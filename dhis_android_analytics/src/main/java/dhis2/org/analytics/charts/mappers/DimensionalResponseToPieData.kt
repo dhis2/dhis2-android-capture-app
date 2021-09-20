@@ -5,6 +5,7 @@ import dhis2.org.analytics.charts.data.SerieData
 import java.util.Date
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionalResponse
+import java.util.GregorianCalendar
 
 class DimensionalResponseToPieData {
     fun map(dimensionalResponse: DimensionalResponse, dimension: Dimension): List<SerieData> {
@@ -12,7 +13,7 @@ class DimensionalResponseToPieData {
         val coordinates = dimensionalResponse.values.groupBy { it.dimensions[dimensionIndex] }
             .map { entry ->
                 GraphPoint(
-                    eventDate = Date(),
+                    eventDate = GregorianCalendar(2021, 0, 1).time,
                     fieldValue = entry.value.sumByDouble { it.value?.toDouble() ?: 0.0 }.toFloat(),
                     legend = dimensionalResponse.metadata[entry.key]?.displayName
                 )

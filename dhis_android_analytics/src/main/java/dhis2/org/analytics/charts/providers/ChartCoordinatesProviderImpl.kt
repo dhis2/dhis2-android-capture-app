@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.Period
+import java.util.GregorianCalendar
 
 class ChartCoordinatesProviderImpl(
     val d2: D2,
@@ -204,7 +205,7 @@ class ChartCoordinatesProviderImpl(
                 }
 
                 GraphPoint(
-                    eventDate = Date(),
+                    eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
                     fieldValue = gridResponseValue.value!!.toFloat(),
                     legend = columnLegend

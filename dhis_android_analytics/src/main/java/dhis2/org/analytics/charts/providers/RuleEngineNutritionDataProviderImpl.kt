@@ -3,8 +3,8 @@ package dhis2.org.analytics.charts.providers
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.NutritionChartType
 import dhis2.org.analytics.charts.data.SerieData
-import java.util.Date
 import org.hisp.dhis.rules.functions.ZScoreTable
+import java.util.GregorianCalendar
 
 class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
     override fun getNutritionData(nutritionChartType: NutritionChartType): List<SerieData> {
@@ -30,7 +30,7 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
             for (dataIndex in 0 until numberOfData) {
                 nutritionData[dataIndex].add(
                     GraphPoint(
-                        eventDate = Date(),
+                        eventDate = GregorianCalendar(2021, 0, 1).time,
                         position = parameter,
                         fieldValue = values[dataIndex]
                     )
