@@ -68,7 +68,7 @@ class FormViewModel(
             ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                 Timber.tag(TAG)
                     .d("${result.first.id} is not a data element or attribute")
-                repository.composeList()
+                _items.value = repository.composeList()
             }
             ValueStoreResult.VALUE_NOT_UNIQUE -> {
                 showInfo.value = InfoUiModel(
@@ -77,7 +77,9 @@ class FormViewModel(
                 )
                 _items.value = repository.composeList()
             }
-            else -> _items.value = repository.composeList()
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                _items.value = repository.composeList()
+            }
         }
     }
 
