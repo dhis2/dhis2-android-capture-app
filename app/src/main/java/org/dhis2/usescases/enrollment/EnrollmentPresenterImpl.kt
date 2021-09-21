@@ -66,6 +66,7 @@ class EnrollmentPresenterImpl(
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
+    private var warningFields = mutableMapOf<String, String>()
     private var mandatoryFields = mutableMapOf<String, String>()
     private var uniqueFields = mutableListOf<String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
@@ -232,9 +233,6 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && field !is DisplayViewModel) {
-                if (field.error?.isNotEmpty() == true) {
-                    errorFields[field.programStageSection ?: sectionUid] = field.label
-                }
                 if (field.mandatory && field.value.isNullOrEmpty()) {
                     mandatoryFields[field.label] = field.programStageSection ?: sectionUid
                     if (showErrors.first) {
@@ -253,10 +251,23 @@ class EnrollmentPresenterImpl(
             var errors = 0
             var warnings = 0
             if (showErrors.first) {
-                repeat(mandatoryFields.filter { it.value == section.uid() }.size) { warnings++ }
+                repeat(
+                    warningFields.filter { warning ->
+                        fieldList.firstOrNull { field ->
+                            field.uid == warning.key && field.programStageSection == section.uid()
+                        } != null
+                    }.size +
+                        mandatoryFields.filter { it.value == section.uid() }.size
+                ) { warnings++ }
             }
             if (showErrors.second) {
-                repeat(errorFields.filter { it.value == section.uid() }.size) { errors++ }
+                repeat(
+                    errorFields.filter { error ->
+                        fieldList.firstOrNull { field ->
+                            field.uid == error.key && field.programStageSection == section.uid()
+                        } != null
+                    }.size
+                ) { errors++ }
             }
             finalList[finalList.indexOf(section)] = section.withErrorsAndWarnings(
                 if (errors != 0) {
@@ -374,6 +385,7 @@ class EnrollmentPresenterImpl(
 
         mandatoryFields.clear()
         errorFields.clear()
+        warningFields.clear()
         uniqueFields.clear()
 
         val fieldMap = fields.map { it.uid to it }.toMap().toMutableMap()
@@ -387,6 +399,7 @@ class EnrollmentPresenterImpl(
         }.apply {
             this@EnrollmentPresenterImpl.configurationErrors = configurationErrors
             errorFields = errorMap().toMutableMap()
+            warningFields = warningMap().toMutableMap()
         }
 
         return ArrayList(fieldMap.values)
@@ -463,7 +476,8 @@ class EnrollmentPresenterImpl(
                 false
             }
             this.errorFields.isNotEmpty() -> {
-                showErrors = Pair(showErrors.first, true)
+                showErrors = Pair(showErrors.first || warningFields.isNotEmpty(), true)
+                fieldsFlowable.onNext(true)
                 view.showErrorFieldsMessage(errorFields.values.toList())
                 false
             }
