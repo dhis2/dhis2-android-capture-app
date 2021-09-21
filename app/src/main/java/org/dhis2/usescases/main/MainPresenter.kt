@@ -119,6 +119,7 @@ class MainPresenter(
                 .subscribe(
                     {
                         workManagerController.cancelAllWork()
+                        FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
                         view.startActivity(LoginActivity::class.java, null, true, true, null)
