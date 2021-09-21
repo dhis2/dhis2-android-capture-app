@@ -126,13 +126,13 @@
                 android:padding="11dp"
                 app:action_icon="@{item}"
                 app:view_edition="@{item.editable}"
-                app:description_icon_tint="@{item.style()}"
+                app:action_icon_tint="@{item.style()}"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
             <ImageView
                 android:id="@+id/delete"
                 style="@style/ActionIcon"
-                app:description_icon_tint="@{item.style()}"
+                app:action_icon_tint="@{item.style()}"
                 android:onClick="@{()->item.onClearValue()}"
                 android:visibility="@{item.canShowDeleteButton ? View.VISIBLE : View.GONE}"
                 app:srcCompat="@drawable/ic_close"

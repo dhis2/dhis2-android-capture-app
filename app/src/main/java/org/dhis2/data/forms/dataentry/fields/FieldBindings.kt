@@ -29,6 +29,15 @@ fun ImageView.tintDescriptionIcon(style: FormUiModelStyle?) {
     }
 }
 
+@BindingAdapter("action_icon_tint")
+fun ImageView.tintActionIcon(style: FormUiModelStyle?) {
+    style?.let {
+        style.getColors()[FormUiColorType.ACTION_ICON]?.let { color ->
+            setColorFilter(color)
+        }
+    }
+}
+
 @BindingAdapter("input_style")
 fun EditText.setInputStyle(styleItem: FieldViewModel?) {
     styleItem?.style()?.let { style ->
