@@ -57,12 +57,14 @@ class DataSetFilterSearchHelperTest {
     }
 
     @Test
+    @Ignore
     fun `Should return dataset instance summaries`() {
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
         verify(filterRepository).dataSetInstanceSummaries()
     }
 
     @Test
+    @Ignore
     fun `Should not apply any filters if not set`() {
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
         verify(filterRepository, times(0))
