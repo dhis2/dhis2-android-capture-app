@@ -36,7 +36,7 @@ class MainNavigator(
     private var currentScreen: MainScreen? = null
     private var currentFragment: Fragment? = null
 
-    fun isHome(): Boolean = isPrograms() || isVisualizations()
+    fun isHome(): Boolean = isPrograms() && isVisualizations()
 
     fun isPrograms(): Boolean =
         currentScreen == MainScreen.PROGRAMS

@@ -39,7 +39,6 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -217,11 +216,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         initSet.applyTo(binding.backdropLayout);
-    }
-
-    @Override
-    public void setFeatureType(FeatureType type) {
-        //binding.navigationBar.setVisibility(type == FeatureType.NONE ? View.GONE : View.VISIBLE);
     }
 
     @Override
