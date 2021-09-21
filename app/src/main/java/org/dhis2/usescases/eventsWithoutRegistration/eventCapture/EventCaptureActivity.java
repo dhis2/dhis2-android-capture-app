@@ -377,7 +377,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
                 .onMenuInflated(popupMenu -> {
-                    popupMenu.getMenu().getItem(0).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    popupMenu.getMenu().findItem(R.id.menu_delete).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    popupMenu.getMenu().findItem(R.id.menu_share).setVisible(false);
                     return Unit.INSTANCE;
                 })
                 .onMenuItemClicked(itemId -> {

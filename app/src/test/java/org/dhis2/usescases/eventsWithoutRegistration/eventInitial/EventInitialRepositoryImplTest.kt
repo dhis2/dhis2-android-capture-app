@@ -45,8 +45,8 @@ class EventInitialRepositoryImplTest {
     @Test
     fun `Should return editable geometry model`() {
         whenever(
-            d2.eventModule().eventService().blockingIsEditable(eventUid)
-        ) doReturn true
+            d2.eventModule().eventService().isEditable(eventUid)
+        ) doReturn Single.just(true)
         val event = Event.builder()
             .uid(eventUid)
             .geometry(Geometry.builder().type(FeatureType.POINT).coordinates("[0,0]").build())

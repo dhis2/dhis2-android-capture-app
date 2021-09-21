@@ -74,8 +74,47 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:visibility="@{chartModel.showNoDataMessage()||chartModel.showNoDataForFiltersMessage()?View.GONE:View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chart_title" />
+
+        <ImageView
+            android:id="@+id/no_data_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="68dp"
+            android:visibility="@{chartModel.showNoDataMessage()||chartModel.showNoDataForFiltersMessage()?View.VISIBLE:View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chart_title"
+            app:srcCompat="@drawable/ic_empty_folder" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/no_data_for_selected_filters"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showNoDataForFiltersMessage()?View.VISIBLE:View.GONE}"
+            app:clipAllCorners="@{8}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_data_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/no_data_to_display"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showNoDataMessage()?View.VISIBLE:View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_data_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

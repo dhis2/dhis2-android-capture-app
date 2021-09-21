@@ -58,12 +58,12 @@ val periodToId = hashMapOf(
     RelativePeriod.LAST_5_YEARS to R.id.last5year
 )
 
-sealed class AnalyticsModel
+sealed class AnalyticsModel(val uid: String)
 
 data class SectionTitle(
     val title: String,
     val sectionType: SectionType = SectionType.MAIN
-) : AnalyticsModel() {
+) : AnalyticsModel(title) {
     fun textStyle(): Int {
         return if (sectionType == SectionType.MAIN) {
             Typeface.BOLD
@@ -75,7 +75,7 @@ data class SectionTitle(
     fun isSubsection(): Boolean = sectionType == SectionType.SUBSECTION
 }
 
-data class ChartModel(val graph: Graph) : AnalyticsModel() {
+data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid ?: graph.title) {
     val observableChartType by lazy {
         ObservableField<ChartType>(
             graph.chartType ?: ChartType.LINE_CHART
@@ -464,6 +464,17 @@ data class ChartModel(val graph: Graph) : AnalyticsModel() {
         if (graph.periodToDisplaySelected != null) filterCount++
         return filterCount
     }
+
+    fun showNoDataMessage(): Boolean {
+        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            graph.periodToDisplaySelected == null &&
+            graph.orgUnitsSelected.isEmpty()
+    }
+
+    fun showNoDataForFiltersMessage(): Boolean {
+        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+            (graph.periodToDisplaySelected != null || graph.orgUnitsSelected.isNotEmpty())
+    }
 }
 
 data class IndicatorModel(
@@ -472,7 +483,7 @@ data class IndicatorModel(
     val color: String?,
     val location: String,
     val defaultLabel: String
-) : AnalyticsModel() {
+) : AnalyticsModel(programIndicator?.uid() ?: defaultLabel) {
     fun label(): String {
         return programIndicator?.displayName() ?: defaultLabel
     }

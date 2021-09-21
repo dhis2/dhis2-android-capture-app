@@ -2,16 +2,19 @@ package org.dhis2.data.forms.dataentry
 
 import android.Manifest
 import android.app.Activity
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -29,7 +32,7 @@ import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
+import org.dhis2.data.forms.dataentry.fields.DialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
@@ -87,7 +90,7 @@ class FormView constructor(
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     private lateinit var alertDialogView: View
-    private lateinit var ageDialogDelegate: AgeDialogDelegate
+    private lateinit var dialogDelegate: DialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
 
     override fun onCreateView(
@@ -99,7 +102,7 @@ class FormView constructor(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        ageDialogDelegate = AgeDialogDelegate()
+        dialogDelegate = DialogDelegate()
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -207,10 +210,11 @@ class FormView constructor(
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
-            is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.OpenCustomCalendar -> showCustomCalendar(uiEvent)
             is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
                 uiEvent
             )
+            is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
@@ -281,31 +285,63 @@ class FormView constructor(
         viewModel.submitIntent(intent)
     }
 
-    private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
-        val date = Calendar.getInstance().time
-
-        val dialog = CalendarPicker(requireContext())
-        dialog.apply {
+    private fun showCustomCalendar(intent: RecyclerViewUiEvents.OpenCustomCalendar) {
+        val dialog = CalendarPicker(requireContext()).apply {
             setTitle(intent.label)
-            setInitialDate(date)
-            isFutureDatesAllowed(true)
+            setInitialDate(intent.date)
+            isFutureDatesAllowed(intent.allowFutureDates)
             setListener(object : OnDatePickerListener {
                 override fun onNegativeClick() {
-                    val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
-                    intentHandler(clearIntent)
+                    intentHandler(FormIntent.ClearValue(intent.uid))
                 }
-
                 override fun onPositiveClick(datePicker: DatePicker) {
-                    val dateIntent = ageDialogDelegate.handleDateInput(
-                        intent.uid,
-                        datePicker.year,
-                        datePicker.month,
-                        datePicker.dayOfMonth
-                    )
-                    intentHandler(dateIntent)
+                    when (intent.isDateTime) {
+                        true -> uiEventHandler(
+                            dialogDelegate.handleDateTimeInput(
+                                intent.uid,
+                                intent.label,
+                                intent.date,
+                                datePicker.year,
+                                datePicker.month,
+                                datePicker.dayOfMonth
+                            )
+                        )
+                        else -> intentHandler(
+                            dialogDelegate.handleDateInput(
+                                intent.uid,
+                                datePicker.year,
+                                datePicker.month,
+                                datePicker.dayOfMonth
+                            )
+                        )
+                    }
                 }
             })
         }
+        dialog.show()
+    }
+
+    private fun showTimePicker(intent: RecyclerViewUiEvents.OpenTimePicker) {
+        val calendar = Calendar.getInstance()
+        intent.date?.let { calendar.time = it }
+        val is24HourFormat = DateFormat.is24HourFormat(requireContext())
+        val dialog = TimePickerDialog(
+            requireContext(),
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                intentHandler(
+                    dialogDelegate.handleTimeInput(
+                        intent.uid,
+                        if (intent.isDateTime == true) intent.date else null,
+                        hourOfDay,
+                        minutes
+                    )
+                )
+            },
+            calendar[Calendar.HOUR_OF_DAY],
+            calendar[Calendar.MINUTE],
+            is24HourFormat
+        )
+        dialog.setTitle(intent.label)
         dialog.show()
     }
 
@@ -324,7 +360,7 @@ class FormView constructor(
         AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(alertDialogView)
             .setPositiveButton(R.string.action_accept) { _, _ ->
-                val dateIntent = ageDialogDelegate.handleYearMonthDayInput(
+                val dateIntent = dialogDelegate.handleYearMonthDayInput(
                     intent.uid,
                     negativeOrZero(yearPicker.text.toString()),
                     negativeOrZero(monthPicker.text.toString()),
@@ -333,7 +369,7 @@ class FormView constructor(
                 intentHandler(dateIntent)
             }
             .setNegativeButton(R.string.clear) { _, _ ->
-                val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                val clearIntent = FormIntent.ClearValue(intent.uid)
                 intentHandler(clearIntent)
             }
             .create()

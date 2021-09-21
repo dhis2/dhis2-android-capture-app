@@ -41,9 +41,7 @@ class LayoutProviderImpl : LayoutProvider {
 
     override fun getLayoutByValueType(valueType: ValueType): Int {
         return when (valueType) {
-            ValueType.DATE -> R.layout.form_date_text
-            ValueType.TIME -> R.layout.form_time_text
-            ValueType.DATETIME -> R.layout.form_date_time_text
+            ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
             else -> R.layout.form_edit_text_custom
         }

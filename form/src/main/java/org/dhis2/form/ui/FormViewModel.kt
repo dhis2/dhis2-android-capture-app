@@ -76,7 +76,7 @@ class FormViewModel(
                 intent.uid,
                 intent.date
             )
-            is FormIntent.ClearDateFromAgeCalendar -> createRowAction(intent.uid, null)
+            is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
                 intent.uid,
                 intent.coordinates,

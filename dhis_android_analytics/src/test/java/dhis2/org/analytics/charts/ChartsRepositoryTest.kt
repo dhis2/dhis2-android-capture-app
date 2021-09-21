@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -67,7 +68,7 @@ class ChartsRepositoryTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(mockedAnalyticsSettings())
         whenever(
-            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any())
+            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any(), any(), any())
         ) doReturn mockedSettingsGraphs()
 
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
@@ -84,12 +85,15 @@ class ChartsRepositoryTest {
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
         mockNumericDataElements(false)
+        mockedVisualizationOrgUnitFilter()
+        mockedVisualizationOrgUnitFilterType()
+        mockedVisualizationPeriodFilter()
         whenever(
-            dataElementToGraph.map(any(), any(), any(), any())
+            dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedDataElementGraph()
         mockIndicators(false)
         whenever(
-            programIndicatorToGraph.map(any(), any(), any(), any())
+            programIndicatorToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -107,7 +111,7 @@ class ChartsRepositoryTest {
         mockRepeatableStagesCall()
         mockNumericDataElements(false)
         whenever(
-            dataElementToGraph.map(any(), any(), any(), any())
+            dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedDataElementGraph()
         mockIndicators(true)
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
@@ -123,10 +127,13 @@ class ChartsRepositoryTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
+        mockedVisualizationOrgUnitFilter()
+        mockedVisualizationOrgUnitFilterType()
+        mockedVisualizationPeriodFilter()
         mockNumericDataElements(true)
         mockIndicators(false)
         whenever(
-            programIndicatorToGraph.map(any(), any(), any(), any())
+            programIndicatorToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -327,5 +334,23 @@ class ChartsRepositoryTest {
             0L,
             dhis2.org.analytics.charts.data.ChartType.LINE_CHART
         )
+    }
+
+    private fun mockedVisualizationPeriodFilter() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
+    }
+
+    private fun mockedVisualizationOrgUnitFilterType() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
+    }
+
+    private fun mockedVisualizationOrgUnitFilter() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
     }
 }

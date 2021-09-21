@@ -73,7 +73,7 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public void onShowCustomCalendar() {
         onItemClick();
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomAgeCalendar(uid(), label()));
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomCalendar(uid(), label(), value() != null ? StringExtensionsKt.toDate(value()) : null, false, false));
     }
 
     public void onShowDayMonthYearPicker() {

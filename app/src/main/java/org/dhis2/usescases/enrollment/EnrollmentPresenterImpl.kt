@@ -200,9 +200,6 @@ class EnrollmentPresenterImpl(
                         result.valueStoreResult?.let {
                             when (it) {
                                 ValueStoreResult.VALUE_CHANGED -> {
-                                    if (shouldShowDateEditionWarning(result.uid)) {
-                                        view.showDateEditionWarning()
-                                    }
                                     fieldsFlowable.onNext(true)
                                     checkFinishing(true)
                                 }
@@ -395,6 +392,13 @@ class EnrollmentPresenterImpl(
     }
 
     fun updateFields() {
+        fieldsFlowable.onNext(true)
+    }
+
+    fun updateFields(action: RowAction) {
+        if (shouldShowDateEditionWarning(action.id)) {
+            view.showDateEditionWarning()
+        }
         fieldsFlowable.onNext(true)
     }
 
