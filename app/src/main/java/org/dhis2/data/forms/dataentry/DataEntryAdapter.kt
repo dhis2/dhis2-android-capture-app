@@ -19,7 +19,10 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
-    private val refactoredViews = intArrayOf(R.layout.form_age_custom, R.layout.form_date_time, R.layout.form_scan)
+    private val refactoredViews = intArrayOf(
+        R.layout.form_age_custom,
+        R.layout.form_date_time, R.layout.form_scan
+    )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
