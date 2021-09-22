@@ -133,12 +133,15 @@ class EnrollmentPresenterImplTest {
     @Test
     fun `Error fields should show mandatory fields dialog`() {
         val fields = arrayListOf(dummyEditTextViewModel("uid1", "error_field"))
-        val calcResult = Result.success(listOf(
-            RuleEffect.create(
-                "ruleUid",
-                RuleActionShowError.create("content", "error_field", "uid1"),
-                "data"
-            )))
+        val calcResult = Result.success(
+            listOf(
+                RuleEffect.create(
+                    "ruleUid",
+                    RuleActionShowError.create("content", "error_field", "uid1"),
+                    "data"
+                )
+            )
+        )
         mockTrackedEntityAttributes()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
