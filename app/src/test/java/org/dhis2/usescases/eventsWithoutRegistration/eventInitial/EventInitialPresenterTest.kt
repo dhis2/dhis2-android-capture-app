@@ -671,6 +671,7 @@ class EventInitialPresenterTest {
                 "",
                 mutableMapOf(),
                 mutableMapOf(),
+                mutableMapOf(),
                 false to false
             )
         ) doReturn Pair(mutableListOf(), mutableListOf())

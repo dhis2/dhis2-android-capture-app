@@ -374,7 +374,7 @@ class EnrollmentPresenterImpl(
         return needsCatCombo || needsCoordinates
     }
 
-    private fun applyRuleEffects(
+    fun applyRuleEffects(
         fields: List<FieldUiModel>,
         result: Result<RuleEffect>
     ): List<FieldUiModel> {
