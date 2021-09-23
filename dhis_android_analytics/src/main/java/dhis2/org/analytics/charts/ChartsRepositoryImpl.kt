@@ -80,7 +80,13 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.program()?.get(programUid)?.find { it.id().equals(groupUid) }
+            ?.program()?.get(programUid)?.find {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
         return graphList

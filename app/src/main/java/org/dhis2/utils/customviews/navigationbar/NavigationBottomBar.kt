@@ -73,6 +73,9 @@ class NavigationBottomBar @JvmOverloads constructor(
         if (visibleItemCount().size > 1) {
             visibility = View.VISIBLE
             animations.show {
+                if (visibility != View.VISIBLE) {
+                    visibility = View.VISIBLE
+                }
                 hidden = false
             }
         }

@@ -651,11 +651,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
-                    presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                    presenter.setProgram(selectedProgram);
+                    binding.navigationBar.pageConfiguration(pageConfigurator);
                 } else if (programs.size() == 1 && pos != 0) {
-                    presenter.setProgram(programs.get(0));
+                    Program selectedProgram = programs.get(0);
+                    presenter.setProgram(selectedProgram);
+                    binding.navigationBar.pageConfiguration(pageConfigurator);
                 } else {
                     presenter.setProgram(null);
+                    binding.navigationBar.hide();
                 }
             }
 

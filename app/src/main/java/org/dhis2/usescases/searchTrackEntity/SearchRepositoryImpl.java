@@ -104,6 +104,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final CrashReportController crashReportController;
 
     SearchRepositoryImpl(String teiType,
+                         @Nullable String initialProgram,
                          D2 d2,
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
@@ -121,6 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
+        this.currentProgram = initialProgram;
     }
 
     @Override
