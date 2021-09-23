@@ -7,6 +7,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.style.FormUiModelStyle
 import org.dhis2.utils.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
@@ -36,7 +37,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>
+            processor: FlowableProcessor<RowAction>,
+            style: FormUiModelStyle
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -55,7 +57,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
                 processor,
-                null,
+                style,
                 false,
                 fieldRendering,
                 hint,

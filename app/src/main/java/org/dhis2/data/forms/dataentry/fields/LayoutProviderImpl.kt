@@ -33,8 +33,6 @@ private val layouts = mapOf<KClass<*>, Int>(
     MatrixOptionSetModel::class to R.layout.matrix_option_set
 )
 
-// Matrix Option Set Model Companion issue to take into account for later
-
 class LayoutProviderImpl : LayoutProvider {
 
     override fun getLayoutByModel(modelClass: KClass<*>): Int {
