@@ -1,12 +1,16 @@
 package org.dhis2.utils.customviews
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,13 +21,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.QRCodeWriter
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import org.dhis2.Bindings.clipWithRoundedCorners
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.QrDetailDialogBinding
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import timber.log.Timber
 
-class QRDetailBottomDialog(
+class
+QRDetailBottomDialog(
     private val value: String,
     private val renderingType: ValueTypeRenderingType?,
     private val editable: Boolean,
@@ -35,10 +46,17 @@ class QRDetailBottomDialog(
     }
 
     private lateinit var binding: QrDetailDialogBinding
+    private var qrContentUri: Uri? = null
+    private var primaryColor: Int? = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        primaryColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
     }
 
     override fun onCreateView(
@@ -53,7 +71,7 @@ class QRDetailBottomDialog(
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,
-                    ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                    primaryColor!!
                 )
             )
             isEnabled = editable == true
@@ -67,10 +85,19 @@ class QRDetailBottomDialog(
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,
-                    ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                    primaryColor!!
                 )
             )
             setOnClickListener {
+                qrContentUri?.let { uri ->
+                    Intent().apply {
+                        action = Intent.ACTION_SEND
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        setDataAndType(uri, context.contentResolver.getType(uri))
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        startActivity(Intent.createChooser(this, context.getString(R.string.share)))
+                    }
+                }
             }
         }
 
@@ -78,7 +105,7 @@ class QRDetailBottomDialog(
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,
-                    ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                    primaryColor!!
                 )
             )
             setOnClickListener {
@@ -111,6 +138,7 @@ class QRDetailBottomDialog(
     override fun onResume() {
         super.onResume()
         renderQrBitmap { qrBitmap ->
+            saveQrImage(qrBitmap)
             Glide.with(this)
                 .load(qrBitmap)
                 .apply(RequestOptions.skipMemoryCacheOf(true))
@@ -146,6 +174,25 @@ class QRDetailBottomDialog(
             callback.invoke(bitMap)
         } else {
             dismiss()
+        }
+    }
+
+    private fun saveQrImage(qrBitmap: Bitmap) {
+        try {
+            val cachePath =
+                FileResourceDirectoryHelper.getFileCacheResourceDirectory(requireContext())
+            val stream =
+                FileOutputStream("$cachePath/qrImage.png")
+
+            qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+            qrContentUri = FileProvider.getUriForFile(
+                requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                File(cachePath, "qrImage.png")
+            )
+        } catch (e: IOException) {
+            Timber.e(e)
         }
     }
 }

@@ -50,6 +50,7 @@
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
+            app:label_text_color="@{item.style()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{item.formattedLabel}"
@@ -75,7 +76,7 @@
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintTop_toTopOf="@+id/label"
             app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary"
+            app:description_icon_tint="@{item.style()}"
             app:view_edition="@{item.editable}" />
 
 
@@ -97,7 +98,8 @@
                 android:hint="@{item.hint}"
                 android:theme="@style/loginInputText"
                 app:error_message="@{item.error()}"
-                app:warning_message="@{item.warning()}">
+                app:warning_message="@{item.warning()}"
+                app:input_layout_style="@{item.style()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
@@ -110,6 +112,7 @@
                     app:requestFocus="@{item.activated()}"
                     app:view_edition="@{item.editable}"
                     app:action_handler="@{item}"
+                    app:input_style="@{item}"
                     tools:text="111-111-111" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -123,11 +126,13 @@
                 android:padding="11dp"
                 app:action_icon="@{item}"
                 app:view_edition="@{item.editable}"
+                app:action_icon_tint="@{item.style()}"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
             <ImageView
                 android:id="@+id/delete"
                 style="@style/ActionIcon"
+                app:action_icon_tint="@{item.style()}"
                 android:onClick="@{()->item.onClearValue()}"
                 android:visibility="@{item.canShowDeleteButton ? View.VISIBLE : View.GONE}"
                 app:srcCompat="@drawable/ic_close"
