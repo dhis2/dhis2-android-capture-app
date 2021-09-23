@@ -198,6 +198,19 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
             }
         ).build()
         appMenu.show()
+
+        if (graph.periodToDisplaySelected != null &&
+            graph.periodToDisplaySelected.isInOther()
+        ) {
+            val periodIdSelected = periodToId[graph.periodToDisplaySelected]
+            appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
+            return
+        } else if (graph.periodToDisplayDefault != null &&
+            graph.periodToDisplayDefault.isInOther()
+        ) {
+            val periodIdDefault = periodToId[graph.periodToDisplayDefault]
+            appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
+        }
     }
 
     private fun showYearlyPeriodVisualization(view: View) {
@@ -220,13 +233,13 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         appMenu.show()
 
         if (graph.periodToDisplaySelected != null &&
-            graph.periodToDisplaySelected.isInMonthly()
+            graph.periodToDisplaySelected.isInYearly()
         ) {
             val periodIdSelected = periodToId[graph.periodToDisplaySelected]
             appMenu.addIconToItem(periodIdSelected!!, R.drawable.ic_check_chart)
             return
         } else if (graph.periodToDisplayDefault != null &&
-            graph.periodToDisplayDefault.isInMonthly()
+            graph.periodToDisplayDefault.isInYearly()
         ) {
             val periodIdDefault = periodToId[graph.periodToDisplayDefault]
             appMenu.addIconToItem(periodIdDefault!!, R.drawable.ic_check_chart)
