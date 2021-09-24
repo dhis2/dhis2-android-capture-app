@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -28,6 +29,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class MainPresenterTest {
@@ -41,6 +43,10 @@ class MainPresenterTest {
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
