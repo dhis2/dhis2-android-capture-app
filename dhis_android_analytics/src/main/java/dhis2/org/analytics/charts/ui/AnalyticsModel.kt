@@ -389,6 +389,7 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 R.id.selection,
                 "$selectionText (${graph.orgUnitsSelected.size})"
             )
+            menuBuilder.addIconToItem(R.id.selection, R.drawable.ic_check_chart)
             return
         } else if (graph.orgUnitsDefault.isNotEmpty()) {
             menuBuilder.showItem(R.id.reset_period)
