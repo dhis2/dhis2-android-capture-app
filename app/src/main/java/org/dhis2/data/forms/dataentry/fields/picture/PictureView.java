@@ -152,22 +152,18 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Ac
                 ).show());
     }
 
-    public void setWarning(String msg) {
-        if (!isEmpty(msg)) {
-            errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.warning_color));
-            errorView.setText(msg);
-            errorView.setVisibility(VISIBLE);
-        } else
-            errorView.setVisibility(GONE);
-    }
-
-    public void setError(String msg) {
-        if (!isEmpty(msg)) {
+    public void setWarningErrorMessage(String warning, String error) {
+        if (!isEmpty(error)) {
             errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.error_color));
-            errorView.setText(msg);
+            errorView.setText(error);
             errorView.setVisibility(VISIBLE);
-        } else
+        } else if (!isEmpty(warning)) {
+            errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.warning_color));
+            errorView.setText(warning);
+            errorView.setVisibility(VISIBLE);
+        } else {
             errorView.setVisibility(GONE);
+        }
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -303,8 +299,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Ac
         setDescription(viewModel.description());
         setInitialValue(viewModel.value());
         setEditable(viewModel.editable());
-        setWarning(viewModel.warning());
-        setError(viewModel.error());
+        setWarningErrorMessage(viewModel.warning(), viewModel.error());
     }
 
     private void subscribe() {
