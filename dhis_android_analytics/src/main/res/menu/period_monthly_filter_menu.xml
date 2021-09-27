@@ -9,21 +9,27 @@
     <group android:id="@+id/filters">
         <item
             android:id="@+id/thismonth"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/thismonth" />
         <item
             android:id="@+id/lastmonth"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/lastmonth" />
         <item
             android:id="@+id/last3months"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last3months" />
         <item
             android:id="@+id/last6months"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last6months" />
         <item
             android:id="@+id/last12months"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last12months" />
         <item
             android:id="@+id/monthThisYear"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/monthsthisyear" />
     </group>
 </menu>
