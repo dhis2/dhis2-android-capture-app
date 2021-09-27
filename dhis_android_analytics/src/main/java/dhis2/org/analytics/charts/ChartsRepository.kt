@@ -11,7 +11,7 @@ interface ChartsRepository {
     fun getProgramVisualization(groupUid: String?, programUid: String): List<Graph>
     fun getHomeVisualization(groupUid: String?): List<Graph>
     fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup>
-    fun getDataSetVisualization(groupUid: String?, programUid: String): List<Graph>
+    fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph>
     fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>)
     fun setVisualizationOrgUnits(
         visualizationUid: String,

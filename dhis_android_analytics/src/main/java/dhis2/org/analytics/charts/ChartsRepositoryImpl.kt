@@ -70,8 +70,18 @@ class ChartsRepositoryImpl(
             .visualizationGroupTestingData(featureConfig)
     }
 
-    override fun getDataSetVisualization(groupUid: String?, programUid: String): List<Graph> {
-        return emptyList<Graph>().nutritionTestingData(d2)
+    override fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph> {
+        val graphList = mutableListOf<Graph>()
+        val visualizationSettings: AnalyticsDhisVisualizationsSetting? =
+            d2.settingModule().analyticsSetting()
+                .visualizationsSettings()
+                .blockingGet()
+
+        visualizationSettings
+            ?.dataSet()?.get(dataSetUid)?.find { it.id().equals(groupUid) }
+            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+
+        return graphList
     }
 
     override fun getProgramVisualization(groupUid: String?, programUid: String): List<Graph> {
