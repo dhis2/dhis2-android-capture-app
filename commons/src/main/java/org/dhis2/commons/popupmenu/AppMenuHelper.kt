@@ -56,6 +56,11 @@ class AppMenuHelper private constructor(
         popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
     }
 
+    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int){
+        popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
+        popupMenu.menu.findItem(id)?.icon?.alpha = 0
+    }
+
     fun changeItemText(@IdRes id: Int, text: String) {
         popupMenu.menu.findItem(id)?.title = text
     }
