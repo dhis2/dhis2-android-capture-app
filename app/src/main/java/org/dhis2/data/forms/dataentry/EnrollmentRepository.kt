@@ -250,7 +250,7 @@ class EnrollmentRepository(
             null,
             onRowActionProccesor,
             emptyList(),
-            null
+            if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
 
         return if (!error.isNullOrEmpty()) {
