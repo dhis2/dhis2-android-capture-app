@@ -69,6 +69,26 @@ class VisualizationToGraph(
         )
     }
 
+    fun addErrorGraph(
+        visualization: Visualization,
+        selectedRelativePeriod: RelativePeriod?,
+        selectedOrgUnits: List<String>?
+    ): Graph {
+        return Graph(
+            title = visualization.displayName() ?: "",
+            series = emptyList(),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = periodStepProvider.periodStep(PeriodType.Monthly),
+            chartType = visualization.type().toAnalyticsChartType(),
+            categories = emptyList(),
+            visualizationUid = visualization.uid(),
+            periodToDisplaySelected = selectedRelativePeriod,
+            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+            hasError = true
+        )
+    }
+
     private fun getCategories(
         visualizationType: VisualizationType?,
         gridAnalyticsResponse: GridAnalyticsResponse

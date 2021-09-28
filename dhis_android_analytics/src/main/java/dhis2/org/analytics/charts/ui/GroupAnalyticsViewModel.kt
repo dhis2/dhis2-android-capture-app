@@ -20,18 +20,19 @@ class GroupAnalyticsViewModel(
     private val charts: Charts
 ) : ViewModel() {
 
-    private val _chipItems = MutableLiveData<List<AnalyticGroup>>()
-    val chipItems: LiveData<List<AnalyticGroup>> = _chipItems
-    private val _analytics = MutableLiveData<List<AnalyticsModel>>()
-    val analytics: LiveData<List<AnalyticsModel>> = _analytics
+    private val _chipItems = MutableLiveData<Result<List<AnalyticGroup>>>()
+    val chipItems: LiveData<Result<List<AnalyticGroup>>> = _chipItems
+    private val _analytics = MutableLiveData<Result<List<AnalyticsModel>>>()
+    val analytics: LiveData<Result<List<AnalyticsModel>>> = _analytics
     private var currentGroup: String? = null
 
     init {
-        fetchAnalyticsGroup()
-        fetchAnalytics(_chipItems.value?.firstOrNull()?.uid)
+        fetchAnalyticsGroup {
+            fetchAnalytics(_chipItems.value?.getOrNull()?.firstOrNull()?.uid)
+        }
     }
 
-    private fun fetchAnalyticsGroup() {
+    private fun fetchAnalyticsGroup(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val result = async(context = Dispatchers.IO) {
                 charts.getVisualizationGroups(uid).map {
@@ -39,9 +40,10 @@ class GroupAnalyticsViewModel(
                 }
             }
             try {
-                _chipItems.value = result.await()
+                _chipItems.value = Result.success(result.await())
+                onSuccess()
             } catch (e: Exception) {
-                e.printStackTrace()
+                _chipItems.value = Result.failure(e)
             }
         }
     }
@@ -107,9 +109,10 @@ class GroupAnalyticsViewModel(
                 }
             }
             try {
-                _analytics.value = result.await()
+                _analytics.value = Result.success(result.await())
             } catch (e: Exception) {
                 e.printStackTrace()
+                _analytics.value = Result.failure(e)
             }
         }
     }

@@ -182,7 +182,13 @@ class ChartsRepositoryImpl(
                 ).let {
                     graphList.add(it)
                 }
-            }
+            } ?: graphList.add(
+                visualizationToGraph.addErrorGraph(
+                    visualization,
+                    selectedRelativePeriod?.firstOrNull(),
+                    selectedOrgUnits
+                )
+            )
         }
     }
 
