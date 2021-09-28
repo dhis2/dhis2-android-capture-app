@@ -173,7 +173,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
-                    presenter.populateList(null);
                     return Unit.INSTANCE;
                 })
                 .needToForceUpdate(true)

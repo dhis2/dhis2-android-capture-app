@@ -237,7 +237,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(rowAction -> {
-                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE || rowAction.getType() == ActionType.ON_SAVE) {
+                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE ||
+                            rowAction.getType() == ActionType.ON_SAVE
+                    ) {
                         Map<String, String> queryDataBU = new HashMap<>(queryData);
                         view.setFabIcon(true);
                         updateQueryData(rowAction);
@@ -246,6 +248,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             updateQueryData(rowAction);
                         }
                         view.showClearSearch(!queryData.isEmpty());
+
+                        if (rowAction.getType() == ActionType.ON_SAVE) {
+                            populateList(null);
+                        }
                     }
                 }, Timber::d)
         );

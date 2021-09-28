@@ -49,7 +49,12 @@ class FormRepositoryImpl(
             ActionType.ON_TEXT_CHANGE -> {
                 updateErrorList(action)
                 updateValueOnList(action.id, action.value)
-                StoreResult(action.id)
+                formValueStore?.let {
+                    StoreResult(action.id)
+                } ?: StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_CHANGED
+                )
             }
         }
     }
