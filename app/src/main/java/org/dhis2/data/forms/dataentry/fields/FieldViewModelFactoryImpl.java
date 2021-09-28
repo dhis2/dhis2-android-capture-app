@@ -99,7 +99,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.style() != null ? trackedEntityAttribute.style() : ObjectStyle.builder().build(),
                 trackedEntityAttribute.fieldMask(),
                 null,
-                fieldProcessor,
                 Collections.emptyList(),
                 FeatureType.POINT);
     }
@@ -122,7 +121,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                ObjectStyle objectStyle,
                                @Nullable String fieldMask,
                                @Nullable LegendValue legendValue,
-                               @NonNull FlowableProcessor<RowAction> processor,
                                @NonNull List<Option> options,
                                @Nullable FeatureType featureType) {
         isNull(type, "type must be supplied");
@@ -150,7 +148,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            processor,
                             style
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
@@ -168,7 +165,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             true,
                             ProgramStageSectionRenderingType.LISTING.toString(),
                             fieldRendering,
-                            processor,
                             options
                     );
                 } else {
@@ -186,7 +182,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             objectStyle,
                             !searchMode,
                             ProgramStageSectionRenderingType.LISTING.toString(),
-                            processor,
                             legendValue
                     );
                 }
@@ -202,7 +197,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         optionSet,
                         description,
                         objectStyle,
-                        processor,
                         options,
                         renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1
                 );
@@ -223,7 +217,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         objectStyle,
                         !searchMode,
                         searchMode,
-                        processor,
                         style
                 );
             case TEXT:
@@ -255,7 +248,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            processor,
                             style
                     );
                 } else {
@@ -277,7 +269,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             ProgramStageSectionRenderingType.LISTING.toString(),
                             !searchMode,
                             searchMode,
-                            processor,
                             legendValue
                     );
                 }
@@ -292,7 +283,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         editable,
                         description,
                         objectStyle,
-                        processor,
                         !searchMode
                 );
             case TIME:
@@ -312,7 +302,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         objectStyle,
                         !searchMode,
                         searchMode,
-                        processor,
                         style
                 );
             case COORDINATE:
@@ -329,7 +318,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         featureType,
                         !searchMode,
                         searchMode,
-                        processor,
                         style
                 );
             case BOOLEAN:
@@ -348,7 +336,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         objectStyle,
                         valueTypeRenderingType,
                         !searchMode,
-                        processor,
                         searchMode
                 );
             case ORGANISATION_UNIT:
@@ -363,8 +350,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         description,
                         objectStyle,
                         !searchMode,
-                        ProgramStageSectionRenderingType.LISTING.toString(),
-                        processor
+                        ProgramStageSectionRenderingType.LISTING.toString()
                 );
             case FILE_RESOURCE:
             case TRACKER_ASSOCIATE:
@@ -378,8 +364,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         section,
                         editable,
                         description,
-                        objectStyle,
-                        processor
+                        objectStyle
                 );
             default:
                 return EditTextViewModel.create(
@@ -400,7 +385,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         ProgramStageSectionRenderingType.LISTING.toString(),
                         !searchMode,
                         searchMode,
-                        processor,
                         legendValue
                 );
         }

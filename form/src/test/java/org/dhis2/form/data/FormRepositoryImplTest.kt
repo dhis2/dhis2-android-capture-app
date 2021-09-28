@@ -9,6 +9,7 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertFalse
@@ -17,14 +18,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class FormRepositoryPersistenceImplTest {
+class FormRepositoryImplTest {
 
     private val formValueStore: FormValueStore = mock()
-    private lateinit var repository: FormRepositoryPersistenceImpl
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
+    private lateinit var repository: FormRepositoryImpl
 
     @Before
     fun setUp() {
-        repository = FormRepositoryPersistenceImpl(formValueStore)
+        repository = FormRepositoryImpl(formValueStore, fieldErrorMessageProvider)
     }
 
     @Test
@@ -80,7 +82,7 @@ class FormRepositoryPersistenceImplTest {
                 id = "testUid",
                 value = "testValue",
                 type = ActionType.ON_SAVE,
-                error = "Wrong value"
+                error = Throwable()
             )
         )
 

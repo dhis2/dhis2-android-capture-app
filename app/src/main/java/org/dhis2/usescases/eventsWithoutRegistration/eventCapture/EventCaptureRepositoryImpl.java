@@ -5,6 +5,7 @@ import static android.text.TextUtils.isEmpty;
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.AuthoritiesKt;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -15,7 +16,6 @@ import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -275,11 +275,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 programStageSection.renderType().mobile().type() : null;
 
                         FieldUiModel fieldViewModel =
-                                fieldFactory.create(uid, formName == null ? displayName : formName,
-                                        valueType, mandatory, optionSet, dataValue,
-                                        programStageSection != null ? programStageSection.uid() : null, allowFutureDates,
+                                fieldFactory.create(uid,
+                                        formName == null ? displayName : formName,
+                                        valueType,
+                                        mandatory,
+                                        optionSet,
+                                        dataValue,
+                                        programStageSection != null ? programStageSection.uid() : null,
+                                        allowFutureDates,
                                         isEventEditable,
-                                        renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), legendValue, processor, options, FeatureType.POINT);
+                                        renderingType,
+                                        description,
+                                        fieldRendering,
+                                        optionCount,
+                                        objectStyle,
+                                        de.fieldMask(),
+                                        legendValue,
+                                        options,
+                                        FeatureType.POINT
+                                );
 
                         if (!error.isEmpty()) {
                             return fieldViewModel.setError(error);

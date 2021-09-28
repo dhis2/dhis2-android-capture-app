@@ -9,12 +9,11 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Objects;
-
-import org.dhis2.form.model.FieldUiModel;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -26,7 +25,6 @@ public abstract class SectionViewModel extends FieldViewModel {
     private boolean showBottomShadow;
     private boolean lastPositionShouldChangeHeight;
 
-    @NonNull
     public abstract boolean isOpen();
 
     @NonNull
@@ -71,7 +69,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 DataEntryViewHolderTypes.SECTION,
                 null,
-                null,
                 false,
                 isOpen,
                 totalFields,
@@ -101,7 +98,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 ObjectStyle.builder().build(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                null,
                 null,
                 false,
                 false,
@@ -138,7 +134,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen(),
@@ -170,7 +165,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen(),
@@ -202,7 +196,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen(),
@@ -263,7 +256,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen,
@@ -294,7 +286,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen(),
@@ -325,7 +316,6 @@ public abstract class SectionViewModel extends FieldViewModel {
                 objectStyle(),
                 null,
                 DataEntryViewHolderTypes.SECTION,
-                processor(),
                 style(),
                 activated(),
                 isOpen(),

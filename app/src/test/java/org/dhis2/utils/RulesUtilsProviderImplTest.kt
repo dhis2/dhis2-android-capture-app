@@ -102,7 +102,6 @@ class RulesUtilsProviderImplTest {
             "",
             null,
             null,
-            null,
             null
         )
     }
@@ -467,7 +466,6 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            null,
             emptyList()
         )
 
@@ -514,7 +512,6 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            null,
             emptyList()
         )
 
@@ -574,7 +571,6 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            null,
             emptyList()
         )
 

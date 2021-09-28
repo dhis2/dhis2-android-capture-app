@@ -68,6 +68,9 @@ dependencies {
     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
     implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
 
+    //Timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+
     //region Test
     testImplementation "junit:junit:${libraries.junit}"
     testImplementation 'org.mockito:mockito-core:3.4.6'

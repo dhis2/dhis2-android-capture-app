@@ -41,7 +41,6 @@ public interface FieldViewModelFactory {
                         @NonNull ObjectStyle objectStyle,
                         @Nullable String fieldMask,
                         @Nullable LegendValue legendValue,
-                        FlowableProcessor<RowAction> processor,
                         List<Option> options,
                         @Nullable FeatureType featureType
     );

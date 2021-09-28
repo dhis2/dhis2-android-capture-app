@@ -168,12 +168,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
 
         formView = new FormView.Builder()
-                .persistence(formRepository)
+                .repository(formRepository)
                 .locationProvider(locationProvider)
                 .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
-                    presenter.populateList(null);
                     return Unit.INSTANCE;
                 })
                 .needToForceUpdate(true)
@@ -514,7 +513,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldUiModel> data) {
-        formView.render(data);
+        formView.processItems(data);
         updateFiltersSearch(presenter.getQueryData().size());
     }
 
