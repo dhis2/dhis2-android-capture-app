@@ -40,7 +40,7 @@ class GroupAnalyticsViewModel(
             }
             try {
                 _chipItems.value = result.await()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -108,7 +108,7 @@ class GroupAnalyticsViewModel(
             }
             try {
                 _analytics.value = result.await()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
