@@ -58,9 +58,11 @@ fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
 fun setInitialValueYear(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[0].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 
@@ -68,9 +70,11 @@ fun setInitialValueYear(editText: EditText, value: String?) {
 fun setInitialValueMonth(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[1].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 
@@ -78,9 +82,11 @@ fun setInitialValueMonth(editText: EditText, value: String?) {
 fun setInitialValueDay(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[2].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 
