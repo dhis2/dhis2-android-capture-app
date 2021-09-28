@@ -38,7 +38,11 @@ class GroupAnalyticsViewModel(
                     AnalyticGroup(it.id(), it.name())
                 }
             }
-            _chipItems.value = result.await()
+            try {
+                _chipItems.value = result.await()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 
@@ -102,7 +106,11 @@ class GroupAnalyticsViewModel(
                     } ?: emptyList()
                 }
             }
-            _analytics.value = result.await()
+            try {
+                _analytics.value = result.await()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 }
