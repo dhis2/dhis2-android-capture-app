@@ -8,17 +8,20 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
-import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
@@ -44,11 +47,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -129,7 +128,7 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory, DhisPeriodUtils periodUtils, Charts charts, CrashReportController crashReportController) {
-        return new SearchRepositoryImpl(teiType, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils, charts, crashReportController);
+        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils, charts, crashReportController);
     }
 
     @Provides
@@ -205,10 +204,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator providePageConfigurator(
-            SearchRepository searchRepository,
-            FeatureConfigRepository featureConfigRepository
-    ) {
-        return new SearchPageConfigurator(searchRepository, featureConfigRepository);
+    NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository) {
+        return new SearchPageConfigurator(searchRepository);
     }
 }

@@ -98,15 +98,6 @@ class MainActivity :
             false
         }
 
-        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        if (restoreScreenName != null) {
-            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
-            mainNavigator.restoreScreen(restoreScreenName)
-        } else {
-            changeFragment(R.id.menu_home)
-            initCurrentScreen()
-        }
-
         binding.mainDrawerLayout.addDrawerListener(this)
 
         prefs = abstracContext.getSharedPreferences(
@@ -138,6 +129,15 @@ class MainActivity :
         }
 
         elevation = ViewCompat.getElevation(binding.toolbar)
+
+        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
+        if (restoreScreenName != null) {
+            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
+            mainNavigator.restoreScreen(restoreScreenName)
+        } else {
+            changeFragment(R.id.menu_home)
+            initCurrentScreen()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

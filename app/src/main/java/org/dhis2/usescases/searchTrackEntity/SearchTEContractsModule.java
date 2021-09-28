@@ -94,6 +94,8 @@ public class SearchTEContractsModule {
         void showClearSearch(boolean empty);
 
         void hideFilter();
+
+        void updateNavigationBar();
     }
 
     public interface Presenter {
