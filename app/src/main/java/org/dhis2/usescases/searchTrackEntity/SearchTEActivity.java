@@ -844,9 +844,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
         setCarouselVisibility(backDropActive);
         if(backDropActive) {
-            binding.navigationBar.hide();
+            binding.navigationBar.setVisibility(View.GONE);
+//            binding.navigationBar.hide();
         }else{
-            binding.navigationBar.show();
+            binding.navigationBar.setVisibility(View.VISIBLE);
+//            binding.navigationBar.show();
         }
 
         initSet.applyTo(binding.backdropLayout);
