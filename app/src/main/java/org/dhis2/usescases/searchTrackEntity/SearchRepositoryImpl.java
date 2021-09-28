@@ -889,6 +889,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         boolean programAttributeHasCoordinates = false;
         boolean eventHasCoordinates = false;
+        boolean eventDataElementHasCoordinates = false;
         if (programUid != null) {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(programUid)
@@ -907,12 +908,27 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .byProgramUid().eq(programUid)
                     .byFeatureType().notIn(FeatureType.NONE)
                     .blockingIsEmpty();
+
+
+            List<Event> events = d2.eventModule().eventQuery().byIncludeDeleted()
+                    .eq(false)
+                    .byProgram()
+                    .eq(programUid)
+                    .blockingGet();
+            for (Event event : events) {
+                if (event.geometry() != null) {
+                    eventDataElementHasCoordinates = true;
+                    break;
+                }
+            }
+
         }
 
         return teTypeHasCoordinates ||
                 enrollmentHasCoordinates ||
                 teAttributeHasCoordinates ||
                 programAttributeHasCoordinates ||
-                eventHasCoordinates;
+                eventHasCoordinates ||
+                eventDataElementHasCoordinates;
     }
 }

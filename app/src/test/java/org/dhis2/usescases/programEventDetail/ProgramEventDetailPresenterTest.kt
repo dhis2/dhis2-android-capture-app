@@ -32,7 +32,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -117,7 +116,6 @@ class ProgramEventDetailPresenterTest {
             BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
         )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
-        whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
         whenever(repository.accessDataWrite) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Observable.just(program)
@@ -128,7 +126,6 @@ class ProgramEventDetailPresenterTest {
             repository.filteredEventsForMap()
         ) doReturn Flowable.just(mapData)
         presenter.init()
-        verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)
         verify(view).setProgram(program)
     }

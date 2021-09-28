@@ -221,7 +221,6 @@
                 style="@style/DhisBottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:menu="@menu/navigation_event_list"
                 tools:visibility="visible" />

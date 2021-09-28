@@ -190,6 +190,7 @@ class MainActivity :
                 ConstraintSet.BOTTOM,
                 50
             )
+            binding.navigationBar.hide()
         } else {
             initSet.connect(
                 R.id.fragment_container,
@@ -198,6 +199,7 @@ class MainActivity :
                 ConstraintSet.BOTTOM,
                 0
             )
+            binding.navigationBar.show()
         }
         initSet.applyTo(binding.backdropLayout)
         mainNavigator.getCurrentIfProgram()?.openFilter(backDropActive)

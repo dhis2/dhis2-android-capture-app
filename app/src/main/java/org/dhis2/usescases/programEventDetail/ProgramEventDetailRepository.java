@@ -41,4 +41,6 @@ public interface ProgramEventDetailRepository {
     Single<List<EventFilter>> workingLists();
 
     Single<ProgramStage> programStage();
+
+    boolean programHasCoordinates();
 }
