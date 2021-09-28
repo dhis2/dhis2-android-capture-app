@@ -21,48 +21,70 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     public abstract String renderType();
 
     public static FieldViewModel create(String id, int layoutId, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, boolean isBackgroundTransparent, String renderType) {
-        return new AutoValue_OrgUnitViewModel(id, layoutId, label, mandatory, value, section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.ORG_UNIT, null, false, isBackgroundTransparent, renderType);
+        return new AutoValue_OrgUnitViewModel(
+                id,
+                layoutId,
+                label,
+                mandatory,
+                value,
+                section,
+                null,
+                editable,
+                null,
+                null,
+                null,
+                description,
+                objectStyle,
+                null,
+                DataEntryViewHolderTypes.ORG_UNIT,
+                null,
+                null,
+                false,
+                ValueType.ORGANISATION_UNIT,
+                isBackgroundTransparent,
+                renderType
+        );
     }
 
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), true, value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), activated(), valueType(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), activated(), valueType(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), activated(), valueType(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), activated(), valueType(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), activated(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), activated(), valueType(), isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_OrgUnitViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), isFocused, isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, style(), hint(), isFocused, valueType(), isBackgroundTransparent(), renderType());
     }
 
     public void onDataChange(String orgUnitUid, String orgUnitName) {

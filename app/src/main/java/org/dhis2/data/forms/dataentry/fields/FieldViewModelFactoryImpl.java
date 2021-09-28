@@ -9,7 +9,6 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
-import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
@@ -21,9 +20,12 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.ui.LayoutProvider;
+import org.dhis2.form.ui.event.UiEventFactoryImpl;
+import org.dhis2.form.ui.provider.LayoutProvider;
+import org.dhis2.form.ui.provider.HintProvider;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.style.FormUiModelStyle;
@@ -68,13 +70,16 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final boolean searchMode;
     private FormUiColorFactory colorFactory;
     private final LayoutProvider layoutProvider;
+    private final HintProvider hintProvider;
 
     public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
-                                     FormUiColorFactory colorFactory, LayoutProvider layoutProvider) {
+                                     FormUiColorFactory colorFactory, LayoutProvider layoutProvider,
+                                     HintProvider hintProvider) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
         this.colorFactory = colorFactory;
         this.layoutProvider = layoutProvider;
+        this.hintProvider = hintProvider;
     }
 
     @Nullable
@@ -124,7 +129,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                @NonNull List<Option> options,
                                @Nullable FeatureType featureType) {
         isNull(type, "type must be supplied");
-        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
+        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory, type);
 
         final KClass<?> myKClass = JvmClassMappingKt.getKotlinClass(ScanTextViewModel.class);
 
@@ -288,21 +293,25 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(
+                return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
-                        label,
-                        mandatory,
-                        type,
                         value,
-                        section,
-                        allowFutureDates,
+                        false,
+                        null,
                         editable,
+                        null,
+                        mandatory,
+                        getFormattedLabel(mandatory, label),
+                        section,
+                        style,
+                        hintProvider.provideDateHint(type),
                         description,
-                        objectStyle,
-                        !searchMode,
-                        searchMode,
-                        style
+                        type,
+                        null,
+                        null,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, type, allowFutureDates)
                 );
             case COORDINATE:
                 return CoordinateViewModel.create(
@@ -443,11 +452,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         return fieldProcessor;
     }
 
-    @Override
-    public BasicFormUiModelStyle style() {
-        return new BasicFormUiModelStyle(colorFactory);
-    }
-
     private int getLayout(Class type) {
         return layoutProvider.getLayoutByModel(JvmClassMappingKt.getKotlinClass(type));
     }
@@ -457,6 +461,14 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             return layoutProvider.getLayoutByValueType(valueType);
         } else {
             return layoutProvider.getLayoutByValueRenderingType(valueTypeRenderingType, valueType);
+        }
+    }
+
+    private String getFormattedLabel(boolean mandatory, String label) {
+        if (mandatory) {
+            return label + " *";
+        } else {
+            return label;
         }
     }
 }

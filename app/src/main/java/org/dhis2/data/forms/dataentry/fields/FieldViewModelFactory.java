@@ -66,6 +66,4 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FlowableProcessor<RowAction> fieldProcessor();
-
-    BasicFormUiModelStyle style();
 }

@@ -104,10 +104,6 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
-            is FormIntent.SelectDateFromAgeCalendar -> createRowAction(
-                intent.uid,
-                intent.date
-            )
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
                 intent.uid,
@@ -216,13 +212,5 @@ class FormViewModel(
 
     fun getFocusedItemUid(): String? {
         return items.value?.first { it.focused }?.uid
-    }
-
-    fun processCalculatedItems(items: List<FieldUiModel>?) {
-        _items.value = repository.composeList(items)
-    }
-
-    companion object {
-        private const val TAG = "FormVIewModel"
     }
 }

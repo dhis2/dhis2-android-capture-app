@@ -53,7 +53,6 @@ public class DateUtils {
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
     public static final String TIME_24H_EXPRESSION = "HH:mm";
-    public static final String TIME_12H_EXPRESSION = "hh:mm a";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -196,11 +195,6 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat timeFormat() {
         return new SimpleDateFormat(TIME_24H_EXPRESSION, Locale.US);
-    }
-
-    @NonNull
-    public static SimpleDateFormat twelveHourTimeFormat() {
-        return new SimpleDateFormat(TIME_12H_EXPRESSION, Locale.US);
     }
 
     @NonNull
@@ -708,11 +702,11 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    private int weekOfTheYear(PeriodType periodType,String periodId){
+    private int weekOfTheYear(PeriodType periodType, String periodId) {
         Pattern pattern = Pattern.compile(periodType.getPattern());
         Matcher matcher = pattern.matcher(periodId);
         int weekNumber = 0;
-        if(matcher.find()){
+        if (matcher.find()) {
             weekNumber = Integer.parseInt(matcher.group(2));
         }
         return weekNumber;
@@ -816,7 +810,8 @@ public class DateUtils {
         dialog.isFutureDatesAllowed(true);
         dialog.setListener(new OnDatePickerListener() {
             @Override
-            public void onNegativeClick() { }
+            public void onNegativeClick() {
+            }
 
             @Override
             public void onPositiveClick(@NotNull DatePicker datePicker) {
@@ -841,7 +836,8 @@ public class DateUtils {
         dialog.isFutureDatesAllowed(true);
         dialog.setListener(new OnDatePickerListener() {
             @Override
-            public void onNegativeClick() { }
+            public void onNegativeClick() {
+            }
 
             @Override
             public void onPositiveClick(@NotNull DatePicker datePicker) {

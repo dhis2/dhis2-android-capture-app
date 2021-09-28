@@ -84,7 +84,7 @@ class EventCaptureFieldProvider(
                     rawValue
                 )
 
-                val legend = if (fieldViewModel.hasLegend()) {
+                val legend = if (fieldViewModel.legend != null) {
                     getColorByLegend(rawValue, de)
                 } else {
                     null

@@ -4,4 +4,8 @@ open class StyleDecorator(protected var style: FormUiModelStyle) : FormUiModelSt
     override fun getColors(): Map<FormUiColorType, Int> {
         return style.getColors()
     }
+
+    override fun getDescriptionIcon(): Int {
+        return getDescriptionIcon()
+    }
 }

@@ -375,7 +375,7 @@ class EnrollmentRepository(
             null,
             when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
                 null -> null
-                else -> DateUtils.databaseDateFormat().format(date)
+                else -> DateUtils.uiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
@@ -402,9 +402,10 @@ class EnrollmentRepository(
             ValueType.DATE,
             true,
             null,
-            DateUtils.databaseDateFormat().format(
-                enrollmentRepository.blockingGet()!!.incidentDate()
-            ),
+            when (val date = enrollmentRepository.blockingGet()!!.incidentDate()) {
+                null -> null
+                else -> DateUtils.uiDateFormat().format(date)
+            },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             canEditAttributes,

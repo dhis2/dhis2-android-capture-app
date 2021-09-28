@@ -307,9 +307,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             val field = fieldViewModels[assign.field()]!!
 
             val value =
-                if (field.getOptionSet() != null && field.value != null) {
+                if (field.optionSet != null && field.value != null) {
                     val valueOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
+                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
                             .byDisplayName().eq(field.value)
                             .one().blockingGet()
                     if (valueOption == null) {
@@ -318,7 +318,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                                 currentRuleUid,
                                 ActionType.ASSIGN,
                                 ConfigurationError.CURRENT_VALUE_NOT_IN_OPTION_SET,
-                                listOf(field.label, field.getOptionSet() ?: "")
+                                listOf(field.label, field.optionSet ?: "")
                             )
                         )
                     }
@@ -335,9 +335,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 fieldsToUpdate.add(assign.field())
             }
             val valueToShow =
-                if (field.getOptionSet() != null && ruleEffect.data()?.isNotEmpty() == true) {
+                if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
                     val effectOption =
-                        d2.optionModule().options().byOptionSetUid().eq(field.getOptionSet())
+                        d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
                             .byCode().eq(ruleEffect.data())
                             .one().blockingGet()
                     if (effectOption == null) {
@@ -349,7 +349,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                                 listOf(
                                     currentRuleUid ?: "",
                                     ruleEffect.data() ?: "",
-                                    field.getOptionSet() ?: ""
+                                    field.optionSet ?: ""
                                 )
                             )
                         )

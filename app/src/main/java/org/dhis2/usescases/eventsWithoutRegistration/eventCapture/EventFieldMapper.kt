@@ -240,7 +240,7 @@ class EventFieldMapper(
     }
 
     private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.getOptionSet() == null || field !is MatrixOptionSetModel
+        return field.optionSet == null || field !is MatrixOptionSetModel
     }
 
     fun completedFieldsPercentage(): Float {

@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry.fields.scan
 import com.google.auto.value.AutoValue
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.dhis2.utils.Preconditions
@@ -14,8 +14,6 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 abstract class ScanTextViewModel : FieldViewModel() {
 
     abstract val fieldRendering: ValueTypeDeviceRendering?
-
-    abstract val hint: String?
 
     companion object {
 
@@ -54,9 +52,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
                 style,
-                false,
-                fieldRendering,
                 hint,
+                false,
+                null,
+                fieldRendering,
                 isBackgroundTransparent,
                 isSearchMode
             )
@@ -80,9 +79,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             activated(),
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -105,9 +105,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             activated(),
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -130,9 +131,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             activated(),
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -155,9 +157,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             activated(),
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -180,9 +183,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             activated(),
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -205,9 +209,10 @@ abstract class ScanTextViewModel : FieldViewModel() {
             fieldMask(),
             DataEntryViewHolderTypes.SCAN_CODE,
             style(),
+            hint(),
             isFocused,
+            valueType(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
