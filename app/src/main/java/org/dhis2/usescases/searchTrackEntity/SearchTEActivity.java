@@ -652,11 +652,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram(selectedProgram);
-                    binding.navigationBar.pageConfiguration(pageConfigurator);
                 } else if (programs.size() == 1 && pos != 0) {
                     Program selectedProgram = programs.get(0);
                     presenter.setProgram(selectedProgram);
-                    binding.navigationBar.pageConfiguration(pageConfigurator);
                 } else {
                     presenter.setProgram(null);
                     binding.navigationBar.hide();
@@ -677,6 +675,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         presenter.getProgramStageStyle(),
                         ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
                 ));
+    }
+
+    @Override
+    public void updateNavigationBar() {
+        binding.navigationBar.pageConfiguration(pageConfigurator);
     }
 
     private void updateMapVisibility(Program newProgram) {
@@ -844,11 +847,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
         setCarouselVisibility(backDropActive);
         if(backDropActive) {
-            binding.navigationBar.setVisibility(View.GONE);
-//            binding.navigationBar.hide();
+            binding.navigationBar.hide();
         }else{
-            binding.navigationBar.setVisibility(View.VISIBLE);
-//            binding.navigationBar.show();
+            binding.navigationBar.show();
         }
 
         initSet.applyTo(binding.backdropLayout);

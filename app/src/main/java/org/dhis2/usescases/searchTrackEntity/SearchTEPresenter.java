@@ -523,6 +523,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
             searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
+            view.updateNavigationBar();
         }
 
         currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
