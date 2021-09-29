@@ -479,14 +479,18 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         return filterCount
     }
 
+    fun showError(): Boolean = graph.hasError
+
     fun showNoDataMessage(): Boolean {
-        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+        return !graph.hasError &&
+            graph.series.all { serie -> serie.coordinates.isEmpty() } &&
             graph.periodToDisplaySelected == null &&
             graph.orgUnitsSelected.isEmpty()
     }
 
     fun showNoDataForFiltersMessage(): Boolean {
-        return graph.series.all { serie -> serie.coordinates.isEmpty() } &&
+        return !graph.hasError &&
+            graph.series.all { serie -> serie.coordinates.isEmpty() } &&
             (graph.periodToDisplaySelected != null || graph.orgUnitsSelected.isNotEmpty())
     }
 }

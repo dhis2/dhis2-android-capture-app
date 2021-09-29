@@ -46,4 +46,7 @@
     <string name="include_this_period_body">It will display the current period in the chart.</string>
     <string name="no_data_for_selected_filters">The filters you applied do not return any data</string>
     <string name="no_data_to_display">You do not have any data to be displayed</string>
+    <string name="visualization_error">Something is wrong with this visualization</string>
+    <string name="visualization_failure">Something is wrong with the visualizations</string>
+    <string name="visualization_groups_failure">Something is wrong with the visualization groups</string>
 </resources>
