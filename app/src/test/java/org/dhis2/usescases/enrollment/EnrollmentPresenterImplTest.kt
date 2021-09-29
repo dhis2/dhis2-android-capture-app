@@ -15,9 +15,6 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -56,10 +53,8 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val onRowActionProcessor: FlowableProcessor<RowAction> = PublishProcessor.create()
     private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
-    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -75,10 +70,8 @@ class EnrollmentPresenterImplTest {
             valueStore,
             analyticsHelper,
             "This field is mandatory",
-            onRowActionProcessor,
             sectionProcessor,
-            matomoAnalyticsController,
-            formRepository
+            matomoAnalyticsController
         )
     }
 
@@ -150,26 +143,6 @@ class EnrollmentPresenterImplTest {
 
         Assert.assertFalse(checkWthErrors)
         verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("error_field"))
-    }
-
-    @Test
-    fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
-        val action = RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
-
-        whenever(formRepository.processUserAction(action)) doReturn StoreResult(
-            "fieldUid",
-            ValueStoreResult.VALUE_NOT_UNIQUE
-        )
-        whenever(enrollmentView.context) doReturn mock()
-
-        presenter.listenToActions()
-        onRowActionProcessor.onNext(
-            action
-        )
-        val checkUnique = presenter.dataIntegrityCheck()
-
-        Assert.assertFalse(checkUnique)
-        verify(enrollmentView, times(2)).showInfoDialog(null, null)
     }
 
     @Test
@@ -359,7 +332,6 @@ class EnrollmentPresenterImplTest {
             "any",
             false,
             false,
-            null,
             null
         )
 

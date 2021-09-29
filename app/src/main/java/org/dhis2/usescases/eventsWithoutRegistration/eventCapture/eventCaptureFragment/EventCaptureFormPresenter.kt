@@ -1,54 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import timber.log.Timber
 
 class EventCaptureFormPresenter(
     val view: EventCaptureFormView,
     private val activityPresenter: EventCaptureContract.Presenter,
-    val schedulerProvider: SchedulerProvider,
-    private val onFieldActionProcessor: FlowableProcessor<RowAction>,
-    private val formRepository: FormRepository
+    val schedulerProvider: SchedulerProvider
 ) {
     private var finishing: Boolean = false
     private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-        disposable.add(
-            onFieldActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-                .doOnNext { activityPresenter.showProgress() }
-                .observeOn(schedulerProvider.io())
-                .switchMap { rowAction ->
-                    Flowable.just(formRepository.processUserAction(rowAction))
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { result ->
-                        result.valueStoreResult?.let {
-                            when (result.valueStoreResult) {
-                                ValueStoreResult.VALUE_CHANGED -> {
-                                    activityPresenter.setValueChanged(result.uid)
-                                    activityPresenter.nextCalculation(true)
-                                }
-                                else -> populateList()
-                            }
-                        } ?: activityPresenter.hideProgress()
-                    },
-                    Timber::e
-                )
-        )
-
         disposable.add(
             activityPresenter.formFieldsFlowable()
                 .subscribeOn(schedulerProvider.io())
@@ -61,8 +28,8 @@ class EventCaptureFormPresenter(
     }
 
     private fun populateList(items: List<FieldUiModel>? = null) {
-        view.showFields(formRepository.composeList(items).toMutableList())
-        checkFinishing(true)
+        view.showFields(items)
+        checkFinishing()
         activityPresenter.hideProgress()
         if (items != null) {
             selectedSection ?: items
@@ -72,8 +39,8 @@ class EventCaptureFormPresenter(
         }
     }
 
-    private fun checkFinishing(canFinish: Boolean) {
-        if (finishing && canFinish) {
+    private fun checkFinishing() {
+        if (finishing) {
             view.performSaveClick()
         }
         finishing = false
@@ -87,20 +54,7 @@ class EventCaptureFormPresenter(
         activityPresenter.attemptFinish()
     }
 
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
-
     fun setFinishing() {
         finishing = true
-    }
-
-    fun saveValue(uid: String, value: String?) {
-        onFieldActionProcessor.onNext(
-            RowAction(
-                id = uid,
-                value = value,
-                type = ActionType.ON_SAVE
-            )
-        )
     }
 }

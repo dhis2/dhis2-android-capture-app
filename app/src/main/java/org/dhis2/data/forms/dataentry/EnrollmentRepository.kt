@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -12,7 +11,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
@@ -43,8 +41,7 @@ class EnrollmentRepository(
     private val enrollmentCoordinatesLabel: String,
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
-    private val incidentDateDefaultLabel: String,
-    private val onRowActionProccesor: FlowableProcessor<RowAction>
+    private val incidentDateDefaultLabel: String
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
@@ -248,7 +245,6 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             null,
-            onRowActionProccesor,
             emptyList(),
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
@@ -391,7 +387,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -420,7 +415,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -444,7 +438,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             null
         )
@@ -476,7 +469,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             featureType
         )
@@ -506,7 +498,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            onRowActionProccesor,
             null,
             featureType
         )

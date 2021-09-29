@@ -20,7 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryPersistenceImpl
+import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -70,7 +70,6 @@ class EnrollmentModule(
         context: Context,
         d2: D2,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
-        onRowActionProcessor: FlowableProcessor<RowAction>,
         modelFactory: FieldViewModelFactory
     ): EnrollmentRepository {
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
@@ -94,8 +93,7 @@ class EnrollmentModule(
             enrollmentCoordinatesLabel,
             reservedValueWarning,
             enrollmentDateDefaultLabel,
-            incidentDateDefaultLabel,
-            onRowActionProcessor
+            incidentDateDefaultLabel
         )
     }
 
@@ -132,10 +130,8 @@ class EnrollmentModule(
         enrollmentFormRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
-        onRowActionProcessor: FlowableProcessor<RowAction>,
         fieldViewModelFactory: FieldViewModelFactory,
-        matomoAnalyticsController: MatomoAnalyticsController,
-        formRepository: FormRepository
+        matomoAnalyticsController: MatomoAnalyticsController
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -149,10 +145,8 @@ class EnrollmentModule(
             valueStore,
             analyticsHelper,
             context.getString(R.string.field_is_mandatory),
-            onRowActionProcessor,
             fieldViewModelFactory.sectionProcessor(),
-            matomoAnalyticsController,
-            formRepository
+            matomoAnalyticsController
         )
     }
 
@@ -209,7 +203,7 @@ class EnrollmentModule(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController
     ): FormRepository {
-        return FormRepositoryPersistenceImpl(
+        return FormRepositoryImpl(
             ValueStoreImpl(
                 d2,
                 enrollmentRepository.blockingGet().trackedEntityInstance()!!,

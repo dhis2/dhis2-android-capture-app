@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.providers
 import dhis2.org.analytics.charts.data.GraphPoint
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
@@ -204,7 +205,7 @@ class ChartCoordinatesProviderImpl(
                 }
 
                 GraphPoint(
-                    eventDate = Date(),
+                    eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
                     fieldValue = gridResponseValue.value!!.toFloat(),
                     legend = columnLegend

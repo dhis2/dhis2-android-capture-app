@@ -1,12 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.visualOptionSet
 
 import com.google.auto.value.AutoValue
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.option.Option
 
@@ -34,7 +32,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             optionSetUid: String?,
             description: String?,
             style: ObjectStyle,
-            processor: FlowableProcessor<RowAction>?,
             options: List<Option>,
             numberOfColumns: Int
         ): MatrixOptionSetModel {
@@ -54,7 +51,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 style,
                 null,
                 DataEntryViewHolderTypes.PICTURE,
-                processor,
                 null,
                 false,
                 options,
@@ -81,7 +77,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),
@@ -107,7 +102,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),
@@ -133,7 +127,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),
@@ -159,7 +152,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),
@@ -185,7 +177,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),
@@ -211,7 +202,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             isFocused,
             options(),
@@ -230,11 +220,13 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         } else {
             selectedOption.code()
         }
-        processor()?.onNext(
-            RowAction(
-                id = uid(),
-                value = nextValue,
-                type = ActionType.ON_SAVE
+
+        callback.intent(
+            FormIntent.OnSave(
+                uid(),
+                nextValue,
+                null,
+                fieldMask()
             )
         )
     }
@@ -268,7 +260,6 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             dataEntryViewType(),
-            processor(),
             style(),
             activated(),
             options(),

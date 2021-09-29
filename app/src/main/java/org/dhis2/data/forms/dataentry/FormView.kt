@@ -22,7 +22,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
@@ -41,7 +40,6 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -67,6 +65,7 @@ class FormView constructor(
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    private val onFocused: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     dispatchers: DispatcherProvider
 ) : Fragment() {
@@ -162,14 +161,14 @@ class FormView constructor(
 
         viewModel.savedValue.observe(
             viewLifecycleOwner,
-            Observer { rowAction ->
+            { rowAction ->
                 onItemChangeListener?.let { it(rowAction) }
             }
         )
 
         viewModel.items.observe(
             viewLifecycleOwner,
-            Observer { items ->
+            { items ->
                 render(items)
             }
         )
@@ -193,6 +192,26 @@ class FormView constructor(
             viewLifecycleOwner,
             { message ->
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        viewModel.focused.observe(
+            viewLifecycleOwner,
+            { onFocused?.invoke() }
+        )
+
+        viewModel.showInfo.observe(
+            viewLifecycleOwner,
+            { infoUiModel ->
+                CustomDialog(
+                    requireContext(),
+                    requireContext().getString(infoUiModel.title),
+                    requireContext().getString(infoUiModel.description),
+                    requireContext().getString(R.string.action_close),
+                    null,
+                    Constants.DESCRIPTION_DIALOG,
+                    null
+                ).show()
             }
         )
     }
@@ -225,7 +244,7 @@ class FormView constructor(
         }
     }
 
-    fun render(items: List<FieldUiModel>) {
+    private fun render(items: List<FieldUiModel>) {
         val layoutManager: LinearLayoutManager =
             binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
@@ -239,15 +258,14 @@ class FormView constructor(
         }
 
         adapter.swap(
-            items,
-            Runnable {
-                when (needToForceUpdate) {
-                    true -> adapter.notifyDataSetChanged()
-                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-                }
-                viewModel.onItemsRendered()
+            items
+        ) {
+            when (needToForceUpdate) {
+                true -> adapter.notifyDataSetChanged()
+                else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
             }
-        )
+            viewModel.onItemsRendered()
+        }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
@@ -497,27 +515,32 @@ class FormView constructor(
         binding.recyclerView.requestFocus()
     }
 
+    fun processItems(items: List<FieldUiModel>?) {
+        viewModel.processCalculatedItems(items)
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
-        private var persistentRepository: FormRepository? = null
+        private var repository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
         private var dispatchers: DispatcherProvider? = null
+        private var onFocused: (() -> Unit)? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
-         * implementation of the repository that fits with your system.
+         * implementation of the repository with a valueStore.
          *
-         * IF you don't provide any repository implementation, data will be kept in memory.
+         * IF you don't provide any valueStore in repository constructor, it will be kept in memory.
          *
          * NOTE: This step is temporary in order to facilitate refactor, in the future will be
          * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
          * library will generate the implementation of the repository.
          */
-        fun persistence(repository: FormRepository) =
-            apply { this.persistentRepository = repository }
+        fun repository(repository: FormRepository) =
+            apply { this.repository = repository }
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -539,10 +562,16 @@ class FormView constructor(
             apply { this.needToForceUpdate = needToForceUpdate }
 
         /**
-         * If set,
+         * Sets if loading started or finished to handle loadingfeedback
          * */
         fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
             apply { this.onLoadingListener = callback }
+
+        /**
+         * It's triggered when form gets focus
+         */
+        fun onFocused(callback: () -> Unit) =
+            apply { this.onFocused = callback }
 
         /**
          * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
@@ -560,13 +589,17 @@ class FormView constructor(
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
             }
+            if (repository == null) {
+                throw Exception("You need to call persistence method and pass a FormRepository")
+            }
             fragmentManager!!.fragmentFactory =
                 FormViewFragmentFactory(
-                    persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                    repository!!,
                     locationProvider,
                     onItemChangeListener,
                     needToForceUpdate,
                     onLoadingListener,
+                    onFocused,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 

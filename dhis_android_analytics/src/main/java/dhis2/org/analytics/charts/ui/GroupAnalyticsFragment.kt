@@ -164,13 +164,25 @@ class GroupAnalyticsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         groupViewModel.chipItems.observe(
             viewLifecycleOwner,
-            {
-                if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
-                    binding.analyticChipGroup.visibility = View.GONE
-                } else {
-                    binding.analyticChipGroup.visibility = View.VISIBLE
-                    disableToolbarElevation?.invoke()
-                    addChips(it)
+            { chipResult ->
+                when {
+                    chipResult.isSuccess -> {
+                        val chips = chipResult.getOrDefault(emptyList())
+                        if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
+                            binding.analyticChipGroup.visibility = View.GONE
+                        } else {
+                            binding.analyticChipGroup.visibility = View.VISIBLE
+                            disableToolbarElevation?.invoke()
+                            addChips(chips)
+                        }
+                    }
+                    chipResult.isFailure -> {
+                        binding.progressLayout.visibility = View.GONE
+                        binding.emptyAnalytics.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_groups_failure)
+                        }
+                    }
                 }
                 startPostponedEnterTransition()
             }
@@ -178,8 +190,17 @@ class GroupAnalyticsFragment : Fragment() {
         groupViewModel.analytics.observe(
             viewLifecycleOwner,
             { analytics ->
-                adapter.submitList(analytics) {
-                    binding.progress.visibility = View.GONE
+                when {
+                    analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
+                        binding.progressLayout.visibility = View.GONE
+                    }
+                    analytics.isFailure -> {
+                        binding.progressLayout.visibility = View.GONE
+                        binding.emptyAnalytics.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_failure)
+                        }
+                    }
                 }
             }
         )
@@ -199,7 +220,7 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
-                            binding.progress.visibility = View.VISIBLE
+                            binding.progressLayout.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
                     }

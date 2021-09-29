@@ -74,7 +74,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:visibility="@{chartModel.showNoDataMessage()||chartModel.showNoDataForFiltersMessage()?View.GONE:View.VISIBLE}"
+            android:visibility="@{chartModel.showNoDataMessage() || chartModel.showNoDataForFiltersMessage() || chartModel.showError() ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chart_title" />
@@ -83,22 +83,35 @@
             android:id="@+id/no_data_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="60dp"
             android:visibility="@{chartModel.showNoDataMessage()||chartModel.showNoDataForFiltersMessage()?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chart_title"
             app:srcCompat="@drawable/ic_empty_folder" />
 
+        <ImageView
+            android:id="@+id/error_data_icon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="70dp"
+            android:visibility="@{chartModel.showError() ? View.VISIBLE : View.GONE}"
+            app:iconResource="@{chartModel.observableChartType.iconResource}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chart_title"
+            app:tint="@color/visualization_error_icon" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="30dp"
             android:gravity="center"
+            android:paddingHorizontal="16dp"
             android:text="@string/no_data_for_selected_filters"
             android:textColor="@color/textSecondary"
             android:textSize="17sp"
-            android:visibility="@{chartModel.showNoDataForFiltersMessage()?View.VISIBLE:View.GONE}"
+            android:visibility="@{chartModel.showNoDataForFiltersMessage() ? View.VISIBLE : View.GONE}"
             app:clipAllCorners="@{8}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -107,14 +120,29 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="30dp"
             android:gravity="center"
+            android:paddingHorizontal="16dp"
             android:text="@string/no_data_to_display"
             android:textColor="@color/textSecondary"
             android:textSize="17sp"
-            android:visibility="@{chartModel.showNoDataMessage()?View.VISIBLE:View.GONE}"
+            android:visibility="@{chartModel.showNoDataMessage() ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/no_data_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:text="@string/visualization_error"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showError() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_data_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

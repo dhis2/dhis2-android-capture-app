@@ -30,8 +30,6 @@ public class ProgramEventDetailContract {
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 
-        void setFeatureType(FeatureType featureType);
-
         void startNewEvent();
 
         void navigateToEvent(String eventId, String orgUnit);

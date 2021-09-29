@@ -13,9 +13,12 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -37,10 +40,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -104,6 +104,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final CrashReportController crashReportController;
 
     SearchRepositoryImpl(String teiType,
+                         @Nullable String initialProgram,
                          D2 d2,
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
@@ -121,6 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
+        this.currentProgram = initialProgram;
     }
 
     @Override
@@ -859,6 +861,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         String programUid = currentProgram();
 
+        if (programUid == null) return false;
+
         boolean teTypeHasCoordinates = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiType)
                 .blockingGet()
@@ -885,6 +889,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         boolean programAttributeHasCoordinates = false;
         boolean eventHasCoordinates = false;
+        boolean eventDataElementHasCoordinates = false;
         if (programUid != null) {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(programUid)
@@ -903,12 +908,27 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .byProgramUid().eq(programUid)
                     .byFeatureType().notIn(FeatureType.NONE)
                     .blockingIsEmpty();
+
+
+            List<Event> events = d2.eventModule().eventQuery().byIncludeDeleted()
+                    .eq(false)
+                    .byProgram()
+                    .eq(programUid)
+                    .blockingGet();
+            for (Event event : events) {
+                if (event.geometry() != null) {
+                    eventDataElementHasCoordinates = true;
+                    break;
+                }
+            }
+
         }
 
         return teTypeHasCoordinates ||
                 enrollmentHasCoordinates ||
                 teAttributeHasCoordinates ||
                 programAttributeHasCoordinates ||
-                eventHasCoordinates;
+                eventHasCoordinates ||
+                eventDataElementHasCoordinates;
     }
 }

@@ -3,17 +3,11 @@ package dhis2.org.analytics.charts
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.nutritionTestingData
-import dhis2.org.analytics.charts.data.pieChartTestingData
-import dhis2.org.analytics.charts.data.radarTestingData
-import dhis2.org.analytics.charts.data.visualizationGroupTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
@@ -31,8 +25,7 @@ class ChartsRepositoryImpl(
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph,
-    private val featureConfig: FeatureConfigRepository
+    private val programIndicatorToGraph: ProgramIndicatorToGraph
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -40,9 +33,7 @@ class ChartsRepositoryImpl(
         if (enrollment.trackedEntityInstance() == null) return emptyList()
 
         val settingsAnalytics = getSettingsAnalytics(enrollment)
-        return if (settingsAnalytics.isNotEmpty() &&
-            !featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS)
-        ) {
+        return if (settingsAnalytics.isNotEmpty()) {
             settingsAnalytics
         } else {
             getDefaultAnalytics(enrollment)
@@ -62,12 +53,9 @@ class ChartsRepositoryImpl(
                     visualizationsSetting.dataSet().containsKey(uid) -> {
                         visualizationsSetting.dataSet()[uid]
                     }
-                    else ->
-                        emptyList<AnalyticsDhisVisualizationsGroup>()
-                            .visualizationGroupTestingData(featureConfig)
+                    else -> emptyList()
                 }
-            } ?: emptyList<AnalyticsDhisVisualizationsGroup>()
-            .visualizationGroupTestingData(featureConfig)
+            } ?: emptyList()
     }
 
     override fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph> {
@@ -92,14 +80,16 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.program()?.get(programUid)?.find { it.id().equals(groupUid) }
+            ?.program()?.get(programUid)?.find {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
-        return when {
-            graphList.isEmpty() && featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS) ->
-                graphList.nutritionTestingData(d2)
-            else -> graphList
-        }
+        return graphList
     }
 
     override fun getHomeVisualization(groupUid: String?): List<Graph> {
@@ -118,11 +108,7 @@ class ChartsRepositoryImpl(
         }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
-        return when {
-            graphList.isEmpty() && featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS) ->
-                graphList.nutritionTestingData(d2)
-            else -> graphList
-        }
+        return graphList
     }
 
     private fun addVisualizationsInGroup(
@@ -182,7 +168,13 @@ class ChartsRepositoryImpl(
                 ).let {
                     graphList.add(it)
                 }
-            }
+            } ?: graphList.add(
+                visualizationToGraph.addErrorGraph(
+                    visualization,
+                    selectedRelativePeriod?.firstOrNull(),
+                    selectedOrgUnits
+                )
+            )
         }
     }
 
@@ -271,8 +263,6 @@ class ChartsRepositoryImpl(
             )
         }.flatten()
             .filter { it.canBeShown() }
-            .radarTestingData(d2, featureConfig)
-            .pieChartTestingData(d2, featureConfig)
     }
 
     private fun getRepeatableProgramStages(program: String?) =

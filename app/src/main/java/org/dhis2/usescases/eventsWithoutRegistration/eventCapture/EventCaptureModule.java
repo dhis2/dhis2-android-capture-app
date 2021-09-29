@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
@@ -22,9 +21,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
-import org.dhis2.form.data.FormRepositoryPersistenceImpl;
+import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.ui.LayoutProvider;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -144,7 +142,7 @@ public class EventCaptureModule {
             @NonNull D2 d2,
             CrashReportController crashReportController
     ) {
-        return new FormRepositoryPersistenceImpl(
+        return new FormRepositoryImpl(
                 new ValueStoreImpl(
                         d2,
                         eventUid,
@@ -159,9 +157,8 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     NavigationPageConfigurator pageConfigurator(
-            EventCaptureContract.EventCaptureRepository repository,
-            FeatureConfigRepository featureRepository
+            EventCaptureContract.EventCaptureRepository repository
     ) {
-        return new EventPageConfigurator(repository, featureRepository);
+        return new EventPageConfigurator(repository);
     }
 }

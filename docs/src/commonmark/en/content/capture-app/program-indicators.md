@@ -18,7 +18,7 @@ Any issues around using a particular feature with Android are highlighted with a
 |if|Evaluates the boolean expression and if true returns the true expression value, if false returns the false expression value. The arguments must follow the rules for any indicator expression.|![](resources/icons/icon-complete.png)||
 |isNull|Returns true if the element value is missing (null), otherwise false.|![](resources/icons/icon-complete.png)||
 |isNotNull|Returns true if the element value is not missing (not null), otherwise false.|![](resources/icons/icon-complete.png)||
-|firstNonNull|RReturns the value of the first element that is not missing (not null). Can be provided any number of arguments. Any argument may also be a numeric or string literal, which will be returned if all the previous objects have missing values.|![](resources/icons/icon-complete.png)||
+|firstNonNull|Returns the value of the first element that is not missing (not null). Can be provided any number of arguments. Any argument may also be a numeric or string literal, which will be returned if all the previous objects have missing values.|![](resources/icons/icon-complete.png)||
 |greatest|Returns the greatest (highest) value of the expressions given. Can be provided any number of arguments.|![](resources/icons/icon-complete.png)||
 |least|Returns the least (lowest) value of the expressions given. Can be provided any number of arguments.|![](resources/icons/icon-complete.png)||
 
@@ -56,7 +56,6 @@ Any issues around using a particular feature with Android are highlighted with a
 |zpvc|Returns the number of numeric zero and positive values among the given object arguments.|![](resources/icons/icon-complete.png)||
 
 ## Variables to use in a program indicator expression or filter { #capture_app_program_ind_variables }
-
 
 | Variable type| Description of variable type|Status|Notes on implementation|
 |-|---|:-:|---|

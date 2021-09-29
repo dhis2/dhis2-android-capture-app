@@ -1,11 +1,9 @@
 package org.dhis2.usescases.enrollment
 
 import android.annotation.SuppressLint
-import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.flowables.ConnectableFlowable
-import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
@@ -15,10 +13,8 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
@@ -59,10 +55,8 @@ class EnrollmentPresenterImpl(
     private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
     private val mandatoryWarning: String,
-    private val onRowActionProcessor: FlowableProcessor<RowAction>,
     private val sectionProcessor: Flowable<String>,
-    private val matomoAnalyticsController: MatomoAnalyticsController,
-    private val formRepository: FormRepository
+    private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
 
     private var configurationErrors: List<RulesUtilsProviderConfigurationError> = listOf()
@@ -140,8 +134,6 @@ class EnrollmentPresenterImpl(
                 )
         )
 
-        listenToActions()
-
         val fields = getFieldFlowable()
 
         disposable.add(
@@ -183,63 +175,15 @@ class EnrollmentPresenterImpl(
         fields.connect()
     }
 
-    @VisibleForTesting
-    fun listenToActions() {
-        disposable.add(
-            onRowActionProcessor
-                .onBackpressureBuffer()
-                .doOnNext { view.showProgress() }
-                .observeOn(schedulerProvider.io())
-                .flatMap { rowAction ->
-                    Flowable.just(formRepository.processUserAction(rowAction))
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { result ->
-                        result.valueStoreResult?.let {
-                            when (it) {
-                                ValueStoreResult.VALUE_CHANGED -> {
-                                    fieldsFlowable.onNext(true)
-                                    checkFinishing(true)
-                                }
-                                ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                                    populateList()
-                                    view.hideProgress()
-                                    checkFinishing(true)
-                                }
-                                ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                                    uniqueFields.add(result.uid)
-                                    view.showInfoDialog(
-                                        view.context.getString(R.string.error),
-                                        view.context.getString(R.string.unique_warning)
-                                    )
-                                    view.hideProgress()
-                                    checkFinishing(false)
-                                }
-                                ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
-                                    Timber.tag(TAG)
-                                        .d("${result.uid} is not a data element or attribute")
-                                    view.hideProgress()
-                                    checkFinishing(false)
-                                }
-                            }
-                        } ?: view.hideProgress()
-                    },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-    }
-
-    private fun checkFinishing(canFinish: Boolean) {
-        if (finishing && canFinish) {
+    private fun checkFinishing() {
+        if (finishing) {
             view.performSaveClick()
         }
         finishing = false
     }
 
     private fun populateList(items: List<FieldUiModel>? = null) {
-        view.showFields(formRepository.composeList(items))
+        view.showFields(items)
     }
 
     private fun setCurrentSection(sectionUid: String): String {
@@ -350,7 +294,7 @@ class EnrollmentPresenterImpl(
                 Flowable.zip<List<FieldUiModel>, Result<RuleEffect>, List<FieldUiModel>>(
                     dataEntryRepository.list(),
                     enrollmentFormRepository.calculate(),
-                    BiFunction { fields, result -> applyRuleEffects(fields, result) }
+                    { fields, result -> applyRuleEffects(fields, result) }
                 )
             }.publish()
     }
@@ -391,15 +335,15 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun updateFields() {
-        fieldsFlowable.onNext(true)
-    }
-
-    fun updateFields(action: RowAction) {
-        if (shouldShowDateEditionWarning(action.id)) {
-            view.showDateEditionWarning()
+    fun updateFields(action: RowAction? = null) {
+        action?.let {
+            if (shouldShowDateEditionWarning(it.id)) {
+                view.showDateEditionWarning()
+            }
         }
+
         fieldsFlowable.onNext(true)
+        checkFinishing()
     }
 
     fun backIsClicked() {

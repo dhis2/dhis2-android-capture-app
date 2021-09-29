@@ -117,10 +117,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         ).inject(this)
 
         formView = FormView.Builder()
-            .persistence(formRepository)
+            .repository(formRepository)
             .locationProvider(locationProvider)
             .dispatcher(dispatchers)
-            .onItemChangeListener(presenter::updateFields)
+            .onItemChangeListener { action -> presenter.updateFields(action) }
             .onLoadingListener { loading ->
                 if (loading) {
                     showProgress()
@@ -413,12 +413,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     /*region DATA ENTRY*/
-    override fun showFields(fields: List<FieldUiModel>) {
-        fields.filter {
+    override fun showFields(fields: List<FieldUiModel>?) {
+        fields?.filter {
             it !is DisplayViewModel
         }
 
-        formView.render(fields)
+        formView.processItems(fields)
     }
 
     /*endregion*/

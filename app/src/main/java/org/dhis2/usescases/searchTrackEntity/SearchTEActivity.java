@@ -168,12 +168,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
 
         formView = new FormView.Builder()
-                .persistence(formRepository)
+                .repository(formRepository)
                 .locationProvider(locationProvider)
                 .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
                     fieldViewModelFactory.fieldProcessor().onNext(action);
-                    presenter.populateList(null);
                     return Unit.INSTANCE;
                 })
                 .needToForceUpdate(true)
@@ -514,7 +513,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFormData(List<FieldUiModel> data) {
-        formView.render(data);
+        formView.processItems(data);
         updateFiltersSearch(presenter.getQueryData().size());
     }
 
@@ -651,11 +650,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
-                    presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                    presenter.setProgram(selectedProgram);
                 } else if (programs.size() == 1 && pos != 0) {
-                    presenter.setProgram(programs.get(0));
+                    Program selectedProgram = programs.get(0);
+                    presenter.setProgram(selectedProgram);
                 } else {
                     presenter.setProgram(null);
+                    binding.navigationBar.hide();
                 }
             }
 
@@ -673,6 +674,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         presenter.getProgramStageStyle(),
                         ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
                 ));
+    }
+
+    @Override
+    public void updateNavigationBar() {
+        binding.navigationBar.pageConfiguration(pageConfigurator);
     }
 
     private void updateMapVisibility(Program newProgram) {

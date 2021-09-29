@@ -622,7 +622,7 @@ class EventInitialPresenterTest {
             CoordinateViewModel.create(
                 "id", 1, "", false, null, null,
                 true, null, ObjectStyle.builder().build(), null, false,
-                false, null, null
+                false, null
             )
         )
         whenever(eventInitialRepository.getProgramWithId(uid)) doReturn Observable.just(program)

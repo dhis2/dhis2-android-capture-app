@@ -170,7 +170,6 @@ For the examples below consider the following:
 | d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to DE | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | |
 | #{yn_prv1} \|\| #{yn_prv2} | Assign fixed value to DE | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | |
 | d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
-| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
 | PR1: #{prv_boolean_one} <br /><br />PR2: #{prv_boolean_two} <br /><br />PR3: #{prv_boolean_one} \|\| #{prv_boolean_two} | PRA1. Assign value  "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2. Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA3. Assign value to DE: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1"| ![](resources/icons/icon-negative.png) | ![](resources/icons/icon-negative.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA. If a boolean is not marked it is counted as string instead of a number |
 | Four PR to assign 1 or 0 to the booleans and an additional for the addition. Priorities go from top to bottom <br /><br />PRC1: !d2:hasValue('prv_boolean_one')  \|\| !#{prv_boolean_one} <br /><br />PRC2: d2:hasValue('prv_boolean_one') && #{prv_boolean_one}<br /><br />PRC3: !d2:hasValue('prv_boolean_two')  \|\| !#{prv_boolean_two} <br /><br />PRC4: d2:hasValue('prv_boolean_two') && #{prv_boolean_two} <br /><br />PRC5: true | PRA1: Assign value: "0" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2: Assign value: "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA3: Assign value: "0" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA4: Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA5: Assign value: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1" to DE <br /> | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA.
 
@@ -225,7 +224,7 @@ The example above shows how different ways of using the hasValue function will h
 
 #### Description
 
-This is a mandatory change. *!#{varible_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
+This is a mandatory change. *!#{variable_name}* can only be used boolean type variables (BOOLEAN and TRUE_ONLY).
 
 #### How to identify via API?
 
@@ -254,11 +253,11 @@ And we can compare with the second list:
 ```xml
 <programRule>
 <condition>!#{Pregant}</condition>
-<displayName>PR03- !#{varible_name} - BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>!#{Age in years}</condition>
-<displayName>PR03- !#{varible_name} - NOT BOOLEAN</displayName>
+<displayName>PR03- !#{variable_name} - NOT BOOLEAN</displayName>
 </programRule>
 <programRule>
 <condition>#{PregnancyStatus} != 'YES'</condition>
@@ -282,18 +281,18 @@ To:
 
 #### Description
 
-This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR, SHOW WARNING, SHOW ERROR, WARNING ON COMPLETE or ERROR ON COMPLETE if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes.
 
 #### How to identify via API?
 
-Get the Program Rules which actions are of type text, with something on the field data and verify their data content to find strings without quotes.
+Get the Program Rules which actions are of type text, with something on the field `data` and verify their data content to find strings without quotes.
 
-`https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false`
+`https://example.org/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR,WARNINGONCOMPLETE,ERRORONCOMPLETE]&filter=programRuleActions.data:!null&paging=false`
 
 For example we can detect here an error of a text field without quotes in the first Program Rule Action while the second one is correct.
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text without quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text without quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -306,7 +305,7 @@ For example we can detect here an error of a text field without quotes in the fi
 ```
 
 ```xml
-<programRule name="PR04- !#{varible_name} - BOOLEAN - Assign text with quotes">
+<programRule name="PR04- !#{variable_name} - BOOLEAN - Assign text with quotes">
 <program name="JB_Testing_2.2"/>
 <programRuleActions>
 <programRuleAction>
@@ -320,21 +319,21 @@ For example we can detect here an error of a text field without quotes in the fi
 
 #### How to fix it?
 
-Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
+Scan the generated list (via the suggested API calls) to find `data` components of the Program Rule Action where text is not quoted, then go to each of the identified Program Rules and update them.
 
 ### Concatenation of string and objects { #capture_app_pr_changes_concat }
 
 #### Description
 
-This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT or DISPLAY KEY/VALUE PAIR if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
+This is a mdantory change. In program rule actions of the type ASSIGN, DISPLAY TEXT, DISPLAY KEY/VALUE PAIR, SHOW WARNING, SHOW ERROR, WARNING ON COMPLETE or ERROR ON COMPLETE if the Expression to evaluate and assign/display is a text, it must be enclosed with single quotes (same as previous change); but, on top of that, if it requires to concatenate two strings or a combination of functions it is mandatory to use the *d2:concatenate* function.
 
 #### How to identify via API?
 
-Get the Program Rules which actions are of type text, with any content on the field data and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
+Get the Program Rules which actions are of type text, with any content on the field `data` and verify their data content to check if in case of two or more strings (or other objects) are being joined the d2:concatenate function is used
 
 Get the Program Rules which actions are of type text and verify their data content to find strings without quotes.
 
-`http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR]&filter=programRuleActions.data:!null&paging=false`
+`http://localhost:8034/api/programRules?fields=program[name],name,programRuleActions[programRuleActionType,content,data]&filter=programRuleActions.programRuleActionType:in:[ASSIGN,DISPLAYTEXT,DISPLAYKEYVALUEPAIR,SHOWWARNING,SHOWERROR,WARNINGONCOMPLETE,ERRORONCOMPLETE]&filter=programRuleActions.data:!null&paging=false`
 
 For example we can detect here an error of two strings in an action without the use of d2:concatenate.
 
@@ -353,9 +352,9 @@ For example we can detect here an error of two strings in an action without the 
 
 #### How to fix it?
 
-Scan the generated list (via the suggested API calls) to find data components of the Program Rule Action where two or more objects are being concatenated and update them to use the *d2:concatenate* function.
+Scan the generated list (via the suggested API calls) to find `data` components of the Program Rule Action where two or more objects are being concatenated and update them to use the *d2:concatenate* function.
 
-In the example above the data should change from:
+In the example above the `data` should change from:
 
 `<data>'Age is 10 and modulus' 'another string'</data>`  
 To:  
