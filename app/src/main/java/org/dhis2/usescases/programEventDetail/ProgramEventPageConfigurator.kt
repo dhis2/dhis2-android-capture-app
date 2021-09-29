@@ -13,4 +13,8 @@ class ProgramEventPageConfigurator(
     override fun displayMapView(): Boolean {
         return repository.programHasCoordinates()
     }
+
+    override fun displayAnalytics(): Boolean {
+        return repository.programHasAnalytics()
+    }
 }
