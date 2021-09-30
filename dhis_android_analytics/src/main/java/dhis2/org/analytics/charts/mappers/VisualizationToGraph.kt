@@ -132,8 +132,9 @@ class VisualizationToGraph(
         }
 
         return serieList.map { gridResponseValueList ->
-            val fieldId = gridResponseValueList.first().columns.first()
-            val fieldName = gridAnalyticsResponse.metadata[fieldId]!!.displayName
+            val fieldName = gridResponseValueList.first().columns.joinToString(separator = "_") {
+                gridAnalyticsResponse.metadata[it]!!.displayName
+            }
             SerieData(
                 fieldName = fieldName,
                 coordinates = chartCoordinatesProvider.visualizationCoordinates(
