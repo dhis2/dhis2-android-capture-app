@@ -17,6 +17,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -35,6 +36,8 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
+import org.hisp.dhis.rules.models.RuleActionShowError
+import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -129,20 +132,26 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        val fields = arrayListOf(
-            dummyEditTextViewModel("uid1", "error_field").withError("Error")
+        val fields = arrayListOf(dummyEditTextViewModel("uid1", "error_field"))
+        val calcResult = Result.success(
+            listOf(
+                RuleEffect.create(
+                    "ruleUid",
+                    RuleActionShowError.create("content", "error_field", "uid1"),
+                    "data"
+                )
+            )
         )
-
         mockTrackedEntityAttributes()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
         ) doReturn false
 
-        presenter.setFieldsToShow("testSection", fields)
+        presenter.applyRuleEffects(fields, calcResult)
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("error_field"))
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("content data"))
     }
 
     @Test

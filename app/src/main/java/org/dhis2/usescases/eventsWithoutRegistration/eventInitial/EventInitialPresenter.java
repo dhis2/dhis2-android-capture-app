@@ -366,6 +366,7 @@ public class EventInitialPresenter {
                                         "",
                                         new ArrayMap<>(),
                                         new ArrayMap<>(),
+                                        new ArrayMap<>(),
                                         new Pair<>(false, false)
                                 )))
                         .subscribeOn(schedulerProvider.io())
