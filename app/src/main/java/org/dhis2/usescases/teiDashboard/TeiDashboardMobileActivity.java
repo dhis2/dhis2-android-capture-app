@@ -284,11 +284,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void showLoadingProgress(boolean showProgress){
-       /* if(showProgress){
-            binding.loadingProgress.getRoot().setVisibility(View.VISIBLE);
+        if(showProgress){
+            binding.toolbarProgress.show();
         }else{
-            binding.loadingProgress.getRoot().setVisibility(View.GONE);
-        }*/
+            binding.toolbarProgress.hide();
+        }
     }
 
     @Override
