@@ -70,7 +70,13 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     public void onShowCustomCalendar() {
         onItemClick();
-        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomCalendar(uid(), label(), value() != null ? StringExtensionsKt.toDate(value()) : null, false, false));
+        Date currentAge;
+        try {
+            currentAge = value() != null ? StringExtensionsKt.toDate(value()) : null;
+        } catch (Exception e) {
+            currentAge = null;
+        }
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.OpenCustomCalendar(uid(), label(), currentAge, false, false));
     }
 
     public void onShowDayMonthYearPicker() {
@@ -84,7 +90,12 @@ public abstract class AgeViewModel extends FieldViewModel {
             return new int[]{0, 0, 0};
         }
 
-        Date initialDate = StringExtensionsKt.toDate(value());
+        Date initialDate;
+        try {
+            initialDate = StringExtensionsKt.toDate(value());
+        } catch (Exception e) {
+            initialDate = null;
+        }
         if (initialDate != null) {
             Calendar.getInstance().setTime(initialDate);
             return DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
