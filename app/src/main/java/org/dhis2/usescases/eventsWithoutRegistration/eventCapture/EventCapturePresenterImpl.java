@@ -70,6 +70,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean canComplete;
     private String completeMessage;
     private Map<String, String> errors;
+    private Map<String, String> warnings;
     private EventStatus eventStatus;
     private boolean hasExpired;
     private final Flowable<String> sectionProcessor;
@@ -104,6 +105,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.schedulerProvider = schedulerProvider;
         this.currentSection = new ObservableField<>("");
         this.errors = new HashMap<>();
+        this.warnings = new HashMap<>();
         this.emptyMandatoryFields = new HashMap<>();
         this.canComplete = true;
         this.compositeDisposable = new CompositeDisposable();
@@ -209,6 +211,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                                 sectionList,
                                                                 section,
                                                                 errors,
+                                                                warnings,
                                                                 emptyMandatoryFields,
                                                                 showErrors
                                                         ))))
@@ -370,6 +373,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         errors = ruleResults.errorMap();
+        warnings = ruleResults.warningMap();
         configurationError = ruleResults.getConfigurationErrors();
         canComplete = ruleResults.getCanComplete();
         completeMessage = ruleResults.getMessageOnComplete();
@@ -588,7 +592,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     private void qualityCheck() {
         Pair<Boolean, Boolean> currentShowError = showErrors;
-        showErrors = new Pair<>(!emptyMandatoryFields.isEmpty(), !errors.isEmpty());
+        showErrors = new Pair<>(!emptyMandatoryFields.isEmpty() || !warnings.isEmpty(), !errors.isEmpty());
         showCalculationProcessor.onNext(
                 currentShowError.getFirst() != showErrors.getFirst() ||
                         currentShowError.getSecond() != showErrors.getSecond()

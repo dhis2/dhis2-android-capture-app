@@ -33,6 +33,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     var canComplete = true
     var messageOnComplete: String? = null
     val fieldsWithErrors = mutableListOf<FieldWithError>()
+    val fieldsWithWarnings = mutableListOf<FieldWithError>()
     val unsupportedRuleActions = mutableListOf<String>()
     val optionsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToHide = mutableMapOf<String, MutableList<String>>()
@@ -53,6 +54,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         canComplete = true
         messageOnComplete = null
         fieldsWithErrors.clear()
+        fieldsWithWarnings.clear()
         unsupportedRuleActions.clear()
         optionsToHide.clear()
         optionGroupsToHide.clear()
@@ -138,6 +140,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             canComplete = canComplete,
             messageOnComplete = messageOnComplete,
             fieldsWithErrors = fieldsWithErrors,
+            fieldsWithWarnings = fieldsWithWarnings,
             unsupportedRules = unsupportedRuleActions,
             fieldsToUpdate = fieldsToUpdate,
             configurationErrors = configurationErrors
@@ -239,9 +242,12 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         data: String
     ) {
         val model = fieldViewModels[showWarning.field()]
+        val warningMessage = "${showWarning.content()} $data"
         if (model != null) {
-            fieldViewModels[showWarning.field()] =
-                model.setWarning(showWarning.content() + " " + data)
+            fieldViewModels[showWarning.field()] = model.setWarning(warningMessage)
+            fieldsWithWarnings.add(
+                FieldWithError(showWarning.field(), warningMessage)
+            )
         }
     }
 

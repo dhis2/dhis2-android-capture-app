@@ -391,6 +391,14 @@ class EventCapturePresenterTest {
         whenever(eventRepository.getOptionsFromGroups(mutableListOf())) doReturn options
         whenever(
             rulesUtilProvider.applyRuleEffects(any(), any(), any(), any(), any())
-        ) doReturn RuleUtilsProviderResult(true, "", listOf(), listOf(), listOf(), listOf())
+        ) doReturn RuleUtilsProviderResult(
+            true,
+            "",
+            listOf(),
+            listOf(),
+            listOf(),
+            listOf(),
+            listOf()
+        )
     }
 }
