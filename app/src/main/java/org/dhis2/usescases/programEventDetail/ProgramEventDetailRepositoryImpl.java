@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -46,9 +47,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private final MapEventToFeatureCollection mapEventToFeatureCollection;
     private final MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
     private final DhisMapUtils mapUtils;
+    private final Charts charts;
 
     ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                     DhisMapUtils mapUtils, FilterPresenter filterPresenter) {
+                                     DhisMapUtils mapUtils, FilterPresenter filterPresenter, Charts charts) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
@@ -56,6 +58,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.mapUtils = mapUtils;
         this.filterPresenter = filterPresenter;
+        this.charts = charts;
     }
 
     @NonNull
@@ -203,5 +206,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         }).blockingGet();
 
         return programStageHasCoordinates || eventDataElementHasCoordinates;
+    }
+
+    @Override
+    public boolean programHasAnalytics() {
+        return charts != null && !charts.getProgramVisualizations(null, programUid).isEmpty();
+
     }
 }
