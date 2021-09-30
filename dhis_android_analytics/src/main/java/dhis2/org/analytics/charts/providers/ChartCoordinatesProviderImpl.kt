@@ -198,7 +198,12 @@ class ChartCoordinatesProviderImpl(
             .mapIndexed { index, gridResponseValue ->
 
                 val periodId = gridResponseValue.rows.firstOrNull()
-                val position = periodId?.let { categories.indexOf(periodId) } ?: index
+                val position = periodId?.let {
+                    when (metadata[periodId]) {
+                        is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
+                        else -> categories.indexOf(metadata[periodId]?.displayName)
+                    }
+                } ?: index
 
                 val columnLegend = gridResponseValue.columns.firstOrNull()?.let {
                     metadata[it]?.displayName
