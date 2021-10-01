@@ -31,7 +31,6 @@ import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.DialogDelegate
 import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
@@ -45,7 +44,8 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.DialogDelegate
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -312,6 +312,7 @@ class FormView constructor(
                 override fun onNegativeClick() {
                     intentHandler(FormIntent.ClearValue(intent.uid))
                 }
+
                 override fun onPositiveClick(datePicker: DatePicker) {
                     when (intent.isDateTime) {
                         true -> uiEventHandler(

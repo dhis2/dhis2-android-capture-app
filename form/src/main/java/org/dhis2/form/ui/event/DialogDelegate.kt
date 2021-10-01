@@ -1,10 +1,10 @@
-package org.dhis2.data.forms.dataentry.fields
+package org.dhis2.form.ui.event
 
 import java.util.Calendar
 import java.util.Date
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.utils.DateUtils
+import org.hisp.dhis.android.core.common.ValueType
 
 class DialogDelegate {
 
@@ -27,7 +27,11 @@ class DialogDelegate {
         }
         val date = DateUtils.oldUiDateFormat().format(ageDate)
 
-        return FormIntent.SelectDateFromAgeCalendar(uid, date)
+        return FormIntent.OnSave(
+            uid = uid,
+            value = date,
+            valueType = ValueType.DATE
+        )
     }
 
     fun handleYearMonthDayInput(
@@ -47,10 +51,13 @@ class DialogDelegate {
             set(Calendar.MILLISECOND, 0)
             return@with time
         }
-        val date = if (ageDate == null) null else DateUtils.oldUiDateFormat()
-            .format(ageDate)
+        val date = DateUtils.oldUiDateFormat().format(ageDate)
 
-        return FormIntent.SelectDateFromAgeCalendar(uid, date)
+        return FormIntent.OnSave(
+            uid = uid,
+            value = date,
+            valueType = ValueType.DATETIME
+        )
     }
 
     fun handleTimeInput(
@@ -70,9 +77,13 @@ class DialogDelegate {
         }
         val dateValue = when (date) {
             null -> DateUtils.timeFormat().format(dateTime)
-            else -> DateUtils.databaseDateFormat().format(dateTime)
+            else -> DateUtils.databaseDateFormatNoSeconds().format(dateTime)
         }
-        return FormIntent.SelectDateFromAgeCalendar(uid, dateValue)
+        return FormIntent.OnSave(
+            uid = uid,
+            value = dateValue,
+            valueType = date?.let { ValueType.DATETIME } ?: ValueType.TIME
+        )
     }
 
     fun handleDateTimeInput(

@@ -534,7 +534,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (!error.isEmpty()) {
                     fieldViewModel = fieldViewModel.setError(error);
                 }
-                if (fieldViewModel.hasLegend()) {
+                if (fieldViewModel.getLegend() != null) {
                     LegendValue legend = getColorByLegend(rawValue, fieldViewModel.getUid());
                     fieldViewModel = fieldViewModel.setLegend(legend);
                 }

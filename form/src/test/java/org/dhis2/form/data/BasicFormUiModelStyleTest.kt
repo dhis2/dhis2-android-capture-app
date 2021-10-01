@@ -7,6 +7,7 @@ import org.dhis2.form.ui.style.BasicFormUiModelStyle
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -14,11 +15,12 @@ import org.junit.Test
 class BasicFormUiModelStyleTest {
 
     private val colorFactory: FormUiColorFactory = mock()
+    private val valueType: ValueType = mock()
     private lateinit var basicFormUiModelStyle: FormUiModelStyle
 
     @Before
     fun setUp() {
-        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory)
+        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType)
     }
 
     @Test

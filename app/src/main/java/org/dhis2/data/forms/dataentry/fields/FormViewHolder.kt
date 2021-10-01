@@ -8,7 +8,7 @@ import org.dhis2.Bindings.clipWithAllRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 
 class FormViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(

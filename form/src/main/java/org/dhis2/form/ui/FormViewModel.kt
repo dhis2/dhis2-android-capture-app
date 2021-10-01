@@ -104,10 +104,6 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
-            is FormIntent.SelectDateFromAgeCalendar -> createRowAction(
-                intent.uid,
-                intent.date
-            )
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
                 intent.uid,
@@ -223,6 +219,6 @@ class FormViewModel(
     }
 
     companion object {
-        private const val TAG = "FormVIewModel"
+        const val TAG = "FormViewModel"
     }
 }

@@ -52,7 +52,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 null,
                 DataEntryViewHolderTypes.PICTURE,
                 null,
+                null,
                 false,
+                null,
                 options,
                 numberOfColumns,
                 emptyList()
@@ -78,7 +80,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -103,7 +107,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -128,7 +134,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -153,7 +161,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -178,7 +188,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -203,7 +215,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             isFocused,
+            valueType(),
             options(),
             numberOfColumns(),
             emptyList<String>()
@@ -261,7 +275,9 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             fieldMask(),
             dataEntryViewType(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             options(),
             numberOfColumns(),
             options

@@ -15,7 +15,8 @@ import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.LayoutProvider
+import org.dhis2.form.ui.provider.HintProvider
+import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -51,6 +52,7 @@ class RulesUtilsProviderImplTest {
     private val valueStore: ValueStore = mock()
     private val colorFactory: FormUiColorFactory = mock()
     private val layoutProvider: LayoutProvider = mock()
+    private val hintProvider: HintProvider = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
@@ -61,7 +63,8 @@ class RulesUtilsProviderImplTest {
             ValueType.values().map { it to it.name }.toMap(),
             false,
             colorFactory,
-            layoutProvider
+            layoutProvider,
+            hintProvider
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
