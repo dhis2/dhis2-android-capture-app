@@ -103,4 +103,6 @@ public interface EventInitialRepository {
     Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
 
     Flowable<EventEditableStatus> getEditableStatus();
+
+    int getMinDaysFromStartByProgramStage(String programStageUid);
 }
