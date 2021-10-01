@@ -28,7 +28,6 @@ package org.dhis2.utils.analytics
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.dhis2.BuildConfig
-import org.dhis2.data.server.ServerComponent
 import org.hisp.dhis.android.core.D2Manager
 
 class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interceptor {
@@ -57,10 +56,11 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         return response
     }
 
-    private fun getDhis2Version() {
+    private fun getDhis2Version(): String? {
         if (serverVersionName == null) {
             serverVersionName =
                 D2Manager.getD2().systemInfoModule().systemInfo().blockingGet().version()
         }
+        return serverVersionName
     }
 }
