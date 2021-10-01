@@ -334,22 +334,21 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onClear() {
-        callback.recyclerViewUiEvents(
-                new RecyclerViewUiEvents.ShowDescriptionLabelDialog(
-                        label(),
-                        description()
-                )
-        );
+        onItemClick();
+        callback.intent(new FormIntent.ClearValue(uid()));
     }
 
+    @Deprecated
     @Override
     public void invokeUiEvent() {
-
+        //Do not use until migrate to FieldUIModel
     }
 
+    @Deprecated
     @Nullable
     @Override
     public UiEventFactory getUiEventFactory() {
+        //Do not use until migrate to FieldUIModel
         return null;
     }
 }
