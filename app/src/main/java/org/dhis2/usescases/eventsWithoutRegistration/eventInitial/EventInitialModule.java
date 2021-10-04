@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
@@ -15,9 +17,8 @@ import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
+import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository;
@@ -78,7 +79,13 @@ public class EventInitialModule {
     @Provides
     @PerActivity
     FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false, colorFactory, new LayoutProviderImpl());
+        return new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                false,
+                colorFactory,
+                new LayoutProviderImpl(),
+                new HintProviderImpl(context)
+        );
     }
 
     @Provides

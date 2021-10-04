@@ -175,9 +175,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (!scheduleEvents.isEmpty())
             scheduleDate = scheduleEvents.get(0).dueDate();
 
-        if (activeDate != null && scheduleDate != null) {
-            return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
-        } else if (activeDate != null) {
+       if (activeDate != null) {
             return activeDate;
         } else if (scheduleDate != null) {
             return scheduleDate;
@@ -407,9 +405,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public List<CategoryOption> getCategoryOptions(String categoryUid) {
-        return d2.categoryModule().categoryOptions()
-                .byCategoryUid(categoryUid)
-                .blockingGet();
+        return d2.categoryModule().categories()
+                .withCategoryOptions()
+                .uid(categoryUid)
+                .blockingGet().categoryOptions();
     }
 
     @Override
@@ -578,5 +577,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Flowable<EventEditableStatus> getEditableStatus() {
         return d2.eventModule().eventService().getEditableStatus(eventUid).toFlowable();
+    }
+
+    @Override
+    public int getMinDaysFromStartByProgramStage(String programStageUid) {
+        ProgramStage programStage = d2.programModule().programStages().uid(programStageUid).blockingGet();
+        if (programStage.minDaysFromStart() != null){
+            return programStage.minDaysFromStart();
+        }
+        return 0;
     }
 }

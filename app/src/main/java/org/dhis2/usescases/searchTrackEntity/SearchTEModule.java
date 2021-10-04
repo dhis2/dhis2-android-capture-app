@@ -27,6 +27,7 @@ import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
@@ -135,7 +136,7 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl());
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context));
     }
 
     @Provides

@@ -1,4 +1,4 @@
-package org.dhis2.form.ui
+package org.dhis2.form.ui.event
 
 import java.util.Date
 import org.hisp.dhis.android.core.common.FeatureType

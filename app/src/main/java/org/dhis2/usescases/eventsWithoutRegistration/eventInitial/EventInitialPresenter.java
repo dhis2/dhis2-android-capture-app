@@ -409,6 +409,10 @@ public class EventInitialPresenter {
         return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
     }
 
+    public int getMinDateByProgramStage(String programStageUid){
+        return eventInitialRepository.getMinDaysFromStartByProgramStage(programStageUid);
+    }
+
     public void getEventOrgUnit(String ouUid) {
         compositeDisposable.add(
                 eventInitialRepository.getOrganisationUnit(ouUid)

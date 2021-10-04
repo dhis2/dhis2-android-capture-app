@@ -865,4 +865,5 @@
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
     <string name="edition_enrollment_is_no_open">This data is not editable because the enrollment is completed or cancelled</string>
     <string name="edition_orgunit_capture_scope">You cannot edit data from this organisation unit</string>
+    <string name="reload_list">Reset search</string>
 </resources>

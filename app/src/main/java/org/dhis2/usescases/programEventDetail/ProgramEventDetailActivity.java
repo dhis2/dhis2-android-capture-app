@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
@@ -51,6 +52,8 @@ import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
         OnOrgUnitSelectionFinished {
@@ -106,6 +109,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         showMap(true);
                     }
                     return true;
+                case R.id.navigation_analytics:
+                    showAnalytics();
                 default:
                     return false;
             }
@@ -314,6 +319,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 showMap ? new EventMapFragment() : new EventListFragment()
         ).commitNow();
         binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
+        binding.filter.setVisibility(View.VISIBLE);
+    }
+
+    private void showAnalytics() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, GroupAnalyticsFragment.Companion.forProgram(programUid)).commitNow();
+        binding.addEventButton.setVisibility(GONE);
+        binding.filter.setVisibility(GONE);
     }
 
     @Override

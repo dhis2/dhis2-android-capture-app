@@ -39,6 +39,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
@@ -398,12 +399,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public Pair<String, Boolean> getMessage(List<SearchTeiModel> list) {
+    public Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list) {
 
         int size = list.size();
 
         String messageId = "";
         boolean canRegister = false;
+        boolean showButton = false;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
@@ -428,6 +430,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
             if (!showList && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+                showButton = true;
             } else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
@@ -457,7 +460,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (messageId.isEmpty())
             canRegister = true;
 
-        return Pair.create(messageId, canRegister);
+        return Trio.create(messageId, canRegister, showButton);
     }
 
     private void handleError(Throwable throwable) {

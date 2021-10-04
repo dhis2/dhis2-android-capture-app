@@ -38,6 +38,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
 
     public abstract KeyboardActionType keyBoardAction();
 
+    @Nullable
+    @Override
+    public LegendValue getLegend() {
+        return legendValue();
+    }
+
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, int layoutId, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,

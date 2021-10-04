@@ -3,16 +3,17 @@ package org.dhis2.data.forms.dataentry.fields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
-import org.dhis2.form.ui.RecyclerViewUiEvents;
+import org.dhis2.form.ui.event.RecyclerViewUiEvents;
+import org.dhis2.form.ui.event.UiEventFactory;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FieldViewModel implements FieldUiModel {
@@ -83,12 +84,18 @@ public abstract class FieldViewModel implements FieldUiModel {
     public abstract FormUiModelStyle style();
 
     @Nullable
+    public abstract String hint();
+
+    @Nullable
     public Callback getCallback() {
         return callback;
     }
 
     @NonNull
     public abstract Boolean activated();
+
+    @Nullable
+    public abstract ValueType valueType();
 
     public String getFormattedLabel() {
         if (mandatory()) {
@@ -98,10 +105,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
-    public boolean shouldShowError() {
-        return warning() != null || error() != null;
-    }
-
     public String getErrorMessage() {
         if (error() != null) {
             return error();
@@ -109,16 +112,6 @@ public abstract class FieldViewModel implements FieldUiModel {
             return warning();
         } else {
             return null;
-        }
-    }
-
-    public int getErrorAppearance() {
-        if (error() != null) {
-            return R.style.error_appearance;
-        } else if (warning() != null) {
-            return R.style.warning_appearance;
-        } else {
-            return -1;
         }
     }
 
@@ -136,6 +129,30 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public FormUiModelStyle getStyle() {
         return style();
+    }
+
+    @Override
+    @Nullable
+    public String getHint() {
+        return hint();
+    }
+
+    @Nullable
+    @Override
+    public String getDescription() {
+        return description();
+    }
+
+    @Nullable
+    @Override
+    public ValueType getValueType() {
+        return valueType();
+    }
+
+    @Nullable
+    @Override
+    public LegendValue getLegend() {
+        return null;
     }
 
     @Override
@@ -219,7 +236,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     public boolean canHaveLegend() {
-        return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
+        return getLegend() != null;
     }
 
     public FieldViewModel withLegend(LegendValue legendValue) {
@@ -238,7 +255,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withEditMode(editable);
     }
 
-    @Override
     public boolean hasLegend() {
         return canHaveLegend();
     }
@@ -265,6 +281,12 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public String getOptionSet() {
         return optionSet();
+    }
+
+    @Nullable
+    @Override
+    public Boolean getAllowFutureDates() {
+        return allowFutureDate();
     }
 
     @Nullable
@@ -308,5 +330,25 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public void onDescriptionClick() {
         callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
+    }
+
+    @Override
+    public void onClear() {
+        onItemClick();
+        callback.intent(new FormIntent.ClearValue(uid()));
+    }
+
+    @Deprecated
+    @Override
+    public void invokeUiEvent() {
+        //Do not use until migrate to FieldUIModel
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public UiEventFactory getUiEventFactory() {
+        //Do not use until migrate to FieldUIModel
+        return null;
     }
 }

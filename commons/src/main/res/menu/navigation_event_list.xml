@@ -10,4 +10,10 @@
         android:enabled="true"
         android:icon="@drawable/ic_navigation_map_view"
         android:title="@string/navigation_map_view" />
+    <item
+        android:id="@+id/navigation_analytics"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_analytics"
+        android:visible="false"
+        android:title="@string/navigation_analytics"/>
 </menu>

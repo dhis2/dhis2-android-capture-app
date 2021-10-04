@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
+import dhis2.org.analytics.charts.Charts;
 
 @PerActivity
 @Module
@@ -93,8 +94,9 @@ public class ProgramEventDetailModule {
                                                        MapEventToFeatureCollection mapEventToFeatureCollection,
                                                        MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        DhisMapUtils dhisMapUtils,
-                                                       FilterPresenter filterPresenter) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection, dhisMapUtils, filterPresenter);
+                                                       FilterPresenter filterPresenter,
+                                                       Charts charts) {
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection, mapCoordinateFieldToFeatureCollection, dhisMapUtils, filterPresenter, charts);
     }
 
     @Provides

@@ -28,11 +28,6 @@ sealed class FormIntent : MviIntent {
         val value: String?
     ) : FormIntent()
 
-    data class SelectDateFromAgeCalendar(
-        val uid: String,
-        val date: String?
-    ) : FormIntent()
-
     data class ClearValue(
         val uid: String
     ) : FormIntent()

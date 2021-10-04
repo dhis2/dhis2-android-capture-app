@@ -12,7 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.DataEntryDiff
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 
 class DataEntryAdapter(private val searchStyle: Boolean) :

@@ -27,8 +27,13 @@ package org.dhis2.utils.analytics
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import org.dhis2.BuildConfig
+import org.hisp.dhis.android.core.D2Manager
 
 class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interceptor {
+
+    val appVersionName = BuildConfig.VERSION_NAME
+    var serverVersionName: String? = null
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -41,12 +46,21 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
                     put(API_CALL_ENDPOINT, request.url().toString())
                 }
             )
+
             analyticHelper.trackMatomoEvent(
                 API_CALL,
-                request.url().toString(),
-                response.code().toString()
+                "${request.method()}_${request.url()}",
+                "${response.code()}_${appVersionName}_${getDhis2Version()}"
             )
         }
         return response
+    }
+
+    private fun getDhis2Version(): String? {
+        if (serverVersionName == null) {
+            serverVersionName =
+                D2Manager.getD2().systemInfoModule().systemInfo().blockingGet().version()
+        }
+        return serverVersionName
     }
 }

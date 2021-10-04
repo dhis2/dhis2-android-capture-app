@@ -8,7 +8,7 @@ import androidx.databinding.BindingAdapter
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.Bindings.toDate
-import org.dhis2.data.forms.dataentry.fields.setInputStyle
+import org.dhis2.form.ui.binding.setInputStyle
 import org.dhis2.utils.DateUtils
 
 @BindingAdapter("onFocusChangeAgeView")

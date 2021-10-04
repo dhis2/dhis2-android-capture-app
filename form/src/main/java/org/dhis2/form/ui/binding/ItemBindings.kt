@@ -1,4 +1,4 @@
-package org.dhis2.form.ui
+package org.dhis2.form.ui.binding
 
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT

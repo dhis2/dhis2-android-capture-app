@@ -73,6 +73,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -281,6 +282,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setTeiFeatureType(presenter.getTrackedEntityType(tEType).featureType());
         teiMapManager.setEnrollmentFeatureType(presenter.getProgram() != null ? presenter.getProgram().featureType() : null);
         teiMapManager.setOnMapClickListener(this);
+
+        binding.showListBtn.setOnClickListener(view -> {
+            binding.messageContainer.setVisibility(GONE);
+            binding.scrollView.setVisibility(View.VISIBLE);
+            binding.progressLayout.setVisibility(GONE);
+        });
     }
 
     @Override
@@ -424,7 +431,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             } else {
                 removeCarousel();
                 binding.mapLayerButton.setVisibility(View.GONE);
-                binding.mapPositionButton.setVisibility(View.VISIBLE);
+                binding.mapPositionButton.setVisibility(View.GONE);
                 presenter.getListData();
             }
 
@@ -555,7 +562,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
         if (!fromRelationship) {
             liveData.observe(this, searchTeiModels -> {
-                org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(searchTeiModels);
+                org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(searchTeiModels);
                 presenter.checkFilters(data.val0().isEmpty());
                 if (data.val0().isEmpty()) {
                     binding.messageContainer.setVisibility(GONE);
@@ -572,11 +579,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
                 if (!searchTeiModels.isEmpty() && !data.val1()) {
                     showHideFilter();
+                    if (data.val2()) {
+                        binding.showListBtn.setVisibility(View.VISIBLE);
+                    }
                 }
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
-                org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(searchTeiModels);
+                org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val0().isEmpty()) {
                     binding.messageContainer.setVisibility(GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
@@ -984,7 +994,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.messageContainer.setVisibility(GONE);
             showMap(true);
         } else {
-            org.dhis2.data.tuples.Pair<String, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
+            org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
             if (data.val0().isEmpty()) {
                 binding.messageContainer.setVisibility(GONE);
                 binding.mapView.setVisibility(View.VISIBLE);

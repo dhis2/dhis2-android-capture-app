@@ -12,6 +12,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
+import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -157,19 +158,22 @@ class FormRepositoryImplTest {
             uid = "uid001",
             layoutId = 1,
             value = "value",
-            label = "field1"
+            label = "field1",
+            valueType = ValueType.TEXT
         ),
         FieldUiModelImpl(
             uid = "uid002",
             layoutId = 2,
             value = "value",
-            label = "field2"
+            label = "field2",
+            valueType = ValueType.TEXT
         ),
         FieldUiModelImpl(
             uid = "uid003",
             layoutId = 3,
             value = "value",
-            label = "field3"
+            label = "field3",
+            valueType = ValueType.TEXT
         )
     )
 }

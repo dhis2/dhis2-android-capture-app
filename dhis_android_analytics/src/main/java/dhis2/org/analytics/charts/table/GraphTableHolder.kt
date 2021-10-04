@@ -9,4 +9,14 @@ class GraphTableHolder(itemView: View) : AbstractViewHolder(itemView) {
     fun bind(text: String) {
         itemView.findViewById<TextView>(R.id.text).text = text
     }
+
+    fun setBackground(isEven: Boolean) {
+        itemView.findViewById<View>(R.id.root)?.setBackgroundResource(
+            if (isEven) {
+                R.color.even_header_color
+            } else {
+                R.color.odd_header_color
+            }
+        )
+    }
 }

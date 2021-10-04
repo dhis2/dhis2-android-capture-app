@@ -14,7 +14,7 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
-import org.dhis2.form.ui.LayoutProvider
+import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
