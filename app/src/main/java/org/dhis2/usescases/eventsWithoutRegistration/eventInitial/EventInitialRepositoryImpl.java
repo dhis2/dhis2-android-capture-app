@@ -405,9 +405,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public List<CategoryOption> getCategoryOptions(String categoryUid) {
-        return d2.categoryModule().categoryOptions()
-                .byCategoryUid(categoryUid)
-                .blockingGet();
+        return d2.categoryModule().categories()
+                .withCategoryOptions()
+                .uid(categoryUid)
+                .blockingGet().categoryOptions();
     }
 
     @Override
