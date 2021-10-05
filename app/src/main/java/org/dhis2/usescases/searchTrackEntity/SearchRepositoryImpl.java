@@ -863,16 +863,25 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (programUid == null) return false;
 
-        boolean teTypeHasCoordinates = d2.trackedEntityModule().trackedEntityTypes()
+        boolean teTypeHasCoordinates = false;
+        FeatureType teTypeFeatureType = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiType)
                 .blockingGet()
-                .featureType() != FeatureType.NONE;
+                .featureType();
 
-        boolean enrollmentHasCoordinates = programUid != null &&
-                d2.programModule().programs()
-                        .uid(programUid)
-                        .blockingGet()
-                        .featureType() != FeatureType.NONE;
+        if (teTypeFeatureType != null && teTypeFeatureType != FeatureType.NONE) {
+            teTypeHasCoordinates = true;
+        }
+
+        boolean enrollmentHasCoordinates = false;
+        FeatureType enrollmentFeatureType = d2.programModule().programs()
+                .uid(programUid)
+                .blockingGet()
+                .featureType();
+
+        if(enrollmentFeatureType != null && enrollmentFeatureType != FeatureType.NONE) {
+            enrollmentHasCoordinates = true;
+        }
 
         List<TrackedEntityTypeAttribute> teAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teiType)
