@@ -98,9 +98,13 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
             val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
             try {
                 blockingSet(finalValue)
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 val crashController = CrashReportControllerImpl()
-                crashController.addBreadCrumb("blockingSetCheck Crash","Attribute: ${attrUid}, value: ${value}")
+                crashController.addBreadCrumb(
+                    "blockingSetCheck Crash",
+                    "Attribute: $attrUid," +
+                        "" + " value: $value"
+                )
                 return false
             }
             true
