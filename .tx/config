@@ -10,7 +10,7 @@ source_file = app/src/main/res/values/strings.xml
 source_lang = en
 type = ANDROID
 
-[dhis2-android-analytics.strings-xml]
+[dhis2-android-capture-app.analytics-strings-xml]
 file_filter = dhis_android_analytics/src/main/res/values-<lang>/strings.xml
 minimum_perc = 0
 source_file = dhis_android_analytics/src/main/res/values/strings.xml
