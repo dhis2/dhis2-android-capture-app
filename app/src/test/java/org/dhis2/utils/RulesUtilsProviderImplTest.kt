@@ -105,7 +105,6 @@ class RulesUtilsProviderImplTest {
             "",
             null,
             null,
-            null,
             null
         )
     }
