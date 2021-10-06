@@ -20,7 +20,7 @@ class GraphToBarData {
         return BarData(
             series.mapIndexed { index: Int, serie: SerieData ->
                 BarDataSet(
-                    coordinateToBarEntryMapper.map(graph, serie.coordinates),
+                    coordinateToBarEntryMapper.map(graph, serie.coordinates, index, series.size),
                     serie.fieldName
                 ).apply {
                     val colorIndex = index % serieColors.size

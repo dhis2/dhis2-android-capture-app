@@ -22,7 +22,7 @@ class GraphToBarChart {
             setPinchZoom(false)
 
             xAxis.apply {
-                setCenterAxisLabels(true)
+//                setCenterAxisLabels(true)
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
