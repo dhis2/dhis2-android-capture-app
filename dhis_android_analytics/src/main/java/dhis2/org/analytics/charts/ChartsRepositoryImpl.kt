@@ -66,7 +66,13 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.dataSet()?.get(dataSetUid)?.find { it.id().equals(groupUid) }
+            ?.dataSet()?.get(dataSetUid)?.find {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }
             ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
         return graphList
