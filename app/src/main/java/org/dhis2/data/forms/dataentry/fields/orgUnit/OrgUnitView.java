@@ -228,15 +228,8 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         setDescription(viewModel.description());
         setWarning(viewModel.warning(), viewModel.error());
 
-        String uid_value_name = viewModel.value();
-        String ouUid = null;
-        String ouName = null;
-        if (!isEmpty(uid_value_name)) {
-            ouUid = uid_value_name.split("_ou_")[0];
-            ouName = uid_value_name.split("_ou_")[1];
-        }
-        setValue(ouUid, ouName);
-        getEditText().setText(ouName);
+        setValue(viewModel.value(), viewModel.displayName());
+        getEditText().setText(viewModel.displayName());
 
         updateEditable(viewModel.editable());
         setListener(viewModel::onDataChange);

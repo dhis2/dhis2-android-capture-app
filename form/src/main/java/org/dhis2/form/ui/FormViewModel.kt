@@ -106,19 +106,21 @@ class FormViewModel(
         return when (intent) {
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
-                intent.uid,
-                intent.coordinates,
-                intent.extraData
+                uid = intent.uid,
+                value = intent.coordinates,
+                extraData = intent.extraData,
+                valueType = ValueType.COORDINATE
             )
             is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
-                intent.uid,
-                intent.featureType,
-                intent.coordinates
+                fieldUid = intent.uid,
+                featureType = intent.featureType,
+                coordinates = intent.coordinates
             )
             is FormIntent.SaveCurrentLocation -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                extraData = intent.featureType
+                extraData = intent.featureType,
+                valueType = ValueType.COORDINATE
             )
             is FormIntent.OnNext -> createRowAction(
                 uid = intent.uid,
@@ -135,7 +137,8 @@ class FormViewModel(
                 createRowAction(
                     uid = intent.uid,
                     value = intent.value,
-                    error = error
+                    error = error,
+                    valueType = intent.valueType
                 )
             }
             is FormIntent.OnFocus -> createRowAction(
@@ -147,7 +150,8 @@ class FormViewModel(
             is FormIntent.OnTextChange -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                actionType = ActionType.ON_TEXT_CHANGE
+                actionType = ActionType.ON_TEXT_CHANGE,
+                valueType = ValueType.TEXT
             )
         }
     }
@@ -179,13 +183,15 @@ class FormViewModel(
         value: String?,
         extraData: String? = null,
         error: Throwable? = null,
-        actionType: ActionType = ActionType.ON_SAVE
+        actionType: ActionType = ActionType.ON_SAVE,
+        valueType: ValueType? = null
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
         error = error,
-        type = actionType
+        type = actionType,
+        valueType = valueType
     )
 
     fun onItemsRendered() {
@@ -206,7 +212,8 @@ class FormViewModel(
         return createRowAction(
             uid = fieldUid,
             value = geometryCoordinates,
-            extraData = featureType
+            extraData = featureType,
+            valueType = ValueType.COORDINATE
         )
     }
 

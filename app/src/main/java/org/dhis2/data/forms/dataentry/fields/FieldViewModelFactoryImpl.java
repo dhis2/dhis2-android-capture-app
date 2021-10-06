@@ -24,8 +24,9 @@ import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.event.UiEventFactoryImpl;
-import org.dhis2.form.ui.provider.LayoutProvider;
+import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.HintProvider;
+import org.dhis2.form.ui.provider.LayoutProvider;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.style.FormUiModelStyle;
@@ -59,7 +60,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     private final FlowableProcessor<RowAction> fieldProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> sectionProcessor = PublishProcessor.create();
-    private final ObservableField<String> currentSection = new ObservableField<String>("");
+    private final ObservableField<String> currentSection = new ObservableField<>("");
 
     private final List<ValueTypeRenderingType> optionSetTextRenderings = Arrays.asList(
             ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
@@ -68,18 +69,25 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
     private final boolean searchMode;
-    private FormUiColorFactory colorFactory;
+    private final FormUiColorFactory colorFactory;
     private final LayoutProvider layoutProvider;
     private final HintProvider hintProvider;
+    private final DisplayNameProvider displayNameProvider;
 
-    public FieldViewModelFactoryImpl(Map<ValueType, String> valueTypeHintMap, boolean searchMode,
-                                     FormUiColorFactory colorFactory, LayoutProvider layoutProvider,
-                                     HintProvider hintProvider) {
+    public FieldViewModelFactoryImpl(
+            @NonNull Map<ValueType, String> valueTypeHintMap,
+            boolean searchMode,
+            FormUiColorFactory colorFactory,
+            LayoutProvider layoutProvider,
+            HintProvider hintProvider,
+            DisplayNameProvider displayNameProvider
+    ) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
         this.colorFactory = colorFactory;
         this.layoutProvider = layoutProvider;
         this.hintProvider = hintProvider;
+        this.displayNameProvider = displayNameProvider;
     }
 
     @Nullable
@@ -311,7 +319,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         null,
                         null,
                         allowFutureDates,
-                        new UiEventFactoryImpl(id, label, type, allowFutureDates)
+                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value)
                 );
             case COORDINATE:
                 return CoordinateViewModel.create(
@@ -359,7 +368,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         description,
                         objectStyle,
                         !searchMode,
-                        ProgramStageSectionRenderingType.LISTING.toString()
+                        ProgramStageSectionRenderingType.LISTING.toString(),
+                        displayNameProvider.provideDisplayName(type, value)
                 );
             case FILE_RESOURCE:
             case TRACKER_ASSOCIATE:

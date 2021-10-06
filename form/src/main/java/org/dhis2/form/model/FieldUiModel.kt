@@ -44,6 +44,8 @@ interface FieldUiModel {
 
     val uiEventFactory: UiEventFactory?
 
+    val displayName: String?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -73,6 +75,8 @@ interface FieldUiModel {
     fun setWarning(warning: String): FieldUiModel
 
     fun setFieldMandatory(): FieldUiModel
+
+    fun setDisplayName(displayName: String?): FieldUiModel
 
     interface Callback {
         fun intent(intent: FormIntent)

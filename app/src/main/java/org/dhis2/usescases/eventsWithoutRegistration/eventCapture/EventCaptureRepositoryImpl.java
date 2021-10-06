@@ -262,9 +262,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         String error = checkConflicts(de.uid(), dataValue);
 
-                        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                            dataValue = dataValue + "_ou_" + friendlyValue;
-                        } else {
+                        if (valueType != ValueType.ORGANISATION_UNIT) {
                             dataValue = friendlyValue;
                         }
 
@@ -516,21 +514,23 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                 String value = null;
                 String rawValue = null;
+                String friendlyValue = null;
                 if (valueRepository.blockingExists()) {
                     value = valueRepository.blockingGet().value();
                     rawValue = value;
-                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
+                    friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
-                    if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                        value = value + "_ou_" + friendlyValue;
-                    } else {
+                    if (!(fieldViewModel instanceof OrgUnitViewModel)) {
                         value = friendlyValue;
                     }
                 }
 
                 String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
 
-                fieldViewModel = fieldViewModel.setValue(value).setEditable(fieldViewModel.getEditable() || isEventEditable);
+                fieldViewModel = fieldViewModel
+                        .setValue(value)
+                        .setDisplayName(friendlyValue)
+                        .setEditable(fieldViewModel.getEditable() || isEventEditable);
                 if (!error.isEmpty()) {
                     fieldViewModel = fieldViewModel.setError(error);
                 }
