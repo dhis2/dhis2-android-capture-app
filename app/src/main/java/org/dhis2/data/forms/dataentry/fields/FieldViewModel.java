@@ -97,6 +97,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract ValueType valueType();
 
+    @Override
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";

@@ -26,6 +26,8 @@ interface FieldUiModel {
 
     val label: String
 
+    val formattedLabel: String
+
     val programStageSection: String?
 
     val style: FormUiModelStyle?
