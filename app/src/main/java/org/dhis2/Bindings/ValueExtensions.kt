@@ -1,6 +1,7 @@
 package org.dhis2.Bindings
 
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -95,7 +96,17 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
             val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
-            blockingSet(finalValue)
+            try {
+                blockingSet(finalValue)
+            } catch (e: Exception) {
+                val crashController = CrashReportControllerImpl()
+                crashController.addBreadCrumb(
+                    "blockingSetCheck Crash",
+                    "Attribute: $attrUid," +
+                        "" + " value: $value"
+                )
+                return false
+            }
             true
         } else {
             blockingDeleteIfExist()
