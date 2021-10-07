@@ -18,4 +18,6 @@
     <string name="select_time">Select time</string>
     <string name="choose_date">Choose date</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
+
+    <string name="form_testing">Testing text</string>
 </resources>
