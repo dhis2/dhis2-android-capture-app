@@ -29,6 +29,9 @@ data class FieldUiModelImpl(
 
     private var callback: FieldUiModel.Callback? = null
 
+    override val formattedLabel: String
+        get() = if (mandatory) "$label *" else label
+
     override fun setCallback(callback: FieldUiModel.Callback) {
         this.callback = callback
     }

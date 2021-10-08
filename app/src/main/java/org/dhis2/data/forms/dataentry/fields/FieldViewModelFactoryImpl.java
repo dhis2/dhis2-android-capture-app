@@ -302,7 +302,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         editable,
                         null,
                         mandatory,
-                        getFormattedLabel(mandatory, label),
+                        label,
                         section,
                         style,
                         hintProvider.provideDateHint(type),
@@ -461,14 +461,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             return layoutProvider.getLayoutByValueType(valueType);
         } else {
             return layoutProvider.getLayoutByValueRenderingType(valueTypeRenderingType, valueType);
-        }
-    }
-
-    private String getFormattedLabel(boolean mandatory, String label) {
-        if (mandatory) {
-            return label + " *";
-        } else {
-            return label;
         }
     }
 }
