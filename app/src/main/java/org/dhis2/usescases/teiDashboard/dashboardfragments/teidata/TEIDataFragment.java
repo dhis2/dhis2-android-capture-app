@@ -159,6 +159,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
         activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
+            showLoadingProgress(true);
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
@@ -338,6 +339,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
+        }
+        showLoadingProgress(false);
+    }
+
+    private void showLoadingProgress(boolean showProgress){
+        if(showProgress){
+            binding.loadingProgress.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.loadingProgress.getRoot().setVisibility(View.GONE);
         }
     }
 
