@@ -256,7 +256,11 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         val options = optionsToHide.union(optionsInGroupsToHide).toMutableList()
             .apply {
                 if (optionsInGroupsToShow.isNotEmpty()) {
-                    addAll(options().map { it.uid() }.subtract(optionsInGroupsToShow))
+                    addAll(
+                        options().map { it.uid() }
+                            .subtract(optionsInGroupsToShow)
+                            .filter { !contains(it) }
+                    )
                 }
             }
 
