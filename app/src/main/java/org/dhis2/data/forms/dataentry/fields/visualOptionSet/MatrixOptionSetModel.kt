@@ -253,9 +253,15 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         optionsInGroupsToHide: List<String>,
         optionsInGroupsToShow: List<String>
     ): FieldViewModel {
-        val options = optionsToHide.union(optionsInGroupsToHide)
-            .filter { optionUidToHide ->
-                !optionsInGroupsToShow.contains(optionUidToHide)
+        val options = optionsToHide.union(optionsInGroupsToHide).toMutableList()
+            .apply {
+                if (optionsInGroupsToShow.isNotEmpty()) {
+                    addAll(
+                        options().map { it.uid() }
+                            .subtract(optionsInGroupsToShow)
+                            .filter { !contains(it) }
+                    )
+                }
             }
 
         return AutoValue_MatrixOptionSetModel(
