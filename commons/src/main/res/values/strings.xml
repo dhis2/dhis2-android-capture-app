@@ -137,6 +137,4 @@
     <string name="section_indicators">Indicators</string>
     <string name="section_charts">Charts</string>
     <string name="section_charts_indicators">Charts and indicators</string>
-
-    <string name="common_testing">Testing text</string>
 </resources>
