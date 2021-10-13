@@ -12,7 +12,7 @@ import dhis2.org.R
 class GraphTableAdapter(val context: Context) :
     AbstractTableAdapter<String, String, String>(context) {
 
-    private val currentWidth = 150
+    private val currentWidth = 200
 
     override fun getCellItemViewType(columnPosition: Int, rowPosition: Int): Int = 0
 
