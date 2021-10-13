@@ -9,13 +9,13 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.R
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.RulesUtilsProviderImpl
@@ -326,17 +326,13 @@ class EnrollmentPresenterImpl(
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
-                    enrollmentFormRepository.autoGenerateEvents()
-                        .flatMap { enrollmentFormRepository.useFirstStageDuringRegistration() }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
+                    enrollmentFormRepository.generateEvents()
+                        .defaultSubscribe(
+                            schedulerProvider,
                             {
-                                if (!DhisTextUtils.isEmpty(it.second)) {
-                                    view.openEvent(it.second)
-                                } else {
-                                    view.openDashboard(it.first)
-                                }
+                                it.second?.let { eventUid ->
+                                    view.openEvent(eventUid)
+                                } ?: view.openDashboard(it.first)
                             },
                             { Timber.tag(TAG).e(it) }
                         )
