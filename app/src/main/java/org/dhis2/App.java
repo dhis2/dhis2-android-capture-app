@@ -141,10 +141,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         try {
             D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
             isLogged = d2Configuration.userModule().isLogged().blockingGet();
-            serverComponent = appComponent.plus(new ServerModule());
         } catch (Exception e) {
-            Timber.e(e);
+            appComponent.injectCrashReportController().trackError(e, e.getMessage());
         }
+        serverComponent = appComponent.plus(new ServerModule());
 
         if (isLogged)
             setUpUserComponent();

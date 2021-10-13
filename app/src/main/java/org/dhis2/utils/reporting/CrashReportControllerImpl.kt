@@ -10,8 +10,8 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 
     override fun trackUser(user: String?, server: String?) {
         val sentryUser = io.sentry.protocol.User().apply {
-            this.username = username
-            others?.put(SERVER_NAME, server)
+            user?.let { this.username = user }
+            server?.let { others?.put(SERVER_NAME, server) }
         }
         Sentry.setUser(sentryUser)
     }
@@ -22,11 +22,13 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
         }
     }
 
-    override fun trackError(exception: Exception, message: String) {
+    override fun trackError(exception: Exception, message: String?) {
         val breadcrumb = Breadcrumb()
-        breadcrumb.type = "Info"
-        breadcrumb.message = message
-        Sentry.addBreadcrumb(breadcrumb)
+        message?.let {
+            breadcrumb.type = "Info"
+            breadcrumb.message = message
+            Sentry.addBreadcrumb(breadcrumb)
+        }
         Sentry.captureException(exception)
     }
 
