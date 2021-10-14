@@ -369,11 +369,18 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
             int oldValue = 0;
-
-            if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
-                oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
-
-            int newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
+            int newValue = 0;
+            try {
+                if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
+                    oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
+            }
+            try {
+                newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
+            }
             try {
                 if (showRowTotal) {
                     int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
