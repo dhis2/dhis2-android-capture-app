@@ -84,20 +84,6 @@ public abstract class FormViewHolder extends AbstractViewHolder {
         }else{
             setNoSelectedEditableColors();
         }
-
-        /*if (canBeEdited()) {
-            if(isSelected()){
-                setSelectedEditableColors();
-            }else{
-                setNoSelectedEditableColors();
-            }
-        } else {
-            if (isSelected()) {
-                setSelectedNoEditableColors();
-            } else {
-                setNoSelectedEditableColors();
-            }
-        }*/
     }
 
     public boolean canBeEdited() {
