@@ -916,7 +916,7 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should have analytics if there is indicators`() {
+    fun `Should have analytics if there are indicators`() {
         mockEvent()
         mockSections()
 
