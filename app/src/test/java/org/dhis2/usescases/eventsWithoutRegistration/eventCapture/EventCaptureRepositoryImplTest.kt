@@ -927,14 +927,20 @@ class EventCaptureRepositoryImplTest {
             d2,
             resourceManager
         )
-//testEventProgramUid
         whenever(
             d2.programModule().programIndicators().byProgramUid().eq(testEventProgramUid)
-                .blockingIsEmpty()
-        ) doReturn false
-    /*    whenever(
+        ) doReturn mock()
+        whenever(
             d2.programModule().programIndicators().byProgramUid().eq(any()).blockingIsEmpty()
-        ) doReturn false */
+        ) doReturn false
+        whenever(
+            d2.programModule().programRules().withProgramRuleActions().byProgramUid()
+                .eq(testEventProgramUid)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programRules().withProgramRuleActions().byProgramUid()
+                .eq(testEventProgramUid).blockingGet()
+        ) doReturn emptyList()
 
         assertTrue(repository.hasAnalytics())
     }
