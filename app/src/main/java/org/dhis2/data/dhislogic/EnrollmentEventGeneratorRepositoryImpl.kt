@@ -52,6 +52,14 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .one().blockingExists()
     }
 
+    override fun eventUidInEnrollment(enrollmentUid: String, stageUid: String): String {
+        return d2.eventModule().events()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .byProgramStageUid().eq(stageUid)
+            .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
+            .one().blockingGet().uid()
+    }
+
     override fun addEvent(
         enrollmentUid: String,
         programUid: String,

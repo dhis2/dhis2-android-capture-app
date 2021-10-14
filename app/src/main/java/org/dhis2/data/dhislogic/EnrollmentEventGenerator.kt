@@ -59,7 +59,10 @@ class EnrollmentEventGenerator(
                 }
             }
         }
-        return Pair(enrollment.uid(), programStage.uid())
+        val eventUidToOpen = generatorRepository.eventUidInEnrollment(
+            enrollment.uid(), programStage.uid()
+        )
+        return Pair(enrollment.uid(), eventUidToOpen)
     }
 
     private fun generateEvent(

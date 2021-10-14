@@ -13,6 +13,7 @@ interface EnrollmentEventGeneratorRepository {
     fun firstStagesInProgram(programUid: String): ProgramStage?
     fun firstOpenAfterEnrollmentStage(programUid: String): ProgramStage?
     fun eventExistInEnrollment(enrollmentUid: String, stageUid: String): Boolean
+    fun eventUidInEnrollment(enrollmentUid: String, stageUid: String): String
     fun addEvent(
         enrollmentUid: String,
         programUid: String,
