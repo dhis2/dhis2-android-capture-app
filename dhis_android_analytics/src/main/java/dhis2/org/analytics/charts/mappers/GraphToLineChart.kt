@@ -4,12 +4,15 @@ import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val DEFAULT_VALUE = 0f
-const val VALUE_PADDING = 5f
+const val VALUE_PADDING = 4f
 const val DEFAULT_GRID_LINE_LENGTH = 10f
 const val DEFAULT_GRID_SPACE_LENGTH = 10f
 const val DEFAULT_GRIP_PHASE = 0f
@@ -54,7 +57,7 @@ class GraphToLineChart {
                     DEFAULT_GRIP_PHASE
                 )
                 axisMaximum = graph.maxValue() + VALUE_PADDING
-                axisMinimum = graph.minValue() - VALUE_PADDING
+                axisMinimum = graph.minValue()
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
@@ -62,6 +65,19 @@ class GraphToLineChart {
             animateX(DEFAULT_ANIM_TIME)
 
             legend.withGlobalStyle()
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e?.data is String) {
+                        data = GraphToLineData().map(graph, e.data as String)
+                        invalidate()
+                    }
+                }
+
+                override fun onNothingSelected() {
+                    data = GraphToLineData().map(graph)
+                    invalidate()
+                }
+            })
             extraBottomOffset = 10f
 
             data = lineData
