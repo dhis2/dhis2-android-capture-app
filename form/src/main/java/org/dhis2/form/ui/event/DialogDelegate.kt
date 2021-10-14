@@ -56,7 +56,7 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = date,
-            valueType = ValueType.DATETIME
+            valueType = ValueType.DATE
         )
     }
 

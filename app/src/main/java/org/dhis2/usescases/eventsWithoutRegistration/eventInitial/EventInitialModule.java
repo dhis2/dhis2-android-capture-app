@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
@@ -78,14 +79,14 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
+    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
                 colorFactory,
                 new LayoutProviderImpl(),
-                new HintProviderImpl(context)
-        );
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(d2));
     }
 
     @Provides

@@ -225,7 +225,7 @@ class EnrollmentRepository(
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
-            dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
+            dataValue = attrValueRepository.blockingGet().value()
         }
 
         val fieldViewModel = fieldFactory.create(
@@ -428,7 +428,7 @@ class EnrollmentRepository(
             ValueType.ORGANISATION_UNIT,
             true,
             null,
-            getOrgUnitValue(enrollmentRepository.blockingGet()!!.organisationUnit()),
+            enrollmentRepository.blockingGet()?.organisationUnit(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
             editable,
@@ -514,16 +514,6 @@ class EnrollmentRepository(
             0,
             ProgramStageSectionRenderingType.LISTING.name
         )
-    }
-
-    private fun getOrgUnitValue(currentValueUid: String?): String? {
-        return if (currentValueUid != null) {
-            currentValueUid + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(
-                currentValueUid
-            ).blockingGet()!!.displayName()
-        } else {
-            null
-        }
     }
 
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {

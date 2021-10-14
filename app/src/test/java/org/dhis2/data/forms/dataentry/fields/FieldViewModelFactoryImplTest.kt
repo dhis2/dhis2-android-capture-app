@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
+import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.style.FormUiColorFactory
@@ -22,6 +23,7 @@ class FieldViewModelFactoryImplTest {
     private val colorFactory: FormUiColorFactory = mock()
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
+    private val displayNameProvider: DisplayNameProvider = mock()
     private val trackedEntityAttribute: TrackedEntityAttribute = mock {
         on { uid() } doReturn "1234"
         on { displayFormName() } doReturn "First name"
@@ -36,7 +38,8 @@ class FieldViewModelFactoryImplTest {
             searchMode,
             colorFactory,
             layoutProvider,
-            hintProvider
+            hintProvider,
+            displayNameProvider
         )
     }
 
