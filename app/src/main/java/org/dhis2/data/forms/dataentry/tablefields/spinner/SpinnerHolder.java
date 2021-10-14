@@ -28,6 +28,7 @@ public class SpinnerHolder extends FormViewHolder {
         this.binding = mBinding;
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
+        textView = binding.optionSetView.textView();
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
 
@@ -39,6 +40,8 @@ public class SpinnerHolder extends FormViewHolder {
     }
 
     public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
+        super.update(viewModel);
+        this.accessDataWrite = accessDataWrite;
         this.viewModel = viewModel;
         this.editable = viewModel.editable() && accessDataWrite;
 
@@ -69,5 +72,6 @@ public class SpinnerHolder extends FormViewHolder {
                         binding.optionSetView);
             }
         }
+        setBackground();
     }
 }

@@ -27,7 +27,6 @@ import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentDatasetSectionBinding
@@ -75,7 +74,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             dataSetUid = it.getString(DATA_SET_UID)
                 ?: throw NullPointerException(
                     "dataSet should not be null. " +
-                        "Before initializing the fragment make sure to set the correct arguments"
+                            "Before initializing the fragment make sure to set the correct arguments"
                 )
         }
         app().userComponent()!!.plus(DataValueModule(dataSetUid, this)).inject(this)
@@ -145,6 +144,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
 
         val tableView = TableView(requireContext())
+        tableView.isShowHorizontalSeparators = false
         tableView.setHasFixedWidth(true)
 
         val columnHeaders = tableData.columnHeaders()
@@ -160,12 +160,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
         val view = View(context)
         view.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15)
-        view.setBackgroundColor(tableView.separatorColor)
+        view.setBackgroundResource(R.color.white)
         binding.tableLayout.addView(view)
 
         tableView.adapter = adapter
         tableView.headerCount = columnHeaders!!.size
-        tableView.shadowColor = ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+        tableView.shadowColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+        tableView.selectedColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+        tableView.unSelectedColor =
+            ContextCompat.getColor(requireContext(), android.R.color.transparent)
 
         adapter.swap(tableData.fieldViewModels)
 
@@ -211,10 +214,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         presenterFragment.initializeProcessor(this)
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
+                                                   _: Int,
+                                                   scrollY: Int,
+                                                   _: Int,
+                                                   _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -281,12 +284,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             )
             cornerParams.topMargin =
                 binding.headerContainer.getChildAt(0).layoutParams.height *
-                (binding.headerContainer.childCount - 1)
+                        (binding.headerContainer.childCount - 1)
             cornerView.layoutParams = cornerParams
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
+                            binding.headerContainer.getChildAt(0).layoutParams.height
             }
             cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener {
                 for (i in 0 until binding.tableLayout.childCount) {

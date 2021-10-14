@@ -240,6 +240,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         }
     }
 
+    public TextView textView() {
+        return editText;
+    }
+
     public interface OnSelectedOption {
         void onSelectedOption(String optionName, String optionCode);
     }

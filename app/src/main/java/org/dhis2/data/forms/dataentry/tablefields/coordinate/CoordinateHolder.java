@@ -1,28 +1,26 @@
 package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
 
+import static android.text.TextUtils.isEmpty;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
-import android.widget.TextView;
 
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.FeatureType;
 
 import io.reactivex.processors.FlowableProcessor;
-
-import static android.text.TextUtils.isEmpty;
 
 public class CoordinateHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
 
     CustomCellViewBinding binding;
-    TextView textView;
     CoordinateViewModel model;
     Context context;
 
@@ -37,7 +35,8 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel, boolean accessDataWrite) {
-
+        super.update(coordinateViewModel);
+        this.accessDataWrite = accessDataWrite;
         this.model = coordinateViewModel;
 
         if (!isEmpty(coordinateViewModel.value()))
@@ -64,6 +63,7 @@ public class CoordinateHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && textView.isEnabled()) {
             showEditDialog();
         }
+        setBackground();
     }
 
     private void showEditDialog() {

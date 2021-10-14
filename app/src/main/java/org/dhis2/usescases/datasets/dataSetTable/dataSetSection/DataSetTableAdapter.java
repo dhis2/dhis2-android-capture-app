@@ -255,7 +255,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(
                 defaultColumnLabel != null ? defaultColumnLabel : ((CategoryOption) columnHeaderItemModel).displayName(),
-                currentTableScale
+                currentTableScale,
+                position
         );
         if (((CategoryOption) columnHeaderItemModel).displayName().isEmpty()) {
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
@@ -301,7 +302,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
         ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale, dataElementDecoration);
-        holder.itemView.getLayoutParams().height = /*currentHeight*/getColumnHeaderHeight();
+        holder.itemView.getLayoutParams().height = getColumnHeaderHeight();
     }
 
 

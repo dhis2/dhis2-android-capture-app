@@ -39,7 +39,7 @@ class DataSetIndicatorAdapter(
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = DataSetIndicatorHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_row, parent, false)
     )
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,
