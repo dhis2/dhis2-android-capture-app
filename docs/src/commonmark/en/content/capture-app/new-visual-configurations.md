@@ -1,5 +1,63 @@
 # Visual configurations { #capture_app_visual }
 
+##  Home Local Analytics (New 2.5)
+
+
+The android app can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
+
+In the Android Settings App select Home, Program or Data set from the Analytics menu and add a visualization by clicking on the  "Add Visualization" button. Search by typing the name of the visualization and select it by clicking on it. An alternative title can be configured, otherwise, the app will display the name of the visualization.
+
+![](resources/images/){ width=25%}
+
+### Visualization Filter
+
+For each visualization, the user will be able to filter in the app by:
+
+* Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
+* OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
+
+![](resources/images/){ width=25%}
+
+A reset button will be displayed if a filter is applied. Select Reset to display the default visualization.
+
+
+![](resources/images/){ width=25%}
+
+### Groups
+
+All of these visualization can be grouped. To do that, configured the group following the steps below:
+
+1. Open the Android Settings App
+2. Click to Add a new visualization in the Analytics Menu (Home, Program or Data set)
+3. Select a visualization
+4. Mark the "Use a group visualization" checkbox
+5. Create or select a created group
+6. Save the visualization
+
+The group will be displayed as a button in the top bar of the Analytics screen.
+
+![](resources/images/){ width=25%}
+
+### Restrictions
+
+The visualizations can be rendered in the home screen of the App, and at the dataset level and program level. It will also support line chart, bar chart, pie chart, radar chart, tables and single value elements and are 100% functional offline.
+
+Android DOESN'T support the following elements:
+
+* Type of visualization: Stacked Column, Bar, Stacked bar, Area, Stacked Area, Radar, Gauge, Year over Year (bar) and Year ove Year (column)
+* Data dimension: Reporting rates, reporting rates on time, Actual reports, Actual reports on time and Expected reports.
+* Relative Period dimension: Last 60 Days, Last 90 Days, Last 180 Days, Last 52 weeks, Weeks this year, This bi-month, Last bi-month, Last 6 bi-month, Bi-months this year, This six-months, Last six-month, Last 2 six-month, This Financial year, Last financial year, Last 5 financial year
+* Fix Period dimension: none of the periods are supported.
+
+## Interface language (New 2.5)
+
+The language of the interface will respond to the language set in the user configuration. If the language is not available in the app, it will pick the language of the device. 
+
+If none of the configurations are available, the app will default to English.
+
+Translations set up in DHIS2 for all available objects will also be shown according to the language in the user configuration.
+
+![](resources/images/){ width=25%}
 
 ## Meta data sync error { #capture_app_visual_sync_error }
 
@@ -95,7 +153,7 @@ In the Android App, the color will be rendered as background color for programs 
 >
 > Colours will first be available in the new Android app, followed in future releases by the new web-based Capture App.
 
-## Rendering Types for Program Sections { #capture_app_visual_rendering_type }
+## Rendering Types for Program Sections (New 2.5) { #capture_app_visual_rendering_type }
 
 
 ![](resources/images/image16.png){width=80% }
@@ -152,7 +210,7 @@ The available rendering options have been expanded to include horizontal and ver
 > ![](resources/images/options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
 
 
-### QR and Barcodes { #capture_app_visual_render_qr }
+### QR and Barcodes (New 2.5) { #capture_app_visual_render_qr }
 
 
 Data elements or attributes type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
@@ -163,3 +221,9 @@ Barcodes also allow the user to manually enter the value.
 ![](resources/images/image119.png){ width=20%}
 ![](resources/images/image120.png){ width=20%}
 ![](resources/images/image121.png){ width=20%}
+
+#### Export/Share
+
+Users are now able to display a bar or QR code in an image so that it can be shared for printing, take a screenshot or show it on the screen for scanning.
+
+![](resources/images/){ width=20%}
