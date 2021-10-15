@@ -14,6 +14,7 @@ class FormViewFragmentFactory(
     private val needToForceUpdate: Boolean = false,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
+    private val onActivityForResult: (() -> Unit)?,
     val dispatchers: DispatcherProvider
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
@@ -24,6 +25,7 @@ class FormViewFragmentFactory(
                 locationProvider,
                 onLoadingListener,
                 onFocused,
+                onActivityForResult,
                 needToForceUpdate,
                 dispatchers
             )

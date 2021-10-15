@@ -176,6 +176,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     fieldViewModelFactory.fieldProcessor().onNext(action);
                     return Unit.INSTANCE;
                 })
+                .activityForResultListener(()->{
+                    initSearchNeeded = false;
+                    return Unit.INSTANCE;
+                })
                 .needToForceUpdate(true)
                 .factory(getSupportFragmentManager())
                 .build();
