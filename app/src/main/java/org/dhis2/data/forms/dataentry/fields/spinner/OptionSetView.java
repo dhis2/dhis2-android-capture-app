@@ -121,7 +121,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public void deleteSelectedOption() {
-        setValueOption(null, null);
+        viewModel.onOptionClear();
     }
 
     public void setOnSelectedOptionListener(OnSelectedOption listener) {

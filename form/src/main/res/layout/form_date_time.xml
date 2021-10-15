@@ -116,7 +116,7 @@
                         android:inputType="date"
                         android:onClick="@{() -> item.invokeUiEvent()}"
                         android:textSize="@dimen/form_edit_text_size"
-                        android:text="@{item.value}"
+                        android:text="@{item.displayName}"
                         app:input_style="@{item}"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -129,6 +129,7 @@
                     android:layout_gravity="center"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:enabled="@{item.editable}"
+                    android:onClick="@{() -> item.invokeUiEvent()}"
                     app:iconResource="@{item.style.descriptionIcon}"
                     app:icon_color="@{item.style}"
                     tools:visibility="visible" />
