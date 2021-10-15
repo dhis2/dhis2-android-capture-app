@@ -345,7 +345,7 @@ public class TableView extends FrameLayout implements ITableView {
             // Set layout manager
             mCellRecyclerView.setLayoutManager(getCellLayoutManager());
 
-            mCellRecyclerView.setBackgroundResource(R.drawable.cell_bg);
+//            mCellRecyclerView.setBackgroundResource(R.drawable.cell_bg);
         } else {
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams

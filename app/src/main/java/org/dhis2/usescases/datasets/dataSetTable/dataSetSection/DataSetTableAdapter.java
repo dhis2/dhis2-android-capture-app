@@ -308,7 +308,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     @Override
     public View onCreateCornerView() {
-        return null;
+        int layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout;
+        return LayoutInflater.from(context).inflate(layout,null);
     }
 
     @Override

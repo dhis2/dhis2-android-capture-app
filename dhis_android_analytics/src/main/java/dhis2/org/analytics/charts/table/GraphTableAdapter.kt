@@ -16,8 +16,10 @@ class GraphTableAdapter(val context: Context) :
 
     override fun getCellItemViewType(columnPosition: Int, rowPosition: Int): Int = 0
 
-    override fun onCreateCornerView(): View? = null
-
+    override fun onCreateCornerView(): View? {
+        val layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout
+        return LayoutInflater.from(context).inflate(layout, null)
+    }
     override fun getColumnHeaderItemViewType(position: Int): Int = 0
 
     override fun getRowHeaderItemViewType(position: Int): Int = 0

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/small_column_header_height"
-    android:orientation="horizontal">
+    android:layout_height="@dimen/small_column_header_height">
 
     <TextView
         android:id="@+id/text"
@@ -18,4 +17,10 @@
         android:singleLine="true"
         android:textSize="12sp"
         tools:text="Test" />
-</LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/table_view_default_row_header_separator_color"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

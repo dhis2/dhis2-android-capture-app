@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -280,11 +281,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 LayoutInflater.from(context).inflate(R.layout.table_view_corner_layout, null)
             val cornerParams = LinearLayout.LayoutParams(
                 tableView.adapter.rowHeaderWidth,
-                binding.headerContainer.getChildAt(0).layoutParams.height
+                binding.headerContainer.children.toList().sumBy { it.layoutParams.height }
             )
-            cornerParams.topMargin =
-                binding.headerContainer.getChildAt(0).layoutParams.height *
-                (binding.headerContainer.childCount - 1)
             cornerView.layoutParams = cornerParams
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
