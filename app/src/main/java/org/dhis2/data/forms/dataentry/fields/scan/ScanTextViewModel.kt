@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
+import android.view.View
+import com.google.android.material.textfield.TextInputEditText
 import com.google.auto.value.AutoValue
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -266,5 +268,26 @@ abstract class ScanTextViewModel : FieldViewModel() {
     fun onClearValue() {
         onItemClick()
         onScanSelected(null)
+    }
+
+    fun onTextChanged(text: CharSequence?) {
+        super.onTextChange(
+            when {
+                text?.isEmpty() == true -> null
+                else -> text?.toString()
+            }
+        )
+    }
+
+    fun onFocusChanged(hasFocus: Boolean, textView: View) {
+        val text = (textView as TextInputEditText).text.toString()
+        if (!hasFocus) {
+            onScanSelected(
+                when {
+                    text.isEmpty() -> null
+                    else -> text
+                }
+            )
+        }
     }
 }

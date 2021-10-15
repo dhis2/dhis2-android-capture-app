@@ -4,7 +4,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import androidx.core.widget.doOnTextChanged
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -50,22 +49,7 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
         if (MotionEvent.ACTION_UP == event.action) model.onItemClick()
         false
     }
-    setOnFocusChangeListener { view, hasFocus ->
-        if (hasFocus && !model.activated()) {
-            clearFocus()
-        } else if (hasFocus && model.isSearchMode()) {
-            openKeyboard()
-        }
-        if (!hasFocus) {
-            model.onScanSelected(
-                if (text.toString().isEmpty()) {
-                    null
-                } else {
-                    text.toString()
-                }
-            )
-        }
-    }
+
     setOnEditorActionListener { v, actionId, _ ->
         when (actionId) {
             EditorInfo.IME_ACTION_NEXT -> {
@@ -77,13 +61,6 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
                 return@setOnEditorActionListener true
             }
             else -> return@setOnEditorActionListener false
-        }
-    }
-    doOnTextChanged { text, _, _, _ ->
-        if (text.toString().isEmpty()) {
-            model.onTextChange(null)
-        } else {
-            model.onTextChange(text.toString())
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -49,9 +50,11 @@ class FormViewModel(
     init {
         viewModelScope.launch {
             _pendingIntents
+                .distinctUntilChanged()
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
                 .collect { result ->
+                    Timber.d("FLOW: new result %s", result.second.valueStoreResult)
                     displayResult(result)
                 }
         }
@@ -79,6 +82,9 @@ class FormViewModel(
             }
             ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                 _items.value = repository.composeList()
+            }
+            ValueStoreResult.TEXT_CHANGING -> {
+                Timber.d("${result.first.id} is changing its value")
             }
         }
     }
