@@ -4,13 +4,14 @@ import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.components.XAxis
+import dhis2.org.analytics.charts.charts.SizeRadarChart
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 
 class GraphToRadarChart {
     fun map(context: Context, graph: Graph): RadarChart {
         val radarData = GraphToRadarData().map(graph)
-        return RadarChart(context).apply {
+        return SizeRadarChart(context).apply {
             description.isEnabled = false
             isHighlightPerTapEnabled = false
 
@@ -22,12 +23,13 @@ class GraphToRadarChart {
                 valueFormatter = CategoryFormatter(graph.categories)
             }
 
+
             legend.withGlobalStyle()
 
             data = radarData
 
             layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 800)
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
         }
     }
 }
