@@ -233,7 +233,7 @@ class EventCaptureRepositoryImplTest {
 
         whenever(
             d2.organisationUnitModule().organisationUnits().uid(testEventOrgUnitUid).blockingGet()
-        )doReturn OrganisationUnit.builder()
+        ) doReturn OrganisationUnit.builder()
             .uid(testEventOrgUnitUid)
             .build()
 
@@ -913,6 +913,36 @@ class EventCaptureRepositoryImplTest {
             .build()
 
         assertTrue(!repository.showCompletionPercentage())
+    }
+
+    @Test
+    fun `Should have analytics if there are indicators`() {
+        mockEvent()
+        mockSections()
+
+        val repository = EventCaptureRepositoryImpl(
+            fieldFactory,
+            ruleEngineRepository,
+            eventUid,
+            d2,
+            resourceManager
+        )
+        whenever(
+            d2.programModule().programIndicators().byProgramUid().eq(testEventProgramUid)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programIndicators().byProgramUid().eq(any()).blockingIsEmpty()
+        ) doReturn false
+        whenever(
+            d2.programModule().programRules().withProgramRuleActions().byProgramUid()
+                .eq(testEventProgramUid)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programRules().withProgramRuleActions().byProgramUid()
+                .eq(testEventProgramUid).blockingGet()
+        ) doReturn emptyList()
+
+        assertTrue(repository.hasAnalytics())
     }
 
     private fun mockEvent(

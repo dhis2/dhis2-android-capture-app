@@ -548,7 +548,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean hasAnalytics() {
-        boolean hasProgramIndicators = d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
+        boolean hasProgramIndicators = !d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
         List<ProgramRule> programRules = d2.programModule().programRules().withProgramRuleActions()
                 .byProgramUid().eq(currentEvent.program()).blockingGet();
         boolean hasProgramRules = false;
