@@ -2,7 +2,55 @@
 
 ## Data Sets in Android { #capture_app_datsets_android }
 
-### Navigation Bar (NEW 2.4)
+## Local Analytics (NEW 2.5)
+
+The android app can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
+
+In the Android Settings App select "Data set" from the Analytics menu and add a visualization by clicking on the  "Add Visualization" button. Search by typing the name of the visualization and select it by clicking on it. An alternative title can be configured, otherwise, the app will display the name of the visualization.
+
+![](resources/images/){ width=25%}
+
+### Visualization Filter
+
+For each visualization, the user will be able to filter in the app by:
+
+* Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
+* OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
+
+![](resources/images/){ width=25%}
+
+A reset button will be displayed if a filter is applied. Select Reset to display the default visualization.
+
+
+![](resources/images/){ width=25%}
+
+### Groups
+
+All of these visualization can be grouped. To do that, configured the group following the steps below:
+
+1. Open the Android Settings App
+2. Click to Add a new visualization in the Analytics Menu
+3. Select a visualization
+4. Mark the "Use a group visualization" checkbox
+5. Create or select a created group
+6. Save the visualization
+
+The group will be displayed as a button in the top bar of the Analytics screen.
+
+![](resources/images/){ width=25%}
+
+### Restrictions
+
+The visualizations can be rendered in the home screen of the App, and at the dataset and program level. It will also support line chart, bar chart, pie chart, radar chart, tables and single value elements and are 100% functional offline.
+
+Android DOESN'T support the following elements:
+
+* Type of visualization: Stacked Column, Bar, Stacked bar, Area, Stacked Area, Radar, Gauge, Year over Year (bar) and Year ove Year (column)
+* Data dimension: Reporting rates, reporting rates on time, Actual reports, Actual reports on time and Expected reports.
+* Relative Period dimension: Last 60 Days, Last 90 Days, Last 180 Days, Last 52 weeks, Weeks this year, This bi-month, Last bi-month, Last 6 bi-month, Bi-months this year, This six-months, Last six-month, Last 2 six-month, This Financial year, Last financial year, Last 5 financial year
+* Fix Period dimension: none of the periods are supported.
+
+### Navigation Bar
 
 Use the new navigation bar to switch between the data entry form and the overview screen.
 
@@ -50,7 +98,7 @@ The length of the first column in datasets is now calculated to show the full te
 
 ![](resources/images/image113.png){ width=25%}
 
-### Indicators (NEW 2.4)
+### Indicators
 
 Indicators are now available in default and section forms and are displayed at the bottom of the data entry form.
 

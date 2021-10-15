@@ -1,7 +1,6 @@
 # Visual configurations { #capture_app_visual }
 
-##  Home Local Analytics (New 2.5)
-
+##  Local Analytics (New 2.5)
 
 The android app can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
 

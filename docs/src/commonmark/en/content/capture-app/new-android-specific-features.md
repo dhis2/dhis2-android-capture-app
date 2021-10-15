@@ -107,9 +107,9 @@ Filter the Events, TEIs(based on their events) and data sets, the following peri
 - Other (Opens a date picker)
 - Anytime
 
-### Org. Unit { #capture_app_generic_filter_orgunit }
+### Org. Unit (New 2.5) { #capture_app_generic_filter_orgunit }
 
-Allows the user to type the search or select an org unit from the tree.
+Allows the user to type the search or select an org unit from the tree. The filter will not be visible if the user has only one Organisation Unit configured.
 
 ### Sync { #capture_app_generic_filter_sync }
 
@@ -139,6 +139,10 @@ The 'Date of Enrollment' will apply to the Enrollment date of the TEI in the pro
 ### Enrollment Status { #capture_app_generic_filter_enroll_status }
 
 The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only one option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
+
+### Follow-Up (New 2.5)
+
+Filter TEIs by Follow-up marks.
 
 ### Filtering added in TEI Dashboard: { #capture_app_generic_filter_tei }
 
@@ -286,3 +290,15 @@ When a program stage or tracked entity type have a feature type (and for program
 If the TEI has a profile image, the map will display it.
 
 ![](resources/images/image103.png){ width=25%}
+
+## Calendar (New 2.5)
+
+In the DHIS2 Android Capture App users can switch date selection from spinner to calendar view. In this version, the app will remember the last visualization selected by the user and use it the next time the user needs to select a date.
+
+![](resources/images/){ width=25%}
+
+## Reason for non-editable data (New 2.5)
+
+Data can be blocked for many reasons in DHIS2, because of access restrictions or expiration among others. When an Event, TEI or Data Set are not editable the user will be able to find the reason on the "Details" section.
+
+![](resources/images/){ width=25%}
