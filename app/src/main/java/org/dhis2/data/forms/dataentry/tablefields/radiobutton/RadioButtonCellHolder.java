@@ -2,15 +2,14 @@ package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.TextView;
 
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
-import org.dhis2.data.forms.dataentry.fields.radiobutton.YesNoView;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -25,7 +24,6 @@ public class RadioButtonCellHolder extends FormViewHolder {
     private final FlowableProcessor<RowAction> processor;
 
     final CustomCellViewBinding binding;
-    TextView textView;
     RadioButtonViewModel viewModel;
     Context context;
 
@@ -39,7 +37,8 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
 
     public void update(RadioButtonViewModel checkBoxViewModel, boolean accessDataWrite) {
-
+        super.update(checkBoxViewModel);
+        this.accessDataWrite = accessDataWrite;
         this.viewModel = checkBoxViewModel;
 
         if (checkBoxViewModel.value() != null && !checkBoxViewModel.value().isEmpty()) {
@@ -72,6 +71,7 @@ public class RadioButtonCellHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && textView.isEnabled()) {
             showEditDialog();
         }
+        setBackground();
     }
 
     private void showEditDialog() {

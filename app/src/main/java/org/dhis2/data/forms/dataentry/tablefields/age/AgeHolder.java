@@ -1,33 +1,32 @@
 package org.dhis2.data.forms.dataentry.tablefields.age;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.content.Context;
 import android.view.View;
-import android.widget.TextView;
 
 import org.dhis2.Bindings.StringExtensionsKt;
+import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.data.forms.dataentry.fields.age.AgeView;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.data.forms.dataentry.fields.age.AgeView;
 import org.dhis2.utils.customviews.TableFieldDialog;
 
 import java.util.Date;
 
 import io.reactivex.processors.FlowableProcessor;
 
-import static android.text.TextUtils.isEmpty;
-
 public class AgeHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
 
     CustomCellViewBinding binding;
-    TextView textView;
     AgeViewModel ageViewModel;
     Context context;
     String date;
+
 
     AgeHolder(CustomCellViewBinding binding, FlowableProcessor<RowAction> processor, Context context) {
         super(binding);
@@ -39,6 +38,8 @@ public class AgeHolder extends FormViewHolder {
 
 
     public void update(AgeViewModel ageViewModel, boolean accessDataWrite) {
+        super.update(ageViewModel);
+        this.accessDataWrite = accessDataWrite;
 
         this.ageViewModel = ageViewModel;
 
@@ -68,6 +69,7 @@ public class AgeHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && textView.isEnabled()) {
             showEditDialog();
         }
+        setBackground();
     }
 
     private void showEditDialog() {

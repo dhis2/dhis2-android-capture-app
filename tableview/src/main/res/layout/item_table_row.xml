@@ -12,15 +12,14 @@
         android:gravity="center"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:background="@color/even_header_color"
-        android:textColor="@color/header_text_color"
         android:singleLine="true"
+        android:textColor="@color/table_view_default_row_header_separator_color"
         android:textSize="12sp"
         tools:text="Test" />
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/table_view_default_row_header_separator_color"
-        android:layout_alignParentBottom="true"/>
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:background="@color/table_view_default_row_header_separator_color" />
 </RelativeLayout>
