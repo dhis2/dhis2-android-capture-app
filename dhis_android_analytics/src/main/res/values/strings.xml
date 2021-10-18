@@ -49,4 +49,5 @@
     <string name="visualization_error">Something is wrong with this visualization</string>
     <string name="visualization_failure">Something is wrong with the visualizations</string>
     <string name="visualization_groups_failure">Something is wrong with the visualization groups</string>
+    <string name="pie_chart_no_data">All data is zero</string>
 </resources>
