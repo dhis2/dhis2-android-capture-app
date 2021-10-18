@@ -23,7 +23,6 @@ class GraphToRadarChart {
                 valueFormatter = CategoryFormatter(graph.categories)
             }
 
-
             legend.withGlobalStyle()
 
             data = radarData
