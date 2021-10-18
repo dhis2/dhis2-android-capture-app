@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.edittext.PatterValidator
+import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertFalse
@@ -20,7 +20,7 @@ class FieldViewModelTest {
     fun `should call onSuccess if valueToEvaluate is null`() {
         mockedTextFieldViewModel("\'w\'w\'x\'x").validateWithFieldMask(
             null,
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(true)
                 }
@@ -40,7 +40,7 @@ class FieldViewModelTest {
     fun `should call onSuccess if valueToEvaluate is empty`() {
         mockedTextFieldViewModel("\'w\'w\'x\'x").validateWithFieldMask(
             "",
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(true)
                 }
@@ -60,7 +60,7 @@ class FieldViewModelTest {
     fun `should call onSuccess if fieldMask is null`() {
         mockedTextFieldViewModel(null).validateWithFieldMask(
             "hello",
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(true)
                 }
@@ -80,7 +80,7 @@ class FieldViewModelTest {
     fun `should call onPatterError if fieldMask is wrong`() {
         mockedTextFieldViewModel("\\w\\w\\x\\x").validateWithFieldMask(
             "hello",
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(false)
                 }
@@ -100,7 +100,7 @@ class FieldViewModelTest {
     fun `should call onSuccess if value matches pattern`() {
         mockedTextFieldViewModel("\\w\\d").validateWithFieldMask(
             "A1",
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(true)
                 }
@@ -120,7 +120,7 @@ class FieldViewModelTest {
     fun `should call onError if value does not matches pattern`() {
         mockedTextFieldViewModel("\\w\\d").validateWithFieldMask(
             "AA1",
-            object : PatterValidator {
+            object : PatternValidator {
                 override fun onSuccess() {
                     assertTrue(false)
                 }

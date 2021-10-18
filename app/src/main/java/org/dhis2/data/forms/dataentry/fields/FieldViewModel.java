@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.edittext.PatterValidator;
+import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
@@ -385,7 +385,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
-    public void validateWithFieldMask(String valueToEvaluate, PatterValidator validator) {
+    public void validateWithFieldMask(String valueToEvaluate, PatternValidator validator) {
         if (valueToEvaluate == null || valueToEvaluate.isEmpty() || fieldMask() == null) {
             validator.onSuccess();
         } else if (fieldMaskIsCorrect()) {

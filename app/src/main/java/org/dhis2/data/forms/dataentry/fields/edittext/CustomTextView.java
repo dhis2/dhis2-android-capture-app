@@ -58,7 +58,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
 
 import timber.log.Timber;
 
@@ -464,7 +463,7 @@ public class CustomTextView extends FieldLayout {
 
     private void validateRegex(String valueToValidate) {
         if (!viewModel.isSearchMode()) {
-            viewModel.validateWithFieldMask(valueToValidate, new PatterValidator() {
+            viewModel.validateWithFieldMask(valueToValidate, new PatternValidator() {
                 @Override
                 public void onSuccess() {
                     setWarning(viewModel.warning(), viewModel.error());

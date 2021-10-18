@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.edittext
 
-interface PatterValidator {
+interface PatternValidator {
     fun onSuccess()
     fun onError()
     fun onPatternError()
