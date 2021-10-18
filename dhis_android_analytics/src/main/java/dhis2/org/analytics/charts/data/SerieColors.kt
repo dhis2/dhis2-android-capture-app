@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts.data
 
 import android.graphics.Color
+import org.dhis2.commons.resources.ColorUtils
 
 class SerieColors {
     companion object {
@@ -43,5 +44,13 @@ class SerieColors {
             Color.parseColor("#FFEA00"),
             Color.parseColor("#FF9100")
         )
+
+        fun getSerieColor(colorIndex: Int, higlight: Boolean): Int {
+            return if (higlight) {
+                getColors()[colorIndex]
+            } else {
+                ColorUtils.withAlpha(getColors()[colorIndex])
+            }
+        }
     }
 }

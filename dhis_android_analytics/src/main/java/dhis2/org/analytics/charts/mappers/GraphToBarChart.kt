@@ -4,6 +4,9 @@ import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
@@ -64,6 +67,19 @@ class GraphToBarChart {
             animateX(DEFAULT_ANIM_TIME)
 
             legend.withGlobalStyle()
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e?.data is String) {
+                        data = GraphToBarData().map(graph, e.data as String)
+                        invalidate()
+                    }
+                }
+
+                override fun onNothingSelected() {
+                    data = GraphToBarData().map(graph)
+                    invalidate()
+                }
+            })
             extraBottomOffset = 10f
 
             data = barData
