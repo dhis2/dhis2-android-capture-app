@@ -6,6 +6,9 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.RadarDataSet
 
 const val default_value_text_size = 10f
+const val default_bar_group_separation = 0.03f
+const val default_bar_group_space = 1.0f - default_bar_group_separation
+const val default_gap = 1.0f
 
 fun LineDataSet.withGlobalStyle(): LineDataSet {
     return this.apply {
@@ -19,7 +22,9 @@ fun LineDataSet.withGlobalStyle(): LineDataSet {
 fun BarData.withGlobalStyle(): BarData {
     return this.apply {
         setValueTextSize(default_value_text_size)
-        barWidth
+        if (dataSetCount> 1) {
+            barWidth = default_bar_group_space / dataSetCount.toFloat()
+        }
     }
 }
 
