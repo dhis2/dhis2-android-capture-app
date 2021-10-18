@@ -211,6 +211,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         ));
     }
 
+    public void onOptionClear() {
+        callback.intent(new FormIntent.ClearValue(uid()));
+    }
+
     @Override
     public boolean equals(FieldUiModel o) {
         return super.equals(o) && o instanceof SpinnerViewModel &&

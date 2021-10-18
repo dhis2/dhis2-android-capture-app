@@ -224,7 +224,9 @@ class EnrollmentRepository(
             }
         }
 
-        if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
+        if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
+            !DhisTextUtils.isEmpty(dataValue)
+        ) {
             dataValue = attrValueRepository.blockingGet().value()
         }
 
@@ -375,7 +377,7 @@ class EnrollmentRepository(
             null,
             when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
                 null -> null
-                else -> DateUtils.uiDateFormat().format(date)
+                else -> DateUtils.oldUiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
@@ -404,7 +406,7 @@ class EnrollmentRepository(
             null,
             when (val date = enrollmentRepository.blockingGet()!!.incidentDate()) {
                 null -> null
-                else -> DateUtils.uiDateFormat().format(date)
+                else -> DateUtils.oldUiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,

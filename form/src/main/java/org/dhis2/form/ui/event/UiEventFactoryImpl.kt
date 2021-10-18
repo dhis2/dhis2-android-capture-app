@@ -19,13 +19,13 @@ class UiEventFactoryImpl(
                 ValueType.DATE -> RecyclerViewUiEvents.OpenCustomCalendar(
                     uid,
                     label,
-                    value?.let { DateUtils.uiDateFormat().parse(it) },
+                    value?.let { DateUtils.oldUiDateFormat().parse(it) },
                     allowFutureDates ?: true
                 )
                 ValueType.DATETIME -> RecyclerViewUiEvents.OpenCustomCalendar(
                     uid,
                     label,
-                    value?.let { DateUtils.dateTimeFormat().parse(it) },
+                    value?.let { DateUtils.databaseDateFormatNoSeconds().parse(it) },
                     allowFutureDates ?: true,
                     isDateTime = true
                 )
