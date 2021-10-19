@@ -106,8 +106,25 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 }
                 true
             }
-        ).build()
-            .show()
+        ).build().apply {
+            show()
+            if (graph.periodToDisplaySelected != null) {
+                addIconToItem(R.id.periodFilter, R.drawable.ic_calendar_chart_selected)
+            }
+            if (graph.orgUnitsSelected.isNotEmpty()) {
+                addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
+            }
+        }
+    }
+
+    fun showFilters(view: View) {
+        when {
+            graph.periodToDisplaySelected != null && graph.orgUnitsSelected.isEmpty() ->
+                showPeriodFilters(view)
+            graph.periodToDisplaySelected == null && graph.orgUnitsSelected.isNotEmpty() ->
+                showOrgUntFilters(view)
+            else -> showVisualizationOptions(view)
+        }
     }
 
     fun showPeriodFilters(view: View) {

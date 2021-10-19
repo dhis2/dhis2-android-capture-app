@@ -33,6 +33,7 @@ public class OrgUnitHolder extends FormViewHolder {
         super(binding);
         compositeDisposable = new CompositeDisposable();
         this.editText = binding.getRoot().findViewById(R.id.input_editText);
+        textView = editText;
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
 
@@ -62,7 +63,7 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     public void update(OrgUnitViewModel viewModel) {
-
+        super.update(viewModel);
         descriptionText = viewModel.description();
         label = new StringBuilder(viewModel.label());
         if (viewModel.mandatory())
@@ -92,5 +93,11 @@ public class OrgUnitHolder extends FormViewHolder {
 
     private String getOrgUnitName(String value) {
       return value;
+    }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        setBackground();
     }
 }

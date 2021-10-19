@@ -1,8 +1,5 @@
 package org.dhis2.data.forms.dataentry.tablefields.unsupported;
 
-import android.widget.Button;
-import android.widget.TextView;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.databinding.FormUnsupportedCellBinding;
@@ -10,11 +7,9 @@ import org.dhis2.databinding.FormUnsupportedCellBinding;
 
 public class UnsupportedHolder extends FormViewHolder {
 
-    private final Button button;
-
     public UnsupportedHolder(FormUnsupportedCellBinding binding) {
         super(binding);
-        button = binding.formButton;
+        textView = binding.formButton;
     }
 
     @Override
@@ -24,9 +19,17 @@ public class UnsupportedHolder extends FormViewHolder {
 
 
     public void update(UnsupportedViewModel viewModel) {
-        button.setText(R.string.unsupported_value_type);
-        button.setEnabled(false);
-        button.setActivated(false);
+        super.update(viewModel);
+        this.accessDataWrite = false;
+        textView.setText(R.string.unsupported_value_type);
+        textView.setEnabled(false);
+        textView.setActivated(false);
         descriptionText = viewModel.description();
+    }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        setBackground();
     }
 }

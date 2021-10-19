@@ -1,5 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
+import static android.content.Context.MODE_PRIVATE;
+import static android.text.TextUtils.isEmpty;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
+import static java.lang.String.valueOf;
+
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -34,6 +42,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -41,7 +50,6 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.FieldLayout;
-import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -50,17 +58,8 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
 
 import timber.log.Timber;
-
-import static android.content.Context.MODE_PRIVATE;
-import static android.text.TextUtils.isEmpty;
-import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
-import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
-import static java.lang.String.valueOf;
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
 public class CustomTextView extends FieldLayout {
@@ -137,7 +136,7 @@ public class CustomTextView extends FieldLayout {
             }
             if (!hasFocus && valueHasChanged()) {
                 sendAction();
-                validateRegex();
+                validateRegex(getEditText().getText().toString());
             }
         });
 
@@ -413,12 +412,7 @@ public class CustomTextView extends FieldLayout {
         setDescription(viewModel.description());
         setText(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());
-        if (!viewModel.isSearchMode() && viewModel.value() != null &&
-                !Objects.requireNonNull(viewModel.value()).isEmpty() &&
-                viewModel.fieldMask() != null &&
-                !Objects.requireNonNull(viewModel.value()).matches(Objects.requireNonNull(viewModel.fieldMask()))) {
-            setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
-        }
+        validateRegex(viewModel.value());
         setEditable(viewModel.editable());
         setRenderingType(viewModel.fieldRendering(), viewModel.uid());
         setOnLongActionListener();
@@ -467,13 +461,29 @@ public class CustomTextView extends FieldLayout {
         getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
     }
 
-    private void validateRegex() {
-        if (!viewModel.isSearchMode())
-            if (viewModel.fieldMask() != null && !getEditText().getText().toString().isEmpty() &&
-                    !getEditText().getText().toString().matches(Objects.requireNonNull(viewModel.fieldMask())))
-                setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
-            else
-                setWarning(viewModel.warning(), viewModel.error());
+    private void validateRegex(String valueToValidate) {
+        if (!viewModel.isSearchMode()) {
+            viewModel.validateWithFieldMask(valueToValidate, new PatternValidator() {
+                @Override
+                public void onSuccess() {
+                    setWarning(viewModel.warning(), viewModel.error());
+                }
+
+                @Override
+                public void onError() {
+                    setWarning(getContext().getString(R.string.wrong_pattern), "");
+                }
+
+                @Override
+                public void onPatternError() {
+                    setWarning(
+                            String.format(
+                                    getContext().getString(R.string.pattern_error),
+                                    viewModel.fieldMask()),
+                            "");
+                }
+            });
+        }
     }
 
     private Boolean valueHasChanged() {

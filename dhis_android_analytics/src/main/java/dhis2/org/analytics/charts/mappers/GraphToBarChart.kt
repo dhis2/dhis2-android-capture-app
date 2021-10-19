@@ -18,7 +18,7 @@ class GraphToBarChart {
             description.isEnabled = false
             isDragEnabled = true
             isScaleXEnabled = true
-            isScaleYEnabled = false
+            isScaleYEnabled = true
             setPinchZoom(false)
 
             xAxis.apply {

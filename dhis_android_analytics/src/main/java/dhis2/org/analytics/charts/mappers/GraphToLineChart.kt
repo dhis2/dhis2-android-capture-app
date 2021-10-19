@@ -9,14 +9,14 @@ import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val DEFAULT_VALUE = 0f
-const val VALUE_PADDING = 50f
+const val VALUE_PADDING = 5f
 const val DEFAULT_GRID_LINE_LENGTH = 10f
 const val DEFAULT_GRID_SPACE_LENGTH = 10f
 const val DEFAULT_GRIP_PHASE = 0f
 const val DEFAULT_ANIM_TIME = 1500
 const val DEFAULT_GRANULARITY = 1f
 const val X_AXIS_DEFAULT_MIN = -1f
-const val DEFAULT_CHART_HEIGHT = 500
+const val DEFAULT_CHART_HEIGHT = 850
 
 class GraphToLineChart {
     fun map(context: Context, graph: Graph): LineChart {
@@ -25,7 +25,7 @@ class GraphToLineChart {
             description.isEnabled = false
             isDragEnabled = true
             isScaleXEnabled = true
-            isScaleYEnabled = false
+            isScaleYEnabled = true
             setPinchZoom(false)
 
             xAxis.apply {

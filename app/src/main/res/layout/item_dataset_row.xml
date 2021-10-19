@@ -13,9 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/default_column_header_height"
-        android:padding="5dp"
-        tools:background="@color/black_de0">
+        android:minHeight="@dimen/default_column_header_height">
 
 
         <TextView
@@ -26,12 +24,13 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:minHeight="@dimen/default_column_header_height"
-            android:textColor="@color/table_view_default_text_color"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="12sp"
+            android:padding="@dimen/padding_5"
             tools:text="DATA ELEMENT TEXT\nTWO \nLINES" />
 
         <ImageView
@@ -45,6 +44,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
-            app:tint="@color/table_view_default_text_color" />
+            android:layout_marginEnd="@dimen/padding_5"
+            app:tint="@color/colorPrimaryLight" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/colorPrimaryLight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

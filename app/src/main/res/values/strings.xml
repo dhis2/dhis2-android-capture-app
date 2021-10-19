@@ -604,6 +604,7 @@
     <!--endregion-->
 
     <string name="wrong_pattern">It is not a correct format.</string>
+    <string name="pattern_error">The configured pattern %s is wrong.</string>
     <string name="fingerprint_title">Fingerprint</string>
     <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
     <string name="security_title">Security</string>

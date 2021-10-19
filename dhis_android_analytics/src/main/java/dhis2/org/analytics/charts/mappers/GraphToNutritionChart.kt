@@ -19,7 +19,7 @@ class GraphToNutritionChart {
             description.isEnabled = false
             isDragEnabled = true
             isScaleXEnabled = true
-            isScaleYEnabled = false
+            isScaleYEnabled = true
             setPinchZoom(false)
             setMaxVisibleValueCount(totalValues + maxValuesThreadhold)
             xAxis.apply {
