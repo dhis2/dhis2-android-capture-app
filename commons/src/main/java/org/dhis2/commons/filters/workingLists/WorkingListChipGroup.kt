@@ -29,12 +29,14 @@ class WorkingListChipGroup @JvmOverloads constructor(
                     this,
                     false
                 ).apply {
-                    tag = workingListItem.uid
                     workingList = workingListItem
                     chip.id = workingListItem.id()
                     chip.isChecked = workingListItem.isSelected()
-                    chip.setOnCheckedChangeListener { _, _ ->
-                        scrollContainer?.scrollToPosition(tag as String)
+                    chip.tag = workingListItem.uid
+                    chip.setOnCheckedChangeListener { _, checked ->
+                        if(checked) {
+                            scrollContainer?.scrollToPosition(chip.tag as String)
+                        }
                     }
                 }.root
             )
