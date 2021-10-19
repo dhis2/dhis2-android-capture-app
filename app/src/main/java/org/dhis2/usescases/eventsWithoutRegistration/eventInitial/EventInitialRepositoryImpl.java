@@ -174,7 +174,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (!scheduleEvents.isEmpty())
             scheduleDate = scheduleEvents.get(0).dueDate();
 
-       if (activeDate != null) {
+        if (activeDate != null) {
             return activeDate;
         } else if (scheduleDate != null) {
             return scheduleDate;
@@ -264,6 +264,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         });
     }
 
+    @Override
+    public Observable<Boolean> referTeiToOrgUnit(String teiUid, String orgUnitUid) {
+        return Observable.fromCallable(() -> {
+            if (teiUid == null && orgUnitUid == null) return true;
+            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid)
+                    .setOrganisationUnitUid(orgUnitUid);
+            return true;
+        });
+    }
+
     @NonNull
     @Override
     public Observable<ProgramStage> programStage(String programUid) {
@@ -316,9 +326,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
-        if(eventUid!= null){
+        if (eventUid != null) {
             return d2.eventModule().eventService().isEditable(eventUid).toObservable();
-        }else{
+        } else {
             return programAccess(programUid);
         }
     }
@@ -578,7 +588,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public int getMinDaysFromStartByProgramStage(String programStageUid) {
         ProgramStage programStage = d2.programModule().programStages().uid(programStageUid).blockingGet();
-        if (programStage.minDaysFromStart() != null){
+        if (programStage.minDaysFromStart() != null) {
             return programStage.minDaysFromStart();
         }
         return 0;

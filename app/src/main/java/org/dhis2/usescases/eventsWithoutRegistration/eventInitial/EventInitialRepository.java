@@ -55,6 +55,8 @@ public interface EventInitialRepository {
                                      @NonNull String orgUnitUid, @NonNull String catComboUid,
                                      @NonNull String catOptionUid, @NonNull Geometry coordinates);
 
+    Observable<Boolean> referTeiToOrgUnit(String teiUid, String orgUnitUid);
+
     @NonNull
     Observable<ProgramStage> programStage(String programUid);
 

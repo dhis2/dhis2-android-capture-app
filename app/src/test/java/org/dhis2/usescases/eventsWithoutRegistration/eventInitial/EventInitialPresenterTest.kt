@@ -271,6 +271,9 @@ class EventInitialPresenterTest {
                 geometry
             )
         ) doReturn Observable.just("event")
+        whenever(
+            eventInitialRepository.referTeiToOrgUnit(any(), any())
+        )doReturn Observable.just(true)
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
@@ -281,7 +284,7 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should how error when there is an problem creating a scheduled event permanent`() {
+    fun `Should show error when there is an problem creating a scheduled event permanent`() {
         val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
@@ -299,6 +302,10 @@ class EventInitialPresenterTest {
                 geometry
             )
         ) doReturn Observable.error(Throwable("Error"))
+
+        whenever(
+            eventInitialRepository.referTeiToOrgUnit(any(), any())
+        )doReturn Observable.just(true)
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(

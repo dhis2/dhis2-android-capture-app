@@ -44,6 +44,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Pair;
+import kotlin.jvm.functions.Function2;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
@@ -286,14 +287,16 @@ public class EventInitialPresenter {
         if (program != null) {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
             compositeDisposable.add(
-                    eventInitialRepository.scheduleEvent(enrollmentUid, null, program.uid(), programStageModel, dueDate, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, geometry)
-                            .subscribeOn(schedulerProvider.io())
+                    Observable.zip(
+                            eventInitialRepository.scheduleEvent(enrollmentUid, null, program.uid(), programStageModel, dueDate, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, geometry),
+                            eventInitialRepository.referTeiToOrgUnit(trackedEntityInstanceUid, orgUnitUid),
+                            (eventUid, referalResult) -> eventUid
+                    ).subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     view::onEventCreated,
                                     t -> view.renderError(t.getMessage())
-                            )
-            );
+                            ));
         }
     }
 
@@ -409,7 +412,7 @@ public class EventInitialPresenter {
         return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
     }
 
-    public int getMinDateByProgramStage(String programStageUid){
+    public int getMinDateByProgramStage(String programStageUid) {
         return eventInitialRepository.getMinDaysFromStartByProgramStage(programStageUid);
     }
 
