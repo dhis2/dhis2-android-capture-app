@@ -62,6 +62,7 @@
     <style name="RedTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryRed</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
@@ -85,6 +86,7 @@
     <style name="GreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryGreen</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
@@ -104,6 +106,7 @@
     <style name="OrangeTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryOrange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLightOrange</item>
@@ -137,6 +140,7 @@
 
     <style name="colorPrimary_e57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_e57</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_e57</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_e57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_e57</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -148,6 +152,7 @@
 
     <style name="colorPrimary_d32" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_d32</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_d32</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_d32</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_d32</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -159,6 +164,7 @@
 
     <style name="colorPrimary_f06" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f06</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f06</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f06</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f06</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -170,6 +176,7 @@
 
     <style name="colorPrimary_c21" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_c21</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_c21</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_c21</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_c21</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -181,6 +188,7 @@
 
     <style name="colorPrimary_880" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_880</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_880</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_880</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_880</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -192,6 +200,7 @@
 
     <style name="colorPrimary_f50" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f50</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f50</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f50</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f50</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -223,6 +232,7 @@
 
     <style name="colorPrimary_ba6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_ba6</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_ba6</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ba6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ba6</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -236,6 +246,7 @@
         <item name="colorPrimary">@color/colorPrimary_8e2</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_8e2</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8e2</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_8e2</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -245,6 +256,7 @@
 
     <style name="colorPrimary_aa0" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_aa0</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_aa0</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_aa0</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_aa0</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -256,6 +268,7 @@
 
     <style name="colorPrimary_7e5" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_7e5</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_7e5</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7e5</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7e5</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -267,6 +280,7 @@
 
     <style name="colorPrimary_452" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_452</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_452</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_452</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_452</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -278,6 +292,7 @@
 
     <style name="colorPrimary_7c4" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_7c4</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_7c4</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7c4</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7c4</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -289,6 +304,7 @@
 
     <style name="colorPrimary_620" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_620</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_620</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_620</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_620</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -314,6 +330,7 @@
 
     <style name="colorPrimary_798" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_798</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_798</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_798</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_798</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -325,6 +342,7 @@
 
     <style name="colorPrimary_394" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_394</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_394</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_394</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_394</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -336,6 +354,7 @@
 
     <style name="colorPrimary_304" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_304</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_304</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_304</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_304</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -361,6 +380,7 @@
 
     <style name="colorPrimary_64b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_64b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_64b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_64b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_64b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -372,6 +392,7 @@
 
     <style name="colorPrimary_197" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_197</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_197</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_197</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_197</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -383,6 +404,7 @@
 
     <style name="colorPrimary_028" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_028</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_028</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_028</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_028</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -407,6 +429,7 @@
 
     <style name="colorPrimary_00b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_00b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_00b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -432,6 +455,7 @@
 
     <style name="colorPrimary_00a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_00a</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_00a</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -443,6 +467,7 @@
 
     <style name="colorPrimary_008" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_008</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_008</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_008</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_008</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -454,6 +479,7 @@
 
     <style name="colorPrimary_006" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_006</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_006</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_006</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_006</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -492,6 +518,7 @@
 
     <style name="colorPrimary_0069" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_0069</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_0069</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_0069</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_0069</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -531,6 +558,7 @@
 
     <style name="colorPrimary_66b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_66b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_66b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_66b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_66b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -542,6 +570,7 @@
 
     <style name="colorPrimary_2e7" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_2e7</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_2e7</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_2e7</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_2e7</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -553,6 +582,7 @@
 
     <style name="colorPrimary_60a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_60a</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_60a</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_60a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_60a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -589,6 +619,7 @@
 
     <style name="colorPrimary_689" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_689</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_689</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_689</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_689</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -600,6 +631,7 @@
 
     <style name="colorPrimary_336" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_336</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_336</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_336</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_336</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -651,6 +683,7 @@
 
     <style name="colorPrimary_9e9" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_9e9</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_9e9</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_9e9</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_9e9</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -662,6 +695,7 @@
 
     <style name="colorPrimary_827" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_827</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_827</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_827</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_827</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -700,6 +734,7 @@
 
     <style name="colorPrimary_f57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f57</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f57</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f57</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -765,6 +800,7 @@
 
     <style name="colorPrimary_bca" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_bca</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_bca</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_bca</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_bca</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -776,6 +812,7 @@
 
     <style name="colorPrimary_8d6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_8d6</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_8d6</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_8d6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8d6</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -787,6 +824,7 @@
 
     <style name="colorPrimary_4e3" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_4e3</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_4e3</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_4e3</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_4e3</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -825,6 +863,7 @@
 
     <style name="colorPrimary_757" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_757</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_757</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_757</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_757</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -836,6 +875,7 @@
 
     <style name="colorPrimary_424" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_424</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_424</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_424</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_424</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -847,6 +887,7 @@
 
     <style name="colorPrimary_cfd" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_cfd</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_cfd</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_cfd</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_cfd</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -858,6 +899,7 @@
 
     <style name="colorPrimary_b0b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_b0b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_b0b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_b0b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_b0b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -869,6 +911,7 @@
 
     <style name="colorPrimary_607" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_607</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_607</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -880,6 +923,7 @@
 
     <style name="colorPrimary_374" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_607</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_607</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
