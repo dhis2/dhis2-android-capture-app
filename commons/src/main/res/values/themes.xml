@@ -213,7 +213,6 @@
     <style name="colorPrimary_e1b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_elb</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark_elb</item>
-        <item name="colorOnPrimary">#502858</item>
         <item name="primaryBgTextColor">@color/primaryBgTextColor_elb</item>
         <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_elb</item>
         <item name="whiteBgTextColor">@color/whiteBgTextColor_elb</item>
