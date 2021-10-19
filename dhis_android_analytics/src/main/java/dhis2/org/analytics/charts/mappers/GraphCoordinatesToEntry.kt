@@ -7,7 +7,8 @@ import dhis2.org.analytics.charts.data.GraphPoint
 class GraphCoordinatesToEntry {
     fun map(
         graph: Graph,
-        coordinates: List<GraphPoint>
+        coordinates: List<GraphPoint>,
+        serieLabel: String
     ): List<Entry> {
         return coordinates.mapIndexed { index, graphPoint ->
 
@@ -20,7 +21,8 @@ class GraphCoordinatesToEntry {
 
             Entry(
                 entryIndex,
-                graphPoint.fieldValue
+                graphPoint.fieldValue,
+                serieLabel
             )
         }
     }

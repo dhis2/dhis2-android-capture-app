@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.mappers
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.RadarDataSet
 
 const val default_value_text_size = 10f
@@ -25,6 +26,14 @@ fun BarData.withGlobalStyle(): BarData {
         if (dataSetCount> 1) {
             barWidth = default_bar_group_space / dataSetCount.toFloat()
         }
+    }
+}
+
+fun PieData.withGlobalStyle(valueFormatter: PercentageValueFormatter, textColor: Int): PieData {
+    return this.apply {
+        setValueFormatter(valueFormatter)
+        setValueTextSize(11f)
+        setValueTextColor(textColor)
     }
 }
 

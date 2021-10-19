@@ -9,7 +9,8 @@ class GraphCoordinatesToBarEntry {
         graph: Graph,
         coordinates: List<GraphPoint>,
         serieIndex: Int,
-        seriesCount: Int
+        seriesCount: Int,
+        serieLabel: String
     ): List<BarEntry> {
         return coordinates.mapIndexed { index, graphPoint ->
             BarEntry(
@@ -17,7 +18,8 @@ class GraphCoordinatesToBarEntry {
                     seriesCount > 1 -> groupedBarIndex(index, serieIndex, seriesCount)
                     else -> singleBarIndex(index, graphPoint, graph)
                 },
-                graphPoint.fieldValue
+                graphPoint.fieldValue,
+                serieLabel
             )
         }
     }
