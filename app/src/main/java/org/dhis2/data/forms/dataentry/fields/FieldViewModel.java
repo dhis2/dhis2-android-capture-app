@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
@@ -16,6 +17,10 @@ import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -366,5 +371,31 @@ public abstract class FieldViewModel implements FieldUiModel {
     public String getDisplayName() {
         //Do not use until migrate to FieldUIModel
         return null;
+    }
+
+    public boolean fieldMaskIsCorrect() {
+        try {
+            if (fieldMask() != null) {
+                Pattern.compile(fieldMask());
+            }
+            return true;
+        } catch (Exception e) {
+            Timber.d(e);
+            return false;
+        }
+    }
+
+    public void validateWithFieldMask(String valueToEvaluate, PatternValidator validator) {
+        if (valueToEvaluate == null || valueToEvaluate.isEmpty() || fieldMask() == null) {
+            validator.onSuccess();
+        } else if (fieldMaskIsCorrect()) {
+            if (valueToEvaluate.matches(fieldMask())) {
+                validator.onSuccess();
+            } else {
+                validator.onError();
+            }
+        } else {
+            validator.onPatternError();
+        }
     }
 }
