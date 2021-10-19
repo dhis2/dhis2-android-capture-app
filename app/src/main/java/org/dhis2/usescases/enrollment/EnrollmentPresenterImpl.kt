@@ -477,6 +477,12 @@ class EnrollmentPresenterImpl(
                 view.showErrorFieldsMessage(errorFields.values.toList())
                 false
             }
+            warningFields.isNotEmpty() -> {
+                showErrors = Pair(true, showErrors.second)
+                fieldsFlowable.onNext(true)
+                view.showWarningFieldsMessage(warningFields.values.toList())
+                false
+            }
             else -> {
                 analyticsHelper.setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 true

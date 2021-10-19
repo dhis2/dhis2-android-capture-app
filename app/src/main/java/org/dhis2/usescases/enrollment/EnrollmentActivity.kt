@@ -271,17 +271,27 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         emptyMandatoryFields: MutableMap<String, String>
     ) {
         AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_complete))
+            .setTitle(getString(R.string.unable_to_save))
             .setMessage(getString(R.string.missing_mandatory_fields))
-            .setEmptyMandatoryFields(emptyMandatoryFields.keys.toList())
+            .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun showErrorFieldsMessage(errorFields: List<String>) {
         AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_complete))
+            .setTitle(getString(R.string.unable_to_save))
             .setMessage(getString(R.string.field_errors))
-            .setEmptyMandatoryFields(errorFields)
+            .setFieldsToDisplay(errorFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    override fun showWarningFieldsMessage(warningFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.warnings_in_form))
+            .setMessage(getString(R.string.what_to_do))
+            .setFieldsToDisplay(warningFields)
+            .setNegativeButton(getString(R.string.review))
+            .setPositiveButton(getString(R.string.save)) { presenter.finish(mode) }
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
