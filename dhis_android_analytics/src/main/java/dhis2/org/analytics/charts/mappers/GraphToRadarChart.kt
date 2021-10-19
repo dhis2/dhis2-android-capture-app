@@ -4,10 +4,10 @@ import android.content.Context
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.components.XAxis
-import dhis2.org.analytics.charts.charts.SizeRadarChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.charts.SizeRadarChart
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 
