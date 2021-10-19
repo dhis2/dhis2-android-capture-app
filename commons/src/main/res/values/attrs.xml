@@ -7,8 +7,10 @@
     <attr name="colorPrimary" format="color" />
     <attr name="colorPrimaryLight" format="color" />
     <attr name="colorAccentAlpha" format="color" />
-    <attr name="coloredBgTextColor" format="color" />
-
+    <attr name="primaryBgTextColor" format="color" />
+    <attr name="primaryLightBgTextColor" format="color" />
+    <attr name="primaryDarkBgTextColor" format="color" />
+    <attr name="whiteBgTextColor" format="color" />
     <attr name="button_selector" format="reference" />
     <attr name="selector_button_round_20" format="reference" />
     <attr name="selector_button_round_7" format="reference" />
