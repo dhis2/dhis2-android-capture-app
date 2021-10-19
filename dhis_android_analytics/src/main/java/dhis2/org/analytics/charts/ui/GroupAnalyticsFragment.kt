@@ -18,6 +18,7 @@ import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
@@ -220,6 +221,7 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
+                            binding.analyticChipGroupContainer.scrollToPosition(chip.tag as String)
                             binding.progressLayout.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
