@@ -172,12 +172,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     name() ?: uid()
                 )
             } else {
-                data()?.let {
-                    RuleActionAssign.create(content(), it, field)
-                } ?: RuleActionUnsupported.create(
-                    "ASSIGN RULE IS MISSING DATA",
-                    name() ?: uid()
-                )
+                RuleActionAssign.create(content(), data() ?: "", field)
             }
         }
         ProgramRuleActionType.SHOWWARNING -> RuleActionShowWarning.create(content(), data(), field)
