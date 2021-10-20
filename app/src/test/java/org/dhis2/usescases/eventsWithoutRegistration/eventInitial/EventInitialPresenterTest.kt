@@ -272,12 +272,12 @@ class EventInitialPresenterTest {
             )
         ) doReturn Observable.just("event")
         whenever(
-            eventInitialRepository.referTeiToOrgUnit(any(), any())
+            eventInitialRepository.referTeiToOrgUnit("teiUid", "orgUnit")
         )doReturn Observable.just(true)
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", null, "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
         )
 
         verify(view).onEventCreated("event")
@@ -304,12 +304,12 @@ class EventInitialPresenterTest {
         ) doReturn Observable.error(Throwable("Error"))
 
         whenever(
-            eventInitialRepository.referTeiToOrgUnit(any(), any())
+            eventInitialRepository.referTeiToOrgUnit("teiUid", "orgUnit")
         )doReturn Observable.just(true)
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", null, "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
         )
 
         verify(view).renderError("Error")
