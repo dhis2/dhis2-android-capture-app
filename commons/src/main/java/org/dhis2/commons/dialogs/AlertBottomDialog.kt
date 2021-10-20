@@ -35,11 +35,11 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
         this.negativeOnclick = onClick
     }
 
-    fun setEmptyMandatoryFields(emptyMandatoryFields: List<String>) = apply {
-        this.emptyMandatoryFields = emptyMandatoryFields
+    fun setFieldsToDisplay(fieldsToDisplay: List<String>) = apply {
+        this.fieldsToDisplay = fieldsToDisplay
     }
 
-    private var emptyMandatoryFields: List<String>? = null
+    private var fieldsToDisplay: List<String>? = null
     private var showNegative: Boolean = false
     private var positiveText: String? = null
     private var positiveOnclick: (() -> Unit)? = null
@@ -95,7 +95,7 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             }
         }
 
-        emptyMandatoryFields?.let { showMissingMandatoryFields() }
+        fieldsToDisplay?.let { showFields() }
 
         return binding.root
     }
@@ -116,9 +116,9 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
         }
     }
 
-    private fun showMissingMandatoryFields() {
+    private fun showFields() {
         var fields = ""
-        emptyMandatoryFields?.forEach { field -> fields += "$field\n" }
+        fieldsToDisplay?.forEach { field -> fields += "$field\n" }
 
         binding.emptyMandatoryFields.apply {
             visibility = View.VISIBLE
