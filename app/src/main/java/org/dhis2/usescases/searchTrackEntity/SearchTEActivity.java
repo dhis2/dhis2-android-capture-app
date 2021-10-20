@@ -136,6 +136,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
     private boolean backDropActive;
+    private boolean fromAnalytics = false;
     /**
      * 0 - it is general filter
      * 1 - it is search filter
@@ -233,6 +234,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.mainLayout.setVisibility(View.VISIBLE);
                     binding.mainComponent.setVisibility(GONE);
                     showMap(false);
+                    showSearchAndFilterButtons();
                     break;
                 case R.id.navigation_map_view:
                     if (backDropActive) {
@@ -241,14 +243,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.mainLayout.setVisibility(View.VISIBLE);
                     binding.mainComponent.setVisibility(GONE);
                     showMap(true);
+                    showSearchAndFilterButtons();
                     break;
                 case R.id.navigation_analytics:
+                    fromAnalytics = true;
                     if (backDropActive) {
                         closeFilters();
                     }
                     binding.mainComponent.setVisibility(View.VISIBLE);
                     binding.mainLayout.setVisibility(GONE);
                     showAnalytics();
+                    hideSearchAndFilterButtons();
                     break;
             }
             return true;
@@ -555,6 +560,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                 HelpManager.TutorialName.TEI_SEARCH,
                                 null),
                 500);
+    }
+
+    private void hideSearchAndFilterButtons() {
+        binding.searchFilter.setVisibility(GONE);
+        binding.searchFilterGeneral.setVisibility(GONE);
+        binding.filterCounterSearch.setVisibility(GONE);
+        binding.filterCounter.setVisibility(GONE);
+        if (OrientationUtilsKt.isLandscape()) {
+            binding.enrollmentButton.setVisibility(GONE);
+        }
+    }
+
+    private void showSearchAndFilterButtons() {
+        if (fromAnalytics) {
+            fromAnalytics = false;
+            binding.searchFilter.setVisibility(View.VISIBLE);
+            binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+            binding.filterCounterSearch.setVisibility(View.VISIBLE);
+            binding.filterCounter.setVisibility(View.VISIBLE);
+            if (OrientationUtilsKt.isLandscape()) {
+                binding.enrollmentButton.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     //endregion
