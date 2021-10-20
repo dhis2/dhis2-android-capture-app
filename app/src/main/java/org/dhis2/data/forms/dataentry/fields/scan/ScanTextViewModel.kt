@@ -10,6 +10,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.dhis2.utils.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
 @AutoValue
@@ -35,7 +36,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            style: FormUiModelStyle
+            style: FormUiModelStyle,
+            valueType: ValueType
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -56,7 +58,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 style,
                 hint,
                 false,
-                null,
+                valueType,
                 fieldRendering,
                 isBackgroundTransparent,
                 isSearchMode

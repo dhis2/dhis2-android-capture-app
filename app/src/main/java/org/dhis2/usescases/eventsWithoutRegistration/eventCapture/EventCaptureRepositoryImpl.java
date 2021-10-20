@@ -262,7 +262,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         String error = checkConflicts(de.uid(), dataValue);
 
-                        if (valueType != ValueType.ORGANISATION_UNIT && !valueType.isDate()) {
+                        boolean isOrgUnit = valueType == ValueType.ORGANISATION_UNIT;
+                        boolean isDate = valueType != null && valueType.isDate();
+                        if (!isOrgUnit && !isDate) {
                             dataValue = friendlyValue;
                         }
 
@@ -520,7 +522,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     rawValue = value;
                     friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
-                    if (!(fieldViewModel instanceof OrgUnitViewModel) && !fieldViewModel.getValueType().isDate()) {
+                    boolean isOrgUnit = fieldViewModel instanceof OrgUnitViewModel;
+                    boolean isDate = fieldViewModel.getValueType() != null && fieldViewModel.getValueType().isDate();
+                    if (!isOrgUnit && !isDate) {
                         value = friendlyValue;
                     }
                 }

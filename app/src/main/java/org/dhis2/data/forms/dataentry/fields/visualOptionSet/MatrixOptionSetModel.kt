@@ -6,6 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 
 const val labelTag = "tag"
@@ -33,7 +34,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             description: String?,
             style: ObjectStyle,
             options: List<Option>,
-            numberOfColumns: Int
+            numberOfColumns: Int,
+            valueType: ValueType
         ): MatrixOptionSetModel {
             return AutoValue_MatrixOptionSetModel(
                 fieldUid,
@@ -54,7 +56,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 null,
                 null,
                 false,
-                null,
+                valueType,
                 options,
                 numberOfColumns,
                 emptyList()
