@@ -229,7 +229,7 @@ class MainActivity :
     }
 
     override fun goToHome() {
-        mainNavigator.openPrograms()
+        mainNavigator.openHome(binding.navigationBar)
     }
 
     override fun changeFragment(id: Int) {
@@ -323,7 +323,7 @@ class MainActivity :
                 presenter.logOut()
             }
             R.id.menu_home -> {
-                mainNavigator.openPrograms()
+                mainNavigator.openHome(binding.navigationBar)
             }
         }
 

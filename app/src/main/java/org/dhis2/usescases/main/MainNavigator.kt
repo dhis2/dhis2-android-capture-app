@@ -14,6 +14,7 @@ import org.dhis2.usescases.jira.JiraFragment
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
+import org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
 
 class MainNavigator(
     private val fragmentManager: FragmentManager,
@@ -52,6 +53,13 @@ class MainNavigator(
 
     fun currentNavigationViewItemId(screenName: String): Int =
         MainScreen.valueOf(screenName).navViewId
+
+    fun openHome(navigationBottomBar: NavigationBottomBar) {
+        when {
+            isVisualizations() -> navigationBottomBar.selectedItemId = R.id.navigation_analytics
+            else -> navigationBottomBar.selectedItemId = R.id.navigation_programs
+        }
+    }
 
     fun openPrograms() {
         val programFragment = ProgramFragment()
