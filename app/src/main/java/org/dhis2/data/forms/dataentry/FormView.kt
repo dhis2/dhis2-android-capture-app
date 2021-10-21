@@ -186,6 +186,15 @@ class FormView constructor(
             }
         )
 
+        viewModel.queryData.observe(
+            viewLifecycleOwner,
+            { rowAction ->
+                if (needToForceUpdate) {
+                    onItemChangeListener?.let { it(rowAction) }
+                }
+            }
+        )
+
         viewModel.items.observe(
             viewLifecycleOwner,
             { items ->
@@ -465,10 +474,6 @@ class FormView constructor(
         mapContent.launch(
             MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value)
         )
-        /*startActivityForResult(
-            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
-            Constants.RQ_MAP_LOCATION_VIEW
-        )*/
     }
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {

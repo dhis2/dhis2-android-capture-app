@@ -307,7 +307,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
-                    android:paddingBottom="56dp"
+                    android:paddingBottom="148dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -444,7 +444,6 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:focusableInTouchMode="true"
-                android:onClick="@{(view)->presenter.onFabClick(needsSearch)}"
                 app:backgroundTint="@color/white"
                 app:elevation="12dp"
                 app:fabSize="normal"
@@ -454,6 +453,5 @@
                 app:searchOrAdd='@{ needsSearch }'
                 app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </RelativeLayout>
 </layout>
