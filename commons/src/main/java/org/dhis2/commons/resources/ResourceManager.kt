@@ -42,6 +42,8 @@ class ResourceManager(val context: Context) {
         } ?: -1
     }
 
+    fun parseD2Error(throwable: Throwable) = D2ErrorUtils(context).getErrorMessage(throwable)
+
     fun defaultEventLabel(): String = context.getString(R.string.events)
     fun defaultDataSetLabel(): String = context.getString(R.string.data_sets)
     fun defaultTeiLabel(): String = context.getString(R.string.tei)
