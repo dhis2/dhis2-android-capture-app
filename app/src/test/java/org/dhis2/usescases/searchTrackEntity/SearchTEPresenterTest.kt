@@ -152,7 +152,7 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should set fabIcon to search if displayFrontPageList and queryData is empty`() {
+    fun `Should display min attribute warning for displayFrontPageList and empty queryData`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -163,9 +163,7 @@ class SearchTEPresenterTest {
 
         presenter.onFabClick(true)
 
-        verify(view).clearData()
-        verify(view).updateFiltersSearch(0)
-        verify(view).setFabIcon(true)
+        verify(view).displayMinNumberOfAttributesMessage(1)
     }
 
     @Test
