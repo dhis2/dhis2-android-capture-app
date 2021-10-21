@@ -34,11 +34,17 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
 
     val appVersionName = BuildConfig.VERSION_NAME
     var serverVersionName: String? = null
+    var isLogged = false
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-        if (response.code() >= 400) {
+
+        if (response.code() >= 400 && !isLogged) {
+            isLogged = D2Manager.getD2().userModule().blockingIsLogged()
+        }
+
+        if (response.code() >= 400 && isLogged) {
             analyticHelper.setEvent(
                 API_CALL,
                 HashMap<String, String>().apply {
