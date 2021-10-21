@@ -34,7 +34,7 @@ class FormViewModel(
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
-    val loading = MutableLiveData<Boolean>()
+    val loading = MutableLiveData(true)
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
