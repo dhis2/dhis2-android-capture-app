@@ -472,7 +472,8 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            emptyList()
+            emptyList(),
+            ValueType.TEXT
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
@@ -518,7 +519,8 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            emptyList()
+            emptyList(),
+            ValueType.TEXT
         )
 
         whenever(
@@ -577,7 +579,8 @@ class RulesUtilsProviderImplTest {
             false,
             "",
             ValueTypeDeviceRendering.builder().build(),
-            emptyList()
+            emptyList(),
+            ValueType.TEXT
         )
 
         ruleUtils.applyRuleEffects(
