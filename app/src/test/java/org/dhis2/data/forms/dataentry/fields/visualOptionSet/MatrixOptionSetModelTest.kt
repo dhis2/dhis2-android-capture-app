@@ -13,8 +13,8 @@ class MatrixOptionSetModelTest {
             optionsToHide,
             emptyList(),
             emptyList()
-        ) as MatrixOptionSetModel
-        assert(matrixOptionSetModel.optionsToHide() == optionsToHide)
+        )
+        assert(matrixOptionSetModel.optionsToShow().map { it.uid() } == listOf("3", "4", "5"))
     }
 
     @Test
@@ -24,8 +24,8 @@ class MatrixOptionSetModelTest {
             emptyList(),
             optionsInGroupToHide,
             emptyList()
-        ) as MatrixOptionSetModel
-        assert(matrixOptionSetModel.optionsToHide() == optionsInGroupToHide)
+        )
+        assert(matrixOptionSetModel.optionsToShow().map { it.uid() } == listOf("3", "4", "5"))
     }
 
     @Test
@@ -35,8 +35,8 @@ class MatrixOptionSetModelTest {
             emptyList(),
             emptyList(),
             optionsInGroupToShow
-        ) as MatrixOptionSetModel
-        assert(matrixOptionSetModel.optionsToHide() == listOf("3", "4", "5"))
+        )
+        assert(matrixOptionSetModel.optionsToShow().map { it.uid() } == listOf("1", "2"))
     }
 
     @Test
@@ -49,8 +49,8 @@ class MatrixOptionSetModelTest {
             optionsToHide,
             optionsInGroupToHide,
             optionsInGroupToShow
-        ) as MatrixOptionSetModel
-        assert(matrixOptionSetModel.optionsToHide() == listOf("1", "2", "4"))
+        )
+        assert(matrixOptionSetModel.optionsToShow().map { it.uid() } == listOf("3", "5"))
     }
 
     private fun matrixOptionSetModel() = MatrixOptionSetModel.create(

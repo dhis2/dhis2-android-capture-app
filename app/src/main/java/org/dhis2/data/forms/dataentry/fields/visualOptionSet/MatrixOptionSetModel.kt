@@ -261,7 +261,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         optionsToHide: List<String>,
         optionsInGroupsToHide: List<String>,
         optionsInGroupsToShow: List<String>
-    ): FieldViewModel {
+    ): MatrixOptionSetModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
             layoutId(),
