@@ -7,13 +7,17 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
+        <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
         <item name="button_selector">@drawable/button_selector</item>
         <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
         <item name="selector_button_round_7">@drawable/selector_button_round_7</item>
@@ -58,6 +62,7 @@
     <style name="RedTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryRed</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
@@ -81,6 +86,7 @@
     <style name="GreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryGreen</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
@@ -100,6 +106,7 @@
     <style name="OrangeTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="whiteBgTextColor">@color/colorPrimaryOrange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLightOrange</item>
@@ -121,6 +128,9 @@
         <item name="colorPrimary">@color/colorPrimary_Pink</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_Pink</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_Pink</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_Pink</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_Pink</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_Pink</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -130,6 +140,7 @@
 
     <style name="colorPrimary_e57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_e57</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_e57</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_e57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_e57</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -141,6 +152,7 @@
 
     <style name="colorPrimary_d32" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_d32</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_d32</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_d32</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_d32</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -152,6 +164,7 @@
 
     <style name="colorPrimary_f06" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f06</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f06</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f06</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f06</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -163,6 +176,7 @@
 
     <style name="colorPrimary_c21" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_c21</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_c21</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_c21</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_c21</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -174,6 +188,7 @@
 
     <style name="colorPrimary_880" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_880</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_880</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_880</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_880</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -185,6 +200,7 @@
 
     <style name="colorPrimary_f50" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f50</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f50</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f50</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f50</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -196,14 +212,11 @@
 
     <style name="colorPrimary_e1b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_elb</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark_elb</item>
-        <item name="colorOnPrimary">#502858</item>
-        <item name="colorSecondary">@color/colorAccent</item>
-        <item name="colorSecondaryVariant">#BEBEBE</item>
-        <item name="colorOnSecondary">@color/black_de0</item>
-
         <item name="colorPrimaryDark">@color/colorPrimaryDark_elb</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_elb</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_elb</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_elb</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_elb</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -213,6 +226,7 @@
 
     <style name="colorPrimary_ba6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_ba6</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_ba6</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ba6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ba6</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -226,6 +240,7 @@
         <item name="colorPrimary">@color/colorPrimary_8e2</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_8e2</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8e2</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_8e2</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -235,6 +250,7 @@
 
     <style name="colorPrimary_aa0" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_aa0</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_aa0</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_aa0</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_aa0</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -246,6 +262,7 @@
 
     <style name="colorPrimary_7e5" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_7e5</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_7e5</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7e5</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7e5</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -257,6 +274,7 @@
 
     <style name="colorPrimary_452" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_452</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_452</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_452</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_452</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -268,6 +286,7 @@
 
     <style name="colorPrimary_7c4" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_7c4</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_7c4</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_7c4</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_7c4</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -279,6 +298,7 @@
 
     <style name="colorPrimary_620" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_620</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_620</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_620</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_620</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -292,6 +312,9 @@
         <item name="colorPrimary">@color/colorPrimary_c5c</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_c5c</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_c5c</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_c5c</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_c5c</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_c5c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -301,6 +324,7 @@
 
     <style name="colorPrimary_798" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_798</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_798</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_798</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_798</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -312,6 +336,7 @@
 
     <style name="colorPrimary_394" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_394</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_394</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_394</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_394</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -323,6 +348,7 @@
 
     <style name="colorPrimary_304" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_304</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_304</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_304</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_304</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -336,6 +362,9 @@
         <item name="colorPrimary">@color/colorPrimary_e3f</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_e3f</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_e3f</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_e3f</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_e3f</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_e3f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -345,6 +374,7 @@
 
     <style name="colorPrimary_64b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_64b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_64b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_64b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_64b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -356,6 +386,7 @@
 
     <style name="colorPrimary_197" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_197</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_197</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_197</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_197</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -367,6 +398,7 @@
 
     <style name="colorPrimary_028" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_028</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_028</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_028</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_028</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -380,6 +412,8 @@
         <item name="colorPrimary">@color/colorPrimary_40c</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_40c</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_40c</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_40c</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_40c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -389,6 +423,7 @@
 
     <style name="colorPrimary_00b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_00b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_00b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -402,6 +437,9 @@
         <item name="colorPrimary">@color/colorPrimary_80d</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_80d</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_80d</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_80d</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_80d</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_80d</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -411,6 +449,7 @@
 
     <style name="colorPrimary_00a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_00a</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_00a</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -422,6 +461,7 @@
 
     <style name="colorPrimary_008" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_008</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_008</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_008</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_008</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -433,6 +473,7 @@
 
     <style name="colorPrimary_006" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_006</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_006</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_006</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_006</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -446,6 +487,9 @@
         <item name="colorPrimary">@color/colorPrimary_e0f</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_e0f</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_e0f</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_e0f</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_e0f</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_e0f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -457,6 +501,8 @@
         <item name="colorPrimary">@color/colorPrimary_80c</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_80c</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_80c</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_80c</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_80c</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -466,6 +512,7 @@
 
     <style name="colorPrimary_0069" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_0069</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_0069</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_0069</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_0069</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -479,6 +526,9 @@
         <item name="colorPrimary">@color/colorPrimary_64f</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_64f</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_64f</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_64f</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_64f</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_64f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -490,6 +540,9 @@
         <item name="colorPrimary">@color/colorPrimary_c8e</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_c8e</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_c8e</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_c8e</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_c8e</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_c8e</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -499,6 +552,7 @@
 
     <style name="colorPrimary_66b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_66b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_66b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_66b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_66b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -510,6 +564,7 @@
 
     <style name="colorPrimary_2e7" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_2e7</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_2e7</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_2e7</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_2e7</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -521,6 +576,7 @@
 
     <style name="colorPrimary_60a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_60a</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_60a</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_60a</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_60a</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -534,6 +590,7 @@
         <item name="colorPrimary">@color/colorPrimary_00e</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_00e</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_00e</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_00e</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -545,6 +602,8 @@
         <item name="colorPrimary">@color/colorPrimary_aed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_aed</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_aed</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_aed</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_aed</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -554,6 +613,7 @@
 
     <style name="colorPrimary_689" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_689</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_689</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_689</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_689</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -565,6 +625,7 @@
 
     <style name="colorPrimary_336" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_336</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_336</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_336</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_336</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -578,6 +639,9 @@
         <item name="colorPrimary">@color/colorPrimary_76f</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_76f</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_76f</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_76f</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_76f</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_76f</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -589,6 +653,8 @@
         <item name="colorPrimary">@color/colorPrimary_64d</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_64d</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_64d</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_64d</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_64d</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -600,6 +666,8 @@
         <item name="colorPrimary">@color/colorPrimary_cdd</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_cdd</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_cdd</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_cdd</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_cdd</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -609,6 +677,7 @@
 
     <style name="colorPrimary_9e9" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_9e9</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_9e9</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_9e9</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_9e9</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -620,6 +689,7 @@
 
     <style name="colorPrimary_827" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_827</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_827</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_827</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_827</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -633,6 +703,9 @@
         <item name="colorPrimary">@color/colorPrimary_fff</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_fff</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_fff</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_fff</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_fff</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_fff</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -644,6 +717,8 @@
         <item name="colorPrimary">@color/colorPrimary_fbc</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_fbc</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_fbc</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_fbc</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_fbc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -653,6 +728,7 @@
 
     <style name="colorPrimary_f57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_f57</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_f57</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_f57</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_f57</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -666,6 +742,9 @@
         <item name="colorPrimary">@color/colorPrimary_ffff</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ffff</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ffff</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_ffff</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffff</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_ffff</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -677,6 +756,8 @@
         <item name="colorPrimary">@color/colorPrimary_ffc</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ffc</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ffc</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffc</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_ffc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -688,6 +769,9 @@
         <item name="colorPrimary">@color/colorPrimary_ffcc</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ffcc</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ffcc</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_ffcc</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffcc</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_ffcc</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -699,6 +783,8 @@
         <item name="colorPrimary">@color/colorPrimary_ffa</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_ffa</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_ffa</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_ffa</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_ffa</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -708,6 +794,7 @@
 
     <style name="colorPrimary_bca" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_bca</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_bca</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_bca</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_bca</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -719,6 +806,7 @@
 
     <style name="colorPrimary_8d6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_8d6</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_8d6</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_8d6</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_8d6</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -730,6 +818,7 @@
 
     <style name="colorPrimary_4e3" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_4e3</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_4e3</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_4e3</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_4e3</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -743,6 +832,9 @@
         <item name="colorPrimary">@color/colorPrimary_faf</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_faf</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_faf</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor_faf</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_faf</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_faf</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -754,6 +846,8 @@
         <item name="colorPrimary">@color/colorPrimary_bdb</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_bdb</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_bdb</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor_bdb</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor_bdb</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
@@ -763,6 +857,7 @@
 
     <style name="colorPrimary_757" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_757</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_757</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_757</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_757</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -774,6 +869,7 @@
 
     <style name="colorPrimary_424" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_424</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_424</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_424</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_424</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -785,6 +881,7 @@
 
     <style name="colorPrimary_cfd" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_cfd</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_cfd</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_cfd</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_cfd</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -796,6 +893,7 @@
 
     <style name="colorPrimary_b0b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_b0b</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_b0b</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_b0b</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_b0b</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -807,6 +905,7 @@
 
     <style name="colorPrimary_607" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_607</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_607</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
@@ -818,6 +917,7 @@
 
     <style name="colorPrimary_374" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_607</item>
+        <item name="whiteBgTextColor">@color/colorPrimary_607</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_607</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_607</item>
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
