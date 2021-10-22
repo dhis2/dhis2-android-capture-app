@@ -107,7 +107,7 @@ Filter the Events, TEIs(based on their events) and data sets, the following peri
 - Other (Opens a date picker)
 - Anytime
 
-### Org. Unit (New 2.5) { #capture_app_generic_filter_orgunit }
+### Org. Unit (Improved 2.5) { #capture_app_generic_filter_orgunit }
 
 Allows the user to type the search or select an org unit from the tree. The filter will not be visible if the user has only one Organisation Unit configured.
 
@@ -291,14 +291,25 @@ If the TEI has a profile image, the map will display it.
 
 ![](resources/images/image103.png){ width=25%}
 
-## Calendar (New 2.5)
+## Personalized Calendar View (New 2.5)
 
 In the DHIS2 Android Capture App users can switch date selection from spinner to calendar view. In this version, the app will remember the last visualization selected by the user and use it the next time the user needs to select a date.
 
-![](resources/images/){ width=25%}
+![](resources/images/image177.png){ width=25%}
 
 ## Reason for non-editable data (New 2.5)
 
 Data can be blocked for many reasons in DHIS2, because of access restrictions or expiration among others. When an Event, TEI or Data Set are not editable the user will be able to find the reason on the "Details" section.
 
-![](resources/images/){ width=25%}
+The following list contains all possible reasons:
+
+* Event completion
+* Enrollment completion
+* Expired event
+* Closed organization unit
+* Organization unit out of capture scope
+* No access to capture data in the program or data set
+* No access to a category option in the program or data set
+
+![](resources/images/image178.png){ width=25%}
+![](resources/images/image179.png){ width=25%}
