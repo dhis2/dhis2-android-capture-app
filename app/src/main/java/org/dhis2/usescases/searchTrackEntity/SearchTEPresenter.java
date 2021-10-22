@@ -401,7 +401,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list) {
 
-        int size = list.size();
+        int size = 0;
+
+        for(SearchTeiModel searchTeiModel : list){
+            if(searchTeiModel.onlineErrorMessage == null) size++;
+        }
 
         String messageId = "";
         boolean canRegister = false;
