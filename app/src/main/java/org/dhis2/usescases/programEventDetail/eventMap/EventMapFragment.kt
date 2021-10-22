@@ -143,13 +143,16 @@ class EventMapFragment :
                             startActivity(mapNavigation.navigateToMapIntent(feature))
                         }
                     }
+                    .addMapManager(eventMapManager!!)
                     .build()
             binding.mapCarousel.setAdapter(carouselAdapter)
+            eventMapManager?.carouselAdapter = carouselAdapter
             eventMapManager?.let { binding.mapCarousel.attachToMapManager(eventMapManager!!) }
-            carouselAdapter.addItems(mapData.events)
+            carouselAdapter.setAllItems(mapData.events)
+            carouselAdapter.updateLayers(eventMapManager?.mapLayerManager?.mapLayers)
         } else {
             eventMapManager?.let {
-                (binding.mapCarousel.adapter as CarouselAdapter?)!!.setItems(mapData.events)
+                (binding.mapCarousel.adapter as CarouselAdapter?)?.setItems(mapData.events)
             }
         }
 

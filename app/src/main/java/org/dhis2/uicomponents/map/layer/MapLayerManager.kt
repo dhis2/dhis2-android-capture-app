@@ -6,7 +6,6 @@ import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.R
-import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
@@ -45,8 +44,6 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
         R.drawable.ic_map_item_5
     )
 
-    private var carouselAdapter: CarouselAdapter? = null
-
     val relationshipUsedColors =
         mutableMapOf<String, Int>()
 
@@ -61,10 +58,6 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun withMapStyle(mapStyle: MapStyle?) = apply {
         this.mapStyle = mapStyle
-    }
-
-    fun withCarousel(carouselAdapter: CarouselAdapter?) = apply {
-        this.carouselAdapter = carouselAdapter
     }
 
     fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
@@ -131,7 +124,6 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
             check -> mapLayers[sourceId]?.showLayer()
             else -> mapLayers[sourceId]?.hideLayer()
         }
-        carouselAdapter?.update(sourceId, mapLayers[sourceId], check)
     }
 
     fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
