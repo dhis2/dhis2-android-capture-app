@@ -5,7 +5,6 @@ import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
-import kotlinx.android.synthetic.main.item_carousel_tei.view.sorting_field_value
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -75,6 +74,27 @@ class RecyclerviewMatchers {
                         val holder = adapter.createViewHolder(view, type)
                         adapter.onBindViewHolder(holder, position)
                         if (!matcher.matches(holder.itemView)) return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        fun <T>allElementsWithHolderTypeHave(holderClass:Class<T>,@NonNull matcher: Matcher<View>) : Matcher<View> {
+            return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
+                override fun describeTo(description: Description) {
+                    description.appendText("all elements have: ")
+                    matcher.describeTo(description)
+                }
+                override fun matchesSafely(view: RecyclerView): Boolean {
+                    val adapter = view.adapter
+                    for (position in 0 until adapter!!.itemCount) {
+                        val type = adapter.getItemViewType(position)
+                        val holder = adapter.createViewHolder(view, type)
+                        adapter.onBindViewHolder(holder, position)
+                        if(holder.javaClass == holderClass) {
+                            if (!matcher.matches(holder.itemView)) return false
+                        }
                     }
                     return true
                 }
