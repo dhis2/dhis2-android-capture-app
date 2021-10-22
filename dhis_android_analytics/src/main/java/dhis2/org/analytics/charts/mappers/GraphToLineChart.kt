@@ -7,6 +7,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
@@ -80,6 +81,8 @@ class GraphToLineChart {
                 }
             })
             extraBottomOffset = 10f
+
+            marker = ChartMarker(context, viewPortHandler, xAxis, axisLeft)
 
             data = lineData
 
