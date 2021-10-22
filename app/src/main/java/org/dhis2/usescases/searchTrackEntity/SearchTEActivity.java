@@ -293,6 +293,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.setOnMapClickListener(this);
 
         binding.showListBtn.setOnClickListener(view -> {
+            presenter.resetSearch();
             binding.messageContainer.setVisibility(GONE);
             binding.scrollView.setVisibility(View.VISIBLE);
             binding.progressLayout.setVisibility(GONE);

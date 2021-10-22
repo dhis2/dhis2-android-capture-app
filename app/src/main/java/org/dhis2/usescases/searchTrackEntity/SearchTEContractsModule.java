@@ -144,6 +144,8 @@ public class SearchTEContractsModule {
 
         void showFilterGeneral();
 
+        void resetSearch();
+
         void clearFilterClick();
 
         void closeFilterClick();

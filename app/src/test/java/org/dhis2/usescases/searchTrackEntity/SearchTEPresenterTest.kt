@@ -379,6 +379,24 @@ class SearchTEPresenterTest {
         verify(view, times(1)).setFabIcon(any())
     }
 
+    @Test
+    fun `Should reset search when program has displayInList and a minAttributeRequired`() {
+        val program = Program.builder()
+            .uid("uid")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        presenter.setProgramForTesting(program)
+        presenter.program = program
+        presenter.queryData["uid"] = "value"
+        assertTrue(presenter.queryData.isNotEmpty())
+
+        presenter.resetSearch()
+
+        assertTrue(presenter.queryData.isEmpty())
+    }
+
     @After
     fun validate() {
         validateMockitoUsage()

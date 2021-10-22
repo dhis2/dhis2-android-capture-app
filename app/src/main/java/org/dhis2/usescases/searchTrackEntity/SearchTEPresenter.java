@@ -539,6 +539,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void resetSearch() {
+        showList = true;
+        queryData.clear();
+        listDataProcessor.onNext(new Unit());
+    }
+
+    @Override
     public void onClearClick() {
         isSearching = true;
         queryData.clear();
