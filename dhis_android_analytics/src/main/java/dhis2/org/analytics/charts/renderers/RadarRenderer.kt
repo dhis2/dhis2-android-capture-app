@@ -21,7 +21,6 @@ class RadarRenderer(
 
     override fun computeSize() {
         var longest = mXAxis.longestLabel
-//        val line = longest.split("\n").toTypedArray()
         val line = lines(longest)
         if (line.size > 1) {
             longest = line[0]
@@ -61,7 +60,7 @@ class RadarRenderer(
             Utils.drawXAxisValue(
                 c,
                 line[1],
-                x + mAxisLabelPaint.textSize,
+                x,
                 y + mAxisLabelPaint.textSize,
                 mAxisLabelPaint,
                 anchor,

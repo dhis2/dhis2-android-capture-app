@@ -36,6 +36,10 @@ class GraphToPieChart {
                 }
             })
 
+            extraTopOffset = 20f
+            extraLeftOffset = 20f
+            extraRightOffset = 20f
+
             setChartData(this, graph)
 
             layoutParams =
