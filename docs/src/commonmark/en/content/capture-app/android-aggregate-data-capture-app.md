@@ -1,6 +1,6 @@
 # Android aggregate data capture app { #capture_app_aggregate }
 
-## Overview { #capture_app_aggregate_overview  } 
+## Overview { #capture_app_aggregate_overview  }
 
 The Data Capture for DHIS2 app allows you to enter data into a DHIS2
 server with an Android device. The app downloads instances of forms

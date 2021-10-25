@@ -1,7 +1,7 @@
 # Android Tracker Capture App { #capture_app_tracker }
 
 ## Overview { #capture_app_tracker_overview }
- 
+
 The Tracker Capture Android app allows you capture, modify and list
 tracked entity instances with its enrolments and events. The Tracker
 Capture app works with multiple event-based programs in DHIS2, which
