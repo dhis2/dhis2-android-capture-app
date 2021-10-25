@@ -178,10 +178,7 @@ class MapLayerDialog(
             layerVisibility.forEach { (sourceId, visible) ->
                 mapManager.mapLayerManager.handleLayer(sourceId, visible)
             }
-
-            mapManager.carouselAdapter?.updateLayers(
-                layerVisibility.keys.toList(), mapManager.mapLayerManager.mapLayers
-            )
+            mapManager.carouselAdapter?.updateLayers(mapManager.mapLayerManager.mapLayers)
             dismiss()
         }
     }
