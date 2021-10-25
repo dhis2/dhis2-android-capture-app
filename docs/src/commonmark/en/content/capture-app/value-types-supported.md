@@ -39,4 +39,3 @@ Any issues around using a particular feature with Android are highlighted with a
 | Coordinate | Enables manual entry of geographical coordinates (doesn't enable automatic capture of coordinates) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png)| |
 | URL | Enables manual entry of a URL. | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) |![](resources/icons/icon-complete.png) | |
 | Image | Enables upload of images. | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-incomplete.png) | |
-

@@ -19,7 +19,7 @@ The app has been extensively tested with the demo servers, and during Beta testi
 
 It is strongly advised to carry out a comprehensive testing of the app in your own server before piloting it.
 
-## How to migrate to Android Capture App { #capture_app_recommendations_migration }
+## How to migrate to Android Capture App { #capture_app_recommendations_migration } 
 
 
 If you are ready for deploying the new Android App in the field and your users are already using Event Capture or Tracker Capture, you should follow these steps:

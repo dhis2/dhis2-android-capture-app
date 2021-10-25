@@ -7,7 +7,7 @@ The Android Settings Web App allows admins to configure synchronization paramete
 
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
-> **Warning**
+> **Warning** 
 >
 > This version comes with improvements and disruptive features, so previous versions are no longer supported, the settings stored there will be removed.
 

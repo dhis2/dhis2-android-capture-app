@@ -2,7 +2,6 @@
 
 ## Login { #capture_app_generic_login }
 
-
 There are two ways to access the application:
 
 1. Manual: The user must type the corresponding URL of the server to be used and enter the username and password.

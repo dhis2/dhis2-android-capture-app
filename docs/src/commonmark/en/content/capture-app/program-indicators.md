@@ -80,3 +80,4 @@ Any issues around using a particular feature with Android are highlighted with a
 |Organisation Unit Count<br/>organisationunit_count|.|![](resources/icons/icon-na.png)|||
 
 [Documentation Reference](https://docs.dhis2.org/master/en/user/html/configure_program_indicator.html%23program_indicator_functions_variables_operators&sa=D&ust=1557433016643000)
+ 

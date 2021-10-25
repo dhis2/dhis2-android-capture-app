@@ -1,4 +1,4 @@
-# Programs { #capture_app_programs }
+# Programs { #capture_app_programs } 
 
 ## Programs in Android { #capture_app_programs_android }
 

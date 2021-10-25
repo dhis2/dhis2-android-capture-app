@@ -348,7 +348,7 @@ For example we can detect here an error of two strings in an action without the 
 </programRuleAction>
 </programRuleActions>
 </programRule>
-```
+``` 
 
 #### How to fix it?
 

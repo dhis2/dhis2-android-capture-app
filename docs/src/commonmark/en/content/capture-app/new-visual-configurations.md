@@ -1,6 +1,5 @@
 # Visual configurations { #capture_app_visual }
 
-
 ## Meta data sync error { #capture_app_visual_sync_error }
 
 

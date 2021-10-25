@@ -92,7 +92,7 @@ The *Complete* button on the second bar will mark the event as complete.
 The Validate button will trigger a check for validity of the
 information you have entered based on the validation rules which have
 been set up for the program.
-
+ 
 The first form field contains a date selector and indicators the time of
 when the event took place. The label is customizable and will vary from
 system to system. The *Enter coordinates* field, which will be displayed
