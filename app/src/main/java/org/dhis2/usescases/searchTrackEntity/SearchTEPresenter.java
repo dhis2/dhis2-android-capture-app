@@ -296,7 +296,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             trackedEntityType,
                                             queryData
                                     ),
-                                    NetworkUtils.isOnline(view.getContext())));
+                                    canSearchOnline()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
@@ -313,7 +313,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                 trackedEntityType,
                                                 queryData
                                         ),
-                                        NetworkUtils.isOnline(view.getContext())))
+                                        canSearchOnline()))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
                                     Map<String, FeatureCollection> coordinateFields = new HashMap<>();
@@ -401,7 +401,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list) {
 
-        int size = list.size();
+        int size = 0;
+
+        for(SearchTeiModel searchTeiModel : list){
+            if(searchTeiModel.onlineErrorMessage == null) size++;
+        }
 
         String messageId = "";
         boolean canRegister = false;
@@ -563,9 +567,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onFabClick(boolean needsSearch) {
-        if (!needsSearch)
+        if (!needsSearch) {
             onEnrollClick();
-        else {
+        } else if (!selectedProgramMinNumberOfAttributesCheck()) {
+            view.displayMinNumberOfAttributesMessage(selectedProgram.minAttributesRequiredToSearch());
+        } else {
             isSearching = true;
             analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             view.clearData();
@@ -1026,5 +1032,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    @Override
+    public boolean selectedProgramMinNumberOfAttributesCheck() {
+        if (selectedProgram == null) {
+            return true;
+        } else {
+            int minAttributes = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
+            return minAttributes <= queryData.size();
+        }
+    }
+
+    private boolean canSearchOnline() {
+        return NetworkUtils.isOnline(view.getContext()) && selectedProgramMinNumberOfAttributesCheck();
     }
 }

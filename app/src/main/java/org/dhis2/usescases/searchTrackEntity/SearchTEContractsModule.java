@@ -96,6 +96,8 @@ public class SearchTEContractsModule {
         void hideFilter();
 
         void updateNavigationBar();
+
+        void displayMinNumberOfAttributesMessage(int minAttributes);
     }
 
     public interface Presenter {
@@ -187,5 +189,7 @@ public class SearchTEContractsModule {
         void populateList(List<FieldUiModel> list);
 
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
+
+        boolean selectedProgramMinNumberOfAttributesCheck();
     }
 }

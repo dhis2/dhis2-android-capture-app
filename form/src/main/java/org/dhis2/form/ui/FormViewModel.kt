@@ -45,6 +45,9 @@ class FormViewModel(
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
 
+    private val _queryData = MutableLiveData<RowAction>()
+    val queryData = _queryData
+
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
 
     init {
@@ -85,6 +88,7 @@ class FormViewModel(
             }
             ValueStoreResult.TEXT_CHANGING -> {
                 Timber.d("${result.first.id} is changing its value")
+                _queryData.value = result.first
             }
         }
     }

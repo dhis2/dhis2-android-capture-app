@@ -64,7 +64,6 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
-import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -148,7 +147,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ObservableBoolean showClear = new ObservableBoolean(false);
 
     private SearchTeiLiveAdapter liveAdapter;
-    private RelationshipLiveAdapter relationshipLiveAdapter;
     private TeiMapManager teiMapManager;
     public boolean initSearchNeeded = true;
     private ObjectAnimator animation = null;
@@ -177,7 +175,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     fieldViewModelFactory.fieldProcessor().onNext(action);
                     return Unit.INSTANCE;
                 })
-                .activityForResultListener(()->{
+                .activityForResultListener(() -> {
                     initSearchNeeded = false;
                     return Unit.INSTANCE;
                 })
@@ -203,14 +201,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainLayout, ExtensionsKt.getDp(16));
         ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
-        if (fromRelationship) {
-            relationshipLiveAdapter = new RelationshipLiveAdapter(presenter, getSupportFragmentManager());
-            binding.scrollView.setAdapter(relationshipLiveAdapter);
-        } else {
-            liveAdapter = new SearchTeiLiveAdapter(presenter, getSupportFragmentManager());
-            binding.scrollView.setAdapter(liveAdapter);
-        }
-
+        liveAdapter = new SearchTeiLiveAdapter(fromRelationship, presenter, getSupportFragmentManager());
+        binding.scrollView.setAdapter(liveAdapter);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();
@@ -222,7 +214,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 hideKeyboard();
                 v.clearFocus();
-                v.performClick();
+                presenter.onFabClick(needsSearch.get());
             }
             return true;
         });
@@ -624,7 +616,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (data.val0().isEmpty()) {
                     binding.messageContainer.setVisibility(GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
-                    relationshipLiveAdapter.submitList(searchTeiModels);
+                    liveAdapter.submitList(searchTeiModels);
                     binding.progressLayout.setVisibility(GONE);
                 } else {
                     binding.progressLayout.setVisibility(GONE);
@@ -684,11 +676,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     programSelected = (Program) adapterView.getItemAtPosition(pos - 1);
                 }
                 if (!programSelected.uid().equals(initialProgram)) {
-                    if (!fromRelationship) {
-                        liveAdapter.clearList();
-                    } else {
-                        relationshipLiveAdapter.clearList();
-                    }
+                    liveAdapter.clearList();
                 }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
@@ -723,6 +711,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void updateNavigationBar() {
         binding.navigationBar.pageConfiguration(pageConfigurator);
+    }
+
+    @Override
+    public void displayMinNumberOfAttributesMessage(int minAttributes) {
+        displayMessage(String.format(getString(R.string.search_min_num_attr), minAttributes));
     }
 
     private void updateMapVisibility(Program newProgram) {
@@ -889,9 +882,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 !backDropActive || general
         );
         setCarouselVisibility(backDropActive);
-        if(backDropActive) {
+        if (backDropActive) {
             binding.navigationBar.hide();
-        }else{
+        } else {
             binding.navigationBar.show();
         }
 
