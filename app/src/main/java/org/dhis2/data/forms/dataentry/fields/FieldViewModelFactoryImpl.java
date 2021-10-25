@@ -161,7 +161,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            style
+                            style,
+                            type
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return OptionSetViewModel.create(
@@ -178,7 +179,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             true,
                             ProgramStageSectionRenderingType.LISTING.toString(),
                             fieldRendering,
-                            options
+                            options,
+                            type
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -195,7 +197,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             objectStyle,
                             !searchMode,
                             ProgramStageSectionRenderingType.LISTING.toString(),
-                            legendValue
+                            legendValue,
+                            type
                     );
                 }
             } else {
@@ -211,7 +214,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         description,
                         objectStyle,
                         options,
-                        renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1
+                        renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1,
+                        type
                 );
             }
         }
@@ -261,7 +265,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            style
+                            style,
+                            type
                     );
                 } else {
                     return EditTextViewModel.create(
@@ -383,7 +388,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         section,
                         editable,
                         description,
-                        objectStyle
+                        objectStyle,
+                        type
                 );
             default:
                 return EditTextViewModel.create(

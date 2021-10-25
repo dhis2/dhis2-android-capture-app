@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.visualOptionSet
 
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Test
 
@@ -71,6 +72,7 @@ class MatrixOptionSetModelTest {
             Option.builder().uid("4").build(),
             Option.builder().uid("5").build()
         ),
-        5
+        5,
+        ValueType.TEXT
     )
 }
