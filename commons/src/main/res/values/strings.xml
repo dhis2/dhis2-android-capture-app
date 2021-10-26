@@ -30,6 +30,7 @@
     <string name="data_sets">Data sets</string>
     <string name="tei">TEI</string>
     <string name="info">Info</string>
+    <string name="done">Done</string>
 
     <!-- Filters -->
     <string name="filters_active">Filters applying</string>

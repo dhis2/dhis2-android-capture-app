@@ -14,20 +14,9 @@
             android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/menu"
-                style="@style/ActionIcon"
-                android:layout_marginStart="4dp"
-                app:tint="?colorPrimary"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:srcCompat="@drawable/ic_ou_tree_arrow_back"
-                tools:ignore="ContentDescription" />
-
             <EditText
                 android:singleLine="true"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginEnd="8dp"
                 android:drawablePadding="8dp"
                 android:padding="8dp"
@@ -35,7 +24,7 @@
                 android:id="@+id/search"
                 app:drawableStartCompat="@drawable/ic_ou_tree_search"
                 app:layout_constraintEnd_toStartOf="@id/clearAll"
-                app:layout_constraintStart_toEndOf="@id/menu"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:hint="@string/search"
@@ -63,9 +52,38 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/buttonPanel"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             tools:listitem="@layout/item_ou_tree" />
+
+        <LinearLayout
+            android:id="@+id/buttonPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orgUnitRecycler">
+
+
+            <Button
+                android:id="@+id/clearBtn"
+                style="@style/TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:textColor="@color/text_black_333"
+                android:textSize="12sp" />
+
+
+            <Button
+                android:id="@+id/acceptBtn"
+                style="@style/TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/done"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

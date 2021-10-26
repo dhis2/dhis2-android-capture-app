@@ -73,7 +73,7 @@ class OUTreeFragment private constructor() :
         savedInstanceState: Bundle?
     ): View {
         return OuTreeFragmentBinding.inflate(inflater, container, false).apply {
-            menu.setOnClickListener {
+            acceptBtn.setOnClickListener {
                 exitOuSelection()
             }
             search.addTextChangedListener(object : TextWatcher {
@@ -101,6 +101,10 @@ class OUTreeFragment private constructor() :
             clearAll.setOnClickListener {
                 selectedOrgUnits.clear()
                 presenter.rebuildCurrentList()
+            }
+            clearBtn.setOnClickListener {
+                selectedOrgUnits.clear()
+                dismiss()
             }
             orgUnitRecycler.adapter = orgUnitSelectorAdapter
         }.root
