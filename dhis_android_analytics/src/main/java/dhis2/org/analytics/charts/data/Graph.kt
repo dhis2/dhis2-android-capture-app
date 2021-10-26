@@ -17,7 +17,7 @@ data class Graph(
     val periodToDisplaySelected: RelativePeriod? = null,
     val visualizationUid: String? = null,
     val hasError: Boolean = false,
-    val errorMessage:String? = null
+    val errorMessage: String? = null
 ) {
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
