@@ -11,15 +11,18 @@ import dhis2.org.analytics.charts.charts.SizeRadarChart
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 
+const val DEFAULT_RADAR_CHART_HEIGHT = 1000
+
 class GraphToRadarChart {
     fun map(context: Context, graph: Graph): RadarChart {
         val radarData = GraphToRadarData().map(graph)
         return SizeRadarChart(context).apply {
-            isRotationEnabled = false
+            isRotationEnabled = true
             description.isEnabled = false
 
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
+                textSize = 8f
                 setDrawGridLines(false)
                 setDrawLabels(true)
                 setCenterAxisLabels(true)
@@ -40,10 +43,16 @@ class GraphToRadarChart {
                     invalidate()
                 }
             })
+
+            extraTopOffset = 5f
+            extraLeftOffset = 5f
+            extraRightOffset = 5f
             data = radarData
 
-            layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                DEFAULT_RADAR_CHART_HEIGHT
+            )
         }
     }
 }

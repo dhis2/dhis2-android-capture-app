@@ -22,7 +22,7 @@ class GraphToRadarData {
                 val isHighlighted = serieToHighlight == null || dataSet.label == serieToHighlight
                 val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
                 dataSet.color = serieColor
-                dataSet.setDrawValues(isHighlighted)
+                dataSet.setDrawValues(dataSet.label == serieToHighlight)
                 addDataSet(dataSet)
             }
         }
