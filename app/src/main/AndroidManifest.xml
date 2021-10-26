@@ -157,6 +157,7 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
+        <activity android:name=".usescases.development.ProgramRulesValidationActivity" />
     </application>
 
 </manifest>
