@@ -20,6 +20,8 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
 
     abstract fun optionsToHide(): List<String>
 
+    abstract fun optionsInGroupsToShow(): List<String>
+
     companion object {
         @JvmStatic
         fun create(
@@ -59,6 +61,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
                 valueType,
                 options,
                 numberOfColumns,
+                emptyList(),
                 emptyList()
             )
         }
@@ -87,6 +90,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -114,6 +118,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -141,6 +146,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -168,6 +174,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -195,6 +202,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -222,6 +230,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
+            emptyList<String>(),
             emptyList<String>()
         )
     }
@@ -254,18 +263,7 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
         optionsToHide: List<String>,
         optionsInGroupsToHide: List<String>,
         optionsInGroupsToShow: List<String>
-    ): FieldViewModel {
-        val options = optionsToHide.union(optionsInGroupsToHide).toMutableList()
-            .apply {
-                if (optionsInGroupsToShow.isNotEmpty()) {
-                    addAll(
-                        options().map { it.uid() }
-                            .subtract(optionsInGroupsToShow)
-                            .filter { !contains(it) }
-                    )
-                }
-            }
-
+    ): MatrixOptionSetModel {
         return AutoValue_MatrixOptionSetModel(
             uid(),
             layoutId(),
@@ -288,13 +286,18 @@ abstract class MatrixOptionSetModel : FieldViewModel() {
             valueType(),
             options(),
             numberOfColumns(),
-            options
+            optionsToHide.union(optionsInGroupsToHide).toMutableList(),
+            optionsInGroupsToShow
         )
     }
 
     fun optionsToShow(): List<Option> {
         return options().filter { option ->
-            !optionsToHide().contains(option.uid())
+            if (optionsInGroupsToShow().isEmpty()) {
+                !optionsToHide().contains(option.uid())
+            } else {
+                optionsInGroupsToShow().contains(option.uid())
+            }
         }
     }
 
