@@ -72,7 +72,8 @@ class VisualizationToGraph(
     fun addErrorGraph(
         visualization: Visualization,
         selectedRelativePeriod: RelativePeriod?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
+        errorMessage: String
     ): Graph {
         return Graph(
             title = visualization.displayName() ?: "",
@@ -85,7 +86,8 @@ class VisualizationToGraph(
             visualizationUid = visualization.uid(),
             periodToDisplaySelected = selectedRelativePeriod,
             orgUnitsSelected = selectedOrgUnits ?: emptyList(),
-            hasError = true
+            hasError = true,
+            errorMessage = errorMessage
         )
     }
 

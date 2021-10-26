@@ -144,7 +144,7 @@
             android:paddingHorizontal="16dp"
             android:paddingStart="52dp"
             android:paddingEnd="52dp"
-            android:text="@string/visualization_error"
+            android:text="@{chartModel.graph.errorMessage}"
             android:textColor="@color/textSecondary"
             android:textSize="17sp"
             android:visibility="@{chartModel.showError() ? View.VISIBLE : View.GONE}"

@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
@@ -25,7 +26,8 @@ class ChartsRepositoryImpl(
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph
+    private val programIndicatorToGraph: ProgramIndicatorToGraph,
+    private val analyticsResources: AnalyticResources
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -66,14 +68,14 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.dataSet()?.get(dataSetUid)?.find {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+            ?.dataSet()?.get(dataSetUid)?.filter {
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
         return graphList
     }
@@ -86,14 +88,14 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.program()?.get(programUid)?.find {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+            ?.program()?.get(programUid)?.filter {
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
 
         return graphList
     }
@@ -105,14 +107,19 @@ class ChartsRepositoryImpl(
             .blockingGet()
 
         visualizationSettings
-            ?.home()?.find {
-            if (groupUid != null) {
-                it.id() == groupUid
-            } else {
-                true
+            ?.home()?.filter {
+                if (groupUid != null) {
+                    it.id() == groupUid
+                } else {
+                    true
+                }
             }
-        }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(
+                    visualizationGroup,
+                    graphList
+                )
+            }
 
         return graphList
     }
@@ -131,7 +138,7 @@ class ChartsRepositoryImpl(
             val selectedOrgUnits = visualizationOrgUnits(visualizationUid)
             val selectedOrgUnitType = visualizationOrgUnitsType(visualizationUid)
 
-            val gridAnalyticsResponse = d2.analyticsModule()
+            d2.analyticsModule()
                 .visualizations()
                 .withVisualization(visualizationUid)
                 .run {
@@ -163,24 +170,29 @@ class ChartsRepositoryImpl(
                     }
                 }
                 .blockingEvaluate()
-                .getOrNull()
-
-            gridAnalyticsResponse?.let {
-                visualizationToGraph.mapToGraph(
-                    visualization,
-                    gridAnalyticsResponse,
-                    selectedRelativePeriod?.firstOrNull(),
-                    selectedOrgUnits
-                ).let {
-                    graphList.add(it)
-                }
-            } ?: graphList.add(
-                visualizationToGraph.addErrorGraph(
-                    visualization,
-                    selectedRelativePeriod?.firstOrNull(),
-                    selectedOrgUnits
+                .fold(
+                    { gridAnalyticsResponse ->
+                        graphList.add(
+                            visualizationToGraph.mapToGraph(
+                                visualization,
+                                gridAnalyticsResponse,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits
+                            )
+                        )
+                    },
+                    { analyticException ->
+                        analyticException.printStackTrace()
+                        graphList.add(
+                            visualizationToGraph.addErrorGraph(
+                                visualization,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits,
+                                analyticsResources.analyticsExceptionMessage(analyticException)
+                            )
+                        )
+                    }
                 )
-            )
         }
     }
 
@@ -188,33 +200,33 @@ class ChartsRepositoryImpl(
         return d2.settingModule().analyticsSetting().teis()
             .byProgram().eq(enrollment.program())
             .blockingGet()?.let { analyticsSettings ->
-            analyticsTeiSettingsToGraph.map(
-                enrollment.trackedEntityInstance()!!,
-                analyticsSettings,
-                { analyticsSettingsUid ->
-                    visualizationPeriod(analyticsSettingsUid)
-                },
-                { analyticsSettingsUid ->
-                    visualizationOrgUnits(analyticsSettingsUid)
-                },
-                { dataElementUid ->
-                    d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
-                        .displayFormName() ?: dataElementUid
-                },
-                { indicatorUid ->
-                    d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
-                        .displayName() ?: indicatorUid
-                },
-                { nutritionGenderData ->
-                    val genderValue =
-                        d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                            nutritionGenderData.attributeUid,
-                            enrollment.trackedEntityInstance()
-                        ).blockingGet()
-                    nutritionGenderData.isFemale(genderValue?.value())
-                }
-            )
-        } ?: emptyList()
+                analyticsTeiSettingsToGraph.map(
+                    enrollment.trackedEntityInstance()!!,
+                    analyticsSettings,
+                    { analyticsSettingsUid ->
+                        visualizationPeriod(analyticsSettingsUid)
+                    },
+                    { analyticsSettingsUid ->
+                        visualizationOrgUnits(analyticsSettingsUid)
+                    },
+                    { dataElementUid ->
+                        d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
+                            .displayFormName() ?: dataElementUid
+                    },
+                    { indicatorUid ->
+                        d2.programModule().programIndicators().uid(indicatorUid).blockingGet()
+                            .displayName() ?: indicatorUid
+                    },
+                    { nutritionGenderData ->
+                        val genderValue =
+                            d2.trackedEntityModule().trackedEntityAttributeValues().value(
+                                nutritionGenderData.attributeUid,
+                                enrollment.trackedEntityInstance()
+                            ).blockingGet()
+                        nutritionGenderData.isFemale(genderValue?.value())
+                    }
+                )
+            } ?: emptyList()
     }
 
     private fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> {
@@ -226,14 +238,14 @@ class ChartsRepositoryImpl(
                 val selectedRelativePeriod =
                     visualizationPeriod(
                         enrollment.trackedEntityInstance()!! +
-                            programStage.uid() +
-                            dataElement.uid()
+                                programStage.uid() +
+                                dataElement.uid()
                     )
                 val selectedOrgUnits =
                     visualizationOrgUnits(
                         enrollment.trackedEntityInstance()!! +
-                            programStage.uid() +
-                            dataElement.uid()
+                                programStage.uid() +
+                                dataElement.uid()
                     )
                 dataElementToGraph.map(
                     dataElement,
@@ -248,14 +260,14 @@ class ChartsRepositoryImpl(
                     val selectedRelativePeriod =
                         visualizationPeriod(
                             enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                programIndicator.uid()
+                                    programStage.uid() +
+                                    programIndicator.uid()
                         )
                     val selectedOrgUnits =
                         visualizationOrgUnits(
                             enrollment.trackedEntityInstance()!! +
-                                programStage.uid() +
-                                programIndicator.uid()
+                                    programStage.uid() +
+                                    programIndicator.uid()
                         )
                     programIndicatorToGraph.map(
                         programIndicator,
@@ -373,7 +385,7 @@ class ChartsRepositoryImpl(
 
     private fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
         return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_p")
-            .blockingExists()
+                .blockingExists()
         ) {
             val entry =
                 d2.dataStoreModule().localDataStore()
@@ -388,7 +400,7 @@ class ChartsRepositoryImpl(
 
     private fun visualizationOrgUnitsType(visualizationUid: String): OrgUnitFilterType? {
         return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou_type")
-            .blockingExists()
+                .blockingExists()
         ) {
             val entry =
                 d2.dataStoreModule().localDataStore()
@@ -403,7 +415,7 @@ class ChartsRepositoryImpl(
 
     private fun visualizationOrgUnits(visualizationUid: String): List<String>? {
         return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou")
-            .blockingExists()
+                .blockingExists()
         ) {
             val entry =
                 d2.dataStoreModule().localDataStore()
