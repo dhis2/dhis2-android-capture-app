@@ -2,4 +2,5 @@
 <resources>
     <dimen name="field_label_size">11sp</dimen>
     <dimen name="form_edit_text_size">12sp</dimen>
+    <dimen name="textSize_12">12sp</dimen>
 </resources>

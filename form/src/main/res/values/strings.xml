@@ -19,4 +19,9 @@
     <string name="select_time">Select time</string>
     <string name="choose_date">Choose date</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
+    <string name="date">Date</string>
+    <string name="hint_year">Years</string>
+    <string name="hint_month">Months</string>
+    <string name="hint_day">Days</string>
+    <string name="wrong_date_format">%s can\'t be parsed as a date</string>
 </resources>
