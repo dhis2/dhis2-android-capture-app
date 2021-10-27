@@ -6,7 +6,6 @@ import javax.inject.Singleton
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 
 @Module
-@Singleton
 class AnalyticsModule internal constructor() {
 
     @Provides

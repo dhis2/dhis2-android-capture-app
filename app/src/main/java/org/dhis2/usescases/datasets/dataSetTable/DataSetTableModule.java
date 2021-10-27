@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-@PerActivity
 @Module
 public class DataSetTableModule {
 

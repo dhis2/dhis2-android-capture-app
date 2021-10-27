@@ -42,7 +42,6 @@ import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
 
-@PerActivity
 @Module
 public class DataSetDetailModule {
 

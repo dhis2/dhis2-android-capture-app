@@ -33,7 +33,6 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 
-@PerFragment
 @Module
 class NotesModule(
     private val view: NotesView,

@@ -23,7 +23,6 @@ import dhis2.org.analytics.charts.Charts;
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
-@PerActivity
 @Module
 public class TeiDashboardModule {
 

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.toolbar.view.moreOptions
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySettingsProgramBinding
@@ -35,7 +34,7 @@ class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
         )
         binding.toolbar.title = getString(R.string.activity_program_settings)
         binding.programSettingsView.adapter = adapter
-        binding.toolbar.moreOptions.moreOptions.visibility = View.GONE
+        binding.toolbar.moreOptions.visibility = View.GONE
         binding.toolbar.menu.setOnClickListener { finish() }
         presenter.init()
     }

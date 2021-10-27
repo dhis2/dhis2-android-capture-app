@@ -3,7 +3,7 @@ ext {
             ndk     : "21.4.7075529",
             sdk     : 30,
             tools   : "30.0.3",
-            minSdk  : 19,
+            minSdk  : 21,
             vCode: 107,
             vName: "2.5"
     ]
@@ -40,7 +40,7 @@ ext {
             lottie                    : "3.4.0",
 
             //Dependency injection
-            dagger                    : "2.14.1",
+            dagger                    : "2.39.1",
 
             //RXJava
             rxjava                    : "2.1.0",

@@ -29,7 +29,7 @@ class OUTreePresenter(
                     repository.orgUnits().toFlowable()
                 }.map { orgUnits ->
                     orgUnits.filter { orgUnit ->
-                        orgUnit.level() == orgUnits.minBy { it.level()!! }?.level()
+                        orgUnit.level() == orgUnits.minByOrNull { it.level()!! }?.level()
                     }
                 }.map { organisationUnits ->
                     val nodes = ArrayList<TreeNode>()

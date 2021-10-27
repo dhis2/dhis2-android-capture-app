@@ -23,7 +23,6 @@ import dagger.Provides;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-@PerFragment
 @Module
 public class TEIDataModule {
 
