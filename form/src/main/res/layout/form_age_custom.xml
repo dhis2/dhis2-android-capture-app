@@ -7,10 +7,6 @@
 
         <import type="android.view.View" />
 
-        <import type="org.dhis2.commons.resources.ColorUtils" />
-
-        <import type="org.dhis2.commons.resources.ColorUtils.ColorType" />
-
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
@@ -31,7 +27,8 @@
             android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -116,7 +113,6 @@
                         android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_calendar])}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
-                        app:onFocusChangeAgeView="@{item}"
                         app:parsingErrorText="@{parsingErrorMessage}"
                         app:setInitialValueDate="@{item.value}"
                         tools:text="1987-06-26" />

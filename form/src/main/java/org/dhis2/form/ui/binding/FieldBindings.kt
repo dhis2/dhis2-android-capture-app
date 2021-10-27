@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.binding
 
 import android.content.res.ColorStateList
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -9,6 +10,7 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.KeyboardActionType
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
 
@@ -83,6 +85,15 @@ fun TextInputLayout.setInputLayoutStyle(style: FormUiModelStyle?) {
     }
 }
 
+@BindingAdapter("warning", "error")
+fun TextView.setWarningOrError(warning: String?, error: String?) {
+    if (warning != null) {
+        this.text = warning
+    } else if (error != null) {
+        this.text = error
+    }
+}
+
 @BindingAdapter("inputWarning", "inputError")
 fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
     when {
@@ -96,5 +107,16 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
             this.error = warning
         }
         else -> this.error = null
+    }
+}
+
+@BindingAdapter("setImeOption")
+fun setImeOption(editText: EditText, type: KeyboardActionType?) {
+    if (type != null) {
+        when (type) {
+            KeyboardActionType.NEXT -> editText.imeOptions = EditorInfo.IME_ACTION_NEXT
+            KeyboardActionType.DONE -> editText.imeOptions = EditorInfo.IME_ACTION_DONE
+            KeyboardActionType.ENTER -> editText.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
+        }
     }
 }

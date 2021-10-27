@@ -25,7 +25,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Calendar
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
@@ -43,7 +42,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
-import org.dhis2.form.ui.binding.negativeOrZero
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
@@ -59,6 +57,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView constructor(
     formRepository: FormRepository,
@@ -530,6 +529,10 @@ class FormView constructor(
 
     fun processItems(items: List<FieldUiModel>?) {
         viewModel.processCalculatedItems(items)
+    }
+
+    private fun negativeOrZero(value: String): Int {
+        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
     class Builder {
