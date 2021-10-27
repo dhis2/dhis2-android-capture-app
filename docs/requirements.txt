@@ -7,7 +7,7 @@ html5lib==1.0.1
 idna==2.8
 Markdown==3.2.1
 markdown-captions==2
-mkdocs==1.1.0
+mkdocs==1.2.3
 mkdocs-material==4.6.3
 mkdocs-minify-plugin==0.2.1
 pdfrw==0.4
