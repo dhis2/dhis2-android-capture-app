@@ -1,75 +1,5 @@
 # Visual configurations { #capture_app_visual }
 
-##  Local Analytics (New 2.5)
-
-The android app can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
-
-To configure an analytic in the Android Settings WebApp, follow the steps below:
-
-* Select Home, Program or Data set from the Analytics menu
-* Click on the  "Add Visualization" button
-* Search by typing the name of the visualization and select it by clicking on it
-* Add an alternative title, otherwise, the app will display the name of the visualization
-
-![](resources/images/capture-app-image162.png){ width=25%}
-![](resources/images/capture-app-image163.png){ width=25%}
-![](resources/images/capture-app-image164.png){ width=25%}
-
-Analytics are created and configured using the web tools, however, the data aggregation happens offline using only data stored in the device.  
-
-![](resources/images/capture-app-image165.png){ width=25%}
-![](resources/images/capture-app-image166.png){ width=25%}
-![](resources/images/capture-app-image167.png){ width=25%}
-
-### Analytics Filter and Types
-
-For each visualization object, the user will be able to filter in the app by:
-
-* Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
-* OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
-
-![](resources/images/capture-app-image168.png){ width=25%}
-![](resources/images/capture-app-image169.png){ width=25%}
-
-A reset button will be displayed if a filter is applied. Select Reset to display the default visualization.
-
-![](resources/images/capture-app-image170.png){ width=25%}
-
-Users can also change The anlytics type between chart, table or single value.
-
-![](resources/images/capture-app-image166.png){ width=25%}
-![](resources/images/capture-app-image171.png){ width=25%}
-
-### Groups
-
-All of these visualization can be displayed by group. To configure the group follow the steps below:
-
-1. Open the Android Settings App
-2. Click to Add a new visualization in the Analytics Menu (Home, Program or Data set)
-3. Select a visualization
-4. Mark the "Use a group visualization" checkbox
-5. Create or select a created group
-6. Save the visualization
-
-The group will be displayed as a button in the top bar of the Analytics screen.
-
-![](resources/images/capture-app-image172.png){ width=25%}
-![](resources/images/capture-app-image173.png){ width=25%}
-
-### Limitations
-
-The android app also has support limitations on chart types, data dimension, period dimension, among others. To see the complete list click [here]().
-
-## Interface language (New 2.5)
-
-The language of the interface will respond to the language set in the user configuration. If the language is not available in the app, it will pick the language of the device. 
-
-If none of the configurations are available, the app will default to English.
-
-Translations set up in DHIS2 for all available objects will also be shown according to the language in the user configuration.
-
-![](resources/images/capture-app-image180.png){ width=25%}
-![](resources/images/capture-app-image181.png){ width=25%}
 
 ## Meta data sync error { #capture_app_visual_sync_error }
 
@@ -165,7 +95,7 @@ In the Android App, the color will be rendered as background color for programs 
 >
 > Colours will first be available in the new Android app, followed in future releases by the new web-based Capture App.
 
-## Rendering Types for Program Sections (Improved 2.5) { #capture_app_visual_rendering_type }
+## Rendering Types for Program Sections { #capture_app_visual_rendering_type }
 
 
 ![](resources/images/capture-app-image16.png){width=80% }
@@ -191,8 +121,8 @@ This is available when:
 2. Creating a new event (Programs with and without registration).
 3. Using period filters in data sets and programs with and without registration.
 
-![](resources/images/capture-app-image60.jpg){ width=25%}
-![](resources/images/capture-app-image61.jpg){ width=25%}
+![](resources/images/capture-app-image60.png){ width=25%}
+![](resources/images/capture-app-image61.png){ width=25%}
 
 > **Note**
 > 
@@ -219,10 +149,10 @@ The available rendering options have been expanded to include horizontal and ver
 >
 > The default rendering option will automatically display a search box whenever there are more than 15 elements in the option set to ease the selection.
 > 
-> ![](resources/images/options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
+> ![](resources/images/capture-app-options_no_search.png){ width=25% } ![](resources/images/capture-app-options_search.png){ width=60% }
 
 
-### QR and Barcodes (Improved 2.5) { #capture_app_visual_render_qr }
+### QR and Barcodes { #capture_app_visual_render_qr }
 
 
 Data elements or attributes type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
@@ -233,9 +163,3 @@ Barcodes also allow the user to manually enter the value.
 ![](resources/images/capture-app-image119.png){ width=20%}
 ![](resources/images/capture-app-image120.png){ width=20%}
 ![](resources/images/capture-app-image121.png){ width=20%}
-
-#### Export/Share
-
-Users are now able to display a bar or QR code in an image so that it can be shared for printing, take a screenshot or show it on the screen for scanning.
-
-![](resources/images/capture-app-image174.png){ width=20%}
