@@ -2,7 +2,7 @@
 
 <!-- DHIS2-SECTION-ID:visual -->
 
-## Meta data sync error
+## Meta data sync error 
 
 <!-- DHIS2-SECTION-ID:visual_metadata -->
 
