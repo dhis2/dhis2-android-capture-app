@@ -10,11 +10,20 @@ import kotlinx.coroutines.launch
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) : ViewModel() {
+    private val _programsWithRules: MutableLiveData<List<Program>> = MutableLiveData()
+    val programWithRules: LiveData<List<Program>> = _programsWithRules
+
+    private val _selectedProgramUid: MutableLiveData<String> = MutableLiveData()
+    val selectedProgramUid: LiveData<String> = _selectedProgramUid
+
     private val _ruleValidations: MutableLiveData<List<RuleValidation>> = MutableLiveData()
     val ruleValidations: LiveData<List<RuleValidation>> = _ruleValidations
+
+    val allValidationsIsOpen: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _programVariables: MutableLiveData<List<FieldUiModel>> = MutableLiveData()
     val programVariables: LiveData<List<FieldUiModel>> = _programVariables
@@ -25,7 +34,7 @@ class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) 
 
     init {
         fetchValidations()
-        fetchProgramVariables("lxAQ7Zs9VYR")
+        fetchProgramsWithRules()
     }
 
     private fun fetchValidations() {
@@ -67,15 +76,35 @@ class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) 
     }
 
     fun runCurrentValidation() {
+        selectedProgramUid.value?.let { programUid ->
+            viewModelScope.launch {
+                val result = async(context = Dispatchers.IO) {
+                    return@async ruleValidator.runValidation(programUid, variableValueMap)
+                }
+                try {
+                    expressionValidationResult.value = result.await()
+                } catch (e: Exception) {
+                    Timber.d(e)
+                }
+            }
+        }
+    }
+
+    private fun fetchProgramsWithRules() {
         viewModelScope.launch {
             val result = async(context = Dispatchers.IO) {
-                return@async ruleValidator.runValidation("lxAQ7Zs9VYR", variableValueMap)
+                return@async ruleValidator.programsWithRules()
             }
             try {
-                expressionValidationResult.value = result.await()
+                _programsWithRules.value = result.await()
             } catch (e: Exception) {
                 Timber.d(e)
             }
         }
+    }
+
+    fun setSelectedProgram(uid: String?) {
+        _selectedProgramUid.value = uid
+        uid?.let { fetchProgramVariables(uid) }
     }
 }

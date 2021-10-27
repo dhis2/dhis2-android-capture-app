@@ -11,8 +11,10 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
+import org.hisp.dhis.rules.ItemValueType
 import org.hisp.dhis.rules.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleActionHideField
@@ -270,7 +272,21 @@ class ProgramRulesValidations(
                 val value = values?.get(valueKey)
 
                 it.name() to ruleVariableValue(value, ruleValueType, values == null)
-            }.toMap()
+            }.toMap().toMutableMap().apply {
+                RuleEngineUtils.ENV_VARIABLES.forEach { (envLabelKey, type) ->
+                    val value = values?.get(envLabelKey)
+                    val ruleValueType = when (type) {
+                        ItemValueType.NUMBER -> RuleValueType.NUMERIC
+                        ItemValueType.DATE -> RuleValueType.DATE
+                        ItemValueType.TEXT -> RuleValueType.TEXT
+                        ItemValueType.BOOLEAN -> RuleValueType.BOOLEAN
+                    }
+                    this[envLabelKey] = RuleVariableValue.create(
+                        value ?: ruleValueType.defaultValue(),
+                        ruleValueType
+                    )
+                }
+            }
 
     private fun ruleVariableValue(
         value: String?,
@@ -344,5 +360,11 @@ class ProgramRulesValidations(
             condition = variableValueMap["Rule Expression"] ?: "",
             valueMap = ruleVariableMap(programUid, variableValueMap)
         ).isEmpty()
+    }
+
+    fun programsWithRules(): List<Program> {
+        return d2.programModule().programs().blockingGet().filter { program ->
+            !d2.programModule().programRules().byProgramUid().eq(program.uid()).blockingIsEmpty()
+        }
     }
 }

@@ -5,7 +5,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?colorPrimary">
 
         <ImageView
             android:id="@+id/back_button"
@@ -17,40 +18,47 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_arrow_back"
-            app:tint="?colorPrimary"
-            tools:tint="@color/colorPrimary" />
+            app:tint="?primaryBgTextColor"
+            tools:tint="@color/white" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Validation results"
-            android:textColor="?whiteBgTextColor"
+            android:textColor="?primaryBgTextColor"
             android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="@id/back_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/back_button"
             app:layout_constraintTop_toTopOf="@id/back_button" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/compose_programs_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_16"
+            app:layout_constraintTop_toBottomOf="@id/back_button" />
+
         <FrameLayout
             android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:layout_constraintTop_toBottomOf="@id/back_button"
-            android:background="?colorPrimary"/>
+            android:layout_height="0dp"
+            android:background="?colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/compose_programs_view" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/runRuleValidation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@id/formViewContainer"
-            app:layout_constraintBottom_toBottomOf="@id/formViewContainer"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"
             app:backgroundTint="?colorAccent"
-            app:tint="?colorPrimary"
-            app:srcCompat="@drawable/ic_navigate_next" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_navigate_next"
+            app:tint="?colorPrimary" />
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/compose_view"
@@ -60,33 +68,24 @@
             android:clipToPadding="false"
             android:paddingBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/formViewContainer" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/ruleValidations"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/padding_16"
-            android:layout_marginTop="@dimen/padding_16"
-            android:layout_marginEnd="@dimen/padding_16"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/formViewContainer"
-            tools:listitem="@layout/rule_validation_item"
-            android:visibility="gone"/>
+            app:layout_constraintTop_toBottomOf="@id/back_button" />
 
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:layout_marginTop="@dimen/padding_16"
-            app:progressColor="@{@color/colorPrimary}"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/back_button" />
+            app:layout_constraintTop_toBottomOf="@id/back_button"
+            app:progressColor="@{@color/primaryBgTextColor}" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/showAllButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
