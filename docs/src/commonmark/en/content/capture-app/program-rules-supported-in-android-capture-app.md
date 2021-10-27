@@ -176,12 +176,17 @@ For the examples below consider the following:
 ### Evaluation of numbers { #capture_app_pr_differences_web_android_numbers }
 
 
-DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
+DHIS2 web (prior to the 2.35 version) evaluates numbers in a more flexible way casting values from integer to floats if required for a division, however, Android takes numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
 
 | Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
 | ----------- | ----------- | :---: | :---: | ----- |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/icons/icon-complete.png) | ![](resources/icons/icon-complete.png) | Division results in 1.33333 in both web and Android |
+
+> **Notes**
+>
+> Please note that this is only applicable if you are running a version prior to 2.35
+
 
 ## Changes in Program Rules (as from version 2.2 of the app ) { #capture_app_pr_changes }
 
