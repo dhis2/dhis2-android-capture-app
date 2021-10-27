@@ -1,4 +1,6 @@
-package org.dhis2.data.forms.dataentry.fields.age;
+package org.dhis2.data.forms.dataentry.tablefields.age;
+
+import static android.text.TextUtils.isEmpty;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -20,24 +22,20 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
-
-import static android.text.TextUtils.isEmpty;
-
 
 public class AgeView extends FieldLayout implements View.OnClickListener {
 
@@ -131,9 +129,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (viewModel != null) {
-            viewModel.onItemClick();
-        }
         switch (view.getId()) {
             case R.id.date_picker:
                 showCustomCalendar(view);
@@ -269,12 +264,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
 
-    public void setIsBgTransparent(Boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        if (!isBgTransparent)
-            binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
-        else
-            binding = AgeCustomViewBinding.inflate(inflater, this, true);
+    public void setIsBgTransparent() {
+        binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
         inputLayout = findViewById(R.id.inputLayout);
         yearInputLayout = findViewById(R.id.yearInputLayout);
@@ -372,15 +363,10 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     public void setViewModel(AgeViewModel viewModel) {
         this.viewModel = viewModel;
         if (binding == null) {
-            setIsBgTransparent(viewModel.isBackgroundTransparent());
+            setIsBgTransparent();
         }
-        setAgeChangedListener(ageDate -> {
-            if (viewModel.value() == null || !Objects.equals(viewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
-                viewModel.onAgeSet(ageDate);
-            }
-        });
 
-        setLabel(viewModel.getFormattedLabel(), viewModel.description());
+        setLabel(getFormattedLabel(), viewModel.description());
 
         if (!isEmpty(viewModel.value())) {
             setInitialValue(viewModel.value());
@@ -392,9 +378,17 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             setWarning(viewModel.warning());
         else if (viewModel.error() != null)
             setError(viewModel.error());
-        else if (!viewModel.isSearchMode())
+        else
             clearErrors();
 
         setEditable(viewModel.editable());
+    }
+
+    private String getFormattedLabel() {
+        if (viewModel.mandatory()) {
+            return viewModel.label() + " *";
+        } else {
+            return viewModel.label();
+        }
     }
 }

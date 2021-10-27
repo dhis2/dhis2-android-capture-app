@@ -48,6 +48,8 @@ interface FieldUiModel {
 
     val displayName: String?
 
+    val uiEventTypes: List<UiEventType>?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -62,7 +64,7 @@ interface FieldUiModel {
 
     fun onClear()
 
-    fun invokeUiEvent()
+    fun invokeUiEvent(uiEventType: UiEventType)
 
     fun setValue(value: String?): FieldUiModel
 
