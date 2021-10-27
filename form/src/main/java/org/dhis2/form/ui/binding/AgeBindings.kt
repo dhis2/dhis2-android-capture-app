@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.age
+package org.dhis2.form.ui.binding
 
 import android.view.View
 import android.widget.EditText
@@ -6,30 +6,30 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import java.util.Calendar
-import java.util.Date
-import org.dhis2.Bindings.toDate
-import org.dhis2.form.ui.binding.setInputStyle
-import org.dhis2.utils.DateUtils
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.string.toDate
+import org.dhis2.form.R
+import org.dhis2.form.model.FieldUiModel
 
 @BindingAdapter("onFocusChangeAgeView")
-fun onFocusChangesAgeView(editText: EditText, model: AgeViewModel) {
+fun onFocusChangesAgeView(editText: EditText, model: FieldUiModel) {
     editText.setOnFocusChangeListener { v, hasFocus -> editText.setInputStyle(model) }
 }
 
-@BindingAdapter("warning", "error", "isSearchMode")
-fun setWarningOrError(textView: TextView, warning: String?, error: String?, isSearchMode: Boolean) {
+@BindingAdapter("warning", "error")
+fun setWarningOrError(textView: TextView, warning: String?, error: String?) {
     if (warning != null) {
-        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.warning_color)
+        val color = ContextCompat.getColor(textView.context, R.color.warning_color)
         textView.setTextColor(color)
         textView.visibility = View.VISIBLE
         textView.text = warning
     } else if (error != null) {
-        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.error_color)
+        val color = ContextCompat.getColor(textView.context, R.color.error_color)
         textView.setTextColor(color)
         textView.visibility = View.VISIBLE
         textView.text = error
-    } else if (!isSearchMode) {
-        val color = ContextCompat.getColor(textView.context, org.dhis2.R.color.textPrimary)
+    } else {
+        val color = ContextCompat.getColor(textView.context, R.color.textPrimary)
         textView.setTextColor(color)
         textView.visibility = View.GONE
     }
@@ -41,12 +41,13 @@ fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
         text = null
     } else {
         try {
-            val initialDate = value.toDate()
-            val dateFormat = DateUtils.uiDateFormat()
-            val result = dateFormat.format(initialDate)
-            Calendar.getInstance().time = initialDate
-            setText(result)
-            errorTextView.visibility = View.GONE
+            value.toDate()?.let {
+                val dateFormat = DateUtils.uiDateFormat()
+                val result = dateFormat.format(it)
+                Calendar.getInstance().time = it
+                setText(result)
+                errorTextView.visibility = View.GONE
+            }
         } catch (e: Exception) {
             errorTextView.text = errorTextView.text.toString().format(value)
             errorTextView.visibility = View.VISIBLE
@@ -91,12 +92,13 @@ fun setInitialValueDay(editText: EditText, value: String?) {
 }
 
 fun getDifferenceBetweenDates(value: String?): IntArray {
-    val initialDate: Date = value!!.toDate()
-    Calendar.getInstance().time = initialDate
-    return DateUtils.getDifference(
-        initialDate,
-        Calendar.getInstance().time
-    )
+    return value?.toDate()?.let {
+        Calendar.getInstance().time = it
+        DateUtils.getDifference(
+            it,
+            Calendar.getInstance().time
+        )
+    } ?: IntArray(0)
 }
 
 fun negativeOrZero(value: String): Int {

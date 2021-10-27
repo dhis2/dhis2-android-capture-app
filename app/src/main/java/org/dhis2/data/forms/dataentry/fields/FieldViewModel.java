@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
+import org.dhis2.form.model.UiEventType;
 import org.dhis2.form.ui.event.RecyclerViewUiEvents;
 import org.dhis2.form.ui.event.UiEventFactory;
 import org.dhis2.form.ui.intent.FormIntent;
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import timber.log.Timber;
@@ -353,7 +355,7 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Deprecated
     @Override
-    public void invokeUiEvent() {
+    public void invokeUiEvent(UiEventType uiEventType) {
         //Do not use until migrate to FieldUIModel
     }
 
@@ -369,6 +371,14 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     @Override
     public String getDisplayName() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<UiEventType> getUiEventTypes() {
         //Do not use until migrate to FieldUIModel
         return null;
     }

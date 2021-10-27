@@ -31,7 +31,6 @@ import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
@@ -44,6 +43,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.binding.negativeOrZero
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent

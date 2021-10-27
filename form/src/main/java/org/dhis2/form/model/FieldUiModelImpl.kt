@@ -25,7 +25,8 @@ data class FieldUiModelImpl(
     override val optionSet: String? = null,
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
-    override val displayName: String? = null
+    override val displayName: String? = null,
+    override val uiEventTypes: List<UiEventType>
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -63,9 +64,9 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.ClearValue(uid))
     }
 
-    override fun invokeUiEvent() {
+    override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
-        uiEventFactory?.generateEvent(value)?.let {
+        uiEventFactory?.generateEvent(value, uiEventType)?.let {
             callback?.recyclerViewUiEvents(it)
         }
     }
