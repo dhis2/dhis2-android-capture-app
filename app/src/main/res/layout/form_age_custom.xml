@@ -13,7 +13,7 @@
 
         <variable
             name="item"
-            type="org.dhis2.data.forms.dataentry.fields.age.AgeViewModel" />
+            type="org.dhis2.form.model.FieldUiModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +28,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
             android:background="?colorPrimary"
-            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -60,9 +60,9 @@
                 style="@style/FieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="@{item.editable()? 1f : 0.5f}"
+                android:alpha="@{item.editable? 1f : 0.5f}"
                 android:text="@{item.formattedLabel}"
-                app:label_text_color="@{item.style()}"
+                app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"
@@ -77,10 +77,10 @@
                 android:layout_width="12dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
-                android:alpha="@{item.editable()? 1f : 0.5f}"
+                android:alpha="@{item.editable? 1f : 0.5f}"
                 android:onClick="@{v -> item.onDescriptionClick()}"
-                android:visibility="@{item.description() != null? View.VISIBLE : View.GONE}"
-                app:description_icon_tint="@{item.style()}"
+                android:visibility="@{item.description != null? View.VISIBLE : View.GONE}"
+                app:description_icon_tint="@{item.style}"
                 app:layout_constraintBottom_toBottomOf="@+id/label"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/label"
@@ -100,25 +100,25 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:alpha="@{item.editable()? 1f : 0.5f}"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/date"
                     android:theme="@style/loginInputText"
-                    app:input_layout_style="@{item.style()}">
+                    app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/date_picker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:enabled="@{item.editable()}"
+                        android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:inputType="date"
-                        android:onClick="@{()-> item.onShowCustomCalendar()}"
+                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_calendar])}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:onFocusChangeAgeView="@{item}"
                         app:parsingErrorText="@{parsingErrorMessage}"
-                        app:setInitialValueDate="@{item.value()}"
+                        app:setInitialValueDate="@{item.value}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,25 +127,25 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="@{item.editable()? 1f : 0.5f}"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_year"
                     android:theme="@style/loginInputText"
-                    app:input_layout_style="@{item.style()}">
+                    app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/input_year"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:enabled="@{item.editable()}"
+                        android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:imeOptions="actionNext"
                         android:inputType="date"
                         android:maxLength="4"
-                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
+                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
-                        app:setInitialValueYear="@{item.value()}"
+                        app:setInitialValueYear="@{item.value}"
                         tools:text="yyyy" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -155,25 +155,25 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="@{item.editable()? 1f : 0.5f}"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_month"
                     android:theme="@style/loginInputText"
-                    app:input_layout_style="@{item.style()}">
+                    app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/input_month"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:enabled="@{item.editable()}"
+                        android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:imeOptions="actionNext"
                         android:inputType="date"
                         android:maxLength="2"
-                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
+                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
-                        app:setInitialValueMonth="@{item.value()}" />
+                        app:setInitialValueMonth="@{item.value}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -182,25 +182,25 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="@{item.editable()? 1f : 0.5f}"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_day"
                     android:theme="@style/loginInputText"
-                    app:input_layout_style="@{item.style()}">
+                    app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/input_days"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:enabled="@{item.editable()}"
+                        android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:imeOptions="actionDone"
                         android:inputType="date"
                         android:maxLength="2"
-                        android:onClick="@{()-> item.onShowDayMonthYearPicker()}"
+                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
-                        app:setInitialValueDay="@{item.value()}" />
+                        app:setInitialValueDay="@{item.value}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
@@ -211,12 +211,11 @@
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:textSize="@dimen/textSize_12"
-                app:error="@{item.error()}"
-                app:isSearchMode="@{item.searchMode}"
+                app:error="@{item.error}"
                 app:layout_constraintEnd_toEndOf="@id/linearLayout"
                 app:layout_constraintStart_toStartOf="@id/linearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                app:warning="@{item.warning()}"
+                app:warning="@{item.warning}"
                 tools:text="This is a error warning"
                 tools:textAppearance="@style/error_appearance"
                 tools:visibility="visible" />

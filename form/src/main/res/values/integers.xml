@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="date_Time">0</integer>
+    <integer name="age_calendar">0</integer>
+    <integer name="age_year_month_day">1</integer>
+</resources>
