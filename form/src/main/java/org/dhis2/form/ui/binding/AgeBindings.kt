@@ -6,22 +6,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.string.toDate
-import org.dhis2.form.model.FieldUiModel
 import java.util.Calendar
-
-@BindingAdapter("onFocusChangeAgeView")
-fun onFocusChangesAgeView(editText: EditText, model: FieldUiModel) {
-    editText.setOnFocusChangeListener { v, hasFocus -> editText.setInputStyle(model) }
-}
-
-@BindingAdapter("warning", "error")
-fun setWarningOrError(textView: TextView, warning: String?, error: String?) {
-    if (warning != null) {
-        textView.text = warning
-    } else if (error != null) {
-        textView.text = error
-    }
-}
 
 @BindingAdapter(value = ["setInitialValueDate", "parsingErrorText"], requireAll = true)
 fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
@@ -79,7 +64,7 @@ fun setInitialValueDay(editText: EditText, value: String?) {
     }
 }
 
-fun getDifferenceBetweenDates(value: String?): IntArray {
+private fun getDifferenceBetweenDates(value: String?): IntArray {
     return value?.toDate()?.let {
         Calendar.getInstance().time = it
         DateUtils.getDifference(
@@ -87,8 +72,4 @@ fun getDifferenceBetweenDates(value: String?): IntArray {
             Calendar.getInstance().time
         )
     } ?: IntArray(0)
-}
-
-fun negativeOrZero(value: String): Int {
-    return if (value.isEmpty()) 0 else -Integer.valueOf(value)
 }
