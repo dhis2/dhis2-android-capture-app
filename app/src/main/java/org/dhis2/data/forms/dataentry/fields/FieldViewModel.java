@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import kotlin.Pair;
 import timber.log.Timber;
 
 public abstract class FieldViewModel implements FieldUiModel {
@@ -407,5 +408,21 @@ public abstract class FieldViewModel implements FieldUiModel {
         } else {
             validator.onPatternError();
         }
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Integer getTextColor() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Pair<Integer[], Integer> getBackGroundColor() {
+        //Do not use until migrate to FieldUIModel
+        return null;
     }
 }

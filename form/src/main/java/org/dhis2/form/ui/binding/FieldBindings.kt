@@ -49,18 +49,16 @@ fun ImageView.tintActionIcon(style: FormUiModelStyle?) {
 }
 
 @BindingAdapter("input_style")
-fun EditText.setInputStyle(styleItem: FieldUiModel?) {
-    styleItem?.style?.let { style ->
-        style.getColors()[FormUiColorType.TEXT_PRIMARY]?.let { color ->
-            setTextColor(color)
+fun TextView.setInputStyle(styleItem: FieldUiModel?) {
+    styleItem?.let { uiModel ->
+        uiModel.textColor?.let {
+            setTextColor(it)
         }
-        val colorType = when {
-            styleItem.warning != null -> FormUiColorType.WARNING
-            styleItem.error != null -> FormUiColorType.ERROR
-            else -> FormUiColorType.TEXT_PRIMARY
-        }
-        style.getColors()[colorType]?.let { color ->
-            ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(color))
+        uiModel.backGroundColor?.let {
+            ViewCompat.setBackgroundTintList(
+                this,
+                ColorStateList.valueOf(it.second)
+            )
         }
     }
 }
