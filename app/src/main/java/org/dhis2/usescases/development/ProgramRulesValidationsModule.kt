@@ -19,15 +19,15 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Manager
 
-@PerActivity
 @Module
 class ProgramRulesValidationsModule(val context: ProgramRulesValidationActivity) {
 
     @Provides
     @PerActivity
-    fun ruleValidationModelFactory(ruleValidations : ProgramRulesValidations) = RulesValidationsModelFactory(
-        ruleValidations
-    )
+    fun ruleValidationModelFactory(ruleValidations: ProgramRulesValidations) =
+        RulesValidationsModelFactory(
+            ruleValidations
+        )
 
     @Provides
     @PerActivity
@@ -58,6 +58,7 @@ class ProgramRulesValidationsModule(val context: ProgramRulesValidationActivity)
     fun provideFormUiColorFactory(): FormUiColorFactory {
         return FormUiModelColorFactoryImpl(context, false)
     }
+
     @Provides
     @PerActivity
     fun formView() = FormView.Builder()
@@ -69,7 +70,7 @@ class ProgramRulesValidationsModule(val context: ProgramRulesValidationActivity)
             )
         )
         .dispatcher(FormDispatcher())
-        .onItemChangeListener {action->
+        .onItemChangeListener { action ->
             context.rulesValidationsModel.handleAction(action)
         }
         .needToForceUpdate(true)

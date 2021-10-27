@@ -1,6 +1,7 @@
 package org.dhis2.usescases.development
 
 import android.os.Build
+import java.util.HashMap
 import org.dhis2.Bindings.toRuleEngineObject
 import org.dhis2.Bindings.toRuleVariableList
 import org.dhis2.data.forms.RuleActionUnsupported
@@ -31,7 +32,6 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
 import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
-import java.util.HashMap
 
 class ProgramRulesValidations(
     val d2: D2,
@@ -100,7 +100,7 @@ class ProgramRulesValidations(
                     null,
                     null,
                     null,
-                    FeatureType.POINT,
+                    FeatureType.POINT
                 )
             )
     }
@@ -109,7 +109,6 @@ class ProgramRulesValidations(
         variableLabel: String,
         dataElementUid: String
     ): FieldUiModel {
-
         val de = d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
 
         return fieldViewModelFactory.create(
@@ -130,7 +129,7 @@ class ProgramRulesValidations(
             de.fieldMask(),
             null,
             null,
-            FeatureType.POINT,
+            FeatureType.POINT
         )
     }
 
@@ -158,7 +157,7 @@ class ProgramRulesValidations(
             attr.fieldMask(),
             null,
             null,
-            FeatureType.POINT,
+            FeatureType.POINT
         )
     }
 
@@ -181,7 +180,7 @@ class ProgramRulesValidations(
             null,
             null,
             null,
-            FeatureType.POINT,
+            FeatureType.POINT
         )
     }
 
@@ -206,11 +205,15 @@ class ProgramRulesValidations(
         return when {
             ruleAction is RuleActionHideField && ruleAction.field().isEmpty() ->
                 "Missing field"
-            ruleAction is RuleActionHideOption && (ruleAction.field()
-                .isEmpty() || ruleAction.option().isEmpty()) ->
+            ruleAction is RuleActionHideOption && (
+                ruleAction.field()
+                    .isEmpty() || ruleAction.option().isEmpty()
+                ) ->
                 "Missing field or option"
-            ruleAction is RuleActionHideOptionGroup && (ruleAction.field()
-                .isEmpty() || ruleAction.optionGroup().isEmpty()) ->
+            ruleAction is RuleActionHideOptionGroup && (
+                ruleAction.field()
+                    .isEmpty() || ruleAction.optionGroup().isEmpty()
+                ) ->
                 "Missing field or option group"
             ruleAction is RuleActionHideProgramStage && ruleAction.programStage().isEmpty() ->
                 "Missing program stage"

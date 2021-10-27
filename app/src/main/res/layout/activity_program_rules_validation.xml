@@ -52,6 +52,16 @@
             app:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_navigate_next" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/compose_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/padding_16"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/formViewContainer" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ruleValidations"
             android:layout_width="match_parent"
@@ -64,7 +74,8 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/formViewContainer"
-            tools:listitem="@layout/rule_validation_item" />
+            tools:listitem="@layout/rule_validation_item"
+            android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/progress"

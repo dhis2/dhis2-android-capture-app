@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) : ViewModel() {
@@ -32,19 +31,7 @@ class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) 
     private fun fetchValidations() {
         viewModelScope.launch {
             val result = async(context = Dispatchers.IO) {
-                val list = ruleValidator.validateProgramRules().toMutableList()
-
-                val iterator = list.listIterator()
-                var currentProgram: Program? = null
-                while (iterator.hasNext()) {
-                    val validation = iterator.next()
-                    if (validation.program.uid() != currentProgram?.uid()) {
-                        currentProgram = validation.program
-                        iterator.set(RuleValidation(program = currentProgram))
-                        iterator.add(validation)
-                    }
-                }
-                return@async list
+                return@async ruleValidator.validateProgramRules().toMutableList()
             }
             try {
                 _ruleValidations.value = result.await()
@@ -70,11 +57,12 @@ class RulesValidationsModel(private val ruleValidator: ProgramRulesValidations) 
     fun handleAction(action: RowAction) {
         when (action.type) {
             ActionType.ON_SAVE,
-            ActionType.ON_TEXT_CHANGE -> if (action.value != null) {
-                variableValueMap[action.id] = action.value!!
-            } else {
-                variableValueMap.remove(action.id)
-            }
+            ActionType.ON_TEXT_CHANGE ->
+                if (action.value != null) {
+                    variableValueMap[action.id] = action.value!!
+                } else {
+                    variableValueMap.remove(action.id)
+                }
         }
     }
 
