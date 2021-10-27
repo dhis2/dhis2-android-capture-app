@@ -3,13 +3,11 @@ package org.dhis2.form.ui.binding
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
-import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.string.toDate
-import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import java.util.Calendar
 
 @BindingAdapter("onFocusChangeAgeView")
 fun onFocusChangesAgeView(editText: EditText, model: FieldUiModel) {
@@ -19,19 +17,9 @@ fun onFocusChangesAgeView(editText: EditText, model: FieldUiModel) {
 @BindingAdapter("warning", "error")
 fun setWarningOrError(textView: TextView, warning: String?, error: String?) {
     if (warning != null) {
-        val color = ContextCompat.getColor(textView.context, R.color.warning_color)
-        textView.setTextColor(color)
-        textView.visibility = View.VISIBLE
         textView.text = warning
     } else if (error != null) {
-        val color = ContextCompat.getColor(textView.context, R.color.error_color)
-        textView.setTextColor(color)
-        textView.visibility = View.VISIBLE
         textView.text = error
-    } else {
-        val color = ContextCompat.getColor(textView.context, R.color.textPrimary)
-        textView.setTextColor(color)
-        textView.visibility = View.GONE
     }
 }
 

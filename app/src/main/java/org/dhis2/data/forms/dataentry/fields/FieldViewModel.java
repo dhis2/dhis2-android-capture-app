@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import kotlin.Pair;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -375,6 +376,22 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     @Override
     public List<UiEventType> getUiEventTypes() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Integer getTextColor() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Pair<Integer[], Integer> getBackGroundColor() {
         //Do not use until migrate to FieldUIModel
         return null;
     }
