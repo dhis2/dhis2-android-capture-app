@@ -7,7 +7,6 @@ import android.view.View;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.data.forms.dataentry.fields.age.AgeView;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
@@ -75,7 +74,7 @@ public class AgeHolder extends FormViewHolder {
     private void showEditDialog() {
 
         AgeView ageView = new AgeView(context);
-        ageView.setIsBgTransparent(true);
+        ageView.setIsBgTransparent();
 
         if (ageViewModel.value() != null && !ageViewModel.value().isEmpty()) {
             ageView.setInitialValue(ageViewModel.value());

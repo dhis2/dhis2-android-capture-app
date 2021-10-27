@@ -44,6 +44,7 @@ import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.DateUtils;
@@ -144,7 +145,15 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context), new DisplayNameProviderImpl(d2));
+        return new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                true,
+                colorFactory,
+                new LayoutProviderImpl(),
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(d2),
+                new UiEventTypesProviderImpl()
+        );
     }
 
     @Provides

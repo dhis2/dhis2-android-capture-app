@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.datetime;
+package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
 import java.util.Date;
 

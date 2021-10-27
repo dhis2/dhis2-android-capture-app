@@ -26,6 +26,7 @@ import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -91,7 +92,9 @@ public class EventCaptureModule {
                 colorFactory,
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2));
+                new DisplayNameProviderImpl(d2),
+                new UiEventTypesProviderImpl()
+        );
     }
 
     @Provides
