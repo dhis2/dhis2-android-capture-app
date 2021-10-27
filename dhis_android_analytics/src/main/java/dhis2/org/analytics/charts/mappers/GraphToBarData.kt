@@ -32,7 +32,7 @@ class GraphToBarData {
                     val colorIndex = index % serieColors.size
                     val isHighlighted = serieToHighlight == null || label == serieToHighlight
                     val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
-                    setDrawValues(isHighlighted)
+                    setDrawValues(graph.series.size == 1 || label == serieToHighlight)
                     color = serieColor
                 }
             }

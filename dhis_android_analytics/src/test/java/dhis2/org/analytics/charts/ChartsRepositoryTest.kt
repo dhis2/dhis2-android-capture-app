@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
@@ -34,12 +35,14 @@ class ChartsRepositoryTest {
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph = mock()
     private val dataElementToGraph: DataElementToGraph = mock()
     private val programIndicatorToGraph: ProgramIndicatorToGraph = mock()
+    private val analyticsResources: AnalyticResources = mock()
     private val repository = ChartsRepositoryImpl(
         d2,
         visualizationToGraph,
         analyticsTeiSettingsToGraph,
         dataElementToGraph,
-        programIndicatorToGraph
+        programIndicatorToGraph,
+        analyticsResources
     )
 
     @Test
