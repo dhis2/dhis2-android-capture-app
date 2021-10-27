@@ -14,7 +14,7 @@ import androidx.databinding.ObservableField;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
+import org.dhis2.data.forms.dataentry.tablefields.datetime.OnDateSelected;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.DateUtils;

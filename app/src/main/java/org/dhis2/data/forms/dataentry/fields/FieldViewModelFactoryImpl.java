@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
@@ -27,6 +26,7 @@ import org.dhis2.form.ui.event.UiEventFactoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.HintProvider;
 import org.dhis2.form.ui.provider.LayoutProvider;
+import org.dhis2.form.ui.provider.UiEventTypesProvider;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.style.FormUiModelStyle;
@@ -73,6 +73,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final LayoutProvider layoutProvider;
     private final HintProvider hintProvider;
     private final DisplayNameProvider displayNameProvider;
+    private final UiEventTypesProvider uiEventTypesProvider;
 
     public FieldViewModelFactoryImpl(
             @NonNull Map<ValueType, String> valueTypeHintMap,
@@ -80,7 +81,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             FormUiColorFactory colorFactory,
             LayoutProvider layoutProvider,
             HintProvider hintProvider,
-            DisplayNameProvider displayNameProvider
+            DisplayNameProvider displayNameProvider,
+            UiEventTypesProvider uiEventTypesProvider
     ) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
@@ -88,6 +90,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         this.layoutProvider = layoutProvider;
         this.hintProvider = hintProvider;
         this.displayNameProvider = displayNameProvider;
+        this.uiEventTypesProvider = uiEventTypesProvider;
     }
 
     @Nullable
@@ -222,19 +225,30 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(
+            case TIME:
+            case DATE:
+            case DATETIME:
+                return new FieldUiModelImpl(
                         id,
-                        getLayout(AgeViewModel.class),
-                        label,
-                        mandatory,
+                        getLayoutByValueType(type, null),
                         value,
-                        section,
+                        false,
+                        null,
                         editable,
+                        null,
+                        mandatory,
+                        label,
+                        section,
+                        style,
+                        hintProvider.provideDateHint(type),
                         description,
-                        objectStyle,
-                        !searchMode,
-                        searchMode,
-                        style
+                        type,
+                        null,
+                        null,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value),
+                        uiEventTypesProvider.provideUiEvents(type)
                 );
             case TEXT:
             case EMAIL:
@@ -302,30 +316,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         description,
                         objectStyle,
                         !searchMode
-                );
-            case TIME:
-            case DATE:
-            case DATETIME:
-                return new FieldUiModelImpl(
-                        id,
-                        getLayoutByValueType(type, null),
-                        value,
-                        false,
-                        null,
-                        editable,
-                        null,
-                        mandatory,
-                        label,
-                        section,
-                        style,
-                        hintProvider.provideDateHint(type),
-                        description,
-                        type,
-                        null,
-                        null,
-                        allowFutureDates,
-                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value)
                 );
             case COORDINATE:
                 return CoordinateViewModel.create(

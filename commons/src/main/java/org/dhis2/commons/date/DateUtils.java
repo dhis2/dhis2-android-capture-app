@@ -235,4 +235,12 @@ public class DateUtils {
         currentDateCalendar.set(Calendar.SECOND, 0);
         currentDateCalendar.set(Calendar.MILLISECOND, 0);
     }
+
+    /**********************
+     COMPARE DATES REGION*/
+
+    public static int[] getDifference(Date startDate, Date endDate) {
+        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
+        return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+    }
 }
