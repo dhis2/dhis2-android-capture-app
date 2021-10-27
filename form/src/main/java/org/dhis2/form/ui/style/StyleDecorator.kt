@@ -1,5 +1,7 @@
 package org.dhis2.form.ui.style
 
+import org.hisp.dhis.android.core.common.ValueType
+
 open class StyleDecorator(protected var style: FormUiModelStyle) : FormUiModelStyle {
     override fun getColors(): Map<FormUiColorType, Int> {
         return style.getColors()
@@ -7,5 +9,13 @@ open class StyleDecorator(protected var style: FormUiModelStyle) : FormUiModelSt
 
     override fun getDescriptionIcon(): Int {
         return getDescriptionIcon()
+    }
+
+    override fun backgroundColor(
+        valueType: ValueType,
+        error: String?,
+        warning: String?
+    ): Pair<Array<Int>, Int> {
+        return backgroundColor(valueType, error, warning)
     }
 }

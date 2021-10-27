@@ -3,6 +3,7 @@ package org.dhis2.form.model
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 
@@ -70,6 +71,15 @@ data class FieldUiModelImpl(
             callback?.recyclerViewUiEvents(it)
         }
     }
+
+    override val textColor: Int?
+        get() = style?.let { style ->
+            style.getColors()[FormUiColorType.TEXT_PRIMARY]
+        }
+
+    override val backGroundColor: Pair<Array<Int>, Int>?
+        get() = style?.backgroundColor(valueType, error, warning)
+
 
     override fun setValue(value: String?) = this.copy(value = value)
 
