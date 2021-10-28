@@ -86,7 +86,7 @@ There are many more restrictions which apply to Android Analytics regarding the 
 
 ### Event - TEI relationships (NEW 2.5)
 
-The app allows adding relationships from single events (event programs) to TEIs. There is a new tab in the event dashboard, named relationships, that is active when it is configured in the server.
+The app allows adding relationships from single events (in event programs) to TEIs. There is a new tab in the event screen, named relationships, that will be displayed only when this type of relationships are configured in the server for the specific program.
 
 >> This version does not allow TEIs to event relationships, or using events that belong to an enrollment.
 
