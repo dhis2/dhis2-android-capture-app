@@ -80,7 +80,6 @@ data class FieldUiModelImpl(
     override val backGroundColor: Pair<Array<Int>, Int>?
         get() = style?.backgroundColor(valueType, error, warning)
 
-
     override fun setValue(value: String?) = this.copy(value = value)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
