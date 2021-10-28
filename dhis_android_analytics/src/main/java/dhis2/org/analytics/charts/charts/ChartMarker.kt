@@ -12,6 +12,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.ViewPortHandler
 import dhis2.org.R
+import org.dhis2.commons.bindings.dp
 
 @SuppressLint("ViewConstructor")
 class ChartMarker(
@@ -26,27 +27,29 @@ class ChartMarker(
         TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT
     }
 
-    private val content = findViewById<TextView>(R.id.chart_marker_content)
+    private val contentX = findViewById<TextView>(R.id.chart_marker_content_x)
+    private val contentY = findViewById<TextView>(R.id.chart_marker_content_y)
     private var markerPlacement: MarkerPlacement? = null
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         highlight?.let { markerPlacement(highlight.xPx, highlight.yPx) }
         val formattedXValue = xAxis.valueFormatter.getAxisLabel(e?.x ?: 0f, xAxis)
         val formattedYValue = yAxis.valueFormatter.getAxisLabel(e?.y ?: 0f, yAxis)
-        content.text = String.format("%s\n%s", formattedXValue, formattedYValue)
+        contentX.text = formattedXValue
+        contentY.text = formattedYValue
         super.refreshContent(e, highlight)
     }
 
     override fun getOffset(): MPPointF {
         return when (markerPlacement) {
             MarkerPlacement.TOP_RIGHT ->
-                MPPointF(0f, -height.toFloat())
+                MPPointF(-width.toFloat() / 2f, -height.toFloat() - 8.dp)
             MarkerPlacement.TOP_LEFT ->
-                MPPointF(-width.toFloat(), -height.toFloat())
+                MPPointF(-width.toFloat() / 2f, -height.toFloat() - 8.dp)
             MarkerPlacement.BOTTOM_RIGHT ->
-                MPPointF(0f, 0f)
+                MPPointF(-width.toFloat() / 2f, 8.dp.toFloat())
             MarkerPlacement.BOTTOM_LEFT ->
-                MPPointF(-width.toFloat(), 0f)
+                MPPointF(-width.toFloat() / 2f, 8.dp.toFloat())
             null -> MPPointF((-(width / 2)).toFloat(), (-height).toFloat())
         }
     }
