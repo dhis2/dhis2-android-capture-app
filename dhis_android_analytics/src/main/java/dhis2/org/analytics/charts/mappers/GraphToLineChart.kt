@@ -12,7 +12,6 @@ import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val DEFAULT_VALUE = 0f
-const val VALUE_PADDING = 4f
 const val DEFAULT_GRID_LINE_LENGTH = 10f
 const val DEFAULT_GRID_SPACE_LENGTH = 10f
 const val DEFAULT_GRIP_PHASE = 0f
@@ -56,7 +55,7 @@ class GraphToLineChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = graph.maxValue() + VALUE_PADDING
+                axisMaximum = graph.maxValue()
                 axisMinimum = graph.minValue()
                 setDrawLimitLinesBehindData(true)
             }
