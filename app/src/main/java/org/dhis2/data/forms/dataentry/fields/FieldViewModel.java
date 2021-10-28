@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
@@ -270,15 +269,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     @NonNull
     @Override
     public FieldUiModel setDisplayName(@Nullable String displayName) {
-        return withDisplayName(displayName);
-    }
-
-    public FieldUiModel withDisplayName(String displayName) {
-        if (this instanceof OrgUnitViewModel) {
-            return ((OrgUnitViewModel) this).withDisplayName(displayName);
-        } else {
-            return this;
-        }
+        return this;
     }
 
     @Nullable
