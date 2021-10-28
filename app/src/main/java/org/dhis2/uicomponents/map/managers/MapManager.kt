@@ -106,7 +106,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             val isLocationEnabled = map?.locationComponent?.isLocationComponentEnabled ?: false
             if (isLocationEnabled) {
                 val location = map?.locationComponent?.lastKnownLocation
-                map?.moveCameraToDevicePosition(LatLng(location))
+                location?.let { map?.moveCameraToDevicePosition(LatLng(location)) }
             }
         } else {
             enableLocationComponentAndCenterCamera(onMissingPermission)
