@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
@@ -24,6 +25,7 @@ class FieldViewModelFactoryImplTest {
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
+    private val uiEventTypesProvider: UiEventTypesProvider = mock()
     private val trackedEntityAttribute: TrackedEntityAttribute = mock {
         on { uid() } doReturn "1234"
         on { displayFormName() } doReturn "First name"
@@ -39,7 +41,8 @@ class FieldViewModelFactoryImplTest {
             colorFactory,
             layoutProvider,
             hintProvider,
-            displayNameProvider
+            displayNameProvider,
+            uiEventTypesProvider
         )
     }
 
