@@ -7,6 +7,7 @@ interface FormUiModelStyle {
     fun getDescriptionIcon(): Int
     fun backgroundColor(
         valueType: ValueType,
-        error: String?, warning: String?
+        error: String?,
+        warning: String?
     ): Pair<Array<Int>, Int>
 }
