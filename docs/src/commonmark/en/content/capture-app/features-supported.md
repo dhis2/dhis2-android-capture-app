@@ -273,12 +273,12 @@ Legends are now available in Android App. It will be shown next to value with th
 
 ### TEI Dashboard navigation panel (New 2.5)
 
-The options offered at the TEI dashboard will be tailored to the specific configuration of the program.
+To simplify and personalize the user experience, the user interface actions offered to the user at the TEI dashboard will be tailored to the specific configuration of each  program.
 
-* Relationships tab will not be visible if the program relationships are not configured
-* "Create event" button will be hidden When the user cannot create more events based on tracker configuration.
-* The Indicator tab will not be visible if the program has no program indicators configured.
-* Organisation Unit filter will not be visible if the user has only one Organisation Unit configured.
+   * Relationships tab will not be visible if the program relationships are not configured
+   * "Create event" button will be hidden when the user cannot create more events based on tracker configuration.
+   * The Indicator tab will not be visible if the program has no program indicators configured.
+   * Organisation Unit filter will not be visible if the user has only one Organisation Unit configured.
 
 ### TEI Card Design { #capture_app_programs_tei_design }
 
