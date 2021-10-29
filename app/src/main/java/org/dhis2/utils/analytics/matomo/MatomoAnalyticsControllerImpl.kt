@@ -35,10 +35,10 @@ class MatomoAnalyticsControllerImpl(
                     updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
                 }
             }
-
-            dhisImplementationTracker?.let {
-                TrackHelper.track().event(category, action).name(label).with(it)
-            }
+        }
+        
+        dhisImplementationTracker?.let {
+            TrackHelper.track().event(category, action).name(label).with(it)
         }
     }
 
