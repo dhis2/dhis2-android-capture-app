@@ -24,7 +24,6 @@ class GraphToPieData {
                 it.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
                 it.valueLinePart1Length = 1f
                 it.valueLinePart1OffsetPercentage = 90f
-                it.valueLinePart2Length = 1f
                 it.valueTypeface = Typeface.DEFAULT_BOLD
                 it.sliceSpace = 1f
             }

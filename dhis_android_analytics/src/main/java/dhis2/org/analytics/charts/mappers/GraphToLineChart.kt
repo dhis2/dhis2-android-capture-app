@@ -7,12 +7,13 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
+import kotlin.math.ceil
 
 const val DEFAULT_VALUE = 0f
-const val VALUE_PADDING = 4f
 const val DEFAULT_GRID_LINE_LENGTH = 10f
 const val DEFAULT_GRID_SPACE_LENGTH = 10f
 const val DEFAULT_GRIP_PHASE = 0f
@@ -56,8 +57,9 @@ class GraphToLineChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = graph.maxValue() + VALUE_PADDING
-                axisMinimum = graph.minValue()
+                val padding = ceil((graph.maxValue() - graph.minValue()) * 0.05f)
+                axisMaximum = graph.maxValue() + padding
+                axisMinimum = graph.minValue() - padding
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
@@ -79,6 +81,8 @@ class GraphToLineChart {
                 }
             })
             extraBottomOffset = 10f
+
+            marker = ChartMarker(context, viewPortHandler, xAxis, axisLeft)
 
             data = lineData
 

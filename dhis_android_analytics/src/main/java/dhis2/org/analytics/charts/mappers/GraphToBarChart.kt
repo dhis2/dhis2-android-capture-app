@@ -7,9 +7,11 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
+import kotlin.math.ceil
 
 const val X_AXIS_MAX_PADDING_WITH_VALUE = 4f
 const val X_AXIS_MIN_PADDING = -5f
@@ -25,7 +27,6 @@ class GraphToBarChart {
             setPinchZoom(false)
 
             xAxis.apply {
-//                setCenterAxisLabels(true)
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
@@ -50,15 +51,12 @@ class GraphToBarChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                axisMaximum = graph.maxValue().let { it ->
-                    it + X_AXIS_MAX_PADDING_WITH_VALUE
-                }
-                axisMinimum = graph.minValue().let { it ->
-                    if (it < 0f) {
-                        it + X_AXIS_MIN_PADDING
-                    } else {
-                        DEFAULT_VALUE
-                    }
+                val padding = ceil((graph.maxValue() - graph.minValue()) * 0.05f)
+                axisMaximum = graph.maxValue() + padding
+                axisMinimum = if (graph.minValue() == 0f) {
+                    graph.minValue()
+                } else {
+                    graph.minValue() - padding
                 }
                 setDrawLimitLinesBehindData(true)
             }
@@ -81,6 +79,8 @@ class GraphToBarChart {
                 }
             })
             extraBottomOffset = 10f
+
+            marker = ChartMarker(context, viewPortHandler, xAxis, axisLeft)
 
             data = barData
 
