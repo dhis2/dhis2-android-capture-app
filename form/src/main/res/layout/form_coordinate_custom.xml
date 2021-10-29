@@ -223,6 +223,7 @@
                     android:visibility="@{item.value != null &amp;&amp; item.editable ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
                     app:srcCompat="@drawable/ic_close"
+                    app:icon_color="@{item.style}"
                     tools:ignore="ContentDescription" />
             </LinearLayout>
 
