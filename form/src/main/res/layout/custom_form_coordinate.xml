@@ -8,7 +8,7 @@
 
         <variable
             name="item"
-            type="org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel" />
+            type="org.dhis2.form.model.FieldUiModel" />
 
     </data>
 
@@ -24,7 +24,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
             android:background="?colorPrimary"
-            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

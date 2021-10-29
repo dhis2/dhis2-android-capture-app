@@ -42,6 +42,15 @@ data class BasicFormUiModelStyle(
             ValueType.IMAGE -> TODO()
         }
 
+    override fun textColor(error: String?, warning: String?): Int? {
+        val colorType = when {
+            warning != null -> FormUiColorType.WARNING
+            error != null -> FormUiColorType.ERROR
+            else -> FormUiColorType.TEXT_PRIMARY
+        }
+        return colors[colorType]
+    }
+
     override fun backgroundColor(
         valueType: ValueType,
         error: String?,

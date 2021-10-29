@@ -54,6 +54,8 @@ interface FieldUiModel {
 
     val backGroundColor: Pair<Array<Int>, Int>?
 
+    val renderingType: UiRenderType?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -69,6 +71,8 @@ interface FieldUiModel {
     fun onClear()
 
     fun invokeUiEvent(uiEventType: UiEventType)
+
+    fun invokeIntent(intent: FormIntent)
 
     fun setValue(value: String?): FieldUiModel
 

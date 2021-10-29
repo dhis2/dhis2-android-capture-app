@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
@@ -228,6 +227,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATE:
             case DATETIME:
             case ORGANISATION_UNIT:
+            case COORDINATE:
                 return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
@@ -248,7 +248,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         allowFutureDates,
                         new UiEventFactoryImpl(id, label, type, allowFutureDates),
                         displayNameProvider.provideDisplayName(type, value),
-                        uiEventTypesProvider.provideUiEvents(type)
+                        uiEventTypesProvider.provideUiEvents(type),
+                        uiEventTypesProvider.provideUiRenderType(featureType)
                 );
             case TEXT:
             case EMAIL:
@@ -316,22 +317,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         description,
                         objectStyle,
                         !searchMode
-                );
-            case COORDINATE:
-                return CoordinateViewModel.create(
-                        id,
-                        getLayout(CoordinateViewModel.class),
-                        label,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        featureType,
-                        !searchMode,
-                        searchMode,
-                        style
                 );
             case BOOLEAN:
             case TRUE_ONLY:

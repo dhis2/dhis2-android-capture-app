@@ -11,6 +11,10 @@ open class StyleDecorator(protected var style: FormUiModelStyle) : FormUiModelSt
         return getDescriptionIcon()
     }
 
+    override fun textColor(error: String?, warning: String?): Int? {
+        return textColor(error, warning)
+    }
+
     override fun backgroundColor(
         valueType: ValueType,
         error: String?,
