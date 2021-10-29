@@ -288,13 +288,13 @@ public class YesNoView extends FieldLayout {
     }
 
     public void setInitialValue(String value) {
-        if (value != null && Boolean.valueOf(value)) {
+        if (value != null && !value.isEmpty() && Boolean.valueOf(value)) {
             hasValue = true;
             radioGroup.check(R.id.yes);
             checkYes.setChecked(true);
             checkNo.setChecked(false);
             yesOnlyToggle.setChecked(true);
-        } else if (value != null) {
+        } else if (value != null && !value.isEmpty()) {
             hasValue = true;
             radioGroup.check(R.id.no);
             checkYes.setChecked(false);
