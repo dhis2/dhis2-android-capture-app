@@ -1,5 +1,6 @@
 package org.dhis2.utils.analytics.matomo
 
+import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.extra.DownloadTracker.Extra.ApkChecksum
@@ -25,6 +26,17 @@ class MatomoAnalyticsControllerImpl(
         matomoTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
         }
+
+        if (dhisImplementationTracker == null && D2Manager.isD2Instantiated()) {
+            D2Manager.getD2().settingModule()?.let { settingModule ->
+                updateDhisImplementationTracker(
+                    settingModule.generalSetting().blockingGet().matomoURL()!!,
+                    settingModule.generalSetting().blockingGet().matomoID()!!,
+                    DEFAULT_EXTERNAL_TRACKER_NAME
+                )
+            }
+        }
+
         dhisImplementationTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
         }
