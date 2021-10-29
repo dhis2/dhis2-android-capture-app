@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields
 
+import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
@@ -13,7 +14,6 @@ import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetMode
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>(
     DisplayViewModel::class to R.layout.custom_form_display,

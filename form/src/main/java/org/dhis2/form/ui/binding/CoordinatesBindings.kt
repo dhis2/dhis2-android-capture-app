@@ -9,11 +9,9 @@ import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.form.R
-
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.intent.FormIntent.SaveCurrentLocation
-
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
