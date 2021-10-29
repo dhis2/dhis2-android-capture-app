@@ -174,7 +174,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (!scheduleEvents.isEmpty())
             scheduleDate = scheduleEvents.get(0).dueDate();
 
-       if (activeDate != null) {
+        if (activeDate != null) {
             return activeDate;
         } else if (scheduleDate != null) {
             return scheduleDate;
@@ -316,23 +316,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
-        if(eventUid!= null){
+        if (eventUid != null) {
             return d2.eventModule().eventService().isEditable(eventUid).toObservable();
-        }else{
-            return programAccess(programUid);
+        } else {
+            return d2.programModule().programStages().uid(stageUid).get().toObservable()
+                    .map(programStage-> programStage.access().data().write());
         }
-    }
-
-    private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() -> {
-                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
-                    boolean stageAccess = true;
-                    if (stageUid != null) {
-                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
-                    }
-                    return programAccess && stageAccess;
-                }
-        );
     }
 
     @Override
@@ -578,7 +567,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public int getMinDaysFromStartByProgramStage(String programStageUid) {
         ProgramStage programStage = d2.programModule().programStages().uid(programStageUid).blockingGet();
-        if (programStage.minDaysFromStart() != null){
+        if (programStage.minDaysFromStart() != null) {
             return programStage.minDaysFromStart();
         }
         return 0;
