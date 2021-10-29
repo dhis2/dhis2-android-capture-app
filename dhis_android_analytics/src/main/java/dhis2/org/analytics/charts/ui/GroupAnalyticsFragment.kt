@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.github.mikephil.charting.utils.Utils
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
@@ -82,6 +83,7 @@ class GroupAnalyticsFragment : Fragment() {
         (context.applicationContext as AnalyticsComponentProvider)
             .provideAnalyticsFragmentComponent(AnalyticsFragmentModule(mode, uid))
             ?.inject(this)
+        Utils.init(context)
     }
 
     override fun onCreateView(
