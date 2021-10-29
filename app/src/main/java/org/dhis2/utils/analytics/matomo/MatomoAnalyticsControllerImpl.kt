@@ -36,7 +36,7 @@ class MatomoAnalyticsControllerImpl(
                 }
             }
         }
-        
+
         dhisImplementationTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
         }
