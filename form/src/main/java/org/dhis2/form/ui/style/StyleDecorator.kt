@@ -7,7 +7,7 @@ open class StyleDecorator(protected var style: FormUiModelStyle) : FormUiModelSt
         return style.getColors()
     }
 
-    override fun getDescriptionIcon(): Int {
+    override fun getDescriptionIcon(): Int? {
         return getDescriptionIcon()
     }
 
