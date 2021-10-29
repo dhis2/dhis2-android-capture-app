@@ -11,11 +11,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.tbuonomo.viewpagerdotsindicator.R
 
+@Deprecated("Use org.dhis2.commons.extensions.closeKeyboard instead")
 fun View.closeKeyboard() {
     val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
+@Deprecated("Use org.dhis2.commons.extensions.openKeyboard instead")
 fun View.openKeyboard() {
     val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)

@@ -19,7 +19,6 @@ import androidx.databinding.DataBindingUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
@@ -30,6 +29,7 @@ import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;

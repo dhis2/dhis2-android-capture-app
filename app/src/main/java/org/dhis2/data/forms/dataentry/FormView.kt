@@ -25,15 +25,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Calendar
-import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
@@ -60,6 +56,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.Calendar
 
 class FormView constructor(
     formRepository: FormRepository,
@@ -323,10 +320,20 @@ class FormView constructor(
         imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
     }
 
-    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
-        is EditTextViewModel,
-        is ScanTextViewModel,
-        is CoordinateViewModel -> true
+    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item.valueType) {
+        ValueType.TEXT,
+        ValueType.EMAIL,
+        ValueType.LETTER,
+        ValueType.NUMBER,
+        ValueType.INTEGER,
+        ValueType.LONG_TEXT,
+        ValueType.PERCENTAGE,
+        ValueType.PHONE_NUMBER,
+        ValueType.INTEGER_NEGATIVE,
+        ValueType.INTEGER_POSITIVE,
+        ValueType.UNIT_INTERVAL,
+        ValueType.URL,
+        ValueType.COORDINATE -> true
         else -> false
     }
 

@@ -1,7 +1,7 @@
 package org.dhis2.form.ui.event
 
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.string.toDate
+import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType

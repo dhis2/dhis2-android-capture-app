@@ -27,4 +27,6 @@
     <string name="polygon">Polygon</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="coordinates_error">Coordinates values are not valid</string>
+    <string name="polygon_captured">Polygon captured</string>
 </resources>

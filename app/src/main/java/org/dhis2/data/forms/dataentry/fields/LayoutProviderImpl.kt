@@ -39,7 +39,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
             ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
-            ValueType.COORDINATE -> R.layout.custom_form_coordinate
+            ValueType.COORDINATE -> R.layout.form_coordinate_custom
             else -> R.layout.form_edit_text_custom
         }
     }

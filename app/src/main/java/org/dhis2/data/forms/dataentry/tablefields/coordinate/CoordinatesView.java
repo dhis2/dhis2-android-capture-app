@@ -22,9 +22,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.databinding.DatasetFormCoordinatesBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
