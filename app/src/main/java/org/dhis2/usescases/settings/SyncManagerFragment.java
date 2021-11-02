@@ -206,6 +206,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setMessage(getString(R.string.wipe_data_meesage))
                 .setView(R.layout.warning_layout)
                 .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    presenter.resetFilters();
                     analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
                     showDeleteProgress();
                 })
