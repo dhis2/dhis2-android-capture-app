@@ -11,7 +11,6 @@ interface EnrollmentFormRepository {
     fun ruleEngine(): Flowable<RuleEngine>
     fun calculate(): Flowable<Result<RuleEffect>>
     fun generateEvents(): Single<Pair<String, String?>>
-    fun getOptionsFromGroups(optionGroupUids: List<String>): List<String>
     fun getProfilePicture(): String
     fun getProgramStageUidFromEvent(eventUi: String): String?
 }

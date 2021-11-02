@@ -390,9 +390,7 @@ class EnrollmentPresenterImpl(
             fieldMap,
             result,
             valueStore
-        ) { options ->
-            enrollmentFormRepository.getOptionsFromGroups(options)
-        }.apply {
+        ).apply {
             this@EnrollmentPresenterImpl.configurationErrors = configurationErrors
             errorFields = errorMap().toMutableMap()
             warningFields = warningMap().toMutableMap()
