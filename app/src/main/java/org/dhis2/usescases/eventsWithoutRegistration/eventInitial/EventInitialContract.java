@@ -3,24 +3,19 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import android.app.DatePickerDialog;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventNonEditableReason;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +64,7 @@ public class EventInitialContract {
 
         EventCreationType eventcreateionType();
 
-        void setGeometryModel(CoordinateViewModel geometryModel);
+        void setGeometryModel(FieldUiModel geometryModel);
 
         void setNewGeometry(String value);
 

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.Result;
@@ -100,7 +99,7 @@ public interface EventInitialRepository {
 
     Flowable<Result<RuleEffect>> calculate();
 
-    Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
+    Single<FieldUiModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
 
     Flowable<EventEditableStatus> getEditableStatus();
 

@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
 @BindingAdapter(value = ["latitude_validator", "error_input"])
-fun EditText.setLatitudeValidator(viewModel: FieldUiModel, errorTextView: TextView?) {
+fun EditText.setLatitudeValidator(viewModel: FieldUiModel?, errorTextView: TextView?) {
     setOnFocusChangeListener { _, hasFocus ->
         onLatOrLonChangeFocus(
             viewModel,
@@ -32,7 +32,7 @@ fun EditText.setLatitudeValidator(viewModel: FieldUiModel, errorTextView: TextVi
 }
 
 @BindingAdapter(value = ["longitude_validator", "error_input"])
-fun EditText.setLongitudeValidator(viewModel: FieldUiModel, errorTextView: TextView?) {
+fun EditText.setLongitudeValidator(viewModel: FieldUiModel?, errorTextView: TextView?) {
     setOnFocusChangeListener { _, hasFocus ->
         onLatOrLonChangeFocus(
             viewModel,
@@ -47,7 +47,7 @@ fun EditText.setLongitudeValidator(viewModel: FieldUiModel, errorTextView: TextV
 }
 
 private fun onLatOrLonChangeFocus(
-    viewModel: FieldUiModel,
+    viewModel: FieldUiModel?,
     errorTextView: TextView?,
     hasFocus: Boolean,
     coordinateValue: String,
@@ -71,7 +71,7 @@ private fun onLatOrLonChangeFocus(
             valueCallback(coordinate.toString())
         }
     } else {
-        viewModel.onItemClick()
+        viewModel?.onItemClick()
     }
 }
 
@@ -81,25 +81,29 @@ fun View.setFieldEdition(isFieldEditable: Boolean) {
 }
 
 @BindingAdapter("geometry_latitude_value")
-fun TextInputEditText.setGeometryLatitudeValue(item: FieldUiModel) {
-    val latitudeValue = when (item.renderingType) {
-        UiRenderType.POINT -> getCurrentGeometry(item)?.let {
-            GeometryHelper.getPoint(it)[1].toString()
+fun TextInputEditText.setGeometryLatitudeValue(item: FieldUiModel?) {
+    item?.let {
+        val latitudeValue = when (it.renderingType) {
+            UiRenderType.POINT -> getCurrentGeometry(it)?.let { geometry ->
+                GeometryHelper.getPoint(geometry)[1].toString()
+            }
+            else -> null
         }
-        else -> null
+        setText(latitudeValue)
     }
-    setText(latitudeValue)
 }
 
 @BindingAdapter("geometry_longitude_value")
-fun TextInputEditText.setGeometryLongitudeValue(item: FieldUiModel) {
-    val latitudeValue = when (item.renderingType) {
-        UiRenderType.POINT -> getCurrentGeometry(item)?.let {
-            GeometryHelper.getPoint(it)[0].toString()
+fun TextInputEditText.setGeometryLongitudeValue(item: FieldUiModel?) {
+    item?.let {
+        val latitudeValue = when (it.renderingType) {
+            UiRenderType.POINT -> getCurrentGeometry(it)?.let { geometry ->
+                GeometryHelper.getPoint(geometry)[0].toString()
+            }
+            else -> null
         }
-        else -> null
+        setText(latitudeValue)
     }
-    setText(latitudeValue)
 }
 
 private fun getCurrentGeometry(item: FieldUiModel): Geometry? {
@@ -123,13 +127,15 @@ fun getFeatureType(renderingType: UiRenderType?): FeatureType {
 }
 
 @BindingAdapter("geometry_polygon_value")
-fun TextInputEditText.setGeometryPolygonValue(item: FieldUiModel) {
-    val latitudeValue = when (item.renderingType) {
-        UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON ->
-            context.getString(R.string.polygon_captured)
-        else -> null
+fun TextInputEditText.setGeometryPolygonValue(item: FieldUiModel?) {
+    item?.let {
+        val latitudeValue = when (it.renderingType) {
+            UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON ->
+                context.getString(R.string.polygon_captured)
+            else -> null
+        }
+        setText(latitudeValue)
     }
-    setText(latitudeValue)
 }
 
 @BindingAdapter(
@@ -141,7 +147,7 @@ fun TextInputEditText.setGeometryPolygonValue(item: FieldUiModel) {
     requireAll = true
 )
 fun TextInputEditText.setOnGeometryLatitudeEditorActionListener(
-    item: FieldUiModel,
+    item: FieldUiModel?,
     editTextToActivate: TextInputEditText,
     errorText: TextView
 ) {
@@ -172,7 +178,7 @@ fun TextInputEditText.setOnGeometryLatitudeEditorActionListener(
     requireAll = true
 )
 fun TextInputEditText.setOnGeometryLongitudeEditorActionListener(
-    item: FieldUiModel,
+    item: FieldUiModel?,
     editTextToActivate: TextInputEditText,
     errorText: TextView
 ) {
@@ -198,7 +204,7 @@ private fun onFilledCoordinate(
     context: Context,
     lat: String,
     long: String,
-    item: FieldUiModel,
+    item: FieldUiModel?,
     errorTextView: TextView
 ): Boolean {
     return if (validateFilledCoordinates(lat, long)) {
@@ -207,7 +213,7 @@ private fun onFilledCoordinate(
         val doubleLong = long.toDoubleOrNull()
         if (doubleLat != null && doubleLong != null) {
             if (areLngLatCorrect(doubleLong, doubleLat)) {
-                item.invokeIntent(
+                item?.invokeIntent(
                     SaveCurrentLocation(
                         uid = item.uid,
                         value = GeometryHelper.createPointGeometry(doubleLong, doubleLat)
@@ -219,7 +225,7 @@ private fun onFilledCoordinate(
                 errorTextView.text = context.getString(R.string.coordinates_error)
             }
         } else {
-            item.invokeIntent(
+            item?.invokeIntent(
                 SaveCurrentLocation(
                     uid = item.uid,
                     value = null,

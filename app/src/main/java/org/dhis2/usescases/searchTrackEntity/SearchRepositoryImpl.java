@@ -22,7 +22,6 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -152,8 +151,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .toList().map(list ->
                         CollectionsKt.filter(list, item ->
-                                !(item instanceof PictureViewModel) &&
-                                        !(item instanceof CoordinateViewModel))
+                                !(item instanceof PictureViewModel))
                 ).toObservable();
     }
 
@@ -182,8 +180,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     );
                 }).toList().map(list ->
                         CollectionsKt.filter(list, item ->
-                                !(item instanceof PictureViewModel) &&
-                                        !(item instanceof CoordinateViewModel))
+                                !(item instanceof PictureViewModel))
                 ).toObservable();
     }
 
