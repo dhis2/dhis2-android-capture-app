@@ -54,6 +54,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPr
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.QRDetailBottomDialog
+import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
+import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
@@ -269,6 +271,7 @@ class FormView constructor(
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
             is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
+            is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
         }
     }
 
@@ -507,6 +510,34 @@ class FormView constructor(
             childFragmentManager,
             QRDetailBottomDialog.TAG
         )
+    }
+
+    private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
+        OrgUnitCascadeDialog(
+            uiEvent.label,
+            uiEvent.value,
+            object : CascadeOrgUnitCallbacks {
+                override fun textChangedConsumer(
+                    selectedOrgUnitUid: String,
+                    selectedOrgUnitName: String
+                ) {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            uiEvent.uid,
+                            selectedOrgUnitUid,
+                            ValueType.ORGANISATION_UNIT
+                        )
+                    )
+                }
+
+                override fun onDialogCancelled() {}
+
+                override fun onClear() {
+                    intentHandler(FormIntent.ClearValue(uiEvent.uid))
+                }
+            },
+            OrgUnitCascadeDialog.OUSelectionType.SEARCH
+        ).show(childFragmentManager, uiEvent.label)
     }
 
     override fun onRequestPermissionsResult(
