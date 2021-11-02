@@ -27,7 +27,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             ValueType.PHONE_NUMBER -> TODO()
             ValueType.EMAIL -> TODO()
             ValueType.USERNAME -> TODO()
-            ValueType.ORGANISATION_UNIT -> TODO()
+            ValueType.ORGANISATION_UNIT -> listOf(UiEventType.ORG_UNIT)
             ValueType.TRACKER_ASSOCIATE -> TODO()
             ValueType.AGE -> listOf(UiEventType.AGE_CALENDAR, UiEventType.AGE_YEAR_MONTH_DAY)
             ValueType.URL -> TODO()

@@ -21,7 +21,9 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     private val refactoredViews = intArrayOf(
         R.layout.form_age_custom,
-        R.layout.form_date_time, R.layout.form_scan
+        R.layout.form_date_time,
+        R.layout.form_scan,
+        R.layout.form_org_unit
     )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null

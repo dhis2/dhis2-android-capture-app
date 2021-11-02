@@ -6,7 +6,6 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -22,7 +21,6 @@ private val layouts = mapOf<KClass<*>, Int>(
     DisplayViewModel::class to R.layout.custom_form_display,
     FileViewModel::class to R.layout.form_button,
     OptionSetViewModel::class to R.layout.form_option_set_selector,
-    OrgUnitViewModel::class to R.layout.form_org_unit,
     PictureViewModel::class to R.layout.custom_form_picture,
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
@@ -42,6 +40,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.AGE -> R.layout.form_age_custom
             ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
+            ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
             else -> R.layout.form_edit_text_custom
         }
     }
