@@ -62,6 +62,11 @@ class UiEventFactoryImpl(
                     label,
                     value?.let { DateUtils.timeFormat().parse(it) }
                 )
+                ValueType.ORGANISATION_UNIT -> RecyclerViewUiEvents.OpenOrgUnitDialog(
+                    uid,
+                    label,
+                    value
+                )
                 else -> null
             }
         } catch (e: Exception) {
