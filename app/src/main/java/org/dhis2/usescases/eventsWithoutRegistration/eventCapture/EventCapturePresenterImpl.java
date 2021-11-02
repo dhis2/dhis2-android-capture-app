@@ -606,16 +606,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setValueChanged(@NotNull String uid) {
-        compositeDisposable.add(
-                Completable.fromCallable(() -> {
-                    eventCaptureRepository.updateFieldValue(uid);
-                    return true;
-                })
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.io())
-                        .subscribe(() -> {
-                        }, Timber::d)
-        );
+        eventCaptureRepository.updateFieldValue(uid);
     }
 
     @Override
