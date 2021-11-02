@@ -507,6 +507,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     }
 
     fun optionsFromGroups(optionGroupUids: List<String>): List<String> {
+        if (optionGroupUids.isEmpty()) return emptyList()
         val optionsFromGroups = arrayListOf<String>()
         val optionGroups = d2.optionModule().optionGroups()
             .withOptions()
