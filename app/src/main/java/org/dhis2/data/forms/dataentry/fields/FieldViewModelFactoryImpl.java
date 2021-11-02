@@ -10,7 +10,6 @@ import androidx.databinding.ObservableField;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
@@ -228,6 +227,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
+            case ORGANISATION_UNIT:
                 return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
@@ -350,21 +350,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         valueTypeRenderingType,
                         !searchMode,
                         searchMode
-                );
-            case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(
-                        id,
-                        getLayout(OrgUnitViewModel.class),
-                        label,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        !searchMode,
-                        ProgramStageSectionRenderingType.LISTING.toString(),
-                        displayNameProvider.provideDisplayName(type, value)
                 );
             case FILE_RESOURCE:
             case TRACKER_ASSOCIATE:

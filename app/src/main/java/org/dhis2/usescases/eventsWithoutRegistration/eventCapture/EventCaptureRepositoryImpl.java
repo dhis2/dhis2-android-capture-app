@@ -10,7 +10,6 @@ import org.dhis2.data.dhislogic.AuthoritiesKt;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
@@ -508,7 +507,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     rawValue = value;
                     friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
-                    boolean isOrgUnit = fieldViewModel instanceof OrgUnitViewModel;
+                    boolean isOrgUnit = fieldViewModel.getValueType() == ValueType.ORGANISATION_UNIT;
                     boolean isDate = fieldViewModel.getValueType() != null && fieldViewModel.getValueType().isDate();
                     if (!isOrgUnit && !isDate) {
                         value = friendlyValue;

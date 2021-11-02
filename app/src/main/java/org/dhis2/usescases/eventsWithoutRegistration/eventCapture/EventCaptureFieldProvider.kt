@@ -6,7 +6,6 @@ import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.RowAction
@@ -75,7 +74,7 @@ class EventCaptureFieldProvider(
                 val (rawValue, friendlyValue) = dataValue(
                     event.uid(),
                     fieldViewModel.uid,
-                    fieldViewModel is OrgUnitViewModel
+                    fieldViewModel.valueType == ValueType.ORGANISATION_UNIT
                 )
 
                 val error = checkConflicts(

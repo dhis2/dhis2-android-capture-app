@@ -9,6 +9,7 @@ class HintProviderImpl(val context: Context) : HintProvider {
     override fun provideDateHint(valueType: ValueType) =
         when (valueType) {
             ValueType.TIME -> context.getString(R.string.select_time)
+            ValueType.ORGANISATION_UNIT -> context.getString(R.string.choose_ou)
             else -> context.getString(R.string.choose_date)
         }
 }
