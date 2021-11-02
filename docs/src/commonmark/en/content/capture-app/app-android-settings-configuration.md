@@ -1,9 +1,9 @@
 # Android Settings Web App { #capture_app_andoid_settings_webapp }
 ## Overview { #capture_app_andoid_settings_webapp_overview }
 
-This section focuses on the Android Settings Web App implementation.
+This section focuses on the [Android Settings Web App](https://apps.dhis2.org/app/a1bd6b5b-de8c-4998-8d34-56c18a139683) implementation.
 
-The Android Settings Web App allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, customize the appearance of Programs, Data sets, and Home screen, and add TEI Analytics items. The configuration parameters defined within this web app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
+The Android Settings Web App allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the Android devices, customize the appearance of Programs, Data sets, and Home screen, and add TEI Analytics items. The configuration parameters defined within this web app will overwrite the settings of all Android devices using the DHIS2 Android Capture App.
 
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
@@ -18,22 +18,37 @@ Includes configurations such as the Matomo URL and project ID, the number of res
 
 ![](resources/images/capture-app-general-settings.png)
 
-**Matomo configuration:** If you already have a Matomo instance, add the Matomo URL and the project ID.
+### Matomo configuration
 
-**Mobile configuration:** This section allows admin users to edit the SMS gateway ad result sender phone number.
+The DHIS2 Android Capture App sends anonymised analytics that can be used to evaluate performance and/or detect problems at an early stage. [Matomo](https://matomo.org) is the tool used for this and running in a specific server not accessible to the general public. However, implementations can set up their own Matomo instance (or using the cloud version) in order to collect and analyse the statistics.
 
-**Reserved values:** This will specify the number of values per TEI attribute reserved to download in the devices.
+Once you have your Matomo instance ready you should get the URLs and the project ID like shown in the picture below (left). The ID can be introduced directly but the URL needs to be followed with */matomo.php* as shown below (right). 
 
-**Encrypt device database:** 
+![](resources/images/capture-app-matomo-instance.png){width=33%}
+![](resources/images/capture-app-matomo-settings.png){width=33%}
+
+### Mobile configuration
+
+This field allows admin users to edit the SMS gateway and result sender phone number.
+
+### Reserved values
+
+This field allows to specify the number of values per TEI attribute reserved to download in the devices.
+
+### Encrypt device database
+
+This check allows the user to enforce the database encryption at device level. This will increase the security level and by preventing side attacks and data leaks.
 
 > **Warning**
 >
-> This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
+> This is a critical action and will affect the local database of all Android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> By default, the android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
+> By default, the Android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance (degradation between 10-15%) of the Android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** By clicking this button, the user will remove all android configuration settings. No configuration will be applied to the Android Capture app (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
+### Disable all settings:
+
+By clicking this button, the user will remove all Android configuration settings. No configuration will be applied to the Android Capture app (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
 
 
 ## Synchronization { #capture_app_andoid_settings_webapp_synchronization }
@@ -56,7 +71,7 @@ This section controls the program data synchronization parameters. It has a sect
 
 #### Global settings { #capture_app_andoid_settings_webapp_synchronization_program_global }
 
-Global settings apply to all programs that an android user has access to. 
+Global settings apply to all programs that an Android user has access to. 
 
 
 ![](resources/images/capture-app-program-global-settings.png)
@@ -121,7 +136,7 @@ This section controls the aggregated data synchronization parameters.
 
 #### Global settings { #capture_app_andoid_settings_webapp_synchronization_data_global }
 
-The first part is for global settings that apply to all data sets an android user has access to. 
+The first part is for global settings that apply to all data sets an Android user has access to. 
 
 ![](resources/images/capture-app-dataset-global-settings.png)
 
@@ -142,7 +157,7 @@ To add a specific setting:
 
 ### User Sync Test { #capture_app_andoid_settings_webapp_synchronization_user_sync_test }
 
-This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc., that an android user has access to (so the resources that the android app will download), and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
+This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc., that an Android user has access to (so the resources that the Android app will download), and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
 ![](resources/images/capture-app-user-sync-test.png)
 
@@ -174,7 +189,7 @@ It allows the admin user to specify which filters should be shown and enable or 
 
 #### Global settings { #capture_app_andoid_settings_webapp_appearance_program_global }
 
-Global settings apply to all programs that an android user has access to.
+Global settings apply to all programs that an Android user has access to.
 
 ![](resources/images/capture-app-appearance-program-global.png)
 
@@ -199,7 +214,7 @@ It allows admins to enable/disable filters for the data set section
 
 #### Global settings { #capture_app_andoid_settings_webapp_appearance_data_global }
 
-The first part is for global settings that apply to all data sets an android user has access to.
+The first part is for global settings that apply to all data sets an Android user has access to.
 
 ![](resources/images/capture-app-appearance-dataset-global.png)
 
@@ -217,9 +232,9 @@ To add a specific setting:
 
 ## Analytics { #capture_app_andoid_settings_webapp_analytics }
 
-Analytics settings define the TEI analytics items (charts, tables) that will be displayed to the user. The scope of the analysis is the TEI, so the visualizations will be displayed in the TEI dashboard of the android app.
+Analytics settings define the TEI analytics items (charts, tables) that will be displayed to the user. The scope of the analysis is the TEI, so the visualizations will be displayed in the TEI dashboard of the Android app.
 
-Any item defined in the settings app will overwrite the default behaviour of the android app, only showing the items defined in the settings app. The purpose of this section is to define visualizations to show evolution of dataelements and program indicators over time. Based on that, it will only take into cosideration dataelements that belongs to a repeatable program stage, or programindicators which formula contains at least one dataelement that belongs to a repeatable program stage.
+Any item defined in the settings app will overwrite the default behaviour of the Android app, only showing the items defined in the settings app. The purpose of this section is to define visualizations to show evolution of dataelements and program indicators over time. Based on that, it will only take into cosideration dataelements that belongs to a repeatable program stage, or programindicators which formula contains at least one dataelement that belongs to a repeatable program stage.
 
 To create a **TEI Analytics** item:
 
@@ -258,7 +273,7 @@ A user can easily install the Android Settings Web App by logging into the DHIS2
 
 ## Log in and first time setup { #capture_app_andoid_settings_webapp_login }
 
-After a user installs and launches the Android Settings Web App for the first time, the web app will require setting and saving the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
+After a user installs and launches the Android Settings Web App for the first time, the web app will require setting and saving the default values of the configuration. This will apply default settings to all Android devices connected to the instance. 
 
 ![](resources/images/capture-app-first-time-setup.png)
 
