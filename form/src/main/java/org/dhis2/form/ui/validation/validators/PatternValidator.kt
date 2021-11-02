@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.edittext
+package org.dhis2.form.ui.validation.validators
 
 interface PatternValidator {
     fun onSuccess()

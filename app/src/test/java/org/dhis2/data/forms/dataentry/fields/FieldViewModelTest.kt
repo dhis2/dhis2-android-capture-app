@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator
+import org.dhis2.form.ui.validation.validators.PatternValidator
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertFalse
