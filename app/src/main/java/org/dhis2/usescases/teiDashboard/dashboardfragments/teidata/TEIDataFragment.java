@@ -266,6 +266,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
             binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setDashboardModel(nprogram);
+            showLoadingProgress(false);
         }
 
         binding.executePendingBindings();
