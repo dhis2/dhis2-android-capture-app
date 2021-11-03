@@ -391,12 +391,12 @@ class EventCapturePresenterTest {
 
         whenever(eventRepository.list(onRowActionProcessor)) doReturn Flowable.just(listOf())
         whenever(eventRepository.calculate()) doReturn Flowable.just(Result.success(listOf()))
-        whenever(eventRepository.getOptionsFromGroups(mutableListOf())) doReturn options
         whenever(
-            rulesUtilProvider.applyRuleEffects(any(), any(), any(), any(), any())
+            rulesUtilProvider.applyRuleEffects(any(), any(), any(), any())
         ) doReturn RuleUtilsProviderResult(
             true,
             "",
+            listOf(),
             listOf(),
             listOf(),
             listOf(),
