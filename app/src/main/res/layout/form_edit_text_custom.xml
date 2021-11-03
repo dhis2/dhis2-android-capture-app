@@ -10,11 +10,12 @@
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
@@ -111,9 +112,12 @@
                         android:textAlignment="textStart"
                         android:textIsSelectable="true"
                         android:textSize="@dimen/form_edit_text_size"
-                        app:requestFocus="@{item.focused}"
-                        app:setImeOption="@{item.keyboardActionType}"
+                        android:focusableInTouchMode="true"
+                        android:focusable="true"
                         app:onEditorActionListener="@{item}"
+                        app:onTextChangeListener="@{item}"
+                        app:requestFocus="@{item}"
+                        app:setImeOption="@{item.keyboardActionType}"
                         tools:text="hello" />
 
                 </com.google.android.material.textfield.TextInputLayout>

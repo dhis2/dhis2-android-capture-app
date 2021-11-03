@@ -15,7 +15,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
@@ -86,7 +86,7 @@
                 android:layout_marginEnd="8dp"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/label"
-                app:layout_constraintEnd_toStartOf="@id/clear_button"
+                app:layout_constraintEnd_toStartOf="@id/clearButton"
                 app:layout_constraintStart_toEndOf="@id/label"
                 app:layout_constraintTop_toTopOf="@+id/label"
                 app:srcCompat="@drawable/ic_info_outline"
@@ -117,14 +117,17 @@
                     android:textColor="@color/textPrimary"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:requestFocus="@{item.focused}"
+                    app:clearButton="@{clearButton}"
+                    app:onEditorActionListener="@{item}"
+                    app:onTextChangeListener="@{item}"
+                    app:requestFocus="@{item}"
                     app:setImeOption="@{item.keyboardActionType}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:id="@+id/clear_button"
+                android:id="@+id/clearButton"
                 style="@style/ActionIcon"
                 app:layout_constraintEnd_toEndOf="@id/fieldBackground"
                 app:layout_constraintTop_toTopOf="@id/fieldBackground"

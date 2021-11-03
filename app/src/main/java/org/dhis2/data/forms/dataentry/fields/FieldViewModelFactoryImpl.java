@@ -230,39 +230,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
 
         switch (type) {
-            case TEXT:
-            case EMAIL:
-            case LETTER:
-            case NUMBER:
-            case INTEGER:
-            case LONG_TEXT:
-            case PERCENTAGE:
-            case PHONE_NUMBER:
-            case INTEGER_NEGATIVE:
-            case INTEGER_POSITIVE:
-            case INTEGER_ZERO_OR_POSITIVE:
-            case UNIT_INTERVAL:
-            case URL:
-                if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(
-                            id,
-                            getLayout(ScanTextViewModel.class),
-                            label,
-                            mandatory,
-                            value,
-                            section,
-                            editable,
-                            optionSet,
-                            description,
-                            objectStyle,
-                            fieldRendering,
-                            valueTypeHintMap.get(type),
-                            !searchMode,
-                            searchMode,
-                            style,
-                            type
-                    );
-                }
             case BOOLEAN:
             case TRUE_ONLY:
                 ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;

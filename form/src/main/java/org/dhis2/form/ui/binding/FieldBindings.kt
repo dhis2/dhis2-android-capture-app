@@ -6,6 +6,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
@@ -21,6 +22,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
+import org.hisp.dhis.android.core.common.ValueType
 
 @BindingAdapter("label_text_color")
 fun TextView.setLabelTextColor(style: FormUiModelStyle?) {
@@ -146,17 +148,21 @@ fun bindOnEditorActionListener(editText: EditText, item: FieldUiModel) {
     }
 }
 
-@BindingAdapter("onTextChangeListener")
-fun bindOnTextChangeListener(editText: EditText, item: FieldUiModel) {
+@BindingAdapter(value = ["onTextChangeListener", "clearButton"], requireAll = false)
+fun bindOnTextChangeListener(editText: EditText, item: FieldUiModel, clearButton: ImageView?) {
     editText.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
         override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
             if (valueHasChanged(editText.text.toString(), item.value) && editText.hasFocus()) {
                 item.onTextChange(charSequence.toString())
             }
-            /*if (isLongText) {
-                updateDeleteVisibility(findViewById<View>(R.id.clear_button))
-            }*/
+            if (item.valueType == ValueType.LONG_TEXT) {
+                if (item.editable && editText.text.toString().isNotEmpty()) {
+                    clearButton?.visibility = View.VISIBLE
+                } else {
+                    clearButton?.visibility = View.GONE
+                }
+            }
         }
 
         override fun afterTextChanged(editable: Editable) {}
@@ -189,4 +195,30 @@ fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
 
 private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean {
     return storedValue != currentValue
+}
+
+@BindingAdapter("requestFocus")
+fun requestFocus(editText: EditText, item: FieldUiModel) {
+    if (item.focused) {
+        editText.requestFocus()
+        editText.isCursorVisible = true
+//        editText.openKeyboard()
+    } else {
+        editText.clearFocus()
+        editText.isCursorVisible = false
+    }
+    editText.setOnTouchListener { _, event ->
+        if (event.action == ACTION_UP) {
+            item.onItemClick()
+        }
+        false
+    }
+
+    editText.setOnFocusChangeListener { v, hasFocus ->
+        if (hasFocus) {
+            //        editText.openKeyboard()
+        } else if (valueHasChanged(editText.text.toString(), item.value)) {
+            //sendAction
+        }
+    }
 }

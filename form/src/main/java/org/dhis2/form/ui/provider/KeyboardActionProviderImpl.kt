@@ -10,7 +10,6 @@ class KeyboardActionProviderImpl : KeyboardActionProvider {
     override fun provideKeyboardAction(valueType: ValueType) =
         when (valueType) {
             LONG_TEXT -> KeyboardActionType.ENTER
-            TEXT -> KeyboardActionType.NEXT
-            else -> null
+            else -> KeyboardActionType.NEXT
         }
 }
