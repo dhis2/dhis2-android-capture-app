@@ -17,6 +17,7 @@ class MatomoAnalyticsControllerImpl(
         matomoTracker?.let {
             it.userId = identification
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             it.userId = identification
         }
@@ -27,6 +28,14 @@ class MatomoAnalyticsControllerImpl(
             TrackHelper.track().event(category, action).name(label).with(it)
         }
 
+        updateDhisImplementationTrackerFirstTime()
+
+        dhisImplementationTracker?.let {
+            TrackHelper.track().event(category, action).name(label).with(it)
+        }
+    }
+
+    private fun updateDhisImplementationTrackerFirstTime() {
         if (dhisImplementationTracker == null && D2Manager.isD2Instantiated()) {
             D2Manager.getD2().settingModule()?.let { settingModule ->
                 val url = settingModule.generalSetting().blockingGet().matomoURL()
@@ -35,10 +44,6 @@ class MatomoAnalyticsControllerImpl(
                     updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
                 }
             }
-        }
-
-        dhisImplementationTracker?.let {
-            TrackHelper.track().event(category, action).name(label).with(it)
         }
     }
 
@@ -53,6 +58,7 @@ class MatomoAnalyticsControllerImpl(
             TrackHelper.track().dimension(index, dimensionValue)
                 .event(category, action).name(label).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().dimension(index, dimensionValue)
                 .event(category, action).name(label).with(it)
@@ -63,6 +69,7 @@ class MatomoAnalyticsControllerImpl(
         matomoTracker?.let {
             TrackHelper.track().screen(screen).title(title).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().screen(screen).title(title).with(it)
         }
@@ -78,6 +85,7 @@ class MatomoAnalyticsControllerImpl(
             TrackHelper.track().screen(screen).title(title)
                 .dimension(index, dimensionValue).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().screen(screen).title(title)
                 .dimension(index, dimensionValue).with(it)
@@ -94,6 +102,7 @@ class MatomoAnalyticsControllerImpl(
                 TrackHelper.track().screen(screen).title(title).dimension(key, value).with(it)
             }
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             dimensions.forEach { (key, value) ->
                 TrackHelper.track().screen(screen).title(title).dimension(key, value).with(it)
@@ -113,6 +122,7 @@ class MatomoAnalyticsControllerImpl(
             TrackHelper.track().screen(screen).title(title).dimension(firstIndex, firstValue)
                 .dimension(secondIndex, secondValue).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().screen(screen).title(title).dimension(firstIndex, firstValue)
                 .dimension(secondIndex, secondValue).with(it)
@@ -123,6 +133,7 @@ class MatomoAnalyticsControllerImpl(
         matomoTracker?.let {
             TrackHelper.track().exception(exception).description(description).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().exception(exception).description(description).with(it)
         }
@@ -149,6 +160,7 @@ class MatomoAnalyticsControllerImpl(
         matomoTracker?.let {
             TrackHelper.track().download().identifier(apkChecksum).with(it)
         }
+        updateDhisImplementationTrackerFirstTime()
         dhisImplementationTracker?.let {
             TrackHelper.track().download().identifier(apkChecksum).with(it)
         }
