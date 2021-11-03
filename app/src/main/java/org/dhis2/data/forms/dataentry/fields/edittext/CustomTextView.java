@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
@@ -45,12 +46,14 @@ import org.dhis2.R;
 import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.form.ui.validation.validators.PatternValidator;
+import org.dhis2.form.ui.validation.failures.FieldMaskFailure;
+import org.dhis2.form.ui.validation.validators.FieldMaskValidator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.FieldLayout;
+import org.hisp.dhis.android.core.arch.helpers.Result;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -462,27 +465,24 @@ public class CustomTextView extends FieldLayout {
         getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
     }
 
-    private void validateRegex(String valueToValidate) {
+    private void validateRegex(@Nullable String valueToValidate) {
         if (!viewModel.isSearchMode()) {
-            viewModel.validateWithFieldMask(valueToValidate, new PatternValidator() {
-                @Override
-                public void onSuccess() {
-                    setWarning(viewModel.warning(), viewModel.error());
-                }
-
-                @Override
-                public void onError() {
+            Result<String, FieldMaskFailure> result = new FieldMaskValidator(viewModel.fieldMask())
+                    .validateNullSafe(valueToValidate);
+            result.fold(value -> {
+                setWarning(viewModel.warning(), viewModel.error());
+                return null;
+            }, fieldMaskFailure -> {
+                if (fieldMaskFailure instanceof FieldMaskFailure.WrongPatternException) {
                     setWarning(getContext().getString(R.string.wrong_pattern), "");
-                }
-
-                @Override
-                public void onPatternError() {
+                } else if (fieldMaskFailure instanceof FieldMaskFailure.InvalidPatternException) {
                     setWarning(
                             String.format(
                                     getContext().getString(R.string.pattern_error),
                                     viewModel.fieldMask()),
                             "");
                 }
+                return null;
             });
         }
     }
