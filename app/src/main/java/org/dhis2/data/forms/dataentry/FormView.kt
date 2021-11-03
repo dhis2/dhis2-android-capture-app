@@ -308,9 +308,11 @@ class FormView constructor(
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
-        items.firstOrNull { it.focused }?.let {
-            if (!doesItemNeedsKeyboard(it)) {
-                closeKeyboard()
+        items.firstOrNull { it.focused }?.let { fieldUiModel ->
+            fieldUiModel.valueType?.let { valueType ->
+                if (!valueType.needsKeyboard) {
+                    closeKeyboard()
+                }
             }
         }
     }
@@ -318,23 +320,6 @@ class FormView constructor(
     private fun closeKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
-    }
-
-    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item.valueType) {
-        ValueType.TEXT,
-        ValueType.EMAIL,
-        ValueType.LETTER,
-        ValueType.NUMBER,
-        ValueType.INTEGER,
-        ValueType.LONG_TEXT,
-        ValueType.PERCENTAGE,
-        ValueType.PHONE_NUMBER,
-        ValueType.INTEGER_NEGATIVE,
-        ValueType.INTEGER_POSITIVE,
-        ValueType.UNIT_INTERVAL,
-        ValueType.URL,
-        ValueType.COORDINATE -> true
-        else -> false
     }
 
     private fun intentHandler(intent: FormIntent) {
