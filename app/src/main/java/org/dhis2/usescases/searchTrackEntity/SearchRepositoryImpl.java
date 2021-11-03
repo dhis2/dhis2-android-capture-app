@@ -840,22 +840,20 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (programUid == null) return false;
 
         boolean teTypeHasCoordinates = false;
-        FeatureType teTypeFeatureType = d2.trackedEntityModule().trackedEntityTypes()
+        TrackedEntityType teTypeFeatureType = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiType)
-                .blockingGet()
-                .featureType();
+                .blockingGet();
 
-        if (teTypeFeatureType != null && teTypeFeatureType != FeatureType.NONE) {
+        if (teTypeFeatureType.featureType() != null && teTypeFeatureType.featureType() != FeatureType.NONE) {
             teTypeHasCoordinates = true;
         }
 
         boolean enrollmentHasCoordinates = false;
-        FeatureType enrollmentFeatureType = d2.programModule().programs()
+        Program enrollmentFeatureType = d2.programModule().programs()
                 .uid(programUid)
-                .blockingGet()
-                .featureType();
+                .blockingGet();
 
-        if (enrollmentFeatureType != null && enrollmentFeatureType != FeatureType.NONE) {
+        if (enrollmentFeatureType.featureType() != null && enrollmentFeatureType.featureType() != FeatureType.NONE) {
             enrollmentHasCoordinates = true;
         }
 
