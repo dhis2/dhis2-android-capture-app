@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.coordinate
+package org.dhis2.data.forms.dataentry.tablefields.coordinate
 
 import android.view.View
 import android.widget.EditText
@@ -11,6 +11,7 @@ import org.dhis2.Bindings.parseToDouble
 import org.dhis2.R
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.uicomponents.map.geometry.isLatitudeValid
 import org.dhis2.uicomponents.map.geometry.isLongitudeValid
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
