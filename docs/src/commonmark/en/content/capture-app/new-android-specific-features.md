@@ -142,7 +142,7 @@ The filter 'Enrollment status' offers three options: Active, Completed, Cancelle
 
 ### Follow-Up (New 2.5)
 
-Filter TEIs by Follow-up marks.
+The 'Follow UO'Filter allowes the user to filter out the TEIs that have been marked as 'Follow-up'. TEIs can be marked to be followed up in the TEI Dashbaord.
 
 ### Filtering added in TEI Dashboard: { #capture_app_generic_filter_tei }
 
