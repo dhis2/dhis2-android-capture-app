@@ -310,11 +310,17 @@ class FormView constructor(
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
         items.firstOrNull { it.focused }?.let { fieldUiModel ->
             fieldUiModel.valueType?.let { valueType ->
-                if (!valueType.needsKeyboard) {
+                if (!needsKeyboard(valueType)) {
                     closeKeyboard()
                 }
             }
         }
+    }
+
+    private fun needsKeyboard(valueType: ValueType): Boolean {
+        return valueType.isText ||
+            valueType.isNumeric ||
+            valueType.isInteger
     }
 
     private fun closeKeyboard() {

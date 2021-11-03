@@ -7,7 +7,7 @@ interface UiEventFactory {
 
     fun generateEvent(
         value: String?,
-        uiEventType: UiEventType?,
-        renderingType: UiRenderType?
+        uiEventType: UiEventType? = null,
+        renderingType: UiRenderType? = null
     ): RecyclerViewUiEvents?
 }
