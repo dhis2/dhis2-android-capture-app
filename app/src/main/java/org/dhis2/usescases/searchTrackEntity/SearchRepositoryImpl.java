@@ -151,7 +151,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .toList().map(list ->
                         CollectionsKt.filter(list, item ->
-                                !(item instanceof PictureViewModel))
+                                !(item instanceof PictureViewModel) &&
+                                        item.getValueType() != ValueType.COORDINATE)
                 ).toObservable();
     }
 
@@ -180,7 +181,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     );
                 }).toList().map(list ->
                         CollectionsKt.filter(list, item ->
-                                !(item instanceof PictureViewModel))
+                                !(item instanceof PictureViewModel) &&
+                                        item.getValueType() != ValueType.COORDINATE)
                 ).toObservable();
     }
 
