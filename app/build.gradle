@@ -45,6 +45,7 @@ android {
         versionCode versions.vCode
         versionName versions.vName
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
