@@ -4,6 +4,12 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -116,11 +122,45 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
 fun setImeOption(editText: EditText, type: KeyboardActionType?) {
     if (type != null) {
         when (type) {
-            KeyboardActionType.NEXT -> editText.imeOptions = EditorInfo.IME_ACTION_NEXT
-            KeyboardActionType.DONE -> editText.imeOptions = EditorInfo.IME_ACTION_DONE
-            KeyboardActionType.ENTER -> editText.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
+            KeyboardActionType.NEXT -> editText.imeOptions = IME_ACTION_NEXT
+            KeyboardActionType.DONE -> editText.imeOptions = IME_ACTION_DONE
+            KeyboardActionType.ENTER -> editText.imeOptions = IME_FLAG_NO_ENTER_ACTION
         }
     }
+}
+
+@BindingAdapter("onEditorActionListener")
+fun bindOnEditorActionListener(editText: EditText, item: FieldUiModel) {
+    editText.setOnEditorActionListener { _, actionId, _ ->
+        when (actionId) {
+            IME_ACTION_NEXT -> {
+                item.onNext()
+                true
+            }
+            IME_ACTION_DONE -> {
+//                closeKeyboard(context)
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+@BindingAdapter("onTextChangeListener")
+fun bindOnTextChangeListener(editText: EditText, item: FieldUiModel) {
+    editText.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+            if (valueHasChanged(editText.text.toString(), item.value) && editText.hasFocus()) {
+                item.onTextChange(charSequence.toString())
+            }
+            /*if (isLongText) {
+                updateDeleteVisibility(findViewById<View>(R.id.clear_button))
+            }*/
+        }
+
+        override fun afterTextChanged(editable: Editable) {}
+    })
 }
 
 @BindingAdapter("optionTint")
@@ -145,4 +185,8 @@ fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
             }
         }
     }
+}
+
+private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean {
+    return storedValue != currentValue
 }

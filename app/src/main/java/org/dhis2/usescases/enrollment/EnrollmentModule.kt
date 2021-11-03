@@ -24,6 +24,7 @@ import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -114,7 +115,8 @@ class EnrollmentModule(
             LayoutProviderImpl(),
             HintProviderImpl(context),
             DisplayNameProviderImpl(d2),
-            UiEventTypesProviderImpl()
+            UiEventTypesProviderImpl(),
+            KeyboardActionProviderImpl()
         )
     }
 

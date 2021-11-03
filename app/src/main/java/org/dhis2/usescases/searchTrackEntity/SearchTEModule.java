@@ -28,6 +28,7 @@ import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
@@ -153,8 +154,8 @@ public class SearchTEModule {
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
-                new UiEventTypesProviderImpl()
-        );
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl());
     }
 
     @Provides

@@ -7,6 +7,7 @@ import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.KeyboardActionType;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.UiEventType;
 import org.dhis2.form.model.UiRenderType;
@@ -446,5 +447,13 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public boolean getHasImage() {
         return false;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public KeyboardActionType getKeyboardActionType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
     }
 }

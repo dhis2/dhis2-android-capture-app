@@ -65,6 +65,8 @@ interface FieldUiModel {
 
     val hasImage: Boolean
 
+    val keyboardActionType: KeyboardActionType?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

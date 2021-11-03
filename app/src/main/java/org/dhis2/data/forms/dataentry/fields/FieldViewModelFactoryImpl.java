@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
@@ -21,6 +20,7 @@ import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.event.UiEventFactoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.HintProvider;
+import org.dhis2.form.ui.provider.KeyboardActionProvider;
 import org.dhis2.form.ui.provider.LayoutProvider;
 import org.dhis2.form.ui.provider.UiEventTypesProvider;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
@@ -70,6 +70,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final HintProvider hintProvider;
     private final DisplayNameProvider displayNameProvider;
     private final UiEventTypesProvider uiEventTypesProvider;
+    private final KeyboardActionProvider keyboardActionProvider;
 
     public FieldViewModelFactoryImpl(
             @NonNull Map<ValueType, String> valueTypeHintMap,
@@ -78,8 +79,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             LayoutProvider layoutProvider,
             HintProvider hintProvider,
             DisplayNameProvider displayNameProvider,
-            UiEventTypesProvider uiEventTypesProvider
-    ) {
+            UiEventTypesProvider uiEventTypesProvider,
+            KeyboardActionProvider keyboardActionProvider) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
         this.colorFactory = colorFactory;
@@ -87,6 +88,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         this.hintProvider = hintProvider;
         this.displayNameProvider = displayNameProvider;
         this.uiEventTypesProvider = uiEventTypesProvider;
+        this.keyboardActionProvider = keyboardActionProvider;
     }
 
     @Nullable
@@ -228,37 +230,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
 
         switch (type) {
-            case AGE:
-            case TIME:
-            case DATE:
-            case DATETIME:
-            case ORGANISATION_UNIT:
-            case COORDINATE:
-            case IMAGE:
-                return new FieldUiModelImpl(
-                        id,
-                        getLayoutByValueType(type, null),
-                        value,
-                        false,
-                        null,
-                        editable,
-                        null,
-                        mandatory,
-                        label,
-                        section,
-                        style,
-                        hintProvider.provideDateHint(type),
-                        description,
-                        type,
-                        null,
-                        null,
-                        allowFutureDates,
-                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value, optionSet),
-                        uiEventTypesProvider.provideUiEvents(type),
-                        uiEventTypesProvider.provideUiRenderType(featureType),
-                        null
-                );
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -290,27 +261,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             searchMode,
                             style,
                             type
-                    );
-                } else {
-                    return EditTextViewModel.create(
-                            id,
-                            getLayoutByValueType(type, null),
-                            label,
-                            mandatory,
-                            value,
-                            valueTypeHintMap.get(type),
-                            1,
-                            type,
-                            section,
-                            editable,
-                            description,
-                            fieldRendering,
-                            objectStyle,
-                            fieldMask,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
-                            !searchMode,
-                            searchMode,
-                            legendValue
                     );
                 }
             case BOOLEAN:
@@ -347,25 +297,29 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         type
                 );
             default:
-                return EditTextViewModel.create(
+                return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
-                        label,
-                        mandatory,
                         value,
-                        valueTypeHintMap.get(type),
-                        1,
-                        type,
-                        section,
+                        false,
+                        null,
                         editable,
+                        null,
+                        mandatory,
+                        label,
+                        section,
+                        style,
+                        hintProvider.provideDateHint(type),
                         description,
-                        fieldRendering,
-                        objectStyle,
-                        fieldMask,
-                        ProgramStageSectionRenderingType.LISTING.toString(),
-                        !searchMode,
-                        searchMode,
-                        legendValue
+                        type,
+                        null,
+                        null,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
+                        uiEventTypesProvider.provideUiEvents(type),
+                        uiEventTypesProvider.provideUiRenderType(featureType),
+                        keyboardActionProvider.provideKeyboardAction(type)
                 );
         }
     }

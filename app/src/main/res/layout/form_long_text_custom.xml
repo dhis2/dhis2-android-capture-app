@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
             name="item"
-            type="org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel" />
+            type="org.dhis2.form.model.FieldUiModel" />
 
     </data>
 
@@ -23,18 +25,125 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
             android:background="?colorPrimary"
-            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <org.dhis2.data.forms.dataentry.fields.edittext.CustomTextView
-            android:id="@+id/custom_edittext"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:viewModel="@{item}" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/renderImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:srcCompat="@drawable/sierra_leone"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/fieldBackground"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bottomsheet_bg"
+                app:layout_constraintBottom_toBottomOf="@id/input_layout"
+                app:layout_constraintTop_toBottomOf="@id/renderImage" />
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/FieldLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@{item.label}"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="@id/fieldBackground"
+                app:layout_constraintTop_toTopOf="@id/fieldBackground"
+                tools:text="lorem" />
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
+                android:layout_width="12dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/label"
+                app:layout_constraintEnd_toStartOf="@id/clear_button"
+                app:layout_constraintStart_toEndOf="@id/label"
+                app:layout_constraintTop_toTopOf="@+id/label"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:hint='@{item.hint}'
+                android:paddingTop="10dp"
+                android:theme="@style/loginInputText"
+                app:layout_constraintEnd_toEndOf="@id/fieldBackground"
+                app:layout_constraintStart_toStartOf="@id/fieldBackground"
+                app:layout_constraintTop_toBottomOf="@id/label"
+                tools:hint="hint">
+
+                <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
+                    android:id="@+id/input_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="start"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="36dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/textPrimary"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:requestFocus="@{item.focused}"
+                    app:setImeOption="@{item.keyboardActionType}"
+                    tools:text="hello" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/clear_button"
+                style="@style/ActionIcon"
+                app:layout_constraintEnd_toEndOf="@id/fieldBackground"
+                app:layout_constraintTop_toTopOf="@id/fieldBackground"
+                app:srcCompat="@drawable/ic_clear"
+                app:tint="@color/default_field_icon_color"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/descIcon"
+                style="@style/ActionIconUnwrap"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary"
+                tools:ignore="ContentDescription" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

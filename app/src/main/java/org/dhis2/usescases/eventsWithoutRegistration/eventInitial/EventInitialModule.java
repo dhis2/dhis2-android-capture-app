@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
@@ -88,8 +89,8 @@ public class EventInitialModule {
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
-                new UiEventTypesProviderImpl()
-        );
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl());
     }
 
     @Provides
