@@ -185,9 +185,6 @@
     <string name="log_out">Cerrar Sesion</string>
     <string name="block_session">Bloquear sesion</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Seleccione ubicación</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
@@ -465,7 +462,6 @@
     <string name="sectionSelectorPrev">ANTERIOR</string>
     <string name="sectionSelectorNext">SIGUIENTE</string>
     <string name="event_overview">Detalles</string>
-    <string name="event_event">Evento</string>
     <string name="event_indicators">Indicadores</string>
     <string name="event_notes">Notas</string>
     <string name="complete_add_new"><![CDATA[Completar y añadir]]></string>
@@ -542,7 +538,6 @@
     <string name="dashboard_menu_delete_tei">Borrar TEI</string>
     <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
-    <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
     <string name="adjusting_form">Adaptando el formulario...</string>
@@ -596,7 +591,6 @@
     <string name="value_required_but_not_provided">%s es obligatorio y no tiene valor</string>
     <string name="polygon_captured">Polígono guardado</string>
     <string name="polygon">Polígono</string>
-    <string name="map_layers">Capas del Mapa</string>
     <!--endregion-->
 
     <string name="wrong_pattern">No tiene el formato correcto</string>
@@ -692,8 +686,6 @@
     <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
     <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
     <string name="dialog_layer_satellite">Mostrar vista satélite</string>
-    <string name="dialog_layer_satellite_base_map">Vista satélite</string>
-    <string name="dialog_layer_street_base_map">Vista de calle</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
@@ -717,7 +709,6 @@
     <string name="filters_title_event_status">Estado del evento</string>
     <string name="filters_title_enrollment_status">Estado de la inscripción.</string>
     <string name="enrollment_date">Fecha de inscripción</string>
-    <string name="action_apply">Aplicar</string>
     <string name="dataset_empty_list_can_create">No hay datos. Pulsa \"+\" para añadir un nuevo registro</string>
     <string name="dataset_emtpy_list_can_not_create">No hay datos. No tienes permisos para añadir un nuevo registro.</string>
     <string name="validation_rules_empty_description">No se han proporcionado descripción o instrucciones</string>
@@ -727,8 +718,6 @@
     <string name="enrollment_status_active">Abierto</string>
     <string name="enrollment_status_completed">Completar</string>
     <string name="enrollment_status_cancelled">Cancelar</string>
-    <string name="no_data">No hay datos</string>
-    <string name="no_coordinates_item">Este %s no tiene coordenadas.</string>
     <string name="event_data">Datos</string>
     <string name="download_tei_error">El %s seleccionado no puede ser descargado.</string>
     <string name="completed_by">Completado por %s: %s</string>
@@ -815,7 +804,6 @@
     <string name="section_indicators">Indicadores</string>
     <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebes habilitarlo para usar esta función.</string>
     <string name="value">Valor</string>
-    <string name="enrolled_in">Inscrito en:</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
     <string name="take_photo">Toma foto</string>
     <string name="from_gallery">Elija de la galería</string>

@@ -22,10 +22,10 @@ import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.android_maps.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -45,11 +45,11 @@ class SearchTEPresenterTest {
     private val repository: SearchRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
-    private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection = mock()
-    private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection =
+    private val mapTeisToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection = mock()
+    private val mapTeiEventsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection = mock()
+    private val mapCoordinateFieldToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection =
         mock()
-    private val eventToEventUiComponent: EventToEventUiComponent = mock()
+    private val eventToEventUiComponent: org.dhis2.android_maps.mapper.EventToEventUiComponent = mock()
     private val initialProgram = "programUid"
     private val preferenceProvider: PreferenceProvider = mock()
     private val dhisMapUtils: DhisMapUtils = mock()

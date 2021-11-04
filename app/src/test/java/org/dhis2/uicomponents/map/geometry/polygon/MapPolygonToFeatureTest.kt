@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry.polygon
 
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.android_maps.geometry.bound.BoundsGeometry
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -9,8 +9,9 @@ import org.junit.Test
 
 class MapPolygonToFeatureTest {
 
-    private lateinit var mapPolygonToFeature: MapPolygonToFeature
-    private val boundsGeometry: BoundsGeometry = BoundsGeometry()
+    private lateinit var mapPolygonToFeature: org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature
+    private val boundsGeometry: org.dhis2.android_maps.geometry.bound.BoundsGeometry =
+        org.dhis2.android_maps.geometry.bound.BoundsGeometry()
 
     private val longitude1 = 43.34532
     private val latitude1 = -23.98234
@@ -19,7 +20,7 @@ class MapPolygonToFeatureTest {
 
     @Before
     fun setup() {
-        mapPolygonToFeature = MapPolygonToFeature()
+        mapPolygonToFeature = org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature()
     }
 
     @Test

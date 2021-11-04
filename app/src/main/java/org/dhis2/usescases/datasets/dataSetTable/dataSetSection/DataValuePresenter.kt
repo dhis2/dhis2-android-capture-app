@@ -15,9 +15,9 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
-import org.dhis2.data.tuples.Pair
-import org.dhis2.data.tuples.Sextet
-import org.dhis2.data.tuples.Trio
+import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Sextet
+import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -162,11 +162,11 @@ class DataValuePresenter(
                         repository.getGreyFields(sectionName),
                         repository.getCompulsoryDataElements(),
                         Function5 { dataElements: List<DataElement>,
-                            optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
+                                    optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
                                             Category>>>>,
-                            dataValues: List<DataSetTableModel>,
-                            disabledDataElements: List<DataElementOperand>,
-                            compulsoryCells: List<DataElementOperand> ->
+                                    dataValues: List<DataSetTableModel>,
+                                    disabledDataElements: List<DataElementOperand>,
+                                    compulsoryCells: List<DataElementOperand> ->
                             var options: List<List<String>> = ArrayList()
                             for ((_, value) in optionsWithCategory) {
                                 options = getCatOptionCombos(value, 0, ArrayList(), null)

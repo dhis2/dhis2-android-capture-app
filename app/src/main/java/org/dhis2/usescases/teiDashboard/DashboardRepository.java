@@ -3,9 +3,8 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -26,7 +25,6 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
 
 public interface DashboardRepository {
 

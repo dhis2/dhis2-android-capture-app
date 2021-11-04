@@ -40,7 +40,7 @@ import org.dhis2.form.model.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.databinding.DataElementLegendBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
+import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.DateUtils;

@@ -71,7 +71,7 @@
             app:srcCompat="@drawable/ic_map_position_ripple" />
 
 
-        <org.dhis2.uicomponents.map.views.CarouselView
+        <org.dhis2.android_maps.views.CarouselView
             android:id="@+id/map_carousel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

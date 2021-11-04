@@ -16,7 +16,7 @@ buildscript {
         // allows to set BuildConfig fields during compilation
         // without breaking incremental compilation
         classpath "hu.supercluster:paperwork-plugin:1.2.7"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
     }
 }
 

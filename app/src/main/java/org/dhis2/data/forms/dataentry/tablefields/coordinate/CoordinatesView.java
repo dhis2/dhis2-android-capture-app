@@ -30,7 +30,6 @@ import org.dhis2.databinding.DatasetFormCoordinatesBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
-import org.dhis2.uicomponents.map.geometry.LngLatValidatorKt;
 import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ActivityResultObservable;

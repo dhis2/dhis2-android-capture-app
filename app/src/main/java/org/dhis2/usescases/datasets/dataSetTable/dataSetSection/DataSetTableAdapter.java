@@ -40,7 +40,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;

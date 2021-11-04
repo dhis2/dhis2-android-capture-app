@@ -6,24 +6,15 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
+import org.dhis2.commons.data.SearchTeiModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
@@ -35,20 +26,22 @@ import org.junit.Test
 
 class MapTeisToFeatureCollectionTest {
 
-    private lateinit var mapTeisToFeatureCollection: MapTeisToFeatureCollection
-    private val bounds: BoundsGeometry = BoundsGeometry()
-    private val mapPointToFeature: MapPointToFeature = mock()
-    private val mapPolygonToFeature: MapPolygonToFeature = mock()
-    private val mapPolygonPointToFeature: MapPolygonPointToFeature = mock()
-    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel =
+    private lateinit var mapTeisToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+    private val bounds: org.dhis2.android_maps.geometry.bound.BoundsGeometry =
+        org.dhis2.android_maps.geometry.bound.BoundsGeometry()
+    private val mapPointToFeature: org.dhis2.android_maps.geometry.point.MapPointToFeature = mock()
+    private val mapPolygonToFeature: org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature = mock()
+    private val mapPolygonPointToFeature: org.dhis2.android_maps.geometry.polygon.MapPolygonPointToFeature = mock()
+    private val mapRelationshipToRelationshipMapModel: org.dhis2.android_maps.mapper.MapRelationshipToRelationshipMapModel =
         mock()
-    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
-    private val boundingBox: GetBoundingBox = GetBoundingBox()
+    private val mapRelationshipsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection = mock()
+    private val boundingBox: org.dhis2.android_maps.geometry.bound.GetBoundingBox =
+        org.dhis2.android_maps.geometry.bound.GetBoundingBox()
 
     @Before
     fun setup() {
         mapTeisToFeatureCollection =
-            MapTeisToFeatureCollection(
+            org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection(
                 bounds, mapPointToFeature,
                 mapPolygonToFeature, mapPolygonPointToFeature,
                 mapRelationshipToRelationshipMapModel, mapRelationshipsToFeatureCollection
@@ -70,7 +63,7 @@ class MapTeisToFeatureCollectionTest {
 
         val pointFeatureResult = featureCollectionResults?.features()?.get(0)?.geometry() as Point
         val uid = featureCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         val image = featureCollectionResults.features()?.get(0)?.getStringProperty(TEI_IMAGE)
         assertThat(pointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(pointFeatureResult.latitude(), `is`(POINT_LATITUDE))
@@ -148,7 +141,7 @@ class MapTeisToFeatureCollectionTest {
         val teiPointFeatureResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
         val uid = featureTeiCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         assertThat(teiPointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(teiPointFeatureResult.latitude(), `is`(POINT_LATITUDE))
         assertThat(uid, `is`(TEI_UID))
@@ -184,7 +177,7 @@ class MapTeisToFeatureCollectionTest {
         val featureTeiResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Polygon
         val uidTeiFeature = featureTeiCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         assertThat(featureTeiResult.coordinates()[0][0].longitude(), `is`(POINT_LONGITUDE))
         assertThat(featureTeiResult.coordinates()[0][0].latitude(), `is`(POINT_LATITUDE))
         assertThat(uidTeiFeature, `is`(TEI_UID))
@@ -192,7 +185,7 @@ class MapTeisToFeatureCollectionTest {
         val featureTeiEnrollmentResult =
             featureTeiCollectionResults.features()?.get(1)?.geometry() as Polygon
         val uidTeiEnrollmentFeature = featureTeiCollectionResults.features()?.get(1)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureTeiEnrollmentResult.coordinates()[0][0].longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT)
@@ -206,7 +199,7 @@ class MapTeisToFeatureCollectionTest {
         val featureEnrollmentFirstResult =
             featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Polygon
         val featureEnrollmentFirstUid = featureEnrollmentCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentFirstResult.coordinates()[0][0].longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT)
@@ -220,7 +213,7 @@ class MapTeisToFeatureCollectionTest {
         val featureEnrollmentSecondResult =
             featureEnrollmentCollectionResults.features()?.get(1)?.geometry() as Polygon
         val featureEnrollmentSecondUid = featureEnrollmentCollectionResults.features()?.get(1)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            ?.getStringProperty(org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentSecondResult.coordinates()[0][0].longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT)

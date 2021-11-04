@@ -9,11 +9,12 @@ import androidx.paging.PagedList;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
-import org.dhis2.data.dhislogic.DhisMapUtils;
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.android_maps.managers.EventMapManager;
+import org.dhis2.android_maps.utils.DhisMapUtils;
+import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
-import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;

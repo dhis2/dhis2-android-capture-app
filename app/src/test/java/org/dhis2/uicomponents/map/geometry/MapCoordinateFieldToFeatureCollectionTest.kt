@@ -5,9 +5,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.data.dhislogic.CoordinateDataElementInfo
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapAttributeToFeature
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -22,16 +22,17 @@ import org.junit.Test
 
 class MapCoordinateFieldToFeatureCollectionTest {
 
-    private lateinit var mapper: MapCoordinateFieldToFeatureCollection
-    private val attributeToFeatureMapper: MapAttributeToFeature = mock()
-    private val dataElementToFeatureMapper: MapDataElementToFeature = mock()
+    private lateinit var mapper: org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+    private val attributeToFeatureMapper: org.dhis2.android_maps.geometry.mapper.featurecollection.MapAttributeToFeature = mock()
+    private val dataElementToFeatureMapper: org.dhis2.android_maps.geometry.mapper.featurecollection.MapDataElementToFeature = mock()
 
     @Before
     fun setUp() {
-        mapper = MapCoordinateFieldToFeatureCollection(
-            dataElementToFeatureMapper,
-            attributeToFeatureMapper
-        )
+        mapper =
+            org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection(
+                dataElementToFeatureMapper,
+                attributeToFeatureMapper
+            )
     }
 
     @Test

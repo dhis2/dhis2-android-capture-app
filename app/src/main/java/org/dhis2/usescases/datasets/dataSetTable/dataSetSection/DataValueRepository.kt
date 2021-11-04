@@ -3,7 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.SortedMap
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo

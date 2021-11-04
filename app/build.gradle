@@ -215,6 +215,7 @@ dependencies {
     implementation project(":dhis_android_analytics")
     implementation project(":form")
     implementation project(":commons")
+    implementation project(":dhis2_android_maps")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -278,12 +279,6 @@ dependencies {
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-    //endregion
-
-    //region Mapbox
-    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:${libraries.mapboxsdk}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:${libraries.mapboxmarkerview}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}"
     //endregion
 
     //region Analytics

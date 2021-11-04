@@ -2,17 +2,16 @@ package org.dhis2.uicomponents.map.geometry
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.android_maps.geometry.bound.GetBoundingBox
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
+import org.dhis2.android_maps.geometry.point.MapPointToFeature
+import org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
-import org.dhis2.uicomponents.map.model.EventUiComponentModel
+import org.dhis2.android_maps.model.EventUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -23,18 +22,19 @@ import org.junit.Test
 
 class MapTeiEventsToFeatureCollectionTest {
 
-    private lateinit var mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection
-    private val bounds: GetBoundingBox = mock()
-    private val mapPointToFeature: MapPointToFeature = mock()
-    private val mapPolygonToFeature: MapPolygonToFeature = mock()
+    private lateinit var mapTeiEventsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+    private val bounds: org.dhis2.android_maps.geometry.bound.GetBoundingBox = mock()
+    private val mapPointToFeature: org.dhis2.android_maps.geometry.point.MapPointToFeature = mock()
+    private val mapPolygonToFeature: org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature = mock()
 
     @Before
     fun setUp() {
-        mapTeiEventsToFeatureCollection = MapTeiEventsToFeatureCollection(
-            mapPointToFeature,
-            mapPolygonToFeature,
-            bounds
-        )
+        mapTeiEventsToFeatureCollection =
+            org.dhis2.android_maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection(
+                mapPointToFeature,
+                mapPolygonToFeature,
+                bounds
+            )
     }
 
     @Test
@@ -58,8 +58,8 @@ class MapTeiEventsToFeatureCollectionTest {
         }
     }
 
-    private fun createEventsList(): List<EventUiComponentModel> {
-        val event = EventUiComponentModel(
+    private fun createEventsList(): List<org.dhis2.android_maps.model.EventUiComponentModel> {
+        val event = org.dhis2.android_maps.model.EventUiComponentModel(
             "eventUid",
             Event.builder().uid(EVENTUID).geometry(
                 getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]")

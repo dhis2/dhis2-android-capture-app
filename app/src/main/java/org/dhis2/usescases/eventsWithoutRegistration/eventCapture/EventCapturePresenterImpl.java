@@ -13,7 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Quartet;
+import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
@@ -38,7 +38,6 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;

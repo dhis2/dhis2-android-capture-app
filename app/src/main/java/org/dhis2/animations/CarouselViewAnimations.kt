@@ -1,11 +1,11 @@
 package org.dhis2.animations
 
 import android.view.animation.DecelerateInterpolator
-import org.dhis2.uicomponents.map.views.CarouselView
+import org.dhis2.android_maps.views.CarouselView
 
 class CarouselViewAnimations {
 
-    fun initMapLoading(view: CarouselView) {
+    fun initMapLoading(view: org.dhis2.android_maps.views.CarouselView) {
         view.animate().apply {
             duration = 500
             interpolator = DecelerateInterpolator()
@@ -15,7 +15,7 @@ class CarouselViewAnimations {
         }
     }
 
-    fun endMapLoading(view: CarouselView) {
+    fun endMapLoading(view: org.dhis2.android_maps.views.CarouselView) {
         view.animate().apply {
             duration = 500
             interpolator = DecelerateInterpolator()

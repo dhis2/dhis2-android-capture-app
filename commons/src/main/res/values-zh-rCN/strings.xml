@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="record_marked_for_deletion">该记录被标记为删除。你不能访问。</string>
+</resources>

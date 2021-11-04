@@ -11,7 +11,7 @@ import org.junit.Test
 
 class MapLineToRelationshipFeatureTest {
 
-    private val mapper = MapLineRelationshipToFeature()
+    private val mapper = org.dhis2.android_maps.geometry.line.MapLineRelationshipToFeature()
 
     @Test
     fun `Should map line to feature`() {

@@ -10,15 +10,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import javax.inject.Inject
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
-import org.dhis2.uicomponents.map.ExternalMapNavigation
-import org.dhis2.uicomponents.map.carousel.CarouselAdapter
-import org.dhis2.uicomponents.map.layer.MapLayerDialog
-import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.dhis2.usescases.programEventDetail.ProgramEventMapData
-import org.dhis2.usescases.programEventDetail.ProgramEventViewModel
+import org.dhis2.commons.data.ProgramEventViewModel
 
 class EventMapFragment :
     FragmentGlobalAbstract(),
@@ -31,9 +27,9 @@ class EventMapFragment :
     lateinit var animations: CarouselViewAnimations
 
     @Inject
-    lateinit var mapNavigation: ExternalMapNavigation
+    lateinit var mapNavigation: org.dhis2.android_maps.ExternalMapNavigation
 
-    private var eventMapManager: EventMapManager? = null
+    private var eventMapManager: org.dhis2.android_maps.managers.EventMapManager? = null
 
     private val fragmentLifeCycle = lifecycle
 
@@ -53,7 +49,7 @@ class EventMapFragment :
         programEventsViewModel.setProgress(true)
         binding = FragmentProgramEventDetailMapBinding.inflate(inflater, container, false)
         binding.apply {
-            eventMapManager = EventMapManager(mapView)
+            eventMapManager = org.dhis2.android_maps.managers.EventMapManager(mapView)
             eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
             eventMapManager?.onCreate(savedInstanceState)
             eventMapManager?.featureType = presenter.programFeatureType()
@@ -68,8 +64,8 @@ class EventMapFragment :
             )
             mapLayerButton.setOnClickListener {
                 eventMapManager?.let {
-                    MapLayerDialog(it)
-                        .show(childFragmentManager, MapLayerDialog::class.java.name)
+                    org.dhis2.android_maps.layer.MapLayerDialog(it)
+                        .show(childFragmentManager, org.dhis2.android_maps.layer.MapLayerDialog::class.java.name)
                 }
             }
 
@@ -125,7 +121,7 @@ class EventMapFragment :
         )
         if (binding.mapCarousel.adapter == null) {
             val carouselAdapter =
-                CarouselAdapter.Builder()
+                org.dhis2.android_maps.carousel.CarouselAdapter.Builder()
                     .addOnSyncClickListener { teiUid: String? ->
                         if (binding.mapCarousel.carouselEnabled) {
                             programEventsViewModel.eventSyncClicked.value = teiUid
@@ -152,7 +148,7 @@ class EventMapFragment :
             carouselAdapter.updateLayers(eventMapManager?.mapLayerManager?.mapLayers)
         } else {
             eventMapManager?.let {
-                (binding.mapCarousel.adapter as CarouselAdapter?)?.setItems(mapData.events)
+                (binding.mapCarousel.adapter as org.dhis2.android_maps.carousel.CarouselAdapter?)?.setItems(mapData.events)
             }
         }
 
@@ -163,7 +159,7 @@ class EventMapFragment :
     }
 
     override fun updateEventCarouselItem(programEventViewModel: ProgramEventViewModel) {
-        (binding.mapCarousel.adapter as CarouselAdapter).updateItem(programEventViewModel)
+        (binding.mapCarousel.adapter as org.dhis2.android_maps.carousel.CarouselAdapter).updateItem(programEventViewModel)
         animations.endMapLoading(binding.mapCarousel)
         programEventsViewModel.setProgress(false)
         programEventsViewModel.updateEvent = null

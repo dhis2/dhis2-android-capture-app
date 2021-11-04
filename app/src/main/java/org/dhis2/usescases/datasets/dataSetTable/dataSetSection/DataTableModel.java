@@ -3,18 +3,13 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementOperand;
-import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.dataset.Section;
 
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 

@@ -7,7 +7,7 @@ import org.junit.Test
 
 class GetBoundingBoxTest {
 
-    private val getBoundingBox = GetBoundingBox()
+    private val getBoundingBox = org.dhis2.android_maps.geometry.bound.GetBoundingBox()
 
     @Test
     fun `Should get bounding box`() {

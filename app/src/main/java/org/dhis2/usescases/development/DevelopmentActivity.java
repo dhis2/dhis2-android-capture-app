@@ -21,7 +21,6 @@ import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
-import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2Manager;
 
 import java.io.BufferedReader;
@@ -31,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 

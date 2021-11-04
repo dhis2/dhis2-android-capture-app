@@ -189,9 +189,6 @@
     <string name="log_out">Log Out</string>
     <string name="block_session">Block Session</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Select location</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
     <string name="fifteen_minute">15 Minutes</string>
@@ -458,6 +455,7 @@
     <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
+    <string name="unable_to_complete">Unable to complete</string>
     <string name="unable_to_save">Unable to save</string>
     <string name="warnings_in_form">There are warnings in the form</string>
     <string name="what_to_do">What do yo want to do?</string>
@@ -549,7 +547,6 @@
     <string name="dashboard_menu_delete_tei">Delete TEI</string>
     <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
-    <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
     <string name="validation_url">This is not a valid url</string>
     <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
     <string name="adjusting_form">Adjusting form…</string>
@@ -603,7 +600,6 @@
     <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
     <string name="polygon_captured">Polygon captured</string>
     <string name="polygon">Polygon</string>
-    <string name="map_layers">Map layers</string>
     <!--endregion-->
 
     <string name="fingerprint_title">Fingerprint</string>
@@ -703,8 +699,6 @@
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
-    <string name="dialog_layer_satellite_base_map">Satellite view</string>
-    <string name="dialog_layer_street_base_map">Street view</string>
     <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
@@ -728,7 +722,6 @@
     <string name="filters_title_event_status">Event status</string>
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
-    <string name="action_apply">Apply</string>
     <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
     <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
     <string name="validation_rules_empty_description">No description or instruction provided</string>
@@ -739,8 +732,6 @@
     <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
-    <string name="no_data">No data</string>
-    <string name="no_coordinates_item">This %s has no coordinates.</string>
     <string name="event_data">Data</string>
     <string name="download_tei_error">The selected %s could not be downloaded.</string>
     <string name="completed_by">Completed by %s: %s</string>
@@ -828,7 +819,6 @@
     <string name="section_indicators">Indicators</string>
     <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
     <string name="value">Value</string>
-    <string name="enrolled_in">Enrolled in:</string>
     <string name="section_charts_indicators">Charts and indicators</string>
     <string name="take_photo">Take Photo</string>
     <string name="from_gallery">Choose from gallery</string>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">选择位置</string>
+    <string name="map_layers">地图层</string>
+</resources>

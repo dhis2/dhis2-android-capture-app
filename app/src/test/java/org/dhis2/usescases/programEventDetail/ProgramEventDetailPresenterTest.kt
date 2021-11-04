@@ -16,6 +16,7 @@ import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertTrue
+import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
@@ -26,9 +27,9 @@ import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo

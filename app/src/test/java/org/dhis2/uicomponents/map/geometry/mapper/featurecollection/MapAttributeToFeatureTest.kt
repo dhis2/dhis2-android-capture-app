@@ -3,13 +3,11 @@ package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.data.dhislogic.CoordinateAttributeInfo
 import org.dhis2.uicomponents.map.geometry.MapEventToFeatureCollectionTest
-import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
+import org.dhis2.android_maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -19,12 +17,15 @@ import org.junit.Before
 import org.junit.Test
 
 class MapAttributeToFeatureTest {
-    private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()
-    private lateinit var attributeMapper: MapAttributeToFeature
+    private val mapCoordinateFieldToFeature: org.dhis2.android_maps.geometry.mapper.feature.MapCoordinateFieldToFeature = mock()
+    private lateinit var attributeMapper: org.dhis2.android_maps.geometry.mapper.featurecollection.MapAttributeToFeature
 
     @Before
     fun setUp() {
-        attributeMapper = MapAttributeToFeature(mapCoordinateFieldToFeature)
+        attributeMapper =
+            org.dhis2.android_maps.geometry.mapper.featurecollection.MapAttributeToFeature(
+                mapCoordinateFieldToFeature
+            )
     }
 
     @Test

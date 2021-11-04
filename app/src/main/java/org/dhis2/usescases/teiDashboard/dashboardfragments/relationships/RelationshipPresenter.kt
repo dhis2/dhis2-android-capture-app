@@ -5,9 +5,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.tuples.Trio
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -29,8 +27,8 @@ class RelationshipPresenter internal constructor(
     private val relationshipRepository: RelationshipRepository,
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
-    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
-    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
+    private val mapRelationshipToRelationshipMapModel: org.dhis2.android_maps.mapper.MapRelationshipToRelationshipMapModel,
+    private val mapRelationshipsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 ) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()

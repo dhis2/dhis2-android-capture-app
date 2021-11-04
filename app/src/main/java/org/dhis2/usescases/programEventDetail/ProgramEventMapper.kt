@@ -4,10 +4,11 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
+import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2

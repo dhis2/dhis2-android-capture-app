@@ -35,7 +35,7 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
+import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
@@ -58,7 +58,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 

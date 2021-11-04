@@ -10,7 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.validationrules.ValidationRuleResult
 import org.dhis2.utils.validationrules.Violation

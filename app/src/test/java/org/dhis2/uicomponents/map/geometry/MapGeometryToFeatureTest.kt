@@ -3,15 +3,14 @@ package org.dhis2.uicomponents.map.geometry
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
-import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertEquals
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.android_maps.geometry.bound.BoundsGeometry
+import org.dhis2.android_maps.geometry.mapper.MapGeometryToFeature
+import org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
+import org.dhis2.android_maps.geometry.point.MapPointToFeature
+import org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -21,9 +20,9 @@ import org.junit.Test
 
 class MapGeometryToFeatureTest {
 
-    private lateinit var mapGeometryToFeature: MapGeometryToFeature
-    private val pointMapper: MapPointToFeature = mock()
-    private val polygonMapper: MapPolygonToFeature = mock()
+    private lateinit var mapGeometryToFeature: org.dhis2.android_maps.geometry.mapper.MapGeometryToFeature
+    private val pointMapper: org.dhis2.android_maps.geometry.point.MapPointToFeature = mock()
+    private val polygonMapper: org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature = mock()
     private val longitudePoint = -11.96
     private val latitudePoint = 9.49
 
@@ -34,7 +33,8 @@ class MapGeometryToFeatureTest {
 
     @Before
     fun setup() {
-        mapGeometryToFeature = MapGeometryToFeature(pointMapper, polygonMapper)
+        mapGeometryToFeature =
+            org.dhis2.android_maps.geometry.mapper.MapGeometryToFeature(pointMapper, polygonMapper)
     }
 
     @Test
@@ -84,7 +84,7 @@ class MapGeometryToFeatureTest {
     @Test
     fun `Should not map point or polygon when feature type is unknown`() {
         val geometry = Geometry.builder().coordinates("[-$longitudePoint, $latitudePoint]").build()
-        val boundsGeometry = BoundsGeometry()
+        val boundsGeometry = org.dhis2.android_maps.geometry.bound.BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
         whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
