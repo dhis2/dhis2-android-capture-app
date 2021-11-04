@@ -2,9 +2,6 @@ package org.dhis2
 
 import android.content.Context
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import timber.log.Timber
 import java.io.FileOutputStream
 
@@ -22,30 +19,6 @@ class DBTestLoader(private val context: Context) {
         val output = FileOutputStream("$databasePath/$DB_NAME")
 
         input.copyTo(output)
-
-        /*try {
-            val input = context.assets.open("databases/$DB_NAME_TEST")
-            val output = FileOutputStream("$databasePath/$DB_NAME")
-            writeExtractedFileToDisk(input, output)
-        } catch (e: IOException) {
-            Timber.e(Throwable("Could not load testing database"))
-        } */
-    }
-
-    @Throws(IOException::class)
-    fun writeExtractedFileToDisk(input: InputStream, outs: OutputStream) {
-        val buffer = ByteArray(1024)
-        var length: Int
-
-        length = input.read(buffer)
-        while (length > 0) {
-            outs.write(buffer, 0, length)
-            length = input.read(buffer)
-        }
-
-        outs.flush()
-        outs.close()
-        input.close()
     }
 
     companion object {
