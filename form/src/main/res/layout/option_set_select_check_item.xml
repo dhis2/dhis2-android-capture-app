@@ -4,29 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
-            name="editable"
-            type="Boolean" />
-
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
         <variable
-            name="optionName"
-            type="String" />
-
-        <variable
-            name="isBgTransparent"
-            type="Boolean" />
+            name="option"
+            type="org.hisp.dhis.android.core.option.Option" />
     </data>
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:enabled="@{editable}"
-        android:text="@{optionName}"
         android:layout_marginEnd="4dp"
-        app:setTextColor="@{isBgTransparent}"
-        app:tintCheckboxButton="@{isBgTransparent}"
+        android:enabled="@{item.editable}"
+        android:text="@{option.displayName()}"
+        app:optionTint="@{item.style}"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         tools:text="Option name" />

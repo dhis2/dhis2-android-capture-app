@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
@@ -166,22 +165,29 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             type
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                    return OptionSetViewModel.create(
+                    return new FieldUiModelImpl(
                             id,
-                            getLayout(OptionSetViewModel.class),
-                            label,
-                            mandatory,
-                            optionSet,
+                            getLayoutByValueType(type, fieldRendering.type()),
                             value,
-                            section,
+                            false,
+                            null,
                             editable,
+                            null,
+                            mandatory,
+                            label,
+                            section,
+                            style,
+                            hintProvider.provideDateHint(type),
                             description,
-                            objectStyle,
-                            true,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
-                            fieldRendering,
+                            type,
+                            null,
+                            optionSet,
+                            allowFutureDates,
+                            new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                            displayNameProvider.provideDisplayName(type, value),
+                            null,
                             options,
-                            type
+                            fieldRendering.type()
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -249,7 +255,9 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         new UiEventFactoryImpl(id, label, type, allowFutureDates),
                         displayNameProvider.provideDisplayName(type, value),
                         uiEventTypesProvider.provideUiEvents(type),
-                        uiEventTypesProvider.provideUiRenderType(featureType)
+                        uiEventTypesProvider.provideUiRenderType(featureType),
+                        null,
+                        null
                 );
             case TEXT:
             case EMAIL:

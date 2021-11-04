@@ -4,7 +4,6 @@ import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
@@ -18,7 +17,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 private val layouts = mapOf<KClass<*>, Int>(
     DisplayViewModel::class to R.layout.custom_form_display,
     FileViewModel::class to R.layout.form_button,
-    OptionSetViewModel::class to R.layout.form_option_set_selector,
     PictureViewModel::class to R.layout.custom_form_picture,
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
@@ -48,6 +46,15 @@ class LayoutProviderImpl : LayoutProvider {
         renderingType: ValueTypeRenderingType,
         valueType: ValueType
     ): Int {
+        if (valueType == ValueType.TEXT) {
+            return when (renderingType) {
+                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
+                else -> R.layout.form_edit_text_custom
+            }
+        }
         if (renderingType == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
             renderingType == ValueTypeRenderingType.DEFAULT ||
             renderingType == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ||

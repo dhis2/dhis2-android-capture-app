@@ -9,7 +9,6 @@ import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
@@ -20,6 +19,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -102,13 +102,7 @@ class EnrollmentRepository(
             .map {
                 val finalFieldList = mutableListOf<FieldUiModel>()
                 for ((index, field) in it.withIndex()) {
-                    if (field is OptionSetViewModel) {
-                        val options =
-                            d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-                        finalFieldList.add(field.withOptions(options))
-                    } else if (
+                    if (
                         (index == it.lastIndex) &&
                         field is EditTextViewModel &&
                         field.valueType() != ValueType.LONG_TEXT
@@ -137,13 +131,7 @@ class EnrollmentRepository(
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
                     val field = transform(programTrackedEntityAttribute, section.uid())
-                    if (field is OptionSetViewModel) {
-                        val options =
-                            d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-                        fields.add(field.withOptions(options))
-                    } else if (
+                    if (
                         (index == section.attributes()!!.lastIndex) &&
                         field is EditTextViewModel &&
                         field.valueType() != ValueType.LONG_TEXT
@@ -192,11 +180,15 @@ class EnrollmentRepository(
         }
 
         var optionCount = 0
+        var options = listOf<Option>()
         if (!DhisTextUtils.isEmpty(optionSet)) {
             optionCount =
                 d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount()
+            options =
+                d2.optionModule().options().byOptionSetUid().eq(optionSet)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .blockingGet()
         }
-
         var warning: String? = null
 
         if (generated && dataValue == null) {
@@ -247,7 +239,7 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             null,
-            emptyList(),
+            options,
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
 

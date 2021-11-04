@@ -11,10 +11,11 @@ import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.LayoutProvider
@@ -24,6 +25,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
 import org.hisp.dhis.rules.models.RuleActionDisplayText
@@ -461,22 +463,29 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
             1,
             "label",
             false,
-            "optionSetUid",
-            null,
             null,
             true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
+            true,
+            "label",
+            "section",
+            null,
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
+            "optionSetUid",
+            null,
+            null,
+            null,
+            null,
             emptyList(),
-            ValueType.TEXT
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
@@ -492,7 +501,7 @@ class RulesUtilsProviderImplTest {
         ) { emptyList() }
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToHide.contains("optionUid")
+            testFieldViewModels["field"]?.optionsToHide?.contains("optionUid") == true
         )
 
         verify(valueStore).deleteOptionValueIfSelected("field", "optionUid")
@@ -508,22 +517,29 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
             1,
             "label",
             false,
-            "optionSetUid",
-            null,
             null,
             true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
+            true,
+            "label",
+            "section",
+            null,
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
+            "optionSetUid",
+            null,
+            null,
+            null,
+            null,
             emptyList(),
-            ValueType.TEXT
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
         )
 
         whenever(
@@ -545,12 +561,10 @@ class RulesUtilsProviderImplTest {
         ) { optionGroupUids -> listOf("optionToHide1", "optionToHide2") }
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToHide.contains("optionToHide1")
+            testFieldViewModels["field"]?.optionsToHide?.contains("optionToHide1") == true
         )
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToHide.contains("optionToHide2")
+            testFieldViewModels["field"]?.optionsToHide?.contains("optionToHide2") == true
         )
 
         verify(
@@ -568,22 +582,29 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
             1,
             "label",
             false,
-            "optionSetUid",
-            null,
             null,
             true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
+            true,
+            "label",
+            "section",
+            null,
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
+            "optionSetUid",
+            null,
+            null,
+            null,
+            null,
             emptyList(),
-            ValueType.TEXT
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
         )
 
         ruleUtils.applyRuleEffects(
@@ -594,12 +615,10 @@ class RulesUtilsProviderImplTest {
         ) { optionGroupUids -> listOf("optionToShow1", "optionToShow2") }
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToShow.contains("optionToShow1")
+            testFieldViewModels["field"]?.optionsToShow?.contains("optionToShow1") == true
         )
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToShow.contains("optionToShow2")
+            testFieldViewModels["field"]?.optionsToShow?.contains("optionToShow2") == true
         )
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
     }

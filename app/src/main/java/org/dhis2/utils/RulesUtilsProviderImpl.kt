@@ -1,7 +1,6 @@
 package org.dhis2.utils
 
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
@@ -188,18 +187,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     ) as SpinnerViewModel
                     fieldViewModels[fieldUid] = mappedSpinnerModel
                 }
-                is OptionSetViewModel -> {
-                    var mappedOptionSetModel = fieldViewModel.setOptionsToHide(
-                        listOf(
-                            optionsToHide,
-                            optionsInGroupsToHide
-                        ).flatten()
-                    ) as OptionSetViewModel
-                    mappedOptionSetModel =
-                        mappedOptionSetModel.setOptionsToShow(optionsInGroupsToShow)
-                    fieldViewModels[fieldUid] = mappedOptionSetModel
-                }
-                else -> {
+                else -> fieldViewModel.takeIf { field -> field.optionSet != null }?.apply {
+                    this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
+                    this.optionsToShow = optionsInGroupsToShow
                 }
             }
         }

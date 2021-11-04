@@ -5,6 +5,8 @@ import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.option.Option
 
 interface FieldUiModel {
 
@@ -56,6 +58,14 @@ interface FieldUiModel {
 
     val renderingType: UiRenderType?
 
+    val options: List<Option>?
+
+    val renderingType: ValueTypeRenderingType?
+
+    var optionsToHide: List<String>?
+
+    var optionsToShow: List<String>?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -69,6 +79,8 @@ interface FieldUiModel {
     fun onDescriptionClick()
 
     fun onClear()
+
+    fun onSave(value: String?)
 
     fun invokeUiEvent(uiEventType: UiEventType)
 

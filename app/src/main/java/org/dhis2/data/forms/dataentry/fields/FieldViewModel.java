@@ -17,6 +17,8 @@ import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
+import org.hisp.dhis.android.core.option.Option;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -346,6 +348,11 @@ public abstract class FieldViewModel implements FieldUiModel {
         callback.intent(new FormIntent.ClearValue(uid()));
     }
 
+    @Override
+    public void onSave(String value) {
+        //Do not use until migrate to FieldUIModel
+    }
+
     @Deprecated
     @Override
     public void invokeUiEvent(UiEventType uiEventType) {
@@ -430,5 +437,46 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public void invokeIntent(@NonNull FormIntent intent) {
         //Do not use until migrate to FieldUIModel
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<Option> getOptions() {
+        //Do not use until migrate to FieldUIModel
+
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<String> getOptionsToHide() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<String> getOptionsToShow() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Override
+    public void setOptionsToHide(@Nullable List<String> optionsToHide) { }
+
+    @Deprecated
+    @Override
+    public void setOptionsToShow(@Nullable List<String> optionsToShow) { }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public ValueTypeRenderingType getRenderingType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
     }
 }
