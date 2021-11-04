@@ -1,6 +1,8 @@
 package org.dhis2.form.ui.provider
 
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiRenderType
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 
 class UiEventTypesProviderImpl : UiEventTypesProvider {
@@ -23,7 +25,10 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             ValueType.INTEGER_NEGATIVE -> TODO()
             ValueType.INTEGER_ZERO_OR_POSITIVE -> TODO()
             ValueType.FILE_RESOURCE -> TODO()
-            ValueType.COORDINATE -> TODO()
+            ValueType.COORDINATE -> listOf(
+                UiEventType.REQUEST_CURRENT_LOCATION,
+                UiEventType.REQUEST_LOCATION_BY_MAP
+            )
             ValueType.PHONE_NUMBER -> TODO()
             ValueType.EMAIL -> TODO()
             ValueType.USERNAME -> TODO()
@@ -32,6 +37,15 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             ValueType.AGE -> listOf(UiEventType.AGE_CALENDAR, UiEventType.AGE_YEAR_MONTH_DAY)
             ValueType.URL -> TODO()
             ValueType.IMAGE -> TODO()
+        }
+    }
+
+    override fun provideUiRenderType(featureType: FeatureType?): UiRenderType {
+        return when (featureType) {
+            FeatureType.POINT -> UiRenderType.POINT
+            FeatureType.POLYGON -> UiRenderType.POLYGON
+            FeatureType.MULTI_POLYGON -> UiRenderType.MULTI_POLYGON
+            else -> UiRenderType.DEFAULT
         }
     }
 }
