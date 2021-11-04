@@ -5,7 +5,7 @@ import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
-import com.jakewharton.espresso.OkHttp3IdlingResource
+import java.util.concurrent.TimeUnit
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.di.TestingInjector
@@ -19,11 +19,12 @@ import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
-import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.rules.Timeout
 
 open class BaseTest {
 
@@ -35,6 +36,9 @@ open class BaseTest {
     lateinit var mockWebServerRobot: MockWebServerRobot
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
+
+    @Rule
+    var timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
 
     @Before
     @Throws(Exception::class)
@@ -63,11 +67,13 @@ open class BaseTest {
     }
 
     private fun registerCountingIdlingResource() {
-        IdlingRegistry.getInstance().register(CountingIdlingResourceSingleton.countingIdlingResource)
+        IdlingRegistry.getInstance()
+            .register(CountingIdlingResourceSingleton.countingIdlingResource)
     }
 
-    private fun unregisterCountingIdlingResource(){
-        IdlingRegistry.getInstance().unregister(CountingIdlingResourceSingleton.countingIdlingResource)
+    private fun unregisterCountingIdlingResource() {
+        IdlingRegistry.getInstance()
+            .unregister(CountingIdlingResourceSingleton.countingIdlingResource)
     }
 
     fun setupMockServer() {
@@ -103,11 +109,11 @@ open class BaseTest {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
-    fun turnOnConnectivityAfterLogin(){
+    fun turnOnConnectivityAfterLogin() {
         ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
     }
 
-    fun turnOffConnectivityAfterLogin(){
+    fun turnOffConnectivityAfterLogin() {
         ServerURLWrapper.setServerUrl("none")
     }
 
