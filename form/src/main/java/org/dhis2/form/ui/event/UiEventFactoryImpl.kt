@@ -2,8 +2,10 @@ package org.dhis2.form.ui.event
 
 import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.string.toDate
+import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiRenderType
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
 
@@ -15,7 +17,8 @@ class UiEventFactoryImpl(
 ) : UiEventFactory {
     override fun generateEvent(
         value: String?,
-        uiEventType: UiEventType?
+        uiEventType: UiEventType?,
+        renderingType: UiRenderType?
     ): RecyclerViewUiEvents? {
         var uiEvent: RecyclerViewUiEvents? = null
         try {
@@ -67,6 +70,25 @@ class UiEventFactoryImpl(
                     label,
                     value
                 )
+                ValueType.COORDINATE -> {
+                    uiEventType?.let {
+                        when (it) {
+                            UiEventType.REQUEST_CURRENT_LOCATION -> {
+                                RecyclerViewUiEvents.RequestCurrentLocation(
+                                    uid = uid
+                                )
+                            }
+                            UiEventType.REQUEST_LOCATION_BY_MAP -> {
+                                RecyclerViewUiEvents.RequestLocationByMap(
+                                    uid = uid,
+                                    featureType = getFeatureType(renderingType),
+                                    value = value
+                                )
+                            }
+                            else -> null
+                        }
+                    }
+                }
                 else -> null
             }
         } catch (e: Exception) {
@@ -74,6 +96,16 @@ class UiEventFactoryImpl(
         }
 
         return uiEvent
+    }
+
+    private fun getFeatureType(renderingType: UiRenderType?): FeatureType {
+        return when (renderingType) {
+            UiRenderType.DEFAULT -> FeatureType.NONE
+            UiRenderType.POINT -> FeatureType.POINT
+            UiRenderType.POLYGON -> FeatureType.POLYGON
+            UiRenderType.MULTI_POLYGON -> FeatureType.MULTI_POLYGON
+            null -> FeatureType.NONE
+        }
     }
 
     private fun valueToYearMonthDay(value: String?) = value?.toDate()?.let {

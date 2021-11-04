@@ -4,7 +4,8 @@ import org.hisp.dhis.android.core.common.ValueType
 
 interface FormUiModelStyle {
     fun getColors(): Map<FormUiColorType, Int>
-    fun getDescriptionIcon(): Int
+    fun getDescriptionIcon(): Int?
+    fun textColor(error: String?, warning: String?): Int?
     fun backgroundColor(
         valueType: ValueType,
         error: String?,

@@ -224,8 +224,8 @@
                         android:orientation="vertical" />
 
                     <include
-                        android:id="@+id/geometry"
-                        layout="@layout/form_coordinates"
+                        android:id="@+id/coordinateField"
+                        layout="@layout/form_coordinate_custom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="@{programStage.featureType()!=null &amp;&amp; programStage.featureType() != FeatureType.NONE ?View.VISIBLE:View.GONE}" />

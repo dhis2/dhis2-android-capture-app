@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
@@ -519,7 +518,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor) {
+    public Single<FieldUiModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor) {
         return Single.fromCallable(() -> {
             ArrayList<EventStatus> nonEditableStatus = new ArrayList<>();
             nonEditableStatus.add(EventStatus.COMPLETED);
@@ -536,7 +535,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     coordinatesValue = geometry.coordinates();
                 }
             }
-            return (CoordinateViewModel) fieldFactory.create(
+            return fieldFactory.create(
                     "",
                     "",
                     ValueType.COORDINATE,

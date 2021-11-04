@@ -25,4 +25,9 @@
     <string name="hint_month">Months</string>
     <string name="hint_day">Days</string>
     <string name="wrong_date_format">%s can\'t be parsed as a date</string>
+    <string name="polygon">Polygon</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="coordinates_error">Coordinates values are not valid</string>
+    <string name="polygon_captured">Polygon captured</string>
 </resources>
