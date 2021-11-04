@@ -39,8 +39,8 @@ open class BaseTest {
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
-    @Rule
-    var timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
+    @get:Rule
+    val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
 
     @Before
     @Throws(Exception::class)
