@@ -24,6 +24,9 @@ import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.rules.Timeout
+import java.util.concurrent.TimeUnit
 
 open class BaseTest {
 
@@ -35,6 +38,9 @@ open class BaseTest {
     lateinit var mockWebServerRobot: MockWebServerRobot
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
+
+    @Rule
+    var timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
 
     @Before
     @Throws(Exception::class)
