@@ -2,8 +2,8 @@ package org.dhis2
 
 import android.content.Context
 import java.io.File
-import timber.log.Timber
 import java.io.FileOutputStream
+import timber.log.Timber
 
 class DBTestLoader(private val context: Context) {
 
