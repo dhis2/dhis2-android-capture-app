@@ -1,4 +1,4 @@
-package org.dhis2.commons.string
+package org.dhis2.commons.extensions
 
 import org.dhis2.commons.date.DateUtils
 import timber.log.Timber

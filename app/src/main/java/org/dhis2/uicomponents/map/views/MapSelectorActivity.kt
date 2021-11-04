@@ -30,8 +30,8 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import org.dhis2.Bindings.truncate
 import org.dhis2.R
+import org.dhis2.commons.extensions.truncate
 import org.dhis2.databinding.ActivityMapSelectorBinding
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.camera.moveCameraToPosition
