@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
@@ -17,7 +16,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>(
-    CoordinateViewModel::class to R.layout.custom_form_coordinate,
     DisplayViewModel::class to R.layout.custom_form_display,
     FileViewModel::class to R.layout.form_button,
     OptionSetViewModel::class to R.layout.form_option_set_selector,
@@ -41,6 +39,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
             ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
+            ValueType.COORDINATE -> R.layout.form_coordinate_custom
             else -> R.layout.form_edit_text_custom
         }
     }

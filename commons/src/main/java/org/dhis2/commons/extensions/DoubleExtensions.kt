@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.commons.extensions
 
 import java.math.RoundingMode
 

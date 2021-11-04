@@ -13,34 +13,22 @@ data class BasicFormUiModelStyle(
         return colors
     }
 
-    override fun getDescriptionIcon(): Int =
+    override fun getDescriptionIcon(): Int? =
         when (valueType) {
-            ValueType.TEXT -> TODO()
-            ValueType.LONG_TEXT -> TODO()
-            ValueType.LETTER -> TODO()
-            ValueType.BOOLEAN -> TODO()
-            ValueType.TRUE_ONLY -> TODO()
             ValueType.DATE -> R.drawable.ic_form_date
             ValueType.DATETIME -> R.drawable.ic_form_date_time
             ValueType.TIME -> R.drawable.ic_form_time
-            ValueType.NUMBER -> TODO()
-            ValueType.UNIT_INTERVAL -> TODO()
-            ValueType.PERCENTAGE -> TODO()
-            ValueType.INTEGER -> TODO()
-            ValueType.INTEGER_POSITIVE -> TODO()
-            ValueType.INTEGER_NEGATIVE -> TODO()
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> TODO()
-            ValueType.FILE_RESOURCE -> TODO()
-            ValueType.COORDINATE -> TODO()
-            ValueType.PHONE_NUMBER -> TODO()
-            ValueType.EMAIL -> TODO()
-            ValueType.USERNAME -> TODO()
-            ValueType.ORGANISATION_UNIT -> TODO()
-            ValueType.TRACKER_ASSOCIATE -> TODO()
-            ValueType.AGE -> TODO()
-            ValueType.URL -> TODO()
-            ValueType.IMAGE -> TODO()
+            else -> null
         }
+
+    override fun textColor(error: String?, warning: String?): Int? {
+        val colorType = when {
+            warning != null -> FormUiColorType.WARNING
+            error != null -> FormUiColorType.ERROR
+            else -> FormUiColorType.TEXT_PRIMARY
+        }
+        return colors[colorType]
+    }
 
     override fun backgroundColor(
         valueType: ValueType,

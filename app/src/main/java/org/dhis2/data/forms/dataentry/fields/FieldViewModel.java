@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.UiEventType;
+import org.dhis2.form.model.UiRenderType;
 import org.dhis2.form.ui.event.RecyclerViewUiEvents;
 import org.dhis2.form.ui.event.UiEventFactory;
 import org.dhis2.form.ui.intent.FormIntent;
@@ -387,5 +388,19 @@ public abstract class FieldViewModel implements FieldUiModel {
     public Pair<Integer[], Integer> getBackGroundColor() {
         //Do not use until migrate to FieldUIModel
         return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public UiRenderType getRenderingType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Override
+    public void invokeIntent(@NonNull FormIntent intent) {
+        //Do not use until migrate to FieldUIModel
     }
 }

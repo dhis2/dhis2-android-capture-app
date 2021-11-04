@@ -1,11 +1,16 @@
 package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,22 +27,20 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.maps.geometry.LngLatValidatorKt;
 import org.dhis2.maps.views.MapSelectorActivity;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.extensions.DoubleExtensionsKt;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
-import org.dhis2.databinding.DatasetFormCoordinatesBinding;
-import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -49,13 +52,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import kotlin.Unit;
-
-import static android.app.Activity.RESULT_OK;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener, ActivityResultObserver {
 
@@ -73,34 +69,23 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FeatureType featureType;
     private Geometry currentGeometry;
     private TextView labelText;
-    private org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel viewModel;
 
     public CoordinatesView(Context context) {
         super(context);
         if (!isInEditMode())
             init(context);
-        else
-            initEditor();
     }
 
     public CoordinatesView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (!isInEditMode())
             init(context);
-        else
-            initEditor();
     }
 
     public CoordinatesView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         if (!isInEditMode())
             init(context);
-        else
-            initEditor();
-    }
-
-    public void initEditor() {
-        LayoutInflater.from(getContext()).inflate(R.layout.form_coordinates, this, true);
     }
 
     public void init(Context context) {
@@ -193,8 +178,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
-            } else {
-                onItemClick();
             }
         });
 
@@ -212,8 +195,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         }
                     }
                 }
-            } else {
-                onItemClick();
             }
         });
     }
@@ -224,23 +205,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 (isEmpty(latitude.getText()) && isEmpty(longitude.getText()));
     }
 
-    public void setCurrentLocationListener(OnCurrentLocationClick currentLocationListener) {
-        this.currentLocationListener = currentLocationListener;
-    }
-
     public void setLabel(String label) {
         this.label = label;
-        if (binding instanceof FormCoordinatesBinding)
-            ((DatasetFormCoordinatesBinding) binding).setLabel(label);
-        else
-            ((DatasetFormCoordinatesAccentBinding) binding).setLabel(label);
+        ((DatasetFormCoordinatesAccentBinding) binding).setLabel(label);
     }
 
     public void setDescription(String description) {
-        if (binding instanceof FormCoordinatesBinding)
-            ((DatasetFormCoordinatesBinding) binding).setDescription(description);
-        else
-            ((DatasetFormCoordinatesAccentBinding) binding).setDescription(description);
+        ((DatasetFormCoordinatesAccentBinding) binding).setDescription(description);
 
         ImageView descriptionIcon = findViewById(R.id.descriptionLabel);
         descriptionIcon.setOnClickListener(v ->
@@ -304,7 +275,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        onItemClick();
         switch (view.getId()) {
             case R.id.location1:
                 getLocation();
@@ -381,7 +351,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            onItemClick();
             latitude.performClick();
         }
     }
@@ -509,39 +478,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         return latitude.isEnabled() && longitude.isEnabled();
     }
 
-    public void setViewModel(org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel viewModel) {
-        this.viewModel = viewModel;
-
-        if (binding == null) {
-            setIsBgTransparent(viewModel.isBackgroundTransparent());
-        }
-
-        setCurrentLocationListener(geometry -> {
-            closeKeyboard(binding.getRoot());
-            viewModel.onCurrentLocationClick(geometry);
-        });
-
-        setFeatureType(viewModel.featureType());
-        setLabel(viewModel.getFormattedLabel());
-        setDescription(viewModel.description());
-
-        setInitialValue(viewModel.value());
-        setWarning(viewModel.warning());
-        setError(viewModel.error());
-        setEditable(viewModel.editable());
-    }
-
-    private void onItemClick() {
-        if (viewModel != null) {
-            viewModel.onItemClick();
-        }
-    }
-
     private void subscribe() {
         ((ActivityResultObservable) getContext()).subscribe(this);
-    }
-
-    public org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel getViewModel() {
-        return viewModel;
     }
 }

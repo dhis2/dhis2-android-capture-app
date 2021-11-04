@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.string.toDate
+import org.dhis2.commons.extensions.toDate
 
 @BindingAdapter(value = ["setInitialValueDate", "parsingErrorText"], requireAll = true)
 fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {

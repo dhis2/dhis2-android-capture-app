@@ -1,5 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.utils.Constants.ONE_TIME;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PERMANENT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
+import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -19,20 +35,19 @@ import androidx.databinding.DataBindingUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
@@ -40,6 +55,8 @@ import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.ui.intent.FormIntent;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -86,22 +103,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Unit;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.ONE_TIME;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PERMANENT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View,
         DatePickerDialog.OnDateSetListener {
@@ -152,7 +153,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private CompositeDisposable disposable = new CompositeDisposable();
     private Geometry newGeometry;
-    private CoordinateViewModel currentGeometryModel;
+    private FieldUiModel currentGeometryModel;
     private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
@@ -901,18 +902,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setGeometryModel(CoordinateViewModel geometryModel) {
+    public void setGeometryModel(FieldUiModel geometryModel) {
         setGeometryCallback(geometryModel);
-        binding.geometry.setItem(geometryModel);
+        if (binding.coordinateField != null) {
+            binding.coordinateField.setItem(geometryModel);
+        }
     }
 
-    private void setGeometryCallback(CoordinateViewModel geometryModel) {
+    private void setGeometryCallback(FieldUiModel geometryModel) {
         currentGeometryModel = geometryModel;
         geometryModel.setCallback(geometryController.getCoordinatesCallback(
                 value -> {
                     presenter.setChangingCoordinates(true);
                     setNewGeometry(value);
-                    setGeometryModel((CoordinateViewModel) geometryModel.withValue(value));
+                    setGeometryModel(geometryModel.setValue(value));
                     return Unit.INSTANCE;
                 },
                 fieldUid -> {
@@ -953,7 +956,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
             String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
             Geometry geometry = geometryController.generateLocationFromCoordinates(locationType, dataExtra);
-            currentGeometryModel.onCurrentLocationClick(geometry);
+            currentGeometryModel.invokeIntent(new FormIntent.SaveCurrentLocation(
+                    currentGeometryModel.getUid(),
+                    geometry == null ? null : geometry.coordinates(),
+                    FeatureType.POINT.name()
+            ));
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -972,7 +980,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
                     double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
                     Geometry geometry = GeometryHelper.createPointGeometry(longitude, latitude);
-                    currentGeometryModel.onCurrentLocationClick(geometry);
+                    currentGeometryModel.invokeIntent(new FormIntent.SaveCurrentLocation(
+                            currentGeometryModel.getUid(),
+                            geometry == null ? null : geometry.coordinates(),
+                            FeatureType.POINT.name()
+                    ));
                     return Unit.INSTANCE;
                 },
                 () -> {
