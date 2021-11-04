@@ -488,4 +488,18 @@ public abstract class FieldViewModel implements FieldUiModel {
         //Do not use until migrate to FieldUIModel
         return null;
     }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public UiRenderType getRenderingType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Override
+    public void invokeIntent(@NonNull FormIntent intent) {
+        //Do not use until migrate to FieldUIModel
+    }
 }
