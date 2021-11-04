@@ -18,13 +18,10 @@ class DBTestLoader(private val context: Context) {
             Timber.i("Database won't be copy, it already exits")
             return
         }
-        try {
-            val input = context.assets.open("databases/$DB_NAME_TEST")
-            val output = FileOutputStream("$databasePath/$DB_NAME")
-            writeExtractedFileToDisk(input, output)
-        } catch (e: IOException) {
-            Timber.e(Throwable("Could not load testing database"))
-        }
+        val input = context.assets.open("databases/$DB_NAME_TEST")
+        val output = FileOutputStream("$databasePath/$DB_NAME")
+
+        input.copyTo(output)
     }
 
     @Throws(IOException::class)
