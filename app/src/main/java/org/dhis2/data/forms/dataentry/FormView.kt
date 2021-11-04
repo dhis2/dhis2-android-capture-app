@@ -26,14 +26,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
-import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
@@ -311,23 +308,24 @@ class FormView constructor(
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
-        items.firstOrNull { it.focused }?.let {
-            if (!doesItemNeedsKeyboard(it)) {
-                closeKeyboard()
+        items.firstOrNull { it.focused }?.let { fieldUiModel ->
+            fieldUiModel.valueType?.let { valueType ->
+                if (!needsKeyboard(valueType)) {
+                    closeKeyboard()
+                }
             }
         }
+    }
+
+    private fun needsKeyboard(valueType: ValueType): Boolean {
+        return valueType.isText ||
+            valueType.isNumeric ||
+            valueType.isInteger
     }
 
     private fun closeKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
-    }
-
-    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
-        is EditTextViewModel,
-        is ScanTextViewModel,
-        is CoordinateViewModel -> true
-        else -> false
     }
 
     private fun intentHandler(intent: FormIntent) {

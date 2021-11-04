@@ -3,7 +3,6 @@ package org.dhis2.form.model
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 
@@ -27,7 +26,8 @@ data class FieldUiModelImpl(
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
-    override val uiEventTypes: List<UiEventType>
+    override val uiEventTypes: List<UiEventType>,
+    override val renderingType: UiRenderType? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -67,15 +67,17 @@ data class FieldUiModelImpl(
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
-        uiEventFactory?.generateEvent(value, uiEventType)?.let {
+        uiEventFactory?.generateEvent(value, uiEventType, renderingType)?.let {
             callback?.recyclerViewUiEvents(it)
         }
     }
 
+    override fun invokeIntent(intent: FormIntent) {
+        callback?.intent(intent)
+    }
+
     override val textColor: Int?
-        get() = style?.let { style ->
-            style.getColors()[FormUiColorType.TEXT_PRIMARY]
-        }
+        get() = style?.textColor(error, warning)
 
     override val backGroundColor: Pair<Array<Int>, Int>?
         get() = style?.backgroundColor(valueType, error, warning)
