@@ -186,8 +186,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             new UiEventFactoryImpl(id, label, type, allowFutureDates),
                             displayNameProvider.provideDisplayName(type, value),
                             null,
-                            options,
-                            fieldRendering.type()
+                            uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
+                            options
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -256,7 +256,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         displayNameProvider.provideDisplayName(type, value),
                         uiEventTypesProvider.provideUiEvents(type),
                         uiEventTypesProvider.provideUiRenderType(featureType),
-                        null,
                         null
                 );
             case TEXT:

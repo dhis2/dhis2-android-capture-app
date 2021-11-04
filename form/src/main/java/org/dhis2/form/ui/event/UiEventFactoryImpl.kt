@@ -104,7 +104,7 @@ class UiEventFactoryImpl(
             UiRenderType.POINT -> FeatureType.POINT
             UiRenderType.POLYGON -> FeatureType.POLYGON
             UiRenderType.MULTI_POLYGON -> FeatureType.MULTI_POLYGON
-            null -> FeatureType.NONE
+            else -> FeatureType.NONE
         }
     }
 

@@ -5,7 +5,6 @@ import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.option.Option
 
 data class FieldUiModelImpl(
@@ -28,11 +27,9 @@ data class FieldUiModelImpl(
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
-    override val uiEventTypes: List<UiEventType>,
-    override val renderingType: UiRenderType? = null
     override val uiEventTypes: List<UiEventType>?,
-    override val options: List<Option>? = null,
-    override val renderingType: ValueTypeRenderingType? = null
+    override val renderingType: UiRenderType? = null,
+    override val options: List<Option>? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

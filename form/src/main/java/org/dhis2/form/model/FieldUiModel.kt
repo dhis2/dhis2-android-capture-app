@@ -60,8 +60,6 @@ interface FieldUiModel {
 
     val options: List<Option>?
 
-    val renderingType: ValueTypeRenderingType?
-
     var optionsToHide: List<String>?
 
     var optionsToShow: List<String>?

@@ -471,12 +471,4 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Deprecated
     @Override
     public void setOptionsToShow(@Nullable List<String> optionsToShow) { }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public ValueTypeRenderingType getRenderingType() {
-        //Do not use until migrate to FieldUIModel
-        return null;
-    }
 }

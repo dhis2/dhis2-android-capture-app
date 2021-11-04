@@ -12,6 +12,7 @@ import androidx.databinding.BindingAdapter
 import org.dhis2.form.databinding.OptionSetSelectCheckItemBinding
 import org.dhis2.form.databinding.OptionSetSelectItemBinding
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
@@ -20,8 +21,8 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
     visibility = when {
         item.value != null && item.editable -> when (item.renderingType) {
-            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS -> View.VISIBLE
+            UiRenderType.HORIZONTAL_RADIOBUTTONS,
+            UiRenderType.VERTICAL_RADIOBUTTONS -> View.VISIBLE
             else -> View.GONE
         }
         else -> View.GONE
@@ -29,19 +30,19 @@ fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
 }
 
 @BindingAdapter("renderingType")
-fun LinearLayout.setRenderingType(renderingType: ValueTypeRenderingType?) {
+fun LinearLayout.setRenderingType(renderingType: UiRenderType?) {
     when (renderingType) {
-        ValueTypeRenderingType.VERTICAL_CHECKBOXES -> orientation = LinearLayout.VERTICAL
-        ValueTypeRenderingType.HORIZONTAL_CHECKBOXES -> orientation = LinearLayout.HORIZONTAL
+        UiRenderType.VERTICAL_CHECKBOXES, -> orientation = LinearLayout.VERTICAL
+        UiRenderType.HORIZONTAL_CHECKBOXES -> orientation = LinearLayout.HORIZONTAL
         else -> visibility = View.GONE
     }
 }
 
 @BindingAdapter("renderingType")
-fun RadioGroup.setRenderingType(renderingType: ValueTypeRenderingType?) {
+fun RadioGroup.setRenderingType(renderingType: UiRenderType?) {
     when (renderingType) {
-        ValueTypeRenderingType.VERTICAL_RADIOBUTTONS -> orientation = LinearLayout.VERTICAL
-        ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS -> orientation = LinearLayout.HORIZONTAL
+        UiRenderType.VERTICAL_RADIOBUTTONS -> orientation = LinearLayout.VERTICAL
+        UiRenderType.HORIZONTAL_RADIOBUTTONS -> orientation = LinearLayout.HORIZONTAL
         else -> visibility = View.GONE
     }
 }
