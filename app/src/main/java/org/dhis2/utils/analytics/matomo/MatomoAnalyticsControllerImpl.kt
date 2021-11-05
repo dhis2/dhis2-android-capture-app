@@ -38,10 +38,13 @@ class MatomoAnalyticsControllerImpl(
     private fun updateDhisImplementationTrackerFirstTime() {
         if (dhisImplementationTracker == null && D2Manager.isD2Instantiated()) {
             D2Manager.getD2().settingModule()?.let { settingModule ->
-                val url = settingModule.generalSetting().blockingGet().matomoURL()
-                val id = settingModule.generalSetting().blockingGet().matomoID()
-                if (url != null && id != null) {
-                    updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
+                val settings = settingModule.generalSetting().blockingGet()
+                settings?.let {
+                    val url = settingModule.generalSetting().blockingGet().matomoURL()
+                    val id = settingModule.generalSetting().blockingGet().matomoID()
+                    if (url != null && id != null) {
+                        updateDhisImplementationTracker(url, id, DEFAULT_EXTERNAL_TRACKER_NAME)
+                    }
                 }
             }
         }
