@@ -31,7 +31,7 @@ fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
 @BindingAdapter("renderingType")
 fun LinearLayout.setRenderingType(renderingType: UiRenderType?) {
     when (renderingType) {
-        UiRenderType.VERTICAL_CHECKBOXES, -> orientation = LinearLayout.VERTICAL
+        UiRenderType.VERTICAL_CHECKBOXES -> orientation = LinearLayout.VERTICAL
         UiRenderType.HORIZONTAL_CHECKBOXES -> orientation = LinearLayout.HORIZONTAL
         else -> visibility = View.GONE
     }

@@ -50,7 +50,9 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
         }
     }
 
-    override fun provideUiRenderType(valueTypeRenderingType: ValueTypeRenderingType?): UiRenderType {
+    override fun provideUiRenderType(
+        valueTypeRenderingType: ValueTypeRenderingType?
+    ): UiRenderType {
         return when (valueTypeRenderingType) {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS -> UiRenderType.VERTICAL_RADIOBUTTONS
             ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS -> UiRenderType.HORIZONTAL_RADIOBUTTONS

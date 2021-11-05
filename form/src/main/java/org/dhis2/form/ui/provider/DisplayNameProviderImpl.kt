@@ -6,7 +6,11 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
 
-    override fun provideDisplayName(valueType: ValueType?, value: String?, optionSet :String?): String? {
+    override fun provideDisplayName(
+        valueType: ValueType?,
+        value: String?,
+        optionSet: String?
+    ): String? {
         return value?.let {
             when (valueType) {
                 ValueType.ORGANISATION_UNIT ->
