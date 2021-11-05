@@ -375,14 +375,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Deprecated
     @Nullable
     @Override
-    public List<UiEventType> getUiEventTypes() {
-        //Do not use until migrate to FieldUIModel
-        return null;
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
     public Integer getTextColor() {
         //Do not use until migrate to FieldUIModel
         return null;

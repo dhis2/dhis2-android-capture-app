@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.event
 
+import com.nhaarman.mockitokotlin2.description
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Test
@@ -44,6 +45,7 @@ class UiEventFactoryImplTest {
     private fun provideEventForType(valueType: ValueType) = UiEventFactoryImpl(
         uid = "uid",
         label = "label",
+        description = "description",
         valueType = valueType,
         true
     )

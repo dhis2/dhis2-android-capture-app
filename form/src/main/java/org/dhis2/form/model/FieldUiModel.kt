@@ -49,8 +49,6 @@ interface FieldUiModel {
 
     val displayName: String?
 
-    val uiEventTypes: List<UiEventType>?
-
     val textColor: Int?
 
     val backGroundColor: Pair<Array<Int>, Int>?

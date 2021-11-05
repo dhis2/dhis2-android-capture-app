@@ -17,9 +17,12 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.openKeyboard
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -132,15 +135,15 @@ fun setImeOption(editText: EditText, type: KeyboardActionType?) {
 }
 
 @BindingAdapter("onEditorActionListener")
-fun bindOnEditorActionListener(editText: EditText, item: FieldUiModel) {
-    editText.setOnEditorActionListener { _, actionId, _ ->
+fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
+    setOnEditorActionListener { _, actionId, _ ->
         when (actionId) {
             IME_ACTION_NEXT -> {
                 item.onNext()
                 true
             }
             IME_ACTION_DONE -> {
-//                closeKeyboard(context)
+                closeKeyboard()
                 true
             }
             else -> false
@@ -149,15 +152,15 @@ fun bindOnEditorActionListener(editText: EditText, item: FieldUiModel) {
 }
 
 @BindingAdapter(value = ["onTextChangeListener", "clearButton"], requireAll = false)
-fun bindOnTextChangeListener(editText: EditText, item: FieldUiModel, clearButton: ImageView?) {
-    editText.addTextChangedListener(object : TextWatcher {
+fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
+    addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
         override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-            if (valueHasChanged(editText.text.toString(), item.value) && editText.hasFocus()) {
+            if (valueHasChanged(text.toString(), item.value) && hasFocus()) {
                 item.onTextChange(charSequence.toString())
             }
             if (item.valueType == ValueType.LONG_TEXT) {
-                if (item.editable && editText.text.toString().isNotEmpty()) {
+                if (item.editable && text.toString().isNotEmpty()) {
                     clearButton?.visibility = View.VISIBLE
                 } else {
                     clearButton?.visibility = View.GONE
@@ -198,27 +201,33 @@ private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean
 }
 
 @BindingAdapter("requestFocus")
-fun requestFocus(editText: EditText, item: FieldUiModel) {
+fun EditText.requestFocus(item: FieldUiModel) {
     if (item.focused) {
-        editText.requestFocus()
-        editText.isCursorVisible = true
-//        editText.openKeyboard()
+        requestFocus()
+        isCursorVisible = true
+        openKeyboard()
     } else {
-        editText.clearFocus()
-        editText.isCursorVisible = false
+        clearFocus()
+        isCursorVisible = false
     }
-    editText.setOnTouchListener { _, event ->
+    setOnTouchListener { _, event ->
         if (event.action == ACTION_UP) {
             item.onItemClick()
         }
-        false
+        performClick()
     }
 
-    editText.setOnFocusChangeListener { v, hasFocus ->
+    setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus) {
-            //        editText.openKeyboard()
-        } else if (valueHasChanged(editText.text.toString(), item.value)) {
+            openKeyboard()
+        } else if (valueHasChanged(text.toString(), item.value)) {
             //sendAction
+            item.invokeIntent(FormIntent.OnSave(
+                item.uid,
+                text.toString(),
+                item.valueType,
+                
+            ))
         }
     }
 }
