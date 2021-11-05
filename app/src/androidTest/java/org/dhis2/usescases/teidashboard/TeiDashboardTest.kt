@@ -17,6 +17,8 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +31,12 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @Before
+    override fun setUp(){
+        super.setUp()
+        setupCredentials()
+    }
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
@@ -360,6 +368,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
         val teiLastName = "Banks"

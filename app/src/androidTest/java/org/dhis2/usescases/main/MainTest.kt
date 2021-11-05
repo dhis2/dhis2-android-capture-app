@@ -27,6 +27,7 @@ class MainTest : BaseTest() {
 
     @Test
     fun checkHomeScreenRecyclerviewHasElements() {
+        setupCredentials()
         startActivity()
         homeRobot {
             checkViewIsNotEmpty()

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,6 +10,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import org.dhis2.AppTest
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
@@ -36,6 +38,11 @@ class SearchTETest : BaseTest() {
 
     private var mapIdlingResource: MapIdlingResource? = null
     private var map: MapboxMap? = null
+
+    override fun setUp() {
+        super.setUp()
+        setupCredentials()
+    }
 
     @Test
     fun shouldSuccessfullySearchByName() {
