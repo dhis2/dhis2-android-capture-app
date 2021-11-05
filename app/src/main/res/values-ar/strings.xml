@@ -687,11 +687,6 @@
     <string name="syncing_period_not_editable">فترة المزامنة غير قابلة للتعديل</string>
     <string name="sync_parameters_not_editable">عوامل المزامنة غير قابلة للتعديل</string>
     <string name="rv_no_editable">عدد القيم المحجوزة التي تم تنزيلها غير قابل للتعديل</string>
-    <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
-    <string name="dialog_layer_event">إظهار الأحداث</string>
-    <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
-    <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
-    <string name="dialog_layer_heatmap">إظهار طبقة مخطط الحرارة</string>
     <string name="downloading">تنزيل</string>
     <string name="filter_sync_synced">المتزامنة</string>
     <string name="filter_sync_not_synced">الغير متزامنة</string>

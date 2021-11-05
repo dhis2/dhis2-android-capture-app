@@ -12,11 +12,11 @@
 
         <variable
             name="viewModel"
-            type="org.dhis2.android_maps.geometry.polygon.PolygonViewModel" />
+            type="org.dhis2.maps.geometry.polygon.PolygonViewModel" />
 
         <variable
             name="point"
-            type="org.dhis2.android_maps.geometry.polygon.PolygonViewModel.PolygonPoint" />
+            type="org.dhis2.maps.geometry.polygon.PolygonViewModel.PolygonPoint" />
 
     </data>
 

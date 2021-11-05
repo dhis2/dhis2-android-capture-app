@@ -7,8 +7,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
 import org.junit.Assert

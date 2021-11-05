@@ -660,8 +660,4 @@
     <string name="syncing_period_not_editable">同步期间不能编辑</string>
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
-    <string name="dialog_layer_satellite">显示卫星视图</string>
-    <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
-    <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
-    <string name="dialog_layer_heatmap">显示热力图</string>
     </resources>

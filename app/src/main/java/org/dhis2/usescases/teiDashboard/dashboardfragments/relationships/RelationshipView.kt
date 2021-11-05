@@ -18,7 +18,7 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>)
     fun setFeatureCollection(
         currentTei: String?,
-        relationshipsMapModels: List<org.dhis2.android_maps.model.RelationshipUiComponentModel>,
+        relationshipsMapModels: List<org.dhis2.maps.model.RelationshipUiComponentModel>,
         map: Pair<Map<String?, FeatureCollection>, BoundingBox>
     )
 

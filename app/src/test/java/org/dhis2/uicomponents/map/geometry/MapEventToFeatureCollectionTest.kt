@@ -3,11 +3,12 @@ package org.dhis2.uicomponents.map.geometry
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.android_maps.geometry.bound.GetBoundingBox
-import org.dhis2.android_maps.geometry.mapper.MapGeometryToFeature
-import org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
@@ -18,14 +19,14 @@ import org.junit.Test
 
 class MapEventToFeatureCollectionTest {
 
-    private val mapGeometryToFeature: org.dhis2.android_maps.geometry.mapper.MapGeometryToFeature = mock()
-    private val bounds: org.dhis2.android_maps.geometry.bound.GetBoundingBox = mock()
-    private lateinit var mapEventToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+    private val mapGeometryToFeature: MapGeometryToFeature = mock()
+    private val bounds: GetBoundingBox = mock()
+    private lateinit var mapEventToFeatureCollection: MapEventToFeatureCollection
 
     @Before
     fun setup() {
         mapEventToFeatureCollection =
-            org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection(
+            MapEventToFeatureCollection(
                 mapGeometryToFeature,
                 bounds
             )

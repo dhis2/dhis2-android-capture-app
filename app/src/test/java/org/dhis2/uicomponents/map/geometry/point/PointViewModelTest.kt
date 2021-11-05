@@ -6,11 +6,11 @@ import org.junit.Test
 
 class PointViewModelTest {
 
-    private lateinit var pointViewModel: org.dhis2.android_maps.geometry.point.PointViewModel
+    private lateinit var pointViewModel: org.dhis2.maps.geometry.point.PointViewModel
 
     @Before
     fun setup() {
-        pointViewModel = org.dhis2.android_maps.geometry.point.PointViewModel()
+        pointViewModel = org.dhis2.maps.geometry.point.PointViewModel()
     }
 
     @Test

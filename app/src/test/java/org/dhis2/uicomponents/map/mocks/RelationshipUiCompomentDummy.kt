@@ -1,29 +1,29 @@
 package org.dhis2.uicomponents.map.mocks
 
-import org.dhis2.android_maps.model.RelationshipDirection
-import org.dhis2.android_maps.model.RelationshipUiComponentModel
-import org.dhis2.android_maps.model.TeiMap
+import org.dhis2.maps.model.RelationshipDirection
+import org.dhis2.maps.model.RelationshipUiComponentModel
+import org.dhis2.maps.model.TeiMap
 
 object RelationshipUiCompomentDummy {
 
-    fun relationshipUiComponentModelWrongCoordinates(): org.dhis2.android_maps.model.RelationshipUiComponentModel {
+    fun relationshipUiComponentModelWrongCoordinates(): RelationshipUiComponentModel {
         val geometryFrom = GeometryDummy.getGeometryAsPointWrong()
         val geometryTo = GeometryDummy.getGeometryAsPointWrong()
 
-        return org.dhis2.android_maps.model.RelationshipUiComponentModel(
+        return RelationshipUiComponentModel(
             DISPLAY_NAME_FIRST,
             UID_FIRST,
             RELATIONSHIP_TYPE,
-            org.dhis2.android_maps.model.RelationshipDirection.FROM,
+            RelationshipDirection.FROM,
             false,
-            org.dhis2.android_maps.model.TeiMap(
+            TeiMap(
                 TEIUID_FROM,
                 geometryFrom,
                 "",
                 -1,
                 ""
             ),
-            org.dhis2.android_maps.model.TeiMap(
+            TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
@@ -33,24 +33,24 @@ object RelationshipUiCompomentDummy {
         )
     }
 
-    fun relationshipUiComponentModel(): org.dhis2.android_maps.model.RelationshipUiComponentModel {
+    fun relationshipUiComponentModel(): RelationshipUiComponentModel {
         val geometryFrom = GeometryDummy.getGeometryAsPointFrom()
         val geometryTo = GeometryDummy.getGeometryAsPointTo()
 
-        return org.dhis2.android_maps.model.RelationshipUiComponentModel(
+        return RelationshipUiComponentModel(
             DISPLAY_NAME_FIRST,
             UID_FIRST,
             RELATIONSHIP_TYPE,
-            org.dhis2.android_maps.model.RelationshipDirection.FROM,
+            RelationshipDirection.FROM,
             false,
-            org.dhis2.android_maps.model.TeiMap(
+            TeiMap(
                 TEIUID_FROM,
                 geometryFrom,
                 "",
                 -1,
                 ""
             ),
-            org.dhis2.android_maps.model.TeiMap(
+            TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
@@ -60,18 +60,18 @@ object RelationshipUiCompomentDummy {
         )
     }
 
-    fun relationshipUiComponentModelSecond(): org.dhis2.android_maps.model.RelationshipUiComponentModel {
+    fun relationshipUiComponentModelSecond(): RelationshipUiComponentModel {
         val geometryFrom = GeometryDummy.getGeometryAsPointFrom()
         val geometryTo = GeometryDummy.getGeometryAsPointTo()
 
-        return org.dhis2.android_maps.model.RelationshipUiComponentModel(
+        return RelationshipUiComponentModel(
             DISPLAY_NAME_SECOND,
             UID_SECOND,
             RELATIONSHIP_TYPE,
-            org.dhis2.android_maps.model.RelationshipDirection.FROM,
+            RelationshipDirection.FROM,
             false,
-            org.dhis2.android_maps.model.TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
-            org.dhis2.android_maps.model.TeiMap(TEIUID_TO, geometryTo, "", -1, "")
+            TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
+            TeiMap(TEIUID_TO, geometryTo, "", -1, "")
         )
     }
 

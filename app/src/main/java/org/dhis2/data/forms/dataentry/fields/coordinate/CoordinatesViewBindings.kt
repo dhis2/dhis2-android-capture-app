@@ -11,8 +11,6 @@ import org.dhis2.Bindings.parseToDouble
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.android_maps.geometry.isLatitudeValid
-import org.dhis2.android_maps.geometry.isLongitudeValid
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -26,7 +24,7 @@ fun EditText.setLatitudeValidator(viewModel: CoordinateViewModel?, errorTextView
             hasFocus,
             text.toString(),
             context.getString(R.string.coordinates_error),
-            { coordinate -> org.dhis2.android_maps.geometry.isLatitudeValid(coordinate) },
+            { coordinate -> org.dhis2.maps.geometry.isLatitudeValid(coordinate) },
             { coordinateValue -> setText(coordinateValue) }
         )
     }
@@ -41,7 +39,7 @@ fun EditText.setLongitudeValidator(viewModel: CoordinateViewModel?, errorTextVie
             hasFocus,
             text.toString(),
             context.getString(R.string.coordinates_error),
-            { coordinate -> org.dhis2.android_maps.geometry.isLongitudeValid(coordinate) },
+            { coordinate -> org.dhis2.maps.geometry.isLongitudeValid(coordinate) },
             { coordinateValue -> setText(coordinateValue) }
         )
     }

@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry
 
-import org.dhis2.android_maps.geometry.closestPointTo
+import org.dhis2.maps.geometry.closestPointTo
 import org.junit.Assert.assertTrue
 import org.junit.Test
 

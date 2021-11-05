@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.commons.data.SearchTeiModel
 import java.io.File
+import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule

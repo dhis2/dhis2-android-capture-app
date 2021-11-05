@@ -15,11 +15,11 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.android_maps.ExternalMapNavigation;
-import org.dhis2.android_maps.carousel.CarouselAdapter;
-import org.dhis2.android_maps.layer.MapLayerDialog;
-import org.dhis2.android_maps.managers.RelationshipMapManager;
-import org.dhis2.android_maps.model.RelationshipUiComponentModel;
+import org.dhis2.maps.ExternalMapNavigation;
+import org.dhis2.maps.carousel.CarouselAdapter;
+import org.dhis2.maps.layer.MapLayerDialog;
+import org.dhis2.maps.managers.RelationshipMapManager;
+import org.dhis2.maps.model.RelationshipUiComponentModel;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.data.RelationshipViewModel;
 import org.dhis2.commons.data.tuples.Trio;
@@ -46,7 +46,7 @@ import kotlin.Unit;
 
 import static android.app.Activity.RESULT_OK;
 
-import static org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
+import static org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;

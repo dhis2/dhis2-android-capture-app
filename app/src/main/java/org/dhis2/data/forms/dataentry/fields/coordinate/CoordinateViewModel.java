@@ -9,6 +9,7 @@ import androidx.databinding.ObservableField;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.Bindings.StringExtensionsKt;
+import org.dhis2.maps.geometry.LngLatValidatorKt;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.ui.event.RecyclerViewUiEvents;

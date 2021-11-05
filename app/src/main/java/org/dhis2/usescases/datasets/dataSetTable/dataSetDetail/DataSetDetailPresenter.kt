@@ -4,8 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function3
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_DATASET
 import org.dhis2.utils.analytics.matomo.Categories.Companion.DATASET_DETAIL
@@ -49,7 +49,7 @@ class DataSetDetailPresenter(
                         DataSetInstance,
                         Period,
                         Boolean,
-                            Trio<DataSetInstance, Period, Boolean>>(
+                        Trio<DataSetInstance, Period, Boolean>>(
                         repository.dataSetInstance(),
                         repository.getPeriod().toFlowable(),
                         repository.isComplete().toFlowable(),

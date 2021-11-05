@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Event</string>
     <string name="no_data">No data</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="app_name" translatable="false">Commons</string>

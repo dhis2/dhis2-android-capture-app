@@ -6,4 +6,9 @@
     <string name="dialog_layer_satellite_base_map">Суньий йўлдош кўриниши</string>
     <string name="action_apply">Мурожаат қилиш</string>
     <string name="no_coordinates_item">Ушбу %s координаталарга эга эмас</string>
+    <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
+    <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>
+    <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
+    <string name="dialog_layer_enrollment_coordinates">Қайд этилганлар координаталарини кўрсатиш</string>
+    <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>
 </resources>

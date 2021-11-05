@@ -15,12 +15,12 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import org.dhis2.R
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 
 class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 

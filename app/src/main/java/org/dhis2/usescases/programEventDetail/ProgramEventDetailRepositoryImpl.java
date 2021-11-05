@@ -9,13 +9,13 @@ import androidx.paging.PagedList;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
-import org.dhis2.android_maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
-import org.dhis2.android_maps.geometry.mapper.featurecollection.MapEventToFeatureCollection;
-import org.dhis2.android_maps.managers.EventMapManager;
-import org.dhis2.android_maps.utils.DhisMapUtils;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.maps.managers.EventMapManager;
+import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
@@ -176,7 +176,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @Override
-    public Single<ProgramStage> programStage(){
+    public Single<ProgramStage> programStage() {
         return d2.programModule().programStages().byProgramUid().eq(programUid).one().get();
     }
 
@@ -186,11 +186,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         boolean programStageHasCoordinates =
                 d2.programModule().programStages().byProgramUid().eq(programUid).one().get()
                         .map(stage -> {
-                           if (stage.featureType() != null && stage.featureType() != FeatureType.NONE) {
-                               return true;
-                           } else {
-                               return false;
-                           }
+                            if (stage.featureType() != null && stage.featureType() != FeatureType.NONE) {
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }).blockingGet();
 
         boolean eventDataElementHasCoordinates =

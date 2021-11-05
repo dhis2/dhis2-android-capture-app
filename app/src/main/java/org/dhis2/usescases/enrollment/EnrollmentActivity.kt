@@ -27,6 +27,7 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -169,12 +170,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
-                    if (data?.hasExtra(org.dhis2.android_maps.views.MapSelectorActivity.DATA_EXTRA) == true) {
+                    if (data?.hasExtra(MapSelectorActivity.DATA_EXTRA) == true) {
                         handleGeometry(
                             FeatureType.valueOfFeatureType(
-                                data.getStringExtra(org.dhis2.android_maps.views.MapSelectorActivity.LOCATION_TYPE_EXTRA)
+                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
                             ),
-                            data.getStringExtra(org.dhis2.android_maps.views.MapSelectorActivity.DATA_EXTRA)!!, requestCode
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
                         )
                     }
                 }

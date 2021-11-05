@@ -6,4 +6,9 @@
     <string name="dialog_layer_satellite_base_map">منظر من القمر الصناعي</string>
     <string name="action_apply">تطبيق</string>
     <string name="no_coordinates_item">%s لا يملك أي احداثيات</string>
+    <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
+    <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
+    <string name="dialog_layer_event">إظهار الأحداث</string>
+    <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
+    <string name="dialog_layer_heatmap">إظهار طبقة مخطط الحرارة</string>
 </resources>

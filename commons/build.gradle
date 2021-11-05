@@ -62,6 +62,13 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    //region GOOGLE AUTO VALUE
+    // Google's auto-value. Annotations are used only during compilation time, as well as
+    // annotation processor which hoops up into compilation process
+    api "com.google.auto.value:auto-value:${libraries.autovalue}"
+    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
+
+
     implementation "androidx.core:core-ktx:${libraries.corektx}"
     implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
     implementation "com.google.android.material:material:${libraries.material}"

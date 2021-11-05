@@ -38,9 +38,9 @@ import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.UserManager
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract

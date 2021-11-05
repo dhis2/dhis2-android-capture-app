@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import org.dhis2.android_maps.model.EventUiComponentModel;
-import org.dhis2.android_maps.model.StageStyle;
+import org.dhis2.maps.model.EventUiComponentModel;
+import org.dhis2.maps.model.StageStyle;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;

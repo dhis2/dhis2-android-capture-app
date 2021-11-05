@@ -5,16 +5,17 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.android_maps.geometry.bound.GetBoundingBox
-import org.dhis2.android_maps.geometry.line.MapLineRelationshipToFeature
-import org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.android_maps.geometry.point.MapPointToFeature
-import org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.geometry.point.MapPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModel
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModelSecond
-import org.dhis2.android_maps.model.RelationshipUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -23,16 +24,16 @@ import org.junit.Test
 
 class MapRelationshipsToFeatureCollectionTest {
 
-    private val mapLineToFeature: org.dhis2.android_maps.geometry.line.MapLineRelationshipToFeature = mock()
-    private val mapPointToFeature: org.dhis2.android_maps.geometry.point.MapPointToFeature = mock()
-    private val mapPolygonToFeature: org.dhis2.android_maps.geometry.polygon.MapPolygonToFeature = mock()
-    private val bounds: org.dhis2.android_maps.geometry.bound.GetBoundingBox = mock()
-    private lateinit var mapRelationshipsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+    private val mapLineToFeature: MapLineRelationshipToFeature = mock()
+    private val mapPointToFeature: MapPointToFeature = mock()
+    private val mapPolygonToFeature: MapPolygonToFeature = mock()
+    private val bounds: GetBoundingBox = mock()
+    private lateinit var mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
 
     @Before
     fun setup() {
         mapRelationshipsToFeatureCollection =
-            org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection(
+            MapRelationshipsToFeatureCollection(
                 mapLineToFeature,
                 mapPointToFeature,
                 mapPolygonToFeature,
@@ -108,7 +109,7 @@ class MapRelationshipsToFeatureCollectionTest {
         assertThat(pointToSecondType.latitude(), `is`(TO_LATITUDE))
     }
 
-    private fun getLineFeature(model: org.dhis2.android_maps.model.RelationshipUiComponentModel): Feature {
+    private fun getLineFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
         val coordinates2 = GeometryHelper.getPoint(model.to.geometry!!)
         return Feature.fromGeometry(
@@ -127,14 +128,16 @@ class MapRelationshipsToFeatureCollectionTest {
         )
     }
 
-    private fun getPointFromFeature(model: org.dhis2.android_maps.model.RelationshipUiComponentModel): Feature {
+    private fun getPointFromFeature(
+        model: RelationshipUiComponentModel
+    ): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])
         return Feature.fromGeometry(point)
     }
 
-    private fun getPointToFeature(model: org.dhis2.android_maps.model.RelationshipUiComponentModel): Feature {
+    private fun getPointToFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.to.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])

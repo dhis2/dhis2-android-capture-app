@@ -1,9 +1,11 @@
 package org.dhis2.uicomponents.map.geometry.point
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertEquals
-import org.dhis2.android_maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
@@ -13,12 +15,12 @@ import org.junit.Test
 
 class MapPointToFeatureTest {
 
-    private lateinit var mapPointToFeature: org.dhis2.android_maps.geometry.point.MapPointToFeature
-    private val boundsGeometry: org.dhis2.android_maps.geometry.bound.BoundsGeometry = mock()
+    private lateinit var mapPointToFeature: MapPointToFeature
+    private val boundsGeometry: BoundsGeometry = mock()
 
     @Before
     fun setup() {
-        mapPointToFeature = org.dhis2.android_maps.geometry.point.MapPointToFeature()
+        mapPointToFeature = MapPointToFeature()
     }
 
     @Test
@@ -30,7 +32,7 @@ class MapPointToFeatureTest {
             .type(FeatureType.POINT)
             .build()
 
-        whenever(boundsGeometry.update(latitude, longitude)) doReturn org.dhis2.android_maps.geometry.bound.BoundsGeometry(
+        whenever(boundsGeometry.update(latitude, longitude)) doReturn BoundsGeometry(
             latitude,
             latitude,
             longitude,

@@ -2,4 +2,8 @@
 <resources>
     <string name="select_location">选择位置</string>
     <string name="map_layers">地图层</string>
+    <string name="dialog_layer_satellite">显示卫星视图</string>
+    <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
+    <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
+    <string name="dialog_layer_heatmap">显示热力图</string>
 </resources>

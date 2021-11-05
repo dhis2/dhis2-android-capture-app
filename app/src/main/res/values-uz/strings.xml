@@ -681,11 +681,6 @@
     <string name="syncing_period_not_editable">Синхронизация даври таҳрирланмайди</string>
     <string name="sync_parameters_not_editable">Синхронизация параметри таҳрирланмайди</string>
     <string name="rv_no_editable">Юкланган ҳимояланган қийматлар сони таҳрирланмайди</string>
-    <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
-    <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>
-    <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
-    <string name="dialog_layer_enrollment_coordinates">Қайд этилганлар координаталарини кўрсатиш</string>
-    <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>
     <string name="downloading">Юклаб олинмоқда</string>
     <string name="filter_sync_synced">Синхронизацияланган</string>
     <string name="filter_sync_not_synced">Синхронизацияланмаган</string>

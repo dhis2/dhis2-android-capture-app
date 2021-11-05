@@ -685,11 +685,6 @@
     <string name="syncing_period_not_editable">El periodo de sincronización no es editable</string>
     <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
     <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
-    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
-    <string name="dialog_layer_event">Mostrar eventos</string>
-    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
-    <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
-    <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
     <string name="downloading">Descargando</string>
     <string name="filter_sync_synced">Sincronizado</string>
     <string name="filter_sync_not_synced">No Sincronizado</string>

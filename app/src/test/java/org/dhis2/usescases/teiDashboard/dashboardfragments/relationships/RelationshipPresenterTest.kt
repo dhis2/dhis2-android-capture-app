@@ -9,8 +9,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.android_maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -39,9 +39,8 @@ class RelationshipPresenterTest {
     private val repository: RelationshipRepository = mock()
     private val schedulerProvider: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val mapRelationshipToRelationshipMapModel =
-        org.dhis2.android_maps.mapper.MapRelationshipToRelationshipMapModel()
-    private val mapRelationshipsToFeatureCollection: org.dhis2.android_maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection = mock()
+    private val mapRelationshipToRelationshipMapModel = MapRelationshipToRelationshipMapModel()
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
     private val relationshipConstrain: RelationshipConstraint = mock()
     private val relationshipType: RelationshipType = mock {
         on { fromConstraint() } doReturn relationshipConstrain
