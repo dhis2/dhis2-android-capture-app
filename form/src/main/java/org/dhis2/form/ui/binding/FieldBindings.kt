@@ -6,22 +6,28 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.openKeyboard
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
+import org.dhis2.form.databinding.DataElementLegendBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
+import org.dhis2.form.model.LegendValue
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
@@ -228,6 +234,31 @@ fun EditText.requestFocus(item: FieldUiModel) {
                 item.valueType,
                 
             ))
+        }
+    }
+}
+
+@BindingAdapter("legendBadge")
+fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
+    legendLayout.visibility = if (legendValue != null) View.VISIBLE else View.GONE
+    if (legendValue != null) {
+        val legendBinding: DataElementLegendBinding = DataElementLegendBinding.inflate(
+            LayoutInflater.from(legendLayout.context)
+        )
+        legendBinding.legend = legendValue
+        legendLayout.removeAllViews()
+        legendLayout.addView(legendBinding.root)
+    }
+}
+
+@BindingAdapter("legendValue")
+fun setLegend(textView: TextView, legendValue: LegendValue?) {
+    if (legendValue != null) {
+        val bg = textView.background
+        DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.color, 38))
+        val drawables = textView.compoundDrawables
+        for (drawable in drawables) {
+            if (drawable != null) DrawableCompat.setTint(drawable, legendValue.color)
         }
     }
 }
