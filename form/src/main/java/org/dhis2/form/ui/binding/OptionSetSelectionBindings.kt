@@ -15,7 +15,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 @BindingAdapter("delete_visibility")
 fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
@@ -49,49 +48,51 @@ fun RadioGroup.setRenderingType(renderingType: UiRenderType?) {
 
 @BindingAdapter("options")
 fun LinearLayout.addOptions(item: FieldUiModel) {
-    removeAllViews()
-    item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
-        val optionBinding: OptionSetSelectCheckItemBinding =
-            OptionSetSelectCheckItemBinding.inflate(LayoutInflater.from(context), this, false)
-        optionBinding.apply {
-            this.item = item
-            this.option = option
-            checkBox.apply {
-                val optionChecked = item.value?.let {
-                    it == option.displayName() || it == option.name()
-                } ?: false
-                isChecked = optionChecked
-                setOnCheckedChangeListener { _, isChecked ->
-                    when {
-                        isChecked -> item.onSave(option.code())
-                        else -> item.takeIf { optionChecked }?.onClear()
+    if (item.renderingType?.isCheckBox() == true) {
+        removeAllViews()
+        item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
+            val optionBinding: OptionSetSelectCheckItemBinding =
+                OptionSetSelectCheckItemBinding.inflate(LayoutInflater.from(context), this, false)
+            optionBinding.apply {
+                this.item = item
+                this.option = option
+                checkBox.apply {
+                    val optionChecked = item.displayName == option.displayName()
+                    isChecked = optionChecked
+                    setOnCheckedChangeListener { _, isChecked ->
+                        when {
+                            isChecked -> item.onSave(option.code())
+                            else -> item.takeIf { optionChecked }?.onClear()
+                        }
                     }
                 }
             }
+            addView(optionBinding.root)
         }
-        addView(optionBinding.root)
     }
 }
 
 @BindingAdapter("options")
 fun RadioGroup.addOptions(item: FieldUiModel) {
-    removeAllViews()
-    item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
-        val optionBinding: OptionSetSelectItemBinding =
-            OptionSetSelectItemBinding.inflate(LayoutInflater.from(context), this, false)
-        optionBinding.apply {
-            this.item = item
-            this.option = option
-            radio.apply {
-                isChecked = item.value?.let {
-                    it == option.displayName() || it == option.name()
-                } ?: false
-                setOnCheckedChangeListener { _, isChecked ->
-                    when { isChecked -> item.onSave(option.code()) }
+    if (item.renderingType?.isRadioButton() == true) {
+        removeAllViews()
+        item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
+            val optionBinding: OptionSetSelectItemBinding =
+                OptionSetSelectItemBinding.inflate(LayoutInflater.from(context), this, false)
+            optionBinding.apply {
+                this.item = item
+                this.option = option
+                radio.apply {
+                    isChecked = item.displayName == option.displayName()
+                    setOnCheckedChangeListener { _, isChecked ->
+                        when {
+                            isChecked -> item.onSave(option.code())
+                        }
+                    }
                 }
             }
+            addView(optionBinding.root)
         }
-        addView(optionBinding.root)
     }
 }
 

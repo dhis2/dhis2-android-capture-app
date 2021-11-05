@@ -95,7 +95,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     public FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
                                            @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
                                            @Nullable String value,
-                                           boolean editable) {
+                                           boolean editable,
+                                           List<Option> options) {
         return create(trackedEntityAttribute.uid(),
                 trackedEntityAttribute.displayFormName(),
                 trackedEntityAttribute.valueType(),
@@ -112,7 +113,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.style() != null ? trackedEntityAttribute.style() : ObjectStyle.builder().build(),
                 trackedEntityAttribute.fieldMask(),
                 null,
-                Collections.emptyList(),
+                options,
                 FeatureType.POINT);
     }
 
@@ -184,7 +185,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             optionSet,
                             allowFutureDates,
                             new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                            displayNameProvider.provideDisplayName(type, value),
+                            displayNameProvider.provideDisplayName(type, value, optionSet),
                             null,
                             uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
                             options
@@ -253,7 +254,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         null,
                         allowFutureDates,
                         new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
                         uiEventTypesProvider.provideUiEvents(type),
                         uiEventTypesProvider.provideUiRenderType(featureType),
                         null

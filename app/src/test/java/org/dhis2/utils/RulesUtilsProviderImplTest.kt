@@ -15,7 +15,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.LayoutProvider
@@ -24,7 +23,6 @@ import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
