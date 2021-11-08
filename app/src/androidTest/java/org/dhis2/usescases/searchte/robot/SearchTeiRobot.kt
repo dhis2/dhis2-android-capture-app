@@ -12,6 +12,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -103,7 +104,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult(searchWord: String, message: String) {
         onView(withId(R.id.message))
-            .check(matches(withText(message)))
+            .check(matches(isDisplayed()))
     }
 
     fun clickOnProgramSpinner() {
