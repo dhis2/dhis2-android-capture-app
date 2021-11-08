@@ -3,6 +3,11 @@ package org.dhis2
 import android.os.StrictMode
 import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.dhis2.common.coroutine.DispatcherTestingModule
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
@@ -10,8 +15,8 @@ import org.dhis2.commons.schedulers.SchedulerModule
 import org.dhis2.commons.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.user.UserModule
-import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.usescases.sync.MockedWorkManagerController
+import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
 
@@ -45,7 +50,11 @@ class AppTest : App() {
 
     private fun populateDBIfNeeded() {
         TestingInjector.provideDBImporter(applicationContext).apply {
-            copyDatabaseFromAssetsIfNeeded()
+            runBlocking {
+                withContext(Dispatchers.IO) {
+                    copyDatabaseFromAssetsIfNeeded()
+                }
+            }
         }
     }
 
