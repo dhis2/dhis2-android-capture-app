@@ -315,16 +315,19 @@ public class EventInitialPresenter {
 
     public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date,
                           String orgUnitUid, String catComboUid, String catOptionCombo, Geometry geometry) {
-
-        compositeDisposable.add(
-                eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                eventModel -> view.onEventUpdated(eventModel.uid()),
-                                error -> view.displayMessage(error.getLocalizedMessage())
-                        )
-        );
+        if (eventInitialRepository.getEditableStatus().blockingFirst() instanceof EventEditableStatus.NonEditable) {
+            view.onEventUpdated(eventUid);
+        } else {
+            compositeDisposable.add(
+                    eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    eventModel -> view.onEventUpdated(eventModel.uid()),
+                                    error -> view.displayMessage(error.getLocalizedMessage())
+                            )
+            );
+        }
     }
 
     public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {

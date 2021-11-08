@@ -30,7 +30,9 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.event.EventNonEditableReason
+import org.hisp.dhis.android.core.event.EventNonEditableReason.NO_DATA_WRITE_ACCESS
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -369,6 +371,9 @@ class EventInitialPresenterTest {
         val event = Event.builder().uid("event_uid").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(EventEditableStatus.Editable())
+        whenever(
             eventInitialRepository.editEvent(
                 "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
             )
@@ -389,9 +394,33 @@ class EventInitialPresenterTest {
     }
 
     @Test
+    fun `Should not update event status on ReadOnly event`() {
+        val geometry = Geometry.builder().type(FeatureType.POINT).build()
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(NonEditable(NO_DATA_WRITE_ACCESS))
+
+        presenter.editEvent(
+            "tei",
+            "stage",
+            "event_uid",
+            "date",
+            "orgUnit",
+            "catCombo",
+            "catOptionCombo",
+            geometry
+        )
+
+        verify(view).onEventUpdated("event_uid")
+    }
+
+    @Test
     fun `Should display message when there is a problem editing event`() {
         val event = Event.builder().uid("event_uid").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(EventEditableStatus.Editable())
         whenever(
             eventInitialRepository.editEvent(
                 "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
