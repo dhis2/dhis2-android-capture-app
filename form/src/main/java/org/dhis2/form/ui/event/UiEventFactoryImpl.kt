@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.event
 
+import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.UiEventType
@@ -14,7 +15,6 @@ import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
-import java.util.Calendar
 
 class UiEventFactoryImpl(
     val uid: String,
