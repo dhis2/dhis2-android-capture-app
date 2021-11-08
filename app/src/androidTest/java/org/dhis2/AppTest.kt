@@ -33,6 +33,7 @@ class AppTest : App() {
     @Override
     override fun setUpServerComponent() {
         D2Manager.setTestingDatabase(DB_TO_IMPORT, USERNAME)
+        D2Manager.setTestMode(true)
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
