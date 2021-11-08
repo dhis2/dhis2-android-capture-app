@@ -12,7 +12,6 @@ To configure analytics open the Android Settings WebApp on your DHIS2 server and
    4. Add an alternative title, otherwise, the app will display the name of the visualization
 
 ![](resources/images/capture-app-image162.png){ width=25%}
-![](resources/images/capture-app-image163.png){ width=25%}
 ![](resources/images/capture-app-image164.png){ width=25%}
 
 Analytics are created and configured using the web tools, however, the data aggregation happens offline using only data stored in the device.  
@@ -37,6 +36,7 @@ For each visualization object, the user will be able to filter in the app by:
    * Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
    * OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
 
+![](resources/images/capture-app-image180.png){ width=25%}
 ![](resources/images/capture-app-image168.png){ width=25%}
 ![](resources/images/capture-app-image169.png){ width=25%}
 
@@ -62,7 +62,6 @@ All these visualizations can be organised and displayed in groups. Groups are al
 
 You can name your different groups, they will be displayed as a button in the top bar of the analytics screen.
 
-![](resources/images/capture-app-image172.png){ width=25%}
 ![](resources/images/capture-app-image173.png){ width=25%}
 
 ### Limitations
@@ -90,8 +89,7 @@ If none of the language configurations are available, the app will default to En
 
 Translations set up in DHIS2 for metadata will also be shown according to the language in the user configuration.
 
-![](resources/images/capture-app-image180.png){ width=25%}
-![](resources/images/capture-app-image181.png){ width=25%}
+![](resources/images/capture-app-image182.png){ width=25%}
 
 ## Meta data sync error { #capture_app_visual_sync_error }
 
@@ -222,20 +220,15 @@ This is available when:
 
 ## Render types { #capture_app_visual_render }
 
-
 The available rendering options have been expanded to include horizontal and vertical radio buttons, checkboxes and toggles. The allowed options depend on the value type.
 
 - Yes Only: can be rendered as radio button or checkbox.
-
-![](resources/images/capture-app-image111.jpg){ width=25%}
-
+  
 - Yes/No: can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes or toggle.
-
-![](resources/images/capture-app-image112.jpg){ width=25%}
-
+  
 - Text: When is linked to an option set can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes. The option set must be configured with value type "Text", any other value type will be displayed as a drop-down list.
 
-![](resources/images/capture-app-image110.jpg){ width=25%}
+![](resources/images/capture-app-image111.png){ width=25%}
 
 > **Note** 
 >
@@ -260,4 +253,5 @@ Barcodes also allow the user to manually enter the value.
 
 Users are now able to display a bar or QR code in an image so that it can be shared for printing, take a screenshot or show it on the screen for scanning.
 
+![](resources/images/capture-app-image181.png){ width=20%}
 ![](resources/images/capture-app-image174.png){ width=20%}

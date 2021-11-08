@@ -14,7 +14,6 @@ To configure analytics open the Android Settings WebApp on your DHIS2 server and
    4. Add an alternative title, otherwise, the app will display the name of the visualization
 
 ![](resources/images/capture-app-image162.png){ width=25%}
-![](resources/images/capture-app-image163.png){ width=25%}
 ![](resources/images/capture-app-image164.png){ width=25%}
 
 Analytics are created and configured using the web tools, however, the data aggregation happens offline using only data stored in the device.  
@@ -38,7 +37,7 @@ For each visualization object, the user will be able to filter in the app by:
 
    * Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
    * OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
-
+![](resources/images/capture-app-image180.png){ width=25%}
 ![](resources/images/capture-app-image168.png){ width=25%}
 ![](resources/images/capture-app-image169.png){ width=25%}
 
@@ -64,7 +63,6 @@ All these visualizations can be organised and displayed in groups. Groups are al
 
 You can name your different groups, they will be displayed as a button in the top bar of the analytics screen.
 
-![](resources/images/capture-app-image172.png){ width=25%}
 ![](resources/images/capture-app-image173.png){ width=25%}
 
 #### Limitations
@@ -91,7 +89,6 @@ The app allows adding relationships from single events (in event programs) to TE
 >> This version does not allow TEIs to event relationships, or using events that belong to an enrollment.
 
 ![](resources/images/capture-app-image175.png){ width=25%}
-![](resources/images/capture-app-image176.png){ width=25%}
 
 ### New Navigation Bar
 
@@ -205,7 +202,6 @@ The user can select one or more layers to be displayed.
 The maps will display coordinates and polygons.
 
 ![](resources/images/capture-app-image125.png){ width=25%}
-![](resources/images/capture-app-image146.png){ width=25%}
 ![](resources/images/capture-app-image136.png){ width=25%}
 
 #### Map Carousel { #capture_app_programs_map_carousel }
@@ -216,7 +212,7 @@ On the map view of the program, a carousel of cards is displayed, one for each e
 
 * When scrolling horizontally the carousel, the map zooms into the selected coordinates. If coordinates field is empty a message is shown instead.
 
-![](resources/images/capture-app-image126.jpg){ width=25%} 
+![](resources/images/capture-app-image126.png){ width=25%} 
 ![](resources/images/capture-app-image133.png){ width=25%}
 
 Each card displays Tracked Entity Attributes (for Tracker Programs) and Data Elements (for Event programs) configured as 'Display in list'.
@@ -244,8 +240,8 @@ If the user grants location permissions to the App, the map will show the curren
 
 If the TEI or event has coordinates a navigation icon will be displayed at the top right of the card. Click to open the location in a maps App.
 
-![](resources/images/capture-app-image149.jpg){ width=25%}
-![](resources/images/capture-app-image150.jpg){ width=25%}
+![](resources/images/capture-app-image149.png){ width=25%}
+![](resources/images/capture-app-image150.png){ width=25%}
 ![](resources/images/capture-app-image151.jpg){ width=25%}
 
 ### Working Lists
@@ -254,20 +250,20 @@ Working lists are now compatible with the Android app. Once a list is selected, 
 
 Working lists are available in Event and Tracker Programs.
 
-![](resources/images/capture-app-image152.jpg){ width=25%}
-![](resources/images/capture-app-image153.jpg){ width=25%}
+![](resources/images/capture-app-image152.png){ width=25%}
+![](resources/images/capture-app-image153.png){ width=25%}
 
 ### Program Indicators
 
 The new analytics tab now supports displaying text and key/value pair in feedback or indicator section.
 
-![](resources/images/capture-app-image154.jpg){ width=25%}
+![](resources/images/capture-app-image154.png){ width=25%}
 
 ### Legends
 
 Legends are now available in Android App. It will be shown next to value with the respective color and label.
 
-![](resources/images/capture-app-image155.jpg){ width=25%}
+![](resources/images/capture-app-image155.png){ width=25%}
 
 ## Program with registration in Android { #capture_app_programs_with_reg }
 
@@ -285,11 +281,12 @@ To simplify and personalize the user experience, the user interface actions offe
 The new TEI Card design includes:
 
 * Last update date
-* Other enrollments in programs with displayFrontPageList
-* At least **3 main attributes**. 
-  * If there are more, there will be an arrow to display the full list (only attributes with displayInList option)
+* The first 2 attributes with displayInList option
+  * If there are more, there will be an arrow to display the full list
+* Enrollment org unit
 * Enrollment status label if **completed** or **cancelled**
 * Overdue icon if an overdue event exists with the most recent overdue event date
+* Follow-up icon if the TEI is marked 
 * Card image (one of the following options):
   * Profile picture when available or
   * First letter of the first attribute or
@@ -312,7 +309,6 @@ All tracker programs will take the user to the search screen. The search fields 
 
 At first, the user is obligated to do a search. if there are no coincidences, the search button will change to an ‘Add’ button for the user to create a new enrollment.
 
-![](resources/images/capture-app-image78.png){ width=25%}
 ![](resources/images/capture-app-image79.png){ width=25%}
 
 ### Search screen for all Tracked Entity Type { #capture_app_programs_search_screen }
@@ -395,20 +391,19 @@ It is possible to display the evolution in data elements as charts, values or ta
 
 1. Single value: It will display the newest value in the program.
    
-![](resources/images/capture-app-image156.jpg){ width=25%}
+![](resources/images/capture-app-image156.png){ width=25%}
 
 2. Charts: It is possible to display the values as a line chart o as a bar chart.
 
-![](resources/images/capture-app-image157.jpg){ width=25%}
-![](resources/images/capture-app-image158.jpg){ width=25%}
+![](resources/images/capture-app-image157.png){ width=25%}
 
 The Nutrition Growth charts are shown according to the WHO standards.  This option will render a background image and apply the axis (0 to 5 monthly)according to the WHO model.
 
- ![](resources/images/capture-app-image159.jpg){ width=25%}
+ ![](resources/images/capture-app-image159.png){ width=25%}
    
 3. Tables: It will display the data elements or indicators in the rows and the periods in the columns.
 
-![](resources/images/capture-app-image160.jpg){ width=25%} 
+![](resources/images/capture-app-image160.png){ width=25%} 
 
 ## Supported features Overview { #capture_app_programs_supported_features }
 

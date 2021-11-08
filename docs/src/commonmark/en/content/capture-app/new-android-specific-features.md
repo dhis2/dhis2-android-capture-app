@@ -19,8 +19,7 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/capture-app-image62.png){ width=25%}
-![](resources/images/capture-app-image63.jpg){ width=25%}
+![](resources/images/capture-app-image63.png){ width=25%}
 
 > **Warning**
 > 
@@ -77,7 +76,6 @@ The app has new and improved filters for all listing screens (home, event listin
 Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
 ![](resources/images/capture-app-image19.png){ width=25%}
-![](resources/images/capture-app-image97.png){ width=25%}
 ![](resources/images/capture-app-image123.png){ width=25%}
 ![](resources/images/capture-app-image134.png){ width=25%}
 

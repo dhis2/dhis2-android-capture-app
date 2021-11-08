@@ -14,7 +14,6 @@ To configure analytics open the Android Settings WebApp on your DHIS2 server and
    4. Add an alternative title, otherwise, the app will display the name of the visualization
 
 ![](resources/images/capture-app-image162.png){ width=25%}
-![](resources/images/capture-app-image163.png){ width=25%}
 ![](resources/images/capture-app-image164.png){ width=25%}
 
 Analytics are created and configured using the web tools, however, the data aggregation happens offline using only data stored in the device.  
@@ -39,6 +38,7 @@ For each visualization object, the user will be able to filter in the app by:
   * Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
   * OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
 
+![](resources/images/capture-app-image180.png){ width=25%}
 ![](resources/images/capture-app-image168.png){ width=25%}
 ![](resources/images/capture-app-image169.png){ width=25%}
 
@@ -64,7 +64,6 @@ All these visualizations can be organised and displayed in groups. Groups are al
 
 You can name your different groups, they will be displayed as a button in the top bar of the analytics screen.
 
-![](resources/images/capture-app-image172.png){ width=25%}
 ![](resources/images/capture-app-image173.png){ width=25%}
 
 ### Limitations
