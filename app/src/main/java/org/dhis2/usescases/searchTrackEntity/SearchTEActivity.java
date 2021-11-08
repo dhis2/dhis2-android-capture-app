@@ -588,9 +588,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
         if (!fromRelationship) {
             liveData.observe(this, searchTeiModels -> {
-                org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(searchTeiModels);
-                presenter.checkFilters(data.val0().isEmpty());
-                if (data.val0().isEmpty()) {
+                SearchMessageResult data = presenter.getMessage(searchTeiModels);
+                presenter.checkFilters(data.getMessage().isEmpty());
+                if (data.getMessage().isEmpty()) {
                     binding.messageContainer.setVisibility(GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(searchTeiModels);
@@ -599,21 +599,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 } else {
                     binding.progressLayout.setVisibility(GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
-                    binding.message.setText(data.val0());
+                    binding.message.setText(data.getMessage());
                     binding.scrollView.setVisibility(GONE);
                     CountingIdlingResourceSingleton.INSTANCE.decrement();
                 }
-                if (!searchTeiModels.isEmpty() && !data.val1()) {
+                if (!searchTeiModels.isEmpty() && !data.getCanRegister() && data.getForceSearch()) {
                     showHideFilter();
-                    if (data.val2()) {
+                    if (data.getShowButton()) {
                         binding.showListBtn.setVisibility(View.VISIBLE);
                     }
                 }
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
-                org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(searchTeiModels);
-                if (data.val0().isEmpty()) {
+                SearchMessageResult data = presenter.getMessage(searchTeiModels);
+                if (data.getMessage().isEmpty()) {
                     binding.messageContainer.setVisibility(GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(searchTeiModels);
@@ -621,11 +621,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 } else {
                     binding.progressLayout.setVisibility(GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
-                    binding.message.setText(data.val0());
+                    binding.message.setText(data.getMessage());
                     binding.scrollView.setVisibility(GONE);
                 }
                 CountingIdlingResourceSingleton.INSTANCE.decrement();
-                if (!presenter.getQueryData().isEmpty() && data.val1())
+                if (!presenter.getQueryData().isEmpty() && data.getCanRegister())
                     setFabIcon(false);
             });
         }
@@ -1021,8 +1021,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.messageContainer.setVisibility(GONE);
             showMap(true);
         } else {
-            org.dhis2.data.tuples.Trio<String, Boolean, Boolean> data = presenter.getMessage(trackerMapData.getTeiModels());
-            if (data.val0().isEmpty()) {
+            SearchMessageResult data = presenter.getMessage(trackerMapData.getTeiModels());
+            if (data.getMessage().isEmpty()) {
                 binding.messageContainer.setVisibility(GONE);
                 binding.mapView.setVisibility(View.VISIBLE);
                 binding.mapCarousel.setVisibility(View.VISIBLE);
@@ -1047,13 +1047,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             } else {
                 binding.messageContainer.setVisibility(View.VISIBLE);
-                binding.message.setText(data.val0());
+                binding.message.setText(data.getMessage());
                 binding.mapView.setVisibility(View.GONE);
                 binding.mapCarousel.setVisibility(View.GONE);
                 binding.mapLayerButton.setVisibility(View.GONE);
                 binding.mapPositionButton.setVisibility(GONE);
             }
-            if (!trackerMapData.getTeiModels().isEmpty() && !data.val1()) {
+            if (!trackerMapData.getTeiModels().isEmpty() && !data.getCanRegister()) {
                 showHideFilter();
             }
             binding.toolbarProgress.hide();
