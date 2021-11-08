@@ -23,7 +23,6 @@ import org.dhis2.form.ui.style.FormUiColorFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
 import org.hisp.dhis.rules.models.RuleActionDisplayText
