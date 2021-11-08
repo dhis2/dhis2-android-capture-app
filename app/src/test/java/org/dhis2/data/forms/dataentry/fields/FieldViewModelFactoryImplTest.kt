@@ -52,7 +52,8 @@ class FieldViewModelFactoryImplTest {
             trackedEntityAttribute,
             programTrackedEntityAttribute,
             "Peter",
-            true
+            true,
+            emptyList()
         )
         verify(trackedEntityAttribute).displayFormName()
         verify(programTrackedEntityAttribute, never()).displayName()
