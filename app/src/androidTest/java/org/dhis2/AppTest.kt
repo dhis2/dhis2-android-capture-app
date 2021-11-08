@@ -1,5 +1,6 @@
 package org.dhis2
 
+import android.os.StrictMode
 import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
 import org.dhis2.common.coroutine.DispatcherTestingModule
@@ -20,8 +21,26 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
+        enableStrictMode()
         populateDBIfNeeded()
         super.onCreate()
+    }
+
+    private fun enableStrictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectNetwork()
+                .penaltyLog()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        )
     }
 
     private fun populateDBIfNeeded() {
