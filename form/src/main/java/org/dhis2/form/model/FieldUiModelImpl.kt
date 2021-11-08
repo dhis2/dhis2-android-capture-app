@@ -68,6 +68,7 @@ data class FieldUiModelImpl(
     }
 
     override fun onSave(value: String?) {
+        onItemClick()
         callback?.intent(FormIntent.OnSave(uid, value, valueType))
     }
 

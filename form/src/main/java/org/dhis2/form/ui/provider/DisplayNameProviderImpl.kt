@@ -33,11 +33,17 @@ class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
                         DateUtils.timeFormat().parse(value) ?: ""
                     )
                 ValueType.TEXT -> optionSet?.let {
-                    d2.optionModule().options()
+                    val byCode = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSet)
                         .byCode().eq(value).one()
-                        .blockingGet()
-                        .displayName()
+                    val byName = d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet)
+                        .byDisplayName().eq(value).one()
+                    when {
+                        byCode.blockingExists() -> return byCode.blockingGet().displayName()
+                        byName.blockingExists() -> return byName.blockingGet().displayName()
+                        else -> value
+                    }
                 }
                 else -> value
             }

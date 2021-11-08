@@ -24,7 +24,7 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
 
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
         attribute.optionSet()?.let {
-            return value()
+            return checkOptionSetValue(d2, it.uid(), value()!!)
         } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!)
     } else {
         return null

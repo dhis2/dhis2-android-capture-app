@@ -482,8 +482,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList(),
-            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
+            null,
+            emptyList()
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
@@ -536,8 +536,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList(),
-            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
+            null,
+            emptyList()
         )
 
         whenever(
@@ -601,8 +601,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList(),
-            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS
+            null,
+            emptyList()
         )
 
         ruleUtils.applyRuleEffects(
