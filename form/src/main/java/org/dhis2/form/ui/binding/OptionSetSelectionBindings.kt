@@ -31,8 +31,14 @@ fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
 @BindingAdapter("renderingType")
 fun LinearLayout.setRenderingType(renderingType: UiRenderType?) {
     when (renderingType) {
-        UiRenderType.VERTICAL_CHECKBOXES -> orientation = LinearLayout.VERTICAL
-        UiRenderType.HORIZONTAL_CHECKBOXES -> orientation = LinearLayout.HORIZONTAL
+        UiRenderType.VERTICAL_CHECKBOXES -> {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.VISIBLE
+        }
+        UiRenderType.HORIZONTAL_CHECKBOXES -> {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = View.VISIBLE
+        }
         else -> visibility = View.GONE
     }
 }
@@ -40,8 +46,14 @@ fun LinearLayout.setRenderingType(renderingType: UiRenderType?) {
 @BindingAdapter("renderingType")
 fun RadioGroup.setRenderingType(renderingType: UiRenderType?) {
     when (renderingType) {
-        UiRenderType.VERTICAL_RADIOBUTTONS -> orientation = LinearLayout.VERTICAL
-        UiRenderType.HORIZONTAL_RADIOBUTTONS -> orientation = LinearLayout.HORIZONTAL
+        UiRenderType.VERTICAL_RADIOBUTTONS -> {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.VISIBLE
+        }
+        UiRenderType.HORIZONTAL_RADIOBUTTONS -> {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = View.VISIBLE
+        }
         else -> visibility = View.GONE
     }
 }
