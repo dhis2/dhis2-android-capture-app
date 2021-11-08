@@ -9,15 +9,17 @@ import timber.log.Timber
 
 class FieldMaskValidator(val fieldMask: String?) : ValueTypeValidator<FieldMaskFailure> {
 
+    private val formattedFieldMask = fieldMask?.removeSurrounding("\'")
+
     fun validateNullSafe(value: String?): Result<String?, FieldMaskFailure> {
         return value?.let { validate(value) } ?: Result.Success(value)
     }
 
     override fun validate(value: String): Result<String, FieldMaskFailure> {
-        return if (fieldMask.isNullOrEmpty() || value.isEmpty()) {
+        return if (formattedFieldMask.isNullOrEmpty() || value.isEmpty()) {
             Result.Success(value)
         } else if (fieldMaskIsCorrect()) {
-            if (value.matches(fieldMask.toRegex())) {
+            if (value.matches(formattedFieldMask.toRegex())) {
                 Result.Success(value)
             } else {
                 Result.Failure(FieldMaskFailure.WrongPatternException)
@@ -30,7 +32,7 @@ class FieldMaskValidator(val fieldMask: String?) : ValueTypeValidator<FieldMaskF
     @VisibleForTesting
     fun fieldMaskIsCorrect(): Boolean {
         return try {
-            Pattern.compile(fieldMask)
+            Pattern.compile(formattedFieldMask)
             true
         } catch (e: Exception) {
             Timber.d(e)
