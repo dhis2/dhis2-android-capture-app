@@ -41,7 +41,7 @@ class SearchTETest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
-        setupCredentials()
+      //  setupCredentials()
     }
 
     @Test

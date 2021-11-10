@@ -43,7 +43,7 @@ class SyncFlowTest : BaseTest() {
         super.setUp()
         workInfoStatusLiveData =
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
-        setupCredentials()
+      //  setupCredentials()
     }
 
     @Test
