@@ -17,9 +17,9 @@ class JiraTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    override fun getPermissionsToBeAccepted(): Array<String> {
+  /*  override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    }
+    } */
 
     override fun setUp() {
         super.setUp()

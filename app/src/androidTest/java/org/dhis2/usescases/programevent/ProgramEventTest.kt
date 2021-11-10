@@ -21,9 +21,9 @@ class ProgramEventTest: BaseTest() {
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
 
-    override fun getPermissionsToBeAccepted(): Array<String> {
+  /*  override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
+    } */
 
     @Test
     fun shouldCreateNewEventAndCompleteIt() {

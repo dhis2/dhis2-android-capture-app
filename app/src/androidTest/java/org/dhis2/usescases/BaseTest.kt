@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
@@ -37,20 +38,27 @@ open class BaseTest {
     lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
 
-    protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
+  //  protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
     @get:Rule
     val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
+
+    @get:Rule
+    var permissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
 
     @Before
     @Throws(Exception::class)
     open fun setUp() {
         injectDependencies()
-        allowPermissions()
+        //    allowPermissions()
         registerCountingIdlingResource()
     }
 
-    private fun allowPermissions() {
+  /*  private fun allowPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getPermissionsToBeAccepted().forEach {
                 InstrumentationRegistry.getInstrumentation()
@@ -58,7 +66,7 @@ open class BaseTest {
                     .executeShellCommand("pm grant ${context.packageName} $it")
             }
         }
-    }
+    } */
 
     private fun injectDependencies() {
         TestingInjector.apply {
@@ -69,11 +77,13 @@ open class BaseTest {
     }
 
     private fun registerCountingIdlingResource() {
-        IdlingRegistry.getInstance().register(CountingIdlingResourceSingleton.countingIdlingResource)
+        IdlingRegistry.getInstance()
+            .register(CountingIdlingResourceSingleton.countingIdlingResource)
     }
 
-    private fun unregisterCountingIdlingResource(){
-        IdlingRegistry.getInstance().unregister(CountingIdlingResourceSingleton.countingIdlingResource)
+    private fun unregisterCountingIdlingResource() {
+        IdlingRegistry.getInstance()
+            .unregister(CountingIdlingResourceSingleton.countingIdlingResource)
     }
 
     fun setupMockServer() {
@@ -109,11 +119,11 @@ open class BaseTest {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
-    fun turnOnConnectivityAfterLogin(){
+    fun turnOnConnectivityAfterLogin() {
         ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
     }
 
-    fun turnOffConnectivityAfterLogin(){
+    fun turnOffConnectivityAfterLogin() {
         ServerURLWrapper.setServerUrl("none")
     }
 

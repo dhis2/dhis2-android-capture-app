@@ -26,9 +26,9 @@ class SettingsTest : BaseTest() {
     @JvmField
     val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(rule)
 
-    override fun getPermissionsToBeAccepted(): Array<String> {
+ /*   override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    }
+    } */
 
     @Test
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
