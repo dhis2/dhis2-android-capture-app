@@ -10,7 +10,7 @@ import timber.log.Timber
 
 class DBTestLoader(private val context: Context) {
 
-     fun copyDatabaseFromAssetsIfNeeded() {
+    fun copyDatabaseFromAssetsIfNeeded() {
         val databasePath = context.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/$DB_NAME")
 
