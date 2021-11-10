@@ -227,13 +227,14 @@ fun EditText.requestFocus(item: FieldUiModel) {
         if (hasFocus) {
             openKeyboard()
         } else if (valueHasChanged(text.toString(), item.value)) {
-            //sendAction
-            item.invokeIntent(FormIntent.OnSave(
-                item.uid,
-                text.toString(),
-                item.valueType,
-                
-            ))
+            item.invokeIntent(
+                FormIntent.OnSave(
+                    item.uid,
+                    text.toString(),
+                    item.valueType,
+                    item.fieldMask
+                )
+            )
         }
     }
 }

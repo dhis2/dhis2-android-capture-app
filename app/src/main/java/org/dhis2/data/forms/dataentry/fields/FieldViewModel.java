@@ -448,4 +448,10 @@ public abstract class FieldViewModel implements FieldUiModel {
         //Do not use until migrate to FieldUIModel
         return null;
     }
+
+    @Nullable
+    @Override
+    public String getFieldMask() {
+        return fieldMask();
+    }
 }

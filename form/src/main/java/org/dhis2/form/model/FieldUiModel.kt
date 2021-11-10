@@ -65,6 +65,8 @@ interface FieldUiModel {
 
     val keyboardActionType: KeyboardActionType?
 
+    val fieldMask: String?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

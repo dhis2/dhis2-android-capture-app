@@ -32,6 +32,8 @@ data class FieldUiModelImpl(
     override val renderingType: UiRenderType? = null,
     override val options: List<Option>? = null,
     override val keyboardActionType: KeyboardActionType? = null
+    override val keyboardActionType: KeyboardActionType? = null,
+    override val fieldMask: String? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

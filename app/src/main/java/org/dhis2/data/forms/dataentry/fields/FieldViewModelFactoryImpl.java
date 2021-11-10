@@ -285,7 +285,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                         displayNameProvider.provideDisplayName(type, value, optionSet),
                         uiEventTypesProvider.provideUiRenderType(featureType),
-                        keyboardActionProvider.provideKeyboardAction(type)
+                        keyboardActionProvider.provideKeyboardAction(type),
+                        fieldMask
                 );
         }
     }
