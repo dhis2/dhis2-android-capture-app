@@ -26,7 +26,7 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
-        enableStrictMode()
+   //     enableStrictMode()
         populateDBIfNeeded()
         super.onCreate()
     }
