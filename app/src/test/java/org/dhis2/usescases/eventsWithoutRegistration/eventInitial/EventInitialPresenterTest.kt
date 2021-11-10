@@ -29,9 +29,10 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.event.EventNonEditableReason
+import org.hisp.dhis.android.core.event.EventNonEditableReason.BLOCKED_BY_COMPLETION
 import org.hisp.dhis.android.core.event.EventNonEditableReason.NO_DATA_WRITE_ACCESS
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -372,7 +373,7 @@ class EventInitialPresenterTest {
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         whenever(
             eventInitialRepository.editableStatus
-        ) doReturn Flowable.just(EventEditableStatus.Editable())
+        ) doReturn Flowable.just(Editable())
         whenever(
             eventInitialRepository.editEvent(
                 "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
@@ -420,7 +421,7 @@ class EventInitialPresenterTest {
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         whenever(
             eventInitialRepository.editableStatus
-        ) doReturn Flowable.just(EventEditableStatus.Editable())
+        ) doReturn Flowable.just(Editable())
         whenever(
             eventInitialRepository.editEvent(
                 "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
@@ -624,10 +625,30 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should track event analitycs`() {
+    fun `Should track event analytics`() {
         presenter.onEventCreated()
 
         verify(matomoAnalyticsController).trackEvent(any(), any(), any())
+    }
+
+    @Test
+    fun `Should return true if event is editable`() {
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(Editable())
+
+        val isEditable = presenter.isEventEditable
+        assert(isEditable)
+    }
+
+    @Test
+    fun `Should return false if event is not editable`() {
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(NonEditable(BLOCKED_BY_COMPLETION))
+
+        val isEditable = presenter.isEventEditable
+        assert(!isEditable)
     }
 
     private fun initMocks(
@@ -677,8 +698,7 @@ class EventInitialPresenterTest {
         val event = Event.builder().uid(eventId).build()
         val programStage = ProgramStage.builder().uid(eventId).build()
         val stringCategoryOptionMap = mutableMapOf<String, CategoryOption>()
-        val editionStatus =
-            EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
+        val editionStatus = NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
 
         whenever(eventInitialRepository.event(eventId)) doReturn Observable.just(event)
         whenever(

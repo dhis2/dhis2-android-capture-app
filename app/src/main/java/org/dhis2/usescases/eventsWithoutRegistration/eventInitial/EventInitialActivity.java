@@ -445,7 +445,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.orgUnit.setEnabled(false);
             binding.temp.setEnabled(false);
-            binding.actionButton.setText(getString(R.string.check_event));
+            if (presenter.isEventEditable()) {
+                binding.actionButton.setText(getString(R.string.action_close));
+            } else {
+                binding.actionButton.setText(getString(R.string.check_event));
+            }
             binding.executePendingBindings();
 
         }
@@ -778,7 +782,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.orgUnit.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
-            binding.actionButton.setText(getString(R.string.check_event));
+            binding.actionButton.setText(getString(R.string.action_close));
             binding.executePendingBindings();
         }
     }

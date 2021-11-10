@@ -315,9 +315,7 @@ public class EventInitialPresenter {
 
     public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date,
                           String orgUnitUid, String catComboUid, String catOptionCombo, Geometry geometry) {
-        if (eventInitialRepository.getEditableStatus().blockingFirst() instanceof EventEditableStatus.NonEditable) {
-            view.onEventUpdated(eventUid);
-        } else {
+        if (isEventEditable()) {
             compositeDisposable.add(
                     eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
                             .subscribeOn(schedulerProvider.io())
@@ -327,6 +325,8 @@ public class EventInitialPresenter {
                                     error -> view.displayMessage(error.getLocalizedMessage())
                             )
             );
+        } else {
+            view.onEventUpdated(eventUid);
         }
     }
 
@@ -486,5 +486,9 @@ public class EventInitialPresenter {
 
     public void onEventCreated() {
         matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK);
+    }
+
+    public boolean isEventEditable() {
+        return eventInitialRepository.getEditableStatus().blockingFirst() instanceof EventEditableStatus.Editable;
     }
 }
