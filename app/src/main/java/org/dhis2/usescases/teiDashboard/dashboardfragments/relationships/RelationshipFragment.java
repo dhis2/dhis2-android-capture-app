@@ -241,7 +241,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private void goToRelationShip(@NonNull RelationshipType relationshipTypeModel,
                                   @NonNull String teiTypeUid) {
         relationshipType = relationshipTypeModel;
-        presenter.goToAddRelationship(teiTypeUid);
+        presenter.goToAddRelationship(teiTypeUid, relationshipType);
     }
 
     @Override

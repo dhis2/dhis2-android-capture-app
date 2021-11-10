@@ -399,17 +399,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list) {
+    public SearchMessageResult getMessage(List<SearchTeiModel> list) {
 
         int size = 0;
+        int errorSize = 0;
 
-        for(SearchTeiModel searchTeiModel : list){
-            if(searchTeiModel.onlineErrorMessage == null) size++;
+        for (SearchTeiModel searchTeiModel : list) {
+            if (searchTeiModel.onlineErrorMessage == null) size++;
+            if (searchTeiModel.onlineErrorMessage != null) errorSize++;
         }
 
         String messageId = "";
         boolean canRegister = false;
         boolean showButton = false;
+
+        if (!list.isEmpty() && list.size() == errorSize) {
+            return new SearchMessageResult(list.get(0).onlineErrorMessage, canRegister, showButton, false);
+        }
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
@@ -464,7 +470,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (messageId.isEmpty())
             canRegister = true;
 
-        return Trio.create(messageId, canRegister, showButton);
+        return new SearchMessageResult(messageId, canRegister, showButton, true);
     }
 
     private void handleError(Throwable throwable) {
