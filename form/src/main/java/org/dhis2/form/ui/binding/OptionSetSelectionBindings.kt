@@ -1,10 +1,7 @@
 package org.dhis2.form.ui.binding
 
-import android.content.res.ColorStateList
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioGroup
@@ -13,8 +10,6 @@ import org.dhis2.form.databinding.OptionSetSelectCheckItemBinding
 import org.dhis2.form.databinding.OptionSetSelectItemBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.ui.style.FormUiColorType
-import org.dhis2.form.ui.style.FormUiModelStyle
 
 @BindingAdapter("delete_visibility")
 fun ImageView.setOptionSetDeleteVisibility(item: FieldUiModel) {
