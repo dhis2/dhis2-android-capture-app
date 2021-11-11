@@ -1,6 +1,5 @@
 package org.dhis2
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import java.io.File
@@ -25,10 +24,9 @@ class DBTestLoader(private val context: Context) {
 
         try {
             writeExtractedFileToDisk(input, output)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("Crash copy", e.toString())
         }
-       // input.copyTo(output)
     }
 
     @Throws(IOException::class)
