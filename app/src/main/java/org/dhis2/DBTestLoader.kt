@@ -1,6 +1,8 @@
 package org.dhis2
 
 import android.content.Context
+import android.os.Build
+import android.os.FileUtils
 import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
@@ -22,11 +24,26 @@ class DBTestLoader(private val context: Context) {
         val input = context.assets.open("databases/$DB_NAME_TEST")
         val output = FileOutputStream("$databasePath/$DB_NAME")
 
-        try {
-            writeExtractedFileToDisk(input, output)
-        } catch (e: Exception) {
-            Log.e("Crash copy", e.toString())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Log.i("Copy", "Copy starts")
+            FileUtils.copy(
+                input,
+                output,
+                null,
+                null,
+                FileUtils.ProgressListener {
+                    Log.i("Copy", "Copy percetange: $it")
+                }
+            )
+        } else {
+            Log.i("Copy", "Cannot copy")
         }
+
+        /*   try {
+               writeExtractedFileToDisk(input, output)
+           } catch (e: Exception) {
+               Log.e("Crash copy", e.toString())
+           } */
     }
 
     @Throws(IOException::class)
