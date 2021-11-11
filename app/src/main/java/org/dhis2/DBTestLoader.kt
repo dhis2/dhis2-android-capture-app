@@ -7,7 +7,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import timber.log.Timber
 
 class DBTestLoader(private val context: Context) {
 
@@ -15,10 +14,10 @@ class DBTestLoader(private val context: Context) {
         val databasePath = context.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/$DB_NAME")
 
-        if (file.exists()) {
-            Timber.i("Database won't be copy, it already exits")
-            return
-        }
+        /*   if (file.exists()) {
+               Timber.i("Database won't be copy, it already exits")
+               return
+           } */
         val input = context.assets.open("databases/$DB_NAME_TEST")
         val output = FileOutputStream("$databasePath/$DB_NAME")
 
