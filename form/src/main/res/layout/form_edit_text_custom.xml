@@ -121,6 +121,7 @@
                         app:onTextChangeListener="@{item}"
                         app:requestFocus="@{item}"
                         app:setImeOption="@{item.keyboardActionType}"
+                        app:setInputType="@{item.valueType}"
                         tools:text="hello" />
 
                 </com.google.android.material.textfield.TextInputLayout>

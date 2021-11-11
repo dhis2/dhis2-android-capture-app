@@ -125,6 +125,7 @@
                     app:onTextChangeListener="@{item}"
                     app:requestFocus="@{item}"
                     app:setImeOption="@{item.keyboardActionType}"
+                    app:setInputType="@{item.valueType}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -132,8 +133,8 @@
             <ImageView
                 android:id="@+id/clearButton"
                 style="@style/ActionIcon"
-                android:visibility="@{(item.editable &amp;&amp; item.value != null) ? View.VISIBLE : View.GONE}"
                 android:onClick="@{() -> item.onClear()}"
+                android:visibility="@{(item.editable &amp;&amp; item.value != null) ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="@id/fieldBackground"
                 app:layout_constraintTop_toTopOf="@id/fieldBackground"
                 app:srcCompat="@drawable/ic_clear"
