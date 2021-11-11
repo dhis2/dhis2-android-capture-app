@@ -51,7 +51,7 @@ class AppTest : App() {
 
     private fun populateDBIfNeeded() {
         Log.d("populateDB", "Populating D.B")
-    /*    TestingInjector.provideDBImporter(applicationContext).apply {
+        TestingInjector.provideDBImporter(applicationContext).apply {
             runBlocking {
                 Log.d("populateDB", "Populating runblocking")
                 withContext(Dispatchers.IO) {
@@ -60,11 +60,11 @@ class AppTest : App() {
                     Log.d("populateDB", "Populate successfully")
                 }
             }
-        } */
-
-        TestingInjector.provideDBImporter(applicationContext).apply {
-            copyDatabaseFromAssetsIfNeeded()
         }
+
+        /*TestingInjector.provideDBImporter(applicationContext).apply {
+            copyDatabaseFromAssetsIfNeeded()
+        }*/
     }
 
     @Override
