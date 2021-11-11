@@ -1,6 +1,7 @@
 package org.dhis2
 
 import android.os.StrictMode
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
 import kotlinx.coroutines.CoroutineScope
@@ -49,10 +50,14 @@ class AppTest : App() {
     }
 
     private fun populateDBIfNeeded() {
+        Log.d("populateDB", "Populating D.B")
         TestingInjector.provideDBImporter(applicationContext).apply {
             runBlocking {
+                Log.d("populateDB", "Populating runblocking")
                 withContext(Dispatchers.IO) {
+                    Log.d("populateDB", "Populating WithContext")
                     copyDatabaseFromAssetsIfNeeded()
+                    Log.d("populateDB", "Populate successfully")
                 }
             }
         }
