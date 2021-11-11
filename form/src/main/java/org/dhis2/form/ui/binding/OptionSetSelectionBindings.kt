@@ -116,27 +116,3 @@ private fun FieldUiModel.canShowOption(optionUid: String): Boolean {
         else -> !inOptionsToHide
     }
 }
-
-@BindingAdapter("optionTint")
-fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        style?.let {
-            it.getColors()[FormUiColorType.PRIMARY]?.let { primaryColor ->
-                it.getColors()[FormUiColorType.TEXT_PRIMARY]?.let { textPrimaryColor ->
-                    val colorStateList = ColorStateList(
-                        arrayOf(
-                            intArrayOf(android.R.attr.state_checked),
-                            intArrayOf(-android.R.attr.state_checked)
-                        ),
-                        intArrayOf(
-                            primaryColor,
-                            textPrimaryColor
-                        )
-                    )
-                    buttonTintList = colorStateList
-                    setTextColor(colorStateList)
-                }
-            }
-        }
-    }
-}

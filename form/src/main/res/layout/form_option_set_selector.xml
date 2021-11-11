@@ -140,7 +140,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
-                android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"                tools:visibility="visible"
+                android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
                 app:warning="@{item.warning}"
                 app:input_style="@{item}"
@@ -149,6 +149,7 @@
                 app:layout_constraintStart_toStartOf="@id/label"
                 app:layout_constraintTop_toBottomOf="@id/label"
                 tools:text="This is a warning"
+                tools:visibility="visible"
                 tools:textAppearance="@style/error_appearance"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
