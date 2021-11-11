@@ -1,6 +1,8 @@
 package org.dhis2
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -21,7 +23,12 @@ class DBTestLoader(private val context: Context) {
         val input = context.assets.open("databases/$DB_NAME_TEST")
         val output = FileOutputStream("$databasePath/$DB_NAME")
 
-        input.copyTo(output)
+        try {
+            writeExtractedFileToDisk(input, output)
+        } catch (e: Exception){
+            Log.e("Crash copy", e.toString())
+        }
+       // input.copyTo(output)
     }
 
     @Throws(IOException::class)
@@ -30,6 +37,7 @@ class DBTestLoader(private val context: Context) {
         var length: Int
 
         length = input.read(buffer)
+        Log.d("Copy DB", "length: $length")
         while (length > 0) {
             outs.write(buffer, 0, length)
             length = input.read(buffer)
