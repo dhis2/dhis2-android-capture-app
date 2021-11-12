@@ -351,6 +351,10 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
+            clickOnSearchFilter()
+            typeAttributeAtPosition(relationshipName, 0)
+            typeAttributeAtPosition(relationshipLastName, 1)
+            clickOnFab()
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
