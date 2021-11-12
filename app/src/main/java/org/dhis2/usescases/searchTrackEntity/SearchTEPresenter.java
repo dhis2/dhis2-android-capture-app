@@ -129,6 +129,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final Flowable<RowAction> fieldProcessor;
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
+    private final SearchMessageMapper searchMessageMapper;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -146,7 +147,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController) {
+                             MatomoAnalyticsController matomoAnalyticsController,
+                             SearchMessageMapper searchMessageMapper) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -158,7 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.fieldProcessor = fieldProcessor;
-
+        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
@@ -400,77 +402,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public SearchMessageResult getMessage(List<SearchTeiModel> list) {
-
-        int size = 0;
-        int errorSize = 0;
-
-        for (SearchTeiModel searchTeiModel : list) {
-            if (searchTeiModel.onlineErrorMessage == null) size++;
-            if (searchTeiModel.onlineErrorMessage != null) errorSize++;
-        }
-
-        String messageId = "";
-        boolean canRegister = false;
-        boolean showButton = false;
-
-        if (!list.isEmpty() && list.size() == errorSize) {
-            return new SearchMessageResult(list.get(0).onlineErrorMessage, canRegister, showButton, false);
-        }
-
-        if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
-                if (isSearching) {
-                    if (size == 0) {
-                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        canRegister = true;
-                    }
-                } else {
-                    messageId = view.getContext().getString(R.string.search_init);
-                }
-            } else if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-            } else if (size == 0 && !queryData.isEmpty()) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0) {
-                messageId = view.getContext().getString(R.string.search_init);
-            }
-        } else if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
-            if (!showList && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                showButton = true;
-            } else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            }
-        } else if (selectedProgram == null) {
-            if (!teiTypeHasAttributesToDisplay) {
-                messageId = String.format(view.getContext().getString(R.string.tei_type_has_no_attributes), getTrackedEntityName().displayName());
-            } else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
-                messageId = view.getContext().getString(R.string.search_init);
-            else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-        } else {
-            if (size == 0 && !queryData.isEmpty()) {
-                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID) ? queryData.size() - 1 : queryData.size();
-                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
-                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                else
-                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0)
-                messageId = view.getContext().getString(R.string.search_init);
-        }
-
-        if (messageId.isEmpty())
-            canRegister = true;
-
-        return new SearchMessageResult(messageId, canRegister, showButton, true);
+        return searchMessageMapper.getSearchMessage(
+                list,
+                selectedProgram,
+                queryData,
+                teiTypeHasAttributesToDisplay,
+                MAX_NO_SELECTED_PROGRAM_RESULTS,
+                getTrackedEntityName().displayName()
+        );
     }
 
     private void handleError(Throwable throwable) {

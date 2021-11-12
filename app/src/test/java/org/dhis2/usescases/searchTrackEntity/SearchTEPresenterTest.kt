@@ -57,6 +57,7 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val searchMessageMapper: SearchMessageMapper = mock()
 
     @Before
     fun setUp() {
@@ -84,7 +85,8 @@ class SearchTEPresenterTest {
             filterRepository,
             null,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            searchMessageMapper
         )
     }
 
