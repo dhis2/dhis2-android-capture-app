@@ -21,6 +21,7 @@ class VisualizationToGraph(
     private val chartCoordinatesProvider: ChartCoordinatesProvider
 ) {
     val dimensionalResponseToPieData by lazy { DimensionalResponseToPieData() }
+    val dimensionRowCombinator by lazy { DimensionRowCombinator() }
 
     fun map(visualizations: List<DimensionalVisualization>): List<Graph> {
         return visualizations.map { visualization: DimensionalVisualization ->
@@ -100,9 +101,12 @@ class VisualizationToGraph(
                 listOf("Values")
             }
             else -> {
-                gridAnalyticsResponse.headers.rows.firstOrNull()?.map {
-                    gridAnalyticsResponse.metadata[it.id]!!.displayName
-                } ?: emptyList()
+                val combCategories = mutableListOf<String>()
+                dimensionRowCombinator.combineWithNextItem(
+                    gridAnalyticsResponse,
+                    combCategories
+                )
+                combCategories
             }
         }
     }
@@ -135,7 +139,13 @@ class VisualizationToGraph(
 
         return serieList.map { gridResponseValueList ->
             val fieldName = gridResponseValueList.first().columns.joinToString(separator = "_") {
-                gridAnalyticsResponse.metadata[it]!!.displayName
+                when (val metadataItem = gridAnalyticsResponse.metadata[it]) {
+                    is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
+                        Locale.getDefault(),
+                        metadataItem.item
+                    )
+                    else -> gridAnalyticsResponse.metadata[it]!!.displayName
+                }
             }
             SerieData(
                 fieldName = fieldName,
