@@ -79,6 +79,7 @@ class ProgramEventTest: BaseTest() {
         eventRobot {
             clickOnFormFabButton()
             clickOnFinishAndComplete()
+            waitToDebounce(400)
         }
 
         programEventsRobot {
