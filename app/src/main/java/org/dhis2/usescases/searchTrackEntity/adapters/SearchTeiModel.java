@@ -42,7 +42,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private String teTypeName;
     private String enrolledOrgUnit;
     private boolean showNavigationButton = false;
-    public String onlineErrorMessage;
+    @Nullable public String onlineErrorMessage;
 
     public SearchTeiModel() {
         this.tei = null;
