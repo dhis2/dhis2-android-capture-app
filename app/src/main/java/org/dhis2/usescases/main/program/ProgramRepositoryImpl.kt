@@ -80,7 +80,7 @@ internal class ProgramRepositoryImpl(
 
     private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {
         return Pair(
-            filterPresenter.filteredEventProgram(program).blockingGet().filter { event->
+            filterPresenter.filteredEventProgram(program).blockingGet().filter { event ->
                 event.syncState() != State.RELATIONSHIP
             }.size,
             false
