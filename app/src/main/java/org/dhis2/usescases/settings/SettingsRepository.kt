@@ -173,6 +173,7 @@ class SettingsRepository(
         return d2.eventModule().events()
             .byEnrollmentUid().isNull
             .byDeleted().isFalse
+            .bySyncState().neq(State.RELATIONSHIP)
             .blockingCount()
     }
 
