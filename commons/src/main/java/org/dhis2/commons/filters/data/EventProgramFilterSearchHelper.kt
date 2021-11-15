@@ -1,11 +1,12 @@
 package org.dhis2.commons.filters.data
 
-import javax.inject.Inject
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
+import javax.inject.Inject
 
 class EventProgramFilterSearchHelper @Inject constructor(
     private val filterRepository: FilterRepository,
@@ -92,11 +93,12 @@ class EventProgramFilterSearchHelper @Inject constructor(
     private fun applyStateFilter(
         eventRepository: EventQueryCollectionRepository
     ): EventQueryCollectionRepository {
-        return if (filterManager.stateFilters.isNotEmpty()) {
-            filterRepository.applyStateFilter(eventRepository, filterManager.stateFilters)
-        } else {
-            eventRepository
+        val statesToFilter = mutableListOf(State.RELATIONSHIP).apply {
+            if (filterManager.stateFilters.isNotEmpty()) {
+                addAll(filterManager.stateFilters)
+            }
         }
+        return filterRepository.applyStateFilter(eventRepository, statesToFilter)
     }
 
     private fun applyDateFilter(
