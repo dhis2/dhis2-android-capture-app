@@ -26,7 +26,7 @@ data class Graph(
             series.maxOf { serie ->
                 try {
                     serie.coordinates.maxOf { point -> point.position ?: 0f }
-                } catch (e: NoSuchElementException){
+                } catch (e: NoSuchElementException) {
                     0f
                 }
             }
