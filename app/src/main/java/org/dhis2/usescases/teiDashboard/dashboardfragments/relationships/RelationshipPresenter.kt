@@ -199,6 +199,7 @@ class RelationshipPresenter internal constructor(
             }
         } else {
             view.showRelationshipNotFoundError(
+                teiUid,
                 d2.trackedEntityModule()
                     .trackedEntityTypes().uid(teiType).blockingGet()!!.displayName() ?: ""
             )
@@ -225,5 +226,23 @@ class RelationshipPresenter internal constructor(
             )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
+    }
+
+    fun trackedEntityType(teiUid: String) = d2.trackedEntityModule().trackedEntityInstances()
+        .uid(teiUid).blockingGet().trackedEntityType()
+
+    fun teiSearchableAttributeValues(teiUid: String): Map<String, String> {
+        val searchableValues = mutableMapOf<String,String>()
+        d2.trackedEntityModule().trackedEntityTypeAttributes()
+            .bySearchable().isTrue
+            .blockingGet().forEach {typeAttribute ->
+                val attributeUid = typeAttribute.trackedEntityAttribute()?.uid()!!
+                val value = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    .value(attributeUid, teiUid).blockingGet().value()
+                if(value!=null){
+                    searchableValues[attributeUid] = value
+                }
+            }
+        return searchableValues
     }
 }

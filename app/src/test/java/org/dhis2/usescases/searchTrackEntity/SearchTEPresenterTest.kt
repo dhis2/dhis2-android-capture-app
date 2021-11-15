@@ -87,6 +87,7 @@ class SearchTEPresenterTest {
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
             searchMessageMapper
+            emptyMap()
         )
     }
 

@@ -1,5 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import static android.view.View.GONE;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
@@ -45,6 +50,14 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
@@ -62,12 +75,9 @@ import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -76,11 +86,6 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.FilterItem;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.Filters;
-import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -88,7 +93,6 @@ import org.hisp.dhis.android.core.program.Program;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -100,11 +104,6 @@ import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
-
-import static android.view.View.GONE;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
         MapboxMap.OnMapClickListener, OnOrgUnitSelectionFinished {
@@ -155,6 +154,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private CarouselAdapter carouselAdapter;
     private FormView formView;
 
+    private enum Extra {
+        TEI_UID("TRACKED_ENTITY_UID"),
+        PROGRAM_UID("PROGRAM_UID"),
+        QUERY_ATTR("QUERY_DATA_ATTR"),
+        QUERY_VALUES("QUERY_DATA_VALUES");
+        private final String key;
+
+        Extra(String key) {
+            this.key = key;
+        }
+
+        public String key() {
+            return key;
+        }
+    }
+
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -165,7 +180,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(
+                new SearchTEModule(this,
+                        tEType,
+                        initialProgram,
+                        getContext(),
+                        SearchTEExtraKt.queryDataExtra(this)
+                )).inject(this);
 
         formView = new FormView.Builder()
                 .repository(formRepository)

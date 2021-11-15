@@ -200,7 +200,7 @@ class RelationshipPresenterTest {
         ) doReturn getMockedTeiType()
         presenter.openDashboard("teiUid")
 
-        verify(view).showRelationshipNotFoundError(getMockedTeiType().displayName()!!)
+        verify(view).showRelationshipNotFoundError("teiUid", getMockedTeiType().displayName()!!)
     }
 
     private fun getMockedProgram(access: Boolean): Program {

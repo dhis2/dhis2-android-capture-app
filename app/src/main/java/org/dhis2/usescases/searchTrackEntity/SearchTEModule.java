@@ -53,6 +53,8 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
+import java.util.Map;
+
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
@@ -65,15 +67,17 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
+    private final Map<String, String> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
-                          Context context) {
+                          Context context, Map<String, String> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
         this.moduleContext = context;
+        this.initialQuery = initialQuery;
     }
 
     @Provides
@@ -102,7 +106,8 @@ public class SearchTEModule {
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper,
+                initialQuery);
     }
 
     @Provides

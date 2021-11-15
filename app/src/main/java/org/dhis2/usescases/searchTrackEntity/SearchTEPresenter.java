@@ -148,7 +148,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper) {
+                             SearchMessageMapper searchMessageMapper,
+                             Map<String, String> initialQuery) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -168,6 +169,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
+        queryData.putAll(initialQuery);
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();

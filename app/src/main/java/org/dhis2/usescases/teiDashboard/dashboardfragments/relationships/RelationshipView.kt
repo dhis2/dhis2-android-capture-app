@@ -14,7 +14,7 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun showPermissionError()
     fun openDashboardFor(teiUid: String)
     fun showTeiWithoutEnrollmentError(teiTypeName: String)
-    fun showRelationshipNotFoundError(teiTypeName: String)
+    fun showRelationshipNotFoundError(teiUid:String, teiTypeName: String)
     fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>)
     fun setFeatureCollection(
         currentTei: String?,

@@ -190,7 +190,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         Intent intent = new Intent(getContext(), SearchTEActivity.class);
         Bundle extras = new Bundle();
-        extras.putBoolean("FROM_RELATIONSHIP", true);
         extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
         extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
         extras.putString("PROGRAM_UID", null);
@@ -200,6 +199,18 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         }
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
+    }
+
+    private void goToSearchTEI(@NonNull String teiUid){
+        Intent intent = new Intent(getContext(), SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("TRACKED_ENTITY_UID", presenter.trackedEntityType(teiUid));
+        extras.putString("PROGRAM_UID", null);
+        Map<String, String> searchableAttributesMap = presenter.teiSearchableAttributeValues(teiUid);
+        extras.putStringArrayList("QUERY_DATA_VALUES", new ArrayList<>(searchableAttributesMap.values()));
+        extras.putStringArrayList("QUERY_DATA_ATTR", new ArrayList<>(searchableAttributesMap.keySet()));
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 
     @Override
@@ -255,13 +266,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void openEventFor(@NonNull String eventUid, @NonNull String programUid){
+    public void openEventFor(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = EventCaptureActivity.getActivityBundle(
                 eventUid,
                 programUid,
                 EventMode.CHECK
         );
-        Intent intent = new Intent(getContext(),EventCaptureActivity.class);
+        Intent intent = new Intent(getContext(), EventCaptureActivity.class);
         intent.putExtras(bundle);
         getActivity().startActivity(intent);
     }
@@ -269,16 +280,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void showTeiWithoutEnrollmentError(@NotNull String teiTypeName) {
         showInfoDialog(
-                String.format(
-                        getString(R.string.resource_not_found),
-                        teiTypeName),
+                String.format(getString(R.string.resource_not_found), teiTypeName),
                 getString(R.string.relationship_without_enrollment),
                 getString(R.string.button_ok),
                 getString(R.string.no),
                 new OnDialogClickListener() {
                     @Override
                     public void onPositiveClick() {
-
                     }
 
                     @Override
@@ -289,7 +297,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void showRelationshipNotFoundError(@NotNull String teiTypeName) {
+    public void showRelationshipNotFoundError(String teiUid, @NotNull String teiTypeName) {
         showInfoDialog(
                 String.format(
                         getString(R.string.resource_not_found),
@@ -300,7 +308,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new OnDialogClickListener() {
                     @Override
                     public void onPositiveClick() {
-
+                        goToSearchTEI(teiUid);
                     }
 
                     @Override
