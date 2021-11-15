@@ -1,7 +1,9 @@
 package org.dhis2.form.ui.binding
 
 import android.content.res.ColorStateList
+import android.os.Build
 import android.view.inputmethod.EditorInfo
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -117,6 +119,30 @@ fun setImeOption(editText: EditText, type: KeyboardActionType?) {
             KeyboardActionType.NEXT -> editText.imeOptions = EditorInfo.IME_ACTION_NEXT
             KeyboardActionType.DONE -> editText.imeOptions = EditorInfo.IME_ACTION_DONE
             KeyboardActionType.ENTER -> editText.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
+        }
+    }
+}
+
+@BindingAdapter("optionTint")
+fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        style?.let {
+            it.getColors()[FormUiColorType.PRIMARY]?.let { primaryColor ->
+                it.getColors()[FormUiColorType.TEXT_PRIMARY]?.let { textPrimaryColor ->
+                    val colorStateList = ColorStateList(
+                        arrayOf(
+                            intArrayOf(android.R.attr.state_checked),
+                            intArrayOf(-android.R.attr.state_checked)
+                        ),
+                        intArrayOf(
+                            primaryColor,
+                            textPrimaryColor
+                        )
+                    )
+                    buttonTintList = colorStateList
+                    setTextColor(colorStateList)
+                }
+            }
         }
     }
 }

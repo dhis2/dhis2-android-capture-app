@@ -6,7 +6,11 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
 
-    override fun provideDisplayName(valueType: ValueType?, value: String?): String? {
+    override fun provideDisplayName(
+        valueType: ValueType?,
+        value: String?,
+        optionSet: String?
+    ): String? {
         return value?.let {
             when (valueType) {
                 ValueType.ORGANISATION_UNIT ->
@@ -28,6 +32,19 @@ class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
                     DateUtils.timeFormat().format(
                         DateUtils.timeFormat().parse(value) ?: ""
                     )
+                ValueType.TEXT -> optionSet?.let {
+                    val byCode = d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet)
+                        .byCode().eq(value).one()
+                    val byName = d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet)
+                        .byDisplayName().eq(value).one()
+                    when {
+                        byCode.blockingExists() -> return byCode.blockingGet().displayName()
+                        byName.blockingExists() -> return byName.blockingGet().displayName()
+                        else -> value
+                    }
+                }
                 else -> value
             }
         }

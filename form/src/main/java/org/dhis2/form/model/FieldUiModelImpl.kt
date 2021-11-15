@@ -5,6 +5,7 @@ import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.option.Option
 
 data class FieldUiModelImpl(
     override val uid: String,
@@ -26,8 +27,9 @@ data class FieldUiModelImpl(
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
-    override val uiEventTypes: List<UiEventType>,
-    override val renderingType: UiRenderType? = null
+    override val uiEventTypes: List<UiEventType>?,
+    override val renderingType: UiRenderType? = null,
+    override val options: List<Option>? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -65,6 +67,11 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.ClearValue(uid))
     }
 
+    override fun onSave(value: String?) {
+        onItemClick()
+        callback?.intent(FormIntent.OnSave(uid, value, valueType))
+    }
+
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
         uiEventFactory?.generateEvent(value, uiEventType, renderingType)?.let {
@@ -81,6 +88,10 @@ data class FieldUiModelImpl(
 
     override val backGroundColor: Pair<Array<Int>, Int>?
         get() = style?.backgroundColor(valueType, error, warning)
+
+    override var optionsToHide: List<String>? = null
+
+    override var optionsToShow: List<String>? = null
 
     override fun setValue(value: String?) = this.copy(value = value)
 

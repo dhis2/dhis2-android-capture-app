@@ -101,7 +101,13 @@ class FormRepositoryImpl(
                 itemList = list.updated(
                     list.indexOf(item),
                     item.setValue(value)
-                        .setDisplayName(displayNameProvider.provideDisplayName(valueType, value))
+                        .setDisplayName(
+                            displayNameProvider.provideDisplayName(
+                                valueType,
+                                value,
+                                item.optionSet
+                            )
+                        )
                 )
             }
         }

@@ -4,6 +4,7 @@ import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class UiEventTypesProviderImpl : UiEventTypesProvider {
 
@@ -45,6 +46,18 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             FeatureType.POINT -> UiRenderType.POINT
             FeatureType.POLYGON -> UiRenderType.POLYGON
             FeatureType.MULTI_POLYGON -> UiRenderType.MULTI_POLYGON
+            else -> UiRenderType.DEFAULT
+        }
+    }
+
+    override fun provideUiRenderType(
+        valueTypeRenderingType: ValueTypeRenderingType?
+    ): UiRenderType {
+        return when (valueTypeRenderingType) {
+            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS -> UiRenderType.VERTICAL_RADIOBUTTONS
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS -> UiRenderType.HORIZONTAL_RADIOBUTTONS
+            ValueTypeRenderingType.VERTICAL_CHECKBOXES -> UiRenderType.VERTICAL_CHECKBOXES
+            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES -> UiRenderType.HORIZONTAL_CHECKBOXES
             else -> UiRenderType.DEFAULT
         }
     }
