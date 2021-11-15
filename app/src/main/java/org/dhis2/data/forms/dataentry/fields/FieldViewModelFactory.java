@@ -49,7 +49,8 @@ public interface FieldViewModelFactory {
     FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
                                     @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
                                     @Nullable String value,
-                                    boolean editable);
+                                    boolean editable,
+                                    List<Option> options);
 
     @NonNull
     FieldUiModel createSingleSection(String singleSectionName);
