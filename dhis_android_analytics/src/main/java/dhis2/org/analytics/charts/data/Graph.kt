@@ -23,7 +23,13 @@ data class Graph(
         return if (categories.isNotEmpty()) {
             categories.size.toFloat() - 1
         } else if (series.isNotEmpty()) {
-            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+            series.maxOf { serie ->
+                try {
+                    serie.coordinates.maxOf { point -> point.position ?: 0f }
+                } catch (e: NoSuchElementException){
+                    0f
+                }
+            }
         } else {
             0f
         }
