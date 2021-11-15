@@ -56,7 +56,7 @@ class SearchMessageMapper(private val searchResources: SearchResources) {
             }
         } else {
             when {
-                programCanDisplayFrontPage(program, searchParameters) ->
+                programCanDisplayFrontPage(program, searchParameters) && list.isNotEmpty() ->
                     displayFrontPageResult()
                 else ->
                     initSearchResult()

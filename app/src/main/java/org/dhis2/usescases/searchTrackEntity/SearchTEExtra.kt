@@ -16,7 +16,8 @@ fun SearchTEActivity.programUidExtra() =
 fun SearchTEActivity.queryDataExtra(): Map<String, String> {
     val attributes =
         intent.getStringArrayListExtra(SearchTEExtra.QUERY_ATTR.key)?.toList() ?: emptyList()
-    val values = intent.getStringArrayListExtra(SearchTEExtra.QUERY_VALUES.key)?.toList() ?: emptyList()
+    val values =
+        intent.getStringArrayListExtra(SearchTEExtra.QUERY_VALUES.key)?.toList() ?: emptyList()
     if (attributes.size != values.size) return emptyMap()
     return attributes.mapIndexed { index, attributeUid ->
         attributeUid to values[index]
