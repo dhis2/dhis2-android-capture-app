@@ -188,10 +188,8 @@ class FilterRepository @Inject constructor(
     fun eventsByProgram(programUid: String): EventQueryCollectionRepository {
         return d2.eventModule()
             .eventQuery()
-            .byIncludeDeleted()
-            .eq(false)
-            .byProgram()
-            .eq(programUid)
+            .byIncludeDeleted().eq(false)
+            .byProgram().eq(programUid)
     }
 
     fun applyOrgUnitFilter(

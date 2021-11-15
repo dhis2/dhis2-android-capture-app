@@ -93,12 +93,11 @@ class EventProgramFilterSearchHelper @Inject constructor(
     private fun applyStateFilter(
         eventRepository: EventQueryCollectionRepository
     ): EventQueryCollectionRepository {
-        val statesToFilter = mutableListOf(State.RELATIONSHIP).apply {
-            if (filterManager.stateFilters.isNotEmpty()) {
-                addAll(filterManager.stateFilters)
-            }
+        return if (filterManager.stateFilters.isNotEmpty()) {
+            filterRepository.applyStateFilter(eventRepository, filterManager.stateFilters)
+        } else {
+            eventRepository
         }
-        return filterRepository.applyStateFilter(eventRepository, statesToFilter)
     }
 
     private fun applyDateFilter(
