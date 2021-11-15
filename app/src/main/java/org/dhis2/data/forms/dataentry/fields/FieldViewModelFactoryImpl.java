@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
@@ -96,7 +95,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     public FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
                                            @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
                                            @Nullable String value,
-                                           boolean editable) {
+                                           boolean editable,
+                                           List<Option> options) {
         return create(trackedEntityAttribute.uid(),
                 trackedEntityAttribute.displayFormName(),
                 trackedEntityAttribute.valueType(),
@@ -113,7 +113,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.style() != null ? trackedEntityAttribute.style() : ObjectStyle.builder().build(),
                 trackedEntityAttribute.fieldMask(),
                 null,
-                Collections.emptyList(),
+                options,
                 FeatureType.POINT);
     }
 
@@ -166,22 +166,29 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             type
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                    return OptionSetViewModel.create(
+                    return new FieldUiModelImpl(
                             id,
-                            getLayout(OptionSetViewModel.class),
-                            label,
-                            mandatory,
-                            optionSet,
+                            getLayoutByValueType(type, fieldRendering.type()),
                             value,
-                            section,
+                            false,
+                            null,
                             editable,
+                            null,
+                            mandatory,
+                            label,
+                            section,
+                            style,
+                            hintProvider.provideDateHint(type),
                             description,
-                            objectStyle,
-                            true,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
-                            fieldRendering,
-                            options,
-                            type
+                            type,
+                            null,
+                            optionSet,
+                            allowFutureDates,
+                            new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                            displayNameProvider.provideDisplayName(type, value, optionSet),
+                            null,
+                            uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
+                            options
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -247,9 +254,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         null,
                         allowFutureDates,
                         new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
                         uiEventTypesProvider.provideUiEvents(type),
-                        uiEventTypesProvider.provideUiRenderType(featureType)
+                        uiEventTypesProvider.provideUiRenderType(featureType),
+                        null
                 );
             case TEXT:
             case EMAIL:

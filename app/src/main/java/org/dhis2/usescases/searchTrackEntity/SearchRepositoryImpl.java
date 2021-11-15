@@ -55,6 +55,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -142,11 +143,19 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(typeAttribute.trackedEntityAttribute().uid())
                             .blockingGet();
+                    List<Option> options = new ArrayList<>();
+                    if (attribute.optionSet() != null) {
+                        options = d2.optionModule().options()
+                                .byOptionSetUid().eq(attribute.optionSet().uid())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                .blockingGet();
+                    }
                     return fieldFactory.createForAttribute(
                             attribute,
                             null,
                             currentSearchValues.get(attribute.uid()),
-                            true
+                            true,
+                            options
                     );
                 })
                 .toList().map(list ->
@@ -173,11 +182,19 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
                             .uid(programAttribute.trackedEntityAttribute().uid())
                             .blockingGet();
+                    List<Option> options = new ArrayList<>();
+                    if (attribute.optionSet() != null) {
+                        options = d2.optionModule().options()
+                                .byOptionSetUid().eq(attribute.optionSet().uid())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                .blockingGet();
+                    }
                     return fieldFactory.createForAttribute(
                             attribute,
                             programAttribute,
                             currentSearchValues.get(attribute.uid()),
-                            true
+                            true,
+                            options
                     );
                 }).toList().map(list ->
                         CollectionsKt.filter(list, item ->
