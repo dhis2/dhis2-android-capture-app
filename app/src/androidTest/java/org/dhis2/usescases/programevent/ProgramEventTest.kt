@@ -29,7 +29,7 @@ class ProgramEventTest : BaseTest() {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    @Test
+//    @Test
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity(atenatalCare)
