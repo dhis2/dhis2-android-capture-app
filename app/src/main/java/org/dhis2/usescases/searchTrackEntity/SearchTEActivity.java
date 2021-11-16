@@ -214,8 +214,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
 
         try {
-            fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
             fromRelationshipTeiUid = getIntent().getStringExtra("FROM_RELATIONSHIP_TEI");
+            fromRelationship = fromRelationshipTeiUid != null;
         } catch (Exception e) {
             Timber.d(e.getMessage());
         }
@@ -616,13 +616,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(searchTeiModels);
                     binding.progressLayout.setVisibility(GONE);
-                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 } else {
                     binding.progressLayout.setVisibility(GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.getMessage());
                     binding.scrollView.setVisibility(GONE);
-                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 }
                 if (!searchTeiModels.isEmpty() && !data.getCanRegister() && data.getForceSearch()) {
                     showHideFilter();
@@ -630,6 +628,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         binding.showListBtn.setVisibility(View.VISIBLE);
                     }
                 }
+                CountingIdlingResourceSingleton.INSTANCE.decrement();
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
@@ -645,9 +644,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.message.setText(data.getMessage());
                     binding.scrollView.setVisibility(GONE);
                 }
-                CountingIdlingResourceSingleton.INSTANCE.decrement();
                 if (!presenter.getQueryData().isEmpty() && data.getCanRegister())
                     setFabIcon(false);
+                CountingIdlingResourceSingleton.INSTANCE.decrement();
             });
         }
         updateFilters(FilterManager.getInstance().getTotalFilters());
