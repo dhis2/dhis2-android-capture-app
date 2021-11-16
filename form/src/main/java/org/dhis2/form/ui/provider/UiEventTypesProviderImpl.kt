@@ -37,7 +37,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             ValueType.TRACKER_ASSOCIATE -> TODO()
             ValueType.AGE -> listOf(UiEventType.AGE_CALENDAR, UiEventType.AGE_YEAR_MONTH_DAY)
             ValueType.URL -> TODO()
-            ValueType.IMAGE -> TODO()
+            ValueType.IMAGE -> listOf(UiEventType.SHOW_PICTURE, UiEventType.ADD_PICTURE)
         }
     }
 

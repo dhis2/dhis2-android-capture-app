@@ -6,22 +6,18 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.dhis2.form.model.UiEventType"/>
 
         <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="description"
-            type="java.lang.String" />
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="0dp">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/startGuideline"
@@ -46,7 +42,7 @@
             android:background="?colorPrimary"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
-            android:visibility="gone"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/addImageBtn"/>
@@ -57,8 +53,9 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:text="@{label}"
+            android:alpha="@{item.editable? 1f : 0.5f}"
+            android:text="@{item.formattedLabel}"
+            app:label_text_color="@{item.style}"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constrainedWidth="true"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -72,10 +69,12 @@
             style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
-            android:visibility="@{(description!=null)?View.VISIBLE : View.GONE}"
+            android:alpha="@{item.editable? 1f : 0.5f}"
+            android:onClick="@{v -> item.onDescriptionClick()}"
+            android:visibility="@{item.description != null? View.VISIBLE : View.GONE}"
+            app:description_icon_tint="@{item.style}"
             android:layout_marginEnd="16dp"
             app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary"
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/label"
@@ -89,6 +88,10 @@
             android:layout_height="wrap_content"
             android:text="@string/add_image"
             android:textColor="?colorPrimary"
+            android:enabled="@{item.editable}"
+            android:alpha="@{item.editable? 1f : 0.5f}"
+            android:visibility="@{item.hasImage ? View.GONE : View.VISIBLE}"
+            android:onClick="@{v -> item.invokeUiEvent(UiEventType.ADD_PICTURE)}"
             app:backgroundTint="@color/white"
             app:icon="@drawable/ic_form_image"
             app:iconTint="?colorPrimary"
@@ -106,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:visibility="gone"
+            android:visibility="@{item.hasImage ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/addImageBtn"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -124,6 +127,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:scaleType="center"
+                    android:onClick="@{v -> item.invokeUiEvent(UiEventType.SHOW_PICTURE)}"
+                    app:image_value="@{item.value}"
                     tools:layout_height="200dp"
                     tools:srcCompat="@tools:sample/backgrounds/scenic"/>
 
@@ -131,11 +136,12 @@
                     android:id="@+id/clear"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:visibility="gone"
+                    android:visibility="@{item.hasImage &amp;&amp; item.editable ? View.VISIBLE : View.GONE}"
                     android:background="@drawable/white_circle_ripple"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_alignEnd="@id/image"
+                    android:onClick="@{v -> item.onClear()}"
                     app:srcCompat="@drawable/ic_clear"
                     app:tint="@color/red_060"
                     tools:visibility="visible" />
@@ -151,8 +157,10 @@
             android:padding="4dp"
             android:layout_marginTop="8dp"
             android:textSize="@dimen/textSize_12"
-            android:visibility="gone"
-            android:text="kajsajsajasj "
+            android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
+            app:error="@{item.error}"
+            app:warning="@{item.warning}"
+            app:input_style="@{item}"
             app:layout_constraintTop_toBottomOf="@id/imageCard"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"

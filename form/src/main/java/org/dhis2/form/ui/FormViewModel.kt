@@ -173,7 +173,10 @@ class FormViewModel(
     ): Throwable? {
         return fieldValue?.let { value ->
             var error =
-                when (val result = valueType?.validator?.validate(value)) {
+                when (
+                    val result = valueType?.takeIf { it != ValueType.IMAGE }
+                        ?.validator?.validate(value)
+                ) {
                     is Result.Failure -> result.failure
                     else -> null
                 }

@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -33,18 +32,13 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.CAMERA_REQUEST
 import org.dhis2.utils.Constants.ENROLLMENT_UID
-import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.FileResourcesUtil
-import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.toMessage
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -177,39 +171,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             ),
                             data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
                         )
-                    }
-                }
-                GALLERY_REQUEST -> {
-                    try {
-                        val imageUri = data?.data
-                        presenter.saveFile(
-                            uuid,
-                            FileResourcesUtil.getFileFromGallery(this, imageUri).path
-                        )
-                        presenter.updateFields()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(
-                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-                CAMERA_REQUEST -> {
-                    val imageFile = File(
-                        FileResourceDirectoryHelper.getFileResourceDirectory(this),
-                        "tempFile.png"
-                    )
-
-                    val file = ImageUtils().rotateImage(this, imageFile)
-
-                    try {
-                        presenter.saveFile(uuid, if (file.exists()) file.path else null)
-                        presenter.updateFields()
-                    } catch (e: Exception) {
-                        crashReportController.logException(e)
-                        Toast.makeText(
-                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
                 RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)

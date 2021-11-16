@@ -235,6 +235,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
             case ORGANISATION_UNIT:
             case COORDINATE:
+            case IMAGE:
                 return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
@@ -313,19 +314,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             legendValue
                     );
                 }
-            case IMAGE:
-                return PictureViewModel.create(
-                        id,
-                        getLayout(PictureViewModel.class),
-                        label,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        !searchMode
-                );
             case BOOLEAN:
             case TRUE_ONLY:
                 ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;

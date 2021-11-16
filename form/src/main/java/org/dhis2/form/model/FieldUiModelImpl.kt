@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import java.io.File
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
@@ -92,6 +93,9 @@ data class FieldUiModelImpl(
     override var optionsToHide: List<String>? = null
 
     override var optionsToShow: List<String>? = null
+
+    override val hasImage: Boolean
+        get() = value?.let { File(it).exists() } ?: false
 
     override fun setValue(value: String?) = this.copy(value = value)
 

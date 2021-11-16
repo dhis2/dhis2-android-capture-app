@@ -1,6 +1,6 @@
 package org.dhis2.bindings
 
-import org.dhis2.Bindings.resizeToMinimum
+import org.dhis2.commons.bindings.resizeToMinimum
 import org.junit.Assert.assertTrue
 import org.junit.Test
 

@@ -63,6 +63,8 @@ interface FieldUiModel {
 
     var optionsToShow: List<String>?
 
+    val hasImage: Boolean
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

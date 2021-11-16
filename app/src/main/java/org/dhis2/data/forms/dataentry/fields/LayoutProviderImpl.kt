@@ -4,7 +4,6 @@ import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -17,7 +16,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 private val layouts = mapOf<KClass<*>, Int>(
     DisplayViewModel::class to R.layout.custom_form_display,
     FileViewModel::class to R.layout.form_button,
-    PictureViewModel::class to R.layout.custom_form_picture,
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
     SpinnerViewModel::class to R.layout.form_option_set_spinner,
@@ -38,6 +36,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
             ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
             ValueType.COORDINATE -> R.layout.form_coordinate_custom
+            ValueType.IMAGE -> R.layout.form_picture
             else -> R.layout.form_edit_text_custom
         }
     }
