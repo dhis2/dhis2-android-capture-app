@@ -200,7 +200,7 @@ class RelationshipPresenter internal constructor(
         } else {
             view.showRelationshipNotFoundError(
                 d2.trackedEntityModule()
-                    .trackedEntityTypes().uid(teiType).blockingGet()!!.displayName() ?: ""
+                    .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: ""
             )
         }
     }
