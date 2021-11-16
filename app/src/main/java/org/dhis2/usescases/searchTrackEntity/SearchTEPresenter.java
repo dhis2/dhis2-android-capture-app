@@ -264,7 +264,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(program ->
-                        Flowable.combineLatest(queryProcessor.startWith(queryData),
+                        Flowable.combineLatest(queryProcessor.startWith(queryData) .doOnNext(pair -> view.clearData()),
                                 FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
                                 Pair::create)
                 )
@@ -352,14 +352,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));
-
-        compositeDisposable.add(
-                queryProcessor
-                        .startWith(queryData)
-                        .subscribeOn(schedulerProvider.ui())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> view.clearData(), Timber::d)
-        );
 
         compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
@@ -468,13 +460,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else {
             otherProgramSelected = !newProgramSelected.equals(selectedProgram);
         }
-        selectedProgram = newProgramSelected;
-        view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
-        view.clearData();
-        view.setFabIcon(true);
-        showList = true;
 
         if (otherProgramSelected) {
+            selectedProgram = newProgramSelected;
+            view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
+            view.clearData();
+            view.setFabIcon(true);
+            showList = true;
+
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
             searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
