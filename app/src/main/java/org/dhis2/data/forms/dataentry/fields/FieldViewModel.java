@@ -5,8 +5,6 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.edittext.PatternValidator;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
@@ -18,11 +16,11 @@ import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.option.Option;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
 import kotlin.Pair;
 
 public abstract class FieldViewModel implements FieldUiModel {
