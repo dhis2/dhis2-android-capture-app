@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
