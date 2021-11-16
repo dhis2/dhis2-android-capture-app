@@ -355,7 +355,22 @@ class SettingsRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.eventModule().events()
-                .byEnrollmentUid().isNull.byDeleted().isFalse.blockingCount()
+                .byEnrollmentUid().isNull
+                .byDeleted().isFalse
+                .bySyncState()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull
+                .byDeleted().isFalse
+                .bySyncState().neq(State.RELATIONSHIP)
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull
+                .byDeleted().isFalse
+                .bySyncState().neq(State.RELATIONSHIP)
+                .blockingCount()
         ) doReturn 0
     }
 
