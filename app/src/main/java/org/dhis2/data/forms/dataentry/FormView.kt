@@ -113,7 +113,7 @@ class FormView constructor(
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if (it.values.all { isGranted -> isGranted }) {
                 showAddImageOptions()
-                (context as ActivityResultObservable?)?.subscribe(object: ActivityResultObserver {
+                (context as ActivityResultObservable?)?.subscribe(object : ActivityResultObserver {
                     override fun onActivityResult(
                         requestCode: Int,
                         resultCode: Int,
