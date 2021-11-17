@@ -38,7 +38,6 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -182,14 +181,15 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             hintProvider.provideDateHint(type),
                             description,
                             type,
-                            null,
+                            legendValue,
                             optionSet,
                             allowFutureDates,
-                            new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                            new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                             displayNameProvider.provideDisplayName(type, value, optionSet),
-                            null,
                             uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
-                            options
+                            options,
+                            keyboardActionProvider.provideKeyboardAction(type),
+                            fieldMask
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -279,12 +279,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         hintProvider.provideDateHint(type),
                         description,
                         type,
-                        null,
-                        null,
+                        legendValue,
+                        optionSet,
                         allowFutureDates,
                         new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                         displayNameProvider.provideDisplayName(type, value, optionSet),
                         uiEventTypesProvider.provideUiRenderType(featureType),
+                        options,
                         keyboardActionProvider.provideKeyboardAction(type),
                         fieldMask
                 );

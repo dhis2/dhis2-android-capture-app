@@ -121,11 +121,13 @@
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
                     app:clearButton="@{clearButton}"
-                    app:onEditorActionListener="@{item}"
                     app:onTextChangeListener="@{item}"
-                    app:requestFocus="@{item}"
+                    app:requestFocus="@{item.focused}"
                     app:setImeOption="@{item.keyboardActionType}"
                     app:setInputType="@{item.valueType}"
+                    app:setOnEditorActionListener="@{item}"
+                    app:setOnFocusChangeListener="@{item}"
+                    app:setOnTouchListener="@{item}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>

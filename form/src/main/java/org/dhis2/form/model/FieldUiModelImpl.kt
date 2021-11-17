@@ -28,10 +28,8 @@ data class FieldUiModelImpl(
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
-    override val uiEventTypes: List<UiEventType>?,
     override val renderingType: UiRenderType? = null,
     override val options: List<Option>? = null,
-    override val keyboardActionType: KeyboardActionType? = null
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null
 ) : FieldUiModel {

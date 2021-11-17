@@ -2,17 +2,16 @@ package org.dhis2.form.ui.binding
 
 import android.content.res.ColorStateList
 import android.os.Build
-import android.view.inputmethod.EditorInfo
-import android.widget.CompoundButton
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.MotionEvent.ACTION_UP
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -170,23 +169,6 @@ fun EditText.bindInputType(valueType: ValueType) {
     inputType?.let { this.inputType = it }
 }
 
-@BindingAdapter("onEditorActionListener")
-fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
-    setOnEditorActionListener { _, actionId, _ ->
-        when (actionId) {
-            IME_ACTION_NEXT -> {
-                item.onNext()
-                true
-            }
-            IME_ACTION_DONE -> {
-                closeKeyboard()
-                true
-            }
-            else -> false
-        }
-    }
-}
-
 @BindingAdapter(value = ["onTextChangeListener", "clearButton"], requireAll = false)
 fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
     addTextChangedListener(object : TextWatcher {
@@ -232,43 +214,6 @@ fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
     }
 }
 
-private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean {
-    return storedValue != currentValue
-}
-
-@BindingAdapter("requestFocus")
-fun EditText.requestFocus(item: FieldUiModel) {
-    if (item.focused) {
-        requestFocus()
-        isCursorVisible = true
-        openKeyboard()
-    } else {
-        clearFocus()
-        isCursorVisible = false
-    }
-    setOnTouchListener { _, event ->
-        if (event.action == ACTION_UP) {
-            item.onItemClick()
-        }
-        performClick()
-    }
-
-    setOnFocusChangeListener { _, hasFocus ->
-        if (hasFocus) {
-            openKeyboard()
-        } else if (valueHasChanged(text.toString(), item.value)) {
-            item.invokeIntent(
-                FormIntent.OnSave(
-                    item.uid,
-                    text.toString(),
-                    item.valueType,
-                    item.fieldMask
-                )
-            )
-        }
-    }
-}
-
 @BindingAdapter("legendBadge")
 fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
     legendLayout.visibility = if (legendValue != null) View.VISIBLE else View.GONE
@@ -292,4 +237,64 @@ fun setLegend(textView: TextView, legendValue: LegendValue?) {
             if (drawable != null) DrawableCompat.setTint(drawable, legendValue.color)
         }
     }
+}
+
+@BindingAdapter("requestFocus")
+fun bindRequestFocus(editText: EditText, focused: Boolean) {
+    if (focused) {
+        editText.requestFocus()
+        editText.isCursorVisible = true
+        editText.openKeyboard()
+    } else {
+        editText.clearFocus()
+        editText.isCursorVisible = false
+    }
+}
+
+@BindingAdapter("setOnTouchListener")
+fun bindOnTouchListener(editText: EditText, item: FieldUiModel) {
+    editText.setOnTouchListener { _: View?, event: MotionEvent ->
+        if (MotionEvent.ACTION_UP == event.action) item.onItemClick()
+        false
+    }
+}
+
+@BindingAdapter("setOnEditorActionListener")
+fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
+    setOnEditorActionListener { _, actionId, _ ->
+        when (actionId) {
+            IME_ACTION_NEXT -> {
+                item.onNext()
+                true
+            }
+            IME_ACTION_DONE -> {
+                closeKeyboard()
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+@BindingAdapter("setOnFocusChangeListener")
+fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
+    setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus) {
+            openKeyboard()
+        } else if (valueHasChanged(text.toString(), item.value)) {
+//            checkAutocompleteRendering()
+            item.invokeIntent(
+                FormIntent.OnSave(
+                    uid = item.uid,
+                    value = text.toString(),
+                    valueType = item.valueType,
+                    fieldMask = "item.fieldMask"
+                )
+            )
+        }
+    }
+}
+
+private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean {
+    return storedValue != currentValue
 }
