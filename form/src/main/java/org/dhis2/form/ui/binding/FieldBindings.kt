@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -20,6 +21,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import org.dhis2.commons.extensions.Preconditions.Companion.equals
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.openKeyboard
 import org.dhis2.commons.resources.ColorUtils
@@ -174,7 +176,7 @@ fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
         override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-            if (valueHasChanged(text.toString(), item.value) && hasFocus()) {
+            if (valueHasChanged(text, item.value) && hasFocus()) {
                 item.onTextChange(charSequence.toString())
             }
             if (item.valueType == ValueType.LONG_TEXT) {
@@ -281,20 +283,23 @@ fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
     setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus) {
             openKeyboard()
-        } else if (valueHasChanged(text.toString(), item.value)) {
+        } else if (valueHasChanged(text, item.value)) {
 //            checkAutocompleteRendering()
             item.invokeIntent(
                 FormIntent.OnSave(
                     uid = item.uid,
                     value = text.toString(),
                     valueType = item.valueType,
-                    fieldMask = "item.fieldMask"
+                    fieldMask = item.fieldMask
                 )
             )
         }
     }
 }
 
-private fun valueHasChanged(currentValue: String, storedValue: String?): Boolean {
-    return storedValue != currentValue
+private fun valueHasChanged(currentValue: Editable, storedValue: String?): Boolean {
+    return !equals(
+        if (TextUtils.isEmpty(currentValue)) "" else currentValue.toString(),
+        storedValue ?: ""
+    )
 }

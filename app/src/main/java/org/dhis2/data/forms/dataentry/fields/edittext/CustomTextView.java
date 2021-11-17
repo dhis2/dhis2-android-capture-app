@@ -50,7 +50,7 @@ import org.dhis2.form.ui.validation.failures.FieldMaskFailure;
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.ObjectStyleUtils;
-import org.dhis2.utils.Preconditions;
+import org.dhis2.commons.extensions.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.Result;

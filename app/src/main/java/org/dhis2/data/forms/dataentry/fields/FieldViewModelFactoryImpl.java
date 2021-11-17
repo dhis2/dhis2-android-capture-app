@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
-import static org.dhis2.utils.Preconditions.isNull;
+import static org.dhis2.commons.extensions.Preconditions.isNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
