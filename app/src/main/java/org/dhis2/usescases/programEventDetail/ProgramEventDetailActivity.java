@@ -316,7 +316,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         isMapVisible = showMap;
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                showMap ? new EventMapFragment() : new EventListFragment()
+                showMap ? new EventMapFragment() : new EventListFragment(),
+                showMap ? "MAP_FRAGMENT" : "EVENT_LIST"
         ).commitNow();
         binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
         binding.filter.setVisibility(View.VISIBLE);
