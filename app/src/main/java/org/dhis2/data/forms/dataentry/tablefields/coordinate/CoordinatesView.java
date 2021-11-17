@@ -339,7 +339,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 labelText,
                 latitudeInputLayout,
                 longitudeInputLayout,
-                findViewById(R.id.formLabel),
                 findViewById(R.id.location1),
                 findViewById(R.id.location2),
                 clearButton,
