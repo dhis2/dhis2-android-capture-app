@@ -10,18 +10,17 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import org.dhis2.R
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 
 class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
 
@@ -56,15 +55,14 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
             .setBackgroundThreadExecutor(bgThreadPoolExecutor)
             .build()
 
-        liveAdapter = ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel, config)
+        liveAdapter =
+            ProgramEventDetailLiveAdapter(presenter.program(), programEventsViewModel, config)
         return FragmentProgramEventDetailListBinding.inflate(inflater, container, false)
             .apply {
                 binding = this
                 recycler.adapter = liveAdapter
             }.root
     }
-
-
 
     override fun onResume() {
         super.onResume()
@@ -86,7 +84,7 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
                         binding.emptyTeis.visibility = View.GONE
                         binding.recycler.visibility = View.VISIBLE
                     }
-                 //   CountingIdlingResourceSingleton.decrement()
+                    //   CountingIdlingResourceSingleton.decrement()
                 }
             }
         )

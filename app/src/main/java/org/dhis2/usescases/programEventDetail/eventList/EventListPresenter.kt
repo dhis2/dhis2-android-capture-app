@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail.eventList
 
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
@@ -21,7 +20,7 @@ class EventListPresenter(
     val disposable = CompositeDisposable()
 
     fun init() {
-       // CountingIdlingResourceSingleton.increment()
+        // CountingIdlingResourceSingleton.increment()
         disposable.add(
             filterManager.asFlowable().startWith(filterManager)
                 .map { eventRepository.filteredProgramEvents() }
