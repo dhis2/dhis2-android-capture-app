@@ -102,8 +102,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint='@{item.hint}'
                     android:theme="@style/loginInputText"
+                    app:inputError="@{item.error}"
+                    app:inputWarning="@{item.warning}"
+                    app:input_layout_style="@{item.style}"
                     tools:hint="hint">
 
                     <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
@@ -114,6 +118,7 @@
                         android:focusableInTouchMode="true"
                         android:gravity="start"
                         android:maxLines="1"
+                        android:text="@{item.value}"
                         android:textAlignment="textStart"
                         android:textIsSelectable="true"
                         android:textSize="@dimen/form_edit_text_size"
