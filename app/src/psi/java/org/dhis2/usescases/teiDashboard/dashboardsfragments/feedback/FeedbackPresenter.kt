@@ -6,7 +6,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.utils.Constants
 
 sealed class FeedbackState {

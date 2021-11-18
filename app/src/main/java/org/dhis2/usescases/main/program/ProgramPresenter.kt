@@ -4,9 +4,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
