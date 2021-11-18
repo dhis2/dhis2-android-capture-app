@@ -38,7 +38,6 @@ class ProgramEventTest : BaseTest() {
         programEventsRobot {
             clickOnAddEvent()
         }
-
         eventRegistrationRobot {
             clickNextButton()
             waitToDebounce(600)
@@ -47,11 +46,9 @@ class ProgramEventTest : BaseTest() {
             clickOnFormFabButton()
             clickOnFinishAndComplete()
         }
-
         programEventsRobot {
             checkEventWasCreatedAndClosed(eventOrgUnit, 0)
         }
-
     }
 
     private fun disableRecyclerViewAnimations() {
@@ -109,7 +106,7 @@ class ProgramEventTest : BaseTest() {
         }
 
         programEventsRobot {
-            //    waitToDebounce(800)
+            waitToDebounce(800)
             checkEventIsOpen(eventDate, eventOrgUnit)
         }
 
