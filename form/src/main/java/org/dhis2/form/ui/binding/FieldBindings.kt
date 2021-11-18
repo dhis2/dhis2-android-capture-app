@@ -146,24 +146,30 @@ fun setImeOption(editText: EditText, type: KeyboardActionType?) {
 fun EditText.bindInputType(valueType: ValueType) {
     val inputType = when (valueType) {
         ValueType.TEXT -> InputType.TYPE_CLASS_TEXT
-        ValueType.LONG_TEXT -> InputType.TYPE_CLASS_TEXT or
-            InputType.TYPE_TEXT_FLAG_MULTI_LINE
-        ValueType.LETTER -> InputType.TYPE_CLASS_TEXT or
-            InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-        ValueType.NUMBER -> InputType.TYPE_CLASS_NUMBER or
-            InputType.TYPE_NUMBER_FLAG_DECIMAL or
-            InputType.TYPE_NUMBER_FLAG_SIGNED
-        ValueType.UNIT_INTERVAL -> InputType.TYPE_CLASS_NUMBER or
-            InputType.TYPE_NUMBER_FLAG_DECIMAL
+        ValueType.LONG_TEXT ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        ValueType.LETTER ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        ValueType.NUMBER ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                InputType.TYPE_NUMBER_FLAG_SIGNED
+        ValueType.UNIT_INTERVAL ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
         ValueType.PERCENTAGE -> InputType.TYPE_CLASS_NUMBER
         ValueType.INTEGER_NEGATIVE,
-        ValueType.INTEGER -> InputType.TYPE_CLASS_NUMBER or
-            InputType.TYPE_NUMBER_FLAG_SIGNED
+        ValueType.INTEGER ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_SIGNED
         ValueType.INTEGER_POSITIVE,
         ValueType.INTEGER_ZERO_OR_POSITIVE -> InputType.TYPE_CLASS_NUMBER
         ValueType.PHONE_NUMBER -> InputType.TYPE_CLASS_PHONE
-        ValueType.EMAIL -> InputType.TYPE_CLASS_TEXT or
-            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        ValueType.EMAIL ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         ValueType.URL -> InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT
         else -> null
     }
