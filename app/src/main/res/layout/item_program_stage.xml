@@ -7,10 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="presenter"
-            type="org.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.Presenter" />
-
-        <variable
             name="programStage"
             type="org.hisp.dhis.android.core.program.ProgramStage" />
     </data>

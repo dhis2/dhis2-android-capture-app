@@ -14,7 +14,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 
-const val DEFAULT_BOUND_PADDING = 500
+const val DEFAULT_BOUND_PADDING = 50
 const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
 
 fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBounds) {
@@ -56,6 +56,26 @@ fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
         .zoom(15.0)
         .build()
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+}
+
+fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
+    this.easeCamera(
+        CameraUpdateFactory.newLatLng(
+            LatLng(
+                latLng.latitude,
+                latLng.longitude
+            )
+        )
+    )
+    val cameraPosition = CameraPosition.Builder()
+        .target(
+            LatLng(
+                latLng.latitude,
+                latLng.longitude
+            )
+        )
+        .build()
+    this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
 fun MapboxMap.centerCameraOnFeature(feature: Feature) {

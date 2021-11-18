@@ -1,22 +1,17 @@
 package org.dhis2.usescases.programEventDetail.eventMap
 
-import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
-import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import java.util.ArrayList
 import javax.inject.Inject
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
 import org.dhis2.uicomponents.map.ExternalMapNavigation
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
-import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerDialog
 import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -75,6 +70,12 @@ class EventMapFragment :
                 eventMapManager?.let {
                     MapLayerDialog(it)
                         .show(childFragmentManager, MapLayerDialog::class.java.name)
+                }
+            }
+
+            mapPositionButton.setOnClickListener {
+                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
                 }
             }
         }
@@ -166,33 +167,9 @@ class EventMapFragment :
     }
 
     override fun onMapClick(point: LatLng): Boolean {
-        val rectF = eventMapManager?.map?.projection?.toScreenLocation(point)?.let { pointf ->
-            RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
-        }
-
-        val features: MutableList<Feature> = ArrayList()
-        rectF?.let {
-            for (mapLayer in eventMapManager?.mapLayerManager?.getLayers() ?: emptyList()) {
-                eventMapManager?.map?.queryRenderedFeatures(it, mapLayer.getId())
-                    ?.let { layerFeatures ->
-                        features.addAll(layerFeatures)
-                    }
-            }
-        }
-
-        if (features.isNotEmpty()) {
-            val selectedFeature = eventMapManager?.findFeature(
-                LayerType.EVENT_LAYER.name,
-                MapEventToFeatureCollection.EVENT,
-                features[0].getStringProperty(MapEventToFeatureCollection.EVENT)
-            )
-            eventMapManager?.mapLayerManager?.getLayer(
-                LayerType.EVENT_LAYER.name,
-                true
-            )?.setSelectedItem(selectedFeature)
-            binding.mapCarousel.scrollToFeature(features[0])
+        eventMapManager?.markFeatureAsSelected(point, null)?.let {
+            binding.mapCarousel.scrollToFeature(it)
             return true
-        }
-        return false
+        } ?: return false
     }
 }

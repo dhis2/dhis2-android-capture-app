@@ -4,14 +4,21 @@ import dhis2.org.analytics.charts.data.GraphPoint
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
+import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
+import org.hisp.dhis.android.core.period.Period
 
-class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
+class ChartCoordinatesProviderImpl(
+    val d2: D2,
+    val periodStepProvider: PeriodStepProvider
+) : ChartCoordinatesProvider {
 
     override fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String
     ): List<GraphPoint> {
+        var initialPeriod: Period? = null
         return d2.analyticsModule().eventLineList()
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
@@ -19,9 +26,14 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
             .blockingEvaluate()
             .sortedBy { it.date }
             .mapNotNull { lineListResponse ->
+                if (initialPeriod == null) initialPeriod = lineListResponse.period
                 lineListResponse.values.first().value?.let { value ->
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
+                        position = periodStepProvider.getPeriodDiff(
+                            initialPeriod!!,
+                            lineListResponse.period
+                        ).toFloat(),
                         fieldValue = value.toFloat()
                     )
                 }
@@ -33,6 +45,7 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
         teiUid: String,
         indicatorUid: String
     ): List<GraphPoint> {
+        var initialPeriod: Period? = null
         return d2.analyticsModule()
             .eventLineList()
             .byProgramStage().eq(stageUid)
@@ -49,8 +62,13 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
             }
             .mapNotNull { lineListResponse ->
                 lineListResponse.values.first().value?.let { value ->
+                    if (initialPeriod == null) initialPeriod = lineListResponse.period
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
+                        position = periodStepProvider.getPeriodDiff(
+                            initialPeriod!!,
+                            lineListResponse.period
+                        ).toFloat(),
                         fieldValue = value.toFloat()
                     )
                 }
@@ -93,6 +111,51 @@ class ChartCoordinatesProviderImpl(val d2: D2) : ChartCoordinatesProvider {
                 )
             }
         }
+    }
+
+    override fun pieChartCoordinates(
+        stageUid: String,
+        teiUid: String,
+        dataElementUid: String
+    ): List<GraphPoint> {
+        val eventList = d2.analyticsModule().eventLineList()
+            .byProgramStage().eq(stageUid)
+            .byTrackedEntityInstance().eq(teiUid)
+            .withDataElement(dataElementUid)
+            .blockingEvaluate()
+            .sortedBy { it.date }
+            .filter { it.values.first().value != null }
+        return eventList.groupBy { it.values.first().value }.mapNotNull {
+            GraphPoint(
+                eventDate = formattedDate(it.value.first().date),
+                fieldValue = it.value.size.toFloat(),
+                legend = it.key
+            )
+        }
+    }
+
+    override fun visualizationCoordinates(
+        gridResponseValueList: List<GridResponseValue>,
+        metadata: Map<String, MetadataItem>,
+        categories: List<String>
+    ): List<GraphPoint> {
+        return gridResponseValueList.filter { it.value != null }
+            .mapIndexed { index, gridResponseValue ->
+
+                val periodId = gridResponseValue.rows.firstOrNull()
+                val position = periodId?.let { categories.indexOf(periodId) } ?: index
+
+                val columnLegend = gridResponseValue.columns.firstOrNull()?.let {
+                    metadata[it]?.displayName
+                }
+
+                GraphPoint(
+                    eventDate = Date(),
+                    position = position.toFloat(),
+                    fieldValue = gridResponseValue.value!!.toFloat(),
+                    legend = columnLegend
+                )
+            }
     }
 
     private fun formattedDate(date: Date): Date {

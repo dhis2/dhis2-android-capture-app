@@ -1,6 +1,9 @@
 package org.dhis2.usescases.programEventDetail.eventList
 
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.filter.TextFilter
 import org.dhis2.data.prefs.PreferenceProvider

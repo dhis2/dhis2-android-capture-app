@@ -1,31 +1,28 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.filter.FilterRepository;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
@@ -40,7 +37,7 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
@@ -62,6 +59,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,7 +68,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -527,6 +524,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryData.clear();
         }
 
+        searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
         currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
     }
 
@@ -541,6 +539,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryData.clear();
         view.setFabIcon(true);
         view.showClearSearch(false);
+        searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
         queryProcessor.onNext(new HashMap<>());
     }
@@ -651,101 +650,41 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void showNativeCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dateDialog = new DatePickerDialog(view.getContext(), (
-                (datePicker, year1, month1, day1) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, year1);
-                    selectedCalendar.set(Calendar.MONTH, month1);
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
-
-                    enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-
-                }),
-                year,
-                month,
-                day);
-
-        if (selectedOrgUnit.openingDate() != null)
-            dateDialog.getDatePicker().setMinDate(selectedOrgUnit.openingDate().getTime());
-
-        if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
-            } else {
-                dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-            }
-        } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
-        }
-
-        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                dateDialog.dismiss();
-                showCustomCalendar(selectedOrgUnit, programUid, uid);
-            });
-        }
-
-        dateDialog.show();
+    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+        showCalendar(selectedOrgUnit, programUid, uid);
     }
 
-    private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+    private void showCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+        Date minDate = null;
+        Date maxDate = null;
 
-        if (dialogDisplayed == null || !dialogDisplayed.isShowing()) {
-            LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-            WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-            final DatePicker datePicker = binding.widgetDatepicker;
+        if (selectedOrgUnit.openingDate() != null)
+            minDate = selectedOrgUnit.openingDate();
 
-            Calendar c = Calendar.getInstance();
-            datePicker.updateDate(
-                    c.get(Calendar.YEAR),
-                    c.get(Calendar.MONTH),
-                    c.get(Calendar.DAY_OF_MONTH));
+        if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            maxDate = new Date(System.currentTimeMillis());
+        } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
+                maxDate = selectedOrgUnit.closedDate();
+            } else {
+                maxDate = new Date(System.currentTimeMillis());
+            }
+        } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+            maxDate = selectedOrgUnit.closedDate();
+        }
 
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                    .setTitle(selectedProgram.enrollmentDateLabel());
-
-            if (selectedOrgUnit.openingDate() != null)
-                datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());
-
-            if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-                datePicker.setMaxDate(System.currentTimeMillis());
-            } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-                if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                    datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
-                } else {
-                    datePicker.setMaxDate(System.currentTimeMillis());
-                }
-            } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-                datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
+        CalendarPicker dialog = new CalendarPicker(view.getContext());
+        dialog.setTitle(selectedProgram.enrollmentDateLabel());
+        dialog.setMinDate(minDate);
+        dialog.setMaxDate(maxDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
             }
 
-            alertDialog.setView(binding.getRoot());
-            dialogDisplayed = alertDialog.create();
-
-            binding.changeCalendarButton.setOnClickListener(changeButton -> {
-                showNativeCalendar(selectedOrgUnit, programUid, uid);
-                dialogDisplayed.dismiss();
-            });
-            binding.clearButton.setOnClickListener(clearButton -> dialogDisplayed.dismiss());
-            binding.acceptButton.setOnClickListener(acceptButton -> {
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
                 Calendar selectedCalendar = Calendar.getInstance();
                 selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                 selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -757,15 +696,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 selectedEnrollmentDate = selectedCalendar.getTime();
 
                 enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-                dialogDisplayed.dismiss();
-            });
-            dialogDisplayed.show();
-        }
-    }
-
-
-    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-        showCustomCalendar(selectedOrgUnit, programUid, uid);
+            }
+        });
+        dialog.show();
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
@@ -920,7 +853,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void getListData(){
+    public void getListData() {
         listDataProcessor.onNext(new Unit());
     }
 
@@ -1025,7 +958,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void populateList(List<FieldUiModel> list) {
-        if (list != null){
+        if (list != null) {
             view.setFabIcon(!list.isEmpty());
         }
         view.setFormData(formRepository.composeList(list));
@@ -1043,10 +976,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (listResultIsOk) {
             view.setFiltersVisibility(hasToShowFilters);
-        } else if (!listResultIsOk && hasToShowFilters){
+        } else if (!listResultIsOk && hasToShowFilters) {
             boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
             view.setFiltersVisibility(filtersActive);
-        } else if (!listResultIsOk && !hasToShowFilters){
+        } else if (!listResultIsOk && !hasToShowFilters) {
             view.setFiltersVisibility(false);
         }
     }
@@ -1074,7 +1007,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void setOpeningFilterToNone(){
+    public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
     }
 }

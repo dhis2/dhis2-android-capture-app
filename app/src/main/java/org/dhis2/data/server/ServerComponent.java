@@ -2,7 +2,7 @@ package org.dhis2.data.server;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.dagger.PerServer;
+import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;

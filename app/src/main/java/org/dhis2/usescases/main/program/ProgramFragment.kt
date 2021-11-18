@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
@@ -34,10 +35,6 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
-
-/**
- * Created by ppajuelo on 18/10/2017.f
- */
 
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
@@ -66,8 +63,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
+        ViewCompat.setTransitionName(binding.drawerLayout, "contenttest")
+        binding.lifecycleOwner = this
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
@@ -230,6 +229,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
         dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
     }
+
+    fun sharedView() = binding.drawerLayout
 
     companion object {
         const val FRAGMENT_TAG = "SYNC"

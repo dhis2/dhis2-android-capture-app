@@ -11,9 +11,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.data.prefs.Preference.Companion.GROUPING
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.prefs.Preference.Companion.GROUPING
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.Constants.PROGRAM_THEME

@@ -35,9 +35,9 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val noteId: String? = intent.getStringExtra(Constants.NOTE_ID)
-        val programUid = intent.getStringExtra(Constants.PROGRAM_UID)
+        val programUid = intent.getStringExtra(Constants.PROGRAM_UID) ?: ""
         noteType = intent.getSerializableExtra(Constants.NOTE_TYPE) as NoteType
-        uid = intent.getStringExtra(Constants.UID)
+        uid = intent.getStringExtra(Constants.UID) ?: ""
 
         app().userComponent()?.plus(NoteDetailModule(this, noteId, programUid))?.inject(this)
         noteId?.let { isNewNote.set(false) }

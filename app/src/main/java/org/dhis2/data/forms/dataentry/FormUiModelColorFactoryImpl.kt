@@ -2,9 +2,9 @@ package org.dhis2.data.forms.dataentry
 
 import android.content.Context
 import androidx.core.content.ContextCompat
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.style.FormUiColorType
-import org.dhis2.utils.ColorUtils
 
 class FormUiModelColorFactoryImpl(
     val context: Context,

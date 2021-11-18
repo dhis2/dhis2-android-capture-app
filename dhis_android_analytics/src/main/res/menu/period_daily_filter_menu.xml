@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back_daily"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/daily"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/today"
+            android:title="@string/today" />
+        <item
+            android:id="@+id/yesterday"
+            android:title="@string/yesterday" />
+        <item
+            android:id="@+id/last3days"
+            android:title="@string/last3Days" />
+        <item
+            android:id="@+id/last7days"
+            android:title="@string/last7Days" />
+        <item
+            android:id="@+id/last14days"
+            android:title="@string/last14Days" />
+        <item
+            android:id="@+id/last30days"
+            android:title="@string/last30Days" />
+    </group>
+</menu>

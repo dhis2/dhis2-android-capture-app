@@ -69,6 +69,8 @@ public class FilterManager implements Serializable {
     private boolean assignedFilter;
     private ObservableField<Boolean> observableAssignedToMe = new ObservableField<>();
     private SortingItem sortingItem;
+    private boolean followUpFilter;
+    private ObservableField<Boolean> observableFollowUp = new ObservableField<>();
 
     private ArrayList<Filters> unsupportedFilters = new ArrayList<>();
 
@@ -80,6 +82,7 @@ public class FilterManager implements Serializable {
     private ObservableField<Integer> eventStatusFiltersApplied;
     private ObservableField<Integer> enrollmentStatusFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
+    private ObservableField<Integer> followUpFilterApplied;
 
     private List<String> stateValues = new ArrayList<>();
 
@@ -134,6 +137,7 @@ public class FilterManager implements Serializable {
         eventStatusFilters = new ArrayList<>();
         enrollmentStatusFilters = new ArrayList<>();
         assignedFilter = false;
+        followUpFilter =false;
         sortingItem = null;
 
         ouFiltersApplied = new ObservableField<>(0);
@@ -144,6 +148,7 @@ public class FilterManager implements Serializable {
         eventStatusFiltersApplied = new ObservableField<>(0);
         enrollmentStatusFiltersApplied = new ObservableField<>(0);
         assignedToMeApplied = new ObservableField<>(0);
+        followUpFilterApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -161,6 +166,7 @@ public class FilterManager implements Serializable {
         copy.eventStatusFilters = new ArrayList<>(getEventStatusFilters());
         copy.enrollmentStatusFilters = new ArrayList<>(getEnrollmentStatusFilters());
         copy.assignedFilter = getAssignedFilter();
+        copy.followUpFilter = getFollowUpFilter();
         copy.sortingItem = getSortingItem();
         return copy;
     }
@@ -174,6 +180,7 @@ public class FilterManager implements Serializable {
                 Objects.equals(filterManager.eventStatusFilters, this.eventStatusFilters) &&
                 Objects.equals(filterManager.enrollmentStatusFilters, this.enrollmentStatusFilters) &&
                 filterManager.assignedFilter == this.assignedFilter &&
+                filterManager.followUpFilter == this.followUpFilter &&
                 Objects.equals(filterManager.sortingItem, this.sortingItem);
     }
 
@@ -312,6 +319,8 @@ public class FilterManager implements Serializable {
                 return enrollmentStatusFiltersApplied;
             case ASSIGNED_TO_ME:
                 return assignedToMeApplied;
+            case FOLLOW_UP:
+                return followUpFilterApplied;
             default:
                 return new ObservableField<>(0);
         }
@@ -360,10 +369,11 @@ public class FilterManager implements Serializable {
         int assignedApplying = assignedFilter ? 1 : 0;
         int sortingIsActive = sortingItem != null ? 1 : 0;
         int workingListFilters = getTotalFilterCounterForWorkingList(currentWorkingListScope.get());
+        int followUpApplying = followUpFilter ? 1 : 0;
         return ouIsApplying + stateIsApplying + periodIsApplying +
                 eventStatusApplying + catComboApplying +
                 assignedApplying + enrollmentPeriodIsApplying + enrollmentStatusApplying +
-                sortingIsActive + workingListFilters;
+                sortingIsActive + workingListFilters + followUpApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -497,6 +507,15 @@ public class FilterManager implements Serializable {
         }
     }
 
+    public void clearFollowUp() {
+        if (followUpFilter) {
+            followUpFilter = false;
+            observableFollowUp.set(false);
+            followUpFilterApplied.set(0);
+            publishData();
+        }
+    }
+
     public void clearSorting() {
         sortingItem = null;
         publishData();
@@ -542,6 +561,8 @@ public class FilterManager implements Serializable {
         assignedFilter = false;
         observableAssignedToMe.set(false);
         sortingItem = null;
+        followUpFilter = false;
+        observableFollowUp.set(false);
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
@@ -552,6 +573,7 @@ public class FilterManager implements Serializable {
         assignedToMeApplied.set(0);
         this.currentWorkingList = null;
         setWorkingListScope(new EmptyWorkingList());
+        followUpFilterApplied.set(0);
 
         if (!workingListActive())
             publishData();
@@ -581,6 +603,22 @@ public class FilterManager implements Serializable {
             this.sortingItem = null;
         }
         publishData();
+    }
+
+    public boolean getFollowUpFilter() {
+        return followUpFilter;
+    }
+
+    public ObservableField<Boolean> observeFollowUp() {
+        return observableFollowUp;
+    }
+
+    public void setFollowUp(boolean isChecked) {
+        this.followUpFilter = isChecked;
+        observableFollowUp.set(isChecked);
+        followUpFilterApplied.set(isChecked ? 1 : 0);
+        publishData();
+
     }
 
     public SortingItem getSortingItem() {
@@ -697,6 +735,7 @@ public class FilterManager implements Serializable {
                 case ENROLLMENT_DATE:
                 case ENROLLMENT_STATUS:
                 case WORKING_LIST:
+                case FOLLOW_UP:
                 default:
                     return defaultValue;
             }

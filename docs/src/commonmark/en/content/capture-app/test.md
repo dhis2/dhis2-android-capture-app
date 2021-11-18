@@ -8,12 +8,12 @@
 
 In case of errors during the sync process, a message is displayed in the settings menu ('Sync data' or 'Sync configuration' section). Also, a red sync icon is displayed next to the program in the Home screen. The sync error log gives details about the error and is prepared to be shared with admins.
 
-![](resources/images/image43.jpg){ width=25%}
-![](resources/images/XXXX-image11.png){ width=25%}
+![](resources/images/capture-app-image43.jpg){ width=25%}
+![](resources/images/capture-app-image11.png){ width=25%}
 
 You can also open the sync errors log from **Settings**:
 
-![](resources/images/image15.jpg){ width=25%}
+![](resources/images/capture-app-image15.jpg){ width=25%}
 
 
 ## Personalize your Icon
@@ -22,7 +22,7 @@ You can also open the sync errors log from **Settings**:
 
 You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon will be the flag configured in your server.
 
-![](resources/images/image32.jpg){ width=25%}
+![](resources/images/capture-app-image32.jpg){ width=25%}
 
 > **Note**
 >
@@ -41,7 +41,7 @@ You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon wil
 
 You can set the generic theme of the app by configuring the them in our server:
 
-![](resources/images/XXXX-image28.png){width=80% }
+![](resources/images/capture-app-image28.png){width=80% }
 
 > **Note**
 >
@@ -57,7 +57,7 @@ You can set the generic theme of the app by configuring the them in our server:
 >   - Vietnam
 > - Select your flag
 >
->![](resources/images/XXXX-image23.png){ width=25%}
+>![](resources/images/capture-app-image23.png){ width=25%}
 
 ## Icon library for metadata
 
@@ -71,12 +71,12 @@ Icons can be associated to programs, stages, data elements and the options of an
 >
 > This feature is available from DHIS 2 2.30 onwards
 
-![](resources/images/XXXX-image13.png){ .center width=80% }
+![](resources/images/capture-app-image13.png){ .center width=80% }
 
 In the Android App icons render in the home screen to illustrate all the programs available to a user, or while adding an stage. For data elements and options, the icons render for single event programs, when a section contains a single DE, showing the option set as a matrix or sequence of images.
 
-![](resources/images/XXXX-image19.png){ width=25%}
-![](resources/images/XXXX-image26.png){ width=25%}
+![](resources/images/capture-app-image19.png){ width=25%}
+![](resources/images/capture-app-image26.png){ width=25%}
 
 > **Note**
 >
@@ -90,11 +90,11 @@ We plan to expand the collection of icons on each future version of DHIS2- for t
 
 Tracker and Event capture now have the ability to render colours for programs, stages, data elements and options in option sets. A colour picker is integrated in the Maintenance App, which shows as a palette, except for options which allows the selection of any colour.
 
-![](resources/images/XXXX-image20.png){ .center width=80% }
+![](resources/images/capture-app-image20.png){ .center width=80% }
 
 In the Android App, the color will be rendered as background color for programs and stages combined with an icon (if selected). For options it renders as the background colour during data entry form for single event programs. When the user selects a program with an assigned colour, that colour becomes the background theme for all screens in the domain of the program.
 
-![](resources/images/XXXX-image19.png){ width=25%}
+![](resources/images/capture-app-image19.png){ width=25%}
 ![](resources/images/image2.jpg){ width=25%}
 
 > **Note**
@@ -105,12 +105,12 @@ In the Android App, the color will be rendered as background color for programs 
 
  <!-- DHIS2-SECTION-ID:visual_rendering -->
 
-![](resources/images/XXXX-image16.png){width=80% }
+![](resources/images/capture-app-image16.png){width=80% }
 
 **Program Section**: when used in combination with icons, a Program Section with a single data element and associated Option Set can render the options in sequential or matrix layout (see screenshots).
 
-![](resources/images/XXXX-image26.png){ width=25%}
-![](resources/images/XXXX-image36.png){ width=25%}
+![](resources/images/capture-app-image26.png){ width=25%}
+![](resources/images/capture-app-image36.png){ width=25%}
 
 > **Note**
 >
@@ -128,8 +128,8 @@ This is available when:
 2. Creating a new event (Programs with and without registration).
 3. Using period filters in data sets and programs with and without registration.
 
-![](resources/images/XXXX-image60.png){ width=25%}
-![](resources/images/XXXX-image61.png){ width=25%}
+![](resources/images/capture-app-image60.png){ width=25%}
+![](resources/images/capture-app-image61.png){ width=25%}
 
 > **Note**
 > 
@@ -143,21 +143,21 @@ The available rendering options have been expanded to include horizontal and ver
 
 - Yes Only: can be rendered as radio button or checkbox.
 
-![](resources/images/image111.jpg){ width=25%}
+![](resources/images/capture-app-image111.jpg){ width=25%}
 
 - Yes/No: can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes or toggle.
 
-![](resources/images/image112.jpg){ width=25%}
+![](resources/images/capture-app-image112.jpg){ width=25%}
 
 - Text: When is linked to an option set can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes.
 
-![](resources/images/image110.jpg){ width=25%}
+![](resources/images/capture-app-image110.jpg){ width=25%}
 
 > **Note** 
 >
 > The default rendering option will automatically display a search box whenever there are more than 15 elements in the option set to ease the selection.
 > 
-> ![](resources/images/XXXX-options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
+> ![](resources/images/capture-app-options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
 
 
 ### QR and Barcodes
@@ -166,7 +166,7 @@ The available rendering options have been expanded to include horizontal and ver
 
 Data elements or attributes or type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
 
-![](resources/images/XXXX-image118.png){ width=20%}
-![](resources/images/XXXX-image119.png){ width=20%}
-![](resources/images/XXXX-image120.png){ width=20%}
-![](resources/images/XXXX-image121.png){ width=20%}
+![](resources/images/capture-app-image118.png){ width=20%}
+![](resources/images/capture-app-image119.png){ width=20%}
+![](resources/images/capture-app-image120.png){ width=20%}
+![](resources/images/capture-app-image121.png){ width=20%}

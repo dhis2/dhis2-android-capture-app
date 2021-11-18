@@ -19,7 +19,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 
 import java.util.List;

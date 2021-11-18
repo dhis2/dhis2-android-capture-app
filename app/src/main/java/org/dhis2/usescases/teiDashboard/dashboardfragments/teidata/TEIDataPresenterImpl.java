@@ -10,11 +10,11 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -81,6 +81,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
+    private List<String> stagesToHide;
 
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
                                 DashboardRepository dashboardRepository,
@@ -194,7 +195,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    view.setEvents(),
+                                    events ->
+                                            view.setEvents(
+                                                    events,
+                                                    canAddNewEvents()
+                                            ),
                                     Timber::d
                             )
             );
@@ -261,7 +266,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             return events;
         }
 
-        List<String> stagesToHide = new ArrayList<>();
+        stagesToHide = new ArrayList<>();
         for (RuleEffect ruleEffect : calcResult.items()) {
             if (ruleEffect.ruleAction() instanceof RuleActionHideProgramStage) {
                 RuleActionHideProgramStage hideStageAction =
@@ -503,7 +508,16 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void setOpeningFilterToNone(){
+    public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    private boolean canAddNewEvents() {
+        return d2.enrollmentModule()
+                .enrollmentService()
+                .blockingGetAllowEventCreation(
+                        enrollmentUid,
+                        stagesToHide
+                );
     }
 }
