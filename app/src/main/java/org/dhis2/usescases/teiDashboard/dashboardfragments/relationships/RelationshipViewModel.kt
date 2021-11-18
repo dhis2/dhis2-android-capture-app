@@ -18,7 +18,8 @@ data class RelationshipViewModel(
     val toImage: String?,
     val fromDefaultImageResource: Int,
     val toDefaultImageResource: Int,
-    val ownerDefaultColorResource: Int
+    val ownerDefaultColorResource: Int,
+    val canBeOpened: Boolean = true
 ) {
     fun displayRelationshipName(): String {
         val values = when (direction) {

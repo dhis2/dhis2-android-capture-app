@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.resources.setItemPic
 import org.dhis2.databinding.ItemRelationshipBinding
@@ -10,13 +11,22 @@ class RelationshipViewHolder(private val binding: ItemRelationshipBinding) :
     fun bind(presenter: RelationshipPresenter, relationships: RelationshipViewModel) {
         binding.apply {
             relationshipCard.setOnClickListener {
-                presenter.onRelationshipClicked(
-                    relationships.ownerType,
-                    relationships.ownerUid
-                )
+                if (relationships.canBeOpened) {
+                    presenter.onRelationshipClicked(
+                        relationships.ownerType,
+                        relationships.ownerUid
+                    )
+                }
             }
-            clearButton.setOnClickListener {
-                relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
+            clearButton.apply {
+                visibility = if (relationships.canBeOpened) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                setOnClickListener {
+                    relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
+                }
             }
             relationshipTypeName.text = relationships.displayRelationshipTypeName()
             toRelationshipName.text = relationships.displayRelationshipName()
