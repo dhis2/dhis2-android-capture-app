@@ -7,7 +7,9 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
@@ -175,6 +177,14 @@ class RelationshipRepositoryImpl(
                         )
                     }
 
+                val canBeOpened = if (direction == RelationshipDirection.FROM) {
+                    tei.syncState() != State.RELATIONSHIP &&
+                        orgUnitInScope(tei.organisationUnit())
+                } else {
+                    event.syncState() != State.RELATIONSHIP &&
+                        orgUnitInScope(event.organisationUnit())
+                }
+
                 RelationshipViewModel(
                     relationship,
                     fromGeometry,
@@ -189,7 +199,8 @@ class RelationshipRepositoryImpl(
                     toProfilePic,
                     fromDefaultPic,
                     toDefaultPic,
-                    getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI)
+                    getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI),
+                    canBeOpened
                 )
             }
         }
@@ -222,6 +233,7 @@ class RelationshipRepositoryImpl(
                 val toProfilePic: String?
                 val fromDefaultPicRes: Int
                 val toDefaultPicRes: Int
+                val canBoOpened: Boolean
 
                 when (teiUid) {
                     relationship.from()?.trackedEntityInstance()?.trackedEntityInstance() -> {
@@ -240,6 +252,8 @@ class RelationshipRepositoryImpl(
                             toValues = getTeiAttributesForRelationship(toTei.uid())
                             toProfilePic = toTei.profilePicturePath(d2, programUid)
                             toDefaultPicRes = getTeiDefaultRes(toTei)
+                            canBoOpened = toTei.syncState() != State.RELATIONSHIP &&
+                                orgUnitInScope(toTei.organisationUnit())
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
@@ -250,6 +264,8 @@ class RelationshipRepositoryImpl(
                             toValues = getEventValuesForRelationship(toEvent.uid())
                             toProfilePic = null
                             toDefaultPicRes = getEventDefaultRes(toEvent)
+                            canBoOpened = toEvent.syncState() != State.RELATIONSHIP &&
+                                orgUnitInScope(toEvent.organisationUnit())
                         }
                     }
                     relationship.to()?.trackedEntityInstance()?.trackedEntityInstance() -> {
@@ -269,6 +285,8 @@ class RelationshipRepositoryImpl(
                             fromValues = getTeiAttributesForRelationship(fromTei.uid())
                             fromProfilePic = fromTei.profilePicturePath(d2, programUid)
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
+                            canBoOpened = fromTei.syncState() != State.RELATIONSHIP &&
+                                orgUnitInScope(fromTei.organisationUnit())
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
@@ -279,6 +297,8 @@ class RelationshipRepositoryImpl(
                             fromValues = getEventValuesForRelationship(fromEvent.uid())
                             fromProfilePic = null
                             fromDefaultPicRes = getEventDefaultRes(fromEvent)
+                            canBoOpened = fromEvent.syncState() != State.RELATIONSHIP &&
+                                orgUnitInScope(fromEvent.organisationUnit())
                         }
                     }
                     else -> return@mapNotNull null
@@ -300,10 +320,25 @@ class RelationshipRepositoryImpl(
                     toProfilePic,
                     fromDefaultPicRes,
                     toDefaultPicRes,
-                    getOwnerColor(relationshipOwnerUid, relationshipOwnerType)
+                    getOwnerColor(relationshipOwnerUid, relationshipOwnerType),
+                    canBoOpened
                 )
             }
         }
+    }
+
+    private fun orgUnitInScope(orgUnitUid: String?): Boolean {
+        return orgUnitUid?.let {
+            val inCaptureScope = d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .uid(orgUnitUid)
+                .blockingExists()
+            val inSearchScope = d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                .uid(orgUnitUid)
+                .blockingExists()
+            inCaptureScope || inSearchScope
+        } ?: false
     }
 
     private fun getOwnerColor(uid: String, relationshipOwnerType: RelationshipOwnerType): Int {
