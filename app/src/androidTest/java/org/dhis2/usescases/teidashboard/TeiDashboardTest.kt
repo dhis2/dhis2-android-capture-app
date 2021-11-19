@@ -397,6 +397,7 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
+       //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }
 
