@@ -63,7 +63,7 @@ class FormRepositoryImplTest {
             type = ActionType.ON_TEXT_CHANGE
         )
         val result = repository.processUserAction(action)
-        assertNull(result.valueStoreResult)
+        assertThat(result.valueStoreResult, `is`(ValueStoreResult.TEXT_CHANGING))
     }
 
     @Test

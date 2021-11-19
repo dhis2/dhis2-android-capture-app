@@ -121,7 +121,6 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
         error != null -> {
             setErrorTextAppearance(R.style.error_appearance)
             this.error = error
-            editText?.text = null
         }
         warning != null -> {
             setErrorTextAppearance(R.style.warning_appearance)
@@ -181,9 +180,10 @@ fun EditText.bindInputType(valueType: ValueType) {
 fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+        override fun afterTextChanged(editable: Editable) {
             if (valueHasChanged(text, item.value) && hasFocus()) {
-                item.onTextChange(charSequence.toString())
+                item.onTextChange(text.toString())
             }
             if (item.valueType == ValueType.LONG_TEXT) {
                 if (item.editable && text.toString().isNotEmpty()) {
@@ -193,8 +193,6 @@ fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView
                 }
             }
         }
-
-        override fun afterTextChanged(editable: Editable) {}
     })
 }
 

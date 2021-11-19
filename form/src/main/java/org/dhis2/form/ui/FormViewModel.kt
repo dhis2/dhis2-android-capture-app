@@ -171,7 +171,11 @@ class FormViewModel(
         fieldValue: String?,
         fieldMask: String?
     ): Throwable? {
-        return fieldValue?.let { value ->
+        if (fieldValue.isNullOrEmpty()) {
+            return null
+        }
+
+        return fieldValue.let { value ->
             var error =
                 when (
                     val result = valueType?.takeIf { it != ValueType.IMAGE }

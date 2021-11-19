@@ -50,7 +50,6 @@ class FormRepositoryImpl(
             }
 
             ActionType.ON_TEXT_CHANGE -> {
-                updateErrorList(action)
                 updateValueOnList(action.id, action.value, action.valueType)
                 StoreResult(
                     action.id,
