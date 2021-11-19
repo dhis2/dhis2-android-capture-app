@@ -373,11 +373,12 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
             if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
                 oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
 
+            int newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
             try {
                 if (showRowTotal) {
                     int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
                             "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
-                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                            + (newValue - oldValue);
                     changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
                 }
             } catch (Exception e) {
@@ -388,7 +389,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                 if (showColumnTotal) {
                     int totalColumn = Integer.parseInt(isEmpty(getCellItem(rowAction.columnPos(), viewModels.size() - 1)) ?
                             "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
-                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                            + (newValue - oldValue);
                     changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
                 }
             } catch (Exception e) {
@@ -399,7 +400,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                 if (showRowTotal && showColumnTotal) {
                     int total = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1)) ?
                             "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
-                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                            + (newValue - oldValue);
                     changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
                 }
             } catch (Exception e) {

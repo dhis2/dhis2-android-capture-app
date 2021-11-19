@@ -11,14 +11,13 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
         android:background="@drawable/ic_front_backdrop_bg"
-        android:clipToPadding="false"
-        tools:openDrawer="end">
+        android:clipToPadding="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/filter"
@@ -75,7 +74,9 @@
             android:id="@+id/progressLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/filter">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/filter">
 
             <ProgressBar
                 android:id="@+id/program_progress"
@@ -90,9 +91,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/program_recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_below="@+id/progressLayout"
+            app:layout_constraintTop_toBottomOf="@id/progressLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:clipToPadding="false"
+            android:paddingBottom="56dp"
             app:initGrid="@{false}"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="@{1}"
@@ -105,12 +109,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:layout_below="@id/progressLayout"
+            app:layout_constraintTop_toBottomOf="@id/progressLayout"
             android:text="@string/empty_program_list"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             android:visibility="gone" />
-
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

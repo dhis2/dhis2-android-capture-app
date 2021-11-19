@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
-import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.commons.di.dagger.PerFragment;
 
 import dagger.Subcomponent;
 

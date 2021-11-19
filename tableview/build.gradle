@@ -1,11 +1,14 @@
 apply plugin: 'com.android.library'
 
+def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.sdk
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
         versionCode 1
         versionName version
 
@@ -16,20 +19,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-/*
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-        options.addStringOption('encoding', 'UTF-8')
-        options.addStringOption('charSet', 'UTF-8')
-    }*/
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
+
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
+
+    testImplementation "junit:junit:${libraries.junit}"
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
 }

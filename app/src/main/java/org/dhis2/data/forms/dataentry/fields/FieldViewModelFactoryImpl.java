@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.fieldMask(),
                 null,
                 fieldProcessor,
-                null,
+                Collections.emptyList(),
                 null);
     }
 
@@ -103,7 +104,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
                                @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
                                @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle,
-                               @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, List<Option> options,@Nullable String url) {
+                               @Nullable String fieldMask, @Nullable LegendValue legendValue, @NonNull FlowableProcessor<RowAction> processor, @NonNull List<Option> options, @Nullable String url) {
         isNull(type, "type must be supplied");
         FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory);
 

@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.R
-import org.dhis2.utils.ColorUtils
+import org.dhis2.commons.resources.ColorUtils
 
 class ResourceManager(val context: Context) {
 

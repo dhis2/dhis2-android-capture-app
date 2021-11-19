@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.mappers
 
+import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.NutritionGenderData
 import dhis2.org.analytics.charts.data.NutritionSettingsAnalyticsModel
@@ -55,11 +56,18 @@ class AnalyticsTeiSettingsToGraph(
             val dataElementCoordinates = analyticsSetting.dataElements().map {
                 SerieData(
                     dataElementNameProvider(it.dataElementUid),
-                    chartCoordinatesProvider.dataElementCoordinates(
-                        it.stageUid,
-                        teiUid,
-                        it.dataElementUid
-                    )
+                    when (analyticsSetting.type) {
+                        ChartType.PIE_CHART -> chartCoordinatesProvider.pieChartCoordinates(
+                            it.stageUid,
+                            teiUid,
+                            it.dataElementUid
+                        )
+                        else -> chartCoordinatesProvider.dataElementCoordinates(
+                            it.stageUid,
+                            teiUid,
+                            it.dataElementUid
+                        )
+                    }
                 )
             }
             val indicatorCoordinates = analyticsSetting.indicators().map {
@@ -74,10 +82,9 @@ class AnalyticsTeiSettingsToGraph(
             }.filter { it.coordinates.isNotEmpty() }
             Graph(
                 analyticsSetting.displayName,
-                false,
                 nutritionCoordinates.union(dataElementCoordinates).union(indicatorCoordinates)
                     .toList(),
-                "",
+                null,
                 PeriodType.valueOf(analyticsSetting.period()),
                 periodStepProvider.periodStep(PeriodType.valueOf(analyticsSetting.period())),
                 analyticsSetting.type

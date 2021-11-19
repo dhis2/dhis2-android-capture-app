@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.qr.QRInterface;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

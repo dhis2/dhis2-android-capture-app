@@ -134,6 +134,6 @@ class EventCaptureFormPresenterTest {
     @Test
     fun `Should try to finish`() {
         presenter.onActionButtonClick()
-        verify(activityPresenter).attempFinish()
+        verify(activityPresenter).attemptFinish()
     }
 }

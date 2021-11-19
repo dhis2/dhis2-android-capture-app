@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.rules.DataBindingIdlingResourceRule
-import org.dhis2.common.rules.RetryRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.main.MainActivity
@@ -16,6 +15,9 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SettingsTest : BaseTest() {
+
+    val KEY_GATEWAY = "gateway"
+    val GATEWAY_NUMER = "+34923030005"
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
@@ -104,7 +106,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyDeleteLocalData() {
         startActivity()
 
@@ -119,6 +120,7 @@ class SettingsTest : BaseTest() {
             clickOnAcceptDialog()
             checkSnackBarIsShown()
         }
+        cleanLocalDatabase()
     }
 
     @Test
@@ -144,12 +146,12 @@ class SettingsTest : BaseTest() {
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
         }
+        cleanLocalDatabase()
     }
 
-    // To check
-    @Test
-    @Ignore
+   @Test
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
+        preferencesRobot.saveValueToSDKPreferences(KEY_GATEWAY, GATEWAY_NUMER)
         startActivity()
 
         homeRobot {
@@ -159,8 +161,8 @@ class SettingsTest : BaseTest() {
 
         settingsRobot {
             clickOnSMSSettings()
-            checkGatewayNumberFieldIsDisable()
-            checkSMSSubmissionIsEnable()
+            checkGatewayNumberFieldIsNotEnabled()
+            checkGatewayNumberFieldIs(GATEWAY_NUMER)
         }
     }
 

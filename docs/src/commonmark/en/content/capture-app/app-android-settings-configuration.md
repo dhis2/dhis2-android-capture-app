@@ -8,6 +8,7 @@ The Android Settings Web App allows admins to configure synchronization paramete
 Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
 > **Warning**
+>
 > This version comes with improvements and disruptive features, so previous versions are no longer supported, the settings stored there will be removed.
 
 
@@ -87,6 +88,25 @@ This section allows the admin users to specify the behaviour of a particular pro
 In the case that any specific settings has been saved, a table will show a summary with the specific configuration per program, and the options to edit or delete these settings.
 
 ![](resources/images/capture-app-program-specific-table.png)
+
+> **Caution**
+>
+> Using specific settings per program might have unexpected results in the number of TEIs downloaded and the total amount might exceed the one defined in the Global Settings. This is due to how the appliation download the TEIs from the server. The Android client will first download a max number of TEIs from the server based on the Organistation Units where the user has access and based on the lastUpdate field. Afterwards it will download a max munumber of TEIs from the specific programs. Therefore, if the TEIs downloaded from the Global setting (500 in the example above) have been updated more recently than any of the TEIs from a specific program (500 for Malaria case diagnosis, treatment and investigation) the Android client will end up downloading 1000 TEI.
+> 
+> This might look confusing at first, but once understood can be used to ensure a minium (and maximum) number of TEIs for a specific program will be downloaded which can be very useful in specific implementations.
+>
+> Imagine an implementation where it must be ensured that the Android user has all the TEIs of a specific program in a server where the same user has access to other Organisation Units where other TEIs might be enrolled in another program. The program is called Community Care and it has 17 TEIs which have been updated very long time ago. The administrator can ensure that the 17 TEIs will be donwloaded by setting anything in Global Settings (if needed to reduce bandwidth a very low value should be set) and a at least 17 for the specific program as show in the image below:
+>
+> ![](resources/images/capture-app-program-specific-example-web.png)
+>
+> When the initial synchronization is triggered the Android device will first download the last TEIs updated on the server (which according to our example do not belong to the specific program) and secondly up to 20 TEI from the specific program resulting in the following (notice all the TEIs for the program were downloaded):
+>
+> ![](resources/images/capture-app-program-specific-example-mobile1.png)
+>
+> And by going to the settings it can be appreciated how the total number of TEIs is the expected 37, 20 from the Global Setting, and 17 from the program specific.
+>
+> ![](resources/images/capture-app-program-specific-example-mobile2.png)
+>
 
 #### Reset all values { #capture_app_andoid_settings_webapp_synchronization_program_reset_all }
 

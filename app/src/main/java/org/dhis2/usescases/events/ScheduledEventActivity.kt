@@ -1,20 +1,19 @@
 package org.dhis2.usescases.events
 
-import android.app.DatePickerDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import android.widget.DatePicker
 import androidx.databinding.DataBindingUtil
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
-import org.dhis2.databinding.WidgetDatepickerBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -114,21 +113,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     fun setEventDateClickListener(periodType: PeriodType?) {
         binding.date.setOnClickListener {
             if (periodType == null) {
-                showCustomCalendar(
-                    DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
-                        val date = Calendar.getInstance().apply {
-                            set(Calendar.YEAR, year)
-                            set(Calendar.MONTH, month)
-                            set(Calendar.DAY_OF_MONTH, day)
-                            set(Calendar.HOUR, 0)
-                            set(Calendar.MINUTE, 0)
-                            set(Calendar.SECOND, 0)
-                            set(Calendar.MILLISECOND, 0)
-                        }.time
-                        presenter.setEventDate(date)
-                    },
-                    false
-                )
+                showCustomCalendar(false)
             } else {
                 var minDate =
                     DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
@@ -157,21 +142,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
         binding.dueDate.setOnClickListener {
             if (periodType == null) {
-                showCustomCalendar(
-                    DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                        val date = Calendar.getInstance().apply {
-                            set(Calendar.YEAR, year)
-                            set(Calendar.MONTH, month)
-                            set(Calendar.DAY_OF_MONTH, day)
-                            set(Calendar.HOUR, 0)
-                            set(Calendar.MINUTE, 0)
-                            set(Calendar.SECOND, 0)
-                            set(Calendar.MILLISECOND, 0)
-                        }.time
-                        presenter.setDueDate(date)
-                    },
-                    true
-                )
+                showCustomCalendar(true)
             } else {
                 var minDate =
                     DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
@@ -199,26 +170,13 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         }
     }
 
-    private fun showCustomCalendar(
-        listener: DatePickerDialog.OnDateSetListener,
-        isDueDate: Boolean
-    ) {
-        val layoutInflater = LayoutInflater.from(context)
-        val widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater)
-        val datePicker = widgetBinding.widgetDatepicker
-
-        val calendar = Calendar.getInstance()
+    private fun showCustomCalendar(isDueDate: Boolean) {
+        val dialog = CalendarPicker(this)
 
         if (isDueDate) {
-            calendar.time = event.dueDate()
-            calendar.add(Calendar.DAY_OF_YEAR, stage.standardInterval() ?: 0)
+            dialog.setInitialDate(event.dueDate())
+            dialog.setScheduleInterval(stage.standardInterval() ?: 0)
         }
-
-        datePicker.updateDate(
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
 
         if (program.expiryPeriodType() != null) {
             val minDate = DateUtils.getInstance().expDate(
@@ -226,73 +184,35 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 program.expiryDays() ?: 0,
                 program.expiryPeriodType()
             )
-            datePicker.minDate = minDate!!.time
+            dialog.setMinDate(minDate)
         }
 
         if (!isDueDate) {
-            datePicker.maxDate = System.currentTimeMillis() - 1000
+            dialog.setMaxDate(Date(System.currentTimeMillis() - 1000))
         }
-
-        val alertDialog = AlertDialog.Builder(context, R.style.DatePickerTheme)
-
-        alertDialog.setView(widgetBinding.root)
-        val dialog = alertDialog.create()
-
-        widgetBinding.changeCalendarButton.setOnClickListener {
-            showNativeCalendar(listener, isDueDate)
-            dialog.dismiss()
-        }
-        widgetBinding.clearButton.setOnClickListener { dialog.dismiss() }
-        widgetBinding.acceptButton.setOnClickListener {
-            listener.onDateSet(datePicker, datePicker.year, datePicker.month, datePicker.dayOfMonth)
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private fun showNativeCalendar(
-        listener: DatePickerDialog.OnDateSetListener,
-        isDueDate: Boolean
-    ) {
-        val calendar = Calendar.getInstance()
-
-        if (isDueDate) {
-            calendar.time = event.dueDate()
-            calendar.add(Calendar.DAY_OF_YEAR, stage.standardInterval() ?: 0)
-        }
-
-        val datePickerDialog = DatePickerDialog(
-            this, listener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-        if (program.expiryPeriodType() != null) {
-            val minDate = DateUtils.getInstance().expDate(
-                null,
-                program.expiryDays() ?: 0,
-                program.expiryPeriodType()
-            )
-            datePickerDialog.datePicker.minDate = minDate!!.time
-        }
-
-        if (!isDueDate) {
-            datePickerDialog.datePicker.maxDate = System.currentTimeMillis() - 1000
-        }
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            datePickerDialog.setButton(
-                DialogInterface.BUTTON_NEUTRAL,
-                getString(R.string.change_calendar)
-            ) { _, _ ->
-                datePickerDialog.dismiss()
-                showCustomCalendar(listener, isDueDate)
+        dialog.setListener(object : OnDatePickerListener {
+            override fun onNegativeClick() {
+                dialog.dismiss()
             }
-        }
 
-        datePickerDialog.show()
+            override fun onPositiveClick(datePicker: DatePicker) {
+                val date = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, datePicker.year)
+                    set(Calendar.MONTH, datePicker.month)
+                    set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
+                    set(Calendar.HOUR, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.time
+                if (isDueDate) {
+                    presenter.setDueDate(date)
+                } else {
+                    presenter.setEventDate(date)
+                }
+            }
+        })
+        dialog.show()
     }
 
     override fun openInitialActivity() {

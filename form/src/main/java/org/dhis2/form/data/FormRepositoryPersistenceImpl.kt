@@ -5,9 +5,11 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 
 class FormRepositoryPersistenceImpl(
-    private val formValueStore: FormValueStore
+    private val formValueStore: FormValueStore,
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider
 ) : FormRepository {
 
     private val itemsWithError = mutableListOf<RowAction>()
@@ -68,7 +70,10 @@ class FormRepositoryPersistenceImpl(
     ): List<FieldUiModel> {
         return list.map { item ->
             fieldsWithError.find { it.id == item.uid }?.let { action ->
-                item.setValue(action.value).setError(action.error)
+                val error = action.error?.let {
+                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                }
+                item.setValue(action.value).setError(error)
             } ?: item
         }
     }

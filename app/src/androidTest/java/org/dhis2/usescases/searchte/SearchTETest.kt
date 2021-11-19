@@ -3,7 +3,11 @@ package org.dhis2.usescases.searchte
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
@@ -18,7 +22,6 @@ import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -111,6 +114,7 @@ class SearchTETest : BaseTest() {
         val lastNamePosition = 1
         val filterCount = "3"
 
+        setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
@@ -154,6 +158,8 @@ class SearchTETest : BaseTest() {
         val orgUnit = "Ngelehun CHC"
         val registerTeiDetails = createRegisterTEI()
         val overdueDate = createOverdueDate()
+
+        setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot {
@@ -204,6 +210,7 @@ class SearchTETest : BaseTest() {
         val totalFilterCount = "2"
         val filterCount = "1"
 
+        setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
@@ -230,6 +237,7 @@ class SearchTETest : BaseTest() {
         val totalCount = "2"
         val filterCount = "1"
 
+        setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot {
@@ -307,7 +315,6 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("To review why the sleep is needed")
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Lynn"
@@ -315,17 +322,14 @@ class SearchTETest : BaseTest() {
         prepareTBIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnOptionMenu()
             clickOnShowMap()
             try {
-                mapIdlingResource = MapIdlingResource(rule)
-                IdlingRegistry.getInstance().register(mapIdlingResource)
-                map = mapIdlingResource!!.map
+                val device = UiDevice.getInstance(getInstrumentation())
+                device.wait(Until.hasObject(By.desc(MAP_LOADED)), 6000)
+                checkCarouselTEICardInfo(firstName)
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
-            waitToDebounce(3000)
-            checkCarouselTEICardInfo(firstName)
         }
     }
 
@@ -421,5 +425,6 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
+        const val MAP_LOADED = "LOADED"
     }
 }

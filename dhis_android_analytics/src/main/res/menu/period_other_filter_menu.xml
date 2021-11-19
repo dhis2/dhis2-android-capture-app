@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back_other"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/other"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/thisquarter"
+            android:title="@string/thisquarter" />
+        <item
+            android:id="@+id/lastquarter"
+            android:title="@string/lastquarter" />
+        <item
+            android:id="@+id/last4quarter"
+            android:title="@string/last4quarters" />
+        <item
+            android:id="@+id/quarterthisyear"
+            android:title="@string/quartersthisyear" />
+    </group>
+</menu>

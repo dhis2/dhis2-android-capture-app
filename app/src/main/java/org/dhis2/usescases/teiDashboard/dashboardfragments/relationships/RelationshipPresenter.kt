@@ -4,11 +4,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Trio
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
-import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -23,9 +22,10 @@ import timber.log.Timber
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,
     private val d2: D2,
-    private val programUid: String,
-    private val teiUid: String,
-    private val dashboardRepository: DashboardRepository,
+    private val programUid: String?,
+    private val teiUid: String?,
+    private val eventUid: String?,
+    private val relationshipRepository: RelationshipRepository,
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
@@ -37,13 +37,13 @@ class RelationshipPresenter internal constructor(
         d2.trackedEntityModule().trackedEntityInstances()
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
-            .blockingGet().trackedEntityType()
+            .blockingGet()?.trackedEntityType()
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
         compositeDisposable.add(
             updateRelationships.startWith(true)
-                .flatMap { dashboardRepository.listTeiRelationships() }
+                .flatMapSingle { relationshipRepository.relationships() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -61,13 +61,13 @@ class RelationshipPresenter internal constructor(
         )
 
         compositeDisposable.add(
-            dashboardRepository.relationshipsForTeiType(teiType)
+            relationshipRepository.relationshipTypes()
                 .map { list ->
                     val finalList = ArrayList<Trio<RelationshipType, String, Int>>()
                     for (rType in list) {
                         val iconResId =
-                            dashboardRepository.getObjectStyle(rType.val1())!!
-                        finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId))
+                            relationshipRepository.getTeiTypeDefaultRes(rType.second)
+                        finalList.add(Trio.create(rType.first, rType.second, iconResId))
                     }
                     finalList
                 }
@@ -85,7 +85,11 @@ class RelationshipPresenter internal constructor(
             .programs().uid(programUid).blockingGet()!!.access().data().write()!!
         ) {
             analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
-            view.goToAddRelationship(teiUid, teiTypeToAdd)
+            if (teiUid != null) {
+                view.goToAddRelationship(teiUid, teiTypeToAdd)
+            } else if (eventUid != null) {
+                view.goToAddRelationship(eventUid, teiTypeToAdd)
+            }
         } else {
             view.showPermissionError()
         }
@@ -104,6 +108,18 @@ class RelationshipPresenter internal constructor(
     }
 
     fun addRelationship(selectedTei: String, relationshipTypeUid: String) {
+        if (teiUid != null) {
+            addTeiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
+        } else if (eventUid != null) {
+            addEventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
+        }
+    }
+
+    private fun addTeiToTeiRelationship(
+        teiUid: String,
+        selectedTei: String,
+        relationshipTypeUid: String
+    ) {
         val relationshipType =
             d2.relationshipModule().relationshipTypes().withConstraints().uid(relationshipTypeUid)
                 .blockingGet()
@@ -123,6 +139,24 @@ class RelationshipPresenter internal constructor(
         try {
             val relationship =
                 RelationshipHelper.teiToTeiRelationship(fromTei, toTei, relationshipTypeUid)
+            d2.relationshipModule().relationships().blockingAdd(relationship)
+        } catch (e: D2Error) {
+            view.displayMessage(e.errorDescription())
+        } finally {
+            updateRelationships.onNext(true)
+        }
+    }
+
+    private fun addEventToTeiRelationship(
+        eventUid: String,
+        selectedTei: String,
+        relationshipTypeUid: String
+    ) {
+        try {
+            val relationship =
+                RelationshipHelper.eventToTeiRelationship(
+                    eventUid, selectedTei, relationshipTypeUid
+                )
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())
@@ -154,11 +188,25 @@ class RelationshipPresenter internal constructor(
         }
     }
 
+    fun openEvent(eventUid: String, eventProgramUid: String) {
+        view.openEventFor(eventUid, eventProgramUid)
+    }
+
     fun onDettach() {
         compositeDisposable.clear()
     }
 
     fun displayMessage(message: String) {
         view.displayMessage(message)
+    }
+
+    fun onRelationshipClicked(ownerType: RelationshipOwnerType, ownerUid: String) {
+        when (ownerType) {
+            RelationshipOwnerType.EVENT -> openEvent(
+                ownerUid,
+                relationshipRepository.getEventProgram(ownerUid)
+            )
+            RelationshipOwnerType.TEI -> openDashboard(ownerUid)
+        }
     }
 }

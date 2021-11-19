@@ -1,0 +1,85 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+android {
+    compileSdkVersion versions.sdk
+    buildToolsVersion versions.tools
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        debug{
+
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "default"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        dataBinding true
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation "androidx.core:core-ktx:${libraries.corektx}"
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "com.google.android.material:material:${libraries.material}"
+    implementation "com.google.code.gson:gson:${libraries.gson}"
+    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+    implementation "com.google.dagger:dagger:${libraries.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    implementation "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+    implementation "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
+    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+
+    //Timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+
+    api "com.github.bumptech.glide:glide:${libraries.glide}"
+    kapt "com.github.bumptech.glide:compiler:${libraries.glide}"
+
+    testImplementation 'junit:junit:4.13.2'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}

@@ -2,7 +2,7 @@ package org.dhis2.common.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.dhis2.data.prefs.PreferenceProviderImpl
+import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.utils.Constants
 
 class PreferenceTestingImpl(context: Context) : PreferenceProviderImpl(context) {

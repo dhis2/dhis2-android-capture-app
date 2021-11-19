@@ -10,20 +10,19 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.PIN
+import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.data.prefs.Preference.Companion.PIN
-import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.user.User
@@ -34,9 +33,9 @@ import org.junit.Test
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
+    private val repository: HomeRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: MainView = mock()
-    private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
@@ -48,7 +47,7 @@ class MainPresenterTest {
         presenter =
             MainPresenter(
                 view,
-                d2,
+                repository,
                 schedulers,
                 preferences,
                 workManagerController,
@@ -99,8 +98,7 @@ class MainPresenterTest {
 
     @Test
     fun `Should log out`() {
-        whenever(d2.userModule()) doReturn mock()
-        whenever(d2.userModule().logOut()) doReturn Completable.complete()
+        whenever(repository.logOut()) doReturn Completable.complete()
 
         presenter.logOut()
 
@@ -164,31 +162,11 @@ class MainPresenterTest {
 
     private fun presenterMocks() {
         // UserModule
-        whenever(d2.userModule()) doReturn mock()
-        whenever(d2.userModule().user()) doReturn mock()
-        whenever(d2.userModule().user().get()) doReturn Single.just(createUser())
+        whenever(repository.user()) doReturn Single.just(createUser())
 
         // categoryModule
-        whenever(d2.categoryModule()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().byIsDefault()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().byIsDefault().eq(true)) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().byIsDefault().eq(true).one()) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
-        ) doReturn Single.just(createCategoryCombo())
-
-        whenever(d2.categoryModule().categoryOptionCombos()) doReturn mock()
-        whenever(d2.categoryModule().categoryOptionCombos().byCode()) doReturn mock()
-        whenever(d2.categoryModule().categoryOptionCombos().byCode().eq("default")) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryOptionCombos().byCode().eq("default").one()
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryOptionCombos().byCode().eq("default").one().get()
-        ) doReturn Single.just(
-            createCategoryOptionCombo()
-        )
+        whenever(repository.defaultCatCombo()) doReturn Single.just(createCategoryCombo())
+        whenever(repository.defaultCatOptCombo()) doReturn Single.just(createCategoryOptionCombo())
     }
 
     private fun createUser(): User {

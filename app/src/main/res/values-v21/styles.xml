@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="DatePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
     <style name="spinner" parent="@android:style/Widget.Material.Spinner.Underlined"/>
 </resources>

@@ -20,7 +20,7 @@
         android:background="@color/white_faf"
         android:layout_height="match_parent">
 
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
             android:id="@+id/navigationView"
             style="@style/DhisBottomNavigationView"
             android:layout_width="match_parent"

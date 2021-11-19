@@ -10,10 +10,10 @@ import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.data.dagger.PerServer
+import org.dhis2.commons.di.dagger.PerServer
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.filter.GetFiltersApplyingWebAppConfig
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper

@@ -134,10 +134,9 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     ) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-
-            val url = URL(serverUrl)
+            
             val feedbackUrl =
-                URL("https://feedback.psi-mis.org/${url.host}/${enrollmentInfo.enrollmentUid}")
+                URL("https://client-dev.psi-connect.org/hnqis_rdqa/assessment.html?id=${enrollmentInfo.enrollmentUid}&server=$serverUrl")
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
             val assessmentDateText =

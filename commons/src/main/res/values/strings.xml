@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_configuration">Feature Configuration</string>
+    <string name="app_name">Commons</string>
+    <string name="change_calendar_view">Change calendar view</string>
+    <string name="clear">clear</string>
+    <string name="action_accept">Accept</string>
+    <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="navigation_list_view">List view</string>
+    <string name="navigation_table_view">Table view</string>
+    <string name="navigation_map_view">Map view</string>
+    <string name="navigation_analytics">Analytics</string>
+    <string name="navigation_tasks">Tasks</string>
+    <string name="navigation_programs">Programs</string>
+    <string name="navigation_events">Events</string>
+    <string name="navigation_relationships">Relationships</string>
+    <string name="navigation_notes">Notes</string>
+    <string name="navigation_data_entry">Data entry</string>
+    <string name="navigation_tei_data">Details</string>
+    <string name="event_overview">Details</string>
+</resources>

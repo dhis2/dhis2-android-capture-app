@@ -2,9 +2,9 @@ package org.dhis2.usescases.teiDashboard;
 
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -25,10 +25,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 
-/**
- * QUADRAM. Created by ppajuelo on 30/11/2017.
- */
-
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
@@ -36,8 +32,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
     private final FilterManager filterManager;
-    private final String enrollmentUid;
-    private TeiDashboardContracts.View view;
+    private final TeiDashboardContracts.View view;
 
     private String teiUid;
     public String programUid;
@@ -59,7 +54,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
-        this.enrollmentUid = enrollmentUid;
         this.analyticsHelper = analyticsHelper;
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;

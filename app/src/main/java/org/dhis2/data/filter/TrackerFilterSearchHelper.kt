@@ -39,6 +39,7 @@ class TrackerFilterSearchHelper @Inject constructor(
             .withFilter { applyDateFilter(it) }
             .withFilter { applyEnrollmentDateFilter(it) }
             .withFilter { applyAssignedToMeFilter(it) }
+            .withFilter { applyFollowUpFilter(it) }
             .withFilter { applySorting(it) }
     }
 
@@ -139,6 +140,16 @@ class TrackerFilterSearchHelper @Inject constructor(
     ): TrackedEntityInstanceQueryCollectionRepository {
         return if (filterManager.assignedFilter) {
             filterRepository.applyAssignToMe(teiQuery)
+        } else {
+            teiQuery
+        }
+    }
+
+    private fun applyFollowUpFilter(
+        teiQuery: TrackedEntityInstanceQueryCollectionRepository
+    ): TrackedEntityInstanceQueryCollectionRepository {
+        return if (filterManager.followUpFilter) {
+            filterRepository.applyFollowUp(teiQuery)
         } else {
             teiQuery
         }

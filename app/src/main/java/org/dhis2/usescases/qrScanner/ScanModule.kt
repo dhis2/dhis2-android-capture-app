@@ -2,7 +2,7 @@ package org.dhis2.usescases.qrScanner
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 import org.hisp.dhis.android.core.D2
 
 @PerActivity

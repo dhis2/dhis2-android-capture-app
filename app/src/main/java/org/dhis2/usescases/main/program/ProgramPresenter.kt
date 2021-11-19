@@ -2,9 +2,8 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
@@ -15,7 +14,7 @@ import timber.log.Timber
 
 class ProgramPresenter internal constructor(
     private val view: ProgramView,
-    private val homeRepository: HomeRepository,
+    private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferenceProvider: PreferenceProvider,
     private val filterManager: FilterManager,
@@ -30,11 +29,11 @@ class ProgramPresenter internal constructor(
         disposable.add(
             applyFiler
                 .switchMap {
-                    homeRepository.programModels().onErrorReturn {
+                    programRepository.programModels().onErrorReturn {
                         arrayListOf()
                     }
                         .mergeWith(
-                            homeRepository.aggregatesModels().onErrorReturn {
+                            programRepository.aggregatesModels().onErrorReturn {
                                 arrayListOf()
                             }
                         )

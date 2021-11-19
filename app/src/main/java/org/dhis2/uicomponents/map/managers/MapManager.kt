@@ -22,6 +22,7 @@ import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
+import org.dhis2.uicomponents.map.camera.moveCameraToDevicePosition
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 
@@ -42,6 +43,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     ) {
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
+                mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
                 setUi()
                 map?.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
@@ -95,6 +97,20 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     fun pointToLatLn(point: Point): LatLng {
         return LatLng(point.latitude(), point.longitude())
+    }
+
+    fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
+        val isLocationActivated =
+            map?.locationComponent?.let { it.isLocationComponentActivated } ?: false
+        if (isLocationActivated) {
+            val isLocationEnabled = map?.locationComponent?.isLocationComponentEnabled ?: false
+            if (isLocationEnabled) {
+                val location = map?.locationComponent?.lastKnownLocation
+                map?.moveCameraToDevicePosition(LatLng(location))
+            }
+        } else {
+            enableLocationComponentAndCenterCamera(onMissingPermission)
+        }
     }
 
     fun isMapReady() = map != null && style?.isFullyLoaded ?: false
@@ -184,6 +200,35 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     override fun onPermissionResult(granted: Boolean) {
                         if (granted) {
                             enableLocationComponent(style, onMissingPermission)
+                        }
+                    }
+                })
+                onMissingPermission(permissionsManager)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableLocationComponentAndCenterCamera(
+        onMissingPermission: (PermissionsManager?) -> Unit
+    ) {
+        map?.locationComponent?.apply {
+            if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
+                activateLocationComponent(
+                    LocationComponentActivationOptions.builder(
+                        mapView.context,
+                        style!!
+                    ).build()
+                )
+                isLocationComponentEnabled = true
+                centerCameraOnMyPosition(onMissingPermission)
+            } else {
+                permissionsManager = PermissionsManager(object : PermissionsListener {
+                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+
+                    override fun onPermissionResult(granted: Boolean) {
+                        if (granted) {
+                            centerCameraOnMyPosition(onMissingPermission)
                         }
                     }
                 })

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <group android:id="@+id/visualization">
+            <item
+                android:id="@+id/back"
+                android:icon="@drawable/ic_arrowback_chart"
+                android:title="@string/orgUnit"/>
+        </group>
+        <group android:id="@+id/filters">
+            <item
+                android:id="@+id/all"
+                android:title="@string/all" />
+            <item
+                android:id="@+id/selection"
+                android:title="@string/selection" />
+        </group>
+
+        <group android:id="@+id/resetcurrent">
+            <item
+                android:visible="false"
+                android:icon="@drawable/ic_reset_chart"
+                android:id="@+id/reset_orgunit"
+                android:title="@string/reset" />
+        </group>
+    </menu>

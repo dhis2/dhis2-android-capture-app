@@ -3,7 +3,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.filter.FilterRepository;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.utils.filters.FilterItem;
@@ -27,7 +27,6 @@ public class DataSetDetailPresenter {
     private FilterManager filterManager;
     private FilterRepository filterRepository;
     private DisableHomeFiltersFromSettingsApp disableHomFilters;
-    private MatomoAnalyticsController matomoAnalyticsController;
 
     CompositeDisposable disposable;
 
@@ -36,8 +35,7 @@ public class DataSetDetailPresenter {
                                   SchedulerProvider schedulerProvider,
                                   FilterManager filterManager,
                                   FilterRepository filterRepository,
-                                  DisableHomeFiltersFromSettingsApp disableHomFilters,
-                                  MatomoAnalyticsController matomoAnalyticsController) {
+                                  DisableHomeFiltersFromSettingsApp disableHomFilters) {
 
         this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
@@ -45,7 +43,6 @@ public class DataSetDetailPresenter {
         this.filterManager = filterManager;
         this.filterRepository = filterRepository;
         this.disableHomFilters = disableHomFilters;
-        this.matomoAnalyticsController = matomoAnalyticsController;
         disposable = new CompositeDisposable();
     }
 
@@ -63,23 +60,6 @@ public class DataSetDetailPresenter {
                                     } else {
                                         view.setFilters(filterItems);
                                     }
-                                },
-                                Timber::d
-                        )
-        );
-
-        disposable.add(
-                filterManager.asFlowable()
-                        .startWith(filterManager)
-                        .flatMap(filterManager -> dataSetDetailRepository.dataSetGroups(
-                                filterManager.getOrgUnitUidsFilters(),
-                                filterManager.getPeriodFilters(),
-                                filterManager.getStateFilters(),
-                                filterManager.getCatOptComboFilters()))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> {
-                                    view.setData(data);
                                     view.updateFilters(filterManager.getTotalFilters());
                                 },
                                 Timber::d
@@ -95,14 +75,7 @@ public class DataSetDetailPresenter {
                                 Timber::e
                         ));
 
-        disposable.add(
-                dataSetDetailRepository.canWriteAny()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                canWrite -> view.setWritePermission(canWrite),
-                                Timber::e
-                        ));
+
 
         disposable.add(FilterManager.getInstance().getCatComboRequest()
                 .subscribeOn(schedulerProvider.io())
@@ -114,16 +87,8 @@ public class DataSetDetailPresenter {
         );
     }
 
-    public void addDataSet() {
-        view.startNewDataSet();
-    }
-
     public void onBackClick() {
         view.back();
-    }
-
-    public void openDataSet(DataSetDetailModel dataSet) {
-        view.openDataSet(dataSet);
     }
 
     public void showFilter() {
@@ -150,16 +115,6 @@ public class DataSetDetailPresenter {
 
     public void displayMessage(String message) {
         view.displayMessage(message);
-    }
-
-
-    public void onSyncIconClick(DataSetDetailModel dataSet) {
-        matomoAnalyticsController.trackEvent(DATASET_LIST, SYNC_DATASET, CLICK);
-        view.showSyncDialog(dataSet);
-    }
-
-    public void updateFilters() {
-        filterManager.publishData();
     }
 
     public void clearFilterClick() {

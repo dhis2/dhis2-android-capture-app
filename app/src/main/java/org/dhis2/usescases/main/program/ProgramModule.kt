@@ -2,12 +2,12 @@ package org.dhis2.usescases.main.program
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.filter.FilterPresenter
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.resources.ResourceManager
@@ -20,7 +20,7 @@ class ProgramModule(private val view: ProgramView) {
     @Provides
     @PerFragment
     internal fun programPresenter(
-        homeRepository: HomeRepository,
+        programRepository: ProgramRepository,
         schedulerProvider: SchedulerProvider,
         preferenceProvider: PreferenceProvider,
         filterManager: FilterManager,
@@ -28,7 +28,7 @@ class ProgramModule(private val view: ProgramView) {
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
-            homeRepository,
+            programRepository,
             schedulerProvider,
             preferenceProvider,
             filterManager,
@@ -45,8 +45,8 @@ class ProgramModule(private val view: ProgramView) {
         dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
         resourceManager: ResourceManager
-    ): HomeRepository {
-        return HomeRepositoryImpl(
+    ): ProgramRepository {
+        return ProgramRepositoryImpl(
             d2,
             filterPresenter,
             dhisProgramUtils,

@@ -1,4 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_data">No data</string>
+    <string name="show_bar_graph">View as Bar</string>
+    <string name="show_line_graph">View as Line</string>
+    <string name="show_table_graph">View as Table</string>
+    <string name="show_table_value">View as Value</string>
+    <string name="show_radar_graph">Show as Radar</string>
+    <string name="show_pie_value">View as Pie</string>
+    <string name="action_accept">Accept</string>
+    <string name="period">Period</string>
+    <string name="orgUnit">OrgUnit</string>
+    <string name="none">None</string>
+    <string name="daily">Daily</string>
+    <string name="today">Today</string>
+    <string name="other">Other</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last3Days">Last 3 Days</string>
+    <string name="last7Days">Last 7 Days</string>
+    <string name="last14Days">Last 14 Days</string>
+    <string name="last30Days">Last 30 Days</string>
+    <string name="thisweek">This Week</string>
+    <string name="lastweek">Last Week</string>
+    <string name="last4weeks">Last 4 Weeks</string>
+    <string name="last12weeks">Last 12 Weeks</string>
+    <string name="thismonth">This Month</string>
+    <string name="lastmonth">Last Month</string>
+    <string name="last3months">Last 3 Months</string>
+    <string name="last6months">Last 6 Months</string>
+    <string name="last12months">Last 12 Months</string>
+    <string name="monthsthisyear">Months This Year</string>
+    <string name="thisquarter">This Quarter</string>
+    <string name="lastquarter">Last Quarter</string>
+    <string name="last4quarters">Last 4 Quarters</string>
+    <string name="quartersthisyear">Quarter This Year</string>
+    <string name="thisyear">This Year</string>
+    <string name="lastyear">Last Year</string>
+    <string name="last5years">Last 5 Years</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="all">All</string>
+    <string name="selection">Selection</string>
+    <string name="reset">Reset</string>
+    <string name="include_this_period_title">Do you want to include the current period?</string>
+    <string name="include_this_period_body">It will display the current period in the chart.</string>
 </resources>
