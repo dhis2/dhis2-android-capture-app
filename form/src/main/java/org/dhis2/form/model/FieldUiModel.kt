@@ -103,6 +103,8 @@ interface FieldUiModel {
 
     fun setDisplayName(displayName: String?): FieldUiModel
 
+    fun setKeyBoardActionDone(): FieldUiModel
+
     interface Callback {
         fun intent(intent: FormIntent)
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)

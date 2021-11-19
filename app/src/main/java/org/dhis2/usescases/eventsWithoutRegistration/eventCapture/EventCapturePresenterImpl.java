@@ -7,12 +7,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.ValueStore;
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
@@ -24,7 +23,6 @@ import org.dhis2.utils.RuleUtilsProviderResult;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +36,6 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -305,15 +302,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             for (FieldUiModel fieldViewModel : fields) {
                                 if (fieldViewModel.getMandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.getValue())) {
                                     emptyMandatoryFields.put(fieldViewModel.getUid(), fieldViewModel);
-                                }
-                            }
-                            if (!fields.isEmpty()) {
-                                int lastIndex = fields.size() - 1;
-                                FieldUiModel field = fields.get(lastIndex);
-                                if (field instanceof EditTextViewModel &&
-                                        ((EditTextViewModel) field).valueType() != ValueType.LONG_TEXT
-                                ) {
-                                    fields.set(lastIndex, ((EditTextViewModel) field).withKeyBoardActionDone());
                                 }
                             }
                             return fields;

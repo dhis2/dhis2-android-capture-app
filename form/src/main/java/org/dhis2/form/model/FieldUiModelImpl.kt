@@ -102,6 +102,8 @@ data class FieldUiModelImpl(
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
+    override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
+
     override fun setFocus() = this.copy(focused = true)
 
     override fun setError(error: String?) = this.copy(error = error)

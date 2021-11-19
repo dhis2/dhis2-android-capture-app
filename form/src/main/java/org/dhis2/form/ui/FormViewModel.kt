@@ -74,17 +74,17 @@ class FormViewModel(
             ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                 Timber.tag(TAG)
                     .d("${result.first.id} is not a data element or attribute")
-                _items.value = repository.composeList()
+                processCalculatedItems()
             }
             ValueStoreResult.VALUE_NOT_UNIQUE -> {
                 showInfo.value = InfoUiModel(
                     R.string.error,
                     R.string.unique_warning
                 )
-                _items.value = repository.composeList()
+                processCalculatedItems()
             }
             ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                _items.value = repository.composeList()
+                processCalculatedItems()
             }
             ValueStoreResult.TEXT_CHANGING -> {
                 Timber.d("${result.first.id} is changing its value")
@@ -234,7 +234,7 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    fun processCalculatedItems(items: List<FieldUiModel>?) {
+    fun processCalculatedItems(items: List<FieldUiModel>? = null) {
         _items.value = repository.composeList(items)
     }
 

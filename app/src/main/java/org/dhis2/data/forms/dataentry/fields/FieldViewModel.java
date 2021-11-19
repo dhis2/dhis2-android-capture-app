@@ -429,11 +429,13 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Deprecated
     @Override
-    public void setOptionsToHide(@Nullable List<String> optionsToHide) { }
+    public void setOptionsToHide(@Nullable List<String> optionsToHide) {
+    }
 
     @Deprecated
     @Override
-    public void setOptionsToShow(@Nullable List<String> optionsToShow) { }
+    public void setOptionsToShow(@Nullable List<String> optionsToShow) {
+    }
 
     @Deprecated
     @Override
@@ -453,5 +455,15 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public String getFieldMask() {
         return fieldMask();
+    }
+
+    @NonNull
+    @Override
+    public FieldUiModel setKeyBoardActionDone() {
+        if (this instanceof EditTextViewModel) {
+            return ((EditTextViewModel) this).withKeyBoardActionDone();
+        } else {
+            return this;
+        }
     }
 }

@@ -3,12 +3,12 @@ package org.dhis2.data.forms.dataentry.fields.scan
 import android.view.View
 import com.google.android.material.textfield.TextInputEditText
 import com.google.auto.value.AutoValue
+import org.dhis2.commons.extensions.Preconditions
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
-import org.dhis2.commons.extensions.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
