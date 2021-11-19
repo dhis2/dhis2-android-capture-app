@@ -486,7 +486,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList()
+            null,
+            null
         )
 
         whenever(valueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
@@ -540,7 +541,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList()
+            null,
+            null
         )
 
         whenever(
@@ -614,7 +616,8 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            emptyList()
+            null,
+            null
         )
 
         ruleUtils.applyRuleEffects(

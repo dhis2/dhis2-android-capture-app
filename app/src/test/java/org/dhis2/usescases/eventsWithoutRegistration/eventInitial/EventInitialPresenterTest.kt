@@ -687,8 +687,7 @@ class EventInitialPresenterTest {
                 valueType = ValueType.COORDINATE,
                 legend = null,
                 optionSet = null,
-                allowFutureDates = null,
-                uiEventTypes = emptyList()
+                allowFutureDates = null
             )
         )
         whenever(eventInitialRepository.getProgramWithId(uid)) doReturn Observable.just(program)
