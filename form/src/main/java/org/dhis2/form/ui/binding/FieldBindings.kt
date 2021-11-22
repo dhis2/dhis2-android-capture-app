@@ -3,7 +3,9 @@ package org.dhis2.form.ui.binding
 import android.content.res.ColorStateList
 import android.os.Build
 import android.text.Editable
+import android.text.InputFilter
 import android.text.InputType
+import android.text.Spanned
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -197,6 +199,13 @@ fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView
     })
 }
 
+private fun valueHasChanged(currentValue: Editable, storedValue: String?): Boolean {
+    return !equals(
+        if (TextUtils.isEmpty(currentValue)) "" else currentValue.toString(),
+        storedValue ?: ""
+    )
+}
+
 @BindingAdapter("optionTint")
 fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -310,9 +319,28 @@ fun EditText.bindLongClickToClipboard(item: FieldUiModel) {
     }
 }
 
-private fun valueHasChanged(currentValue: Editable, storedValue: String?): Boolean {
-    return !equals(
-        if (TextUtils.isEmpty(currentValue)) "" else currentValue.toString(),
-        storedValue ?: ""
-    )
+@BindingAdapter("setFilters")
+fun EditText.bindSetFilters(valueType: ValueType) {
+    filters = when (valueType) {
+        ValueType.TEXT -> arrayOf<InputFilter>(InputFilter.LengthFilter(50000))
+        ValueType.LETTER -> {
+            arrayOf(
+                InputFilter.LengthFilter(1),
+                InputFilter { source: CharSequence, _: Int, _: Int, _: Spanned?, _: Int, _: Int ->
+                    when {
+                        source.toString().isEmpty() -> {
+                            source.toString()
+                        }
+                        source.toString().matches(Regex("[a-zA-Z]")) -> {
+                            source.toString()
+                        }
+                        else -> {
+                            ""
+                        }
+                    }
+
+                })
+        }
+        else -> arrayOf()
+    }
 }

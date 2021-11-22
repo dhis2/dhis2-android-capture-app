@@ -127,6 +127,7 @@
                         app:input_style="@{item}"
                         app:onTextChangeListener="@{item}"
                         app:requestFocus="@{item.focused}"
+                        app:setFilters="@{item.valueType}"
                         app:setImeOption="@{item.keyboardActionType}"
                         app:setInputType="@{item.valueType}"
                         app:setOnEditorActionListener="@{item}"
