@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
 import static org.dhis2.commons.extensions.Preconditions.isNull;
+import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +23,7 @@ import org.dhis2.form.ui.provider.HintProvider;
 import org.dhis2.form.ui.provider.KeyboardActionProvider;
 import org.dhis2.form.ui.provider.LayoutProvider;
 import org.dhis2.form.ui.provider.UiEventTypesProvider;
-import org.dhis2.form.ui.style.BasicFormUiModelStyle;
-import org.dhis2.form.ui.style.FormUiColorFactory;
-import org.dhis2.form.ui.style.FormUiModelStyle;
+import org.dhis2.form.ui.provider.UiStyleProvider;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -46,7 +44,6 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.jvm.JvmClassMappingKt;
-import kotlin.reflect.KClass;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
@@ -64,17 +61,17 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
     private final boolean searchMode;
-    private final FormUiColorFactory colorFactory;
     private final LayoutProvider layoutProvider;
     private final HintProvider hintProvider;
     private final DisplayNameProvider displayNameProvider;
     private final UiEventTypesProvider uiEventTypesProvider;
     private final KeyboardActionProvider keyboardActionProvider;
+    private final UiStyleProvider uiStyleProvider;
 
     public FieldViewModelFactoryImpl(
             @NonNull Map<ValueType, String> valueTypeHintMap,
             boolean searchMode,
-            FormUiColorFactory colorFactory,
+            UiStyleProvider uiStyleProvider,
             LayoutProvider layoutProvider,
             HintProvider hintProvider,
             DisplayNameProvider displayNameProvider,
@@ -82,7 +79,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             KeyboardActionProvider keyboardActionProvider) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
-        this.colorFactory = colorFactory;
+        this.uiStyleProvider = uiStyleProvider;
         this.layoutProvider = layoutProvider;
         this.hintProvider = hintProvider;
         this.displayNameProvider = displayNameProvider;
@@ -138,10 +135,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                @NonNull List<Option> options,
                                @Nullable FeatureType featureType) {
         isNull(type, "type must be supplied");
-        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory, type);
-
-        final KClass<?> myKClass = JvmClassMappingKt.getKotlinClass(ScanTextViewModel.class);
-
         if (searchMode)
             mandatory = false;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
@@ -162,7 +155,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            style,
+                            uiStyleProvider.provideStyle(type),
                             type
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
@@ -177,7 +170,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             mandatory,
                             label,
                             section,
-                            style,
+                            uiStyleProvider.provideStyle(type),
                             hintProvider.provideDateHint(type),
                             description,
                             type,
@@ -275,7 +268,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         mandatory,
                         label,
                         section,
-                        style,
+                        uiStyleProvider.provideStyle(type),
                         hintProvider.provideDateHint(type),
                         description,
                         type,

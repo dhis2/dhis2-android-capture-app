@@ -26,7 +26,8 @@ import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.provider.UiStyleProviderImpl
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -105,25 +106,21 @@ class EnrollmentModule(
     @PerActivity
     fun fieldFactory(
         context: Context,
-        colorFactory: FormUiColorFactory,
         d2: D2
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             context.valueTypeHintMap(),
             false,
-            colorFactory,
+            UiStyleProviderImpl(
+                FormUiModelColorFactoryImpl(activityContext, true),
+                LongTextUiColorFactoryImpl(activityContext, true)
+            ),
             LayoutProviderImpl(),
             HintProviderImpl(context),
             DisplayNameProviderImpl(d2),
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl()
         )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideFormUiColorFactory(): FormUiColorFactory {
-        return FormUiModelColorFactoryImpl(activityContext, true)
     }
 
     @Provides

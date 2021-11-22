@@ -123,7 +123,6 @@
                     android:paddingBottom="36dp"
                     android:text="@{item.value}"
                     android:textAlignment="textStart"
-                    android:textColor="@color/textPrimary"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
                     app:clearButton="@{clearButton}"

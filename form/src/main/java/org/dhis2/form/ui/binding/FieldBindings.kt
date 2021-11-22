@@ -338,8 +338,8 @@ fun EditText.bindSetFilters(valueType: ValueType) {
                             ""
                         }
                     }
-
-                })
+                }
+            )
         }
         else -> arrayOf()
     }

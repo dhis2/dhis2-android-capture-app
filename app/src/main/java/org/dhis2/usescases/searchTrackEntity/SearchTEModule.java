@@ -30,7 +30,8 @@ import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
@@ -146,22 +147,22 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+    FieldViewModelFactory fieldViewModelFactory(
+            Context context,
+            D2 d2) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 true,
-                colorFactory,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(moduleContext, false),
+                        new LongTextUiColorFactoryImpl(moduleContext, false)
+
+                ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl());
-    }
-
-    @Provides
-    @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(moduleContext, false);
     }
 
     @Provides

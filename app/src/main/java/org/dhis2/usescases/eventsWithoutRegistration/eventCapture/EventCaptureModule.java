@@ -28,7 +28,8 @@ import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -87,22 +88,22 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+    FieldViewModelFactory fieldFactory(
+            Context context,
+            D2 d2
+    ) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
-                colorFactory,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(activityContext, true),
+                        new LongTextUiColorFactoryImpl(activityContext, true)
+                ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl());
-    }
-
-    @Provides
-    @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(activityContext, true);
     }
 
     @Provides
