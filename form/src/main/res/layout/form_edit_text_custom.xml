@@ -115,6 +115,7 @@
                         android:id="@+id/input_editText"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:ellipsize="end"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
                         android:gravity="start"

@@ -30,6 +30,7 @@ import org.dhis2.form.databinding.DataElementLegendBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
 import org.dhis2.form.model.LegendValue
+import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
@@ -298,6 +299,14 @@ fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
                 )
             )
         }
+    }
+}
+
+@BindingAdapter("setLongCLickToClipboard")
+fun EditText.bindLongClickToClipboard(item: FieldUiModel) {
+    setOnLongClickListener {
+        item.invokeUiEvent(UiEventType.COPY_TO_CLIPBOARD)
+        true
     }
 }
 

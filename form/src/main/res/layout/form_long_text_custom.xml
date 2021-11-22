@@ -119,6 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
+                    app:setLongCLickToClipboard="@{item}"
                     android:paddingTop="8dp"
                     android:paddingBottom="36dp"
                     android:text="@{item.value}"

@@ -6,6 +6,7 @@ import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
 import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
+import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
 import org.dhis2.form.model.UiEventType.ORG_UNIT
 import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
@@ -90,6 +91,9 @@ class UiEventFactoryImpl(
                 SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
                     label,
                     value ?: ""
+                )
+                COPY_TO_CLIPBOARD -> RecyclerViewUiEvents.CopyToClipboard(
+                    value = value
                 )
                 else -> null
             }
