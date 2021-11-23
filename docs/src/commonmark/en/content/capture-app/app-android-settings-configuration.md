@@ -217,25 +217,31 @@ To add a specific setting:
 
 ## Analytics { #capture_app_andoid_settings_webapp_analytics }
 
-Analytics settings define the TEI analytics items (charts, tables) that will be displayed to the user. The scope of the analysis is the TEI, so the visualizations will be displayed in the TEI dashboard of the android app.
+Analytics settings define TEI, Home, Program and Data Set analytics items (charts, tables) that will be displayed to the user. Any item defined in the settings app will overwrite the default behaviour of the android app, only showing the items defined in the settings app. 
 
-Any item defined in the settings app will overwrite the default behaviour of the android app, only showing the items defined in the settings app. The purpose of this section is to define visualizations to show evolution of dataelements and program indicators over time. Based on that, it will only take into cosideration dataelements that belongs to a repeatable program stage, or programindicators which formula contains at least one dataelement that belongs to a repeatable program stage.
+Also, even though these analytics are created using the android settings web app, the data aggregation happens offline using only data stored in the device.
+
+### TEI
+
+The scope of the analysis is the TEI, so the visualizations will be displayed in the TEI dashboard of the android app.
+
+The purpose of this section is to define visualizations to show evolution of dataelements and program indicators over time. Based on that, it will only take into cosideration dataelements that belongs to a repeatable program stage, or programindicators which formula contains at least one dataelement that belongs to a repeatable program stage.
 
 To create a **TEI Analytics** item:
 
-- Click on *Add TEI Analytics*. A dialog box will pop up with a small form.
-- Choose a program and a repeatable program stage, and fill the form. The **Short name** is the only optional field.
-- If an item visualization other than WHO Nutrition has been chosen, the next fields to select are the period type (monthly, weekly, daily), an element type (Program Indicator, Data Element), and an element that will be based on the element type previously selected. Remember that these elements are related to the program and repeatable program stage chosen at the beginning.
+1. Click on *Add TEI Analytics*. A dialog box will pop up with a small form.
+2. Choose a program and a repeatable program stage, and fill the form. The **Short name** is the only optional field.
+3. If an item visualization other than WHO Nutrition has been chosen, the next fields to select are the period type (monthly, weekly, daily), an element type (Program Indicator, Data Element), and an element that will be based on the element type previously selected. Remember that these elements are related to the program and repeatable program stage chosen at the beginning.
 
 ![](resources/images/capture-app-analytics-item.png)
 
 To create a **WHO Nutrition Analytics** item:
 
-- Select a program, a program stage, and WHO nutrition as visualization type.
-- Choose a WHO visualization type that can be Height for Age (HFA), Weight for Age (WFA) or Weight for Height (WFH).
-- Select the trackedentityattribute that represents the gender. You have then to specify the option for Male 'Male title' and the option for Female 'Female title'. Normally they will be option codes.
-- Choose the dataelement/programindicator that will be displayed in the Horizontal (x) axis
-- Choose the dataelement/programindicator that will be displayed in the Vertical (y) axis
+1. Select a program, a program stage, and WHO nutrition as visualization type.
+2. Choose a WHO visualization type that can be Height for Age (HFA), Weight for Age (WFA) or Weight for Height (WFH).
+3. Select the trackedentityattribute that represents the gender. You have then to specify the option for Male 'Male title' and the option for Female 'Female title'. Normally they will be option codes.
+4. Choose the dataelement/programindicator that will be displayed in the Horizontal (x) axis
+5. Choose the dataelement/programindicator that will be displayed in the Vertical (y) axis
 
 
 ![](resources/images/capture-app-analytics-who-item.png)
@@ -243,6 +249,180 @@ To create a **WHO Nutrition Analytics** item:
 If any TEI Analytics item has been created, a table will show the item's title and program name, and action buttons to delete or edit that item.
 
 ![](resources/images/capture-app-analytics-table.png)
+
+### Home
+
+Home visualizations are displayed in the home screen (Anlaytics tab) of the android app.
+
+All items available are first created in the Data visualizer app in DHIS2 and configured in the android settings app.
+
+To create a **Home** item:
+
+1. Click on "Add Home Visualization"
+2. Click on the search box and select the visualization from the list or type the name of the visualization item.
+3. Add an alternative title, otherwise, the app will display the name of the visualization
+4. By default, the app will enable the group visualization setting.
+   1. Create a new group: A free text box will pop-up to type the name or
+   2. Select a created group visualization: Choose an option from the list to add the visualization or
+   3. Disable the group visualization by clicking on the checkbox.
+5. Click on the "Save" button.
+
+![](resources/images/capture-app-analytics-home-newGroup.png)
+
+![](resources/images/capture-app-analytics-home-createdGroup.png)
+
+To remove a **Home** item:
+
+1. Search for the item by expanding the groups
+2. Click the "Delete" button next to the item's name
+3. Click on "Delete"
+4. Click on the "Save" button
+
+![](resources/images/capture-app-analytics-home-deleteVisualization.png)
+
+To remove a **Home** group:
+
+1. Search for the specific group to delete
+2. Click on "Delete Group"
+3. Click on "Delete"
+4. Click on the "Save" button
+
+All of the items associated to that group will be deleted
+
+![](resources/images/capture-app-analytics-home-deleteGroup.png)
+
+To reset all values:
+
+1. Click on "Reset all values to default"
+2. Click on the "Save" button
+
+### Program
+
+Program visualizations are displayed in the search screen (Anlaytics tab) in tracker programs or in the list screen (Analytics tab) in event programs of the android app.
+
+All items available are first created in the Data visualizer app in DHIS2 and configured in the android settings app.
+
+To create a **Program** item:
+
+1. Click on "Add Program Visualization"
+2. Select a Program
+3. Click on the search box and select the visualization from the list or type the name of the visualization item.
+4. Add an alternative title, otherwise, the app will display the name of the visualization
+5. By default, the app will enable the group visualization setting.
+   1. Create a new group: A free text box will pop-up to type the name or
+   2. Select a created group visualization: Choose an option from the list to add the visualization or
+   3. Disable the group visualization by clicking on the checkbox.
+6. Click on the "Save" button.
+
+![](resources/images/capture-app-analytics-program-add.png)
+
+To remove a **program** item:
+
+1. Search for the item by expanding the program and group
+2. Click the "Delete" button next to the item's name
+3. Click on "Delete"
+4. Click on the "Save" button
+
+![](resources/images/capture-app-analytics-program-deleteVisualization.png)
+
+To remove a **program** group:
+
+1. Search for the specific group to delete in the corresponding program
+2. Click on "Delete Group"
+3. Click on "Delete"
+4. Click on the "Save" button
+
+All of the items associated to that group will be deleted
+
+![](resources/images/capture-app-analytics-program-deleteGroup.png)
+
+To reset all values:
+
+1. Click on "Reset all values to default"
+2. Click on the "Save" button
+
+### Data Set
+
+Data Set visualizations are displayed in the list screen (Analytics tab) in a Data Set of the android app.
+
+All items available are first created in the Data visualizer app in DHIS2 and configured in the android settings app.
+
+To create a **Data Set** item:
+
+1. Click on "Add Data Set Visualization"
+2. Select a Data Set
+3. Click on the search box and select the visualization from the list or type the name of the visualization item.
+4. Add an alternative title, otherwise, the app will display the name of the visualization
+5. By default, the app will enable the group visualization setting.
+   1. Create a new group: A free text box will pop-up to type the name or
+   2. Select a created group visualization: Choose an option from the list to add the visualization or
+   3. Disable the group visualization by clicking on the checkbox.
+6. Click on the "Save" button.
+
+![](resources/images/capture-app-analytics-dataset-add.png)
+
+To remove a **Data Set** item:
+
+1. Search for the item by expanding the Data Set and group
+2. Click the "Delete" button next to the item's name
+3. Click on "Delete"
+4. Click on the "Save" button
+
+![](resources/images/capture-app-analytics-dataset-deleteVisualization.png)
+
+To remove a **Data Set** group:
+
+1. Search for the specific group to delete in the corresponding Data Set
+2. Click on "Delete Group"
+3. Click on "Delete"
+4. Click on the "Save" button
+
+All of the items associated to that group will be deleted
+
+![](resources/images/capture-app-analytics-dataset-deleteGroup.png)
+
+To reset all values:
+
+1. Click on "Reset all values to default"
+2. Click on the "Save" button
+
+### Visualization user test
+
+The visualization user test is a feature available in Home, Program and Data Set Analytic setting that helps the admin user to identify if any particular user will be able to see the visualization.
+
+The android settings app checks for at least one of these three permissions:
+
+1. Visualization is public
+2. User has individual access to the visualization
+3. User is in a group that has access to the visualization
+
+To run the test:
+
+1. Select the user from the list
+2. Click on "Run test"
+
+![](resources/images/capture-app-analytics-usertest-access.png)
+
+![](resources/images/capture-app-analytics-usertest-access-visualization.png)
+
+![](resources/images/capture-app-analytics-usertest-noaccess.png)
+
+![](resources/images/capture-app-analytics-usertest-noaccess-visualization.png)
+
+### Analytics Limitations
+
+Since the aggregations and calculations displayed are calculated in the device, the implementation of analytics is limited compared to web. In summary the compatible and suported objects and features are:
+
+   - Well formed analytic objects (series, categories, filters)
+   - User has view access
+   - Limitations for Pivot Tables
+      - Number of header lines: 1
+      - Number of header columns: 1
+   - Limitations for Charts
+      - Number of Series: No limit (but remember you are rendering in a small screen)
+      - Number of Categories (doesn’t apply for pie chart): No limit
+
+There are many more restrictions which apply to Android Analytics regarding the many configuration options available in the Web Visualizer as well as the supported functions and calculations related to indicators and program indicators. [This table](https://docs.google.com/spreadsheets/d/1127cz7M0K4fux5CU0V54V2Z77NZWCr0BTrZ6jcCec4Q) summarises all supported features.
 
 
 ## Installation { #capture_app_andoid_settings_webapp_installation }
