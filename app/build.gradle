@@ -200,11 +200,6 @@ sonarqube {
 }
 
 dependencies {
-    debugImplementation project(':core')
-    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-        exclude group: "org.hisp.dhis", module: "core-rules"
-    }
-
     debugImplementation project(':dhis2-rule-engine')
     releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"

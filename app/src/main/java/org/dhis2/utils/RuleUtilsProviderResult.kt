@@ -9,11 +9,17 @@ data class RuleUtilsProviderResult(
     val canComplete: Boolean,
     val messageOnComplete: String?,
     val fieldsWithErrors: List<FieldWithError>,
+    val fieldsWithWarnings: List<FieldWithError>,
     val unsupportedRules: List<String>,
     val fieldsToUpdate: List<String>,
+    val stagesToHide: List<String>,
     val configurationErrors: List<RulesUtilsProviderConfigurationError>
 ) {
     fun errorMap(): Map<String, String> = fieldsWithErrors.map {
+        it.fieldUid to it.errorMessage
+    }.toMap()
+
+    fun warningMap(): Map<String, String> = fieldsWithWarnings.map {
         it.fieldUid to it.errorMessage
     }.toMap()
 }

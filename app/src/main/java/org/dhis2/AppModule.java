@@ -6,8 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.dhis2.utils.ExpressionEvaluatorImpl;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import javax.inject.Singleton;

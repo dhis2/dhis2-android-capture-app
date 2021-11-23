@@ -1,5 +1,6 @@
 package org.dhis2.utils.filters.workingLists
 
+import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.common.DateFilterPeriod
 import org.hisp.dhis.android.core.common.DatePeriodType

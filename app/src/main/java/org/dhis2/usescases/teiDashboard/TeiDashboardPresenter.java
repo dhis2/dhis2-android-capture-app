@@ -8,7 +8,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;

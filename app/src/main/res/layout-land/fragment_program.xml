@@ -93,6 +93,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/progressLayout"
             android:clipToPadding="false"
+            android:paddingBottom="56dp"
             app:initGrid="@{true}"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="@{3}" />

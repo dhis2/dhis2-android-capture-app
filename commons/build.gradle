@@ -55,6 +55,11 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    debugApi project(':core')
+    releaseApi("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation "androidx.core:core-ktx:${libraries.corektx}"
@@ -82,4 +87,6 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+
 }

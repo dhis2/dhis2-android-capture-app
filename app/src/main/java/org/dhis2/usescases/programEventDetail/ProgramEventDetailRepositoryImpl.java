@@ -10,23 +10,19 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.data.filter.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -36,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -50,9 +47,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private final MapEventToFeatureCollection mapEventToFeatureCollection;
     private final MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
     private final DhisMapUtils mapUtils;
+    private final Charts charts;
 
     ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection, MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                     DhisMapUtils mapUtils, FilterPresenter filterPresenter) {
+                                     DhisMapUtils mapUtils, FilterPresenter filterPresenter, Charts charts) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
@@ -60,6 +58,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.mapUtils = mapUtils;
         this.filterPresenter = filterPresenter;
+        this.charts = charts;
     }
 
     @NonNull
@@ -101,35 +100,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .toFlowable();
     }
 
-    private EventCollectionRepository eventRepoSorting(SortingItem sortingItem, EventCollectionRepository eventRepo) {
-        if (sortingItem != null) {
-            switch (sortingItem.getFilterSelectedForSorting()) {
-                case ORG_UNIT:
-                    eventRepo = eventRepo.orderByOrganisationUnitName(
-                            sortingItem.getSortingStatus() == SortingStatus.ASC ?
-                                    RepositoryScope.OrderByDirection.ASC :
-                                    RepositoryScope.OrderByDirection.DESC);
-                    break;
-                case PERIOD:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC) {
-                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.ASC);
-                    } else {
-                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
-        }
-        return eventRepo;
-    }
-
     @Override
     public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
         return d2.eventModule().events().byUid().eq(eventUid).withTrackedEntityDataValues().one().get()
-                .map(event -> mapper.eventToProgramEvent(event))
+                .map(mapper::eventToProgramEvent)
                 .toFlowable();
     }
 
@@ -205,4 +179,38 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return d2.programModule().programStages().byProgramUid().eq(programUid).one().get();
     }
 
+    @Override
+    public boolean programHasCoordinates() {
+
+        boolean programStageHasCoordinates =
+                d2.programModule().programStages().byProgramUid().eq(programUid).one().get()
+                        .map(stage -> {
+                           if (stage.featureType() != null && stage.featureType() != FeatureType.NONE) {
+                               return true;
+                           } else {
+                               return false;
+                           }
+                        }).blockingGet();
+
+        boolean eventDataElementHasCoordinates =
+                filterPresenter.filteredEventProgram(program().blockingFirst()).get()
+                        .map(events -> {
+                            boolean hasGeometry = false;
+                            for (Event event : events) {
+                                if (event.geometry() != null) {
+                                    hasGeometry = true;
+                                    break;
+                                }
+                            }
+                            return hasGeometry;
+                        }).blockingGet();
+
+        return programStageHasCoordinates || eventDataElementHasCoordinates;
+    }
+
+    @Override
+    public boolean programHasAnalytics() {
+        return charts != null && !charts.getProgramVisualizations(null, programUid).isEmpty();
+
+    }
 }

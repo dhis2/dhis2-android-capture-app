@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -100,4 +101,8 @@ public interface EventInitialRepository {
     Flowable<Result<RuleEffect>> calculate();
 
     Single<CoordinateViewModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
+
+    Flowable<EventEditableStatus> getEditableStatus();
+
+    int getMinDaysFromStartByProgramStage(String programStageUid);
 }

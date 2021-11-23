@@ -10,25 +10,24 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.commons.filters.AssignedFilter
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.ProgramType
+import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisMapUtils
-import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.form.data.FormRepository
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.AssignedFilter
-import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
-import org.dhis2.utils.filters.FilterItem
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.ProgramType
-import org.dhis2.utils.filters.sorting.SortingItem
-import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.junit.After
@@ -58,7 +57,7 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
-    private val formRepository: FormRepository = mock()
+    private val searchMessageMapper: SearchMessageMapper = mock()
 
     @Before
     fun setUp() {
@@ -87,7 +86,7 @@ class SearchTEPresenterTest {
             null,
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
-            formRepository
+            searchMessageMapper
         )
     }
 
@@ -155,7 +154,7 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should set fabIcon to search if displayFrontPageList and queryData is empty`() {
+    fun `Should display min attribute warning for displayFrontPageList and empty queryData`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -166,9 +165,7 @@ class SearchTEPresenterTest {
 
         presenter.onFabClick(true)
 
-        verify(view).clearData()
-        verify(view).updateFiltersSearch(0)
-        verify(view).setFabIcon(true)
+        verify(view).displayMinNumberOfAttributesMessage(1)
     }
 
     @Test
@@ -371,7 +368,7 @@ class SearchTEPresenterTest {
     @Test
     fun `Should populate same list when onItemAction is triggered in FormView`() {
         presenter.populateList(null)
-        verify(view, times(1)).setFormData(any())
+        verify(view, times(1)).setFormData(null)
         verify(view, times(0)).setFabIcon(any())
     }
 
@@ -380,6 +377,24 @@ class SearchTEPresenterTest {
         presenter.populateList(listOf())
         verify(view, times(1)).setFormData(any())
         verify(view, times(1)).setFabIcon(any())
+    }
+
+    @Test
+    fun `Should reset search when program has displayInList and a minAttributeRequired`() {
+        val program = Program.builder()
+            .uid("uid")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        presenter.setProgramForTesting(program)
+        presenter.program = program
+        presenter.queryData["uid"] = "value"
+        assertTrue(presenter.queryData.isNotEmpty())
+
+        presenter.resetSearch()
+
+        assertTrue(presenter.queryData.isEmpty())
     }
 
     @After

@@ -81,6 +81,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private FlowableProcessor<Boolean> reopenProcessor;
     private boolean isKeyboardOpened = false;
 
+    private static int MAX_ITEM_CACHED_VIEWPAGER2 = 2;
+
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
                                    @NonNull String orgUnitName,
@@ -189,6 +191,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.setAdapter(viewPagerAdapter);
+        binding.viewPager.setOffscreenPageLimit(MAX_ITEM_CACHED_VIEWPAGER2);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);

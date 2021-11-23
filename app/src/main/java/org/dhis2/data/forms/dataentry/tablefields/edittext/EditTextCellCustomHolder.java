@@ -18,11 +18,11 @@ import com.evrencoskun.tableview.handler.SelectionHandler;
 
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.Validator;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -36,7 +36,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     private static final int DEFAULT_CELL_OFFSET = 3;
     private EditText editText;
     private EditTextModel editTextModel;
-    private boolean accessDataWrite;
     private CustomTextViewCellBinding customBinding;
 
     private TableView tableView;
@@ -49,6 +48,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                              ObservableBoolean isEditable, TableView tableView) {
         super(binding);
         editText = binding.inputEditText;
+        textView = editText;
         accessDataWrite = isEditable.get();
         customBinding = binding;
         this.tableView = tableView;
@@ -87,11 +87,12 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         });
 
         validators = ((Components) binding.getRoot().getContext().getApplicationContext()).appComponent().injectValidators();
+        setBackground();
     }
 
 
     public void update(@NonNull FieldViewModel model) {
-
+        super.update(model);
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
 
@@ -316,11 +317,12 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         } else if (!editTextModel.editable()) {
             closeKeyboard(editText);
         }
+        setBackground();
     }
 
     @Override
     public void handleClickIfNeeded() {
-        if (editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT) {
+        if (editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT && canBeEdited()) {
             showEditDialog();
         }
     }

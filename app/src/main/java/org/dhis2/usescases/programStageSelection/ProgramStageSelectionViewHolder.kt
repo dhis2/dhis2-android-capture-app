@@ -6,8 +6,8 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.Bindings
 import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemProgramStageBinding
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber

@@ -1,6 +1,5 @@
 package org.dhis2.utils.customviews
 
-import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
@@ -34,6 +33,7 @@ class FormBottomDialogPresenterTest {
                 "uid1",
                 EditTextViewModel.create(
                     "uid1",
+                    1,
                     "label1",
                     true,
                     null,
@@ -49,7 +49,6 @@ class FormBottomDialogPresenterTest {
                     "any",
                     false,
                     false,
-                    PublishProcessor.create(),
                     null
                 )
             ),
@@ -57,6 +56,7 @@ class FormBottomDialogPresenterTest {
                 "uid2",
                 MatrixOptionSetModel.create(
                     "uid2",
+                    1,
                     "label2",
                     true,
                     null,
@@ -65,9 +65,9 @@ class FormBottomDialogPresenterTest {
                     "optionSetUid",
                     null,
                     ObjectStyle.builder().build(),
-                    PublishProcessor.create(),
                     emptyList(),
-                    2
+                    2,
+                    ValueType.TEXT
                 )
             )
         )

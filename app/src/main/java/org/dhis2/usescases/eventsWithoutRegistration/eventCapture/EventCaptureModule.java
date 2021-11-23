@@ -7,8 +7,9 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -20,15 +21,16 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.data.FormRepositoryPersistenceImpl;
+import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
+import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
+import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -83,8 +85,14 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), false, colorFactory);
+    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+        return new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                false,
+                colorFactory,
+                new LayoutProviderImpl(),
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(d2));
     }
 
     @Provides
@@ -142,7 +150,7 @@ public class EventCaptureModule {
             @NonNull D2 d2,
             CrashReportController crashReportController
     ) {
-        return new FormRepositoryPersistenceImpl(
+        return new FormRepositoryImpl(
                 new ValueStoreImpl(
                         d2,
                         eventUid,
@@ -150,16 +158,16 @@ public class EventCaptureModule {
                         new DhisEnrollmentUtils(d2),
                         crashReportController
                 ),
-                new FieldErrorMessageProvider(activityContext)
+                new FieldErrorMessageProvider(activityContext),
+                new DisplayNameProviderImpl(d2)
         );
     }
 
     @Provides
     @PerActivity
     NavigationPageConfigurator pageConfigurator(
-            EventCaptureContract.EventCaptureRepository repository,
-            FeatureConfigRepository featureRepository
+            EventCaptureContract.EventCaptureRepository repository
     ) {
-        return new EventPageConfigurator(repository, featureRepository);
+        return new EventPageConfigurator(repository);
     }
 }

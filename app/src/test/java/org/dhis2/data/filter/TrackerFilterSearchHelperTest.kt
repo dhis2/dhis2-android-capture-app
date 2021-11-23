@@ -10,11 +10,13 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import java.util.Date
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.sorting.SortingItem
-import org.dhis2.utils.filters.sorting.SortingStatus
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.filters.data.TrackerFilterSearchHelper
+import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.filters.sorting.SortingStatus
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
@@ -64,21 +66,21 @@ class TrackerFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should return query by program`() {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
         verify(filterRepository).trackedEntityInstanceQueryByProgram("programUid")
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should return query by type`() {
         trackerFilterSearchHelper.getFilteredTrackedEntityTypeRepository("teType")
         verify(filterRepository).trackedEntityInstanceQueryByType("teType")
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should not apply any filters if not set`() {
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")
         verify(filterRepository, times(0)).applyEnrollmentStatusFilter(any(), any())
@@ -171,7 +173,7 @@ class TrackerFilterSearchHelperTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Null pointer exception in bitrise")
     fun `Should apply sorting for supported sorting type`() {
         filterManager.sortingItem = SortingItem(Filters.PERIOD, SortingStatus.ASC)
         trackerFilterSearchHelper.getFilteredProgramRepository("programUid")

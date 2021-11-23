@@ -7,6 +7,7 @@ import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.style.BasicFormUiModelStyle;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -25,23 +26,24 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FieldUiModel create(@NonNull String id,
-                          @NonNull String label,
-                          @NonNull ValueType valueType,
-                          @NonNull Boolean mandatory,
-                          @Nullable String optionSet,
-                          @Nullable String value,
-                          @Nullable String programStageSection,
-                          @Nullable Boolean AllowFutureDate,
-                          @NonNull Boolean editable,
-                          @Nullable ProgramStageSectionRenderingType renderingType,
-                          @Nullable String description,
-                          @Nullable ValueTypeDeviceRendering fieldRendering,
-                          @Nullable Integer optionCount,
-                          @NonNull ObjectStyle objectStyle,
-                          @Nullable String fieldMask,
-                          @Nullable LegendValue legendValue,
-                          FlowableProcessor<RowAction> processor,
-                          List<Option> options);
+                        @NonNull String label,
+                        @NonNull ValueType valueType,
+                        @NonNull Boolean mandatory,
+                        @Nullable String optionSet,
+                        @Nullable String value,
+                        @Nullable String programStageSection,
+                        @Nullable Boolean AllowFutureDate,
+                        @NonNull Boolean editable,
+                        @Nullable ProgramStageSectionRenderingType renderingType,
+                        @Nullable String description,
+                        @Nullable ValueTypeDeviceRendering fieldRendering,
+                        @Nullable Integer optionCount,
+                        @NonNull ObjectStyle objectStyle,
+                        @Nullable String fieldMask,
+                        @Nullable LegendValue legendValue,
+                        List<Option> options,
+                        @Nullable FeatureType featureType
+    );
 
     @Nullable
     FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
@@ -54,7 +56,7 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FieldUiModel createSection(String sectionUid, String sectionName, String description,
-                                 boolean isOpen, int totalFields, int completedFields, String rendering);
+                               boolean isOpen, int totalFields, int completedFields, String rendering);
 
     @NonNull
     FieldUiModel createClosingSection();
@@ -64,6 +66,4 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FlowableProcessor<RowAction> fieldProcessor();
-
-    BasicFormUiModelStyle style();
 }

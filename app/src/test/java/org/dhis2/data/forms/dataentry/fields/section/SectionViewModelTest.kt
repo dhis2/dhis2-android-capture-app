@@ -46,6 +46,7 @@ class SectionViewModelTest {
 
     private fun givenSectionViewModelWithNullDescription() = SectionViewModel.create(
         "",
+        1,
         "",
         null,
         false,
@@ -58,6 +59,7 @@ class SectionViewModelTest {
 
     private fun givenSectionViewModelWithEmptyDescription() = SectionViewModel.create(
         "",
+        1,
         "",
         "",
         false,
@@ -70,6 +72,7 @@ class SectionViewModelTest {
 
     private fun givenSectionViewModelWithDescription() = SectionViewModel.create(
         "",
+        1,
         "",
         "This is a description",
         false,

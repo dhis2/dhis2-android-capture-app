@@ -1,10 +1,11 @@
 package org.dhis2.usescases.programEventDetail;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.workingLists.WorkingListItem;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
@@ -28,8 +29,6 @@ public class ProgramEventDetailContract {
         void openOrgUnitTreeSelector();
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
-
-        void setFeatureType(FeatureType featureType);
 
         void startNewEvent();
 
@@ -70,5 +69,7 @@ public class ProgramEventDetailContract {
         void setOpeningFilterToNone();
 
         String getStageUid();
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
     }
 }

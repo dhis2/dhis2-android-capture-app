@@ -11,8 +11,6 @@ import androidx.databinding.ViewDataBinding;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormDateTextBinding;
-import org.dhis2.databinding.FormTimeTextBinding;
 import org.dhis2.databinding.TableDateTextBinding;
 import org.dhis2.databinding.TableDateTimeTextBinding;
 import org.dhis2.databinding.TableTimeTextBinding;

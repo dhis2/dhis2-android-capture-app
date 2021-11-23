@@ -23,7 +23,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
@@ -36,7 +35,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
-import org.dhis2.animations.ViewAnimationsKt;
+import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.databinding.DataElementLegendBinding;
@@ -46,11 +45,8 @@ import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.dhis2.utils.filters.CatOptionComboFilter;
-import org.dhis2.utils.filters.Filters;
-import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
-import org.dhis2.utils.filters.sorting.SortingItem;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.filters.CatOptionComboFilter;
+import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
@@ -66,8 +62,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import timber.log.Timber;
 
 import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
@@ -633,49 +627,6 @@ public class Bindings {
         });
     }
 
-    @BindingAdapter("withCatComboFilterAdapter")
-    public static void setWithCatComboFilterAdapter(RecyclerView recyclerView, boolean setAdapter) {
-        if (setAdapter) {
-            recyclerView.setAdapter(new CatOptCombFilterAdapter());
-        }
-    }
-
-    @BindingAdapter("fromResource")
-    public static void setFromResource(ImageView imageView, @DrawableRes int resource) {
-        try {
-            imageView.setImageDrawable(AppCompatResources.getDrawable(imageView.getContext(), resource));
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-    }
-
-    @BindingAdapter(value = {"sortingItem", "filterType"}, requireAll = true)
-    public static void setSortingIcon(ImageView sortingIcon, SortingItem sortingItem, Filters filterType) {
-        if (sortingItem != null) {
-            if (sortingItem.component1() != filterType) {
-                sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_deactivated));
-            } else {
-                switch (sortingItem.component2()) {
-                    case ASC:
-                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_ascending));
-                        break;
-                    case DESC:
-                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_descending));
-                        break;
-                    case NONE:
-                    default:
-                        sortingIcon.setImageDrawable(AppCompatResources.getDrawable(sortingIcon.getContext(), R.drawable.ic_sort_deactivated));
-                        break;
-                }
-            }
-        }
-    }
-
-    @BindingAdapter(value = {"filterArrow", "filterType"})
-    public static void setFilterArrow(View view, Filters openFilter, Filters filterType) {
-        view.animate().scaleY(openFilter != filterType ? 1 : -1).setDuration(200).start();
-    }
-
     @BindingAdapter(value = {"dataSetStatus"})
     public static void setDataSetStatusIcon(ImageView view, Boolean isComplete) {
         int drawableResource = isComplete ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_open;
@@ -727,6 +678,11 @@ public class Bindings {
         }
     }
 
+    @BindingAdapter("setTextColor")
+    public static void setTextColor(TextView textView, boolean isBgTransparent) {
+        textView.setTextColor(getColorStateViewChecked(textView.getContext(), isBgTransparent));
+    }
+
     private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
         int colorStateChecked;
         int colorStateUnchecked;
@@ -758,9 +714,11 @@ public class Bindings {
     public static void requestFocus(EditText editText, boolean focused) {
         if (focused) {
             editText.requestFocus();
+            editText.setCursorVisible(true);
             openKeyboard(editText);
         } else {
             editText.clearFocus();
+            editText.setCursorVisible(false);
         }
     }
 

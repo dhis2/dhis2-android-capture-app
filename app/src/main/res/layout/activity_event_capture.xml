@@ -102,9 +102,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:padding="0dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/guideline"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toBottomOf="@id/guideline"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
