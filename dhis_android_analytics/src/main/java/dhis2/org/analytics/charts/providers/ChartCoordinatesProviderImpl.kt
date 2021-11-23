@@ -4,6 +4,7 @@ import dhis2.org.analytics.charts.data.GraphPoint
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.GregorianCalendar
+import java.util.Locale
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
@@ -197,16 +198,25 @@ class ChartCoordinatesProviderImpl(
         return gridResponseValueList.filter { it.value != null }
             .mapIndexed { index, gridResponseValue ->
 
-                val periodId = gridResponseValue.rows.firstOrNull()
-                val position = periodId?.let {
+                val periodId = gridResponseValue.rows.joinToString(separator = " - ") {
+                    metadata[it]?.displayName.toString()
+                }
+
+                val position = periodId.let {
                     when (metadata[periodId]) {
                         is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
-                        else -> categories.indexOf(metadata[periodId]?.displayName)
+                        else -> categories.indexOf(periodId)
                     }
-                } ?: index
+                }
 
                 val columnLegend = gridResponseValue.columns.firstOrNull()?.let {
-                    metadata[it]?.displayName
+                    when (val metadataItem = metadata[it]) {
+                        is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
+                            Locale.getDefault(),
+                            metadataItem.item
+                        )
+                        else -> metadata[it]?.displayName
+                    }
                 }
 
                 GraphPoint(

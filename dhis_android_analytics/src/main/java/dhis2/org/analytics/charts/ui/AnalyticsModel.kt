@@ -106,8 +106,25 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
                 }
                 true
             }
-        ).build()
-            .show()
+        ).build().apply {
+            show()
+            if (graph.periodToDisplaySelected != null) {
+                addIconToItem(R.id.periodFilter, R.drawable.ic_calendar_chart_selected)
+            }
+            if (graph.orgUnitsSelected.isNotEmpty()) {
+                addIconToItem(R.id.orgFilter, R.drawable.ic_orgunit_chart_selected)
+            }
+        }
+    }
+
+    fun showFilters(view: View) {
+        when {
+            graph.periodToDisplaySelected != null && graph.orgUnitsSelected.isEmpty() ->
+                showPeriodFilters(view)
+            graph.periodToDisplaySelected == null && graph.orgUnitsSelected.isNotEmpty() ->
+                showOrgUntFilters(view)
+            else -> showVisualizationOptions(view)
+        }
     }
 
     fun showPeriodFilters(view: View) {
@@ -479,17 +496,29 @@ data class ChartModel(val graph: Graph) : AnalyticsModel(graph.visualizationUid 
         return filterCount
     }
 
+    fun hideChart(): Boolean = showNoDataMessage() ||
+        showNoDataForFiltersMessage() ||
+        showError() ||
+        pieChartDataIsZero()
+
+    fun displayNoData(): Boolean = showNoDataMessage() || showNoDataForFiltersMessage()
+
+    fun displayErrorData(): Boolean = showError() || pieChartDataIsZero()
+
     fun showError(): Boolean = graph.hasError
 
+    fun pieChartDataIsZero(): Boolean = observableChartType.get() == ChartType.PIE_CHART &&
+        graph.series.all { serie -> serie.coordinates.all { point -> point.fieldValue == 0f } }
+
     fun showNoDataMessage(): Boolean {
-        return !graph.hasError &&
+        return !graph.hasError && !pieChartDataIsZero() &&
             graph.series.all { serie -> serie.coordinates.isEmpty() } &&
             graph.periodToDisplaySelected == null &&
             graph.orgUnitsSelected.isEmpty()
     }
 
     fun showNoDataForFiltersMessage(): Boolean {
-        return !graph.hasError &&
+        return !graph.hasError && !pieChartDataIsZero() &&
             graph.series.all { serie -> serie.coordinates.isEmpty() } &&
             (graph.periodToDisplaySelected != null || graph.orgUnitsSelected.isNotEmpty())
     }

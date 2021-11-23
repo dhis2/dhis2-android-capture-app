@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class FormViewModel(
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl())
 ) : ViewModel() {
 
-    val loading = MutableLiveData<Boolean>()
+    val loading = MutableLiveData(true)
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
@@ -44,14 +45,19 @@ class FormViewModel(
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
 
+    private val _queryData = MutableLiveData<RowAction>()
+    val queryData = _queryData
+
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
 
     init {
         viewModelScope.launch {
             _pendingIntents
+                .distinctUntilChanged()
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
                 .collect { result ->
+                    Timber.d("FLOW: new result %s", result.second.valueStoreResult)
                     displayResult(result)
                 }
         }
@@ -80,6 +86,10 @@ class FormViewModel(
             ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
                 _items.value = repository.composeList()
             }
+            ValueStoreResult.TEXT_CHANGING -> {
+                Timber.d("${result.first.id} is changing its value")
+                _queryData.value = result.first
+            }
         }
     }
 
@@ -106,19 +116,21 @@ class FormViewModel(
         return when (intent) {
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
-                intent.uid,
-                intent.coordinates,
-                intent.extraData
+                uid = intent.uid,
+                value = intent.coordinates,
+                extraData = intent.extraData,
+                valueType = ValueType.COORDINATE
             )
             is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
-                intent.uid,
-                intent.featureType,
-                intent.coordinates
+                fieldUid = intent.uid,
+                featureType = intent.featureType,
+                coordinates = intent.coordinates
             )
             is FormIntent.SaveCurrentLocation -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                extraData = intent.featureType
+                extraData = intent.featureType,
+                valueType = ValueType.COORDINATE
             )
             is FormIntent.OnNext -> createRowAction(
                 uid = intent.uid,
@@ -135,7 +147,8 @@ class FormViewModel(
                 createRowAction(
                     uid = intent.uid,
                     value = intent.value,
-                    error = error
+                    error = error,
+                    valueType = intent.valueType
                 )
             }
             is FormIntent.OnFocus -> createRowAction(
@@ -147,7 +160,8 @@ class FormViewModel(
             is FormIntent.OnTextChange -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
-                actionType = ActionType.ON_TEXT_CHANGE
+                actionType = ActionType.ON_TEXT_CHANGE,
+                valueType = ValueType.TEXT
             )
         }
     }
@@ -179,13 +193,15 @@ class FormViewModel(
         value: String?,
         extraData: String? = null,
         error: Throwable? = null,
-        actionType: ActionType = ActionType.ON_SAVE
+        actionType: ActionType = ActionType.ON_SAVE,
+        valueType: ValueType? = null
     ) = RowAction(
         id = uid,
         value = value,
         extraData = extraData,
         error = error,
-        type = actionType
+        type = actionType,
+        valueType = valueType
     )
 
     fun onItemsRendered() {
@@ -206,7 +222,8 @@ class FormViewModel(
         return createRowAction(
             uid = fieldUid,
             value = geometryCoordinates,
-            extraData = featureType
+            extraData = featureType,
+            valueType = ValueType.COORDINATE
         )
     }
 

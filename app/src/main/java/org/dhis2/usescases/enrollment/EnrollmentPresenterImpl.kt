@@ -9,13 +9,13 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.R
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.RulesUtilsProviderImpl
@@ -326,17 +326,13 @@ class EnrollmentPresenterImpl(
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
-                    enrollmentFormRepository.autoGenerateEvents()
-                        .flatMap { enrollmentFormRepository.useFirstStageDuringRegistration() }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
+                    enrollmentFormRepository.generateEvents()
+                        .defaultSubscribe(
+                            schedulerProvider,
                             {
-                                if (!DhisTextUtils.isEmpty(it.second)) {
-                                    view.openEvent(it.second)
-                                } else {
-                                    view.openDashboard(it.first)
-                                }
+                                it.second?.let { eventUid ->
+                                    view.openEvent(eventUid)
+                                } ?: view.openDashboard(it.first)
                             },
                             { Timber.tag(TAG).e(it) }
                         )
@@ -394,9 +390,7 @@ class EnrollmentPresenterImpl(
             fieldMap,
             result,
             valueStore
-        ) { options ->
-            enrollmentFormRepository.getOptionsFromGroups(options)
-        }.apply {
+        ).apply {
             this@EnrollmentPresenterImpl.configurationErrors = configurationErrors
             errorFields = errorMap().toMutableMap()
             warningFields = warningMap().toMutableMap()
@@ -479,6 +473,12 @@ class EnrollmentPresenterImpl(
                 showErrors = Pair(showErrors.first || warningFields.isNotEmpty(), true)
                 fieldsFlowable.onNext(true)
                 view.showErrorFieldsMessage(errorFields.values.toList())
+                false
+            }
+            warningFields.isNotEmpty() -> {
+                showErrors = Pair(true, showErrors.second)
+                fieldsFlowable.onNext(true)
+                view.showWarningFieldsMessage(warningFields.values.toList())
                 false
             }
             else -> {

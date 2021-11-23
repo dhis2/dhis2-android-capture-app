@@ -159,6 +159,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
         activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
+            showLoadingProgress(true);
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
@@ -265,6 +266,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
             binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setDashboardModel(nprogram);
+            showLoadingProgress(false);
         }
 
         binding.executePendingBindings();
@@ -338,6 +340,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
+        }
+        showLoadingProgress(false);
+    }
+
+    private void showLoadingProgress(boolean showProgress){
+        if(showProgress){
+            binding.loadingProgress.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.loadingProgress.getRoot().setVisibility(View.GONE);
         }
     }
 
@@ -604,7 +615,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
         ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
     }

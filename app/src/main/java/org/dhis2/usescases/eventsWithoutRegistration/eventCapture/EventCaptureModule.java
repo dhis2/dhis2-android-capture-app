@@ -24,6 +24,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
@@ -84,14 +85,14 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory) {
+    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
                 colorFactory,
                 new LayoutProviderImpl(),
-                new HintProviderImpl(context)
-        );
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(d2));
     }
 
     @Provides
@@ -157,7 +158,8 @@ public class EventCaptureModule {
                         new DhisEnrollmentUtils(d2),
                         crashReportController
                 ),
-                new FieldErrorMessageProvider(activityContext)
+                new FieldErrorMessageProvider(activityContext),
+                new DisplayNameProviderImpl(d2)
         );
     }
 

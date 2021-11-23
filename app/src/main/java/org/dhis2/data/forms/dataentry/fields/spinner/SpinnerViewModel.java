@@ -11,6 +11,7 @@ import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                                           Boolean mandatory, String optionSet, String value,
                                           String section, Boolean editable, String description,
                                           ObjectStyle objectStyle, boolean isBackgroundTransparent,
-                                          String renderType, LegendValue legendValue) {
+                                          String renderType, LegendValue legendValue, ValueType valueType) {
         return new AutoValue_SpinnerViewModel(
                 id,
                 layoutId,
@@ -62,7 +63,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                 null,
                 hintFilterOptions,
                 false,
-                null,
+                valueType,
                 legendValue,
                 optionSet,
                 new ArrayList<>(),
@@ -209,6 +210,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                 null,
                 fieldMask()
         ));
+    }
+
+    public void onOptionClear() {
+        callback.intent(new FormIntent.ClearValue(uid()));
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.option.Option;
 
@@ -43,7 +44,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             boolean isBackgroundTransparent,
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
-                                            List<Option> options) {
+                                            List<Option> options,
+                                            ValueType valueType) {
 
         return new AutoValue_OptionSetViewModel(
                 id,
@@ -64,7 +66,7 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                 null,
                 null,
                 false,
-                null,
+                valueType,
                 isBackgroundTransparent,
                 renderType,
                 fieldRendering,

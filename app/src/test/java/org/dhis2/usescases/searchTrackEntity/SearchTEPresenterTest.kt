@@ -57,6 +57,7 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val searchMessageMapper: SearchMessageMapper = mock()
 
     @Before
     fun setUp() {
@@ -84,7 +85,8 @@ class SearchTEPresenterTest {
             filterRepository,
             null,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            searchMessageMapper
         )
     }
 
@@ -152,7 +154,7 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should set fabIcon to search if displayFrontPageList and queryData is empty`() {
+    fun `Should display min attribute warning for displayFrontPageList and empty queryData`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -163,9 +165,7 @@ class SearchTEPresenterTest {
 
         presenter.onFabClick(true)
 
-        verify(view).clearData()
-        verify(view).updateFiltersSearch(0)
-        verify(view).setFabIcon(true)
+        verify(view).displayMinNumberOfAttributesMessage(1)
     }
 
     @Test
@@ -377,6 +377,24 @@ class SearchTEPresenterTest {
         presenter.populateList(listOf())
         verify(view, times(1)).setFormData(any())
         verify(view, times(1)).setFabIcon(any())
+    }
+
+    @Test
+    fun `Should reset search when program has displayInList and a minAttributeRequired`() {
+        val program = Program.builder()
+            .uid("uid")
+            .displayFrontPageList(true)
+            .minAttributesRequiredToSearch(1)
+            .build()
+
+        presenter.setProgramForTesting(program)
+        presenter.program = program
+        presenter.queryData["uid"] = "value"
+        assertTrue(presenter.queryData.isNotEmpty())
+
+        presenter.resetSearch()
+
+        assertTrue(presenter.queryData.isEmpty())
     }
 
     @After

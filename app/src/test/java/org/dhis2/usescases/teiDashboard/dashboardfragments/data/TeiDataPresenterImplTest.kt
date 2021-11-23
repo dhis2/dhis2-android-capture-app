@@ -14,6 +14,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
@@ -46,6 +47,7 @@ class TeiDataPresenterImplTest {
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private lateinit var teiDataPresenterImpl: TEIDataContracts.Presenter
+    private val valueStore: ValueStore = mock()
 
     @Before
     fun setUp() {
@@ -62,7 +64,8 @@ class TeiDataPresenterImplTest {
             preferences,
             analytics,
             filterManager,
-            filterRepository
+            filterRepository,
+            valueStore
         )
     }
 

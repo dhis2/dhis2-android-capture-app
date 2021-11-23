@@ -17,6 +17,7 @@
         android:layout_height="wrap_content">
 
         <HorizontalScrollView
+            android:id="@+id/workingListChipContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +38,8 @@
                 app:singleLine="true"
                 app:singleSelection="true"
                 app:workingLists="@{filterItem.workingLists}"
-                app:workingFilter="@{filterItem}"/>
+                app:workingFilter="@{filterItem}"
+                app:chipScrollContainer="@{workingListChipContainer}"/>
         </HorizontalScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -315,16 +315,19 @@ public class EventInitialPresenter {
 
     public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date,
                           String orgUnitUid, String catComboUid, String catOptionCombo, Geometry geometry) {
-
-        compositeDisposable.add(
-                eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                eventModel -> view.onEventUpdated(eventModel.uid()),
-                                error -> view.displayMessage(error.getLocalizedMessage())
-                        )
-        );
+        if (isEventEditable()) {
+            compositeDisposable.add(
+                    eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    eventModel -> view.onEventUpdated(eventModel.uid()),
+                                    error -> view.displayMessage(error.getLocalizedMessage())
+                            )
+            );
+        } else {
+            view.onEventUpdated(eventUid);
+        }
     }
 
     public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {
@@ -387,7 +390,7 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null, options -> new ArrayList<>());
+        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null);
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -483,5 +486,9 @@ public class EventInitialPresenter {
 
     public void onEventCreated() {
         matomoAnalyticsController.trackEvent(EVENT_LIST, CREATE_EVENT, CLICK);
+    }
+
+    public boolean isEventEditable() {
+        return eventInitialRepository.getEditableStatus().blockingFirst() instanceof EventEditableStatus.Editable;
     }
 }

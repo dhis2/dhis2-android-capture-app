@@ -145,11 +145,11 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     }
 
     public boolean isNegativeChecked() {
-        return value() != null && !Boolean.parseBoolean(value());
+        return value() != null && !value().isEmpty() && !Boolean.parseBoolean(value());
     }
 
     public boolean isAffirmativeChecked() {
-        return Boolean.parseBoolean(value());
+        return value() != null && !value().isEmpty() && Boolean.parseBoolean(value());
     }
 
     @Override

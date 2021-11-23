@@ -96,6 +96,8 @@ public class SearchTEContractsModule {
         void hideFilter();
 
         void updateNavigationBar();
+
+        void displayMinNumberOfAttributesMessage(int minAttributes);
     }
 
     public interface Presenter {
@@ -134,7 +136,7 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        org.dhis2.data.tuples.Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list);
+        SearchMessageResult getMessage(List<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
 
@@ -143,6 +145,8 @@ public class SearchTEContractsModule {
         void showFilter();
 
         void showFilterGeneral();
+
+        void resetSearch();
 
         void clearFilterClick();
 
@@ -185,5 +189,7 @@ public class SearchTEContractsModule {
         void populateList(List<FieldUiModel> list);
 
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
+
+        boolean selectedProgramMinNumberOfAttributesCheck();
     }
 }

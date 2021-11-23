@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -183,8 +184,20 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredEventProgram(any())
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredEventProgram(any()).blockingCount()
-        ) doReturn 10
+            filterPresenter.filteredEventProgram(any()).blockingGet()
+        ) doReturn listOf(
+            Event.builder().uid("0").syncState(State.SYNCED).build(),
+            Event.builder().uid("1").syncState(State.SYNCED).build(),
+            Event.builder().uid("2").syncState(State.SYNCED).build(),
+            Event.builder().uid("3").syncState(State.SYNCED).build(),
+            Event.builder().uid("4").syncState(State.SYNCED).build(),
+            Event.builder().uid("5").syncState(State.SYNCED).build(),
+            Event.builder().uid("6").syncState(State.SYNCED).build(),
+            Event.builder().uid("7").syncState(State.SYNCED).build(),
+            Event.builder().uid("8").syncState(State.SYNCED).build(),
+            Event.builder().uid("9").syncState(State.SYNCED).build(),
+            Event.builder().uid("10").syncState(State.RELATIONSHIP).build()
+        )
         whenever(
             filterPresenter.filteredTrackerProgram(any())
         ) doReturn mock()

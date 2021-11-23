@@ -16,13 +16,20 @@ data class Graph(
     val orgUnitsSelected: List<String> = emptyList(),
     val periodToDisplaySelected: RelativePeriod? = null,
     val visualizationUid: String? = null,
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val errorMessage: String? = null
 ) {
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
             categories.size.toFloat() - 1
         } else if (series.isNotEmpty()) {
-            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+            series.maxOf { serie ->
+                try {
+                    serie.coordinates.maxOf { point -> point.position ?: 0f }
+                } catch (e: NoSuchElementException) {
+                    0f
+                }
+            }
         } else {
             0f
         }

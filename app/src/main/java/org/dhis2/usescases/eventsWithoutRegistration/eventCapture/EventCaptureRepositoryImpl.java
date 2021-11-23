@@ -262,9 +262,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                         String error = checkConflicts(de.uid(), dataValue);
 
-                        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                            dataValue = dataValue + "_ou_" + friendlyValue;
-                        } else {
+                        boolean isOrgUnit = valueType == ValueType.ORGANISATION_UNIT;
+                        boolean isDate = valueType != null && valueType.isDate();
+                        if (!isOrgUnit && !isDate) {
                             dataValue = friendlyValue;
                         }
 
@@ -481,20 +481,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public List<String> getOptionsFromGroups(List<String> optionGroupUids) {
-        List<String> optionsFromGroups = new ArrayList<>();
-        List<OptionGroup> optionGroups = d2.optionModule().optionGroups().withOptions().byUid().in(optionGroupUids).blockingGet();
-        for (OptionGroup optionGroup : optionGroups) {
-            for (ObjectWithUid option : optionGroup.options()) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid());
-                }
-            }
-        }
-        return optionsFromGroups;
-    }
-
-    @Override
     public boolean showCompletionPercentage() {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
             return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
@@ -516,28 +502,31 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                 String value = null;
                 String rawValue = null;
+                String friendlyValue = null;
                 if (valueRepository.blockingExists()) {
                     value = valueRepository.blockingGet().value();
                     rawValue = value;
-                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
+                    friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
-                    if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                        value = value + "_ou_" + friendlyValue;
-                    } else {
+                    boolean isOrgUnit = fieldViewModel instanceof OrgUnitViewModel;
+                    boolean isDate = fieldViewModel.getValueType() != null && fieldViewModel.getValueType().isDate();
+                    if (!isOrgUnit && !isDate) {
                         value = friendlyValue;
                     }
                 }
 
                 String error = checkConflicts(uid, valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null);
 
-                fieldViewModel = fieldViewModel.setValue(value).setEditable(fieldViewModel.getEditable() || isEventEditable);
+                fieldViewModel = fieldViewModel
+                        .setValue(value)
+                        .setDisplayName(friendlyValue)
+                        .setEditable(fieldViewModel.getEditable() || isEventEditable);
                 if (!error.isEmpty()) {
                     fieldViewModel = fieldViewModel.setError(error);
                 }
-                if (fieldViewModel.getLegend() != null) {
-                    LegendValue legend = getColorByLegend(rawValue, fieldViewModel.getUid());
-                    fieldViewModel = fieldViewModel.setLegend(legend);
-                }
+
+                LegendValue legend = getColorByLegend(rawValue, fieldViewModel.getUid());
+                fieldViewModel = fieldViewModel.setLegend(legend);
 
                 iterator.set(fieldViewModel);
                 updated = true;
@@ -548,7 +537,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean hasAnalytics() {
-        boolean hasProgramIndicators = d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
+        boolean hasProgramIndicators = !d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
         List<ProgramRule> programRules = d2.programModule().programRules().withProgramRuleActions()
                 .byProgramUid().eq(currentEvent.program()).blockingGet();
         boolean hasProgramRules = false;

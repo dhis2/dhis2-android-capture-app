@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
@@ -97,6 +98,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract ValueType valueType();
 
+    @Override
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";
@@ -235,10 +237,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withError(error);
     }
 
-    public boolean canHaveLegend() {
-        return getLegend() != null;
-    }
-
     public FieldViewModel withLegend(LegendValue legendValue) {
         if (this instanceof EditTextViewModel) {
             return ((EditTextViewModel) this).withlegendValue(legendValue);
@@ -255,14 +253,24 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withEditMode(editable);
     }
 
-    public boolean hasLegend() {
-        return canHaveLegend();
-    }
-
     @NotNull
     @Override
     public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
         return withLegend(legendValue);
+    }
+
+    @NonNull
+    @Override
+    public FieldUiModel setDisplayName(@Nullable String displayName) {
+        return withDisplayName(displayName);
+    }
+
+    public FieldUiModel withDisplayName(String displayName) {
+        if (this instanceof OrgUnitViewModel) {
+            return ((OrgUnitViewModel) this).withDisplayName(displayName);
+        } else {
+            return this;
+        }
     }
 
     @Nullable
@@ -348,6 +356,14 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     @Override
     public UiEventFactory getUiEventFactory() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public String getDisplayName() {
         //Do not use until migrate to FieldUIModel
         return null;
     }

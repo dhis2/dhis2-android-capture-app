@@ -12,12 +12,14 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.allElementsHave
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.viewactions.clickChildViewWithId
@@ -85,10 +87,14 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(allElementsHave(allOf(
-                hasDescendant(withText(firstSearchWord)),
-                hasDescendant(withText(secondSearchWord))
-            ))))
+            .check(matches(
+                RecyclerviewMatchers.allElementsWithHolderTypeHave(
+                    SearchTEViewHolder::class.java, allOf(
+                        hasDescendant(withText(firstSearchWord)),
+                        hasDescendant(withText(secondSearchWord))
+                    )
+                )
+            ))
     }
 
     fun checkFilterCount(filterCount: String) {
@@ -98,7 +104,7 @@ class SearchTeiRobot : BaseRobot() {
 
     fun checkNoSearchResult(searchWord: String, message: String) {
         onView(withId(R.id.message))
-            .check(matches(withText(message)))
+            .check(matches(isDisplayed()))
     }
 
     fun clickOnProgramSpinner() {

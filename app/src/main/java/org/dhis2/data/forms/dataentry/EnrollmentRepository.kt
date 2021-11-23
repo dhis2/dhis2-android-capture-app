@@ -224,8 +224,10 @@ class EnrollmentRepository(
             }
         }
 
-        if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
-            dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
+        if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
+            !DhisTextUtils.isEmpty(dataValue)
+        ) {
+            dataValue = attrValueRepository.blockingGet().value()
         }
 
         val fieldViewModel = fieldFactory.create(
@@ -375,7 +377,7 @@ class EnrollmentRepository(
             null,
             when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
                 null -> null
-                else -> DateUtils.uiDateFormat().format(date)
+                else -> DateUtils.oldUiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
@@ -404,7 +406,7 @@ class EnrollmentRepository(
             null,
             when (val date = enrollmentRepository.blockingGet()!!.incidentDate()) {
                 null -> null
-                else -> DateUtils.uiDateFormat().format(date)
+                else -> DateUtils.oldUiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
@@ -428,7 +430,7 @@ class EnrollmentRepository(
             ValueType.ORGANISATION_UNIT,
             true,
             null,
-            getOrgUnitValue(enrollmentRepository.blockingGet()!!.organisationUnit()),
+            enrollmentRepository.blockingGet()?.organisationUnit(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
             editable,
@@ -514,16 +516,6 @@ class EnrollmentRepository(
             0,
             ProgramStageSectionRenderingType.LISTING.name
         )
-    }
-
-    private fun getOrgUnitValue(currentValueUid: String?): String? {
-        return if (currentValueUid != null) {
-            currentValueUid + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(
-                currentValueUid
-            ).blockingGet()!!.displayName()
-        } else {
-            null
-        }
     }
 
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {

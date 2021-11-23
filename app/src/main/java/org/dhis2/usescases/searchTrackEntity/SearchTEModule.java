@@ -8,7 +8,6 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
@@ -27,6 +26,7 @@ import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.style.FormUiColorFactory;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
@@ -96,12 +96,21 @@ public class SearchTEModule {
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        FieldViewModelFactory fieldViewModelFactory,
-                                                       MatomoAnalyticsController matomoAnalyticsController) {
+                                                       MatomoAnalyticsController matomoAnalyticsController,
+                                                       SearchMessageMapper searchMessageMapper) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper);
+    }
+
+    @Provides
+    @PerActivity
+    SearchMessageMapper searchMessageMapper(Context context) {
+        return new SearchMessageMapper(
+                new SearchResources(context)
+        );
     }
 
     @Provides
@@ -135,8 +144,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context));
+    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context), new DisplayNameProviderImpl(d2));
     }
 
     @Provides
@@ -200,10 +209,11 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormRepository provideFormRepository() {
+    FormRepository provideFormRepository(D2 d2) {
         return new FormRepositoryImpl(
                 null,
-                new FieldErrorMessageProvider(moduleContext)
+                new FieldErrorMessageProvider(moduleContext),
+                new DisplayNameProviderImpl(d2)
         );
     }
 

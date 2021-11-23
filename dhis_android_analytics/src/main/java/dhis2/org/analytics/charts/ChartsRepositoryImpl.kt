@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
@@ -25,7 +26,8 @@ class ChartsRepositoryImpl(
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph
+    private val programIndicatorToGraph: ProgramIndicatorToGraph,
+    private val analyticsResources: AnalyticResources
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -66,8 +68,15 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.dataSet()?.get(dataSetUid)?.find { it.id().equals(groupUid) }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.dataSet()?.get(dataSetUid)?.filter {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }?.forEach { visualizationGroup ->
+            addVisualizationsInGroup(visualizationGroup, graphList)
+        }
 
         return graphList
     }
@@ -80,14 +89,19 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.program()?.get(programUid)?.find {
+            ?.program()?.get(programUid)?.filter {
             if (groupUid != null) {
                 it.id() == groupUid
             } else {
                 true
             }
         }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(
+                    visualizationGroup,
+                    graphList
+                )
+            }
 
         return graphList
     }
@@ -99,14 +113,19 @@ class ChartsRepositoryImpl(
             .blockingGet()
 
         visualizationSettings
-            ?.home()?.find {
+            ?.home()?.filter {
             if (groupUid != null) {
                 it.id() == groupUid
             } else {
                 true
             }
         }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(
+                    visualizationGroup,
+                    graphList
+                )
+            }
 
         return graphList
     }
@@ -125,7 +144,7 @@ class ChartsRepositoryImpl(
             val selectedOrgUnits = visualizationOrgUnits(visualizationUid)
             val selectedOrgUnitType = visualizationOrgUnitsType(visualizationUid)
 
-            val gridAnalyticsResponse = d2.analyticsModule()
+            d2.analyticsModule()
                 .visualizations()
                 .withVisualization(visualizationUid)
                 .run {
@@ -157,24 +176,29 @@ class ChartsRepositoryImpl(
                     }
                 }
                 .blockingEvaluate()
-                .getOrNull()
-
-            gridAnalyticsResponse?.let {
-                visualizationToGraph.mapToGraph(
-                    visualization,
-                    gridAnalyticsResponse,
-                    selectedRelativePeriod?.firstOrNull(),
-                    selectedOrgUnits
-                ).let {
-                    graphList.add(it)
-                }
-            } ?: graphList.add(
-                visualizationToGraph.addErrorGraph(
-                    visualization,
-                    selectedRelativePeriod?.firstOrNull(),
-                    selectedOrgUnits
+                .fold(
+                    { gridAnalyticsResponse ->
+                        graphList.add(
+                            visualizationToGraph.mapToGraph(
+                                visualization,
+                                gridAnalyticsResponse,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits
+                            )
+                        )
+                    },
+                    { analyticException ->
+                        analyticException.printStackTrace()
+                        graphList.add(
+                            visualizationToGraph.addErrorGraph(
+                                visualization,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits,
+                                analyticsResources.analyticsExceptionMessage(analyticException)
+                            )
+                        )
+                    }
                 )
-            )
         }
     }
 

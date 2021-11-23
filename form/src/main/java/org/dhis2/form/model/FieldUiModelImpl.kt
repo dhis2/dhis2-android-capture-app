@@ -24,10 +24,14 @@ data class FieldUiModelImpl(
     override val legend: LegendValue? = null,
     override val optionSet: String? = null,
     override val allowFutureDates: Boolean? = null,
-    override val uiEventFactory: UiEventFactory? = null
+    override val uiEventFactory: UiEventFactory? = null,
+    override val displayName: String? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
+
+    override val formattedLabel: String
+        get() = if (mandatory) "$label *" else label
 
     override fun setCallback(callback: FieldUiModel.Callback) {
         this.callback = callback
@@ -67,6 +71,8 @@ data class FieldUiModelImpl(
     }
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
     override fun setFocus() = this.copy(focused = true)
 

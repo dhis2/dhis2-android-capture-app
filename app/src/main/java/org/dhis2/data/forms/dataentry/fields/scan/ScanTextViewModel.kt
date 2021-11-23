@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
+import android.view.View
+import com.google.android.material.textfield.TextInputEditText
 import com.google.auto.value.AutoValue
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -8,6 +10,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.dhis2.utils.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
 @AutoValue
@@ -33,7 +36,8 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            style: FormUiModelStyle
+            style: FormUiModelStyle,
+            valueType: ValueType
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
@@ -54,7 +58,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 style,
                 hint,
                 false,
-                null,
+                valueType,
                 fieldRendering,
                 isBackgroundTransparent,
                 isSearchMode
@@ -266,5 +270,26 @@ abstract class ScanTextViewModel : FieldViewModel() {
     fun onClearValue() {
         onItemClick()
         onScanSelected(null)
+    }
+
+    fun onTextChanged(text: CharSequence?) {
+        super.onTextChange(
+            when {
+                text?.isEmpty() == true -> null
+                else -> text?.toString()
+            }
+        )
+    }
+
+    fun onFocusChanged(hasFocus: Boolean, textView: View) {
+        val text = (textView as TextInputEditText).text.toString()
+        if (!hasFocus) {
+            onScanSelected(
+                when {
+                    text.isEmpty() -> null
+                    else -> text
+                }
+            )
+        }
     }
 }

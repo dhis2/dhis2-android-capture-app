@@ -30,6 +30,7 @@
     <string name="data_sets">Data sets</string>
     <string name="tei">TEI</string>
     <string name="info">Info</string>
+    <string name="done">Done</string>
 
     <!-- Filters -->
     <string name="filters_active">Filters applying</string>
@@ -137,4 +138,65 @@
     <string name="section_indicators">Indicators</string>
     <string name="section_charts">Charts</string>
     <string name="section_charts_indicators">Charts and indicators</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Password is missing. Please enter password.</string>
+    <string name="login_error_null_username">Username is missing. Please enter username.</string>
+    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_dhis_version_v2">This server is running a DHIS2 version different than %s. Update your server version or contact your admin.</string>
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
+    <string name="login_error_error_response">Sorry! Something failed on the server side.</string>
+    <string name="login_error_no_dhis_instance">The URL provided is not a DHIS2 server.</string>
+    <string name="login_error_bad_credentials">The username or password are incorrect</string>
+    <string name="login_error_unknown_host">Unknown server</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="error_unexpected">Something unexpected went worng.</string>
+    <string name="error_too_manu_org_units">Your user has more than one root organisation units. Review your configuration or contact your admin.</string>
+    <string name="error_max_tei_count_reached">Online results exceed the maximum number of tracker instances that can be shown. Please refine your search.</string>
+    <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
+    <string name="error_already_authenticated">The user is already logged in.</string>
+    <string name="error_already_executed">The request has already been executed.</string>
+    <string name="error_api_invalid_query">Server request is invalid.</string>
+    <string name="error_app_name_not_set">The application name has not been set.</string>
+    <string name="error_app_version_not_set">The application version has not been set.</string>
+    <string name="error_access_keystore">Unable to access device keystore.</string>
+    <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
+    <string name="error_delete_non_existing_object">Deletion aborted. The object does not exist.</string>
+    <string name="error_instance_keystore">Unable to instantiate keystore.</string>
+    <string name="error_reserve_value_on_server">We couldn´t reserve values for these record. Please contact your admin.</string>
+    <string name="error_export_login">Please login to export the database.</string>
+    <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
+    <string name="error_import_exist">You are importing an already existing database.</string>
+    <string name="error_import_logout">Please logout to import a new database.</string>
+    <string name="error_import_version">The version of the imported database is higher than supported.</string>
+    <string name="error_file_not_found">The file has not been found.</string>
+    <string name="error_file_resize">There was an error resizing the image.</string>
+    <string name="error_generate_coordinate">It is not possible to generate coordinates.</string>
+    <string name="error_job">Job report not available.</string>
+    <string name="error_low_on_available_values">You might be running low on available values.</string>
+    <string name="error_user_no_authenticated">There is no user authenticated.</string>
+    <string name="error_user_no_authenticated_offline">There is no user authenticated offline.</string>
+    <string name="error_no_values_left_on_server">There are not enough values to reserve on the server. Please conctact your admin.</string>
+    <string name="error_different_offline_user">You are trying to login offline with a different user.</string>
+    <string name="error_invalid_geometry">The geometry value is invalid.</string>
+    <string name="error_no_reserved_values">There are no reserved values available. Go to settings and refill values when you have internet connection.</string>
+    <string name="error_object_update">The object could not be updated.</string>
+    <string name="error_object_insert">The object could not be inserted.</string>
+    <string name="error_ownership_access">You don\'t have access.</string>
+    <string name="error_null_url">The server URL is missing. Please enter URL.</string>
+    <string name="error_server_malformed">The server URL is not well formed. Please check it.</string>
+    <string name="error_settings_app_not_supported">This version of the Settings Web App is not supported.</string>
+    <string name="error_settings_app_not_intalled">The Settings Web App is not installed in the server.</string>
+    <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
+    <string name="error_relationship_updated">The relationship can\'t be updated.</string>
+    <string name="error_too_many_periods">There are too many periods.</string>
+    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
+    <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
+    <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
+    <string name="error_set_value">The value could not be set.</string>
+    <string name="error_value_reservation_time">The request to reserve values has taken too much time. Please retry.</string>
+    <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+    <string name="error_sms_not_supported">SMS is not supported.</string>
+    <string name="error_min_attributes">There are not enough attributes to perform the search. Please refine your search with more attributes.</string>
+    <string name="error_org_unit_scope">Online search is only available for your user search organisation units.</string>
 </resources>

@@ -105,8 +105,14 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
             isSection(visiblePos),
             ArrayList(sectionPositions.values)
         )
-        return if (sectionPosition != -1) {
-            getItem(sectionPosition) as SectionViewModel?
+        val model = if (sectionPosition != -1) {
+            getItem(sectionPosition)
+        } else {
+            null
+        }
+
+        return if (model is SectionViewModel) {
+            model
         } else {
             null
         }

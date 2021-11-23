@@ -10,7 +10,6 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -175,7 +174,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (!scheduleEvents.isEmpty())
             scheduleDate = scheduleEvents.get(0).dueDate();
 
-       if (activeDate != null) {
+        if (activeDate != null) {
             return activeDate;
         } else if (scheduleDate != null) {
             return scheduleDate;
@@ -317,23 +316,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
-        if(eventUid!= null){
+        if (eventUid != null) {
             return d2.eventModule().eventService().isEditable(eventUid).toObservable();
-        }else{
-            return programAccess(programUid);
+        } else {
+            return d2.programModule().programStages().uid(stageUid).get().toObservable()
+                    .map(programStage-> programStage.access().data().write());
         }
-    }
-
-    private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() -> {
-                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
-                    boolean stageAccess = true;
-                    if (stageUid != null) {
-                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
-                    }
-                    return programAccess && stageAccess;
-                }
-        );
     }
 
     @Override
@@ -514,9 +502,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
-        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !DhisTextUtils.Companion.isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
-        }
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFutureDates,
@@ -582,7 +567,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public int getMinDaysFromStartByProgramStage(String programStageUid) {
         ProgramStage programStage = d2.programModule().programStages().uid(programStageUid).blockingGet();
-        if (programStage.minDaysFromStart() != null){
+        if (programStage.minDaysFromStart() != null) {
             return programStage.minDaysFromStart();
         }
         return 0;

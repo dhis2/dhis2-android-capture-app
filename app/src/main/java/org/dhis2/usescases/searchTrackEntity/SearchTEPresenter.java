@@ -129,6 +129,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final Flowable<RowAction> fieldProcessor;
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
+    private final SearchMessageMapper searchMessageMapper;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -146,7 +147,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController) {
+                             MatomoAnalyticsController matomoAnalyticsController,
+                             SearchMessageMapper searchMessageMapper) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -158,7 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.fieldProcessor = fieldProcessor;
-
+        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
@@ -296,7 +298,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             trackedEntityType,
                                             queryData
                                     ),
-                                    NetworkUtils.isOnline(view.getContext())));
+                                    canSearchOnline()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
@@ -313,7 +315,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                 trackedEntityType,
                                                 queryData
                                         ),
-                                        NetworkUtils.isOnline(view.getContext())))
+                                        canSearchOnline()))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
                                     Map<String, FeatureCollection> coordinateFields = new HashMap<>();
@@ -399,68 +401,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public Trio<String, Boolean, Boolean> getMessage(List<SearchTeiModel> list) {
-
-        int size = list.size();
-
-        String messageId = "";
-        boolean canRegister = false;
-        boolean showButton = false;
-
-        if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
-                if (isSearching) {
-                    if (size == 0) {
-                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        canRegister = true;
-                    }
-                } else {
-                    messageId = view.getContext().getString(R.string.search_init);
-                }
-            } else if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-            } else if (size == 0 && !queryData.isEmpty()) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0) {
-                messageId = view.getContext().getString(R.string.search_init);
-            }
-        } else if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
-            if (!showList && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                showButton = true;
-            } else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            }
-        } else if (selectedProgram == null) {
-            if (!teiTypeHasAttributesToDisplay) {
-                messageId = String.format(view.getContext().getString(R.string.tei_type_has_no_attributes), getTrackedEntityName().displayName());
-            } else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
-                messageId = view.getContext().getString(R.string.search_init);
-            else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-        } else {
-            if (size == 0 && !queryData.isEmpty()) {
-                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID) ? queryData.size() - 1 : queryData.size();
-                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
-                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                else
-                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0)
-                messageId = view.getContext().getString(R.string.search_init);
-        }
-
-        if (messageId.isEmpty())
-            canRegister = true;
-
-        return Trio.create(messageId, canRegister, showButton);
+    public SearchMessageResult getMessage(List<SearchTeiModel> list) {
+        return searchMessageMapper.getSearchMessage(
+                list,
+                selectedProgram,
+                queryData,
+                teiTypeHasAttributesToDisplay,
+                MAX_NO_SELECTED_PROGRAM_RESULTS,
+                getTrackedEntityName().displayName()
+        );
     }
 
     private void handleError(Throwable throwable) {
@@ -539,6 +488,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void resetSearch() {
+        showList = true;
+        queryData.clear();
+        listDataProcessor.onNext(new Unit());
+    }
+
+    @Override
     public void onClearClick() {
         isSearching = true;
         queryData.clear();
@@ -556,9 +512,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onFabClick(boolean needsSearch) {
-        if (!needsSearch)
+        if (!needsSearch) {
             onEnrollClick();
-        else {
+        } else if (!selectedProgramMinNumberOfAttributesCheck()) {
+            view.displayMinNumberOfAttributesMessage(selectedProgram.minAttributesRequiredToSearch());
+        } else {
             isSearching = true;
             analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             view.clearData();
@@ -1019,5 +977,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    @Override
+    public boolean selectedProgramMinNumberOfAttributesCheck() {
+        if (selectedProgram == null) {
+            return true;
+        } else {
+            int minAttributes = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
+            return minAttributes <= queryData.size();
+        }
+    }
+
+    private boolean canSearchOnline() {
+        return NetworkUtils.isOnline(view.getContext()) && selectedProgramMinNumberOfAttributesCheck();
     }
 }
