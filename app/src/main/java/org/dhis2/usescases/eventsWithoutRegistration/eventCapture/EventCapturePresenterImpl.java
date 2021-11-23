@@ -361,9 +361,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 true,
                 fieldViewModels,
                 calcResult,
-                valueStore,
-                options -> eventCaptureRepository.getOptionsFromGroups(options)
-        );
+                valueStore);
 
         assignedValueChanged = !ruleResults.getFieldsToUpdate().isEmpty();
         for (String fieldUid : ruleResults.getFieldsToUpdate()) {

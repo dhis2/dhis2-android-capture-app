@@ -376,7 +376,7 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null, options -> new ArrayList<>());
+        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null);
 
         return new ArrayList<>(fieldViewModels.values());
     }

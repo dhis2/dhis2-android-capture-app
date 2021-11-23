@@ -468,20 +468,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public List<String> getOptionsFromGroups(List<String> optionGroupUids) {
-        List<String> optionsFromGroups = new ArrayList<>();
-        List<OptionGroup> optionGroups = d2.optionModule().optionGroups().withOptions().byUid().in(optionGroupUids).blockingGet();
-        for (OptionGroup optionGroup : optionGroups) {
-            for (ObjectWithUid option : optionGroup.options()) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid());
-                }
-            }
-        }
-        return optionsFromGroups;
-    }
-
-    @Override
     public boolean showCompletionPercentage() {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
             return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(

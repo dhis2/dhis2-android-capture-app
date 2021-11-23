@@ -11,8 +11,7 @@ interface RulesUtilsProvider {
         applyForEvent: Boolean,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         calcResult: Result<RuleEffect>,
-        valueStore: ValueStore?,
-        optionsFromGroup: (options: List<String>) -> List<String>
+        valueStore: ValueStore?
     ): RuleUtilsProviderResult
 
     fun applyRuleEffects(
