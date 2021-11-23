@@ -27,7 +27,8 @@ import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -42,9 +43,9 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -57,6 +58,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +83,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -157,6 +159,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
         activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
+            showLoadingProgress(true);
             binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
@@ -263,6 +266,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
             binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setDashboardModel(nprogram);
+            showLoadingProgress(false);
         }
 
         binding.executePendingBindings();
@@ -336,6 +340,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
+        }
+        showLoadingProgress(false);
+    }
+
+    private void showLoadingProgress(boolean showProgress){
+        if(showProgress){
+            binding.loadingProgress.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.loadingProgress.getRoot().setVisibility(View.GONE);
         }
     }
 
@@ -602,7 +615,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openOrgUnitTreeSelector(String programUid) {
-        OUTreeFragment.Companion.newInstance(true).show(getChildFragmentManager(), "OUTreeFragment");
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
+        ouTreeFragment.setSelectionCallback(this);
+        ouTreeFragment.show(getChildFragmentManager(), "OUTreeFragment");
     }
 
     @Override
@@ -618,5 +633,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 .build();
 
         dialog.show(getChildFragmentManager(), uid);
+    }
+
+    @Override
+    public void onSelectionFinished(@NotNull List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 }

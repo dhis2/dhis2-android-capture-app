@@ -3,27 +3,26 @@ package org.dhis2.data.forms.dataentry.fields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
-import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.event.RecyclerViewUiEvents;
+import org.dhis2.form.ui.event.UiEventFactory;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
-import io.reactivex.processors.FlowableProcessor;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
     @NonNull
     public abstract String uid();
+
+    public abstract int layoutId();
 
     @NonNull
     public abstract String label();
@@ -80,13 +79,13 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     public abstract DataEntryViewHolderTypes dataEntryViewType();
 
-    @Nullable
-    public abstract FlowableProcessor<RowAction> processor();
-
     public Callback callback;
 
     @Nullable
     public abstract FormUiModelStyle style();
+
+    @Nullable
+    public abstract String hint();
 
     @Nullable
     public Callback getCallback() {
@@ -96,16 +95,16 @@ public abstract class FieldViewModel implements FieldUiModel {
     @NonNull
     public abstract Boolean activated();
 
+    @Nullable
+    public abstract ValueType valueType();
+
+    @Override
     public String getFormattedLabel() {
         if (mandatory()) {
             return label() + " *";
         } else {
             return label();
         }
-    }
-
-    public boolean shouldShowError() {
-        return warning() != null || error() != null;
     }
 
     public String getErrorMessage() {
@@ -118,25 +117,44 @@ public abstract class FieldViewModel implements FieldUiModel {
         }
     }
 
-    public int getErrorAppearance() {
-        if (error() != null) {
-            return R.style.error_appearance;
-        } else if (warning() != null) {
-            return R.style.warning_appearance;
-        } else {
-            return -1;
-        }
-    }
-
     @Override
     public @NotNull String getUid() {
         return uid();
     }
 
     @Override
+    public int getLayoutId() {
+        return layoutId();
+    }
+
+    @Override
     @Nullable
     public FormUiModelStyle getStyle() {
         return style();
+    }
+
+    @Override
+    @Nullable
+    public String getHint() {
+        return hint();
+    }
+
+    @Nullable
+    @Override
+    public String getDescription() {
+        return description();
+    }
+
+    @Nullable
+    @Override
+    public ValueType getValueType() {
+        return valueType();
+    }
+
+    @Nullable
+    @Override
+    public LegendValue getLegend() {
+        return null;
     }
 
     @Override
@@ -147,6 +165,7 @@ public abstract class FieldViewModel implements FieldUiModel {
         if (o instanceof FieldViewModel) {
             FieldViewModel that = (FieldViewModel) o;
             return this.uid().equals(that.uid())
+                    && this.layoutId() == that.layoutId()
                     && this.label().equals(that.label())
                     && (this.programStageSection() == null ? that.programStageSection() == null : this.programStageSection().equals(that.programStageSection()))
                     && (this.allowFutureDate() == null ? that.allowFutureDate() == null : this.allowFutureDate().equals(that.allowFutureDate()))
@@ -172,19 +191,10 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Override
     public void onItemClick() {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value(),
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_FOCUS
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        callback.intent(new FormIntent.OnFocus(
+                uid(),
+                value()
+        ));
     }
 
     @Override
@@ -197,19 +207,10 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     public void onTextChange(String value) {
-        if (processor() != null) {
-            RowAction action = new RowAction(
-                    uid(),
-                    value,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ActionType.ON_TEXT_CHANGE
-            );
-            Objects.requireNonNull(processor()).onNext(action);
-        }
+        callback.intent(new FormIntent.OnTextChange(
+                uid(),
+                value
+        ));
     }
 
     @NotNull
@@ -236,10 +237,6 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withError(error);
     }
 
-    public boolean canHaveLegend() {
-        return this instanceof EditTextViewModel || this instanceof SpinnerViewModel;
-    }
-
     public FieldViewModel withLegend(LegendValue legendValue) {
         if (this instanceof EditTextViewModel) {
             return ((EditTextViewModel) this).withlegendValue(legendValue);
@@ -256,15 +253,24 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withEditMode(editable);
     }
 
-    @Override
-    public boolean hasLegend() {
-        return canHaveLegend();
-    }
-
     @NotNull
     @Override
     public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
         return withLegend(legendValue);
+    }
+
+    @NonNull
+    @Override
+    public FieldUiModel setDisplayName(@Nullable String displayName) {
+        return withDisplayName(displayName);
+    }
+
+    public FieldUiModel withDisplayName(String displayName) {
+        if (this instanceof OrgUnitViewModel) {
+            return ((OrgUnitViewModel) this).withDisplayName(displayName);
+        } else {
+            return this;
+        }
     }
 
     @Nullable
@@ -283,6 +289,12 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public String getOptionSet() {
         return optionSet();
+    }
+
+    @Nullable
+    @Override
+    public Boolean getAllowFutureDates() {
+        return allowFutureDate();
     }
 
     @Nullable
@@ -322,5 +334,37 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Override
     public boolean getEditable() {
         return editable() != null ? editable() : true;
+    }
+
+    public void onDescriptionClick() {
+        callback.recyclerViewUiEvents(new RecyclerViewUiEvents.ShowDescriptionLabelDialog(label(), description()));
+    }
+
+    @Override
+    public void onClear() {
+        onItemClick();
+        callback.intent(new FormIntent.ClearValue(uid()));
+    }
+
+    @Deprecated
+    @Override
+    public void invokeUiEvent() {
+        //Do not use until migrate to FieldUIModel
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public UiEventFactory getUiEventFactory() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public String getDisplayName() {
+        //Do not use until migrate to FieldUIModel
+        return null;
     }
 }

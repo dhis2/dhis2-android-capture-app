@@ -11,7 +11,6 @@ import org.dhis2.databinding.TableDateTextBinding;
 import org.dhis2.databinding.TableDateTimeTextBinding;
 import org.dhis2.databinding.TableTimeTextBinding;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
@@ -39,20 +38,25 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (binding instanceof TableTimeTextBinding) {
             ((TableTimeTextBinding) binding).timeView.setDateListener(this);
+            textView =  ((TableTimeTextBinding) binding).timeView.getEditText();
         }
 
         if (binding instanceof TableDateTextBinding) {
             ((TableDateTextBinding) binding).dateView.setDateListener(this);
+            textView =  ((TableDateTextBinding) binding).dateView.getEditText();
         }
 
         if (binding instanceof TableDateTimeTextBinding) {
             ((TableDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
+            textView =  ((TableDateTimeTextBinding) binding).dateTimeView.getEditText();
         }
 
     }
 
 
     public void update(DateTimeViewModel viewModel, boolean accessDataWrite, String value) {
+        super.update(viewModel);
+        this.accessDataWrite = accessDataWrite;
         this.dateTimeViewModel = viewModel;
         this.isEditable = accessDataWrite && viewModel.editable();
         descriptionText = viewModel.description();
@@ -170,6 +174,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().performClick();
             }
         }
+        setBackground();
     }
 
 }

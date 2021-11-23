@@ -1,16 +1,17 @@
 package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
-import org.dhis2.utils.filters.EnrollmentDateFilter
-import org.dhis2.utils.filters.EnrollmentStatusFilter
-import org.dhis2.utils.filters.EventStatusFilter
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.OrgUnitFilter
-import org.dhis2.utils.filters.PeriodFilter
-import org.dhis2.utils.filters.ProgramType
-import org.dhis2.utils.filters.SyncStateFilter
-import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.commons.filters.EnrollmentDateFilter
+import org.dhis2.commons.filters.EnrollmentStatusFilter
+import org.dhis2.commons.filters.EventStatusFilter
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.OrgUnitFilter
+import org.dhis2.commons.filters.PeriodFilter
+import org.dhis2.commons.filters.ProgramType
+import org.dhis2.commons.filters.SyncStateFilter
+import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.filters.sorting.SortingItem
 import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.junit.Test

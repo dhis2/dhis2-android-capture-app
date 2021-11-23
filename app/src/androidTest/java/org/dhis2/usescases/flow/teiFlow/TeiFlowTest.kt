@@ -10,6 +10,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,6 +32,7 @@ class TeiFlowTest: BaseTest() {
     private val currentDate = getCurrentDate()
 
     @Test
+    @Ignore
     fun shouldEnrollToSameProgramAfterClosedIt() {
         val totalEventsPerEnrollment = 3
         val pastProgramPosition = 4

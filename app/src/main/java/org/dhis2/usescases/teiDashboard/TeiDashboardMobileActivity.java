@@ -39,8 +39,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.Filters;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -131,6 +131,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
+        showLoadingProgress(true);
         binding.setPresenter(presenter);
 
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS);
@@ -232,6 +233,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
+                            showLoadingProgress(false);
                             if (position != OVERVIEW_POS || programUid == null) {
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
@@ -259,6 +261,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
+                            showLoadingProgress(false);
                             switch (adapter.pageType(position)) {
                                 case ANALYTICS:
                                 case NOTES:
@@ -277,6 +280,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (fromRelationship)
                 binding.teiTablePager.setCurrentItem(1, false);
 
+        }
+    }
+
+    private void showLoadingProgress(boolean showProgress){
+        if(showProgress){
+            binding.toolbarProgress.show();
+        }else{
+            binding.toolbarProgress.hide();
         }
     }
 

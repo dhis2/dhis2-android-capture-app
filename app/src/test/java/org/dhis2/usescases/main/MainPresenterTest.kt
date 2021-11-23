@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -10,24 +11,25 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class MainPresenterTest {
@@ -41,6 +43,10 @@ class MainPresenterTest {
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {

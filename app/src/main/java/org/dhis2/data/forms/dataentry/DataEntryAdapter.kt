@@ -12,14 +12,17 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.DataEntryDiff
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
-    private val refactoredViews = intArrayOf(R.layout.form_age_custom)
+    private val refactoredViews = intArrayOf(
+        R.layout.form_age_custom,
+        R.layout.form_date_time, R.layout.form_scan
+    )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
@@ -102,8 +105,14 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
             isSection(visiblePos),
             ArrayList(sectionPositions.values)
         )
-        return if (sectionPosition != -1) {
-            getItem(sectionPosition) as SectionViewModel?
+        val model = if (sectionPosition != -1) {
+            getItem(sectionPosition)
+        } else {
+            null
+        }
+
+        return if (model is SectionViewModel) {
+            model
         } else {
             null
         }

@@ -8,8 +8,7 @@ import androidx.databinding.BindingAdapter
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.Bindings.toDate
-import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.setInputStyle
+import org.dhis2.form.ui.binding.setInputStyle
 import org.dhis2.utils.DateUtils
 
 @BindingAdapter("onFocusChangeAgeView")
@@ -59,9 +58,11 @@ fun EditText.setInitialValueDate(value: String?, errorTextView: TextView) {
 fun setInitialValueYear(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[0].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 
@@ -69,9 +70,11 @@ fun setInitialValueYear(editText: EditText, value: String?) {
 fun setInitialValueMonth(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[1].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 
@@ -79,9 +82,11 @@ fun setInitialValueMonth(editText: EditText, value: String?) {
 fun setInitialValueDay(editText: EditText, value: String?) {
     if (value.isNullOrEmpty()) {
         editText.text = null
-    } else {
+    } else try {
         val dateDifference = getDifferenceBetweenDates(value)
         editText.setText(dateDifference[2].toString())
+    } catch (e: Exception) {
+        editText.text = null
     }
 }
 

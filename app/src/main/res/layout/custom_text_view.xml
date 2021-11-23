@@ -104,7 +104,7 @@
                 android:theme="@style/loginInputText"
                 tools:hint="hint">
 
-                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
+                <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

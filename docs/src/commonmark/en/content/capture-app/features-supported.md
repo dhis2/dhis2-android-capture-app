@@ -455,6 +455,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Data sharing levels/Can view data|Enables the user to see list of events within the program.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 |Data sharing levels/No access|The user will not be able to see the program|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 
+
 ### Program stage { #capture_app_programs_supported_features_program_stage }
 
 

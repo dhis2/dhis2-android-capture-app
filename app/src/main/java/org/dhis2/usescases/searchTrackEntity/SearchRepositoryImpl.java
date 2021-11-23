@@ -10,12 +10,14 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.filter.FilterPresenter;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -37,12 +39,10 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.arch.helpers.Result;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -55,6 +55,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -76,7 +77,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -104,6 +104,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final CrashReportController crashReportController;
 
     SearchRepositoryImpl(String teiType,
+                         @Nullable String initialProgram,
                          D2 d2,
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
@@ -121,6 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
+        this.currentProgram = initialProgram;
     }
 
     @Override
@@ -211,15 +213,11 @@ public class SearchRepositoryImpl implements SearchRepository {
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
         if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getDataSource()
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().getResultDataSource()
+                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()));
         } else {
-            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getDataSource()
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
-                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
+            dataSource = trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().getResultDataSource()
+                    .map(result -> transformResult(result, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()));
         }
 
         return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntityInstance, SearchTeiModel>() {
@@ -244,15 +242,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty())
             return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().get().toFlowable()
-                    .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
         else
             return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().get().toFlowable()
-                    .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, searchParametersModel.getSelectedProgram() != null ? searchParametersModel.getSelectedProgram().uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()))
                     .toList().toFlowable();
@@ -274,9 +268,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
             } else if (dataValue.contains("_os_")) {
                 dataValue = dataValue.split("_os_")[1];
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
-            } else if (dataValue.contains("_ou_")) {
-                dataValue = dataValue.split("_ou_")[0];
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
             } else
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
@@ -323,8 +314,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                             String dataValue = queryData.get(key);
                             if (dataValue.contains("_os_"))
                                 dataValue = dataValue.split("_os_")[1];
-                            else if (dataValue.contains("_ou_"))
-                                dataValue = dataValue.split("_ou_")[0];
 
                             boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
 
@@ -532,7 +521,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
-                        -1
+                        -1,
+                        true
                 ));
             }
         }
@@ -592,17 +582,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid) {
         return d2.trackedEntityModule().trackedEntityTypes().byUid().eq(trackedEntityUid).one().get().toObservable();
-    }
-
-    private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if (!states.isEmpty()) {
-            while (iterator.hasNext()) {
-                if (!states.contains(iterator.next().state()))
-                    iterator.remove();
-            }
-        }
-        return teis;
     }
 
     @Override
@@ -703,14 +682,14 @@ public class SearchRepositoryImpl implements SearchRepository {
         );
     }
 
-    private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
-        Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        while (iterator.hasNext()) {
-            TrackedEntityInstance tei = iterator.next();
-            if (tei.deleted() != null && tei.deleted())
-                iterator.remove();
+    private SearchTeiModel transformResult(Result<TrackedEntityInstance, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
+        try {
+            return transform(result.getOrThrow(), selectedProgram, offlineOnly, sortingItem);
+        } catch (Throwable e) {
+            SearchTeiModel errorModel = new SearchTeiModel();
+            errorModel.onlineErrorMessage = resources.parseD2Error(e);
+            return errorModel;
         }
-        return teis;
     }
 
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
@@ -859,16 +838,27 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         String programUid = currentProgram();
 
-        boolean teTypeHasCoordinates = d2.trackedEntityModule().trackedEntityTypes()
+        if (programUid == null) return false;
+
+        boolean teTypeHasCoordinates = false;
+        FeatureType teTypeFeatureType = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiType)
                 .blockingGet()
-                .featureType() != FeatureType.NONE;
+                .featureType();
 
-        boolean enrollmentHasCoordinates = programUid != null &&
-                d2.programModule().programs()
-                        .uid(programUid)
-                        .blockingGet()
-                        .featureType() != FeatureType.NONE;
+        if (teTypeFeatureType != null && teTypeFeatureType != FeatureType.NONE) {
+            teTypeHasCoordinates = true;
+        }
+
+        boolean enrollmentHasCoordinates = false;
+        FeatureType enrollmentFeatureType = d2.programModule().programs()
+                .uid(programUid)
+                .blockingGet()
+                .featureType();
+
+        if (enrollmentFeatureType != null && enrollmentFeatureType != FeatureType.NONE) {
+            enrollmentHasCoordinates = true;
+        }
 
         List<TrackedEntityTypeAttribute> teAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teiType)
@@ -885,6 +875,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         boolean programAttributeHasCoordinates = false;
         boolean eventHasCoordinates = false;
+        boolean eventDataElementHasCoordinates = false;
         if (programUid != null) {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(programUid)
@@ -903,12 +894,27 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .byProgramUid().eq(programUid)
                     .byFeatureType().notIn(FeatureType.NONE)
                     .blockingIsEmpty();
+
+
+            List<Event> events = d2.eventModule().eventQuery().byIncludeDeleted()
+                    .eq(false)
+                    .byProgram()
+                    .eq(programUid)
+                    .blockingGet();
+            for (Event event : events) {
+                if (event.geometry() != null) {
+                    eventDataElementHasCoordinates = true;
+                    break;
+                }
+            }
+
         }
 
         return teTypeHasCoordinates ||
                 enrollmentHasCoordinates ||
                 teAttributeHasCoordinates ||
                 programAttributeHasCoordinates ||
-                eventHasCoordinates;
+                eventHasCoordinates ||
+                eventDataElementHasCoordinates;
     }
 }

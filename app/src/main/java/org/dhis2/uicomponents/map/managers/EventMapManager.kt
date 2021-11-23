@@ -65,8 +65,10 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setLayer() {
-        mapLayerManager
-            .addStartLayer(LayerType.EVENT_LAYER, featureType)
+        if (featureType != null && featureType != FeatureType.NONE) {
+            mapLayerManager
+                .addStartLayer(LayerType.EVENT_LAYER, featureType)
+        }
     }
 
     private fun addDynamicIcons() {
@@ -103,7 +105,9 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         propertyName: String,
         propertyValue: String
     ): Feature? {
-        return featureCollection?.features()?.firstOrNull() {
+        return featureCollection?.features()?.firstOrNull {
+            it.getStringProperty(propertyName) == propertyValue
+        } ?: deFeatureCollection[source]?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
         }
     }

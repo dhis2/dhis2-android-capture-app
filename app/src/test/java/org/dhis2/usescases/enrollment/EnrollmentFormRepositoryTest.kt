@@ -5,20 +5,18 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.Date
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.option.OptionGroup
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.junit.Before
-import org.junit.Test
 import org.mockito.Mockito
 
 class EnrollmentFormRepositoryTest {
@@ -29,6 +27,7 @@ class EnrollmentFormRepositoryTest {
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val programRepository = Mockito.mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
     private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
+    private val enrollmentService: DhisEnrollmentUtils = mock()
 
     @Before
     fun setUp() {
@@ -74,44 +73,8 @@ class EnrollmentFormRepositoryTest {
             rulesRepository,
             enrollmentRepository,
             programRepository,
-            teiRepository
+            teiRepository,
+            enrollmentService
         )
-    }
-
-    @Test
-    fun `Should return options from groups`() {
-        val optionGroupUids = arrayListOf("optionGroup1", "optionGroup2")
-        whenever(d2.optionModule().optionGroups().withOptions()) doReturn mock()
-        whenever(d2.optionModule().optionGroups().withOptions().byUid()) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions().byUid().`in`(optionGroupUids)
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups()
-                .withOptions().byUid().`in`(optionGroupUids).blockingGet()
-        ) doReturn arrayListOf(
-            OptionGroup.builder()
-                .uid("optionGroup1")
-                .options(
-                    arrayListOf(
-                        ObjectWithUid.create("option_1_1"),
-                        ObjectWithUid.create("option_1_2")
-                    )
-                )
-                .build(),
-            OptionGroup.builder()
-                .uid("optionGroup2")
-                .options(
-                    arrayListOf(
-                        ObjectWithUid.create("option_1_1"),
-                        ObjectWithUid.create("option_2_1")
-                    )
-                )
-                .build()
-        )
-        val options = repository.getOptionsFromGroups(optionGroupUids)
-
-        assert(options.size == 3)
     }
 }

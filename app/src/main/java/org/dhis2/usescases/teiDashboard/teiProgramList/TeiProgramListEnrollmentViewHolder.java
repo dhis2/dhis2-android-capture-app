@@ -15,7 +15,7 @@ import org.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;
 import org.dhis2.databinding.ItemTeiProgramsProgramsBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 
 import timber.log.Timber;
 

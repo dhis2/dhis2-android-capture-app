@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
@@ -23,7 +24,8 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
@@ -33,13 +35,15 @@ import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,7 +53,10 @@ import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
-public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
+
+public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
+        OnOrgUnitSelectionFinished {
 
     private static final String FRAGMENT_TAG = "SYNC";
 
@@ -60,6 +67,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Inject
     FiltersAdapter filtersAdapter;
+
+    @Inject
+    NavigationPageConfigurator pageConfigurator;
 
     private boolean backDropActive;
     private String programUid;
@@ -86,6 +96,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
@@ -98,6 +109,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         showMap(true);
                     }
                     return true;
+                case R.id.navigation_analytics:
+                    showAnalytics();
                 default:
                     return false;
             }
@@ -201,16 +214,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            binding.navigationBar.hide();
         } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            binding.navigationBar.show();
         }
 
         initSet.applyTo(binding.backdropLayout);
-    }
-
-    @Override
-    public void setFeatureType(FeatureType type) {
-        binding.navigationBar.setVisibility(type == FeatureType.NONE ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -259,7 +269,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment.Companion.newInstance(true).show(getSupportFragmentManager(), "OUTreeFragment");
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
+        ouTreeFragment.setSelectionCallback(this);
+        ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
+    }
+
+    @Override
+    public void onSelectionFinished(List<? extends OrganisationUnit> selectedOrgUnits) {
+        presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
     }
 
     @Override
@@ -302,6 +319,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 showMap ? new EventMapFragment() : new EventListFragment()
         ).commitNow();
         binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
+        binding.filter.setVisibility(View.VISIBLE);
+    }
+
+    private void showAnalytics() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, GroupAnalyticsFragment.Companion.forProgram(programUid)).commitNow();
+        binding.addEventButton.setVisibility(GONE);
+        binding.filter.setVisibility(GONE);
     }
 
     @Override

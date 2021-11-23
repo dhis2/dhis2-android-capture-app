@@ -1,36 +1,24 @@
 package org.dhis2.usescases.enrollment
 
-import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.functions.Function5
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.Bindings.blockingGetCheck
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toRuleAttributeValue
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.RulesRepository
-import org.dhis2.utils.Constants
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.Result as DhisResult
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
-import org.hisp.dhis.android.core.event.EventCreateProjection
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
-import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
-import org.hisp.dhis.rules.models.RuleEvent
-import org.hisp.dhis.rules.models.RuleVariable
 import org.hisp.dhis.rules.models.TriggerEnvironment
 
 class EnrollmentFormRepositoryImpl(
@@ -38,7 +26,8 @@ class EnrollmentFormRepositoryImpl(
     rulesRepository: RulesRepository,
     private val enrollmentRepository: EnrollmentObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
-    teiRepository: TrackedEntityInstanceObjectRepository
+    teiRepository: TrackedEntityInstanceObjectRepository,
+    private val enrollmentService: DhisEnrollmentUtils
 ) : EnrollmentFormRepository {
 
     private var cachedRuleEngineFlowable: Flowable<RuleEngine>
@@ -49,12 +38,7 @@ class EnrollmentFormRepositoryImpl(
 
     init {
         this.cachedRuleEngineFlowable =
-            Single.zip<List<Rule>,
-                List<RuleVariable>,
-                List<RuleEvent>,
-                Map<String, String>,
-                Map<String, List<String>>,
-                RuleEngine>(
+            Single.zip(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
@@ -64,7 +48,7 @@ class EnrollmentFormRepositoryImpl(
                 rulesRepository.supplementaryData(
                     enrollmentRepository.blockingGet().organisationUnit()!!
                 ),
-                Function5 { rules, variables, events, constants, supplData ->
+                { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder()
                         .rules(rules)
                         .ruleVariables(variables)
@@ -104,138 +88,8 @@ class EnrollmentFormRepositoryImpl(
         return cachedRuleEngineFlowable
     }
 
-    override fun useFirstStageDuringRegistration(): Single<Pair<String, String>> {
-        return programRepository.get()
-            .flatMap {
-                if (it.useFirstStageDuringRegistration() == true) {
-                    getFirstStage()
-                } else {
-                    checkOpenAfterEnrollment()
-                }
-            }.map {
-                if (!isEmpty(it.second)) {
-                    checkEventToOpen(it)
-                } else {
-                    it
-                }
-            }
-    }
-
-    private fun getFirstStage(): Single<Pair<String, String>> {
-        return d2.programModule().programStages().byProgramUid().eq(programUid)
-            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
-            .map {
-                if (it.isEmpty()) {
-                    Pair(enrollmentUid, "")
-                } else {
-                    Pair(enrollmentUid, it[0].uid())
-                }
-            }
-    }
-
-    private fun checkOpenAfterEnrollment(): Single<Pair<String, String>> {
-        return d2.programModule().programStages().byProgramUid().eq(programUid)
-            .byOpenAfterEnrollment().isTrue
-            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
-            .map {
-                if (it.isEmpty()) {
-                    Pair(enrollmentUid, "")
-                } else {
-                    Pair(enrollmentUid, it[0].uid())
-                }
-            }
-    }
-
-    private fun checkEventToOpen(enrollmentStagePair: Pair<String, String>): Pair<String, String> {
-        val eventCollectionRepository = d2.eventModule().events()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().eq(enrollmentStagePair.second)
-
-        return if (eventCollectionRepository.one().blockingExists()) {
-            Pair(enrollmentStagePair.first, eventCollectionRepository.one().blockingGet().uid()!!)
-        } else {
-            Pair(
-                enrollmentStagePair.first,
-                generateEvent(
-                    DateUtils.getInstance().today,
-                    d2.programModule().programStages().uid(enrollmentStagePair.second).blockingGet()
-                )
-            )
-        }
-    }
-
-    override fun autoGenerateEvents(): Single<Boolean> {
-        val now = DateUtils.getInstance().today
-        return d2.programModule().programStages()
-            .byProgramUid().eq(programUid)
-            .byAutoGenerateEvent().isTrue
-            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
-            .flatMap {
-                it.forEach { programStage ->
-                    generateEvent(now, programStage)
-                }
-                Single.just(true)
-            }
-    }
-
-    private fun generateEvent(now: Date, programStage: ProgramStage): String {
-        val eventToAdd = EventCreateProjection.builder()
-            .enrollment(enrollmentRepository.blockingGet().uid())
-            .program(programStage.program()!!.uid())
-            .programStage(programStage.uid())
-            .attributeOptionCombo(null)
-            .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
-            .build()
-
-        val eventUid = d2.eventModule().events().blockingAdd(eventToAdd)
-
-        val eventRepository = d2.eventModule().events().uid(eventUid)
-
-        val hideDueDate = programStage.hideDueDate() ?: false
-        val incidentDate = enrollmentRepository.blockingGet().incidentDate()
-        val enrollmentDate = enrollmentRepository.blockingGet().enrollmentDate()
-        val periodType = programStage.periodType()
-        val generateByEnrollmentDate = programStage.generatedByEnrollmentDate() ?: false
-        val reportDateToUse = programStage.reportDateToUse() ?: ""
-        val minDaysFromStart = programStage.minDaysFromStart() ?: 0
-        val calendar = DateUtils.getInstance().calendar
-
-        when (reportDateToUse) {
-            Constants.ENROLLMENT_DATE ->
-                calendar.time = enrollmentDate
-                    ?: Calendar.getInstance().time
-            Constants.INCIDENT_DATE -> calendar.time = incidentDate ?: Calendar.getInstance().time
-            else -> calendar.time = Calendar.getInstance().time
-        }
-
-        if (!generateByEnrollmentDate && incidentDate != null) {
-            calendar.time = incidentDate
-        }
-        if (generateByEnrollmentDate) {
-            calendar.time = enrollmentDate
-        }
-
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        calendar.add(Calendar.DATE, minDaysFromStart)
-        var eventDate = calendar.time
-        if (periodType != null) {
-            eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0)
-        }
-
-        if (eventDate.after(now) && !hideDueDate) {
-            eventRepository.setDueDate(eventDate)
-            eventRepository.setStatus(EventStatus.SCHEDULE)
-        } else {
-            eventRepository.setEventDate(eventDate)
-        }
-
-        return eventUid
+    override fun generateEvents(): Single<Pair<String, String?>> {
+        return Single.fromCallable { enrollmentService.generateEnrollmentEvents(enrollmentUid) }
     }
 
     override fun calculate(): Flowable<DhisResult<RuleEffect>> {
@@ -275,22 +129,6 @@ class EnrollmentFormRepositoryImpl(
                             .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
                     }.toRuleAttributeValue(d2, program.uid())
             }.toFlowable()
-    }
-
-    override fun getOptionsFromGroups(optionGroupUids: List<String>): List<String> {
-        val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = d2.optionModule().optionGroups()
-            .withOptions()
-            .byUid().`in`(optionGroupUids)
-            .blockingGet()
-        for (optionGroup in optionGroups) {
-            for (option in optionGroup.options()!!) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid())
-                }
-            }
-        }
-        return optionsFromGroups
     }
 
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)

@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventNonEditableReason;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -73,5 +74,9 @@ public class EventInitialContract {
         void setNewGeometry(String value);
 
         void displayFeatureTypeError();
+
+        void setEditionStatus(String reason);
+
+        void hideEditionStatus();
     }
 }

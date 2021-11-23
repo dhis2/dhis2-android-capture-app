@@ -21,6 +21,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -54,6 +55,8 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    implementation project(":commons")
+
     debugImplementation project(':core')
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
@@ -67,6 +70,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
     implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
+
+    //Timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
 
     //region Test
     testImplementation "junit:junit:${libraries.junit}"

@@ -207,7 +207,7 @@ class RelationshipMapLayer(
     }
 
     private fun deselectCurrent() {
-        selectedLineLayer.setProperties(visibility(Property.NONE))
+        selectedLineLayer.setProperties(PropertyFactory.iconSize(1f))
         selectedPointLayer.setProperties(visibility(Property.NONE))
     }
 

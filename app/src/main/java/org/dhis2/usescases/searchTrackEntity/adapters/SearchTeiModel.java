@@ -4,6 +4,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -41,6 +42,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private String teTypeName;
     private String enrolledOrgUnit;
     private boolean showNavigationButton = false;
+    @Nullable public String onlineErrorMessage;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -55,8 +57,8 @@ public class SearchTeiModel implements CarouselItemModel {
         this.sortingKey = null;
         this.sortingValue = null;
         this.enrolledOrgUnit = null;
+        this.onlineErrorMessage = null;
     }
-
 
     public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
         enrollmentsInfo.add(enrollmentInfo);

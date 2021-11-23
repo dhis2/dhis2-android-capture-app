@@ -20,8 +20,8 @@ class ChartViewHolder(
         chart.relativePeriodCallback = { selected: RelativePeriod?, thisCurrent: RelativePeriod? ->
             adapterCallback.filterPeriod(chart, selected, thisCurrent)
         }
-        chart.resetFilterCallback = {
-            adapterCallback.resetFilter(it)
+        chart.resetFilterCallback = { chartFilter ->
+            adapterCallback.resetFilter(chart, chartFilter)
         }
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
@@ -42,6 +42,7 @@ class ChartViewHolder(
             .withType(chart.observableChartType.get()!!)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
+
         TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
         binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(chartView)
@@ -50,6 +51,6 @@ class ChartViewHolder(
     interface ChartItemCallback {
         fun filterPeriod(chart: ChartModel, period: RelativePeriod?, current: RelativePeriod?)
         fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType)
-        fun resetFilter(filter: ChartFilter)
+        fun resetFilter(chart: ChartModel, filter: ChartFilter)
     }
 }
