@@ -403,7 +403,6 @@
     <string name="dashboard_indicators">Indicateurs</string>
     <string name="empty_indicators">Il n\'y a pas d\'indicateurs pour ce programme.</string>
     <string name="dashboard_notes">Notes</string>
-    <string name="unable_to_complete">Impossible de terminer</string>
     <string name="field_errors">Certains champs comportent des erreurs. Merci de les vérifier pour compléter.</string>
     <string name="unselect_enrollment">Désélectionner l\'inscription</string>
     <string name="unselect_enrollment_description">Montrer le tableau de bord avec tous les programmes actifs</string>

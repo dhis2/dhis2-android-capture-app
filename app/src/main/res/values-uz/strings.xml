@@ -451,7 +451,6 @@
     <string name="dashboard_analytics">Аналитика</string>
     <string name="empty_indicators">Ушбу дастур учун индикатор мавжуд эмас.</string>
     <string name="dashboard_notes">Изоҳлар</string>
-    <string name="unable_to_complete">Тугалланмади</string>
     <string name="field_errors">Баъзи майдонларда хатолар мавжуд. Илтимос, уларни бажариш учун уларни текширинг</string>
     <string name="unselect_enrollment">Барча қайдлар</string>
     <string name="unselect_enrollment_description">Барча фаол дастурлар билан бошқарув панелини кўрсатиш</string>
@@ -594,7 +593,6 @@
     <string name="map_layers">Харита қаватлари</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">Бу тўғри формат эмас.</string>
     <string name="fingerprint_title">Бармоқ излари</string>
     <string name="fingerprint_message">Илтимос, бармоқ изини киритинг</string>
     <string name="security_title">Хавфсизлик</string>
