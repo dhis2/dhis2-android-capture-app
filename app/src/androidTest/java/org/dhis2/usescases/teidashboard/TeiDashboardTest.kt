@@ -17,7 +17,6 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -335,8 +334,10 @@ class TeiDashboardTest : BaseTest() {
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+        disableRecyclerViewAnimations()
 
         searchTeiRobot {
+            waitToDebounce(800)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -356,6 +357,7 @@ class TeiDashboardTest : BaseTest() {
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
             clickOnFab()
+            waitToDebounce(800)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -365,15 +367,16 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
         val teiLastName = "Banks"
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+        disableRecyclerViewAnimations()
 
         searchTeiRobot {
+            waitToDebounce(800)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -383,21 +386,22 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
+            waitToDebounce(800)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
     @Test
-    @Ignore
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+        disableRecyclerViewAnimations()
 
         searchTeiRobot {
-       //     waitToDebounce(400)
+            waitToDebounce(800)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -407,6 +411,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
+            waitToDebounce(800)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
@@ -427,6 +432,15 @@ class TeiDashboardTest : BaseTest() {
 
         analyticsRobot {
             checkGraphType(1, ChartType.LINE_CHART)
+        }
+    }
+
+    private fun disableRecyclerViewAnimations() {
+        val activity = ruleSearch.activity
+        activity.apply{
+            runOnUiThread {
+                binding.scrollView.itemAnimator = null
+            }
         }
     }
 

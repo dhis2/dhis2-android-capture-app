@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import org.dhis2.databinding.ItemSearchErrorBinding
@@ -14,8 +15,9 @@ import org.dhis2.utils.customviews.ImageDetailBottomDialog
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
     private val presenter: SearchTEContractsModule.Presenter,
-    private val fm: FragmentManager
-) : PagedListAdapter<SearchTeiModel, RecyclerView.ViewHolder>(SearchAdapterDiffCallback()) {
+    private val fm: FragmentManager,
+    config: AsyncDifferConfig<SearchTeiModel>
+) : PagedListAdapter<SearchTeiModel, RecyclerView.ViewHolder>(config) {
 
     private enum class SearchItem {
         TEI,

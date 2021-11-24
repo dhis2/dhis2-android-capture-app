@@ -34,6 +34,8 @@ import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.AsyncDifferConfig;
+import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.Feature;
@@ -64,6 +66,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchAdapterDiffCallback;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -88,10 +91,12 @@ import org.hisp.dhis.android.core.program.Program;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -109,7 +114,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
         MapboxMap.OnMapClickListener, OnOrgUnitSelectionFinished {
 
-    ActivitySearchBinding binding;
+    public ActivitySearchBinding binding;
     @Inject
     SearchTEContractsModule.Presenter presenter;
     @Inject
@@ -201,7 +206,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainLayout, ExtensionsKt.getDp(16));
         ViewExtensionsKt.clipWithRoundedCorners(binding.mapView, ExtensionsKt.getDp(16));
-        liveAdapter = new SearchTeiLiveAdapter(fromRelationship, presenter, getSupportFragmentManager());
+
+        IdlingThreadPoolExecutor bgThreadPoolExecutor = new IdlingThreadPoolExecutor(
+                "SearchDiffExecutor",
+                2,
+                2,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                Executors.defaultThreadFactory()
+        );
+
+        AsyncDifferConfig<SearchTeiModel> config = new AsyncDifferConfig.Builder<>(SearchAdapterDiffCallback.getDiffCallback())
+                .setBackgroundThreadExecutor(bgThreadPoolExecutor)
+                .build();
+
+        liveAdapter = new SearchTeiLiveAdapter(fromRelationship, presenter, getSupportFragmentManager(), config);
         binding.scrollView.setAdapter(liveAdapter);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -629,6 +649,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     setFabIcon(false);
             });
         }
+        CountingIdlingResourceSingleton.INSTANCE.decrement();
         updateFilters(FilterManager.getInstance().getTotalFilters());
     }
 
