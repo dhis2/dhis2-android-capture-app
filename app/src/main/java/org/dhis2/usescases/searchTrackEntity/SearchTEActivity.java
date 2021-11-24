@@ -1053,9 +1053,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.mapLayerButton.setVisibility(View.GONE);
                 binding.mapPositionButton.setVisibility(GONE);
             }
-            if (!trackerMapData.getTeiModels().isEmpty() && !data.getCanRegister()) {
-                showHideFilter();
-            }
             binding.toolbarProgress.hide();
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
