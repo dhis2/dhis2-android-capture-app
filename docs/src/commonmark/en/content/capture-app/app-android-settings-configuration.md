@@ -144,7 +144,7 @@ To add a specific setting:
 
 This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc., that an android user has access to (so the resources that the android app will download), and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
-![](resources/images/capture-app-user-sync-test.png)
+![](resources/images/user-sync-test.png)
 
 > **Note:** 
 >
