@@ -363,14 +363,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case GALLERY_REQUEST:
-            case CAMERA_REQUEST:
-                comesFromImageSource = true;
-                break;
-        }
-
         if (activityResultObserver != null) {
+            comesFromImageSource = true;
             activityResultObserver.onActivityResult(requestCode, resultCode, data);
             activityResultObserver = null;
         }

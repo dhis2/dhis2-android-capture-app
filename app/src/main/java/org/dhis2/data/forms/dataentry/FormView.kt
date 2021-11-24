@@ -1,9 +1,10 @@
 package org.dhis2.data.forms.dataentry
 
 import android.Manifest
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -18,6 +19,7 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -25,8 +27,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import java.io.File
 import java.util.Calendar
+import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.bindings.getFileFromGallery
+import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -49,10 +55,14 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.utils.ActivityResultObservable
+import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.customviews.QRDetailBottomDialog
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
@@ -71,7 +81,7 @@ class FormView constructor(
 
     private val qrScanContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
+            if (it.resultCode == RESULT_OK) {
                 val intent = FormIntent.OnSave(
                     it.data?.getStringExtra(Constants.UID)!!,
                     it.data?.getStringExtra(Constants.EXTRA_DATA),
@@ -83,7 +93,7 @@ class FormView constructor(
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK && it.data?.extras != null
+            if (it.resultCode == RESULT_OK && it.data?.extras != null
             ) {
                 val uid = it.data?.getStringExtra(FIELD_UID)
                 val featureType = it.data?.getStringExtra(LOCATION_TYPE_EXTRA)
@@ -99,6 +109,50 @@ class FormView constructor(
             }
         }
 
+    private val requestCameraPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            if (it.values.all { isGranted -> isGranted }) {
+                showAddImageOptions()
+                (context as ActivityResultObservable?)?.subscribe(object : ActivityResultObserver {
+                    override fun onActivityResult(
+                        requestCode: Int,
+                        resultCode: Int,
+                        data: Intent?
+                    ) {
+                        if (resultCode != RESULT_OK) {
+                            showAddImageOptions()
+                        }
+                    }
+                })
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.camera_permission_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+    private val takePicture =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                val imageFile = File(
+                    FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
+                    "tempFile.png"
+                ).rotateImage(requireContext())
+                onSavePicture?.invoke(imageFile.path)
+            }
+        }
+
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
+                    onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(formRepository, dispatchers)
     }
@@ -109,6 +163,7 @@ class FormView constructor(
     private lateinit var alertDialogView: View
     private lateinit var dialogDelegate: DialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
+    private var onSavePicture: ((String) -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -269,6 +324,8 @@ class FormView constructor(
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
             is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
+            is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
+            is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
         }
     }
 
@@ -485,6 +542,58 @@ class FormView constructor(
                 putExtra(Constants.SCAN_RENDERING_TYPE, event.renderingType)
             }
         )
+    }
+
+    private fun requestAddImage(event: RecyclerViewUiEvents.AddImage) {
+        onSavePicture = { picture ->
+            intentHandler(
+                FormIntent.OnSave(
+                    event.uid,
+                    picture,
+                    ValueType.IMAGE
+                )
+            )
+        }
+        requestCameraPermissions.launch(
+            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        )
+    }
+
+    private fun showAddImageOptions() {
+        val options = arrayOf<CharSequence>(
+            requireContext().getString(R.string.take_photo),
+            requireContext().getString(R.string.from_gallery),
+            requireContext().getString(R.string.cancel)
+        )
+        AlertDialog.Builder(requireContext())
+            .setTitle(requireContext().getString(R.string.select_option))
+            .setItems(options) { dialog: DialogInterface, item: Int ->
+                run {
+                    when (options[item]) {
+                        requireContext().getString(R.string.take_photo) -> {
+                            val photoUri = FileProvider.getUriForFile(
+                                requireContext(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                File(
+                                    FileResourceDirectoryHelper.getFileResourceDirectory(context),
+                                    "tempFile.png"
+                                )
+                            )
+                            takePicture.launch(photoUri)
+                        }
+                        requireContext().getString(R.string.from_gallery) -> {
+                            pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+                        }
+                    }
+                    dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
+        ImageDetailBottomDialog(event.label, File(event.value))
+            .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
     }
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {

@@ -441,4 +441,10 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Deprecated
     @Override
     public void setOptionsToShow(@Nullable List<String> optionsToShow) { }
+
+    @Deprecated
+    @Override
+    public boolean getHasImage() {
+        return false;
+    }
 }

@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -31,16 +32,12 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
-import org.dhis2.utils.FileResourcesUtil;
-import org.dhis2.utils.ImageUtils;
 import org.dhis2.utils.RuleUtilsProviderResultKt;
 import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -193,39 +190,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             ).show();
         } else {
             finishDataEntry();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case Constants.GALLERY_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    Uri imageUri = data.getData();
-                    try {
-                        presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
-                        presenter.nextCalculation(true);
-                    } catch (Exception e) {
-                        crashReportController.logException(e);
-                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
-            case Constants.CAMERA_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
-                    File file = new ImageUtils().rotateImage(this, imageFile);
-                    try {
-                        presenter.saveImage(uuid, file.exists() ? file.getPath() : null);
-                        presenter.nextCalculation(true);
-                    } catch (Exception e) {
-                        crashReportController.logException(e);
-                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
         }
     }
 

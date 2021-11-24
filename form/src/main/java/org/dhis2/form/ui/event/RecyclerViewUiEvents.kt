@@ -62,4 +62,13 @@ sealed class RecyclerViewUiEvents {
         val label: String,
         val value: String?
     ) : RecyclerViewUiEvents()
+
+    data class AddImage(
+        val uid: String
+    ) : RecyclerViewUiEvents()
+
+    data class ShowImage(
+        val label: String,
+        val value: String
+    ) : RecyclerViewUiEvents()
 }
