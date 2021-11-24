@@ -110,7 +110,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 showSessionExpired();
                 return Unit.INSTANCE;
             });
-            if (!serverComponent.userManager().allowScreenShare()) {
+            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+                    !serverComponent.userManager().allowScreenShare()) {
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
             }
         }
