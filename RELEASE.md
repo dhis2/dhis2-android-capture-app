@@ -32,7 +32,7 @@ All these visualizations can be organized and displayed in groups. Groups are al
 - Period: Daily, Weekly, Monthly, Yearly, This Quarter, Last Quarter, Last 4 Quarters and Quarter this year.
 - OrgUnit: Select "All" to display all the org units available to the user or "Selection" to specify one or multiple org units.
 
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-2557) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Home.png) | [Screenshot 2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Filtering.png) | [Screenshot 3](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Groups.png) | [Screenshot 4](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Android+Settings+Webapp.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-2557) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Home.png) | [Screenshot 2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Filtering.png) | [Screenshot 3](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Groups.png) | [Screenshot 4](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Local+Analytics+-+Android+Settings+Webapp.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#local-analytics-new-25)
 
 
 ## DATA ENTRY USER EXPERIENCE
@@ -40,13 +40,13 @@ All these visualizations can be organized and displayed in groups. Groups are al
 **Dataset redesign** The layout for datasets data entry has been redesigned for a more integrated user experience and clean user interface. [Jira](https://jira.dhis2.org/browse/ANDROAPP-4382) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Data+Sets+New+style.png)
 
 **Export/Share QR and Bar codes:** Data elements or attributes type text can be configured as QR or barcodes. With the new export/share option, users will be able to display a bar or QR code in an image so that it can be shared it for printing, take a screenshot or show it on the screen for scanning.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-3891) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Export+Share+QR+Code.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-3891) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Export+Share+QR+Code.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#capture_app_visual_render_qr)
 
 **Improved render for icon-based data entry:** When program sections rendering type is used in combination with icons, a section with a single data element and associated Option Set renders the assigned icons next the options to simplify data entry. The layout and design of this screen has been redesigned and improved for a better user experience.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-4027) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Visual+Data+Entry.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-4027) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Visual+Data+Entry.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#capture_app_visual_rendering_type)
 
 **Personalized Calendar View:** In the DHIS2 Android Capture App users can switch date selection from spinner to calendar view. In this version, the app will remember the last visualization selected by the user and use it the next time the user needs to select a date.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-2402) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Calendar.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-2402) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Calendar.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/android-specific-features.html#personalized-calendar-view-new-25)
 
 **Display reason for data non-editable:** Data can be blocked for many reasons in DHIS2, because of access restrictions or expiration among others. When an Event, TEI or Data Set are not editable the user will be able to find the reason in the "Details" section.  The possible reasons are:
 - Event completion
@@ -56,36 +56,36 @@ All these visualizations can be organized and displayed in groups. Groups are al
 - Organisation unit out of capture scope
 - No access to capture data in the program or data set
 - No access to a category option in the program or data set
-  [Jira](https://jira.dhis2.org/browse/ANDROAPP-3565) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Non+Editable+Data.png) | [Documentation]()
+  [Jira](https://jira.dhis2.org/browse/ANDROAPP-3565) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Non+Editable+Data.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/android-specific-features.html#reason-for-non-editable-data-new-25)
 
 **Adjust TEI Dashboard options to program configuration:** The options offered at the TEI dashboard will be tailored to the specific configuration of the program.
 - Relationships tab will not be visible if the program relationships are not configured.
 - Create event button will be hidden when the user cannot create more events based on tracker configuration.
 - Indicators tab will be not be visible if the program has no program indicators configured.
 - Organisation Unit filter will not be visible if the user has only one Organisation Unit configured.
-  [Jira](https://jira.dhis2.org/browse/ANDROAPP-4097) | [Jira 2](https://jira.dhis2.org/browse/ANDROAPP-3129) | [Jira 3](https://jira.dhis2.org/browse/ANDROAPP-4099) | [Documentation]()
+  [Jira](https://jira.dhis2.org/browse/ANDROAPP-4097) | [Jira 2](https://jira.dhis2.org/browse/ANDROAPP-3129) | [Jira 3](https://jira.dhis2.org/browse/ANDROAPP-4099) | [Documentation](https://docs.dhis2.org/en/use/android-app/features-supported.html#tei-dashboard-navigation-panel-new-25)
 
 
 ## MAPS
 
 **General Maps User experience:** After three versions since maps were included in the DHIS2 Android App, we have reviewed and improved the user experience based on community feedback.  
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-4024) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-4024)
 
 **Center to user postion:** If the user grants location permissions to the App, the map will show the current location represented as a blue color dot. The maps in the DHIS2 Android Capture App now include the possibility to center the map on the user location.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-3583) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-User+position.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-3583) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-User+position.png)
 
 ## TRACKER FEATURES
 
-**Add support for Event - TEI relationships:** The app now allows users to add relationships from single events (Event programs) to TEIs. There is a new tab in the event dashboard, named relationships, that is active when it is configured in the server. This version does not allow relationships from TEIs to events or using events that belong to an enrollment. [Jira](https://jira.dhis2.org/browse/ANDROAPP-2275) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Event+TEI+Relationships.png) | [Documentation]()
+**Add support for Event - TEI relationships:** The app now allows users to add relationships from single events (Event programs) to TEIs. There is a new tab in the event dashboard, named relationships, that is active when it is configured in the server. This version does not allow relationships from TEIs to events or using events that belong to an enrollment. [Jira](https://jira.dhis2.org/browse/ANDROAPP-2275) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Event+TEI+Relationships.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/features-supported.html#event-tei-relationships-new-25)
 
 **NEW filter for TEIs marked as follow-up:** In Tracker pograms, the 'Follow Up' filter allows the user to filter out the TEIs that have been marked as 'Follow-up'. TEIs can be marked to be followed up in the TEI Dashbaord.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-3304) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Follow+Up+Filter.png) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-3304) | [Screenshot](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+2.5/Android-2-5-Follow+Up+Filter.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/android-specific-features.html#follow-up-new-25)
 
 ## OTHER FEATURES
 
 **Interface language based on DHIS2 user language:** The language of the interface will correspond to the language set in the DHIS2 user configuration. If the language is not available in the app, it will pick the language of the device. If none of the language configurations are available, the app will default to English.
 Translations set up in DHIS2 for metadata will also be shown according to the language in the user configuration.
-[Jira](https://jira.dhis2.org/browse/ANDROAPP-2925) | [Documentation]()
+[Jira](https://jira.dhis2.org/browse/ANDROAPP-2925) | [Documentation](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#interface-language-new-25)
 
 ## MAINTENANCE
 
