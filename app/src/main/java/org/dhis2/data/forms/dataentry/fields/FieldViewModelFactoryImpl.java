@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
@@ -235,6 +234,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
             case ORGANISATION_UNIT:
             case COORDINATE:
+            case IMAGE:
                 return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
@@ -313,19 +313,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             legendValue
                     );
                 }
-            case IMAGE:
-                return PictureViewModel.create(
-                        id,
-                        getLayout(PictureViewModel.class),
-                        label,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        !searchMode
-                );
             case BOOLEAN:
             case TRUE_ONLY:
                 ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
