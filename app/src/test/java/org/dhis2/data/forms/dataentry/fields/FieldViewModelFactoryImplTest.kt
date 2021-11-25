@@ -9,7 +9,7 @@ import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -22,7 +22,7 @@ class FieldViewModelFactoryImplTest {
     private val searchMode = true
     private lateinit var fieldViewModelFactoryImpl: FieldViewModelFactoryImpl
     private val programTrackedEntityAttribute: ProgramTrackedEntityAttribute = mock()
-    private val colorFactory: FormUiColorFactory = mock()
+    private val uiStyleProvider: UiStyleProvider = mock()
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
@@ -40,7 +40,7 @@ class FieldViewModelFactoryImplTest {
         fieldViewModelFactoryImpl = FieldViewModelFactoryImpl(
             valueTypeHintMap,
             searchMode,
-            colorFactory,
+            uiStyleProvider,
             layoutProvider,
             hintProvider,
             displayNameProvider,

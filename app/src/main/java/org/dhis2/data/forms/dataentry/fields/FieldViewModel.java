@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.KeyboardActionType;
@@ -245,9 +244,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     public FieldViewModel withLegend(LegendValue legendValue) {
-        if (this instanceof EditTextViewModel) {
-            return ((EditTextViewModel) this).withlegendValue(legendValue);
-        } else if (this instanceof SpinnerViewModel) {
+        if (this instanceof SpinnerViewModel) {
             return ((SpinnerViewModel) this).withlegendValue(legendValue);
         } else {
             return this;
@@ -457,13 +454,11 @@ public abstract class FieldViewModel implements FieldUiModel {
         return fieldMask();
     }
 
+    @Deprecated
     @NonNull
     @Override
     public FieldUiModel setKeyBoardActionDone() {
-        if (this instanceof EditTextViewModel) {
-            return ((EditTextViewModel) this).withKeyBoardActionDone();
-        } else {
-            return this;
-        }
+        //Do not use until migrate to FieldUIModel
+        return this;
     }
 }

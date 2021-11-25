@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
@@ -20,7 +19,7 @@ import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -46,6 +45,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import java.util.ArrayList
 
 class RulesUtilsProviderImplTest {
 
@@ -54,7 +54,7 @@ class RulesUtilsProviderImplTest {
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val valueStore: ValueStore = mock()
-    private val colorFactory: FormUiColorFactory = mock()
+    private val uiStyleProvider: UiStyleProvider = mock()
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
@@ -69,7 +69,7 @@ class RulesUtilsProviderImplTest {
         fieldFactory = FieldViewModelFactoryImpl(
             ValueType.values().map { it to it.name }.toMap(),
             false,
-            colorFactory,
+            uiStyleProvider,
             layoutProvider,
             hintProvider,
             displayNameProvider,
