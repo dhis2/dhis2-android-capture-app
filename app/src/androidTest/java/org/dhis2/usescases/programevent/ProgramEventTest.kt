@@ -2,24 +2,28 @@ package org.dhis2.usescases.programevent
 
 import android.Manifest
 import android.content.Intent
+import androidx.fragment.app.Fragment
+import androidx.test.core.app.ActivityScenario
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
+import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
-class ProgramEventTest: BaseTest() {
+class ProgramEventTest : BaseTest() {
 
     private val atenatalCare = "lxAQ7Zs9VYR"
     private val informationCampaign = "q04UBOqq3rp"
 
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
-
 
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -29,11 +33,11 @@ class ProgramEventTest: BaseTest() {
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity(atenatalCare)
+        disableRecyclerViewAnimations()
 
         programEventsRobot {
             clickOnAddEvent()
         }
-
         eventRegistrationRobot {
             clickNextButton()
             waitToDebounce(600)
@@ -42,12 +46,20 @@ class ProgramEventTest: BaseTest() {
             clickOnFormFabButton()
             clickOnFinishAndComplete()
         }
-
         programEventsRobot {
             checkEventWasCreatedAndClosed(eventOrgUnit, 0)
         }
-
     }
+
+    private fun disableRecyclerViewAnimations() {
+        val activity = rule.activity
+        activity.runOnUiThread {
+            activity.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
+                (this as EventListFragment).binding.recycler.itemAnimator = null
+            }
+        }
+    }
+
     @Test
     fun shouldOpenExistingEvent() {
         val eventDate = "15/3/2020"
@@ -70,6 +82,7 @@ class ProgramEventTest: BaseTest() {
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(atenatalCare)
+        disableRecyclerViewAnimations()
 
         programEventsRobot {
             clickOnEvent(eventDate, eventOrgUnit)
@@ -78,6 +91,7 @@ class ProgramEventTest: BaseTest() {
         eventRobot {
             clickOnFormFabButton()
             clickOnFinishAndComplete()
+            waitToDebounce(400)
         }
 
         programEventsRobot {
@@ -120,6 +134,7 @@ class ProgramEventTest: BaseTest() {
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(atenatalCare)
+        disableRecyclerViewAnimations()
 
         programEventsRobot {
             clickOnEvent(eventDate, eventOrgUnit)

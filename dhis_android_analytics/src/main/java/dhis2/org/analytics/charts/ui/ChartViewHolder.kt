@@ -42,6 +42,7 @@ class ChartViewHolder(
             .withType(chart.observableChartType.get()!!)
             .withGraphData(chart.graph)
             .build().getChartView(binding.root.context)
+
         TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
         binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(chartView)

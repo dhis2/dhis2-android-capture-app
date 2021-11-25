@@ -307,7 +307,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
-                    android:paddingBottom="56dp"
+                    android:paddingBottom="148dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -408,15 +408,18 @@
                         app:progressColor="@{@color/colorPrimary}" />
                 </RelativeLayout>
 
-                <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
-                    android:id="@+id/navigationBar"
-                    style="@style/DhisBottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:elevation="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:menu="@menu/navigation_search_menu" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+                android:id="@+id/navigationBar"
+                style="@style/DhisBottomNavigationView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:elevation="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/navigation_search_menu" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 app:srcCompat="@drawable/ic_refresh"
@@ -441,7 +444,6 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:focusableInTouchMode="true"
-                android:onClick="@{(view)->presenter.onFabClick(needsSearch)}"
                 app:backgroundTint="@color/white"
                 app:elevation="12dp"
                 app:fabSize="normal"
@@ -451,6 +453,5 @@
                 app:searchOrAdd='@{ needsSearch }'
                 app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </RelativeLayout>
 </layout>

@@ -66,7 +66,8 @@ class FormBottomDialogPresenterTest {
                     null,
                     ObjectStyle.builder().build(),
                     emptyList(),
-                    2
+                    2,
+                    ValueType.TEXT
                 )
             )
         )

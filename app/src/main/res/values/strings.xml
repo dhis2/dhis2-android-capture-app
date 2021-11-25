@@ -458,7 +458,10 @@
     <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
-    <string name="unable_to_complete">Unable to complete</string>
+    <string name="unable_to_save">Unable to save</string>
+    <string name="warnings_in_form">There are warnings in the form</string>
+    <string name="what_to_do">What do yo want to do?</string>
+    <string name="review">Review</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
     <string name="unselect_enrollment">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
@@ -603,7 +606,6 @@
     <string name="map_layers">Map layers</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">It is not a correct format.</string>
     <string name="fingerprint_title">Fingerprint</string>
     <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
     <string name="security_title">Security</string>
@@ -866,4 +868,5 @@
     <string name="edition_enrollment_is_no_open">This data is not editable because the enrollment is completed or cancelled</string>
     <string name="edition_orgunit_capture_scope">You cannot edit data from this organisation unit</string>
     <string name="reload_list">Reset search</string>
+    <string name="error_tei_online_search_title">The online search returned the following message:</string>
 </resources>

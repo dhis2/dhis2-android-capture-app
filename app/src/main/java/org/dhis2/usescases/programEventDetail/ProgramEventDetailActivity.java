@@ -269,7 +269,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
         ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
     }
@@ -316,7 +316,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         isMapVisible = showMap;
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                showMap ? new EventMapFragment() : new EventListFragment()
+                showMap ? new EventMapFragment() : new EventListFragment(),
+                showMap ? "MAP_FRAGMENT" : "EVENT_LIST"
         ).commitNow();
         binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
         binding.filter.setVisibility(View.VISIBLE);

@@ -66,6 +66,7 @@ class FormView constructor(
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
+    private val onActivityForResult: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     dispatchers: DispatcherProvider
 ) : Fragment() {
@@ -81,6 +82,25 @@ class FormView constructor(
                 intentHandler(intent)
             }
         }
+
+    private val mapContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK && it.data?.extras != null
+            ) {
+                val uid = it.data?.getStringExtra(FIELD_UID)
+                val featureType = it.data?.getStringExtra(LOCATION_TYPE_EXTRA)
+                val coordinates = it.data?.getStringExtra(DATA_EXTRA)
+                if (uid != null && featureType != null) {
+                    val intent = FormIntent.SelectLocationFromMap(
+                        uid,
+                        featureType,
+                        coordinates
+                    )
+                    intentHandler(intent)
+                }
+            }
+        }
+
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(formRepository, dispatchers)
     }
@@ -163,6 +183,15 @@ class FormView constructor(
             viewLifecycleOwner,
             { rowAction ->
                 onItemChangeListener?.let { it(rowAction) }
+            }
+        )
+
+        viewModel.queryData.observe(
+            viewLifecycleOwner,
+            { rowAction ->
+                if (needToForceUpdate) {
+                    onItemChangeListener?.let { it(rowAction) }
+                }
             }
         )
 
@@ -441,13 +470,14 @@ class FormView constructor(
     }
 
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
-        startActivityForResult(
-            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
-            Constants.RQ_MAP_LOCATION_VIEW
+        onActivityForResult?.invoke()
+        mapContent.launch(
+            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value)
         )
     }
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
+        onActivityForResult?.invoke()
         qrScanContent.launch(
             Intent(context, ScanActivity::class.java).apply {
                 putExtra(Constants.UID, event.uid)
@@ -478,24 +508,6 @@ class FormView constructor(
             childFragmentManager,
             QRDetailBottomDialog.TAG
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK &&
-            requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
-        ) {
-            val uid = data.getStringExtra(FIELD_UID)
-            val featureType = data.getStringExtra(LOCATION_TYPE_EXTRA)
-            val coordinates = data.getStringExtra(DATA_EXTRA)
-            if (uid != null && featureType != null) {
-                val intent = FormIntent.SelectLocationFromMap(
-                    uid,
-                    featureType,
-                    coordinates
-                )
-                intentHandler(intent)
-            }
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -529,6 +541,7 @@ class FormView constructor(
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
         private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
+        private var onActivityForResult: (() -> Unit)? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -586,6 +599,12 @@ class FormView constructor(
         fun factory(manager: FragmentManager) =
             apply { fragmentManager = manager }
 
+        /**
+         * Listener for the current activity to know if a activityForResult is called
+         * */
+        fun activityForResultListener(callback: () -> Unit) =
+            apply { this.onActivityForResult = callback }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
@@ -601,6 +620,7 @@ class FormView constructor(
                     needToForceUpdate,
                     onLoadingListener,
                     onFocused,
+                    onActivityForResult,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 

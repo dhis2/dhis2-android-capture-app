@@ -19,14 +19,13 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/capture-app-image62.PNG){ width=25%}
-![](resources/images/capture-app-image63.jpg){ width=25%}
+![](resources/images/capture-app-image63.png){ width=25%}
 
 > **Warning**
 > 
 > In DHIS2 versions up to 2.30 if a user attemps an on-line login and their account has been disabled as explained in the [DHIS 2 Manual - Disable User](https://docs.dhis2.org/master/en/user/html/dhis2_user_manual_en_full.html#disable_user) all the data will be wiped from the phone. Make sure that before disabling a user all the data has been synced or that you are using this feature to remotely wipe sensitive data in case of a device getting lost.
 >
-> Due to a change in the login API this feature is not available in 2.31 and above versions.
+> Due to a change in the login API this feature is not available in 2.31, 2.32 and 2.33.
 
 
 ## Account Recovery { #capture_app_generic_recovery }
@@ -42,7 +41,7 @@ The users will be able to restore their own password if they have the setting en
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
 
-![](resources/images/capture-app-image65.PNG){width=25%}
+![](resources/images/capture-app-image65.png){width=25%}
 ![](resources/images/capture-app-image63.jpg){width=25%}
 
 ## Fingerprint { #capture_app_generic_fingerprint }
@@ -77,7 +76,6 @@ The app has new and improved filters for all listing screens (home, event listin
 Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
 ![](resources/images/capture-app-image19.png){ width=25%}
-![](resources/images/capture-app-image97.png){ width=25%}
 ![](resources/images/capture-app-image123.png){ width=25%}
 ![](resources/images/capture-app-image134.png){ width=25%}
 
@@ -107,9 +105,9 @@ Filter the Events, TEIs(based on their events) and data sets, the following peri
 - Other (Opens a date picker)
 - Anytime
 
-### Org. Unit { #capture_app_generic_filter_orgunit }
+### Org. Unit (Improved 2.5) { #capture_app_generic_filter_orgunit }
 
-Allows the user to type the search or select an org unit from the tree.
+Allows the user to type the search or select an org unit from the tree. The filter will not be visible if the user has only one Organisation Unit configured.
 
 ### Sync { #capture_app_generic_filter_sync }
 
@@ -139,6 +137,10 @@ The 'Date of Enrollment' will apply to the Enrollment date of the TEI in the pro
 ### Enrollment Status { #capture_app_generic_filter_enroll_status }
 
 The filter 'Enrollment status' offers three options: Active, Completed, Cancelled. Only one option can be selected at time. If you filter by "completed" and the TEI has more than one enrollment, the app will open the "active"  enrollment. To see the completed one, select the three dot menu at the top right corner of the dashboard and select "program enrollments".
+
+### Follow-Up (New 2.5)
+
+The 'Follow Up' filter allowes the user to filter out the TEIs that have been marked as 'Follow-up'. TEIs can be marked to be followed up in the TEI Dashbaord.
 
 ### Filtering added in TEI Dashboard: { #capture_app_generic_filter_tei }
 
@@ -284,4 +286,28 @@ When a program stage or tracked entity type have a feature type (and for program
 ![](resources/images/capture-app-image102.png){ width=25%}
 
 If the TEI has a profile image, the map will display it.
+
 ![](resources/images/capture-app-image103.png){ width=25%}
+
+## Personalized Calendar View (New 2.5)
+
+In the DHIS2 Android Capture App users can switch date selection from spinner to calendar view. In this version, the app will remember the last visualization selected by the user and use it the next time the user needs to select a date.
+
+![](resources/images/capture-app-image177.png){ width=25%}
+
+## Reason for non-editable data (New 2.5)
+
+Data can be blocked for many reasons in DHIS2, because of access restrictions or expiration among others. When an Event, TEI or Data Set are not editable the user will be able to find the reason on the "Details" section.
+
+The following list contains all possible reasons:
+
+* Event completion
+* Enrollment completion
+* Expired event
+* Closed organization unit
+* Organization unit out of capture scope
+* No access to capture data in the program or data set
+* No access to a category option in the program or data set
+
+![](resources/images/capture-app-image178.png){ width=25%}
+![](resources/images/capture-app-image179.png){ width=25%}

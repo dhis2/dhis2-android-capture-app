@@ -22,6 +22,7 @@ import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -102,14 +103,16 @@ class EnrollmentModule(
     @PerActivity
     fun fieldFactory(
         context: Context,
-        colorFactory: FormUiColorFactory
+        colorFactory: FormUiColorFactory,
+        d2: D2
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             context.valueTypeHintMap(),
             false,
             colorFactory,
             LayoutProviderImpl(),
-            HintProviderImpl(context)
+            HintProviderImpl(context),
+            DisplayNameProviderImpl(d2)
         )
     }
 
@@ -187,14 +190,16 @@ class EnrollmentModule(
         rulesRepository: RulesRepository,
         enrollmentRepository: EnrollmentObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
-        teiRepository: TrackedEntityInstanceObjectRepository
+        teiRepository: TrackedEntityInstanceObjectRepository,
+        enrollmentService: DhisEnrollmentUtils
     ): EnrollmentFormRepository {
         return EnrollmentFormRepositoryImpl(
             d2,
             rulesRepository,
             enrollmentRepository,
             programRepository,
-            teiRepository
+            teiRepository,
+            enrollmentService
         )
     }
 
@@ -214,7 +219,8 @@ class EnrollmentModule(
                 enrollmentRepository,
                 crashReportController
             ),
-            FieldErrorMessageProvider(activityContext)
+            FieldErrorMessageProvider(activityContext),
+            DisplayNameProviderImpl(d2)
         )
     }
 }

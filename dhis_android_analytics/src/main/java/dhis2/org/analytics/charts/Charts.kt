@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts
 
+import android.content.Context
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -34,6 +35,7 @@ interface Charts {
     }
 
     interface Dependencies {
+        fun getContext(): Context
         fun getD2(): D2
         fun getFeatureConfigRepository(): FeatureConfigRepository
     }

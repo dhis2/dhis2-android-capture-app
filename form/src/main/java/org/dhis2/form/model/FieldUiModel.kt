@@ -26,6 +26,8 @@ interface FieldUiModel {
 
     val label: String
 
+    val formattedLabel: String
+
     val programStageSection: String?
 
     val style: FormUiModelStyle?
@@ -43,6 +45,8 @@ interface FieldUiModel {
     val allowFutureDates: Boolean?
 
     val uiEventFactory: UiEventFactory?
+
+    val displayName: String?
 
     fun setCallback(callback: Callback)
 
@@ -73,6 +77,8 @@ interface FieldUiModel {
     fun setWarning(warning: String): FieldUiModel
 
     fun setFieldMandatory(): FieldUiModel
+
+    fun setDisplayName(displayName: String?): FieldUiModel
 
     interface Callback {
         fun intent(intent: FormIntent)

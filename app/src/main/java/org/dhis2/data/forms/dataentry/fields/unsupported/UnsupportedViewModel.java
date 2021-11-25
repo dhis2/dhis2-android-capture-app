@@ -7,12 +7,13 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ValueType;
 
 @AutoValue
 public abstract class UnsupportedViewModel extends FieldViewModel {
 
-    public static FieldViewModel create(String id, int layoutId, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
-        return new AutoValue_UnsupportedViewModel(id, layoutId, label, false, value, section, null, false, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.UNSUPPORTED, null, null, false, null);
+    public static FieldViewModel create(String id, int layoutId, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle, ValueType valueType) {
+        return new AutoValue_UnsupportedViewModel(id, layoutId, label, false, value, section, null, false, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.UNSUPPORTED, null, null, false, valueType);
     }
 
     @Override

@@ -60,6 +60,7 @@ class TeiFlowRobot : BaseRobot() {
         }
 
         enrollmentRobot {
+            waitToDebounce(1000)
             checkActiveAndPastEnrollmentDetails(enrollmentDetails)
         }
     }

@@ -121,7 +121,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public void deleteSelectedOption() {
-        setValueOption(null, null);
+        viewModel.onOptionClear();
     }
 
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
@@ -238,6 +238,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             new OptionSetPopUp(getContext(), v, viewModel,
                     this);
         }
+    }
+
+    public TextView textView() {
+        return editText;
     }
 
     public interface OnSelectedOption {

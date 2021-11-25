@@ -50,10 +50,10 @@
         <TextView
             android:id="@+id/label"
             style="@style/FieldLabel"
-            app:label_text_color="@{item.style()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{item.formattedLabel}"
+            app:label_text_color="@{item.style()}"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
@@ -71,12 +71,12 @@
             android:layout_marginEnd="16dp"
             android:onClick="@{v -> item.onDescriptionClick()}"
             android:visibility="@{item.description() != null? View.VISIBLE : View.GONE}"
+            app:description_icon_tint="@{item.style()}"
             app:layout_constraintBottom_toBottomOf="@+id/label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label"
             app:layout_constraintTop_toTopOf="@+id/label"
             app:srcCompat="@drawable/ic_info_outline"
-            app:description_icon_tint="@{item.style()}"
             app:view_edition="@{item.editable}" />
 
 
@@ -98,22 +98,25 @@
                 android:hint="@{item.hint}"
                 android:theme="@style/loginInputText"
                 app:error_message="@{item.error()}"
-                app:warning_message="@{item.warning()}"
-                app:input_layout_style="@{item.style()}">
+                app:input_layout_style="@{item.style()}"
+                app:warning_message="@{item.warning()}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
+                    android:onTextChanged="@{(txt, start, before, count )->item.onTextChanged(txt)}"
                     android:singleLine="true"
                     android:text="@{item.value()}"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:requestFocus="@{item.activated()}"
-                    app:view_edition="@{item.editable}"
                     app:action_handler="@{item}"
                     app:input_style="@{item}"
+                    app:onFocusChangeListener="@{(view, hasFocus)->item.onFocusChanged(hasFocus, view)}"
+                    app:requestFocus="@{item.activated()}"
+                    app:view_edition="@{item.editable}"
                     tools:text="111-111-111" />
+
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,16 +128,16 @@
                 android:onClick="@{()->item.scan()}"
                 android:padding="11dp"
                 app:action_icon="@{item}"
-                app:view_edition="@{item.editable}"
                 app:action_icon_tint="@{item.style()}"
+                app:view_edition="@{item.editable}"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
             <ImageView
                 android:id="@+id/delete"
                 style="@style/ActionIcon"
-                app:action_icon_tint="@{item.style()}"
                 android:onClick="@{()->item.onClearValue()}"
                 android:visibility="@{item.canShowDeleteButton ? View.VISIBLE : View.GONE}"
+                app:action_icon_tint="@{item.style()}"
                 app:srcCompat="@drawable/ic_close"
                 app:tint="@color/colorGreyDefault"
                 tools:visibility="visible" />

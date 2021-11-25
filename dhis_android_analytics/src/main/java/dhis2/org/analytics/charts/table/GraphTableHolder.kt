@@ -8,6 +8,7 @@ import dhis2.org.R
 class GraphTableHolder(itemView: View) : AbstractViewHolder(itemView) {
     fun bind(text: String) {
         itemView.findViewById<TextView>(R.id.text).text = text
+        itemView.findViewById<TextView>(R.id.text).isSelected = true
     }
 
     fun setBackground(isEven: Boolean) {

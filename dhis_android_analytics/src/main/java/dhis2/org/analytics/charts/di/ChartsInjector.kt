@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.di
 
+import android.content.Context
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -7,6 +8,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.ChartsRepository
 import dhis2.org.analytics.charts.ChartsRepositoryImpl
 import dhis2.org.analytics.charts.DhisAnalyticCharts
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.mappers.AnalyticDataElementToDataElementData
 import dhis2.org.analytics.charts.mappers.AnalyticIndicatorToIndicatorData
 import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalyticsModel
@@ -41,14 +43,16 @@ class ChartsModule {
         visualizationToGraph: VisualizationToGraph,
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
-        indicatorToGraph: ProgramIndicatorToGraph
+        indicatorToGraph: ProgramIndicatorToGraph,
+        analyticsResources: AnalyticResources
     ): ChartsRepository =
         ChartsRepositoryImpl(
             d2,
             visualizationToGraph,
             analyticsTeiSettingsToGraph,
             dataElementToGraph,
-            indicatorToGraph
+            indicatorToGraph,
+            analyticsResources
         )
 
     @Provides
@@ -117,6 +121,11 @@ class ChartsModule {
         periodStepProvider: PeriodStepProvider
     ): ChartCoordinatesProvider {
         return ChartCoordinatesProviderImpl(d2, periodStepProvider)
+    }
+
+    @Provides
+    internal fun analyticResources(context: Context): AnalyticResources {
+        return AnalyticResources(context)
     }
 
     @Provides

@@ -5,11 +5,14 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.hisp.dhis.android.core.common.ValueType
 
 class FormRepositoryImpl(
     private val formValueStore: FormValueStore?,
-    private val fieldErrorMessageProvider: FieldErrorMessageProvider
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider,
+    private val displayNameProvider: DisplayNameProvider
 ) : FormRepository {
 
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
@@ -29,7 +32,7 @@ class FormRepositoryImpl(
                     if (formValueStore != null) {
                         formValueStore.save(action.id, action.value, action.extraData)
                     } else {
-                        updateValueOnList(action.id, action.value)
+                        updateValueOnList(action.id, action.value, action.valueType)
                         StoreResult(
                             action.id,
                             ValueStoreResult.VALUE_CHANGED
@@ -48,12 +51,10 @@ class FormRepositoryImpl(
 
             ActionType.ON_TEXT_CHANGE -> {
                 updateErrorList(action)
-                updateValueOnList(action.id, action.value)
-                formValueStore?.let {
-                    StoreResult(action.id)
-                } ?: StoreResult(
+                updateValueOnList(action.id, action.value, action.valueType)
+                StoreResult(
                     action.id,
-                    ValueStoreResult.VALUE_CHANGED
+                    ValueStoreResult.TEXT_CHANGING
                 )
             }
         }
@@ -92,7 +93,7 @@ class FormRepositoryImpl(
         return null
     }
 
-    private fun updateValueOnList(uid: String, value: String?) {
+    private fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
         itemList.let { list ->
             list.find { item ->
                 item.uid == uid
@@ -100,6 +101,7 @@ class FormRepositoryImpl(
                 itemList = list.updated(
                     list.indexOf(item),
                     item.setValue(value)
+                        .setDisplayName(displayNameProvider.provideDisplayName(valueType, value))
                 )
             }
         }
@@ -115,6 +117,12 @@ class FormRepositoryImpl(
                     fieldErrorMessageProvider.getFriendlyErrorMessage(it)
                 }
                 item.setValue(action.value).setError(error)
+                    .setDisplayName(
+                        displayNameProvider.provideDisplayName(
+                            action.valueType,
+                            action.value
+                        )
+                    )
             } ?: item
         }
     }

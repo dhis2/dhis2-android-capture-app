@@ -185,7 +185,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         boolean programStageHasCoordinates =
                 d2.programModule().programStages().byProgramUid().eq(programUid).one().get()
                         .map(stage -> {
-                           if (stage.featureType() != null || stage.featureType() == FeatureType.NONE) {
+                           if (stage.featureType() != null && stage.featureType() != FeatureType.NONE) {
                                return true;
                            } else {
                                return false;

@@ -12,6 +12,7 @@ data class RuleUtilsProviderResult(
     val fieldsWithWarnings: List<FieldWithError>,
     val unsupportedRules: List<String>,
     val fieldsToUpdate: List<String>,
+    val stagesToHide: List<String>,
     val configurationErrors: List<RulesUtilsProviderConfigurationError>
 ) {
     fun errorMap(): Map<String, String> = fieldsWithErrors.map {

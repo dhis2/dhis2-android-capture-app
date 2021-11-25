@@ -141,7 +141,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void openOrgUnitTreeSelector() {
-        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, Collections.emptyList());
+        OUTreeFragment ouTreeFragment = OUTreeFragment.Companion.newInstance(true, FilterManager.getInstance().getOrgUnitUidsFilters());
         ouTreeFragment.setSelectionCallback(this);
         ouTreeFragment.show(getSupportFragmentManager(), "OUTreeFragment");
     }
