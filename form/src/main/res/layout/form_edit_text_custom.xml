@@ -133,6 +133,7 @@
                         app:setOnEditorActionListener="@{item}"
                         app:setOnFocusChangeListener="@{item}"
                         app:setOnTouchListener="@{item}"
+                        app:setRenderingType="@{item}"
                         tools:text="hello" />
 
                 </com.google.android.material.textfield.TextInputLayout>

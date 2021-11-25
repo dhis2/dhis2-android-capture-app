@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.binding
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
 import android.text.Editable
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
+import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -23,9 +25,13 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView
 import org.dhis2.commons.extensions.Preconditions.Companion.equals
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.openKeyboard
+import org.dhis2.commons.prefs.SHARE_PREFS
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
 import org.dhis2.form.databinding.DataElementLegendBinding
@@ -33,6 +39,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
 import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
@@ -298,7 +305,7 @@ fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
         if (hasFocus) {
             openKeyboard()
         } else if (valueHasChanged(text, item.value)) {
-//            checkAutocompleteRendering()
+            checkAutocompleteRendering(context, item, text.toString())
             item.invokeIntent(
                 FormIntent.OnSave(
                     uid = item.uid,
@@ -343,4 +350,47 @@ fun EditText.bindSetFilters(valueType: ValueType) {
         }
         else -> arrayOf()
     }
+}
+
+@BindingAdapter("setRenderingType")
+fun TextInputAutoCompleteTextView.bindRenderingType(item: FieldUiModel) {
+    if (item.renderingType == UiRenderType.AUTOCOMPLETE) {
+        val autoCompleteValues = getListFromPreference(context, item.uid)
+        val autoCompleteAdapter = ArrayAdapter(
+            context,
+            android.R.layout.simple_dropdown_item_1line,
+            autoCompleteValues
+        )
+        setAdapter(autoCompleteAdapter)
+    }
+}
+
+fun getListFromPreference(context: Context, uid: String): MutableList<String> {
+    val gson = Gson()
+    val json = context.getSharedPreferences(
+        SHARE_PREFS,
+        Context.MODE_PRIVATE
+    ).getString(uid, "[]")
+    val type = object : TypeToken<List<String>>() {}.type
+    return gson.fromJson(json, type)
+}
+
+fun checkAutocompleteRendering(context: Context, item: FieldUiModel, value: String) {
+    if (item.renderingType == UiRenderType.AUTOCOMPLETE) {
+        val autoCompleteValues = getListFromPreference(context, item.uid)
+        if (!autoCompleteValues.contains(value)) {
+            autoCompleteValues.add(value)
+            saveListToPreference(context, item.uid, autoCompleteValues)
+        }
+    }
+}
+
+fun saveListToPreference(context: Context, uid: String, list: List<String>) {
+    val gson = Gson()
+    val json = gson.toJson(list)
+    context.getSharedPreferences(
+        SHARE_PREFS,
+        Context.MODE_PRIVATE
+    )
+        .edit().putString(uid, json).apply()
 }

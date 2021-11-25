@@ -1,9 +1,9 @@
 package org.dhis2.form.ui.event
 
-import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiEventType.ADD_PICTURE
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
 import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
@@ -12,10 +12,12 @@ import org.dhis2.form.model.UiEventType.ORG_UNIT
 import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHOW_DESCRIPTION
+import org.dhis2.form.model.UiEventType.SHOW_PICTURE
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.Calendar
 
 class UiEventFactoryImpl(
     val uid: String,

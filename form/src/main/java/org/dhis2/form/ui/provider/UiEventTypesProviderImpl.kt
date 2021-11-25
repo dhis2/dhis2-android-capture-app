@@ -23,6 +23,7 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
             ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS -> UiRenderType.HORIZONTAL_RADIOBUTTONS
             ValueTypeRenderingType.VERTICAL_CHECKBOXES -> UiRenderType.VERTICAL_CHECKBOXES
             ValueTypeRenderingType.HORIZONTAL_CHECKBOXES -> UiRenderType.HORIZONTAL_CHECKBOXES
+            ValueTypeRenderingType.AUTOCOMPLETE -> UiRenderType.AUTOCOMPLETE
             else -> UiRenderType.DEFAULT
         }
     }
