@@ -117,6 +117,7 @@ class FilterTest: BaseTest() {
             selectNotSyncedState()
         }
         homeRobot {
+            openFilters()
             checkItemsInProgram(0,"Antenatal care visit", "1")
             checkItemsInProgram(4,"Child Programme", "0")
         }
