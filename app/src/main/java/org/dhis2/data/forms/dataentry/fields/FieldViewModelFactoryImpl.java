@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
@@ -136,25 +135,33 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             mandatory = false;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
-                if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
+                ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
+                if (valueTypeRenderingType.equals(ValueTypeRenderingType.QR_CODE) || valueTypeRenderingType.equals(ValueTypeRenderingType.BAR_CODE)) {
                 } else {
-                    return SpinnerViewModel.create(
+                    return new FieldUiModelImpl(
                             id,
-                            getLayout(SpinnerViewModel.class),
-                            label,
-                            valueTypeHintMap.get(type),
-                            mandatory,
-                            optionSet,
+                            layoutProvider.getLayoutByType(type, valueTypeRenderingType, renderingType),
                             value,
-                            section,
+                            false,
+                            null,
                             editable,
+                            null,
+                            mandatory,
+                            label,
+                            section,
+                            uiStyleProvider.provideStyle(type),
+                            hintProvider.provideDateHint(type),
                             description,
-                            objectStyle,
-                            !searchMode,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
+                            type,
                             legendValue,
-                            type
+                            optionSet,
+                            allowFutureDates,
+                            new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                            displayNameProvider.provideDisplayName(type, value, optionSet),
+                            uiEventTypesProvider.provideUiRenderType(featureType, valueTypeRenderingType, renderingType),
+                            options,
+                            keyboardActionProvider.provideKeyboardAction(type),
+                            fieldMask
                     );
                 }
             }

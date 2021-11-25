@@ -75,4 +75,8 @@ sealed class RecyclerViewUiEvents {
     data class CopyToClipboard(
         val value: String?
     ) : RecyclerViewUiEvents()
+
+    data class OpenOptionSetDialog(
+        val field: FieldUiModel
+    ) : RecyclerViewUiEvents()
 }

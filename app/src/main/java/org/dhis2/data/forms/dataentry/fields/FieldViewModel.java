@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.KeyboardActionType;
 import org.dhis2.form.model.LegendValue;
@@ -247,24 +246,10 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withError(error);
     }
 
-    public FieldViewModel withLegend(LegendValue legendValue) {
-        if (this instanceof SpinnerViewModel) {
-            return ((SpinnerViewModel) this).withlegendValue(legendValue);
-        } else {
-            return this;
-        }
-    }
-
     @NotNull
     @Override
     public FieldUiModel setEditable(boolean editable) {
         return withEditMode(editable);
-    }
-
-    @NotNull
-    @Override
-    public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
-        return withLegend(legendValue);
     }
 
     @NonNull

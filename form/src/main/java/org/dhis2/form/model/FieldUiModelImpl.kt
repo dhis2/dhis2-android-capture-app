@@ -89,7 +89,7 @@ data class FieldUiModelImpl(
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
-        uiEventFactory?.generateEvent(value, uiEventType, renderingType)?.let {
+        uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
     }

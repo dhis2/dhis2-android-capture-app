@@ -73,9 +73,11 @@ import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.QRDetailBottomDialog
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.dhis2.utils.optionset.OptionSetDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -426,6 +428,7 @@ class FormView(
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
+            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
         }
     }
@@ -783,6 +786,26 @@ class FormView(
                 ) { _, _ -> displayConfErrors = false }
                 .setCancelable(false)
                 .show()
+        }
+    }
+
+    private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
+        OptionSetDialog().apply {
+            create(this@FormView.requireContext())
+            optionSet = uiEvent.field
+            listener = OptionSetOnClickListener {
+                intentHandler(
+                    FormIntent.OnSave(
+                        uiEvent.field.uid,
+                        it.code(),
+                        uiEvent.field.valueType
+                    )
+                )
+            }
+            clearListener = View.OnClickListener {
+                intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
+            }
+            show(this@FormView.childFragmentManager, OptionSetDialog.TAG)
         }
     }
 

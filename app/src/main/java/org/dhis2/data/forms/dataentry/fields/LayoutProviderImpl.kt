@@ -2,15 +2,12 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
-private val layouts = mapOf<KClass<*>, Int>(
-    SpinnerViewModel::class to R.layout.form_option_set_spinner
-)
+private val layouts = mapOf<KClass<*>, Int>()
 
 class LayoutProviderImpl : LayoutProvider {
 
@@ -43,7 +40,7 @@ class LayoutProviderImpl : LayoutProvider {
                     ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
                     ValueTypeRenderingType.QR_CODE,
                     ValueTypeRenderingType.BAR_CODE -> R.layout.form_scan
-                    else -> R.layout.form_edit_text_custom
+                    else -> R.layout.form_option_set_spinner
                 }
             }
             ValueType.TRUE_ONLY,
