@@ -388,6 +388,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
@@ -396,6 +397,7 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
+       //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }
 
