@@ -190,8 +190,7 @@ fun EditText.bindInputType(valueType: ValueType) {
 fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-        override fun afterTextChanged(editable: Editable) {
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
             if (valueHasChanged(text, item.value) && hasFocus()) {
                 item.onTextChange(text.toString())
             }
@@ -203,6 +202,7 @@ fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView
                 }
             }
         }
+        override fun afterTextChanged(editable: Editable) {}
     })
 }
 
@@ -266,6 +266,7 @@ fun setLegend(textView: TextView, legendValue: LegendValue?) {
 fun bindRequestFocus(editText: EditText, focused: Boolean) {
     if (focused) {
         editText.requestFocus()
+        editText.setSelection(editText.length())
         editText.isCursorVisible = true
         editText.openKeyboard()
     } else {
