@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.openKeyboard;
+
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;

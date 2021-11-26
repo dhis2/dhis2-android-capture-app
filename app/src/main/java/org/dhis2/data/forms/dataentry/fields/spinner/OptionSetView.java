@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+
 import android.content.Context;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -21,13 +24,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.dhis2.utils.customviews.OptionSetOnClickListener;
 import org.dhis2.utils.customviews.OptionSetPopUp;
@@ -35,9 +38,6 @@ import org.dhis2.utils.optionset.OptionSetDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
 
 public class OptionSetView extends FieldLayout implements OptionSetOnClickListener, View.OnClickListener {
     private ViewDataBinding binding;

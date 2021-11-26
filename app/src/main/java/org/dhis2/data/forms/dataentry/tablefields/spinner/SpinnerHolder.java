@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.spinner;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+
 import androidx.fragment.app.FragmentActivity;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
