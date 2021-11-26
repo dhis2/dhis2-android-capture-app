@@ -8,7 +8,6 @@ import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
@@ -99,21 +98,6 @@ class EnrollmentRepository(
             .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
             .map { transform(it) }
             .toList()
-            .map {
-                val finalFieldList = mutableListOf<FieldUiModel>()
-                for ((index, field) in it.withIndex()) {
-                    if (
-                        (index == it.lastIndex) &&
-                        field is EditTextViewModel &&
-                        field.valueType() != ValueType.LONG_TEXT
-                    ) {
-                        finalFieldList.add(field.withKeyBoardActionDone())
-                    } else {
-                        finalFieldList.add(field)
-                    }
-                }
-                finalFieldList
-            }
     }
 
     @VisibleForTesting
@@ -131,15 +115,7 @@ class EnrollmentRepository(
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
                     val field = transform(programTrackedEntityAttribute, section.uid())
-                    if (
-                        (index == section.attributes()!!.lastIndex) &&
-                        field is EditTextViewModel &&
-                        field.valueType() != ValueType.LONG_TEXT
-                    ) {
-                        fields.add(field.withKeyBoardActionDone())
-                    } else {
-                        fields.add(field)
-                    }
+                    fields.add(field)
                 }
             }
         }

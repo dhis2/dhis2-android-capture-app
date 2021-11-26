@@ -1,8 +1,8 @@
 package org.dhis2.utils.customviews
 
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
@@ -31,25 +31,14 @@ class FormBottomDialogPresenterTest {
         return mapOf(
             Pair(
                 "uid1",
-                EditTextViewModel.create(
-                    "uid1",
-                    1,
-                    "label1",
-                    true,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    "section",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    "any",
-                    false,
-                    false,
-                    null
+                FieldUiModelImpl(
+                    uid = "uid1",
+                    layoutId = 1,
+                    value = "value",
+                    mandatory = true,
+                    label = "label1",
+                    programStageSection = "section",
+                    valueType = ValueType.TEXT
                 )
             ),
             Pair(

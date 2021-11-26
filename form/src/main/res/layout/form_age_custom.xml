@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="org.dhis2.form.model.UiEventType" />
+
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
@@ -110,7 +112,7 @@
                         android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:inputType="date"
-                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_calendar])}"
+                        android:onClick="@{()-> item.invokeUiEvent(UiEventType.AGE_CALENDAR)}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:parsingErrorText="@{parsingErrorMessage}"
@@ -138,7 +140,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="date"
                         android:maxLength="4"
-                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
+                        android:onClick="@{()-> item.invokeUiEvent(UiEventType.AGE_YEAR_MONTH_DAY)}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:setInitialValueYear="@{item.value}"
@@ -166,7 +168,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="date"
                         android:maxLength="2"
-                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
+                        android:onClick="@{()-> item.invokeUiEvent(UiEventType.AGE_YEAR_MONTH_DAY)}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:setInitialValueMonth="@{item.value}" />
@@ -193,7 +195,7 @@
                         android:imeOptions="actionDone"
                         android:inputType="date"
                         android:maxLength="2"
-                        android:onClick="@{()-> item.invokeUiEvent(item.uiEventTypes[@integer/age_year_month_day])}"
+                        android:onClick="@{()-> item.invokeUiEvent(UiEventType.AGE_YEAR_MONTH_DAY)}"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:setInitialValueDay="@{item.value}" />

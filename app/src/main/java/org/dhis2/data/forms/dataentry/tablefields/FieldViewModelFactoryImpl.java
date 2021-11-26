@@ -8,7 +8,6 @@ import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
@@ -18,7 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Preconditions.isNull;
+import static org.dhis2.commons.extensions.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 

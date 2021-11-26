@@ -71,4 +71,8 @@ sealed class RecyclerViewUiEvents {
         val label: String,
         val value: String
     ) : RecyclerViewUiEvents()
+
+    data class CopyToClipboard(
+        val value: String?
+    ) : RecyclerViewUiEvents()
 }

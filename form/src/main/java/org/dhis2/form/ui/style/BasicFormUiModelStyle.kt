@@ -18,6 +18,7 @@ data class BasicFormUiModelStyle(
             ValueType.DATE -> R.drawable.ic_form_date
             ValueType.DATETIME -> R.drawable.ic_form_date_time
             ValueType.TIME -> R.drawable.ic_form_time
+            ValueType.PERCENTAGE -> R.drawable.ic_form_percentage
             else -> null
         }
 

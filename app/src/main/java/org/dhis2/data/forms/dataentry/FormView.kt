@@ -3,6 +3,8 @@ package org.dhis2.data.forms.dataentry
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.app.TimePickerDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -326,6 +328,23 @@ class FormView constructor(
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
+            is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
+        }
+    }
+
+    private fun copyToClipboard(value: String?) {
+        val clipboard =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        value?.let {
+            if (it.isNotEmpty()) {
+                val clip = ClipData.newPlainText("copy", it)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(
+                    context,
+                    requireContext().getString(R.string.copied_text),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -345,10 +364,7 @@ class FormView constructor(
         adapter.swap(
             items
         ) {
-            when (needToForceUpdate) {
-                true -> adapter.notifyDataSetChanged()
-                else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-            }
+            dataEntryHeaderHelper.onItemsUpdatedCallback()
             viewModel.onItemsRendered()
         }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)

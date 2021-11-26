@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.KeyboardActionType;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.UiEventType;
 import org.dhis2.form.model.UiRenderType;
@@ -244,9 +244,7 @@ public abstract class FieldViewModel implements FieldUiModel {
     }
 
     public FieldViewModel withLegend(LegendValue legendValue) {
-        if (this instanceof EditTextViewModel) {
-            return ((EditTextViewModel) this).withlegendValue(legendValue);
-        } else if (this instanceof SpinnerViewModel) {
+        if (this instanceof SpinnerViewModel) {
             return ((SpinnerViewModel) this).withlegendValue(legendValue);
         } else {
             return this;
@@ -374,14 +372,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Deprecated
     @Nullable
     @Override
-    public List<UiEventType> getUiEventTypes() {
-        //Do not use until migrate to FieldUIModel
-        return null;
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
     public Integer getTextColor() {
         //Do not use until migrate to FieldUIModel
         return null;
@@ -436,15 +426,39 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @Deprecated
     @Override
-    public void setOptionsToHide(@Nullable List<String> optionsToHide) { }
+    public void setOptionsToHide(@Nullable List<String> optionsToHide) {
+    }
 
     @Deprecated
     @Override
-    public void setOptionsToShow(@Nullable List<String> optionsToShow) { }
+    public void setOptionsToShow(@Nullable List<String> optionsToShow) {
+    }
 
     @Deprecated
     @Override
     public boolean getHasImage() {
         return false;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public KeyboardActionType getKeyboardActionType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getFieldMask() {
+        return fieldMask();
+    }
+
+    @Deprecated
+    @NonNull
+    @Override
+    public FieldUiModel setKeyBoardActionDone() {
+        //Do not use until migrate to FieldUIModel
+        return this;
     }
 }

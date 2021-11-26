@@ -113,7 +113,7 @@
                     app:action_handler="@{item}"
                     app:input_style="@{item}"
                     app:onFocusChangeListener="@{(view, hasFocus)->item.onFocusChanged(hasFocus, view)}"
-                    app:requestFocus="@{item.activated()}"
+                    app:requestFocus="@{item.focused}"
                     app:view_edition="@{item.editable}"
                     tools:text="111-111-111" />
 

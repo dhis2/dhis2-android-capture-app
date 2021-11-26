@@ -1,20 +1,49 @@
 package org.dhis2.form.ui.binding
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
-import android.view.inputmethod.EditorInfo
+import android.text.Editable
+import android.text.InputFilter
+import android.text.InputType
+import android.text.Spanned
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+import android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION
+import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView
+import org.dhis2.commons.extensions.Preconditions.Companion.equals
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.openKeyboard
+import org.dhis2.commons.prefs.SHARE_PREFS
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
+import org.dhis2.form.databinding.DataElementLegendBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.KeyboardActionType
+import org.dhis2.form.model.LegendValue
+import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiColorType
 import org.dhis2.form.ui.style.FormUiModelStyle
+import org.hisp.dhis.android.core.common.ValueType
 
 @BindingAdapter("label_text_color")
 fun TextView.setLabelTextColor(style: FormUiModelStyle?) {
@@ -102,7 +131,6 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
         error != null -> {
             setErrorTextAppearance(R.style.error_appearance)
             this.error = error
-            editText?.text = null
         }
         warning != null -> {
             setErrorTextAppearance(R.style.warning_appearance)
@@ -116,11 +144,73 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
 fun setImeOption(editText: EditText, type: KeyboardActionType?) {
     if (type != null) {
         when (type) {
-            KeyboardActionType.NEXT -> editText.imeOptions = EditorInfo.IME_ACTION_NEXT
-            KeyboardActionType.DONE -> editText.imeOptions = EditorInfo.IME_ACTION_DONE
-            KeyboardActionType.ENTER -> editText.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
+            KeyboardActionType.NEXT -> editText.imeOptions = IME_ACTION_NEXT
+            KeyboardActionType.DONE -> editText.imeOptions = IME_ACTION_DONE
+            KeyboardActionType.ENTER -> editText.imeOptions = IME_FLAG_NO_ENTER_ACTION
         }
     }
+}
+
+@BindingAdapter("setInputType")
+fun EditText.bindInputType(valueType: ValueType) {
+    val inputType = when (valueType) {
+        ValueType.TEXT -> InputType.TYPE_CLASS_TEXT
+        ValueType.LONG_TEXT ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        ValueType.LETTER ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        ValueType.NUMBER ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                InputType.TYPE_NUMBER_FLAG_SIGNED
+        ValueType.UNIT_INTERVAL ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        ValueType.PERCENTAGE -> InputType.TYPE_CLASS_NUMBER
+        ValueType.INTEGER_NEGATIVE,
+        ValueType.INTEGER ->
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_SIGNED
+        ValueType.INTEGER_POSITIVE,
+        ValueType.INTEGER_ZERO_OR_POSITIVE -> InputType.TYPE_CLASS_NUMBER
+        ValueType.PHONE_NUMBER -> InputType.TYPE_CLASS_PHONE
+        ValueType.EMAIL ->
+            InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        ValueType.URL -> InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT
+        else -> null
+    }
+
+    inputType?.let { this.inputType = it }
+}
+
+@BindingAdapter(value = ["onTextChangeListener", "clearButton"], requireAll = false)
+fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
+    addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+            if (valueHasChanged(text, item.value) && hasFocus()) {
+                item.onTextChange(text.toString())
+            }
+            if (item.valueType == ValueType.LONG_TEXT) {
+                if (item.editable && text.toString().isNotEmpty()) {
+                    clearButton?.visibility = View.VISIBLE
+                } else {
+                    clearButton?.visibility = View.GONE
+                }
+            }
+        }
+        override fun afterTextChanged(editable: Editable) {}
+    })
+}
+
+private fun valueHasChanged(currentValue: Editable, storedValue: String?): Boolean {
+    return !equals(
+        if (TextUtils.isEmpty(currentValue)) "" else currentValue.toString(),
+        storedValue ?: ""
+    )
 }
 
 @BindingAdapter("optionTint")
@@ -145,4 +235,163 @@ fun CompoundButton.setOptionTint(style: FormUiModelStyle?) {
             }
         }
     }
+}
+
+@BindingAdapter("legendBadge")
+fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
+    legendLayout.visibility = if (legendValue != null) View.VISIBLE else View.GONE
+    if (legendValue != null) {
+        val legendBinding: DataElementLegendBinding = DataElementLegendBinding.inflate(
+            LayoutInflater.from(legendLayout.context)
+        )
+        legendBinding.legend = legendValue
+        legendLayout.removeAllViews()
+        legendLayout.addView(legendBinding.root)
+    }
+}
+
+@BindingAdapter("legendValue")
+fun setLegend(textView: TextView, legendValue: LegendValue?) {
+    if (legendValue != null) {
+        val bg = textView.background
+        DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.color, 38))
+        val drawables = textView.compoundDrawables
+        for (drawable in drawables) {
+            if (drawable != null) DrawableCompat.setTint(drawable, legendValue.color)
+        }
+    }
+}
+
+@BindingAdapter("requestFocus")
+fun bindRequestFocus(editText: EditText, focused: Boolean) {
+    if (focused) {
+        editText.requestFocus()
+        editText.setSelection(editText.length())
+        editText.isCursorVisible = true
+        editText.openKeyboard()
+    } else {
+        editText.clearFocus()
+        editText.isCursorVisible = false
+    }
+}
+
+@BindingAdapter("setOnTouchListener")
+fun bindOnTouchListener(editText: EditText, item: FieldUiModel) {
+    editText.setOnTouchListener { _: View?, event: MotionEvent ->
+        if (MotionEvent.ACTION_UP == event.action) item.onItemClick()
+        false
+    }
+}
+
+@BindingAdapter("setOnEditorActionListener")
+fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
+    setOnEditorActionListener { _, actionId, _ ->
+        when (actionId) {
+            IME_ACTION_NEXT -> {
+                item.onNext()
+                true
+            }
+            IME_ACTION_DONE -> {
+                closeKeyboard()
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+@BindingAdapter("setOnFocusChangeListener")
+fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
+    setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus) {
+            openKeyboard()
+        } else if (valueHasChanged(text, item.value)) {
+            checkAutocompleteRendering(context, item, text.toString())
+            item.invokeIntent(
+                FormIntent.OnSave(
+                    uid = item.uid,
+                    value = text.toString(),
+                    valueType = item.valueType,
+                    fieldMask = item.fieldMask
+                )
+            )
+        }
+    }
+}
+
+@BindingAdapter("setLongCLickToClipboard")
+fun EditText.bindLongClickToClipboard(item: FieldUiModel) {
+    setOnLongClickListener {
+        item.invokeUiEvent(UiEventType.COPY_TO_CLIPBOARD)
+        true
+    }
+}
+
+@BindingAdapter("setFilters")
+fun EditText.bindSetFilters(valueType: ValueType) {
+    filters = when (valueType) {
+        ValueType.TEXT -> arrayOf<InputFilter>(InputFilter.LengthFilter(50000))
+        ValueType.LETTER -> {
+            arrayOf(
+                InputFilter.LengthFilter(1),
+                InputFilter { source: CharSequence, _: Int, _: Int, _: Spanned?, _: Int, _: Int ->
+                    when {
+                        source.toString().isEmpty() -> {
+                            source.toString()
+                        }
+                        source.toString().matches(Regex("[a-zA-Z]")) -> {
+                            source.toString()
+                        }
+                        else -> {
+                            ""
+                        }
+                    }
+                }
+            )
+        }
+        else -> arrayOf()
+    }
+}
+
+@BindingAdapter("setRenderingType")
+fun TextInputAutoCompleteTextView.bindRenderingType(item: FieldUiModel) {
+    if (item.renderingType == UiRenderType.AUTOCOMPLETE) {
+        val autoCompleteValues = getListFromPreference(context, item.uid)
+        val autoCompleteAdapter = ArrayAdapter(
+            context,
+            android.R.layout.simple_dropdown_item_1line,
+            autoCompleteValues
+        )
+        setAdapter(autoCompleteAdapter)
+    }
+}
+
+fun getListFromPreference(context: Context, uid: String): MutableList<String> {
+    val gson = Gson()
+    val json = context.getSharedPreferences(
+        SHARE_PREFS,
+        Context.MODE_PRIVATE
+    ).getString(uid, "[]")
+    val type = object : TypeToken<List<String>>() {}.type
+    return gson.fromJson(json, type)
+}
+
+fun checkAutocompleteRendering(context: Context, item: FieldUiModel, value: String) {
+    if (item.renderingType == UiRenderType.AUTOCOMPLETE) {
+        val autoCompleteValues = getListFromPreference(context, item.uid)
+        if (!autoCompleteValues.contains(value)) {
+            autoCompleteValues.add(value)
+            saveListToPreference(context, item.uid, autoCompleteValues)
+        }
+    }
+}
+
+fun saveListToPreference(context: Context, uid: String, list: List<String>) {
+    val gson = Gson()
+    val json = gson.toJson(list)
+    context.getSharedPreferences(
+        SHARE_PREFS,
+        Context.MODE_PRIVATE
+    )
+        .edit().putString(uid, json).apply()
 }

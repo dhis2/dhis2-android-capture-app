@@ -30,4 +30,17 @@
     <string name="longitude">Longitude</string>
     <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="polygon_captured">Polygon captured</string>
+    <string name="enter_value">Enter value</string>
+    <string name="enter_url">Enter url</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
+    <string name="enter_negative_integer">Enter negative integer</string>
+    <string name="enter_positive_integer">Enter positive integer</string>
+    <string name="enter_number">Enter number</string>
+    <string name="enter_percentage">Enter percentage</string>
+    <string name="enter_unit_interval">Enter number from 0 to 1</string>
+    <string name="enter_letter">Enter letter</string>
+    <string name="enter_long_text">Enter long text</string>
+    <string name="enter_text">Enter text</string>
 </resources>
