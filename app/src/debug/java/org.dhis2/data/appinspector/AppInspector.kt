@@ -22,7 +22,7 @@ class AppInspector(private val context: Context) {
 
     fun init(): AppInspector {
         SoLoader.init(context, false)
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhisUITesting")  {
             AndroidFlipperClient.getInstance(context).apply {
                 addPlugin(
                     layoutInspectorPlugin()

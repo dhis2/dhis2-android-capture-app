@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
@@ -24,6 +25,9 @@ import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.rules.Timeout
+import java.util.concurrent.TimeUnit
 
 open class BaseTest {
 
@@ -36,22 +40,20 @@ open class BaseTest {
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
+    @get:Rule
+    val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
+
+    @get:Rule
+    var permissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
     @Before
     @Throws(Exception::class)
     open fun setUp() {
         injectDependencies()
-        allowPermissions()
         registerCountingIdlingResource()
-    }
-
-    private fun allowPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getPermissionsToBeAccepted().forEach {
-                InstrumentationRegistry.getInstrumentation()
-                    .uiAutomation
-                    .executeShellCommand("pm grant ${context.packageName} $it")
-            }
-        }
     }
 
     private fun injectDependencies() {
