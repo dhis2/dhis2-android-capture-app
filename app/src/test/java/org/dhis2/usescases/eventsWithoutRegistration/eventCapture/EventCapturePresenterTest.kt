@@ -76,6 +76,36 @@ class EventCapturePresenterTest {
     }
 
     @Test
+    fun `Field with section should return its section`() {
+        val section = presenter.getFieldSection(
+            FieldUiModelImpl(
+                uid = "ID",
+                layoutId = 1,
+                label = "Label",
+                programStageSection = "testSection",
+                valueType = ValueType.TEXT
+            )
+        )
+
+        assertTrue(section == "testSection")
+    }
+
+    @Test
+    fun `Field with no section should return empty section`() {
+        val section = presenter.getFieldSection(
+            FieldUiModelImpl(
+                uid = "ID",
+                layoutId = 1,
+                label = "Label",
+                programStageSection = null,
+                valueType = ValueType.TEXT
+            )
+        )
+
+        assertTrue(section.isEmpty())
+    }
+
+    @Test
     fun `Should go back when click`() {
         presenter.onBackClick()
 

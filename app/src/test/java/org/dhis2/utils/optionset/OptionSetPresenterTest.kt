@@ -35,10 +35,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
@@ -119,23 +119,14 @@ class OptionSetPresenterTest {
         )
     }
 
-    private fun getTestSpinnerModel(): SpinnerViewModel {
-        return SpinnerViewModel.create(
-            "id",
-            1,
-            "label",
-            "hint",
-            false,
-            "optionSet",
-            "value",
-            "section",
-            true,
-            "description",
-            ObjectStyle.builder().build(),
-            false,
-            "any",
-            null,
-            ValueType.TEXT
+    private fun getTestSpinnerModel() : FieldUiModel {
+        return FieldUiModelImpl(
+            uid = "ID",
+            layoutId = 1,
+            label = "Label",
+            optionSet = "optionSet",
+            programStageSection = null,
+            valueType = ValueType.TEXT
         )
     }
 
