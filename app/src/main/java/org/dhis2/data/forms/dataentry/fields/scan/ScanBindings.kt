@@ -7,9 +7,9 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import org.dhis2.Bindings.closeKeyboard
-import org.dhis2.Bindings.openKeyboard
 import org.dhis2.R
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.openKeyboard
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 @BindingAdapter("action_icon")

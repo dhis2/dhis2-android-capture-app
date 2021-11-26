@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.location.LocationProvider;
@@ -106,7 +107,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
         binding.actionButton.setOnClickListener(view -> {
-            ViewExtensionsKt.closeKeyboard(view);
+            closeKeyboard(view);
             performSaveClick();
         });
 

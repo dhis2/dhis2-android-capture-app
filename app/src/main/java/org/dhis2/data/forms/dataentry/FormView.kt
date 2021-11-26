@@ -15,7 +15,6 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.TimePicker
 import android.widget.Toast
@@ -38,6 +37,7 @@ import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
@@ -230,7 +230,7 @@ class FormView constructor(
 
         binding.recyclerView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                closeKeyboard()
+                view.closeKeyboard()
             }
         }
 
@@ -384,7 +384,7 @@ class FormView constructor(
         items.firstOrNull { it.focused }?.let { fieldUiModel ->
             fieldUiModel.valueType?.let { valueType ->
                 if (!needsKeyboard(valueType)) {
-                    closeKeyboard()
+                    view?.closeKeyboard()
                 }
             }
         }
@@ -394,11 +394,6 @@ class FormView constructor(
         return valueType.isText ||
             valueType.isNumeric ||
             valueType.isInteger
-    }
-
-    private fun closeKeyboard() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
     }
 
     private fun intentHandler(intent: FormIntent) {
