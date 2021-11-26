@@ -28,9 +28,10 @@ data class FieldUiModelImpl(
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
-    override val uiEventTypes: List<UiEventType>?,
     override val renderingType: UiRenderType? = null,
-    override val options: List<Option>? = null
+    override val options: List<Option>? = null,
+    override val keyboardActionType: KeyboardActionType? = null,
+    override val fieldMask: String? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -100,6 +101,8 @@ data class FieldUiModelImpl(
     override fun setValue(value: String?) = this.copy(value = value)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
+
+    override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
 
     override fun setFocus() = this.copy(focused = true)
 

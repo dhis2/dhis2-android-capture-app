@@ -24,7 +24,8 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         R.layout.form_date_time,
         R.layout.form_scan,
         R.layout.form_org_unit,
-        R.layout.form_coordinate_custom
+        R.layout.form_coordinate_custom,
+        R.layout.form_edit_text_custom
     )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null

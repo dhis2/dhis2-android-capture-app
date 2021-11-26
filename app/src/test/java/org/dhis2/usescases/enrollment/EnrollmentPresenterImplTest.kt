@@ -13,8 +13,8 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.Result
@@ -26,7 +26,6 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -104,21 +103,21 @@ class EnrollmentPresenterImplTest {
     fun `Missing fields should show mandatory fields dialog`() {
         val fields = arrayListOf(
             dummyEditTextViewModel("uid1", "missing_mandatory_field", mandatory = true),
-            dummyEditTextViewModel("uid2", "error_field").withError("Error")
+            dummyEditTextViewModel("uid2", "error_field").setError("Error")
         )
 
         whenever(d2.trackedEntityModule()) doReturn mock()
         whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
         fields.forEach {
             whenever(
-                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid())
+                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid)
             ) doReturn mock()
             whenever(
-                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid()).blockingGet()
+                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid).blockingGet()
             ) doReturn mock()
             whenever(
                 d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(it.uid()).blockingGet().unique()
+                    .uid(it.uid).blockingGet().unique()
             ) doReturn false
         }
 
@@ -323,25 +322,14 @@ class EnrollmentPresenterImplTest {
         value: String? = null,
         mandatory: Boolean = false
     ) =
-        EditTextViewModel.create(
-            uid,
-            1,
-            label,
-            mandatory,
-            value,
-            "",
-            1,
-            ValueType.TEXT,
-            "testSection",
-            true,
-            null,
-            null,
-            ObjectStyle.builder().build(),
-            null,
-            "any",
-            false,
-            false,
-            null
+        FieldUiModelImpl(
+            uid = uid,
+            layoutId = 1,
+            value = value,
+            mandatory = mandatory,
+            label = label,
+            programStageSection = "testSection",
+            valueType = ValueType.TEXT
         )
 
     private fun mockTrackedEntityAttributes() {

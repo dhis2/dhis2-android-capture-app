@@ -50,7 +50,6 @@ class FormRepositoryImpl(
             }
 
             ActionType.ON_TEXT_CHANGE -> {
-                updateErrorList(action)
                 updateValueOnList(action.id, action.value, action.valueType)
                 StoreResult(
                     action.id,
@@ -65,7 +64,30 @@ class FormRepositoryImpl(
             itemList = it
         }
         val listWithErrors = mergeListWithErrorFields(itemList, itemsWithError)
-        return setFocusedItem(listWithErrors)
+        val focusedList = setFocusedItem(listWithErrors)
+        return setLastItem(focusedList)
+    }
+
+    private fun setLastItem(list: List<FieldUiModel>): List<FieldUiModel> {
+        if (list.isEmpty()) {
+            return list
+        }
+        val lastItem = getLastSectionItem(list)
+        return if (usesKeyboard(lastItem.valueType) && lastItem.valueType != ValueType.LONG_TEXT) {
+            list.updated(list.indexOf(lastItem), lastItem.setKeyBoardActionDone())
+        } else {
+            list
+        }
+    }
+
+    private fun getLastSectionItem(list: List<FieldUiModel>): FieldUiModel {
+        return list.asReversed().first { it.valueType != null }
+    }
+
+    private fun usesKeyboard(valueType: ValueType?): Boolean {
+        return valueType?.let {
+            it.isText || it.isNumeric || it.isInteger
+        } ?: false
     }
 
     private fun setFocusedItem(list: List<FieldUiModel>) = focusedItem?.let {

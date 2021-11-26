@@ -1,13 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import static org.dhis2.commons.extensions.Preconditions.isNull;
 import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
-import static org.dhis2.utils.Preconditions.isNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
@@ -21,11 +20,10 @@ import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.event.UiEventFactoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.HintProvider;
+import org.dhis2.form.ui.provider.KeyboardActionProvider;
 import org.dhis2.form.ui.provider.LayoutProvider;
 import org.dhis2.form.ui.provider.UiEventTypesProvider;
-import org.dhis2.form.ui.style.BasicFormUiModelStyle;
-import org.dhis2.form.ui.style.FormUiColorFactory;
-import org.dhis2.form.ui.style.FormUiModelStyle;
+import org.dhis2.form.ui.provider.UiStyleProvider;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -38,7 +36,6 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +44,6 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.jvm.JvmClassMappingKt;
-import kotlin.reflect.KClass;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
@@ -65,28 +61,30 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
     );
     private final boolean searchMode;
-    private final FormUiColorFactory colorFactory;
     private final LayoutProvider layoutProvider;
     private final HintProvider hintProvider;
     private final DisplayNameProvider displayNameProvider;
     private final UiEventTypesProvider uiEventTypesProvider;
+    private final KeyboardActionProvider keyboardActionProvider;
+    private final UiStyleProvider uiStyleProvider;
 
     public FieldViewModelFactoryImpl(
             @NonNull Map<ValueType, String> valueTypeHintMap,
             boolean searchMode,
-            FormUiColorFactory colorFactory,
+            UiStyleProvider uiStyleProvider,
             LayoutProvider layoutProvider,
             HintProvider hintProvider,
             DisplayNameProvider displayNameProvider,
-            UiEventTypesProvider uiEventTypesProvider
-    ) {
+            UiEventTypesProvider uiEventTypesProvider,
+            KeyboardActionProvider keyboardActionProvider) {
         this.valueTypeHintMap = valueTypeHintMap;
         this.searchMode = searchMode;
-        this.colorFactory = colorFactory;
+        this.uiStyleProvider = uiStyleProvider;
         this.layoutProvider = layoutProvider;
         this.hintProvider = hintProvider;
         this.displayNameProvider = displayNameProvider;
         this.uiEventTypesProvider = uiEventTypesProvider;
+        this.keyboardActionProvider = keyboardActionProvider;
     }
 
     @Nullable
@@ -137,10 +135,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                @NonNull List<Option> options,
                                @Nullable FeatureType featureType) {
         isNull(type, "type must be supplied");
-        FormUiModelStyle style = new BasicFormUiModelStyle(colorFactory, type);
-
-        final KClass<?> myKClass = JvmClassMappingKt.getKotlinClass(ScanTextViewModel.class);
-
         if (searchMode)
             mandatory = false;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
@@ -161,7 +155,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             valueTypeHintMap.get(type),
                             !searchMode,
                             searchMode,
-                            style,
+                            uiStyleProvider.provideStyle(type),
                             type
                     );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
@@ -176,18 +170,19 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             mandatory,
                             label,
                             section,
-                            style,
+                            uiStyleProvider.provideStyle(type),
                             hintProvider.provideDateHint(type),
                             description,
                             type,
-                            null,
+                            legendValue,
                             optionSet,
                             allowFutureDates,
-                            new UiEventFactoryImpl(id, label, type, allowFutureDates),
+                            new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                             displayNameProvider.provideDisplayName(type, value, optionSet),
-                            null,
                             uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
-                            options
+                            options,
+                            keyboardActionProvider.provideKeyboardAction(type),
+                            fieldMask
                     );
                 } else {
                     return SpinnerViewModel.create(
@@ -228,91 +223,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
 
         switch (type) {
-            case AGE:
-            case TIME:
-            case DATE:
-            case DATETIME:
-            case ORGANISATION_UNIT:
-            case COORDINATE:
-            case IMAGE:
-                return new FieldUiModelImpl(
-                        id,
-                        getLayoutByValueType(type, null),
-                        value,
-                        false,
-                        null,
-                        editable,
-                        null,
-                        mandatory,
-                        label,
-                        section,
-                        style,
-                        hintProvider.provideDateHint(type),
-                        description,
-                        type,
-                        null,
-                        null,
-                        allowFutureDates,
-                        new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value, optionSet),
-                        uiEventTypesProvider.provideUiEvents(type),
-                        uiEventTypesProvider.provideUiRenderType(featureType),
-                        null
-                );
-            case TEXT:
-            case EMAIL:
-            case LETTER:
-            case NUMBER:
-            case INTEGER:
-            case LONG_TEXT:
-            case PERCENTAGE:
-            case PHONE_NUMBER:
-            case INTEGER_NEGATIVE:
-            case INTEGER_POSITIVE:
-            case INTEGER_ZERO_OR_POSITIVE:
-            case UNIT_INTERVAL:
-            case URL:
-                if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(
-                            id,
-                            getLayout(ScanTextViewModel.class),
-                            label,
-                            mandatory,
-                            value,
-                            section,
-                            editable,
-                            optionSet,
-                            description,
-                            objectStyle,
-                            fieldRendering,
-                            valueTypeHintMap.get(type),
-                            !searchMode,
-                            searchMode,
-                            style,
-                            type
-                    );
-                } else {
-                    return EditTextViewModel.create(
-                            id,
-                            getLayoutByValueType(type, null),
-                            label,
-                            mandatory,
-                            value,
-                            valueTypeHintMap.get(type),
-                            1,
-                            type,
-                            section,
-                            editable,
-                            description,
-                            fieldRendering,
-                            objectStyle,
-                            fieldMask,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
-                            !searchMode,
-                            searchMode,
-                            legendValue
-                    );
-                }
             case BOOLEAN:
             case TRUE_ONLY:
                 ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
@@ -347,25 +257,30 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         type
                 );
             default:
-                return EditTextViewModel.create(
+                return new FieldUiModelImpl(
                         id,
                         getLayoutByValueType(type, null),
-                        label,
-                        mandatory,
                         value,
-                        valueTypeHintMap.get(type),
-                        1,
-                        type,
-                        section,
+                        false,
+                        null,
                         editable,
+                        null,
+                        mandatory,
+                        label,
+                        section,
+                        uiStyleProvider.provideStyle(type),
+                        hintProvider.provideDateHint(type),
                         description,
-                        fieldRendering,
-                        objectStyle,
-                        fieldMask,
-                        ProgramStageSectionRenderingType.LISTING.toString(),
-                        !searchMode,
-                        searchMode,
-                        legendValue
+                        type,
+                        legendValue,
+                        optionSet,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
+                        uiEventTypesProvider.provideUiRenderType(featureType),
+                        options,
+                        keyboardActionProvider.provideKeyboardAction(type),
+                        fieldMask
                 );
         }
     }

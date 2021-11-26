@@ -49,8 +49,6 @@ interface FieldUiModel {
 
     val displayName: String?
 
-    val uiEventTypes: List<UiEventType>?
-
     val textColor: Int?
 
     val backGroundColor: Pair<Array<Int>, Int>?
@@ -64,6 +62,10 @@ interface FieldUiModel {
     var optionsToShow: List<String>?
 
     val hasImage: Boolean
+
+    val keyboardActionType: KeyboardActionType?
+
+    val fieldMask: String?
 
     fun setCallback(callback: Callback)
 
@@ -100,6 +102,8 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     fun setDisplayName(displayName: String?): FieldUiModel
+
+    fun setKeyBoardActionDone(): FieldUiModel
 
     interface Callback {
         fun intent(intent: FormIntent)
