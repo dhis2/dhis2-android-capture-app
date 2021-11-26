@@ -364,10 +364,7 @@ class FormView constructor(
         adapter.swap(
             items
         ) {
-            when (needToForceUpdate) {
-                true -> adapter.notifyDataSetChanged()
-                else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-            }
+            dataEntryHeaderHelper.onItemsUpdatedCallback()
             viewModel.onItemsRendered()
         }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
