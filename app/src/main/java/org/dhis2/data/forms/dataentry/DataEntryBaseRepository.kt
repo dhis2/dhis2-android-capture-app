@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
@@ -88,19 +87,6 @@ abstract class DataEntryBaseRepository(
             }
         }
         return optionsFromGroups
-    }
-
-    fun handleOptionSetAndLastFields(field: FieldUiModel, isLastField: Boolean): FieldUiModel {
-        return when {
-            isLastField &&
-                field is EditTextViewModel &&
-                field.valueType() != ValueType.LONG_TEXT -> {
-                field.withKeyBoardActionDone()
-            }
-            else -> {
-                field
-            }
-        }
     }
 
     fun transformSection(

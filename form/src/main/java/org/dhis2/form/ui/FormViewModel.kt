@@ -275,7 +275,7 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    fun processCalculatedItems(items: List<FieldUiModel>?) {
+    fun processCalculatedItems() {
         _items.value = repository.composeList()
     }
 
