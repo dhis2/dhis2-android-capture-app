@@ -75,7 +75,7 @@ interface FieldUiModel {
 
     fun onNext()
 
-    fun onTextChange(value: String?)
+    fun onTextChange(value: CharSequence?)
 
     fun onDescriptionClick()
 

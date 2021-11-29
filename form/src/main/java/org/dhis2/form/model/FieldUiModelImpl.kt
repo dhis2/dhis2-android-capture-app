@@ -51,8 +51,12 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnNext(uid, value))
     }
 
-    override fun onTextChange(value: String?) {
-        callback?.intent(FormIntent.OnTextChange(uid, value))
+    override fun onTextChange(value: CharSequence?) {
+        val text = when {
+            value?.isEmpty() == true -> null
+            else -> value?.toString()
+        }
+        callback?.intent(FormIntent.OnTextChange(uid, text))
     }
 
     override fun onDescriptionClick() {

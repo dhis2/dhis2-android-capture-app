@@ -212,10 +212,14 @@ public abstract class FieldViewModel implements FieldUiModel {
         ));
     }
 
-    public void onTextChange(String value) {
+    public void onTextChange(CharSequence value) {
+        String text = null;
+        if (value != null) {
+            text = value.toString();
+        }
         callback.intent(new FormIntent.OnTextChange(
                 uid(),
-                value
+                text
         ));
     }
 
