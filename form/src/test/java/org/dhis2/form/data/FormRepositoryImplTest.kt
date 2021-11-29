@@ -215,8 +215,7 @@ class FormRepositoryImplTest {
             label = "field1",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
-            uiEventFactory = null,
-            uiEventTypes = null
+            uiEventFactory = null
         ),
         FieldUiModelImpl(
             uid = "uid002",
@@ -225,8 +224,7 @@ class FormRepositoryImplTest {
             label = "field2",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
-            uiEventFactory = null,
-            uiEventTypes = null
+            uiEventFactory = null
         ),
         FieldUiModelImpl(
             uid = "uid003",
@@ -235,8 +233,7 @@ class FormRepositoryImplTest {
             label = "field3",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
-            uiEventFactory = null,
-            uiEventTypes = null
+            uiEventFactory = null
         )
     )
 }
