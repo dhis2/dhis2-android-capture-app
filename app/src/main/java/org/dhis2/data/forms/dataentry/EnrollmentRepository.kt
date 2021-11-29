@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Single
+import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
@@ -24,7 +25,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
-import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -144,8 +144,8 @@ class EnrollmentRepository(
                         .byProgram().eq(programUid)
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                            transform(programTrackedEntityAttribute, section.uid())
-                        }
+                        transform(programTrackedEntityAttribute, section.uid())
+                    }
                 }
             }
             return@fromCallable fields

@@ -7,7 +7,6 @@ import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetMode
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 abstract class DataEntryBaseRepository(

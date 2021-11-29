@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry
 import android.text.TextUtils
 import io.reactivex.Flowable
 import io.reactivex.Single
+import java.util.ArrayList
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
@@ -19,7 +20,6 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
-import java.util.ArrayList
 
 class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -100,10 +100,10 @@ class EventRepository(
                         .byProgramStage().eq(event.programStage())
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
-                            fields.add(
-                                transform(it)
-                            )
-                        }
+                        fields.add(
+                            transform(it)
+                        )
+                    }
                 }
             }
             return@fromCallable fields
@@ -143,8 +143,8 @@ class EventRepository(
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue)) {
                 if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode()
-                        .eq(dataValue)
-                        .one().blockingExists()
+                    .eq(dataValue)
+                    .one().blockingExists()
                 ) {
                     dataValue =
                         d2.optionModule().options().byOptionSetUid().eq(optionSet)
@@ -214,8 +214,8 @@ class EventRepository(
             .blockingGet()
             .firstOrNull { conflict ->
                 conflict.event() == eventUid &&
-                        conflict.dataElement() == dataElementUid &&
-                        conflict.value() == value
+                    conflict.dataElement() == dataElementUid &&
+                    conflict.value() == value
             }?.displayDescription() ?: ""
     }
 
