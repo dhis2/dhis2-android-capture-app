@@ -35,11 +35,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
 import org.dhis2.utils.Result
-import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -82,7 +82,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                calcResult
+                kotlin.Result.success(calcResult.items())
             )
         ) doAnswer { null }
 
@@ -107,7 +107,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                calcResult
+                kotlin.Result.success(calcResult.items())
             )
         ) doAnswer {
             it.getArgument<MutableMap<String, ProgramStage>>(0).remove("programStage")

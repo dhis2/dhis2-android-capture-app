@@ -1,14 +1,20 @@
 package org.dhis2.form.ui
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -48,5 +54,44 @@ class FormViewModelTest {
 //        viewModel.displayResult(result)
 
         assertNotNull("Info message is generated", viewModel.showInfo.value)
+    }
+
+    @Test
+    fun `Missing and errors fields should show mandatory fields dialog`() {
+        whenever(repository.runDataIntegrityCheck()) doReturn MissingMandatoryResult(
+            emptyMap(),
+            false,
+            null
+        )
+
+        viewModel.runDataIntegrityCheck()
+
+        assertTrue(viewModel.dataIntegrityResult.value is MissingMandatoryResult)
+    }
+
+    @Test
+    fun `Error fields should show mandatory fields dialog`() {
+        whenever(repository.runDataIntegrityCheck()) doReturn FieldsWithErrorResult(
+            emptyList(),
+            false,
+            null
+        )
+
+        viewModel.runDataIntegrityCheck()
+
+        assertTrue(viewModel.dataIntegrityResult.value is FieldsWithErrorResult)
+    }
+
+    @Test
+    fun `Check data integrity is a success`() {
+        whenever(repository.runDataIntegrityCheck()) doReturn SuccessfulResult(
+            null,
+            true,
+            null
+        )
+
+        viewModel.runDataIntegrityCheck()
+
+        assertTrue(viewModel.dataIntegrityResult.value is SuccessfulResult)
     }
 }
