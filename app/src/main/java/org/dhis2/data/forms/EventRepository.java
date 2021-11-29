@@ -3,13 +3,11 @@ package org.dhis2.data.forms;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.form.data.RulesRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
-
-import java.util.HashMap;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;

@@ -1,60 +1,42 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
-import timber.log.Timber
 
 class EventCaptureFormPresenter(
-    val view: EventCaptureFormView,
-    private val activityPresenter: EventCaptureContract.Presenter,
-    val schedulerProvider: SchedulerProvider
+    private val activityPresenter: EventCaptureContract.Presenter
 ) {
-    private var finishing: Boolean = false
-    private var selectedSection: String? = null
-    var disposable: CompositeDisposable = CompositeDisposable()
 
-    fun init() {
-        disposable.add(
-            activityPresenter.formFieldsFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { fields -> populateList(fields) },
-                    { Timber.e(it) }
-                )
-        )
-    }
-
-    private fun populateList(items: List<FieldUiModel>? = null) {
-        view.showFields(items)
-        checkFinishing()
-        activityPresenter.hideProgress()
-        if (items != null) {
-            selectedSection ?: items
-                .mapNotNull { it.programStageSection }
-                .firstOrNull()
-                .let { selectedSection = it }
+    fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+        when (result) {
+            is FieldsWithErrorResult -> activityPresenter.attemptFinish(
+                result.canComplete,
+                result.onCompleteMessage,
+                result.fieldUidErrorList,
+                emptyMap()
+            )
+            is FieldsWithWarningResult -> activityPresenter.attemptFinish(
+                result.canComplete,
+                result.onCompleteMessage,
+                emptyList<String>(),
+                emptyMap()
+            )
+            is MissingMandatoryResult -> activityPresenter.attemptFinish(
+                result.canComplete,
+                result.onCompleteMessage,
+                emptyList<String>(),
+                result.mandatoryFields
+            )
+            is SuccessfulResult -> activityPresenter.attemptFinish(
+                result.canComplete,
+                result.onCompleteMessage,
+                emptyList(),
+                emptyMap()
+            )
         }
-    }
-
-    private fun checkFinishing() {
-        if (finishing) {
-            view.performSaveClick()
-        }
-        finishing = false
-    }
-
-    fun onDetach() {
-        disposable.clear()
-    }
-
-    fun onActionButtonClick() {
-        activityPresenter.attemptFinish()
-    }
-
-    fun setFinishing() {
-        finishing = true
     }
 }
