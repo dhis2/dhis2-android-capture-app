@@ -96,9 +96,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     private SearchParametersModel savedSearchParameters;
     private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
-    private FieldViewModelFactory fieldFactory;
     private DhisPeriodUtils periodUtils;
-    private String currentProgram = null;
+    private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
 
@@ -108,7 +107,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
                          SearchSortingValueSetter sortingValueSetter,
-                         FieldViewModelFactory fieldFactory,
                          DhisPeriodUtils periodUtils,
                          Charts charts,
                          CrashReportController crashReportController) {
@@ -117,89 +115,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
         this.filterPresenter = filterPresenter;
-        this.fieldFactory = fieldFactory;
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
         this.currentProgram = initialProgram;
-    }
-
-    @Override
-    public Observable<List<FieldUiModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues) {
-        if (programUid == null || programUid.isEmpty()) {
-            return trackedEntitySearchFields(currentSearchValues);
-        } else {
-            return programTrackedEntityAttributes(programUid, currentSearchValues);
-        }
-    }
-
-    private Observable<List<FieldUiModel>> trackedEntitySearchFields(Map<String, String> currentSearchValues) {
-        return d2.trackedEntityModule().trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid().eq(teiType)
-                .get().toFlowable()
-                .flatMapIterable(typeAttributes -> typeAttributes)
-                .map(typeAttribute -> {
-                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(typeAttribute.trackedEntityAttribute().uid())
-                            .blockingGet();
-                    List<Option> options = new ArrayList<>();
-                    if (attribute.optionSet() != null) {
-                        options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet().uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet();
-                    }
-                    return fieldFactory.createForAttribute(
-                            attribute,
-                            null,
-                            currentSearchValues.get(attribute.uid()),
-                            true,
-                            options
-                    );
-                })
-                .toList().map(list ->
-                        CollectionsKt.filter(list, item ->
-                                item.getValueType() != ValueType.IMAGE &&
-                                        item.getValueType() != ValueType.COORDINATE)
-                ).toObservable();
-    }
-
-    private Observable<List<FieldUiModel>> programTrackedEntityAttributes(String programUid, Map<String, String> currentSearchValues) {
-        return d2.programModule().programTrackedEntityAttributes()
-                .withRenderType()
-                .byProgram().eq(programUid)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toFlowable()
-                .flatMapIterable(programAttributes -> programAttributes)
-                .filter(programAttribute -> {
-                    boolean isSearcheable = programAttribute.searchable();
-                    boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(programAttribute.trackedEntityAttribute().uid())
-                            .blockingGet().unique() == Boolean.TRUE;
-                    return isSearcheable || isUnique;
-                })
-                .map(programAttribute -> {
-                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(programAttribute.trackedEntityAttribute().uid())
-                            .blockingGet();
-                    List<Option> options = new ArrayList<>();
-                    if (attribute.optionSet() != null) {
-                        options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet().uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet();
-                    }
-                    return fieldFactory.createForAttribute(
-                            attribute,
-                            programAttribute,
-                            currentSearchValues.get(attribute.uid()),
-                            true,
-                            options
-                    );
-                }).toList().map(list ->
-                        CollectionsKt.filter(list, item ->
-                                item.getValueType() != ValueType.IMAGE &&
-                                        item.getValueType() != ValueType.COORDINATE)
-                ).toObservable();
     }
 
     @Override
