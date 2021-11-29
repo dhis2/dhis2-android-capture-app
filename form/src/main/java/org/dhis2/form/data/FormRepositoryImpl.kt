@@ -130,7 +130,15 @@ class FormRepositoryImpl(
     }
 
     private fun calculateCompletionPercentage(list: List<FieldUiModel>) {
-        val fields = list.filter { it.valueType != null }
+        val unsupportedValueTypes = listOf(
+            ValueType.FILE_RESOURCE,
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.USERNAME
+        )
+        val fields = list.filter {
+            it.valueType != null &&
+                !unsupportedValueTypes.contains(it.valueType)
+        }
         val totalFields = fields.size
         val fieldsWithValue = fields.filter { it.value != null }.size
         completionPercentage = if (totalFields == 0) {

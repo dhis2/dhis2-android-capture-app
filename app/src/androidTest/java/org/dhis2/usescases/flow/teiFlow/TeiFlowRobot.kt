@@ -34,6 +34,7 @@ class TeiFlowRobot : BaseRobot() {
         }
 
         enrollmentRobot {
+            waitToDebounce(500)
             clickOnSaveEnrollment()
         }
     }
