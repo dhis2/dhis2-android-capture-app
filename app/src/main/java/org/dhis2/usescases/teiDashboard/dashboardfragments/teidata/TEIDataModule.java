@@ -10,6 +10,7 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.form.data.FormValueStore;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
@@ -50,7 +51,7 @@ public class TEIDataModule {
                                                  PreferenceProvider preferenceProvider,
                                                  FilterManager filterManager,
                                                  FilterRepository filterRepository,
-                                                 ValueStore valueStore) {
+                                                 FormValueStore valueStore) {
         return new TEIDataPresenterImpl(view,
                 d2,
                 dashboardRepository,
@@ -86,7 +87,7 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
-    ValueStore valueStore(
+    FormValueStore valueStore(
             D2 d2,
             CrashReportController crashReportController
     ){
