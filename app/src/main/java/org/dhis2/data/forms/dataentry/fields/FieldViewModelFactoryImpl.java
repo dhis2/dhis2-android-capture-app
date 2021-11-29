@@ -87,7 +87,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         this.keyboardActionProvider = keyboardActionProvider;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
                                            @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,

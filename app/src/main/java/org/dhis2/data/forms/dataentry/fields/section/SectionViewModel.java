@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -355,15 +356,15 @@ public abstract class SectionViewModel extends FieldViewModel {
     }
 
     public boolean hasErrorAndWarnings() {
-        return (errors() != null && warnings() != null);
+        return (errors() != null && errors()>0 && warnings() != null && warnings() > 0);
     }
 
     public boolean hasNotAnyErrorOrWarning() {
-        return (errors() == null && warnings() == null);
+        return (errors() == null || errors() == 0) && (warnings() == null || warnings() == 0);
     }
 
     public boolean hasOnlyErrors() {
-        return (errors() != null && warnings() == null);
+        return (errors() != null && errors() > 0 && (warnings() == null || warnings() == 0));
     }
 
     public String getFormattedSectionFieldsInfo() {
@@ -380,7 +381,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         if (selectedField() != null && sectionProcessor() != null) {
             String sectionToOpen = Objects.equals(selectedField().get(), uid()) ? "" : uid();
             selectedField().set(sectionToOpen);
-            sectionProcessor().onNext(sectionToOpen);
+            callback.intent(new FormIntent.OnSection(sectionToOpen));
         }
     }
 

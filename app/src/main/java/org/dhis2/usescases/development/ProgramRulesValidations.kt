@@ -4,12 +4,12 @@ import android.os.Build
 import java.util.HashMap
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariableList
-import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.rules.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
+import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariableAttribute
 import org.hisp.dhis.rules.models.RuleVariableCalculatedValue

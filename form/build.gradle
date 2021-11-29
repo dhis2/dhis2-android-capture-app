@@ -62,6 +62,11 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
+    debugImplementation project(':dhis2-rule-engine')
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
+    }
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation "com.google.android.material:material:${libraries.material}"
