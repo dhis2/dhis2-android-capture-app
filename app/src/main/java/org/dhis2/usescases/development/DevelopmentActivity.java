@@ -60,9 +60,6 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         binding.ruleActionQualityButton.setOnClickListener(view -> {
             Intent intent = new Intent(this,ProgramRulesValidationActivity.class);
             startActivity(intent);
-            /*binding.ruleActionQualityResult.setText("Checking...");
-            String result = new ProgramRulesValidations(D2Manager.getD2()).validateRules();
-            binding.ruleActionQualityResult.setText(result);*/
         });
     }
 

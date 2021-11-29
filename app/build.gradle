@@ -57,12 +57,6 @@ android {
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
 
-        /*javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath true
-            }
-        }*/
-
         manifestPlaceholders = [
                 appAuthRedirectScheme: ''
         ]
