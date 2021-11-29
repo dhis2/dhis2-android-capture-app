@@ -243,7 +243,7 @@ class FormRepositoryImpl(
         }
             .filter { field ->
                 field.valueType == null ||
-                        field.programStageSection == openedSectionUid
+                    field.programStageSection == openedSectionUid
             }
     }
 
@@ -289,7 +289,7 @@ class FormRepositoryImpl(
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = fieldUiModel.mandatory &&
-                fieldUiModel.value == null && showWarnigns
+            fieldUiModel.value == null && showWarnigns
 
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
