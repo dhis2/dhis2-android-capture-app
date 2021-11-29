@@ -186,23 +186,20 @@ fun EditText.bindInputType(valueType: ValueType) {
     inputType?.let { this.inputType = it }
 }
 
-@BindingAdapter(value = ["onTextChangeListener", "clearButton"], requireAll = false)
-fun EditText.bindOnTextChangeListener(item: FieldUiModel, clearButton: ImageView?) {
+@BindingAdapter(value = ["onTextClearListener", "clearButton"], requireAll = false)
+fun EditText.bindOnTextClearListener(item: FieldUiModel, clearButton: ImageView?) {
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-            if (valueHasChanged(text, item.value) && hasFocus()) {
-                item.onTextChange(text.toString())
-            }
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+        override fun afterTextChanged(editable: Editable) {
             if (item.valueType == ValueType.LONG_TEXT) {
-                if (item.editable && text.toString().isNotEmpty()) {
+                if (item.editable && editable.toString().isNotEmpty()) {
                     clearButton?.visibility = View.VISIBLE
                 } else {
                     clearButton?.visibility = View.GONE
                 }
             }
         }
-        override fun afterTextChanged(editable: Editable) {}
     })
 }
 
