@@ -59,7 +59,6 @@ class EventTest: BaseTest() {
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {
-            waitToDebounce(3000)
             checkEventFormDetails(eventDetails)
             clickOnDetails()
             checkEventDetails(eventDetails)

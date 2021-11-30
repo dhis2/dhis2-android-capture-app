@@ -233,7 +233,7 @@ class FormRepositoryImplTest {
             label = "field3",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
-            uiEventFactory = nullT
+            uiEventFactory = null
         )
     )
 }

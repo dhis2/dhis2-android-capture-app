@@ -60,6 +60,7 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -464,6 +465,7 @@ class FormView(
             dataEntryHeaderHelper.onItemsUpdatedCallback()
             viewModel.onItemsRendered()
             onFieldItemsRendered?.invoke(items.isEmpty())
+            FormCountingIdlingResource.decrement()
         }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
