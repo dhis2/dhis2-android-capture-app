@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel" />
+            type="org.dhis2.form.model.FieldUiModel" />
 
     </data>
 
@@ -23,7 +23,7 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.label()}"
+            android:text="@{item.formattedLabel}"
             android:textColor="@color/placeholder"
             tools:text="Form field name" />
 

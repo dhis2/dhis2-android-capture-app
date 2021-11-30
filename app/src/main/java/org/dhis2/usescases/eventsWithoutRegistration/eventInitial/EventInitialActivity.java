@@ -47,7 +47,6 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
@@ -736,24 +735,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
         } else
             binding.orgUnit.setText("");
-    }
-
-    private int calculateCompletedFields(@NonNull List<FieldUiModel> updates) {
-        int total = 0;
-        for (FieldUiModel fieldViewModel : updates) {
-            if (fieldViewModel.getValue() != null && !fieldViewModel.getValue().isEmpty())
-                total++;
-        }
-        return total;
-    }
-
-    private int calculateUnsupportedFields(@NonNull List<FieldUiModel> updates) {
-        int total = 0;
-        for (FieldUiModel fieldViewModel : updates) {
-            if (fieldViewModel instanceof UnsupportedViewModel)
-                total++;
-        }
-        return total;
     }
 
     @Override
