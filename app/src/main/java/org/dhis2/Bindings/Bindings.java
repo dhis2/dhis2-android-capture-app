@@ -36,7 +36,6 @@ import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.filters.CatOptionComboFilter;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
@@ -643,83 +642,6 @@ public class Bindings {
                 break;
 
         }
-    }
-
-    @BindingAdapter("setTextColor")
-    public static void setTextColorRadioButton(RadioButton radioButton, boolean isBgTransparent) {
-        radioButton.setTextColor(getColorStateViewChecked(radioButton.getContext(), isBgTransparent));
-    }
-
-    @BindingAdapter("tintRadioButton")
-    public static void tintRadioButton(RadioButton radioButton, boolean isBg) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
-            radioButton.invalidate();
-        }
-    }
-
-    @BindingAdapter("setTextColor")
-    public static void setTextColorCheckbox(MaterialCheckBox checkbox, boolean isBgTransparent) {
-        checkbox.setTextColor(getColorStateViewChecked(checkbox.getContext(), isBgTransparent));
-    }
-
-    @BindingAdapter("tintCheckboxButton")
-    public static void tintCheckbox(MaterialCheckBox radioButton, boolean isBg) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            radioButton.setButtonTintList(getColorStateViewChecked(radioButton.getContext(), isBg));
-            radioButton.invalidate();
-        }
-    }
-
-    @BindingAdapter("setTextColor")
-    public static void setTextColor(TextView textView, boolean isBgTransparent) {
-        textView.setTextColor(getColorStateViewChecked(textView.getContext(), isBgTransparent));
-    }
-
-    private static ColorStateList getColorStateViewChecked(Context context, boolean isBackground) {
-        int colorStateChecked;
-        int colorStateUnchecked;
-
-        if (isBackground) {
-            colorStateChecked = ColorUtils.getPrimaryColor(context,
-                    ColorUtils.ColorType.PRIMARY);
-            colorStateUnchecked = ContextCompat.getColor(context, R.color.textPrimary);
-        } else {
-            colorStateChecked = ColorUtils.getPrimaryColor(context,
-                    ColorUtils.ColorType.ACCENT);
-            colorStateUnchecked = colorStateChecked;
-        }
-
-
-        return new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{-android.R.attr.state_checked}
-                },
-                new int[]{
-                        colorStateChecked,
-                        colorStateUnchecked
-                }
-        );
-    }
-
-    @BindingAdapter("checkListener")
-    public static void checkListener(RadioGroup radioGroup, RadioButtonViewModel viewModel) {
-        radioGroup.setOnCheckedChangeListener(null);
-        if (viewModel.isAffirmativeChecked()) {
-            radioGroup.check(R.id.yes);
-        } else if (viewModel.isNegativeChecked()) {
-            radioGroup.check(R.id.no);
-        } else {
-            radioGroup.clearCheck();
-        }
-        radioGroup.setOnCheckedChangeListener((radioGroup1, checkedId) -> {
-            if (checkedId == R.id.yes) {
-                viewModel.onValueChanged(true);
-            } else if (checkedId == R.id.no) {
-                viewModel.onValueChanged(false);
-            }
-        });
     }
 
     @BindingAdapter("clipCorners")

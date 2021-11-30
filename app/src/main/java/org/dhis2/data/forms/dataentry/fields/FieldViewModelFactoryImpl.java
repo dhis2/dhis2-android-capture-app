@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
@@ -110,7 +109,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 trackedEntityAttribute.fieldMask(),
                 null,
                 options,
-                FeatureType.POINT);
+                trackedEntityAttribute.valueType() == ValueType.COORDINATE ? FeatureType.POINT : null);
     }
 
     @NonNull
@@ -160,7 +159,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return new FieldUiModelImpl(
                             id,
-                            getLayoutByValueType(type, fieldRendering.type()),
+                            layoutProvider.getLayoutByType(type, fieldRendering.type()),
                             value,
                             false,
                             null,
@@ -178,7 +177,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             allowFutureDates,
                             new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                             displayNameProvider.provideDisplayName(type, value, optionSet),
-                            uiEventTypesProvider.provideUiRenderType(fieldRendering.type()),
+                            uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering.type()),
                             options,
                             keyboardActionProvider.provideKeyboardAction(type),
                             fieldMask
@@ -220,53 +219,31 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 );
             }
         }
-
-        switch (type) {
-            case BOOLEAN:
-            case TRUE_ONLY:
-                ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
-                return RadioButtonViewModel.fromRawValue(
-                        id,
-                        getLayoutByValueType(type, valueTypeRenderingType),
-                        label,
-                        type,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        valueTypeRenderingType,
-                        !searchMode,
-                        searchMode
-                );
-            default:
-                return new FieldUiModelImpl(
-                        id,
-                        getLayoutByValueType(type, null),
-                        value,
-                        false,
-                        null,
-                        editable,
-                        null,
-                        mandatory,
-                        label,
-                        section,
-                        uiStyleProvider.provideStyle(type),
-                        hintProvider.provideDateHint(type),
-                        description,
-                        type,
-                        legendValue,
-                        optionSet,
-                        allowFutureDates,
-                        new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value, optionSet),
-                        uiEventTypesProvider.provideUiRenderType(featureType),
-                        options,
-                        keyboardActionProvider.provideKeyboardAction(type),
-                        fieldMask
-                );
-        }
+        return new FieldUiModelImpl(
+                id,
+                        layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null),
+                value,
+                false,
+                null,
+                editable,
+                null,
+                mandatory,
+                label,
+                section,
+                uiStyleProvider.provideStyle(type),
+                hintProvider.provideDateHint(type),
+                description,
+                type,
+                legendValue,
+                optionSet,
+                allowFutureDates,
+                new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                displayNameProvider.provideDisplayName(type, value, optionSet),
+                        uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null),
+                options,
+                keyboardActionProvider.provideKeyboardAction(type),
+                fieldMask
+        );
     }
 
     @NonNull
@@ -324,13 +301,5 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     private int getLayout(Class type) {
         return layoutProvider.getLayoutByModel(JvmClassMappingKt.getKotlinClass(type));
-    }
-
-    private int getLayoutByValueType(ValueType valueType, ValueTypeRenderingType valueTypeRenderingType) {
-        if (valueTypeRenderingType == null) {
-            return layoutProvider.getLayoutByValueType(valueType);
-        } else {
-            return layoutProvider.getLayoutByValueRenderingType(valueTypeRenderingType, valueType);
-        }
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.radiobutton;
+package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -17,11 +17,7 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -66,10 +62,6 @@ public class YesNoView extends FieldLayout {
 
     public void init(Context context) {
         super.init(context);
-    }
-
-    public void setValueListener(OnValueChanged listener) {
-        this.valueListener = listener;
     }
 
     public void setValueType(ValueType valueType) {
@@ -159,26 +151,6 @@ public class YesNoView extends FieldLayout {
         }
     }
 
-    public void setLabel(String label) {
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
-    }
-
-    public void setDescription(String description) {
-        binding.setVariable(BR.description, description);
-        binding.executePendingBindings();
-        findViewById(R.id.descriptionLabel).setOnClickListener(v ->
-                new CustomDialog(
-                        getContext(),
-                        label,
-                        description != null ? description : getContext().getString(R.string.empty_description),
-                        getContext().getString(R.string.action_close),
-                        null,
-                        Constants.DESCRIPTION_DIALOG,
-                        null
-                ).show());
-    }
-
     public void setIsBgTransparent(boolean isBgTransparent) {
         this.isBgTransparent = isBgTransparent;
         setLayout();
@@ -262,76 +234,12 @@ public class YesNoView extends FieldLayout {
 
     }
 
-    public String getLabel() {
-        if (labelView != null)
-            return labelView.getText().toString();
-        else
-            return null;
-    }
-
     public RadioGroup getRadioGroup() {
         return radioGroup;
     }
 
     public View getClearButton() {
         return clearButton;
-    }
-
-    @Override
-    public void dispatchSetActivated(boolean activated) {
-        super.dispatchSetActivated(activated);
-        if (activated) {
-            labelView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-        } else {
-            labelView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.textPrimary, null));
-        }
-    }
-
-    public void setInitialValue(String value) {
-        if (value != null && !value.isEmpty() && Boolean.valueOf(value)) {
-            hasValue = true;
-            radioGroup.check(R.id.yes);
-            checkYes.setChecked(true);
-            checkNo.setChecked(false);
-            yesOnlyToggle.setChecked(true);
-        } else if (value != null && !value.isEmpty()) {
-            hasValue = true;
-            radioGroup.check(R.id.no);
-            checkYes.setChecked(false);
-            checkNo.setChecked(true);
-            yesOnlyToggle.setChecked(false);
-        } else {
-            hasValue = false;
-            radioGroup.clearCheck();
-            checkYes.setChecked(false);
-            checkNo.setChecked(false);
-            yesOnlyToggle.setChecked(false);
-        }
-
-        updateDeleteVisibility(clearButton);
-    }
-
-    public void setEditable(Boolean editable) {
-        for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            View view = radioGroup.getChildAt(i);
-            view.setEnabled(editable);
-            setEditable(editable, view);
-        }
-        checkYes.setEnabled(editable);
-        checkNo.setEnabled(editable);
-        yesOnlyToggle.setEnabled(editable);
-        clearButton.setEnabled(editable);
-
-        setEditable(editable,
-                labelView,
-                checkYes,
-                checkNo,
-                yesOnlyToggle,
-                clearButton,
-                findViewById(R.id.descriptionLabel)
-        );
-
-        updateDeleteVisibility(clearButton);
     }
 
     public interface OnValueChanged {
@@ -348,43 +256,5 @@ public class YesNoView extends FieldLayout {
     @Override
     protected boolean isEditable() {
         return clearButton.isEnabled();
-    }
-
-    public void setViewModel(RadioButtonViewModel viewModel) {
-        this.viewModel = viewModel;
-
-        if (binding == null) {
-            setIsBgTransparent(viewModel.isBackgroundTransparent());
-        }
-        setLabel(viewModel.getFormattedLabel());
-        setDescription(viewModel.description());
-        setValueType(viewModel.valueType());
-        setRendering(viewModel.renderingType());
-        setInitialValue(viewModel.value());
-        setEditable(viewModel.editable());
-        setValueListener(new OnValueChanged() {
-            @Override
-            public void onValueChanged(boolean isActive) {
-                viewModel.onItemClick();
-                if (isActive) {
-                    viewModel.onValueChanged(true);
-                } else {
-                    viewModel.onValueChanged(false);
-                }
-            }
-
-            @Override
-            public void onClearValue() {
-                viewModel.onValueChanged(null);
-                clearBackground(viewModel.isSearchMode());
-                nextFocus(binding.getRoot());
-            }
-        });
-    }
-
-    private void clearBackground(boolean isSearchMode) {
-        if (!isSearchMode) {
-            binding.getRoot().setBackgroundResource(R.color.form_field_background);
-        }
     }
 }

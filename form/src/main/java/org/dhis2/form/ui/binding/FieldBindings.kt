@@ -20,6 +20,7 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
@@ -360,6 +361,22 @@ fun TextInputAutoCompleteTextView.bindRenderingType(item: FieldUiModel) {
             autoCompleteValues
         )
         setAdapter(autoCompleteAdapter)
+    }
+}
+
+@BindingAdapter("checkListener")
+fun RadioGroup.checkListener(item: FieldUiModel) {
+    this.setOnCheckedChangeListener(null)
+    when {
+        item.isAffirmativeChecked -> this.check(R.id.yes)
+        item.isNegativeChecked -> this.check(R.id.no)
+        else -> this.clearCheck()
+    }
+    this.setOnCheckedChangeListener { _, checkedId ->
+        when (checkedId) {
+            R.id.yes -> item.onSaveBoolean(true)
+            R.id.no -> item.onSaveBoolean(false)
+        }
     }
 }
 

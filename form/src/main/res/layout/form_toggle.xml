@@ -9,7 +9,7 @@
 
         <variable
             name="item"
-            type="org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel" />
+            type="org.dhis2.form.model.FieldUiModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +24,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="6dp"
             android:background="?colorPrimary"
-            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,10 +55,10 @@
                 style="@style/FieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                android:alpha="@{item.editable ? 1.0f : 0.5f}"
                 android:text="@{item.formattedLabel}"
-                android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
-                app:setTextColor="@{item.backgroundTransparent}"
+                android:visibility="@{item.label != null ? View.VISIBLE : View.GONE}"
+                app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"
@@ -75,27 +75,26 @@
                 android:layout_marginEnd="16dp"
                 android:onClick="@{v -> item.onDescriptionClick()}"
                 android:visibility="@{(item.description != null) ? View.VISIBLE : View.GONE}"
+                app:description_icon_tint="@{item.style}"
                 app:layout_constraintBottom_toBottomOf="@+id/label"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/label"
                 app:layout_constraintTop_toTopOf="@+id/label"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                app:srcCompat="@drawable/ic_info_outline" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/yesOnlyToggle"
                 style="@style/Widget.AppCompat.CompoundButton.Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="@{item.editable() ? 1.0f : 0.5f}"
-                android:checked="@{item.isAffirmativeChecked()}"
-                android:enabled="@{item.editable()}"
-                android:onClick="@{(v) -> item.isAffirmativeChecked() ? item.onClear() : item.onValueChanged(true)}"
+                android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                android:checked="@{item.isAffirmativeChecked}"
+                android:enabled="@{item.editable}"
+                android:onClick="@{v -> item.onSaveBoolean(true)}"
                 android:paddingTop="4dp"
                 android:text="@string/yes"
-                android:textAppearance="@style/TextPrimary"
                 android:textSize="@dimen/form_edit_text_size"
-                app:setTextColor="@{item.backgroundTransparent}"
+                app:optionTint="@{item.style}"
                 app:layout_constraintStart_toStartOf="@+id/label"
                 app:layout_constraintTop_toBottomOf="@id/label"
                 app:switchPadding="10dp"
@@ -107,12 +106,11 @@
                 android:id="@+id/warningError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:gravity="center"
-                android:text="@{item.errorMessage}"
-                android:textColor="@color/colorPrimaryOrange"
-                android:textSize="18sp"
-                android:visibility="@{item.errorMessage != null ? View.VISIBLE : View.GONE}"
+                android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
+                app:error="@{item.error}"
+                app:warning="@{item.warning}"
+                app:input_style="@{item}"
+                android:textSize="@dimen/textSize_12"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/yesOnlyToggle"

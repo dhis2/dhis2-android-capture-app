@@ -6,25 +6,27 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class UiEventTypesProviderImpl : UiEventTypesProvider {
 
-    override fun provideUiRenderType(featureType: FeatureType?): UiRenderType {
+    override fun provideUiRenderType(
+        featureType: FeatureType?,
+        valueTypeRenderingType: ValueTypeRenderingType?
+    ): UiRenderType {
         return when (featureType) {
             FeatureType.POINT -> UiRenderType.POINT
             FeatureType.POLYGON -> UiRenderType.POLYGON
             FeatureType.MULTI_POLYGON -> UiRenderType.MULTI_POLYGON
-            else -> UiRenderType.DEFAULT
-        }
-    }
-
-    override fun provideUiRenderType(
-        valueTypeRenderingType: ValueTypeRenderingType?
-    ): UiRenderType {
-        return when (valueTypeRenderingType) {
-            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS -> UiRenderType.VERTICAL_RADIOBUTTONS
-            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS -> UiRenderType.HORIZONTAL_RADIOBUTTONS
-            ValueTypeRenderingType.VERTICAL_CHECKBOXES -> UiRenderType.VERTICAL_CHECKBOXES
-            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES -> UiRenderType.HORIZONTAL_CHECKBOXES
-            ValueTypeRenderingType.AUTOCOMPLETE -> UiRenderType.AUTOCOMPLETE
-            else -> UiRenderType.DEFAULT
+            else -> when (valueTypeRenderingType) {
+                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ->
+                    UiRenderType.VERTICAL_RADIOBUTTONS
+                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ->
+                    UiRenderType.HORIZONTAL_RADIOBUTTONS
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
+                    UiRenderType.VERTICAL_CHECKBOXES
+                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ->
+                    UiRenderType.HORIZONTAL_CHECKBOXES
+                ValueTypeRenderingType.AUTOCOMPLETE ->
+                    UiRenderType.AUTOCOMPLETE
+                else -> UiRenderType.DEFAULT
+            }
         }
     }
 }
