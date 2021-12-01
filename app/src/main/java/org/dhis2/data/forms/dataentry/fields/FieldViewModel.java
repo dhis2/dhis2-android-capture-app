@@ -248,6 +248,12 @@ public abstract class FieldViewModel implements FieldUiModel {
 
     @NotNull
     @Override
+    public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
+        return this;
+    }
+
+    @NotNull
+    @Override
     public FieldUiModel setEditable(boolean editable) {
         return withEditMode(editable);
     }
