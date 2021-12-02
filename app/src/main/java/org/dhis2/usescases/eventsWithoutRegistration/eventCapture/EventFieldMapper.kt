@@ -4,14 +4,11 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 import org.hisp.dhis.android.core.common.ValueType
-
-const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
 class EventFieldMapper(
     private val fieldFactory: FieldViewModelFactory,
@@ -43,9 +40,6 @@ class EventFieldMapper(
 
         if (eventSectionModels.first().sectionName() == "NO_SECTION") {
             finalFieldList.add(SectionViewModel.createClosingSection())
-        }
-        if (fieldMap.containsKey(DISPLAY_FIELD_KEY) && fieldMap[DISPLAY_FIELD_KEY] != null) {
-            finalFieldList.addAll(fieldMap[DISPLAY_FIELD_KEY] as Collection<FieldUiModel>)
         }
 
         val sections = finalFieldList.filterIsInstance<SectionViewModel>()
@@ -120,26 +114,19 @@ class EventFieldMapper(
                         field
                     }
                 )
-                if (field !is DisplayViewModel) {
-                    if (fieldIsNotVisualOptionSet(field)) {
-                        totalFields++
-                    } else if (!visualDataElements.contains(field.uid)) {
-                        visualDataElements.add(field.uid)
-                        totalFields++
-                    }
+
+                if (fieldIsNotVisualOptionSet(field)) {
+                    totalFields++
+                } else if (!visualDataElements.contains(field.uid)) {
+                    visualDataElements.add(field.uid)
+                    totalFields++
                 }
                 if (isUnsupported(field.valueType)) totalFields--
             }
         }
     }
 
-    private fun getFieldSection(field: FieldUiModel): String {
-        return if (field is DisplayViewModel) {
-            DISPLAY_FIELD_KEY
-        } else {
-            return field.programStageSection ?: ""
-        }
-    }
+    private fun getFieldSection(field: FieldUiModel) = field.programStageSection ?: ""
 
     private fun updateFieldMap(fieldSection: String, field: FieldUiModel) {
         if (!fieldMap.containsKey(fieldSection)) {
@@ -226,10 +213,7 @@ class EventFieldMapper(
         sectionModel: FormSectionViewModel
     ) {
         for (fieldViewModel in fields) {
-            if (fieldViewModel !is DisplayViewModel) {
-                finalFields[fieldViewModel.uid] =
-                    !isEmpty(fieldViewModel.value)
-            }
+            finalFields[fieldViewModel.uid] = !isEmpty(fieldViewModel.value)
         }
 
         var cont = 0
