@@ -175,7 +175,6 @@ class FormTest: BaseTest() {
         }
 
         enrollmentRobot {
-            waitToDebounce(500)
             clickOnPersonAttributes("Attributes - Person")
             scrollToBottomProgramForm()
             clickOnDatePicker()
@@ -186,7 +185,6 @@ class FormTest: BaseTest() {
         }
 
         eventRobot {
-            waitToDebounce(500)
             clickOnUpdate()
             waitToDebounce(3000)
         }
