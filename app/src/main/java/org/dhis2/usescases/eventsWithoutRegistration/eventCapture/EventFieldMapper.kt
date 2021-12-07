@@ -6,10 +6,10 @@ import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
+import org.hisp.dhis.android.core.common.ValueType
 
 const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
 
@@ -128,7 +128,7 @@ class EventFieldMapper(
                         totalFields++
                     }
                 }
-                if (field is UnsupportedViewModel) totalFields--
+                if (isUnsupported(field.valueType)) totalFields--
             }
         }
     }
@@ -254,8 +254,13 @@ class EventFieldMapper(
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
-    fun unsupportedFieldsPercentage(): Float {
-        return calculateCompletionPercentage(unsupportedFields, totalFields)
+    private fun isUnsupported(type: ValueType?): Boolean {
+        return when (type) {
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.USERNAME,
+            ValueType.FILE_RESOURCE -> true
+            else -> false
+        }
     }
 
     private fun calculateCompletionPercentage(
