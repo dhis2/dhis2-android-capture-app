@@ -78,6 +78,15 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnSave(uid, value, valueType))
     }
 
+    override fun onSaveBoolean(boolean: Boolean) {
+        onItemClick()
+        val result = when {
+            value == null || value != boolean.toString() -> boolean.toString()
+            else -> null
+        }
+        callback?.intent(FormIntent.OnSave(uid, result, valueType))
+    }
+
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
         uiEventFactory?.generateEvent(value, uiEventType, renderingType)?.let {
@@ -101,6 +110,12 @@ data class FieldUiModelImpl(
 
     override val hasImage: Boolean
         get() = value?.let { File(it).exists() } ?: false
+
+    override val isAffirmativeChecked: Boolean
+        get() = value?.toBoolean() == true
+
+    override val isNegativeChecked: Boolean
+        get() = value?.toBoolean() == false
 
     override fun setValue(value: String?) = this.copy(value = value)
 
