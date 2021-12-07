@@ -18,12 +18,12 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.maps.views.MapSelectorActivity
@@ -36,9 +36,7 @@ import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.RulesUtilsProviderConfigurationError
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
-import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -120,8 +118,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     showProgress()
                 } else {
                     hideProgress()
+                    setSaveButtonVisible(true)
                 }
             }
+            .onDiscardWarningMessage { presenter.finish(mode) }
             .factory(supportFragmentManager)
             .build()
 
@@ -226,34 +226,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
         }
-    }
-
-    override fun showMissingMandatoryFieldsMessage(
-        emptyMandatoryFields: MutableMap<String, String>
-    ) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.missing_mandatory_fields))
-            .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    override fun showErrorFieldsMessage(errorFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.field_errors))
-            .setFieldsToDisplay(errorFields)
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    override fun showWarningFieldsMessage(warningFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.warnings_in_form))
-            .setMessage(getString(R.string.what_to_do))
-            .setFieldsToDisplay(warningFields)
-            .setNegativeButton(getString(R.string.review))
-            .setPositiveButton(getString(R.string.save)) { presenter.finish(mode) }
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun goBack() {
@@ -383,16 +355,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     /*endregion*/
 
-    /*region DATA ENTRY*/
-    override fun showFields(fields: List<FieldUiModel>?) {
-        fields?.filter {
-            it !is DisplayViewModel
-        }
-
-        formView.processItems(fields)
-    }
-
-    /*endregion*/
     override fun requestFocus() {
         binding.root.requestFocus()
     }
@@ -410,8 +372,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             presenter.setFinishing()
             currentFocus?.apply { clearFocus() }
         } else {
-            if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
+            if (!presenter.hasAccess()) {
                 presenter.finish(mode)
+            } else {
+                formView.requestDataIntegrityCheck().observe(this) { result ->
+                    if (result is SuccessfulResult) presenter.finish(mode)
+                }
             }
         }
     }
@@ -433,21 +399,5 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setMessage(R.string.enrollment_date_edition_warning)
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
-    }
-
-    override fun displayConfigurationErrors(
-        configurationError: List<RulesUtilsProviderConfigurationError>
-    ) {
-        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.warning_error_on_complete_title)
-            .setMessage(configurationError.toMessage(this))
-            .setPositiveButton(
-                R.string.action_close
-            ) { _, _ -> }
-            .setNegativeButton(
-                getString(R.string.action_do_not_show_again)
-            ) { _, _ -> presenter.disableConfErrorMessage() }
-            .setCancelable(false)
-            .show()
     }
 }

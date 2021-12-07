@@ -1,8 +1,5 @@
-package org.dhis2.utils
+package org.dhis2.form.data
 
-import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
@@ -39,15 +36,15 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val optionGroupsToShow = mutableMapOf<String, MutableList<String>>()
     var fieldsToUpdate = mutableListOf<String>()
     val configurationErrors = mutableListOf<RulesUtilsProviderConfigurationError>()
-    var valueStore: ValueStore? = null
+    var valueStore: FormValueStore? = null
     var currentRuleUid: String? = null
     val stagesToHide = mutableListOf<String>()
 
     override fun applyRuleEffects(
         applyForEvent: Boolean,
         fieldViewModels: MutableMap<String, FieldUiModel>,
-        calcResult: Result<RuleEffect>,
-        valueStore: ValueStore?
+        calcResult: List<RuleEffect>,
+        valueStore: FormValueStore?
     ): RuleUtilsProviderResult {
         this.applyForEvent = applyForEvent
         canComplete = true
@@ -62,7 +59,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         configurationErrors.clear()
         this.valueStore = valueStore
 
-        calcResult.items().forEach {
+        calcResult.forEach {
             currentRuleUid = it.ruleId()
             when (it.ruleAction()) {
                 is RuleActionShowWarning -> showWarning(
@@ -133,7 +130,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         }
 
         currentRuleUid = null
-        setOptionsInFields(fieldViewModels)
 
         return RuleUtilsProviderResult(
             canComplete = canComplete,
@@ -143,55 +139,19 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             unsupportedRules = unsupportedRuleActions,
             fieldsToUpdate = fieldsToUpdate,
             configurationErrors = configurationErrors,
-            stagesToHide = stagesToHide
+            stagesToHide = stagesToHide,
+            optionsToHide = optionsToHide,
+            optionGroupsToHide = optionGroupsToHide,
+            optionGroupsToShow = optionGroupsToShow
         )
     }
 
     override fun applyRuleEffects(
         programStages: MutableMap<String, ProgramStage>,
-        calcResult: Result<RuleEffect>
+        calcResult: Result<List<RuleEffect>>
     ) {
-        calcResult.items().filter { it.ruleAction() is RuleActionHideProgramStage }.forEach {
+        calcResult.getOrNull()?.filter { it.ruleAction() is RuleActionHideProgramStage }?.forEach {
             hideProgramStage(programStages, it.ruleAction() as RuleActionHideProgramStage)
-        }
-    }
-
-    private fun setOptionsInFields(
-        fieldViewModels: MutableMap<String, FieldUiModel>
-    ) {
-        fieldViewModels.forEach {
-            val fieldUid = it.key
-            val optionsToHide = optionsToHide[fieldUid] ?: mutableListOf()
-            val optionsInGroupsToHide = optionsFromGroups(
-                optionGroupsToHide[fieldUid] ?: mutableListOf()
-            )
-            val optionsInGroupsToShow = optionsFromGroups(
-                optionGroupsToShow[fieldUid] ?: mutableListOf()
-            )
-            when (val fieldViewModel = it.value) {
-                is MatrixOptionSetModel -> {
-                    val hiddenMatrixModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide,
-                        optionsInGroupsToHide,
-                        optionsInGroupsToShow
-                    )
-                    fieldViewModels[fieldUid] = hiddenMatrixModel
-                }
-                is SpinnerViewModel -> {
-                    var mappedSpinnerModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide,
-                        optionsInGroupsToHide
-                    ) as SpinnerViewModel
-                    mappedSpinnerModel = mappedSpinnerModel.setOptionGroupsToShow(
-                        optionsInGroupsToShow
-                    ) as SpinnerViewModel
-                    fieldViewModels[fieldUid] = mappedSpinnerModel
-                }
-                else -> fieldViewModel.takeIf { field -> field.optionSet != null }?.apply {
-                    this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
-                    this.optionsToShow = optionsInGroupsToShow
-                }
-            }
         }
     }
 
@@ -204,7 +164,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     }
 
     private fun saveForEvent(uid: String, value: String?): ValueStoreResult {
-        return valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
+        /*return valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
+            ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED*/
+        return valueStore?.save(uid, value, null)?.valueStoreResult
             ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED
     }
 
@@ -216,7 +178,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             } else if (
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
             ) {
-                return valueStore?.save(uid, value)?.blockingFirst()?.valueStoreResult
+                return valueStore?.save(uid, value, null)?.valueStoreResult
                     ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED
             }
         } catch (d2Error: D2Error) {
@@ -254,7 +216,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             fieldsWithErrors.add(
                 FieldWithError(showError.field(), errorMessage)
             )
-            valueStore?.saveWithTypeCheck(showError.field(), null)?.blockingFirst()
+//            valueStore?.saveWithTypeCheck(showError.field(), null)?.blockingFirst()
+            valueStore?.save(showError.field(), null, null)
         }
     }
 
@@ -494,22 +457,5 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         ) {
             fieldsToUpdate.add(fieldUid)
         }
-    }
-
-    fun optionsFromGroups(optionGroupUids: List<String>): List<String> {
-        if (optionGroupUids.isEmpty()) return emptyList()
-        val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = d2.optionModule().optionGroups()
-            .withOptions()
-            .byUid().`in`(optionGroupUids)
-            .blockingGet()
-        for (optionGroup in optionGroups) {
-            for (option in optionGroup.options()!!) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid())
-                }
-            }
-        }
-        return optionsFromGroups
     }
 }

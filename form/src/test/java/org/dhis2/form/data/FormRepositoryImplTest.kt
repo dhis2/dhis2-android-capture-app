@@ -1,8 +1,12 @@
 package org.dhis2.form.data
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -14,6 +18,8 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.rules.models.RuleActionAssign
+import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -21,6 +27,9 @@ import org.junit.Test
 
 class FormRepositoryImplTest {
 
+    private val rulesUtilsProvider: RulesUtilsProvider = mock()
+    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val dataEntryRepository: DataEntryRepository = mock()
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
@@ -28,11 +37,17 @@ class FormRepositoryImplTest {
 
     @Before
     fun setUp() {
+        whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
         repository = FormRepositoryImpl(
             formValueStore,
             fieldErrorMessageProvider,
-            displayNameProvider
+            displayNameProvider,
+            dataEntryRepository,
+            ruleEngineRepository,
+            rulesUtilsProvider
         )
+        repository.fetchFormItems()
     }
 
     @Test
@@ -98,10 +113,7 @@ class FormRepositoryImplTest {
 
     @Test
     fun `Should set focus to first item`() {
-        // Given a list of non focused items
-        repository.composeList(provideItemList())
-
-        // When user taps on first item
+        // When the user taps on first item
         repository.processUserAction(
             RowAction(
                 id = "uid001",
@@ -117,7 +129,7 @@ class FormRepositoryImplTest {
     @Test
     fun `Should set focus to the next editable item when tapping on next`() {
         // Given a list with first item focused
-        repository.composeList(provideItemList())
+        repository.composeList()
         repository.processUserAction(
             RowAction(
                 id = "uid001",
@@ -143,7 +155,7 @@ class FormRepositoryImplTest {
     @Test
     fun `Should update value when text changes`() {
         // Given a list of items
-        repository.composeList(provideItemList())
+        repository.composeList()
 
         // When user updates second item text
         repository.processUserAction(
@@ -158,27 +170,70 @@ class FormRepositoryImplTest {
         assertThat(repository.composeList()[1].value, `is`("newValue"))
     }
 
+    @Test
+    fun `Should apply program rules`() {
+        whenever(ruleEngineRepository.calculate()) doReturn listOf(
+            RuleEffect.create(
+                "",
+                RuleActionAssign.create(
+                    null,
+                    "assignedValue", "uid001"
+                )
+            )
+        )
+
+        whenever(dataEntryRepository.isEvent) doReturn true
+
+        whenever(
+            rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any())
+        ) doReturn RuleUtilsProviderResult(
+            canComplete = true,
+            messageOnComplete = null,
+            fieldsWithErrors = emptyList(),
+            fieldsWithWarnings = emptyList(),
+            unsupportedRules = emptyList(),
+            fieldsToUpdate = listOf("uid001"),
+            configurationErrors = emptyList(),
+            stagesToHide = emptyList(),
+            optionsToHide = emptyMap(),
+            optionGroupsToHide = emptyMap(),
+            optionGroupsToShow = emptyMap()
+        )
+
+        verify(rulesUtilsProvider, times(1)).applyRuleEffects(any(), any(), any(), any())
+    }
+
+    private fun mockedSections() = listOf(
+        "section1"
+    )
+
     private fun provideItemList() = listOf<FieldUiModel>(
         FieldUiModelImpl(
             uid = "uid001",
             layoutId = 1,
             value = "value",
             label = "field1",
-            valueType = ValueType.TEXT
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
         ),
         FieldUiModelImpl(
             uid = "uid002",
             layoutId = 2,
             value = "value",
             label = "field2",
-            valueType = ValueType.TEXT
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
         ),
         FieldUiModelImpl(
             uid = "uid003",
             layoutId = 3,
             value = "value",
             label = "field3",
-            valueType = ValueType.TEXT
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
         )
     )
 }

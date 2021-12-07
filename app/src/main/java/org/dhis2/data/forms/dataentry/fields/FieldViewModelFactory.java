@@ -45,7 +45,7 @@ public interface FieldViewModelFactory {
                         @Nullable FeatureType featureType
     );
 
-    @Nullable
+    @NonNull
     FieldUiModel createForAttribute(@$NonNull TrackedEntityAttribute trackedEntityAttribute,
                                     @Nullable ProgramTrackedEntityAttribute programTrackedEntityAttribute,
                                     @Nullable String value,

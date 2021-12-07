@@ -127,7 +127,7 @@
                     android:text="@{item.warnings().toString()}"
                     android:textColor="@color/white"
                     android:textSize="12sp"
-                    android:visibility="@{item.warnings() == null ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{item.warnings() == null || item.warnings() == 0 ? View.GONE : View.VISIBLE}"
                     app:chipBackgroundColor="@color/section_warning_color"
                     app:chipIcon="@drawable/ic_menu_info"
                     app:chipIconTint="@color/white"

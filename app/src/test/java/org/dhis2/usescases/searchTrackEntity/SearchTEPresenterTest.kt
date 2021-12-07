@@ -86,7 +86,8 @@ class SearchTEPresenterTest {
             null,
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
-            searchMessageMapper
+            searchMessageMapper,
+            emptyMap()
         )
     }
 
@@ -368,14 +369,12 @@ class SearchTEPresenterTest {
     @Test
     fun `Should populate same list when onItemAction is triggered in FormView`() {
         presenter.populateList(null)
-        verify(view, times(1)).setFormData(null)
         verify(view, times(0)).setFabIcon(any())
     }
 
     @Test
     fun `Should populate list for enrollment `() {
         presenter.populateList(listOf())
-        verify(view, times(1)).setFormData(any())
         verify(view, times(1)).setFabIcon(any())
     }
 

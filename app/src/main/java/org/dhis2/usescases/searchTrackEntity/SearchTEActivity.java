@@ -1,5 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import static android.view.View.GONE;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
@@ -53,6 +58,14 @@ import org.dhis2.maps.model.MapStyle;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.data.CarouselItemModel;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
@@ -63,12 +76,9 @@ import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -77,11 +87,6 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.FilterItem;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.Filters;
-import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -91,6 +96,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -100,11 +106,6 @@ import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
 import timber.log.Timber;
-
-import static android.view.View.GONE;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
         MapboxMap.OnMapClickListener, OnOrgUnitSelectionFinished {
@@ -155,6 +156,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private CarouselAdapter carouselAdapter;
     private FormView formView;
 
+    private enum Extra {
+        TEI_UID("TRACKED_ENTITY_UID"),
+        PROGRAM_UID("PROGRAM_UID"),
+        QUERY_ATTR("QUERY_DATA_ATTR"),
+        QUERY_VALUES("QUERY_DATA_VALUES");
+        private final String key;
+
+        Extra(String key) {
+            this.key = key;
+        }
+
+        public String key() {
+            return key;
+        }
+    }
+
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -165,7 +182,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(
+                new SearchTEModule(this,
+                        tEType,
+                        initialProgram,
+                        getContext(),
+                        SearchTEExtraKt.queryDataExtra(this)
+                )).inject(this);
 
         formView = new FormView.Builder()
                 .repository(formRepository)
@@ -177,6 +200,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 })
                 .activityForResultListener(() -> {
                     initSearchNeeded = false;
+                    return Unit.INSTANCE;
+                })
+                .onFieldItemsRendered(isEmpty->{
+                    presenter.setAttributesEmpty(isEmpty);
                     return Unit.INSTANCE;
                 })
                 .needToForceUpdate(true)
@@ -522,12 +549,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setFormData(List<FieldUiModel> data) {
-        formView.processItems(data);
-        updateFiltersSearch(presenter.getQueryData().size());
-    }
-
-    @Override
     public void clearData() {
         if (!isMapVisible()) {
             binding.progressLayout.setVisibility(View.VISIBLE);
@@ -669,19 +690,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                Program programSelected;
+                String programSelectedUid;
                 if (pos == 0) {
-                    programSelected = (Program) adapterView.getItemAtPosition(0);
+                    programSelectedUid = null;
                 } else {
-                    programSelected = (Program) adapterView.getItemAtPosition(pos - 1);
+                    programSelectedUid = ((Program) adapterView.getItemAtPosition(pos - 1)).uid();
                 }
-                if (!programSelected.uid().equals(initialProgram)) {
+
+                if (!Objects.equals(programSelectedUid, initialProgram)) {
                     liveAdapter.clearList();
                 }
                 if (pos > 0) {
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
-                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
+                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()), selectedProgram.uid());
                     presenter.setProgram(selectedProgram);
                 } else if (programs.size() == 1 && pos != 0) {
                     Program selectedProgram = programs.get(0);
@@ -736,68 +758,31 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setProgramColor(String color) {
+    public void setProgramColor(String color, String programUid) {
         int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+
+        if (prefs.getInt(Constants.PROGRAM_THEME, -1) == programTheme) return;
+
         if (programTheme != -1) {
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
-            int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.RedTheme:
-                    colorPrimary = R.color.colorPrimaryRed;
-                    break;
-                case R.style.OrangeTheme:
-                    colorPrimary = R.color.colorPrimaryOrange;
-                    break;
-                case R.style.GreenTheme:
-                    colorPrimary = R.color.colorPrimaryGreen;
-                    break;
-                default:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-            }
-            programColor = ContextCompat.getColor(this, colorPrimary);
         }
-        binding.enrollmentButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
-        binding.clearFilterSearchButton.setSupportImageTintList(ColorStateList.valueOf(programColor));
-        binding.mainToolbar.setBackgroundColor(programColor);
-        binding.backdropLayout.setBackgroundColor(programColor);
-        binding.navigationBar.setIconsColor(programColor);
-        binding.totalFilterCount.setTextColor(programColor);
-        binding.totalSearchCount.setTextColor(programColor);
 
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
-        binding.executePendingBindings();
-        binding.clearFilter.setImageDrawable(
-                ColorUtils.tintDrawableWithColor(
-                        binding.clearFilter.getDrawable(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
-                ));
-        binding.closeFilter.setImageDrawable(
-                ColorUtils.tintDrawableWithColor(
-                        binding.closeFilter.getDrawable(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
-                ));
-        binding.progress.setIndeterminateDrawable(
-                ColorUtils.tintDrawableWithColor(
-                        binding.progress.getIndeterminateDrawable(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)
-                ));
+        startActivity(SearchTEActivity.class, updateBundle(programUid), true, false, null);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-            int colorToReturn = a.getColor(0, 0);
-            a.recycle();
-            window.setStatusBarColor(colorToReturn);
-        }
+    private Bundle updateBundle(String programUid) {
+        Bundle bundle = getIntent().getExtras();
+        bundle.putString(Extra.PROGRAM_UID.key(), programUid);
+        Map<String,String> currentQueryData = presenter.getQueryData();
+        bundle.putStringArrayList(Extra.QUERY_ATTR.key(), new ArrayList<>(currentQueryData.keySet()));
+        bundle.putStringArrayList(Extra.QUERY_VALUES.key(), new ArrayList<>(currentQueryData.values()));
+        return bundle;
     }
 
     @Override
@@ -939,8 +924,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (switchOpenClose == 0) {
             filtersAdapter.notifyDataSetChanged();
             FilterManager.getInstance().clearAllFilters();
-        } else
+        } else {
+            formView.clearValues();
             presenter.onClearClick();
+        }
     }
 
     @Override

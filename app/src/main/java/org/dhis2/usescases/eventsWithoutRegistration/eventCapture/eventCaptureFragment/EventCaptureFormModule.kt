@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 
 @Module
@@ -15,13 +14,10 @@ class EventCaptureFormModule(
     @Provides
     @PerFragment
     fun providePresenter(
-        activityPresenter: EventCaptureContract.Presenter,
-        schedulerProvider: SchedulerProvider
+        activityPresenter: EventCaptureContract.Presenter
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(
-            view,
-            activityPresenter,
-            schedulerProvider
+            activityPresenter
         )
     }
 }

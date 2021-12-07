@@ -6,8 +6,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import java.util.ArrayList
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.utils.Result
-import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
@@ -61,7 +61,7 @@ class ProgramStageSelectionPresenter(
             return stageModels
         }
         val stageView = stageModels.map { it.uid() to it }.toMap().toMutableMap()
-        ruleUtils.applyRuleEffects(stageView, calcResult)
+        ruleUtils.applyRuleEffects(stageView, kotlin.Result.success(calcResult.items()))
         return ArrayList(stageView.values)
     }
 

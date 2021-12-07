@@ -1,4 +1,4 @@
-package org.dhis2.data.forms
+package org.dhis2.form.data
 
 import android.os.Build
 import android.text.TextUtils.isEmpty

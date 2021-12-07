@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry
 
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
@@ -41,15 +40,15 @@ class EnrollmentRepository(
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
     private val incidentDateDefaultLabel: String
-) : DataEntryRepository {
+) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
     private val canEditAttributes: Boolean = dhisEnrollmentUtils.canBeEdited(enrollmentUid)
 
-    override fun enrollmentSectionUids(): Flowable<MutableList<String>> {
-        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+    override fun sectionUids(): Flowable<MutableList<String>> {
+        return enrollmentRepository.get()
             .flatMap { enrollment ->
                 d2.programModule().programSections().byProgramUid().eq(enrollment.program()).get()
             }.map { programSections ->
@@ -60,7 +59,7 @@ class EnrollmentRepository(
     }
 
     override fun list(): Flowable<MutableList<FieldUiModel>> {
-        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+        return enrollmentRepository.get()
             .flatMap { enrollment ->
                 d2.programModule().programs().uid(enrollment.program()).get()
             }
@@ -90,14 +89,39 @@ class EnrollmentRepository(
             }.toFlowable()
     }
 
+    override fun isEvent(): Boolean {
+        return false
+    }
+
+    private fun getSingleSectionList(): MutableList<FieldUiModel> {
+        val tei = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
+            .blockingGet()
+        val teiType = d2.trackedEntityModule().trackedEntityTypes()
+            .uid(tei.trackedEntityType()).blockingGet()
+        return mutableListOf(
+            fieldFactory.createSingleSection(
+                String.format(
+                    singleSectionLabel,
+                    teiType.displayName()
+                )
+            )
+        )
+    }
+
     @VisibleForTesting
     fun getFieldsForSingleSection(programUid: String): Single<List<FieldUiModel>> {
-        return d2.programModule().programTrackedEntityAttributes().withRenderType()
-            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
-            .toFlowable()
-            .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
-            .map { transform(it) }
-            .toList()
+        return Single.fromCallable {
+            val programAttributes =
+                d2.programModule().programTrackedEntityAttributes().withRenderType()
+                    .byProgram().eq(programUid)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .blockingGet()
+
+            programAttributes.map { programTrackedEntityAttribute ->
+                transform(programTrackedEntityAttribute)
+            }
+        }
     }
 
     @VisibleForTesting
@@ -105,27 +129,27 @@ class EnrollmentRepository(
         programSections: List<ProgramSection>,
         programUid: String
     ): Single<List<FieldUiModel>> {
-        val fields = ArrayList<FieldUiModel>()
-        for (section in programSections) {
-            fields.add(transformSection(section))
-            for ((index, attribute) in section.attributes()!!.withIndex()) {
-                d2.programModule().programTrackedEntityAttributes()
-                    .withRenderType()
-                    .byProgram().eq(programUid)
-                    .byTrackedEntityAttribute().eq(attribute.uid())
-                    .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                    val field = transform(programTrackedEntityAttribute, section.uid())
-                    fields.add(field)
+        return Single.fromCallable {
+            val fields = mutableListOf<FieldUiModel>()
+            programSections.forEach { section ->
+                fields.add(
+                    transformSection(
+                        section.uid(),
+                        section.displayName(),
+                        section.description()
+                    )
+                )
+                section.attributes()?.forEachIndexed { index, attribute ->
+                    d2.programModule().programTrackedEntityAttributes().withRenderType()
+                        .byProgram().eq(programUid)
+                        .byTrackedEntityAttribute().eq(attribute.uid())
+                        .one().blockingGet()?.let { programTrackedEntityAttribute ->
+                        transform(programTrackedEntityAttribute, section.uid())
+                    }
                 }
             }
+            return@fromCallable fields
         }
-        return Single.just(fields)
-    }
-
-    override fun getOrgUnits(): Observable<List<OrganisationUnit>> {
-        return d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
-            .toObservable()
     }
 
     private fun transform(
@@ -259,22 +283,6 @@ class EnrollmentRepository(
         }
 
         return Pair(dataValue, warning)
-    }
-
-    private fun getSingleSectionList(): MutableList<FieldUiModel> {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
-            .blockingGet()
-        val teiType = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(tei.trackedEntityType()).blockingGet()
-        return mutableListOf(
-            fieldFactory.createSingleSection(
-                String.format(
-                    singleSectionLabel,
-                    teiType.displayName()
-                )
-            )
-        )
     }
 
     private fun getEnrollmentData(program: Program): MutableList<FieldUiModel> {
@@ -471,18 +479,6 @@ class EnrollmentRepository(
             null,
             null,
             featureType
-        )
-    }
-
-    private fun transformSection(programSection: ProgramSection): FieldUiModel {
-        return fieldFactory.createSection(
-            programSection.uid(),
-            programSection.displayName(),
-            programSection.description(),
-            false,
-            0,
-            0,
-            ProgramStageSectionRenderingType.LISTING.name
         )
     }
 
