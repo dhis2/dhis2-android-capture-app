@@ -9,6 +9,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
 
 private const val loopThreshold = 5
 
@@ -110,7 +111,7 @@ class FormRepositoryImpl(
         //       When SectionViewModel is removed then this needs to be looked at.
         return if (!this.none { it is FieldUiModelImpl }) {
             val lastItem = getLastSectionItem(this)
-            return if (usesKeyboard(lastItem.valueType) && lastItem.valueType != ValueType.LONG_TEXT) {
+            return if (usesKeyboard(lastItem.valueType) && lastItem.valueType != LONG_TEXT) {
                 updated(indexOf(lastItem), lastItem.setKeyBoardActionDone())
             } else {
                 this
