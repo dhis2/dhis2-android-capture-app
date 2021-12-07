@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
