@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -12,7 +11,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>(
-    DisplayViewModel::class to R.layout.custom_form_display,
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
     SpinnerViewModel::class to R.layout.form_option_set_spinner,

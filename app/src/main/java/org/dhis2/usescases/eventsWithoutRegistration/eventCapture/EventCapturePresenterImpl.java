@@ -134,7 +134,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         view.goBack();
     }
 
-
     @Override
     public void attemptFinish(boolean canComplete, String onCompleteMessage, List<String> fieldUidErrorList, Map<String, String> emptyMandatoryFields) {
 
