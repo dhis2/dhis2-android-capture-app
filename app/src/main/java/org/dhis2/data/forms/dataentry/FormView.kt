@@ -210,6 +210,7 @@ class FormView(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
@@ -465,9 +466,9 @@ class FormView(
             dataEntryHeaderHelper.onItemsUpdatedCallback()
             viewModel.onItemsRendered()
             onFieldItemsRendered?.invoke(items.isEmpty())
-            FormCountingIdlingResource.decrement()
         }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        FormCountingIdlingResource.decrement()
     }
 
     private fun checkLastItem(): Boolean {

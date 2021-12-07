@@ -5,7 +5,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.common.ValueType
@@ -91,8 +90,6 @@ class FormRepositoryImpl(
     }
 
     override fun composeList(): List<FieldUiModel> {
-        FormCountingIdlingResource.increment()
-
         calculationLoop = 0
         return itemList
             .applyRuleEffects()
