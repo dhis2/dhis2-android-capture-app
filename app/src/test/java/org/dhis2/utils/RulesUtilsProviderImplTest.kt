@@ -200,7 +200,7 @@ class RulesUtilsProviderImplTest {
     }
 
     @Test
-    fun `RuleActionDisplayText Should not add new DisplayViewModel`() {
+    fun `RuleActionDisplayText Should not add new FieldUIModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
@@ -223,7 +223,7 @@ class RulesUtilsProviderImplTest {
     }
 
     @Test
-    fun `RuleActionDisplayKeyValuePair should not add new DisplayViewModel`() {
+    fun `RuleActionDisplayKeyValuePair should not add new FieldUIModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
