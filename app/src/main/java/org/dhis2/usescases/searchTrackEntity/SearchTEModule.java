@@ -24,6 +24,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
@@ -56,6 +57,9 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
+import java.util.Collections;
+import java.util.Map;
+
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
@@ -68,15 +72,18 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
+    private final Map<String, String> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
-                          Context context) {
+                          Context context,
+                          Map<String, String> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
         this.moduleContext = context;
+        this.initialQuery = initialQuery;
     }
 
     @Provides
@@ -105,7 +112,7 @@ public class SearchTEModule {
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper,initialQuery);
     }
 
     @Provides
@@ -141,8 +148,13 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory, DhisPeriodUtils periodUtils, Charts charts, CrashReportController crashReportController) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils, charts, crashReportController);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+                                      ResourceManager resources,
+                                      SearchSortingValueSetter searchSortingValueSetter,
+                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      CrashReportController crashReportController) {
+        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
+                searchSortingValueSetter, periodUtils, charts, crashReportController);
     }
 
     @Provides
@@ -220,11 +232,28 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormRepository provideFormRepository(D2 d2) {
+    FormRepository provideFormRepository(D2 d2, DataEntryRepository dataEntryRepository) {
         return new FormRepositoryImpl(
                 null,
                 new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(d2)
+                new DisplayNameProviderImpl(d2),
+                dataEntryRepository,
+                null,
+                null
+        );
+    }
+
+    @Provides
+    @PerActivity
+    DataEntryRepository provideDataEntryRepository(
+            D2 d2,
+            FieldViewModelFactory fieldViewModelFactory) {
+        return new SearchRepositoy(
+                d2,
+                fieldViewModelFactory,
+                initialProgram,
+                teiType,
+                initialQuery
         );
     }
 

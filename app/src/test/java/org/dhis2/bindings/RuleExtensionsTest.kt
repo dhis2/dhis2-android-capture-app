@@ -8,7 +8,6 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleEngineObject
-import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -22,6 +21,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepositor
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.junit.Test
 import org.mockito.Mockito
 

@@ -1,9 +1,9 @@
-package org.dhis2.utils
+package org.dhis2.form.data
 
 import android.content.Context
 import androidx.annotation.StringRes
 import kotlin.text.Typography.bullet
-import org.dhis2.R
+import org.dhis2.form.R
 
 data class RuleUtilsProviderResult(
     val canComplete: Boolean,
@@ -13,7 +13,10 @@ data class RuleUtilsProviderResult(
     val unsupportedRules: List<String>,
     val fieldsToUpdate: List<String>,
     val stagesToHide: List<String>,
-    val configurationErrors: List<RulesUtilsProviderConfigurationError>
+    val configurationErrors: List<RulesUtilsProviderConfigurationError>,
+    val optionsToHide: Map<String, List<String>>,
+    val optionGroupsToHide: Map<String, List<String>>,
+    val optionGroupsToShow: Map<String, List<String>>
 ) {
     fun errorMap(): Map<String, String> = fieldsWithErrors.map {
         it.fieldUid to it.errorMessage
@@ -22,6 +25,18 @@ data class RuleUtilsProviderResult(
     fun warningMap(): Map<String, String> = fieldsWithWarnings.map {
         it.fieldUid to it.errorMessage
     }.toMap()
+
+    fun optionsToHide(fieldUid: String): List<String> {
+        return optionsToHide[fieldUid] ?: mutableListOf()
+    }
+
+    fun optionGroupsToHide(fieldUid: String): List<String> {
+        return optionGroupsToHide[fieldUid] ?: mutableListOf()
+    }
+
+    fun optionGroupsToShow(fieldUid: String): List<String> {
+        return optionGroupsToShow[fieldUid] ?: mutableListOf()
+    }
 }
 
 data class FieldWithError(val fieldUid: String, val errorMessage: String)

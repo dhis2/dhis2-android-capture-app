@@ -18,6 +18,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.form.data.FormValueStore;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -30,8 +31,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.RuleUtilsProviderResult;
-import org.dhis2.utils.RulesUtilsProviderImpl;
+import org.dhis2.form.data.RuleUtilsProviderResult;
+import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
@@ -44,7 +45,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -80,7 +80,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final TEIDataContracts.View view;
     private final CompositeDisposable compositeDisposable;
     private final FilterRepository filterRepository;
-    private final ValueStore valueStore;
+    private final FormValueStore valueStore;
 
     private String programUid;
     private DashboardProgramModel dashboardModel;
@@ -97,7 +97,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 AnalyticsHelper analyticsHelper,
                                 FilterManager filterManager,
                                 FilterRepository filterRepository,
-                                ValueStore valueStore) {
+                                FormValueStore valueStore) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -274,7 +274,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
                 false,
                 new HashMap<>(),
-                calcResult,
+                calcResult.items(),
                 valueStore);
 
         stagesToHide = rulesResult.getStagesToHide();

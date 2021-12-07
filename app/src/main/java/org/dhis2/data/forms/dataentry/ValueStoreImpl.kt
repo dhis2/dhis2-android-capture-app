@@ -13,6 +13,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.reporting.CrashReportController
+import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -126,7 +127,14 @@ class ValueStoreImpl(
         }
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue)
+                valueRepository.blockingSetCheck(d2, uid, newValue) { _attrUid, _value ->
+                    val crashController = CrashReportControllerImpl()
+                    crashController.addBreadCrumb(
+                        "blockingSetCheck Crash",
+                        "Attribute: $_attrUid," +
+                            "" + " value: $_value"
+                    )
+                }
             } else {
                 valueRepository.blockingDeleteIfExist()
             }

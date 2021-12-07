@@ -25,8 +25,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import java.io.File
 import java.util.Calendar
@@ -34,6 +36,7 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -42,7 +45,14 @@ import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
+import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.FormRepository
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.RulesUtilsProviderConfigurationError
+import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.data.toMessage
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -50,6 +60,7 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -70,14 +81,18 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
 
-class FormView constructor(
+class FormView(
     formRepository: FormRepository,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
+    private val onDiscardWarningMessage: (() -> Unit)?,
     private val onActivityForResult: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
+    private val completionListener: ((percentage: Float) -> Unit)?,
+    private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
+    private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
@@ -165,6 +180,7 @@ class FormView constructor(
     private lateinit var alertDialogView: View
     private lateinit var dialogDelegate: DialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
+    private var displayConfErrors = true
     private var onSavePicture: ((String) -> Unit)? = null
 
     override fun onCreateView(
@@ -194,6 +210,7 @@ class FormView constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
@@ -272,6 +289,13 @@ class FormView constructor(
             }
         )
 
+        viewModel.confError.observe(
+            viewLifecycleOwner,
+            { confErrors ->
+                displayConfigurationErrors(confErrors)
+            }
+        )
+
         viewModel.showToast.observe(
             viewLifecycleOwner,
             { message ->
@@ -298,6 +322,78 @@ class FormView constructor(
                 ).show()
             }
         )
+
+        viewModel.dataIntegrityResult.observe(
+            viewLifecycleOwner,
+            { result ->
+                if (onDataIntegrityCheck != null) {
+                    onDataIntegrityCheck.invoke(result)
+                } else {
+                    when (result) {
+                        is FieldsWithErrorResult ->
+                            showErrorFieldsMessage(result.fieldUidErrorList)
+                        is FieldsWithWarningResult ->
+                            showWarningFieldsMessage(result.fieldUidWarningList)
+                        is MissingMandatoryResult ->
+                            showMissingMandatoryFieldsMessage(result.mandatoryFields)
+                        is SuccessfulResult -> {}
+                    }
+                }
+            }
+        )
+
+        viewModel.completionPercentage.observe(
+            viewLifecycleOwner,
+            { percentage ->
+                completionListener?.invoke(percentage)
+            }
+        )
+
+        viewModel.calculationLoop.observe(
+            viewLifecycleOwner,
+            { displayLoopWarning ->
+                if (displayLoopWarning) {
+                    showLoopWarning()
+                }
+            }
+        )
+    }
+
+    private fun showErrorFieldsMessage(errorFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_save))
+            .setMessage(getString(R.string.field_errors))
+            .setFieldsToDisplay(errorFields)
+            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    private fun showWarningFieldsMessage(warningFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.warnings_in_form))
+            .setMessage(getString(R.string.what_to_do))
+            .setFieldsToDisplay(warningFields)
+            .setNegativeButton(getString(R.string.review))
+            .setPositiveButton(getString(R.string.save)) { onDiscardWarningMessage?.invoke() }
+            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    private fun showMissingMandatoryFieldsMessage(
+        emptyMandatoryFields: Map<String, String>
+    ) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_save))
+            .setMessage(getString(R.string.missing_mandatory_fields))
+            .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
+            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    private fun showLoopWarning() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
+            .setTitle(getString(R.string.program_rules_loop_warning_title))
+            .setMessage(getString(R.string.program_rules_loop_warning_message))
+            .setPositiveButton(R.string.action_accept) { _, _ -> }
+            .setCancelable(false)
+            .show()
     }
 
     private fun scrollToPosition(position: Int) {
@@ -349,6 +445,9 @@ class FormView constructor(
     }
 
     private fun render(items: List<FieldUiModel>) {
+        viewModel.calculateCompletedFields()
+        viewModel.updateConfigurationErrors()
+        viewModel.displayLoopWarningIfNeeded()
         val layoutManager: LinearLayoutManager =
             binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
@@ -366,8 +465,10 @@ class FormView constructor(
         ) {
             dataEntryHeaderHelper.onItemsUpdatedCallback()
             viewModel.onItemsRendered()
+            onFieldItemsRendered?.invoke(items.isEmpty())
         }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        FormCountingIdlingResource.decrement()
     }
 
     private fun checkLastItem(): Boolean {
@@ -658,6 +759,24 @@ class FormView constructor(
         ).show(childFragmentManager, uiEvent.label)
     }
 
+    private fun displayConfigurationErrors(
+        configurationError: List<RulesUtilsProviderConfigurationError>
+    ) {
+        if (displayConfErrors && configurationError.isNotEmpty()) {
+            MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
+                .setTitle(R.string.warning_error_on_complete_title)
+                .setMessage(configurationError.toMessage(requireContext()))
+                .setPositiveButton(
+                    R.string.action_close
+                ) { _, _ -> }
+                .setNegativeButton(
+                    getString(R.string.action_do_not_show_again)
+                ) { _, _ -> displayConfErrors = false }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
@@ -676,12 +795,18 @@ class FormView constructor(
         binding.recyclerView.requestFocus()
     }
 
-    fun processItems(items: List<FieldUiModel>?) {
-        viewModel.processCalculatedItems(items)
-    }
-
     private fun negativeOrZero(value: String): Int {
         return if (value.isEmpty()) 0 else -Integer.valueOf(value)
+    }
+
+    fun requestDataIntegrityCheck(): LiveData<DataIntegrityCheckResult> {
+        return viewModel.dataIntegrityResult.also {
+            viewModel.runDataIntegrityCheck()
+        }
+    }
+
+    fun clearValues() {
+        intentHandler(FormIntent.OnClear())
     }
 
     class Builder {
@@ -694,6 +819,10 @@ class FormView constructor(
         private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
+        private var onDiscardWarningMessage: (() -> Unit)? = null
+        private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
+        private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
+        private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -757,6 +886,18 @@ class FormView constructor(
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
+        fun onDiscardWarningMessage(callback: () -> Unit) =
+            apply { this.onDiscardWarningMessage = callback }
+
+        fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
+            apply { this.onPercentageUpdate = callback }
+
+        fun onDataIntegrityResult(callback: (result: DataIntegrityCheckResult) -> Unit) =
+            apply { this.onDataIntegrityCheck = callback }
+
+        fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
+            apply { this.onFieldItemsRendered = callback }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
@@ -772,7 +913,11 @@ class FormView constructor(
                     needToForceUpdate,
                     onLoadingListener,
                     onFocused,
+                    onDiscardWarningMessage,
                     onActivityForResult,
+                    onPercentageUpdate,
+                    onDataIntegrityCheck,
+                    onFieldItemsRendered,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 

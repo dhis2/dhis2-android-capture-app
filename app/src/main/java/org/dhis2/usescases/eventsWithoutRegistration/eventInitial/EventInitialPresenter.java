@@ -20,7 +20,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
-import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -390,7 +390,7 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null);
+        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult.items(), null);
 
         return new ArrayList<>(fieldViewModels.values());
     }

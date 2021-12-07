@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -11,9 +13,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.dhis2.form.R
+import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
@@ -38,6 +42,7 @@ class FormViewModel(
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
+    val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
 
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
@@ -47,6 +52,15 @@ class FormViewModel(
 
     private val _queryData = MutableLiveData<RowAction>()
     val queryData = _queryData
+
+    private val _dataIntegrityResult = MutableLiveData<DataIntegrityCheckResult>()
+    val dataIntegrityResult = _dataIntegrityResult
+
+    private val _completionPercentage = MutableLiveData<Float>()
+    val completionPercentage = _completionPercentage
+
+    private val _calculationLoop = MutableLiveData(false)
+    val calculationLoop = _calculationLoop
 
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
 
@@ -61,12 +75,25 @@ class FormViewModel(
                     displayResult(result)
                 }
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = async {
+                repository.fetchFormItems()
+            }
+            try {
+                _items.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+                _items.value = emptyList()
+            }
+        }
     }
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
         when (result.second.valueStoreResult) {
             ValueStoreResult.VALUE_CHANGED -> {
                 _savedValue.value = result.first
+                _items.value = repository.composeList()
             }
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
                 showToast.value = R.string.update_field_error
@@ -114,6 +141,11 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
+            is FormIntent.OnClear -> createRowAction(
+                uid = "",
+                value = null,
+                actionType = ActionType.ON_CLEAR
+            )
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> createRowAction(
                 uid = intent.uid,
@@ -162,6 +194,11 @@ class FormViewModel(
                 value = intent.value,
                 actionType = ActionType.ON_TEXT_CHANGE,
                 valueType = ValueType.TEXT
+            )
+            is FormIntent.OnSection -> createRowAction(
+                uid = intent.sectionUid,
+                value = null,
+                actionType = ActionType.ON_SECTION_CHANGE
             )
         }
     }
@@ -238,8 +275,53 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    fun processCalculatedItems(items: List<FieldUiModel>? = null) {
-        _items.value = repository.composeList(items)
+    fun processCalculatedItems() {
+        _items.value = repository.composeList()
+    }
+
+    fun updateConfigurationErrors() {
+        confError.value = repository.getConfigurationErrors() ?: emptyList()
+    }
+
+    fun runDataIntegrityCheck() {
+        viewModelScope.launch {
+            val result = async(Dispatchers.IO) {
+                repository.runDataIntegrityCheck()
+            }
+            try {
+                _dataIntegrityResult.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                _items.postValue(repository.composeList())
+            }
+        }
+    }
+
+    fun calculateCompletedFields() {
+        viewModelScope.launch {
+            val result = async(Dispatchers.IO) {
+                repository.completedFieldsPercentage(_items.value ?: emptyList())
+            }
+            try {
+                _completionPercentage.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    fun displayLoopWarningIfNeeded() {
+        viewModelScope.launch {
+            val result = async(Dispatchers.IO) {
+                repository.calculationLoopOverLimit()
+            }
+            try {
+                _calculationLoop.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
 
     companion object {

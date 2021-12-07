@@ -26,8 +26,6 @@ import io.reactivex.Observable;
 
 public interface SearchRepository {
 
-    Observable<List<FieldUiModel>> searchFields(@Nullable String programUid, Map<String, String> currentSearchValues);
-
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull

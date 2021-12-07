@@ -25,8 +25,6 @@
 
 package org.dhis2.Bindings
 
-import dhis2.org.analytics.charts.ui.LOCATION_FEEDBACK_WIDGET
-import org.dhis2.data.forms.RuleActionUnsupported
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
@@ -57,6 +55,7 @@ import org.hisp.dhis.rules.models.RuleActionSetMandatoryField
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleActionShowOptionGroup
 import org.hisp.dhis.rules.models.RuleActionShowWarning
+import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
@@ -128,7 +127,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
     return when (programRuleActionType()) {
         ProgramRuleActionType.HIDEFIELD -> RuleActionHideField.create(content(), field)
         ProgramRuleActionType.DISPLAYTEXT ->
-            if (location() == LOCATION_FEEDBACK_WIDGET) {
+            if (location() == RuleActionDisplayText.LOCATION_FEEDBACK_WIDGET) {
                 RuleActionDisplayText.createForFeedback(
                     content(),
                     data()
@@ -140,7 +139,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 )
             }
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
-            if (location() == LOCATION_FEEDBACK_WIDGET) {
+            if (location() == RuleActionDisplayText.LOCATION_FEEDBACK_WIDGET) {
                 RuleActionDisplayKeyValuePair.createForFeedback(
                     content(),
                     data()

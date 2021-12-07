@@ -1,16 +1,18 @@
 package org.dhis2.utils
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
 import java.util.ArrayList
-import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -53,7 +55,7 @@ class RulesUtilsProviderImplTest {
     private lateinit var testFieldViewModels: MutableMap<String, FieldUiModel>
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val valueStore: ValueStore = mock()
+    private val valueStore: FormValueStore = mock()
     private val uiStyleProvider: UiStyleProvider = mock()
     private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
@@ -134,7 +136,7 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -159,7 +161,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -180,22 +182,20 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
-            StoreResult(
-                testingUid,
-                ValueStoreResult.VALUE_CHANGED
-            )
+        whenever(valueStore.save(testingUid, null, null)) doReturn StoreResult(
+            testingUid,
+            ValueStoreResult.VALUE_CHANGED
         )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
-        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
+        verify(valueStore, times(1)).save(testingUid, null, null)
         assertTrue(result.fieldsToUpdate.contains(testingUid))
     }
 
@@ -214,7 +214,7 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -237,7 +237,7 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -264,7 +264,7 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -288,11 +288,11 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
-        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
+        verify(valueStore, times(1)).save(testingUid, "data", null)
         assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
     }
@@ -317,22 +317,21 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        whenever(valueStore.saveWithTypeCheck(any(), any())) doReturn Flowable.just(
+        whenever(valueStore.save(any(), any(), anyOrNull())) doReturn
             StoreResult(
                 testingUid,
                 ValueStoreResult.VALUE_CHANGED
             )
-        )
 
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
-        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
-        verify(valueStore, times(0)).saveWithTypeCheck(testingUid2, "test")
+        verify(valueStore, times(1)).save(testingUid, "data", null)
+        verify(valueStore, times(0)).save(testingUid2, "test", null)
         assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
         assertTrue(testFieldViewModels[testingUid2]!!.value.equals("test"))
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
@@ -354,7 +353,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -376,7 +375,7 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -398,7 +397,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -422,7 +421,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
@@ -445,7 +444,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
     }
@@ -498,12 +497,12 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
         assertTrue(
-            testFieldViewModels["field"]?.optionsToHide?.contains("optionUid") == true
+            result.optionsToHide.isNotEmpty()
         )
 
         verify(valueStore).deleteOptionValueIfSelected("field", "optionUid")
@@ -561,18 +560,15 @@ class RulesUtilsProviderImplTest {
             "optionToHide1", "optionToHide2"
         )
 
-        ruleUtils.applyRuleEffects(
+        val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
         assertTrue(
-            testFieldViewModels["field"]?.optionsToHide?.contains("optionToHide1") == true
-        )
-        assertTrue(
-            testFieldViewModels["field"]?.optionsToHide?.contains("optionToHide2") == true
+            result.optionGroupsToHide.isNotEmpty()
         )
 
         verify(
@@ -620,18 +616,15 @@ class RulesUtilsProviderImplTest {
             null
         )
 
-        ruleUtils.applyRuleEffects(
+        val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) /*{ optionGroupUids -> listOf("optionToShow1", "optionToShow2") }*/
+        )
 
         assertTrue(
-            testFieldViewModels["field"]?.optionsToShow?.contains("optionToShow1") == true
-        )
-        assertTrue(
-            testFieldViewModels["field"]?.optionsToShow?.contains("optionToShow2") == true
+            result.optionGroupsToShow.isNotEmpty()
         )
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
     }

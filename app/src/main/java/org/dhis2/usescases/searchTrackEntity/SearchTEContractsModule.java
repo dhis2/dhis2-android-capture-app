@@ -47,7 +47,7 @@ public class SearchTEContractsModule {
 
         void setTutorial();
 
-        void setProgramColor(String data);
+        void setProgramColor(String data, String programUid);
 
         String fromRelationshipTEI();
 
@@ -86,8 +86,6 @@ public class SearchTEContractsModule {
         void onBackClicked();
 
         void couldNotDownload(String typeName);
-
-        void setFormData(List<FieldUiModel> data);
 
         void setFilters(List<FilterItem> filtersToDisplay);
 
@@ -191,5 +189,7 @@ public class SearchTEContractsModule {
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
 
         boolean selectedProgramMinNumberOfAttributesCheck();
+
+        void setAttributesEmpty(Boolean attributesEmpty);
     }
 }

@@ -11,7 +11,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.HashMap
 import org.dhis2.databinding.FormBottomDialogBinding
-import org.dhis2.form.model.FieldUiModel
 
 class FormBottomDialog : BottomSheetDialogFragment() {
     private var mListener: OnFormBottomDialogItemSelection? = null
@@ -25,7 +24,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     private var mMandatoryFields = false
     private var mMessageOnComplete: String? = null
     private var mFieldsWithErrors = false
-    private var mEmptyMandatoryFields: Map<String, FieldUiModel> = HashMap()
+    private var mEmptyMandatoryFields: Map<String, String> = HashMap()
     private val presenter = FormBottomDialogPresenter()
 
     companion object {
@@ -85,8 +84,7 @@ class FormBottomDialog : BottomSheetDialogFragment() {
     }
 
     fun setEmptyMandatoryFields(
-        emptyMandatoryFields: Map<String,
-            FieldUiModel>
+        emptyMandatoryFields: Map<String, String>
     ): FormBottomDialog {
         mEmptyMandatoryFields = emptyMandatoryFields
         return this
