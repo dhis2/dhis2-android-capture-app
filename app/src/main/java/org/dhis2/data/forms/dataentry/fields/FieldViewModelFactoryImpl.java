@@ -11,7 +11,6 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.FieldUiModelImpl;
@@ -240,21 +239,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         valueTypeRenderingType,
                         !searchMode,
                         searchMode
-                );
-            case FILE_RESOURCE:
-            case TRACKER_ASSOCIATE:
-            case USERNAME:
-                return UnsupportedViewModel.create(
-                        id,
-                        getLayout(UnsupportedViewModel.class),
-                        label,
-                        mandatory,
-                        value,
-                        section,
-                        editable,
-                        description,
-                        objectStyle,
-                        type
                 );
             default:
                 return new FieldUiModelImpl(
