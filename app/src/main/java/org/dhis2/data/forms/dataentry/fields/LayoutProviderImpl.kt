@@ -25,7 +25,10 @@ class LayoutProviderImpl : LayoutProvider {
         return layouts[modelClass]!!
     }
 
-    override fun getLayoutByValueType(valueType: ValueType): Int {
+    override fun getLayoutByType(
+        valueType: ValueType?,
+        renderingType: ValueTypeRenderingType?
+    ): Int {
         return when (valueType) {
             ValueType.AGE -> R.layout.form_age_custom
             ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
@@ -36,39 +39,27 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.FILE_RESOURCE,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
-            else -> R.layout.form_edit_text_custom
-        }
-    }
-
-    override fun getLayoutByValueRenderingType(
-        renderingType: ValueTypeRenderingType,
-        valueType: ValueType
-    ): Int {
-        if (valueType == ValueType.TEXT) {
-            return when (renderingType) {
+            ValueType.TEXT -> return when (renderingType) {
                 ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
                 ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
                 ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
                 ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
                 else -> R.layout.form_edit_text_custom
             }
+            ValueType.TRUE_ONLY,
+            ValueType.BOOLEAN -> return when (renderingType) {
+                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                ValueTypeRenderingType.DEFAULT -> R.layout.form_radio_button
+                ValueTypeRenderingType.TOGGLE -> when (valueType) {
+                    ValueType.TRUE_ONLY -> R.layout.form_toggle
+                    else -> R.layout.form_radio_button
+                }
+                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_check_button
+                else -> R.layout.form_radio_button
+            }
+            else -> R.layout.form_edit_text_custom
         }
-        if (renderingType == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
-            renderingType == ValueTypeRenderingType.DEFAULT ||
-            renderingType == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ||
-            renderingType == ValueTypeRenderingType.TOGGLE &&
-            valueType !== ValueType.TRUE_ONLY
-        ) {
-            return R.layout.form_radio_button_horizontal
-        } else if (renderingType == ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ||
-            renderingType == ValueTypeRenderingType.VERTICAL_CHECKBOXES
-        ) {
-            return R.layout.form_check_button
-        } else if (renderingType == ValueTypeRenderingType.TOGGLE &&
-            valueType === ValueType.TRUE_ONLY
-        ) {
-            return R.layout.form_toggle
-        }
-        return R.layout.form_yes_no
     }
 }

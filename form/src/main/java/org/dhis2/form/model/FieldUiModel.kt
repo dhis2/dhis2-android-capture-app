@@ -67,6 +67,10 @@ interface FieldUiModel {
 
     val fieldMask: String?
 
+    val isAffirmativeChecked: Boolean
+
+    val isNegativeChecked: Boolean
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -82,6 +86,8 @@ interface FieldUiModel {
     fun onClear()
 
     fun onSave(value: String?)
+
+    fun onSaveBoolean(boolean: Boolean)
 
     fun invokeUiEvent(uiEventType: UiEventType)
 

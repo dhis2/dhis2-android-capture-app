@@ -351,6 +351,11 @@ public abstract class FieldViewModel implements FieldUiModel {
         //Do not use until migrate to FieldUIModel
     }
 
+    @Override
+    public void onSaveBoolean(boolean b) {
+        //Do not use until migrate to FieldUIModel
+    }
+
     @Deprecated
     @Override
     public void invokeUiEvent(UiEventType uiEventType) {
@@ -464,5 +469,15 @@ public abstract class FieldViewModel implements FieldUiModel {
     public FieldUiModel setKeyBoardActionDone() {
         //Do not use until migrate to FieldUIModel
         return this;
+    }
+
+    @Override
+    public boolean isAffirmativeChecked() {
+        return false;
+    }
+
+    @Override
+    public boolean isNegativeChecked() {
+        return false;
     }
 }
