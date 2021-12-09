@@ -32,23 +32,27 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.FILE_RESOURCE,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
-            ValueType.TEXT -> return if (isNotEmpty(optionSet)) {
-                when (sectionRenderingType) {
-                    ProgramStageSectionRenderingType.SEQUENTIAL,
-                    ProgramStageSectionRenderingType.MATRIX -> R.layout.form_option_set_matrix
-                    else -> when (renderingType) {
-                        ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                        ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                        ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                        ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
-                        ValueTypeRenderingType.QR_CODE,
-                        ValueTypeRenderingType.BAR_CODE -> R.layout.form_scan
-                        else -> R.layout.form_option_set_spinner
+            ValueType.TEXT ->
+                return if (isNotEmpty(optionSet)) {
+                    when (sectionRenderingType) {
+                        ProgramStageSectionRenderingType.SEQUENTIAL,
+                        ProgramStageSectionRenderingType.MATRIX ->
+                            R.layout.form_option_set_matrix
+                        else -> when (renderingType) {
+                            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                            ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
+                                R.layout.form_option_set_selector
+                            ValueTypeRenderingType.QR_CODE,
+                            ValueTypeRenderingType.BAR_CODE ->
+                                R.layout.form_scan
+                            else -> R.layout.form_option_set_spinner
+                        }
                     }
+                } else {
+                    R.layout.form_edit_text_custom
                 }
-            } else {
-                R.layout.form_edit_text_custom
-            }
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
                 ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
