@@ -1,7 +1,5 @@
 package org.dhis2.form.data
 
-import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
@@ -154,35 +152,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     ) {
         calcResult.getOrNull()?.filter { it.ruleAction() is RuleActionHideProgramStage }?.forEach {
             hideProgramStage(programStages, it.ruleAction() as RuleActionHideProgramStage)
-        }
-    }
-
-    private fun setOptionsInFields(
-        fieldViewModels: MutableMap<String, FieldUiModel>
-    ) {
-        fieldViewModels.forEach {
-            val fieldUid = it.key
-            val optionsToHide = optionsToHide[fieldUid] ?: mutableListOf()
-            val optionsInGroupsToHide = optionsFromGroups(
-                optionGroupsToHide[fieldUid] ?: mutableListOf()
-            )
-            val optionsInGroupsToShow = optionsFromGroups(
-                optionGroupsToShow[fieldUid] ?: mutableListOf()
-            )
-            when (val fieldViewModel = it.value) {
-                is MatrixOptionSetModel -> {
-                    val hiddenMatrixModel = fieldViewModel.setOptionsToHide(
-                        optionsToHide,
-                        optionsInGroupsToHide,
-                        optionsInGroupsToShow
-                    )
-                    fieldViewModels[fieldUid] = hiddenMatrixModel
-                }
-                else -> fieldViewModel.takeIf { field -> field.optionSet != null }?.apply {
-                    this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
-                    this.optionsToShow = optionsInGroupsToShow
-                }
-            }
         }
     }
 

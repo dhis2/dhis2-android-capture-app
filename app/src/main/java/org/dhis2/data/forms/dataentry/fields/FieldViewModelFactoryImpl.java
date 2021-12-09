@@ -140,7 +140,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 } else {
                     return new FieldUiModelImpl(
                             id,
-                            layoutProvider.getLayoutByType(type, valueTypeRenderingType, renderingType),
+                            layoutProvider.getLayoutByType(type, valueTypeRenderingType, optionSet, renderingType),
                             value,
                             false,
                             null,
@@ -168,7 +168,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
         return new FieldUiModelImpl(
                 id,
-                layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, renderingType),
+                layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, optionSet, renderingType),
                 value,
                 false,
                 null,

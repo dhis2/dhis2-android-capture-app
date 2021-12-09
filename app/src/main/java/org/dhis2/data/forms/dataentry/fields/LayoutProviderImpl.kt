@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry.fields
 import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.utils.DhisTextUtils.Companion.isNotEmpty
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
@@ -18,6 +19,7 @@ class LayoutProviderImpl : LayoutProvider {
     override fun getLayoutByType(
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
+        optionSet: String?,
         sectionRenderingType: ProgramStageSectionRenderingType?
     ): Int {
         return when (valueType) {
@@ -30,18 +32,22 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.FILE_RESOURCE,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
-            ValueType.TEXT -> return when (sectionRenderingType) {
-                ProgramStageSectionRenderingType.SEQUENTIAL,
-                ProgramStageSectionRenderingType.MATRIX -> R.layout.form_option_set_matrix
-                else -> when (renderingType) {
-                    ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                    ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                    ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                    ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
-                    ValueTypeRenderingType.QR_CODE,
-                    ValueTypeRenderingType.BAR_CODE -> R.layout.form_scan
-                    else -> R.layout.form_option_set_spinner
+            ValueType.TEXT -> return if (isNotEmpty(optionSet)) {
+                when (sectionRenderingType) {
+                    ProgramStageSectionRenderingType.SEQUENTIAL,
+                    ProgramStageSectionRenderingType.MATRIX -> R.layout.form_option_set_matrix
+                    else -> when (renderingType) {
+                        ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                        ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                        ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                        ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
+                        ValueTypeRenderingType.QR_CODE,
+                        ValueTypeRenderingType.BAR_CODE -> R.layout.form_scan
+                        else -> R.layout.form_option_set_spinner
+                    }
                 }
+            } else {
+                R.layout.form_edit_text_custom
             }
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
