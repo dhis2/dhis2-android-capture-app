@@ -144,7 +144,9 @@ class EnrollmentRepository(
                         .byProgram().eq(programUid)
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                        transform(programTrackedEntityAttribute, section.uid())
+                        fields.add(
+                            transform(programTrackedEntityAttribute, section.uid())
+                        )
                     }
                 }
             }

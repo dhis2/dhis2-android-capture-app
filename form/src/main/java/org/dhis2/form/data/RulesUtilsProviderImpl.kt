@@ -164,9 +164,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     }
 
     private fun saveForEvent(uid: String, value: String?): ValueStoreResult {
-        /*return valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
-            ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED*/
-        return valueStore?.save(uid, value, null)?.valueStoreResult
+        return valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
             ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED
     }
 
