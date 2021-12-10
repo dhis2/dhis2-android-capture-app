@@ -7,10 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
@@ -138,50 +136,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(
-                            id,
-                            getLayout(ScanTextViewModel.class),
-                            label,
-                            mandatory,
-                            value,
-                            section,
-                            editable,
-                            optionSet,
-                            description,
-                            objectStyle,
-                            fieldRendering,
-                            valueTypeHintMap.get(type),
-                            !searchMode,
-                            searchMode,
-                            uiStyleProvider.provideStyle(type),
-                            type
-                    );
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                    return new FieldUiModelImpl(
-                            id,
-                            layoutProvider.getLayoutByType(type, fieldRendering.type(), renderingType),
-                            value,
-                            false,
-                            null,
-                            editable,
-                            null,
-                            mandatory,
-                            label,
-                            section,
-                            uiStyleProvider.provideStyle(type),
-                            hintProvider.provideDateHint(type),
-                            description,
-                            type,
-                            legendValue,
-                            optionSet,
-                            allowFutureDates,
-                            new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
-                            displayNameProvider.provideDisplayName(type, value, optionSet),
-                            uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering.type(), renderingType),
-                            options,
-                            keyboardActionProvider.provideKeyboardAction(type),
-                            fieldMask
-                    );
                 } else {
                     return SpinnerViewModel.create(
                             id,
@@ -201,32 +156,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             type
                     );
                 }
-            } else {
-                return new FieldUiModelImpl(
-                        id,
-                        layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, renderingType),
-                        value,
-                        false,
-                        null,
-                        editable,
-                        null,
-                        mandatory,
-                        label,
-                        section,
-                        uiStyleProvider.provideStyle(type),
-                        hintProvider.provideDateHint(type),
-                        description,
-                        type,
-                        legendValue,
-                        optionSet,
-                        allowFutureDates,
-                        new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value, optionSet),
-                        uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null, renderingType),
-                        options,
-                        keyboardActionProvider.provideKeyboardAction(type),
-                        fieldMask
-                );
             }
         }
         return new FieldUiModelImpl(
@@ -247,7 +176,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 legendValue,
                 optionSet,
                 allowFutureDates,
-                new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                new UiEventFactoryImpl(id, label, description, type, allowFutureDates, optionSet, editable),
                 displayNameProvider.provideDisplayName(type, value, optionSet),
                 uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null, renderingType),
                 options,

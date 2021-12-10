@@ -30,6 +30,10 @@ class UiEventTypesProviderImpl : UiEventTypesProvider {
                         UiRenderType.HORIZONTAL_CHECKBOXES
                     ValueTypeRenderingType.AUTOCOMPLETE ->
                         UiRenderType.AUTOCOMPLETE
+                    ValueTypeRenderingType.QR_CODE ->
+                        UiRenderType.QR_CODE
+                    ValueTypeRenderingType.BAR_CODE ->
+                        UiRenderType.BAR_CODE
                     else -> UiRenderType.DEFAULT
                 }
             }

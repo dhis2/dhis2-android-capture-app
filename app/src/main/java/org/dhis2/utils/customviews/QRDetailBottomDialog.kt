@@ -29,14 +29,14 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.QrDetailDialogBinding
+import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
 class
 QRDetailBottomDialog(
     private val value: String,
-    private val renderingType: ValueTypeRenderingType?,
+    private val renderingType: UiRenderType?,
     private val editable: Boolean,
     private val onClear: () -> Unit,
     private val onScan: () -> Unit
@@ -150,8 +150,8 @@ QRDetailBottomDialog(
 
     private fun renderQrBitmap(callback: (Bitmap) -> Unit) {
         val (writer, format) = when (renderingType) {
-            ValueTypeRenderingType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
-            ValueTypeRenderingType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
+            UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
+            UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
             else -> Pair(null, null)
         }
         if (writer != null && format != null) {

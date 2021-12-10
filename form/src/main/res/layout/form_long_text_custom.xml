@@ -118,6 +118,7 @@
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:enabled="@{item.editable}"
                     android:gravity="start"
                     android:onTextChanged="@{(txt, start, before, count )->item.onTextChange(txt)}"
                     android:paddingTop="8dp"

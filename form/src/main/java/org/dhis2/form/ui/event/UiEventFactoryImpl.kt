@@ -10,6 +10,7 @@ import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
 import org.dhis2.form.model.UiEventType.ORG_UNIT
+import org.dhis2.form.model.UiEventType.QR_CODE
 import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHOW_DESCRIPTION
@@ -24,7 +25,9 @@ class UiEventFactoryImpl(
     val label: String,
     val description: String?,
     val valueType: ValueType,
-    val allowFutureDates: Boolean?
+    val allowFutureDates: Boolean?,
+    val optionSet: String?,
+    val editable: Boolean
 ) : UiEventFactory {
     override fun generateEvent(
         value: String?,
@@ -97,6 +100,23 @@ class UiEventFactoryImpl(
                 COPY_TO_CLIPBOARD -> RecyclerViewUiEvents.CopyToClipboard(
                     value = value
                 )
+                QR_CODE -> {
+                    if (value.isNullOrEmpty()) {
+                        RecyclerViewUiEvents.ScanQRCode(
+                            uid = uid,
+                            optionSet = optionSet,
+                            renderingType = renderingType
+                        )
+                    } else {
+                        RecyclerViewUiEvents.DisplayQRCode(
+                            uid = uid,
+                            optionSet = optionSet,
+                            value = value,
+                            renderingType = renderingType,
+                            editable = editable
+                        )
+                    }
+                }
                 else -> null
             }
         } catch (e: Exception) {

@@ -1,8 +1,8 @@
 package org.dhis2.form.ui.event
 
 import java.util.Date
+import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 sealed class RecyclerViewUiEvents {
 
@@ -46,14 +46,14 @@ sealed class RecyclerViewUiEvents {
     data class ScanQRCode(
         val uid: String,
         val optionSet: String?,
-        val renderingType: ValueTypeRenderingType?
+        val renderingType: UiRenderType?
     ) : RecyclerViewUiEvents()
 
     data class DisplayQRCode(
         val uid: String,
         val optionSet: String?,
         val value: String,
-        val renderingType: ValueTypeRenderingType?,
+        val renderingType: UiRenderType?,
         val editable: Boolean
     ) : RecyclerViewUiEvents()
 
