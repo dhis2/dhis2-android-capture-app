@@ -27,7 +27,7 @@ package org.dhis2.utils.session
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2Manager
 
 @Module

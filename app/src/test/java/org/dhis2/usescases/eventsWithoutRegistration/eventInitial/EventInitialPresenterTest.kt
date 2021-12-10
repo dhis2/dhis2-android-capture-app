@@ -10,10 +10,10 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.Date
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
 import org.dhis2.utils.DateUtils
@@ -497,11 +497,13 @@ class EventInitialPresenterTest {
         val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val selectedDate = Date()
         val date = DateUtils.databaseDateFormat().format(selectedDate)
+        val filteredOrgUnit =
+            OrganisationUnit.builder().uid("orgUnit").displayName("name").build()
 
         initMocks("uid", null, "stageUid", catCombo, true)
         whenever(
             eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf())
+        ) doReturn Observable.just(listOf(filteredOrgUnit))
         whenever(preferences.contains(Preference.CURRENT_ORG_UNIT)) doReturn true
         whenever(preferences.getString(Preference.CURRENT_ORG_UNIT)) doReturn "orgUnit"
 

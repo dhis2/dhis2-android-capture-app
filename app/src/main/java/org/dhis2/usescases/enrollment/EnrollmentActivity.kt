@@ -16,8 +16,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.location.LocationProvider
@@ -25,6 +25,7 @@ import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -41,7 +42,6 @@ import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.ImageUtils
 import org.dhis2.utils.RulesUtilsProviderConfigurationError
-import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.toMessage
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
@@ -63,6 +63,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var locationProvider: LocationProvider
+
+    @Inject
+    lateinit var dispatchers: DispatcherProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -99,12 +102,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
+        val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
+        val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
+            ?: EnrollmentMode.NEW
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
-                intent.getStringExtra(ENROLLMENT_UID_EXTRA),
-                intent.getStringExtra(PROGRAM_UID_EXTRA),
-                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)),
+                enrollmentUid,
+                programUid,
+                enrollmentMode,
                 context
             )
         ).inject(this)
@@ -112,6 +119,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         formView = FormView.Builder()
             .persistence(formRepository)
             .locationProvider(locationProvider)
+            .dispatcher(dispatchers)
             .onItemChangeListener { presenter.updateFields() }
             .onLoadingListener { loading ->
                 if (loading) {
@@ -135,7 +143,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+        mode = enrollmentMode
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.formViewContainer, formView)
@@ -162,12 +170,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
-                    handleGeometry(
-                        FeatureType.valueOfFeatureType(
-                            data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
-                        ),
-                        data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
-                    )
+                    if (data?.hasExtra(MapSelectorActivity.DATA_EXTRA) == true) {
+                        handleGeometry(
+                            FeatureType.valueOfFeatureType(
+                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
+                            ),
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
+                        )
+                    }
                 }
                 GALLERY_REQUEST -> {
                     try {
@@ -276,17 +286,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun goBack() {
-        hideKeyboard()
-        attemptFinish()
+        onBackPressed()
     }
 
     override fun onBackPressed() {
-        if (!isKeyboardOpened()) {
-            attemptFinish()
-        } else {
-            currentFocus?.apply { clearFocus() }
-            hideKeyboard()
-        }
+        formView.onEditionFinish()
+        attemptFinish()
     }
 
     private fun attemptFinish() {

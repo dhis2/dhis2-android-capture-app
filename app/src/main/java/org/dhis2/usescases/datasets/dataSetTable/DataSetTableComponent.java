@@ -1,6 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailModule;
 

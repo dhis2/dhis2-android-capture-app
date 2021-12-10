@@ -2,6 +2,7 @@ package org.dhis2.uicomponents.map.layer.types
 
 import android.graphics.Color
 import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -16,6 +17,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.isBiderectional
@@ -26,7 +28,6 @@ import org.dhis2.uicomponents.map.layer.isUnidirectional
 import org.dhis2.uicomponents.map.layer.withInitialVisibility
 import org.dhis2.uicomponents.map.layer.withTEIMarkerProperties
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager
-import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class RelationshipMapLayer(
@@ -72,7 +73,7 @@ class RelationshipMapLayer(
         style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerAbove(teiPointLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addLayerAbove(selectedPointLayer, TEI_POINT_LAYER_ID)
         style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
@@ -188,12 +189,16 @@ class RelationshipMapLayer(
     }
 
     override fun setSelectedItem(feature: Feature?) {
-        feature?.let { selectPoint(feature) } ?: deselectCurrent()
+        feature?.let { selectPoints(listOf(feature)) } ?: deselectCurrent()
     }
 
-    private fun selectPoint(feature: Feature) {
+    override fun setSelectedItem(features: List<Feature>?) {
+        features?.takeIf { it.isNotEmpty() }?.let { selectPoints(features) }
+    }
+
+    fun selectPoints(features: List<Feature>) {
         style.getSourceAs<GeoJsonSource>(SELECTED_SOURCE)?.apply {
-            setGeoJson(feature)
+            setGeoJson(FeatureCollection.fromFeatures(features))
         }
 
         selectedLineLayer.setProperties(visibility(Property.VISIBLE))

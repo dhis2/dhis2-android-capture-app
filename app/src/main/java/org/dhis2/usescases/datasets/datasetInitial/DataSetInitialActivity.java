@@ -10,12 +10,15 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.CategoryOptionExtensionsKt;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.data.dhislogic.OrganisationUnitExtensionsKt;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
 import org.dhis2.utils.customviews.OrgUnitDialog;
@@ -30,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -101,21 +106,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         checkActionVisivbility();
     }
 
-    private void clearCatOptionCombo() {
-        if (!binding.getDataSetModel().categoryComboName().equals("default")) {
-            for (int i = 0; i < binding.catComboContainer.getChildCount(); i++) {
-                View catView = binding.catComboContainer.getChildAt(i);
-                ((TextInputEditText) catView.findViewById(R.id.input_editText)).setText(null);
-            }
-            for (Category categories : binding.getDataSetModel().getCategories()) {
-                selectedCatOptions.put(categories.uid(), null);
-            }
-        }
-    }
-
-    /**
-     * When changing orgUnit, date must be cleared
-     */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnit> data) {
         if (!orgUnitDialog.isVisible()) {
@@ -130,15 +120,20 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                             if (selectedOrgUnit == null)
                                 orgUnitDialog.dismiss();
                             binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
-                            binding.dataSetPeriodEditText.setText(null);
-                            selectedPeriod = null;
-                            clearCatOptionCombo();
+                            checkPeriodIsValidForOrgUnit(selectedOrgUnit);
                         }
                         checkActionVisivbility();
                         orgUnitDialog.dismiss();
                     })
                     .setNegativeListener(v -> orgUnitDialog.dismiss())
                     .show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        }
+    }
+
+    private void checkPeriodIsValidForOrgUnit(OrganisationUnit selectedOrgUnit) {
+        if (selectedPeriod != null && !OrganisationUnitExtensionsKt.inDateRange(selectedOrgUnit, selectedPeriod)) {
+            binding.dataSetPeriodEditText.setText(null);
+            selectedPeriod = null;
         }
     }
 
@@ -155,7 +150,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     calendar.setTime(selectedDate);
                     this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
-                    clearCatOptionCombo();
+                    checkCatOptionsAreValidForOrgUnit(selectedPeriod);
                     checkActionVisivbility();
                     periodDialog.dismiss();
                 })
@@ -165,6 +160,17 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     checkActionVisivbility();
                 })
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+    }
+
+    private void checkCatOptionsAreValidForOrgUnit(Date selectedPeriod) {
+        int index = 0;
+        for(Iterator<Map.Entry<String, CategoryOption>> it = selectedCatOptions.entrySet().iterator(); it.hasNext(); index++) {
+            CategoryOption categoryOption = it.next().getValue();
+            if (categoryOption != null && !CategoryOptionExtensionsKt.inDateRange(categoryOption, selectedPeriod)) {
+                it.remove();
+                ((TextInputEditText) binding.catComboContainer.getChildAt(index).findViewById(R.id.input_editText)).setText(null);
+            }
+        }
     }
 
     @Override

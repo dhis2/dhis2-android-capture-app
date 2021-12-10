@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TimePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="DatePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="DatePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="DatePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="TimePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="TimePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="TimePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
+    </style>
+
+    <style name="ActionIcon" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconNoPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconUnwrap">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="PopupMenuMarginStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+    </style>
+
+    <style name="TextButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+    <style name="BreakTheGlassBottomSheetDialogTheme"  parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="colorControlActivated">?colorPrimary</item>
+        <item name="colorControlHighlight">?colorPrimary</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+</resources>

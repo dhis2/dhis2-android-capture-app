@@ -323,7 +323,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     }?.map {
                         mapLayerManager.getLayer(key)?.setSelectedItem(it)
                         it
-                    }?.let { addAll(it) }
+                    }?.let {
+                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                        addAll(it)
+                    }
                 }
 
             teiFeatureCollections?.filterKeys {
@@ -368,14 +371,6 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }.flatten().distinct()
     }
 
-    fun getSourcesAndLayersForSearch(): Map<String, Array<String>> {
-        return mapLayerManager.mapLayers
-            .filter { (sourceId, mapLayer) -> mapLayer.visible }
-            .map { (sourceId, mapLayer) ->
-                sourceId to mapLayer.layerIdsToSearch()
-            }.toMap()
-    }
-
     override fun getLayerName(source: String): String {
         return if (fieldFeatureCollections.containsKey(source)) {
             fieldFeatureCollections[source]?.features()?.get(0)?.let {
@@ -402,59 +397,30 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         val pointf: PointF = map?.projection?.toScreenLocation(point)!!
         val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
 
-        val sourcesAndLayers = getSourcesAndLayersForSearch()
-
-        layer?.let {
-            return selectFeatureForLayer(rectF, TEIS_SOURCE_ID, it)
-        }
-
-        return selectedFeature(
-            rectF,
-            sourcesAndLayers.keys.toList(),
-            sourcesAndLayers.values.toList(),
-            0
-        )
+        return selectedFeature(rectF)
     }
 
-    private fun selectedFeature(
-        rectF: RectF,
-        sources: List<String>,
-        layers: List<Array<String>>,
-        count: Int
-    ): Feature? {
-        val source = sources[count]
-        val layersToSearch = layers[count]
-        val features: List<Feature> = map?.queryRenderedFeatures(rectF, *layersToSearch)!!
+    private fun selectedFeature(rectF: RectF): Feature? {
         var selectedFeature: Feature? = null
-        return when {
-            features.isNotEmpty() -> {
-                mapLayerManager.selectFeature(null)
-                selectedFeature = features[0]
-                if (source.contains("RELATIONSHIP")) {
-                    selectedFeature = findFeature(
-                        source,
-                        RELATIONSHIP_UID,
-                        selectedFeature!!.getStringProperty(RELATIONSHIP_UID)
-                    )
+        val sourcesAndLayers = mapLayerManager.sourcesAndLayersForSearch()
+        sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (source, layer) ->
+            val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
+            if (features.isNotEmpty()) {
+                if (selectedFeature == null) {
+                    mapLayerManager.selectFeature(null)
                 }
-                mapLayerManager.getLayer(source, true)?.setSelectedItem(selectedFeature)
-                selectedFeature
-            }
-            count < sources.size - 1 -> {
-                selectedFeature(rectF, sources, layers, count + 1)
-            }
-            else -> selectedFeature
-        }
-    }
-
-    private fun selectFeatureForLayer(rectF: RectF, source: String, layer: String): Feature? {
-        val features: List<Feature> = map?.queryRenderedFeatures(rectF, layer)!!
-        var feature: Feature? = null
-        if (features.isNotEmpty()) {
-            if (source.contains(TEIS_SOURCE_ID)) {
-                feature = features[0]
+                if (selectedFeature == null || source.contains(TEIS_SOURCE_ID)) {
+                    selectedFeature = when {
+                        layer.any { it.contains("RELATIONSHIP") } -> findFeature(
+                            source,
+                            RELATIONSHIP_UID,
+                            features.first().getStringProperty(RELATIONSHIP_UID)
+                        )
+                        else -> features.first()
+                    }
+                }
             }
         }
-        return feature
+        return selectedFeature
     }
 }

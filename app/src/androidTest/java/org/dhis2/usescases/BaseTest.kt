@@ -6,6 +6,8 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import com.jakewharton.espresso.OkHttp3IdlingResource
+import org.dhis2.AppTest
+import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -15,6 +17,7 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
@@ -96,6 +99,10 @@ open class BaseTest {
         }
     }
 
+    fun setDatePicker() {
+        preferencesRobot.saveValue(Preference.DATE_PICKER, true)
+    }
+
     fun turnOnConnectivityAfterLogin(){
         ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
     }
@@ -124,6 +131,10 @@ open class BaseTest {
 
     private fun stopMockServer() {
         mockWebServerRobot.shutdown()
+    }
+
+    fun cleanLocalDatabase() {
+        (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
     }
 
     companion object {

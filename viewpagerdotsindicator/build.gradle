@@ -1,11 +1,14 @@
 apply plugin: 'com.android.library'
 
+def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.sdk
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
         versionCode 1
         versionName version
     }
@@ -19,9 +22,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "androidx.dynamicanimation:dynamicanimation:${libraries.dynamicanimation}"
+    implementation "androidx.viewpager2:viewpager2:${libraries.viewpager2}"
+
+    testImplementation "junit:junit:${libraries.junit}"
 }
 

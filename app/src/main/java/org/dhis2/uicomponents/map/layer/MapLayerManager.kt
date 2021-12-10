@@ -228,4 +228,10 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
         }
         return combinations
     }
+
+    fun sourcesAndLayersForSearch() =
+        mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
+            .map { (sourceId, mapLayer) ->
+                sourceId to mapLayer.layerIdsToSearch()
+            }.toMap()
 }

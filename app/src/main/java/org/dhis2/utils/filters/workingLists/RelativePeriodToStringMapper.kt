@@ -49,6 +49,8 @@ class RelativePeriodToStringMapper(private val filterResources: FilterResources)
             RelativePeriod.LAST_4_BIWEEKS -> filterResources.lastNBiWeeks(4)
             RelativePeriod.LAST_12_WEEKS -> filterResources.lastNWeeks(12)
             RelativePeriod.LAST_52_WEEKS -> filterResources.lastNWeeks(52)
+            RelativePeriod.LAST_10_YEARS -> filterResources.lastNYears(10)
+            RelativePeriod.LAST_10_FINANCIAL_YEARS -> filterResources.lastNFinancialYears(10)
             null -> null
         }
     }

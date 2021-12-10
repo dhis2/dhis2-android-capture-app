@@ -7,9 +7,9 @@
 
         <import type="android.view.View" />
 
-        <import type="org.dhis2.utils.ColorUtils" />
+        <import type="org.dhis2.commons.resources.ColorUtils" />
 
-        <import type="org.dhis2.utils.ColorUtils.ColorType" />
+        <import type="org.dhis2.commons.resources.ColorUtils.ColorType" />
 
         <variable
             name="item"
@@ -117,6 +117,7 @@
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:onFocusChangeAgeView="@{item}"
+                        app:parsingErrorText="@{parsingErrorMessage}"
                         app:setInitialValueDate="@{item.value()}"
                         tools:text="1987-06-26" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -218,6 +219,20 @@
                 app:warning="@{item.warning()}"
                 tools:text="This is a error warning"
                 tools:textAppearance="@style/error_appearance"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/parsingErrorMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="@string/wrong_date_format"
+                android:textAppearance="@style/error_appearance"
+                android:textSize="@dimen/textSize_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/linearLayout"
+                app:layout_constraintStart_toStartOf="@id/linearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/errorMessage"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

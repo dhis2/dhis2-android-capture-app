@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
@@ -24,7 +25,7 @@ class SearchFlowTest : BaseTest() {
 
     @Test
     fun shouldCreateTEIAndFilterByEnrollment() {
-
+        setDatePicker()
         val registerTEIDetails = createRegisterTEI()
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
         val searchCounter = "3"

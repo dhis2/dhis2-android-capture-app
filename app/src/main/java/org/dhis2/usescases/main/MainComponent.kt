@@ -1,7 +1,7 @@
 package org.dhis2.usescases.main
 
 import dagger.Subcomponent
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.usescases.jira.JiraComponent
 import org.dhis2.usescases.jira.JiraModule
 

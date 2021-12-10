@@ -1,7 +1,7 @@
 package org.dhis2.usescases.main.program
 
 import dagger.Subcomponent
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.commons.di.dagger.PerFragment
 
 /**
  * QUADRAM. Created by ppajuelo on 07/02/2018.

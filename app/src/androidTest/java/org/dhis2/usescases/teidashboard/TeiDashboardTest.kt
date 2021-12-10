@@ -89,7 +89,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
-            checkCanAddEvent()
             checkAllEventsCompleted(1)
         }
     }
@@ -174,9 +173,7 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
-            clickOnFab()
-            clickOnReferral()
-            checkCannotAddMoreEventToastIsShown()
+            checkCanNotAddEvent()
         }
     }
 
@@ -297,6 +294,7 @@ class TeiDashboardTest : BaseTest() {
         val visitANCEvent = "ANC Visit (2-4+)"
         val firstANCVisitEvent = "ANC 1st visit"
 
+        setDatePicker()
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {

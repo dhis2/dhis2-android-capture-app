@@ -70,9 +70,14 @@ fun Feature?.addRelationFromInfo(
     relationshipUiComponentModel: RelationshipUiComponentModel
 ): Feature? {
     if (this != null) {
+        addStringProperty(PROPERTY_FEATURE_SOURCE, FeatureSource.RELATIONSHIP.name)
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
             relationshipUiComponentModel.from.teiUid
+        )
+        addStringProperty(
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            relationshipUiComponentModel.relationshipUid
         )
         addNumberProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
@@ -86,9 +91,14 @@ fun Feature?.addRelationToInfo(
     relationshipUiComponentModel: RelationshipUiComponentModel
 ): Feature? {
     if (this != null) {
+        addStringProperty(PROPERTY_FEATURE_SOURCE, FeatureSource.RELATIONSHIP.name)
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
             relationshipUiComponentModel.to.teiUid
+        )
+        addStringProperty(
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            relationshipUiComponentModel.relationshipUid
         )
         addNumberProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,

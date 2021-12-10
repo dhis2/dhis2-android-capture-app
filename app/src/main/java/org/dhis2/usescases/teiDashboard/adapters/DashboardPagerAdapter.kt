@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import java.lang.IllegalStateException
 import org.dhis2.R
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
@@ -18,38 +17,52 @@ class DashboardPagerAdapter(
     fa: FragmentActivity,
     private val currentProgram: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?
+    private val enrollmentUid: String?,
+    private val displayAnalyticScreen: Boolean = true,
+    private val displayRelationshipScreen: Boolean
 ) : FragmentStateAdapter(fa) {
+
+    enum class DashboardPageType {
+        TEI_DETAIL, ANALYTICS, RELATIONSHIPS, NOTES
+    }
 
     private var indicatorsFragment: IndicatorsFragment? = null
     private var relationshipFragment: RelationshipFragment? = null
+    private val landscapePages: List<DashboardPageType>
+    private val portraitPages: List<DashboardPageType>
+
+    init {
+        landscapePages = mutableListOf<DashboardPageType>().apply {
+            if (displayAnalyticScreen) add(DashboardPageType.ANALYTICS)
+            if (displayRelationshipScreen) add(DashboardPageType.RELATIONSHIPS)
+            if (currentProgram != null) add(DashboardPageType.NOTES)
+        }
+        portraitPages = mutableListOf<DashboardPageType>().apply {
+            add(DashboardPageType.TEI_DETAIL)
+            if (displayAnalyticScreen) add(DashboardPageType.ANALYTICS)
+            if (displayRelationshipScreen) add(DashboardPageType.RELATIONSHIPS)
+            if (currentProgram != null) add(DashboardPageType.NOTES)
+        }
+    }
 
     override fun createFragment(position: Int): Fragment {
-        return if (isLandscape()) {
-            createLandscapeFragment(position)
-        } else {
-            createPortraitFragment(position)
-        }
-    }
-
-    private fun createLandscapeFragment(position: Int): Fragment {
-        return when (position) {
-            ANALYTICS_LANDSCAPE_POSITION -> IndicatorsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(VISUALIZATION_TYPE, VisualizationType.TRACKER.name)
-                }
+        return createFragmentForPage(
+            if (isLandscape()) {
+                landscapePages[position]
+            } else {
+                portraitPages[position]
             }
-            RELATIONSHIPS_LANDSCAPE_POSITION -> RelationshipFragment()
-            NOTES_LANDSCAPE_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
-            else -> throw IllegalStateException("Fragment not supported")
-        }
+        )
     }
 
-    private fun createPortraitFragment(position: Int): Fragment {
-        return when (position) {
-            DETAILS_PORTRAIT_POSITION ->
-                TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid)
-            ANALYTICS_PORTRAIT_POSITION -> {
+    private fun createFragmentForPage(pageType: DashboardPageType): Fragment {
+        return when (pageType) {
+            DashboardPageType.TEI_DETAIL -> TEIDataFragment.newInstance(
+                currentProgram,
+                teiUid,
+                enrollmentUid
+            )
+            DashboardPageType.ANALYTICS -> {
                 if (indicatorsFragment == null) {
                     indicatorsFragment = IndicatorsFragment().apply {
                         arguments = Bundle().apply {
@@ -59,74 +72,54 @@ class DashboardPagerAdapter(
                 }
                 indicatorsFragment!!
             }
-            RELATIONSHIPS_PORTRAIT_POSITION -> {
+            DashboardPageType.RELATIONSHIPS -> {
                 if (relationshipFragment == null) {
-                    relationshipFragment = RelationshipFragment()
+                    relationshipFragment = RelationshipFragment().apply {
+                        arguments = RelationshipFragment.withArguments(
+                            currentProgram,
+                            teiUid,
+                            enrollmentUid,
+                            null
+                        )
+                    }
                 }
                 relationshipFragment!!
             }
-            NOTES_PORTRAIT_POSITION -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
-            else -> throw IllegalStateException("Fragment not supported")
+            DashboardPageType.NOTES -> NotesFragment.newTrackerInstance(currentProgram!!, teiUid)
         }
     }
 
     override fun getItemCount() =
-        if (isLandscape()) getLandscapeItemCount() else getPortraitItemCount()
-
-    private fun getPortraitItemCount(): Int {
-        return if (currentProgram != null) PORTRAIT_DASHBOARD_SIZE else 1
-    }
-
-    private fun getLandscapeItemCount(): Int {
-        return if (currentProgram != null) {
-            LANDSCAPE_DASHBOARD_SIZE
-        } else {
-            NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED
-        }
-    }
+        if (isLandscape()) landscapePages.size else portraitPages.size
 
     fun getNavigationPagePosition(navigationId: Int): Int {
-        return when (navigationId) {
-            R.id.navigation_details ->
-                if (isLandscape()) {
-                    NO_POSITION
-                } else {
-                    DETAILS_PORTRAIT_POSITION
-                }
-            R.id.navigation_events -> NO_POSITION
-            R.id.navigation_analytics ->
-                if (isLandscape()) {
-                    ANALYTICS_LANDSCAPE_POSITION
-                } else {
-                    ANALYTICS_PORTRAIT_POSITION
-                }
-            R.id.navigation_relationships ->
-                if (isLandscape()) {
-                    RELATIONSHIPS_LANDSCAPE_POSITION
-                } else {
-                    RELATIONSHIPS_PORTRAIT_POSITION
-                }
-            R.id.navigation_notes ->
-                if (isLandscape()) {
-                    NOTES_LANDSCAPE_POSITION
-                } else {
-                    NOTES_PORTRAIT_POSITION
-                }
-            else -> NO_POSITION
+        val pageType = when (navigationId) {
+            R.id.navigation_details -> DashboardPageType.TEI_DETAIL
+            R.id.navigation_analytics -> DashboardPageType.ANALYTICS
+            R.id.navigation_relationships -> DashboardPageType.RELATIONSHIPS
+            R.id.navigation_notes -> DashboardPageType.NOTES
+            R.id.navigation_events -> null
+            else -> null
+        }
+
+        return pageType?.let {
+            if (isLandscape()) {
+                landscapePages.indexOf(pageType)
+            } else {
+                portraitPages.indexOf(pageType)
+            }
+        } ?: NO_POSITION
+    }
+
+    fun pageType(position: Int): DashboardPageType {
+        return if (isLandscape()) {
+            landscapePages[position]
+        } else {
+            portraitPages[position]
         }
     }
 
     companion object {
         const val NO_POSITION = -1
-        const val DETAILS_PORTRAIT_POSITION = 0
-        const val ANALYTICS_LANDSCAPE_POSITION = 0
-        const val ANALYTICS_PORTRAIT_POSITION = 1
-        const val RELATIONSHIPS_LANDSCAPE_POSITION = 1
-        const val RELATIONSHIPS_PORTRAIT_POSITION = 2
-        const val NOTES_LANDSCAPE_POSITION = 2
-        const val NOTES_PORTRAIT_POSITION = 3
-        const val PORTRAIT_DASHBOARD_SIZE = 4
-        const val LANDSCAPE_DASHBOARD_SIZE = 3
-        const val NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0
     }
 }

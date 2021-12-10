@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.utils.filters.AssignedFilter
 import org.dhis2.utils.filters.EnrollmentStatusFilter
+import org.dhis2.utils.filters.EventStatusFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.Filters
 import org.dhis2.utils.filters.PeriodFilter
@@ -20,6 +21,7 @@ import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceFilter
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -36,6 +38,7 @@ class FilterRepositoryTest {
         const val ASSIGN_TO_ME = "assign_to_me"
         const val HOME_FILTER = "HomeFilter"
         const val PROGRAM_FILTER = "ProgramFilter"
+        const val FOLLOW_UP = "follow_up"
     }
 
     private val observableSortingInject = ObservableField<SortingItem>()
@@ -63,6 +66,7 @@ class FilterRepositoryTest {
             ENROLLMENT_DATE
         whenever(resourceManager.filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
         whenever(resourceManager.filterResources.filterEventDateLabel()) doReturn EVENT_DATE
+        whenever(resourceManager.filterResources.filterFollowUpLabel("Name")) doReturn FOLLOW_UP
     }
 
     @Test
@@ -239,7 +243,11 @@ class FilterRepositoryTest {
     @Test
     fun `Should get tracker filters with working list when webapp is configured`() {
         val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
+            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+            .trackedEntityType(
+                TrackedEntityType.builder().uid("trackerUid").displayName("Name").build()
+            )
+            .build()
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
         whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
@@ -278,13 +286,99 @@ class FilterRepositoryTest {
                 any<Map<ProgramFilter, FilterSetting>>()
             )
         ) doReturn createGlobalTrackerFilterResult()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+                .blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+                .blockingGet().displayName()
+        ) doReturn program.trackedEntityType()?.displayName()
 
         val result = filterRepository.programFilters(program.uid())
 
         assert(result[0].type == Filters.WORKING_LIST)
         assert(result[1].type == Filters.PERIOD)
         assert(result[2].type == Filters.ENROLLMENT_STATUS)
-        assert(result.size == 3)
+        assert(result[3].type == Filters.FOLLOW_UP)
+        assert(result.size == 4)
+    }
+
+    @Test
+    fun `Should get default tracker filters with follow up filter`() {
+        val program = Program.builder().uid("random")
+            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+            .trackedEntityType(
+                TrackedEntityType.builder().uid("trackerUid").displayName("Name").build()
+            )
+            .build()
+        whenever(d2.programModule().programs().uid(any())) doReturn mock()
+        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true)
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages().byProgramUid().eq(program.uid())
+                .byEnableUserAssignment().eq(true).blockingIsEmpty()
+        ) doReturn false
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+                .withTrackedEntityInstanceEventFilters()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+                .withTrackedEntityInstanceEventFilters().blockingGet()
+        ) doReturn emptyList()
+        whenever(
+            d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
+        ) doReturn emptyMap()
+        whenever(
+            getFiltersApplyingWebAppConfig.execute(
+                any<LinkedHashMap<ProgramFilter, FilterItem>>(),
+                any<Map<ProgramFilter, FilterSetting>>()
+            )
+        ) doReturn createDefaultTrackerFilterResult()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+                .blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+                .blockingGet().displayName()
+        ) doReturn program.trackedEntityType()?.displayName()
+
+        val result = filterRepository.programFilters(program.uid())
+
+        assert(result[0].type == Filters.PERIOD)
+        assert(result[1].type == Filters.ENROLLMENT_STATUS)
+        assert(result[2].type == Filters.EVENT_STATUS)
+        assert(result[3].type == Filters.FOLLOW_UP)
+        assert(result[4].type == Filters.ASSIGNED_TO_ME)
+        assert(result.size == 5)
     }
 
     private fun createTrackerEntityInstanceFilters(): List<TrackedEntityInstanceFilter> {
@@ -307,6 +401,35 @@ class FilterRepositoryTest {
                 observableSortingInject,
                 observableOpenFilter,
                 ENROLLMENT_STATUS
+            )
+        )
+    }
+
+    private fun createDefaultTrackerFilterResult(): List<FilterItem> {
+        return listOf(
+            PeriodFilter(
+                ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                EVENT_DATE
+            ),
+            EnrollmentStatusFilter(
+                ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                ENROLLMENT_STATUS
+            ),
+            EventStatusFilter(
+                ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                EVENT_STATUS
+            ),
+            AssignedFilter(
+                ProgramType.TRACKER,
+                observableSortingInject,
+                observableOpenFilter,
+                ASSIGN_TO_ME
             )
         )
     }
@@ -363,6 +486,56 @@ class FilterRepositoryTest {
             ProgramFilter.EVENT_STATUS to createFilterValue(
                 PROGRAM_FILTER,
                 "ENROLLMENT_DATE",
+                false
+            ),
+            ProgramFilter.FOLLOW_UP to createFilterValue(
+                PROGRAM_FILTER,
+                "FOLLOW_UP",
+                false
+            )
+        )
+    }
+
+    private fun createDefaultTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
+        return mapOf(
+            ProgramFilter.EVENT_DATE to createFilterValue(
+                PROGRAM_FILTER,
+                "EVENT_DATE",
+                false
+            ),
+            ProgramFilter.SYNC_STATUS to createFilterValue(
+                PROGRAM_FILTER,
+                "EVE",
+                false
+            ),
+            ProgramFilter.ORG_UNIT to createFilterValue(
+                PROGRAM_FILTER,
+                "ORG_UNIT",
+                false
+            ),
+            ProgramFilter.ENROLLMENT_DATE to createFilterValue(
+                PROGRAM_FILTER,
+                "ENROLLMENT_DATE",
+                false
+            ),
+            ProgramFilter.ENROLLMENT_STATUS to createFilterValue(
+                PROGRAM_FILTER,
+                "ENROLLMENT_DATE",
+                false
+            ),
+            ProgramFilter.ASSIGNED_TO_ME to createFilterValue(
+                PROGRAM_FILTER,
+                "ENROLLMENT_DATE",
+                false
+            ),
+            ProgramFilter.EVENT_STATUS to createFilterValue(
+                PROGRAM_FILTER,
+                "ENROLLMENT_DATE",
+                false
+            ),
+            ProgramFilter.FOLLOW_UP to createFilterValue(
+                PROGRAM_FILTER,
+                "FOLLOW_UP",
                 false
             )
         )

@@ -2,9 +2,9 @@ package org.dhis2.usescases.settings;
 
 
 import org.dhis2.R;
-import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;

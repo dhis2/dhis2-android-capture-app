@@ -4,8 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.FeatureType
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -56,11 +56,25 @@ class GeometryControllerTest {
             { _, _, _ -> currentCallback = 2 }
         )
 
-        coordinateCallback.onItemAction(RowAction(id = "fieldUid", type = ActionType.ON_SAVE))
+        coordinateCallback.intent(
+            FormIntent.SaveCurrentLocation(
+                uid = "fieldUid",
+                value = null,
+                featureType = "none"
+            )
+        )
         assertTrue(currentCallback == 0)
-        coordinateCallback.currentLocation("fieldUid")
+        coordinateCallback.recyclerViewUiEvents(
+            RecyclerViewUiEvents.RequestCurrentLocation("fieldUid")
+        )
         assertTrue(currentCallback == 1)
-        coordinateCallback.mapRequest("fieldUid", FeatureType.POINT.name, null)
+        coordinateCallback.recyclerViewUiEvents(
+            RecyclerViewUiEvents.RequestLocationByMap(
+                "fieldUid",
+                FeatureType.POINT,
+                null
+            )
+        )
         assertTrue(currentCallback == 2)
     }
 }

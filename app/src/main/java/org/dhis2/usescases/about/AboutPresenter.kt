@@ -3,7 +3,7 @@ package org.dhis2.usescases.about
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.user.UserRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.UserCredentials

@@ -29,7 +29,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.R
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.hisp.dhis.android.core.D2

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -33,9 +32,9 @@ import org.dhis2.R;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.AppMenuHelper;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.AlertBottomDialog;
+import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
@@ -50,7 +49,6 @@ import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
-import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -123,9 +121,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 ));
         dataSetTableComponent.inject(this);
         super.onCreate(savedInstanceState);
-
-        //Orientation
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);

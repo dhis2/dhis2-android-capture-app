@@ -793,6 +793,7 @@
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>
     <string name="show_table_value">View as Value</string>
+    <string name="show_pie_value">View as Pie</string>
     <string name="working_list_default_label">Working list %s</string>
     <string name="filter_period_last_n_days">Last %d days</string>
     <string name="filter_period_this_year">This year</string>
@@ -848,5 +849,10 @@
     <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="action_do_not_show_again">Do not show again</string>
+    <string name="feature_configuration">Feature Configuration</string>
+    <string name="show_radar_graph">Show as Radar</string>
     <string name="coordinate_feature_type_error">Can not set coordinate type</string>
+    <string name="filter_follow_up_label">Followed up %s</string>
+    <string name="wrong_date_format">%s can\'t be parsed as a date</string>
+    <string name="update_field_error">This field could not be updated. Please try again</string>
 </resources>

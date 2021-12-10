@@ -6,13 +6,14 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.ui.SectionTitle
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.data.analytics.SectionTitle
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.Result
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.period.PeriodType
@@ -171,7 +172,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(mockedEffects()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn mockedCharts()
 
         val testObserver = repository.fetchData().test()
@@ -271,7 +272,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(emptyList()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn emptyList()
 
         val testObserver = repository.fetchData().test()
@@ -369,7 +370,7 @@ class TrackerAnalyticsRepositoryTest {
         ) doReturn Flowable.just(Result.success(emptyList()))
 
         whenever(
-            charts.getCharts(any())
+            charts.geEnrollmentCharts(any())
         ) doReturn mockedCharts()
 
         val testObserver = repository.fetchData().test()
@@ -423,9 +424,8 @@ class TrackerAnalyticsRepositoryTest {
         return listOf(
             Graph(
                 "title",
-                false,
                 emptyList(),
-                "period",
+                RelativePeriod.LAST_5_YEARS,
                 PeriodType.Yearly,
                 10
             )

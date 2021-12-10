@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import dhis2.org.analytics.charts.Charts
+import dhis2.org.analytics.charts.ui.AnalyticsModel
+import dhis2.org.analytics.charts.ui.ChartModel
 import io.reactivex.Flowable
 import io.reactivex.functions.Function3
-import org.dhis2.data.analytics.AnalyticsModel
-import org.dhis2.data.analytics.ChartModel
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.resources.ResourceManager
@@ -51,7 +51,7 @@ class TrackerAnalyticsRepository(
             },
             getRulesIndicators(),
             Flowable.just(
-                charts?.getCharts(enrollmentUid)?.map { ChartModel(it) }
+                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) }
             ),
             Function3 { indicators, ruleIndicators, charts ->
                 arrangeSections(indicators, ruleIndicators, charts)

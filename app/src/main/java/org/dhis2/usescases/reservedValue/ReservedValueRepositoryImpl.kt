@@ -2,8 +2,8 @@ package org.dhis2.usescases.reservedValue
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 

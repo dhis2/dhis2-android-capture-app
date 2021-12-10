@@ -143,7 +143,13 @@ class EnrollmentRepository(
                     .byTrackedEntityAttribute().eq(attribute.uid())
                     .one().blockingGet()?.let { programTrackedEntityAttribute ->
                     val field = transform(programTrackedEntityAttribute, section.uid())
-                    if (
+                    if (field is OptionSetViewModel) {
+                        val options =
+                            d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                .blockingGet()
+                        fields.add(field.withOptions(options))
+                    } else if (
                         (index == section.attributes()!!.lastIndex) &&
                         field is EditTextViewModel &&
                         field.valueType() != ValueType.LONG_TEXT
@@ -246,7 +252,7 @@ class EnrollmentRepository(
             attribute.fieldMask(),
             null,
             onRowActionProccesor,
-            null,
+            emptyList(),
             null
         )
 

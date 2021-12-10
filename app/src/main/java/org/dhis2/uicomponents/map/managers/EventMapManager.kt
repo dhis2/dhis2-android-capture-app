@@ -1,11 +1,13 @@
 package org.dhis2.uicomponents.map.managers
 
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
@@ -113,7 +115,8 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     ): List<Feature>? {
         return mutableListOf<Feature>().apply {
             featureCollection?.features()?.filter {
-                it.getStringProperty(propertyName) == propertyValue
+                mapLayerManager.getLayer(LayerType.EVENT_LAYER.name)?.visible == true &&
+                    it.getStringProperty(propertyName) == propertyValue
             }?.map {
                 mapLayerManager.getLayer(LayerType.EVENT_LAYER.name)
                     ?.setSelectedItem(it)
@@ -156,5 +159,21 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
 
     override fun findFeatures(propertyValue: String): List<Feature>? {
         return findFeatures("", MapEventToFeatureCollection.EVENT, propertyValue)
+    }
+
+    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+        val rectF = map?.projection?.toScreenLocation(point)?.let { pointf ->
+            RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+        } ?: RectF()
+        var selectedFeature: Feature? = null
+        mapLayerManager.sourcesAndLayersForSearch()
+            .filter { it.value.isNotEmpty() }.forEach { (_, layer) ->
+                val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
+                if (features.isNotEmpty()) {
+                    mapLayerManager.selectFeature(null)
+                    selectedFeature = features.first()
+                }
+            }
+        return selectedFeature
     }
 }

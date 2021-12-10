@@ -12,7 +12,7 @@ class GraphCoordinatesToEntry {
         return coordinates.mapIndexed { index, graphPoint ->
             Entry(
                 if (index > 0) {
-                    graph.numberOfStepsToDate(graphPoint.eventDate)
+                    graphPoint.position ?: graph.numberOfStepsToDate(graphPoint.eventDate)
                 } else {
                     index.toFloat()
                 },

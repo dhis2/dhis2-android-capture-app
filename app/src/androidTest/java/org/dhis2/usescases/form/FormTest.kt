@@ -169,7 +169,7 @@ class FormTest: BaseTest() {
     }
 
     @Test
-    fun test(){
+    fun shouldApplyOptionRelatedActions(){
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
         val firstSectionPosition = 1
         startSearchActivity(ruleSearch)
