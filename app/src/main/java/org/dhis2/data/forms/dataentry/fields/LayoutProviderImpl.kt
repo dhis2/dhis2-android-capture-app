@@ -5,16 +5,15 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>(
     ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
-    SpinnerViewModel::class to R.layout.form_option_set_spinner,
-    MatrixOptionSetModel::class to R.layout.matrix_option_set
+    SpinnerViewModel::class to R.layout.form_option_set_spinner
 )
 
 class LayoutProviderImpl : LayoutProvider {
@@ -25,7 +24,8 @@ class LayoutProviderImpl : LayoutProvider {
 
     override fun getLayoutByType(
         valueType: ValueType?,
-        renderingType: ValueTypeRenderingType?
+        renderingType: ValueTypeRenderingType?,
+        sectionRenderingType: ProgramStageSectionRenderingType?
     ): Int {
         return when (valueType) {
             ValueType.AGE -> R.layout.form_age_custom
@@ -37,12 +37,16 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.FILE_RESOURCE,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
-            ValueType.TEXT -> return when (renderingType) {
-                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
-                else -> R.layout.form_edit_text_custom
+            ValueType.TEXT -> return when (sectionRenderingType) {
+                ProgramStageSectionRenderingType.SEQUENTIAL,
+                ProgramStageSectionRenderingType.MATRIX -> R.layout.form_option_set_matrix
+                else -> when (renderingType) {
+                    ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                    ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                    ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                    ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
+                    else -> R.layout.form_edit_text_custom
+                }
             }
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {

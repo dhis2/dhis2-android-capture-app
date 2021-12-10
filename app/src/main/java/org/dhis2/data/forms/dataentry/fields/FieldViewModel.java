@@ -480,4 +480,12 @@ public abstract class FieldViewModel implements FieldUiModel {
     public boolean isNegativeChecked() {
         return false;
     }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<Option> getOptionsToDisplay() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
 }
