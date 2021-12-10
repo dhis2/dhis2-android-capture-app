@@ -117,6 +117,16 @@ data class FieldUiModelImpl(
     override val isNegativeChecked: Boolean
         get() = value?.toBoolean() == false
 
+    override val optionsToDisplay: List<Option>?
+        get() = options?.filter { option ->
+            when {
+                optionsToShow?.isNotEmpty() == true ->
+                    optionsToShow?.contains(option.uid()) ?: false
+                else ->
+                    !(optionsToHide?.contains(option.uid()) ?: false)
+            }
+        }?.sortedBy { it.sortOrder() }
+
     override fun setValue(value: String?) = this.copy(value = value)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)

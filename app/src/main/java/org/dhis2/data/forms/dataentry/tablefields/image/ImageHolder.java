@@ -4,7 +4,7 @@ import android.view.View;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormImageBinding;
+import org.dhis2.form.databinding.FormImageBinding;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

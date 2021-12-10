@@ -180,6 +180,10 @@ class EventRepository(
         } else {
             null
         }
+        val featureType = when (valueType) {
+            ValueType.COORDINATE -> FeatureType.POINT
+            else -> null
+        }
 
         val fieldViewModel = fieldFactory.create(
             uid,
@@ -199,7 +203,7 @@ class EventRepository(
             de.fieldMask(),
             legendValue,
             options,
-            FeatureType.POINT
+            featureType
         )
         return if (error.isNotEmpty()) {
             fieldViewModel.setError(error)

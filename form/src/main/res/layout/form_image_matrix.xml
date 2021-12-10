@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="viewModel"
-            type="org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel" />
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
 
         <variable
             name="option"
@@ -21,11 +21,11 @@
         android:id="@+id/optionCard"
         android:layout_width="match_parent"
         android:layout_height="190dp"
-        android:clickable="@{viewModel.editable()}"
-        android:onClick="@{()->viewModel.selectOption(option)}"
+        android:clickable="@{item.editable}"
+        android:onClick="@{() -> item.onSave(item.displayName == option.displayName ? null : option.code)}"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
-        app:optionSelectionModel="@{viewModel}"
+        app:optionSelectionModel="@{item}"
         app:optionSelectionOption="@{option}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,8 +36,8 @@
                 android:id="@+id/selectionBadge"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.isSelected(option) ? View.VISIBLE : View.GONE}"
-                app:optionSelectionModel="@{viewModel}"
+                android:visibility="@{item.displayName == option.displayName ? View.VISIBLE : View.GONE}"
+                app:optionSelectionModel="@{item}"
                 app:optionSelectionOption="@{option}"
                 app:srcCompat="@drawable/ic_check_border"
                 tools:tint="@color/red_060" />

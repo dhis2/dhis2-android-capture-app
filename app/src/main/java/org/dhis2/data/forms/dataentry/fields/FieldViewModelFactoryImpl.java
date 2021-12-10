@@ -159,7 +159,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
                     return new FieldUiModelImpl(
                             id,
-                            layoutProvider.getLayoutByType(type, fieldRendering.type()),
+                            layoutProvider.getLayoutByType(type, fieldRendering.type(), renderingType),
                             value,
                             false,
                             null,
@@ -177,7 +177,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                             allowFutureDates,
                             new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                             displayNameProvider.provideDisplayName(type, value, optionSet),
-                            uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering.type()),
+                            uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering.type(), renderingType),
                             options,
                             keyboardActionProvider.provideKeyboardAction(type),
                             fieldMask
@@ -202,26 +202,36 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                     );
                 }
             } else {
-                return MatrixOptionSetModel.create(
+                return new FieldUiModelImpl(
                         id,
-                        getLayout(MatrixOptionSetModel.class),
-                        label,
-                        mandatory,
+                        layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, renderingType),
                         value,
-                        section,
+                        false,
+                        null,
                         editable,
-                        optionSet,
+                        null,
+                        mandatory,
+                        label,
+                        section,
+                        uiStyleProvider.provideStyle(type),
+                        hintProvider.provideDateHint(type),
                         description,
-                        objectStyle,
+                        type,
+                        legendValue,
+                        optionSet,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
+                        uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null, renderingType),
                         options,
-                        renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1,
-                        type
+                        keyboardActionProvider.provideKeyboardAction(type),
+                        fieldMask
                 );
             }
         }
         return new FieldUiModelImpl(
                 id,
-                        layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null),
+                layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, renderingType),
                 value,
                 false,
                 null,
@@ -239,7 +249,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 allowFutureDates,
                 new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
                 displayNameProvider.provideDisplayName(type, value, optionSet),
-                        uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null),
+                uiEventTypesProvider.provideUiRenderType(featureType, fieldRendering != null ? fieldRendering.type() : null, renderingType),
                 options,
                 keyboardActionProvider.provideKeyboardAction(type),
                 fieldMask

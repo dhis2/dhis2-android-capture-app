@@ -71,6 +71,8 @@ interface FieldUiModel {
 
     val isNegativeChecked: Boolean
 
+    val optionsToDisplay: List<Option>?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
