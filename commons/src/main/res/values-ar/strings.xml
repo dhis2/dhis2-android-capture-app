@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="change_calendar_view">تغيير طريقة عرض التقويم</string>
+    <string name="clear">تصفية</string>
+    <string name="action_accept">قبول</string>
+    <string name="next">التالي</string>
+    <string name="cancel">إلغاء</string>
+    <string name="yes">نعم</string>
+    <string name="no">لا</string>
+    <string name="clear_all">الغاء التحديد</string>
+    <string name="navigation_list_view">عرض قائمة</string>
+    <string name="navigation_table_view">عرض جدول</string>
+    <string name="navigation_map_view">عرض خريطة</string>
+    <string name="navigation_analytics">التحليلات</string>
+    <string name="navigation_tasks">المهام</string>
+    <string name="navigation_programs">البرامج</string>
+    <string name="navigation_events">الأحداث</string>
+    <string name="navigation_relationships">العلاقات</string>
+    <string name="navigation_notes">الملاحظات</string>
+    <string name="navigation_data_entry">إدخال البيانات</string>
+    <string name="navigation_tei_data">التفاصيل</string>
+    <string name="event_overview">التفاصيل</string>
+    <string name="select_option">تحديد الخيار</string>
+    <string name="search">بحث</string>
+    <string name="jira_issue_sent">تم إرسال المشكلة</string>
+    <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
+    <string name="events">الأحداث</string>
+    <string name="data_sets">حزم البيانات</string>
+    <string name="tei">TEI</string>
+    <string name="info">معلومات</string>
+    <string name="done">تم</string>
+
+    <!-- Filters -->
+    <string name="filters_active">تطبيق عوامل تصفية</string>
+    <string name="filters_disabled">لم يتم تطبيق عوامل تصفية</string>
+    <string name="filters_title_period">الفترة الزمنية</string>
+    <string name="filters_title_org_unit">الوحدة التنظيمية</string>
+    <string name="filters_title_sorting">فرز</string>
+    <string name="filters_title_status">الحالة</string>
+    <string name="filters_title_state">حالة المزامنة</string>
+    <string name="filters_title_assigned">تم تعيينه لي</string>
+    <string name="filters_title_date">التاريخ</string>
+    <string name="filters_title_event_date">بيانات الحدث</string>
+    <string name="enrollment_date">تاريخ التسجيل</string>
+    <string name="filters_title_event_status">حالة الحدث</string>
+    <string name="filters_title_enrollment_status">حالة التسجيل</string>
+    <!-- State -->
+    <string name="state_synced">حالة المزامنة</string>
+    <string name="state_to_post">للإرسال</string>
+    <string name="state_to_update">للتحديث</string>
+    <string name="state_to_delete">للحذف</string>
+    <string name="state_error">خطأ</string>
+    <string name="state_warning">تحذير</string>
+    <string name="state_uploading">رفع</string>
+    <string name="state_relationship">العلاقة</string>
+    <string name="sent_by_sms">مرسل عن طريق sms</string>
+    <string name="sync_by_sms">تم التزامن عبر sms</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">مفتوح</string>
+    <string name="filter_event_status_schedule">المجدولة زمنياً</string>
+    <string name="filter_event_status_overdue">المتأخرة</string>
+    <string name="filter_event_status_visited">تم زيارته</string>
+    <string name="filter_event_status_completed">المكتملة</string>
+    <string name="filter_event_status_skipped">التي تم تخطيها</string>
+    <string name="active">فعال</string>
+    <string name="cancelled">تم الإلغاء</string>
+    <string name="enrollment_status_active">مفتوح</string>
+    <string name="enrollment_status_completed">مكتمل</string>
+    <string name="enrollment_status_cancelled">تم الإلغاء</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">اليوم</string>
+    <string name="filter_period_yesterday">الأمس</string>
+    <string name="filter_period_tomorrow">غداً</string>
+    <string name="filter_period_this_week">هذا الأسبوع</string>
+    <string name="filter_period_last_week">الأسبوع الماضي</string>
+    <string name="filter_perdior_next_week">الأسبوع القادم</string>
+    <string name="filter_period_this_month">الشهر الحالي</string>
+    <string name="filter_period_last_month">الشهر الماضي</string>
+    <string name="filter_period_next_month">الشهر القادم</string>
+    <string name="filter_period_form_to">من - إلى</string>
+    <string name="filter_period_other">أخرى</string>
+    <string name="filter_period_any">في أي وقت</string>
+    <string name="working_list_default_label">قائمة عمل: %s</string>
+    <string name="filter_period_last_n_days">آخر %d يوم</string>
+    <string name="filter_period_this_year">السنة الحالية</string>
+    <string name="filter_period_this_bimonth">ثنائي شهرين الحالي</string>
+    <string name="filter_period_last_bimonth">آخر ثنائي شهري</string>
+    <string name="filter_period_this_quarter">ربع السنة الحالي</string>
+    <string name="filter_period_last_quarter">ربع السنة الماضي</string>
+    <string name="filter_period_six_months">الستة الأشهر الحالية</string>
+    <string name="filter_period_last_six_months">الأشهر الستة الماضية</string>
+    <string name="filter_period_last_n_years">آخر %dسنة</string>
+    <string name="filter_period_last_n_months">آخر %d شهر</string>
+    <string name="filter_period__last_n_weeks">آخر %d أسبوع</string>
+    <string name="filter_period_weeks_this_year">أسابيع السنة الحالية</string>
+    <string name="filter_period_months_this_year">أشهر السنة الحالية</string>
+    <string name="filter_period_bimonths_this_year">كل شهرين هذا العام</string>
+    <string name="filter_period_quarters_this_year">أرباع السنة الحالية</string>
+    <string name="filter_period_months_last_year">أشهر السنة الماضية</string>
+    <string name="filter_period_quarters_last_year">أرباع السنة الماضية</string>
+    <string name="filter_period_last_year">السنة الماضية</string>
+    <string name="filter_period_this_biweek">زوج اسبوعي الحالي</string>
+    <string name="filter_period_last_biweek">زوج اسبوعي الماضي</string>
+    <string name="filter_period_last_n_bimonths">آخر %d أزواج شهرية</string>
+    <string name="filter_period_last_n_quarters">آخر %d ربع</string>
+    <string name="last_n_months">آخر %d شهر</string>
+    <string name="filter_period_this_financial_year">السنة المالية الحالية</string>
+    <string name="filter_period_last_financial_year">السنة المالية الماضية</string>
+    <string name="filter_period_last_n_financial_years">اخر %d سنة مالية</string>
+    <string name="filter_period_last_n_biweeks">آخر %dزوج اسابيع</string>
+    <string name="period">الفترة الزمنية</string>
+    <string name="DAILY">يومي</string>
+    <string name="WEEKLY">أسبوعي</string>
+    <string name="MONTHLY">شهري</string>
+    <string name="YEARLY">سنوي</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">المتزامنة</string>
+    <string name="filter_sync_not_synced">الغير متزامنة</string>
+    <string name="filter_sync_error">تحوي أخطاء في المزامنة</string>
+    <string name="filter_sync_sms">التي تم مزامنتها عبر SMS</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">الآن</string>
+    <string name="interval_minute_ago">منذ %dدقيقة</string>
+    <string name="interval_hour_ago">منذ %d ساعة</string>
+    <string name="interval_yesterday">الأمس</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">التغذية الراجعة</string>
+    <string name="section_indicators">المؤشرات</string>
+    <string name="section_charts">المخططات البيانية</string>
+    <string name="section_charts_indicators">الرسوم البيانية والمؤشرات</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">كلمة المرور مفقودة. الرجاء إدخال كلمة المرور.</string>
+    <string name="login_error_null_username">اسم المستخدم مفقود. الرجاء إدخال اسم المستخدم.</string>
+    <string name="login_error_dhis_version">يقوم هذا الخادم بتشغيل إصدار dhis مختلف عن 2.29. قم بتحديث إصدار الخادم الخاص بك أو استخدم بيئة الاختبار للمتابعة.</string>
+    <string name="login_error_unsuccessful_response">هناك خطأ ما. يرجى التحقق من صحة عنوان URL الخاص بالخادم واسم المستخدم وكلمة المرور وحاول مرة أخرى.</string>
+    <string name="login_error_error_response">آسف! فشل شيء ما من جانب الخادم.</string>
+    <string name="login_error_bad_credentials">إسمك او كلمة المرور الخاصة بك غير صحيحة</string>
+    <string name="login_error_unknown_host">خادم غير معروف</string>
+    <string name="online_search_parsing_error">خطأ اثناء تحليل البيانات</string>
+    <string name="error_unexpected">حدثت مشكلة غير متوقعة.</string>
+    <string name="error_many_requests">الخادم مشغول بعض الشيء في هذه اللحظة. من فضلك حاول قليلا في وقت لاحق.</string>
+    <string name="error_already_authenticated">المستخدم مسجل للدخول مسبقًا</string>
+    <string name="error_already_executed">سبق وأن تم تنفيذ الطلب</string>
+    <string name="error_api_invalid_query">طلب الخادم غير صالح.</string>
+    <string name="error_app_name_not_set">لم يتم تعيين اسم التطبيق.</string>
+    <string name="error_app_version_not_set">لم يتم تعيين إصدار التطبيق.</string>
+    <string name="error_create_existing_error">الغاء الإنشاء. الكائن موجود مسبقًا.</string>
+    <string name="error_delete_non_existing_object">احباط عملية الحذف، الكائن غير موجود.</string>
+    <string name="error_reserve_value_on_server">لم نتمكن من الاحتفاظ بقيم لهذه السجلات. يرجى الاتصال بالمسؤول الخاص بك.</string>
+    <string name="error_export_login">الرجاء تسجيل الدخول لتصدير قاعدة البيانات.</string>
+    <string name="error_export_encrypted">تصدير قاعدة بيانات مشفرة غير مدعوم.</string>
+    <string name="error_import_exist">أنت تستورد قاعدة بيانات موجودة مسبقًا.</string>
+    <string name="error_import_logout">الرجاء تسجيل الخروج لاستيراد قاعدة بيانات جديدة.</string>
+    <string name="error_import_version">إصدار قاعدة البيانات المستوردة أعلى من الإصدار المدعوم.</string>
+    <string name="error_file_not_found">لم يتم العثور على الملف.</string>
+    <string name="error_file_resize">حدث خطأ في تغيير حجم الصورة.</string>
+    <string name="error_generate_coordinate">لا يمكن توليد الإحداثيات.</string>
+    <string name="error_user_no_authenticated">لا يوجد مستخدم مصدق عليه.</string>
+    <string name="error_user_no_authenticated_offline">لا يوجد مستخدم تمت مصادقته في وضع عدم الاتصال.</string>
+    <string name="error_object_update">لم يتمكن من تحديث الكائن.</string>
+    <string name="error_ownership_access">ليس لديك حق الوصول.</string>
+    <string name="error_null_url">عنوان URL للخادم مفقود. الرجاء إدخال URL.</string>
+    <string name="error_server_malformed">عنوان URL للخادم غير منسق بشكل جيد. رجاءا تأكد.</string>
+    <string name="error_relationship_updated">لا يمكن تحديث العلاقة.</string>
+    <string name="error_too_many_periods">هناك فترات كثيرة جدا.</string>
+    <string name="error_url_not_found">لم نتمكن من العثور على URL. الرجاء التحقق منه.</string>
+    <string name="error_account_disabled">تم تعطيل حساب المستخدم الخاص بك. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
+    <string name="error_account_locked">حساب المستخدم الخاص بك مغلق. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
+    </resources>
