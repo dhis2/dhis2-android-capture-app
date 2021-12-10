@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormImageBinding;
+import org.dhis2.form.databinding.FormImageBinding;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;
