@@ -133,37 +133,35 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         isNull(type, "type must be supplied");
         if (searchMode)
             mandatory = false;
+        ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
         if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
-            if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
-                ValueTypeRenderingType valueTypeRenderingType = fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT;
-                if (valueTypeRenderingType.equals(ValueTypeRenderingType.QR_CODE) || valueTypeRenderingType.equals(ValueTypeRenderingType.BAR_CODE)) {
-                } else {
-                    return new FieldUiModelImpl(
-                            id,
-                            layoutProvider.getLayoutByType(type, valueTypeRenderingType, optionSet, renderingType),
-                            value,
-                            false,
-                            null,
-                            editable,
-                            null,
-                            mandatory,
-                            label,
-                            section,
-                            uiStyleProvider.provideStyle(type),
-                            hintProvider.provideDateHint(type),
-                            description,
-                            type,
-                            legendValue,
-                            optionSet,
-                            allowFutureDates,
-                            new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
-                            displayNameProvider.provideDisplayName(type, value, optionSet),
-                            uiEventTypesProvider.provideUiRenderType(featureType, valueTypeRenderingType, renderingType),
-                            options,
-                            keyboardActionProvider.provideKeyboardAction(type),
-                            fieldMask
-                    );
-                }
+            if (valueTypeRenderingType.equals(ValueTypeRenderingType.QR_CODE) || valueTypeRenderingType.equals(ValueTypeRenderingType.BAR_CODE)) {
+            } else {
+                return new FieldUiModelImpl(
+                        id,
+                        layoutProvider.getLayoutByType(type, valueTypeRenderingType, optionSet, renderingType),
+                        value,
+                        false,
+                        null,
+                        editable,
+                        null,
+                        mandatory,
+                        label,
+                        section,
+                        uiStyleProvider.provideStyle(type),
+                        hintProvider.provideDateHint(type),
+                        description,
+                        type,
+                        legendValue,
+                        optionSet,
+                        allowFutureDates,
+                        new UiEventFactoryImpl(id, label, description, type, allowFutureDates),
+                        displayNameProvider.provideDisplayName(type, value, optionSet),
+                        uiEventTypesProvider.provideUiRenderType(featureType, valueTypeRenderingType, renderingType),
+                        options,
+                        keyboardActionProvider.provideKeyboardAction(type),
+                        fieldMask
+                );
             }
         }
         return new FieldUiModelImpl(
