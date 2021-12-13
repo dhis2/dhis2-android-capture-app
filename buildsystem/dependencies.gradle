@@ -8,7 +8,7 @@ ext {
     ]
     libraries = [
             //DHIS2
-            dhis2sdk                  : "1.4.3-eyeseetea-fork-1",
+            dhis2sdk                  : "1.4.3-eyeseetea-fork-2",
             ruleEngine                : "2.0.16",
 
             //androidX
