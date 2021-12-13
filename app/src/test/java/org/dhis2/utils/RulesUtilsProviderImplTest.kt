@@ -1,12 +1,12 @@
 package org.dhis2.utils
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
@@ -182,9 +182,11 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        whenever(valueStore.save(testingUid, null, null)) doReturn StoreResult(
-            testingUid,
-            ValueStoreResult.VALUE_CHANGED
+        whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
+            StoreResult(
+                testingUid,
+                ValueStoreResult.VALUE_CHANGED
+            )
         )
 
         val result = ruleUtils.applyRuleEffects(
@@ -195,7 +197,7 @@ class RulesUtilsProviderImplTest {
         )
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
-        verify(valueStore, times(1)).save(testingUid, null, null)
+        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
         assertTrue(result.fieldsToUpdate.contains(testingUid))
     }
 
@@ -292,7 +294,7 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        verify(valueStore, times(1)).save(testingUid, "data", null)
+        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
         assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
     }
@@ -317,11 +319,12 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        whenever(valueStore.save(any(), any(), anyOrNull())) doReturn
+        whenever(valueStore.saveWithTypeCheck(any(), any())) doReturn Flowable.just(
             StoreResult(
                 testingUid,
                 ValueStoreResult.VALUE_CHANGED
             )
+        )
 
         val result = ruleUtils.applyRuleEffects(
             true,
@@ -330,8 +333,8 @@ class RulesUtilsProviderImplTest {
             valueStore
         )
 
-        verify(valueStore, times(1)).save(testingUid, "data", null)
-        verify(valueStore, times(0)).save(testingUid2, "test", null)
+        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
+        verify(valueStore, times(0)).saveWithTypeCheck(testingUid2, "test")
         assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
         assertTrue(testFieldViewModels[testingUid2]!!.value.equals("test"))
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
