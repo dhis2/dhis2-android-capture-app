@@ -24,7 +24,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     }
 
     private fun initLocationProvider(): String {
-        return locationManager.getBestProvider(locationCriteria, false)
+        return locationManager.getBestProvider(locationCriteria, false).toString()
     }
 
     private fun initHighAccuracyCriteria(): Criteria {
@@ -64,7 +64,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                 5f,
                 locationCriteria,
                 object : LocationListener {
-                    override fun onLocationChanged(location: Location?) {
+                    override fun onLocationChanged(location: Location) {
                         location?.let {
                             onNewLocation(it)
                             locationManager.removeUpdates(this)
@@ -75,11 +75,11 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                         Timber.d("Location status changed, %s, %s", p0, p1)
                     }
 
-                    override fun onProviderEnabled(p0: String?) {
+                    override fun onProviderEnabled(p0: String) {
                         Timber.d("Provider %s enabled", p0)
                     }
 
-                    override fun onProviderDisabled(p0: String?) {
+                    override fun onProviderDisabled(p0: String) {
                         Timber.d("Provider %s disabled", p0)
                     }
                 },

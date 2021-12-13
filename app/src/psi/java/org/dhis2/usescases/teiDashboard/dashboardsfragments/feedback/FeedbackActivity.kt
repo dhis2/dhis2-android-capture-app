@@ -28,9 +28,9 @@ class FeedbackActivity : ActivityGlobalAbstract(), FeedbackPresenter.FeedbackVie
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        teiUid = intent.getStringExtra(Constants.TEI_UID)
-        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
-        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
+        teiUid = intent.getStringExtra(Constants.TEI_UID) ?: ""
+        programUid = intent.getStringExtra(Constants.PROGRAM_UID) ?: ""
+        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID) ?: ""
 
         if (((applicationContext) as App).userComponent() != null) {
             ((applicationContext) as App).userComponent()!!

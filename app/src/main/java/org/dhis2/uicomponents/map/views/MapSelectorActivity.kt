@@ -79,7 +79,7 @@ class MapSelectorActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
-        location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
+        location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA)?:"")
         fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView

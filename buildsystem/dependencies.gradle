@@ -1,7 +1,7 @@
 ext {
     versions = [
-            sdk   : 29,
-            tools : "29.0.2",
+            sdk   : 30,
+            tools : "30.0.3",
             minSdk: 19,
             vCode: 103,
             vName: "2.4.2-eyeseetea-fork-1"
