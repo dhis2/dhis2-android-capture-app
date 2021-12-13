@@ -171,8 +171,6 @@ public class EventCaptureContract {
 
         Single<Integer> getNoteCount();
 
-        List<String> getOptionsFromGroups(List<String> optionGroupUids);
-
         boolean showCompletionPercentage();
 
         void updateFieldValue(String uid);

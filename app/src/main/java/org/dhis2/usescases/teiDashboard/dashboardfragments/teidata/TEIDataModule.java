@@ -1,15 +1,20 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -44,7 +49,8 @@ public class TEIDataModule {
                                                  AnalyticsHelper analyticsHelper,
                                                  PreferenceProvider preferenceProvider,
                                                  FilterManager filterManager,
-                                                 FilterRepository filterRepository) {
+                                                 FilterRepository filterRepository,
+                                                 ValueStore valueStore) {
         return new TEIDataPresenterImpl(view,
                 d2,
                 dashboardRepository,
@@ -57,7 +63,8 @@ public class TEIDataModule {
                 preferenceProvider,
                 analyticsHelper,
                 filterManager,
-                filterRepository);
+                filterRepository,
+                valueStore);
 
     }
 
@@ -75,5 +82,20 @@ public class TEIDataModule {
     @PerFragment
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
+    }
+
+    @Provides
+    @PerFragment
+    ValueStore valueStore(
+            D2 d2,
+            CrashReportController crashReportController
+    ){
+        return new ValueStoreImpl(
+                d2,
+                teiUid,
+                DataEntryStore.EntryMode.ATTR,
+                new DhisEnrollmentUtils(d2),
+                crashReportController
+        );
     }
 }
