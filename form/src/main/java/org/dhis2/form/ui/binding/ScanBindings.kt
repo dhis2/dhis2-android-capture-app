@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.scan
+package org.dhis2.form.ui.binding
 
 import android.view.MotionEvent
 import android.view.View
@@ -7,17 +7,18 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import org.dhis2.R
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.openKeyboard
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.dhis2.form.R
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.UiRenderType
 
 @BindingAdapter("action_icon")
-fun ImageView.setActionIcon(model: ScanTextViewModel) {
+fun ImageView.setActionIcon(model: FieldUiModel) {
     isClickable = model.editable
-    val iconRes = when (model.fieldRendering?.type()) {
-        ValueTypeRenderingType.QR_CODE -> R.drawable.ic_form_qr
-        ValueTypeRenderingType.BAR_CODE -> R.drawable.ic_form_barcode
+    val iconRes = when (model.renderingType) {
+        UiRenderType.QR_CODE -> R.drawable.ic_form_qr
+        UiRenderType.BAR_CODE -> R.drawable.ic_form_barcode
         else -> null
     }
 
@@ -40,7 +41,7 @@ fun TextInputLayout.setErrorMessage(errorMessage: String?, warningMessage: Strin
 }
 
 @BindingAdapter("action_handler")
-fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
+fun TextInputEditText.setActionHandler(model: FieldUiModel) {
     isEnabled = model.editable
     isFocusable = true
     isClickable = model.editable
@@ -64,7 +65,7 @@ fun TextInputEditText.setActionHandler(model: ScanTextViewModel) {
         }
     }
 
-    if (model.activated()) {
+    if (model.focused) {
         requestFocus()
         openKeyboard()
     }

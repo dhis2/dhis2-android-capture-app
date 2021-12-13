@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.form.ui.provider.LayoutProvider
@@ -11,7 +10,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>(
-    ScanTextViewModel::class to R.layout.form_scan,
     SectionViewModel::class to R.layout.form_section,
     SpinnerViewModel::class to R.layout.form_option_set_spinner
 )
@@ -45,6 +43,8 @@ class LayoutProviderImpl : LayoutProvider {
                     ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
                     ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
                     ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_option_set_selector
+                    ValueTypeRenderingType.QR_CODE,
+                    ValueTypeRenderingType.BAR_CODE -> R.layout.form_scan
                     else -> R.layout.form_edit_text_custom
                 }
             }

@@ -11,7 +11,9 @@ enum class UiRenderType {
     HORIZONTAL_CHECKBOXES,
     AUTOCOMPLETE,
     MATRIX,
-    SEQUENCIAL;
+    SEQUENCIAL,
+    QR_CODE,
+    BAR_CODE;
 
     fun isRadioButton() = this == VERTICAL_RADIOBUTTONS || this == HORIZONTAL_RADIOBUTTONS
     fun isCheckBox() = this == VERTICAL_CHECKBOXES || this == HORIZONTAL_CHECKBOXES

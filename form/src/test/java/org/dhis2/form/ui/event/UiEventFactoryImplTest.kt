@@ -56,6 +56,8 @@ class UiEventFactoryImplTest {
         label = "label",
         description = "description",
         valueType = valueType,
+        true,
+        null,
         true
     )
 }

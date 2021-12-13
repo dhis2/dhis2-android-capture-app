@@ -56,6 +56,7 @@ import org.dhis2.form.data.toMessage
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.event.DialogDelegate
@@ -79,6 +80,7 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
 class FormView(
@@ -647,11 +649,18 @@ class FormView(
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
         onActivityForResult?.invoke()
+        val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
+            when (it) {
+                UiRenderType.QR_CODE -> ValueTypeRenderingType.QR_CODE
+                UiRenderType.BAR_CODE -> ValueTypeRenderingType.BAR_CODE
+                else -> ValueTypeRenderingType.DEFAULT
+            }
+        }
         qrScanContent.launch(
             Intent(context, ScanActivity::class.java).apply {
                 putExtra(Constants.UID, event.uid)
                 putExtra(Constants.OPTION_SET, event.optionSet)
-                putExtra(Constants.SCAN_RENDERING_TYPE, event.renderingType)
+                putExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
             }
         )
     }
