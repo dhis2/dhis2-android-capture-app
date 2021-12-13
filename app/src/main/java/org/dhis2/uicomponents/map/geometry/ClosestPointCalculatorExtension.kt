@@ -24,7 +24,7 @@ fun List<List<List<Double>>>.closestPointTo(
     return this[0].map { fromPoint ->
         val toPoint = polPoints.closestPointTo(fromPoint)
         Pair(fromPoint, toPoint)
-    }.minBy { fromToPoints ->
+    }.minByOrNull { fromToPoints ->
         fromToPoints.first.toLatLn().distanceTo(fromToPoints.second.toLatLn())
     } ?: Pair(arrayListOf(0.0, 0.0), arrayListOf(0.0, 0.0))
 }

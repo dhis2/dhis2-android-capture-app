@@ -8,7 +8,6 @@ import org.dhis2.BuildConfig
 import org.dhis2.commons.di.dagger.PerActivity
 
 @Module
-@PerActivity
 object FingerPrintModule {
 
     @JvmStatic

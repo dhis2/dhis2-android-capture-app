@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
 
 @Module
-@PerServer
 class ServerModule {
     @Provides
     @PerServer

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.development;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -57,9 +58,8 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private void loadProgramRuleCheck() {
         binding.ruleActionQualityButton.setOnClickListener(view -> {
-            binding.ruleActionQualityResult.setText("Checking...");
-            String result = new ProgramRulesValidations(D2Manager.getD2()).validateRules();
-            binding.ruleActionQualityResult.setText(result);
+            Intent intent = new Intent(this,ProgramRulesValidationActivity.class);
+            startActivity(intent);
         });
     }
 
