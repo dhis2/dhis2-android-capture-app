@@ -1,8 +1,8 @@
 package org.dhis2.uicomponents.map.mocks
 
-import org.dhis2.uicomponents.map.model.RelationshipDirection
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
-import org.dhis2.uicomponents.map.model.TeiMap
+import org.dhis2.maps.model.RelationshipDirection
+import org.dhis2.maps.model.RelationshipUiComponentModel
+import org.dhis2.maps.model.TeiMap
 
 object RelationshipUiCompomentDummy {
 

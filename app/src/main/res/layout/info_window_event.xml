@@ -13,7 +13,7 @@
 
         <variable
             name="event"
-            type="org.dhis2.usescases.programEventDetail.ProgramEventViewModel" />
+            type="org.dhis2.commons.data.ProgramEventViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig;
 import androidx.recyclerview.widget.DiffUtil;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.program.Program;
 
 import kotlin.Pair;

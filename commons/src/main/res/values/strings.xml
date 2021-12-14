@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Event</string>
+    <string name="no_data">No data</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="app_name" translatable="false">Commons</string>
     <string name="change_calendar_view">Change calendar view</string>
@@ -72,6 +74,7 @@
     <string name="enrollment_status_active">Open</string>
     <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
+    <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Today</string>
@@ -138,6 +141,9 @@
     <string name="section_indicators">Indicators</string>
     <string name="section_charts">Charts</string>
     <string name="section_charts_indicators">Charts and indicators</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Enrolled in:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Password is missing. Please enter password.</string>

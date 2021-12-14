@@ -65,7 +65,7 @@
             android:configChanges="keyboardHidden|screenSize" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
-        <activity android:name="org.dhis2.uicomponents.map.views.MapSelectorActivity" />
+        <activity android:name="org.dhis2.maps.views.MapSelectorActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity

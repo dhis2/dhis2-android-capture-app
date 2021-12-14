@@ -3,9 +3,9 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Quartet;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;

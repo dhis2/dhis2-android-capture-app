@@ -140,9 +140,6 @@
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Välj plats</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minut</string>
     <string name="fifteen_minute">15 minuter</string>

@@ -163,8 +163,7 @@
     <string name="log_out">Déconnecter</string>
     <string name="block_session">Bloquer la session</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Sélectionnez l\'emplacement</string>
+
 
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
@@ -414,7 +413,6 @@
     <string name="sectionSelectorPrev">PREC</string>
     <string name="sectionSelectorNext">SUIV.</string>
     <string name="event_overview">Détails</string>
-    <string name="event_event">Evènement</string>
     <string name="event_indicators">Indicateurs</string>
     <string name="event_notes">Notes</string>
     <string name="complete_add_new"><![CDATA[Compléter & ajouter nouveau]]></string>
@@ -480,7 +478,6 @@
     <string name="dashboard_menu_delete_tei">Supprimer TEI</string>
     <string name="dashboard_menu_delete_enrollment">Supprimer seulement l\'enrôlement</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
-    <string name="record_marked_for_deletion">La donnée est marquée pour être supprimée. Vous ne pouvez pas y accéder</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
     <string name="adjusting_form">Adapter le formulaire...</string>

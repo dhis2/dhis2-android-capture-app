@@ -26,12 +26,10 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.jetbrains.annotations.NotNull;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;

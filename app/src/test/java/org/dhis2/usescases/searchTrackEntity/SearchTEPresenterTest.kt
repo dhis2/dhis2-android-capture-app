@@ -20,12 +20,12 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
+import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.mapper.EventToEventUiComponent
+import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2

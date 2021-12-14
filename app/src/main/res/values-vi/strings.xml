@@ -142,9 +142,6 @@
     <string name="log_out">Đăng xuất</string>
     <string name="block_session">Khóa phiên</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Chọn địa điểm</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Phút</string>
     <string name="fifteen_minute">15 Phút</string>

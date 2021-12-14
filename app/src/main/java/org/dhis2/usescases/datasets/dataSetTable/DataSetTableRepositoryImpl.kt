@@ -7,7 +7,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.Date
 import javax.inject.Singleton
-import org.dhis2.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.utils.validationrules.DataToReview
 import org.dhis2.utils.validationrules.ValidationRuleResult
 import org.dhis2.utils.validationrules.Violation

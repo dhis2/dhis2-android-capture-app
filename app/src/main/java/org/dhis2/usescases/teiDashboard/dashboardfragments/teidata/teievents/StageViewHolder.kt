@@ -4,6 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager

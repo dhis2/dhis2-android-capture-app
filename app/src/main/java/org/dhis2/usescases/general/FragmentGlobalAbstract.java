@@ -9,22 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-
-import java.lang.reflect.Type;
-import java.util.List;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * QUADRAM. Created by ppajuelo on 18/10/2017.

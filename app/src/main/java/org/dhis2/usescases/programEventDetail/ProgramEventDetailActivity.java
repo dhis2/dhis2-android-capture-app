@@ -13,7 +13,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
@@ -43,7 +42,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;

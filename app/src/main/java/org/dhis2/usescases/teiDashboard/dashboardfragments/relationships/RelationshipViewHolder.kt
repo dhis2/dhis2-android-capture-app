@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.setItemPic
 import org.dhis2.databinding.ItemRelationshipBinding
 

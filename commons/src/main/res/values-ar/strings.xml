@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">الحدث</string>
+    <string name="no_data">لا توجد بيانات</string>
+    <string name="enrolled_in">مسجل في:</string>
+    <string name="record_marked_for_deletion">تم وضع علامة على هذا السجل للحذف. لا يمكنك الوصول إليها.</string>
+</resources>

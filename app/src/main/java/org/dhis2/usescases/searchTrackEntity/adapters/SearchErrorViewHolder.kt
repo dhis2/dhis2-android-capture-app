@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.databinding.ItemSearchErrorBinding
 
 class SearchErrorViewHolder(

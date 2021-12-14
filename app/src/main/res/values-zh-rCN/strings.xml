@@ -170,9 +170,6 @@
     <string name="log_out">退出</string>
     <string name="block_session">阻止会话</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">选择位置</string>
-
     <!-- SYNC -->
     <string name="a_minute">1分钟</string>
     <string name="fifteen_minute">15分钟</string>
@@ -518,7 +515,6 @@
     <string name="dashboard_menu_delete_tei">删除实体（TEI）</string>
     <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
-    <string name="record_marked_for_deletion">该记录被标记为删除。你不能访问。</string>
     <string name="validation_url">没有有效的URL</string>
     <string name="uncomplete_authority_error">你没有打开该事件的权限。</string>
     <string name="adjusting_form">调整表单。。。</string>
@@ -571,7 +567,6 @@
     <string name="value_required_but_not_provided">%s是强制的但是没有提供</string>
     <string name="polygon_captured">采集的多边形。</string>
     <string name="polygon">多边形</string>
-    <string name="map_layers">地图层</string>
     <!--endregion-->
 
     <string name="wrong_pattern">不正确的格式</string>
@@ -665,8 +660,4 @@
     <string name="syncing_period_not_editable">同步期间不能编辑</string>
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
-    <string name="dialog_layer_satellite">显示卫星视图</string>
-    <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
-    <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
-    <string name="dialog_layer_heatmap">显示热力图</string>
     </resources>

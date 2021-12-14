@@ -40,7 +40,7 @@ import org.dhis2.form.model.LegendValue;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.databinding.DataElementLegendBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
-import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
+import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.DateUtils;
@@ -67,15 +67,6 @@ import static org.dhis2.Bindings.ViewExtensionsKt.openKeyboard;
 
 
 public class Bindings {
-
-    @BindingAdapter("date")
-    public static void parseDate(TextView textView, Date date) {
-        if (date != null) {
-            SimpleDateFormat formatOut = DateUtils.uiDateFormat();
-            String dateOut = formatOut.format(date);
-            textView.setText(dateOut);
-        }
-    }
 
     @BindingAdapter("drawableEnd")
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
@@ -365,19 +356,7 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("eventWithoutRegistrationStatusIcon")
-    public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-        int drawableResource;
-        switch (event.eventStatus()) {
-            case COMPLETED:
-                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_complete : R.drawable.ic_event_status_complete_read;
-                break;
-            default:
-                drawableResource = event.canBeEdited() ? R.drawable.ic_event_status_open : R.drawable.ic_event_status_open_read;
-                break;
-        }
-        imageView.setImageResource(drawableResource);
-    }
+
 
     @BindingAdapter("stateText")
     public static void setStateText(TextView textView, State state) {

@@ -13,22 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.maps.ExternalMapNavigation;
+import org.dhis2.maps.carousel.CarouselAdapter;
+import org.dhis2.maps.layer.MapLayerDialog;
+import org.dhis2.maps.managers.RelationshipMapManager;
+import org.dhis2.maps.model.RelationshipUiComponentModel;
 import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.RelationshipViewModel;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
-import org.dhis2.uicomponents.map.ExternalMapNavigation;
-import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
-import org.dhis2.uicomponents.map.layer.MapLayerDialog;
-import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
@@ -50,7 +45,14 @@ import javax.inject.Inject;
 import kotlin.Unit;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
+
+import static org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
+
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
 

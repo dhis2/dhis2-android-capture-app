@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="event"
+            type="org.hisp.dhis.android.core.event.Event" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.Program" />
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+
+        <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mapNavigateFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_map_navigate"
+            tools:ignore="ContentDescription" />
+
+        <include
+            android:id="@+id/noCoordinatesLabel"
+            layout="@layout/item_no_coordinates"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginStart="4.3dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/eventInfoCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/eventInfoCard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="81dp"
+            app:rippleColor="@color/rippleColor"
+            android:layout_marginStart="4.3dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="4dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/programStageImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/square_rounded_corners_2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@tools:sample/avatars" />
+
+                <ImageView
+                    android:id="@+id/borderImage"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_oval_shape_white"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    app:layout_constraintBottom_toBottomOf="@id/programStageImage"
+                    app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                    tools:src="@tools:sample/avatars" />
+
+                <ImageView
+                    android:id="@+id/teiImage"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    app:layout_constraintBottom_toBottomOf="@id/borderImage"
+                    app:layout_constraintEnd_toEndOf="@id/borderImage"
+                    app:layout_constraintStart_toStartOf="@+id/borderImage"
+                    app:layout_constraintTop_toTopOf="@id/borderImage"
+                    tools:src="@tools:sample/avatars" />
+
+                <TextView
+                    android:id="@+id/imageText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="15sp"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    app:layout_constraintBottom_toBottomOf="@id/teiImage"
+                    app:layout_constraintEnd_toEndOf="@id/teiImage"
+                    app:layout_constraintStart_toStartOf="@+id/teiImage"
+                    app:layout_constraintTop_toTopOf="@id/teiImage"
+                    tools:text="A" />
+
+                <TextView
+                    android:id="@+id/teiAttribute"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@id/status_icon"
+                    app:layout_constraintStart_toEndOf="@id/programStageImage"
+                    app:layout_constraintTop_toTopOf="@id/programStageImage"
+                    tools:text="@tools:sample/full_names" />
+
+                <TextView
+                    android:id="@+id/programStageName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{programStage.displayName()}"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/status_icon"
+                    app:layout_constraintStart_toEndOf="@id/programStageImage"
+                    app:layout_constraintTop_toBottomOf="@id/teiAttribute"
+                    tools:text="@tools:sample/full_names" />
+
+                <TextView
+                    android:id="@+id/eventInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/programStageImage"
+                    app:layout_constraintTop_toBottomOf="@id/programStageName"
+                    tools:text="03/01/2019 at Ngelehun CHC" />
+
+                <ImageView
+                    android:id="@+id/status_icon"
+                    style="@style/ActionIconNoPadding"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:enrollmentStatusIcon="@{enrollment}"
+                    app:eventProgram="@{program}"
+                    app:eventProgramStage="@{programStage}"
+                    app:eventStatusIcon="@{event}"
+                    app:layout_constraintEnd_toStartOf="@+id/sync_icon"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/sync_icon"
+                    style="@style/ActionIconNoPadding"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:stateIcon='@{event.state()}'
+                    tools:ignore="ContentDescription"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</layout>

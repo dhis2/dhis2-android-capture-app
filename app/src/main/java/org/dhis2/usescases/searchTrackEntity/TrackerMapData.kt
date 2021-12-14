@@ -3,15 +3,13 @@ package org.dhis2.usescases.searchTrackEntity
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import java.util.HashMap
-import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
-import org.dhis2.uicomponents.map.model.EventUiComponentModel
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
+import org.dhis2.commons.data.SearchTeiModel
 
 data class TrackerMapData(
     val teiModels: MutableList<SearchTeiModel>,
-    val eventFeatures: EventsByProgramStage,
+    val eventFeatures: org.dhis2.maps.geometry.mapper.EventsByProgramStage,
     val teiFeatures: HashMap<String, FeatureCollection>,
     val teiBoundingBox: BoundingBox,
-    val eventModels: MutableList<EventUiComponentModel>,
+    val eventModels: MutableList<org.dhis2.maps.model.EventUiComponentModel>,
     val dataElementFeaturess: MutableMap<String, FeatureCollection>
 )

@@ -154,9 +154,6 @@
     <string name="log_out">ອອກຈາກລະບົບ</string>
     <string name="block_session">ໄລຍະປີດການນໍາໃຊ້</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">ເລືອກສະຖານທີ່</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 ນາທີ</string>
     <string name="fifteen_minute">15 ນາທີ</string>
@@ -361,7 +358,6 @@
     <string name="dashboard_indicators">ຕົວຊີ້ວັດ</string>
     <string name="dashboard_notes">ຂໍ້ຄວາມ</string>
     <string name="event_overview">ລາຍລະອຽດ</string>
-    <string name="event_event">ເຫດການ</string>
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ຂໍ້ຄວາມ</string>
     <string name="finish">ສີ້ນສຸດ</string>
@@ -419,11 +415,9 @@
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
     <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
-    <string name="action_apply">ນຳໃຊ້</string>
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
-    <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="event_data">ຂໍ້ມູນ</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="filters_title_date">ວັນທີ່</string>

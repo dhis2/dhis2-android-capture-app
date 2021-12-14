@@ -143,9 +143,6 @@
     <string name="log_out">ចាកចេញ</string>
     <string name="block_session">ការទប់ស្កាត់</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">ជ្រើសរើសទីតាំង</string>
-
     <!-- SYNC -->
     <string name="a_minute">១នាទី</string>
     <string name="fifteen_minute">១៥នាទី</string>

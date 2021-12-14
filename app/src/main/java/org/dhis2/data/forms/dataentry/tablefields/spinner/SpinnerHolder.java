@@ -4,7 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.customviews.OptionSetCellPopUp;
 import org.dhis2.utils.optionset.OptionSetDialog;

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
+import org.dhis2.commons.data.SearchTeiModel
 import org.hisp.dhis.android.core.program.Program
 
 class SearchMessageMapper(private val searchResources: SearchResources) {

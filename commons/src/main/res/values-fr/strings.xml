@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Evènement</string>
+    <string name="record_marked_for_deletion">La donnée est marquée pour être supprimée. Vous ne pouvez pas y accéder</string>
+</resources>

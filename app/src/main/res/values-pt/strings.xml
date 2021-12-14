@@ -171,9 +171,6 @@
     <string name="log_out">Sair</string>
     <string name="block_session">Bloquear Sessão</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Selecionar local</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minuto</string>
     <string name="fifteen_minute">15 Minutos</string>
@@ -450,7 +447,6 @@
     <string name="sectionSelectorPrev">ANTERIOR</string>
     <string name="sectionSelectorNext">PRÓXIMO</string>
     <string name="event_overview">Detalhes</string>
-    <string name="event_event">Evento</string>
     <string name="event_indicators">Indicadores</string>
     <string name="event_notes">Notas</string>
     <string name="complete_add_new"><![CDATA[Conclua e adicione novo]]></string>
@@ -519,7 +515,6 @@
     <string name="dashboard_menu_delete_tei">SUPRIMIR TEI</string>
     <string name="dashboard_menu_delete_enrollment">Suprimir somente inscrição</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
-    <string name="record_marked_for_deletion">Este registro está marcado para exclusão. Você não pode acessá-lo.</string>
     <string name="validation_url">Este url não é válido</string>
     <string name="uncomplete_authority_error">Você não tem autoridade para reabrir este evento</string>
     <string name="adjusting_form">Ajustando formulário...</string>
@@ -572,7 +567,6 @@
     <string name="value_required_but_not_provided">%s é obrigatório mas não foi fornecido.</string>
     <string name="polygon_captured">Polígono capturado</string>
     <string name="polygon">Poligono</string>
-    <string name="map_layers">Camadas do mapa</string>
     <!--endregion-->
 
     <string name="wrong_pattern">Não é um formato correto.</string>
@@ -666,10 +660,6 @@
     <string name="syncing_period_not_editable">O período de sincronização não é editável</string>
     <string name="sync_parameters_not_editable">Os parâmetros de sincronização não são editáveis</string>
     <string name="rv_no_editable">O número de valores reservados baixados não é editável</string>
-    <string name="dialog_layer_satellite">Mostrar vista de satélite</string>
-    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas tei</string>
-    <string name="dialog_layer_enrollment_coordinates">Mostrar coordenadas de inscrição</string>
-    <string name="dialog_layer_heatmap">Mostrar camada do mapa de calor</string>
     <string name="downloading">Baixando</string>
     <string name="filter_sync_synced">Sincronizado</string>
     <string name="filter_sync_not_synced">Não sincronizado</string>

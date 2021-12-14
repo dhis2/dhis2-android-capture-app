@@ -300,7 +300,7 @@
                     app:mapbox_uiAttributionGravity="top|start"
                     app:mapbox_uiLogoGravity="top|start" />
 
-                <org.dhis2.uicomponents.map.views.CarouselView
+                <org.dhis2.maps.views.CarouselView
                     android:id="@+id/map_carousel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

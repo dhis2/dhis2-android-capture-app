@@ -28,8 +28,8 @@ import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
+import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
-import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract

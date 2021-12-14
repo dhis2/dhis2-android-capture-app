@@ -10,12 +10,13 @@ import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
+import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType.EVENT
+import org.dhis2.commons.data.EventViewModelType.STAGE
+import org.dhis2.commons.data.EventViewModelType.values
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType.EVENT
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType.STAGE
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType.values
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 

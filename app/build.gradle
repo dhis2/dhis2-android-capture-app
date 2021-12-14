@@ -215,6 +215,7 @@ dependencies {
     implementation project(":dhis_android_analytics")
     implementation project(":form")
     implementation project(":commons")
+    implementation project(":dhis2_android_maps")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -269,21 +270,9 @@ dependencies {
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
     //endregion
 
-    //region GOOGLE AUTO VALUE
-    // Google's auto-value. Annotations are used only during compilation time, as well as
-    // annotation processor which hoops up into compilation process
-    api "com.google.auto.value:auto-value:${libraries.autovalue}"
-    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
-
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-    //endregion
-
-    //region Mapbox
-    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:${libraries.mapboxsdk}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:${libraries.mapboxmarkerview}"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}"
     //endregion
 
     //region Analytics
