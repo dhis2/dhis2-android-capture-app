@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
+import org.dhis2.commons.data.SearchTeiModel
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Assert.assertTrue
 import org.junit.Test
