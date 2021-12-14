@@ -112,8 +112,8 @@ class FormTest: BaseTest() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_OPTION_GROUP, SHOW_OPTION_POSITION)
-            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION)
-            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION)
+            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
+            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
         }
 
         formRobot {
