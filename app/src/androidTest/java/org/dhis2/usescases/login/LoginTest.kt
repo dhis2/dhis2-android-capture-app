@@ -31,10 +31,6 @@ class LoginTest : BaseTest() {
     @get:Rule
     val mainRule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    override fun getPermissionsToBeAccepted(): Array<String> {
-        return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    }
-
     override fun setUp() {
         super.setUp()
         setupMockServer()
