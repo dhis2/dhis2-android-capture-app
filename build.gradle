@@ -4,7 +4,6 @@ buildscript {
     repositories {
         google()
         mavenLocal()
-        jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
@@ -31,7 +30,17 @@ apply from: 'buildsystem/dependencies.gradle'
 allprojects {
     repositories {
         google()
-        jcenter()
+        jcenter() {
+            content {
+                includeModule('de.adorsys.android', 'securestoragelibrary')
+                includeModule('com.facebook.flipper', 'flipper-leakcanary-plugin')
+                includeModule('com.andrognito.pinlockview', 'pinlockview')
+                includeModule('me.toptas.fancyshowcase', 'fancyshowcaseview')
+                includeModule('org.matomo.sdk', 'tracker')
+                includeModule('com.journeyapps', 'zxing-android-embedded')
+                includeGroup('co.infinum')
+            }
+        }
         mavenCentral()
         maven {
             url 'https://maven.google.com'
