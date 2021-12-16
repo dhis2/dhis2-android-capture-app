@@ -96,11 +96,12 @@ class FormRepositoryImpl(
         return itemList
             .applyRuleEffects()
             .mergeListWithErrorFields(itemsWithError)
-            .setOpenedSection()
-            .setFocusedItem()
-            .setLastItem().also {
+            .also {
                 calculateCompletionPercentage(it)
             }
+            .setOpenedSection()
+            .setFocusedItem()
+            .setLastItem()
     }
 
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
