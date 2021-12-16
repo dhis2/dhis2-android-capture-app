@@ -33,7 +33,6 @@ allprojects {
         jcenter() {
             content {
                 includeModule('de.adorsys.android', 'securestoragelibrary')
-                includeModule('com.facebook.flipper', 'flipper-leakcanary-plugin')
                 includeModule('com.andrognito.pinlockview', 'pinlockview')
                 includeModule('me.toptas.fancyshowcase', 'fancyshowcaseview')
                 includeModule('org.matomo.sdk', 'tracker')
