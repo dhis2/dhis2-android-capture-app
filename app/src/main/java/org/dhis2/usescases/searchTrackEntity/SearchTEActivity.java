@@ -157,6 +157,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram, getContext())).inject(this);
 
+        formView = new FormView.Builder()
+                .persistence(formRepository)
+                .locationProvider(locationProvider)
+                .onItemChangeListener(action -> {
+                    fieldViewModelFactory.fieldProcessor().onNext(action);
+                    presenter.populateList(null);
+                    return Unit.INSTANCE;
+                })
+                .needToForceUpdate(true)
+                .factory(getSupportFragmentManager())
+                .build();
+
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
@@ -183,16 +195,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(liveAdapter);
         }
 
-        formView = new FormView.Builder()
-                .persistence(formRepository)
-                .locationProvider(locationProvider)
-                .onItemChangeListener(action -> {
-                    fieldViewModelFactory.fieldProcessor().onNext(action);
-                    presenter.populateList(null);
-                    return Unit.INSTANCE;
-                })
-                .needToForceUpdate(true)
-                .build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();

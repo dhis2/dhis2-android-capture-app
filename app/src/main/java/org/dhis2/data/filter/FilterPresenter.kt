@@ -35,7 +35,7 @@ class FilterPresenter @Inject constructor(
         program: Program,
         textFilter: TextFilter?
     ): EventQueryCollectionRepository {
-       return eventProgramFilterSearchHelper.getFilteredEventRepository(program, textFilter)
+        return eventProgramFilterSearchHelper.getFilteredEventRepository(program, textFilter)
     }
 
     fun filteredEventProgram(

@@ -511,7 +511,6 @@ public class CustomTextView extends FieldLayout {
         if (viewModel.url() != null){
             description = description + "\n" + viewModel.url()  ;
         }
-
         setDescription(description);
         setText(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());

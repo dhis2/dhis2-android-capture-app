@@ -535,4 +535,7 @@ class EnrollmentPresenterImpl(
     fun disableConfErrorMessage() {
         showConfigurationError = false
     }
+
+    fun getEventStage(eventUid: String) =
+        enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
 }

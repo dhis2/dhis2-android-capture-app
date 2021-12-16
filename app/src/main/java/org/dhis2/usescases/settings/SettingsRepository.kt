@@ -12,6 +12,7 @@ import org.dhis2.data.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.data.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.service.SyncResult
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -52,7 +53,10 @@ class SettingsRepository(
                 !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
                 dataHasErrors(),
                 dataHasWarning(),
-                generalSettings?.dataSync() == null
+                generalSettings?.dataSync() == null,
+                prefs.getString(Constants.SYNC_RESULT, null)?.let {
+                    SyncResult.valueOf(it)
+                }
             )
         )
     }

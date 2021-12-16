@@ -23,12 +23,11 @@ class EventListPresenter(
     private  var textFilter: TextFilter = TextFilter("","")
     private val filterFlowable: FlowableProcessor<FilterManager> =  filterManager.asFlowableProcessor()
 
+
     fun init() {
         disposable.add(
             filterFlowable.startWith(filterManager)
-                .map {
-                    eventRepository.filteredProgramEvents(textFilter)
-                }
+                .map { eventRepository.filteredProgramEvents(textFilter) }
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.setLiveData(it) },
@@ -48,7 +47,6 @@ class EventListPresenter(
                     Timber::e
                 )
         );
-
     }
 
     fun program(): Program {

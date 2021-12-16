@@ -73,6 +73,7 @@ public class Constants {
     public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
     public static final String ENROLLMENT_STATUS = "ENROLLMENT_STATUS";
 
+    public static final String SYNC_RESULT = "sync_result";
     public static final String LAST_DATA_SYNC = "last_data_sync";
     public static final String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
     public static final String LAST_META_SYNC = "last_meta_sync";

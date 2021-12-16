@@ -69,7 +69,6 @@ class EventCapturePresenterTest {
                 false,
                 "any",
                 null,
-                null,
                 null
             )
         )

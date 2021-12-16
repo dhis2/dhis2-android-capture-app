@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -253,6 +254,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         return editText.isEnabled();
     }
 
+    public void setBackgroundColor(@ColorInt int color) {
+        inputLayout.setBackgroundColor(color);
+    }
+
     public void setViewModel(SpinnerViewModel viewModel) {
         this.viewModel = viewModel;
         if (binding == null) {
@@ -264,7 +269,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         setValue(viewModel.value());
         setWarning(viewModel.warning(), viewModel.error());
         setLabel(viewModel.getFormattedLabel());
-
         String description = viewModel.description();
 
         if (viewModel.url() != null){
@@ -272,7 +276,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         }
 
         setDescription(description);
-
         setOnClickListener(this);
     }
 }

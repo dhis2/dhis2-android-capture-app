@@ -128,7 +128,6 @@ class ProgramEventDetailPresenterTest {
         whenever(
             repository.filteredEventsForMap()
         ) doReturn Flowable.just(mapData)
-
         presenter.init()
         verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)

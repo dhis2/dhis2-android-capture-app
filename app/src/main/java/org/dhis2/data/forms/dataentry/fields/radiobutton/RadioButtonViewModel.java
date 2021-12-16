@@ -60,7 +60,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, null,false, url, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString()) || value.toLowerCase(Locale.US).equals(Value.NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, null,false, url, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, DataEntryViewHolderTypes.YES_NO, processor, null,false,url, mandatory, type, renderingType, isBackgroundTransparent, isSearchMode);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }

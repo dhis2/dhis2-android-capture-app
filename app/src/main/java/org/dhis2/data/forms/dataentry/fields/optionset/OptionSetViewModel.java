@@ -47,7 +47,8 @@ public abstract class OptionSetViewModel extends FieldViewModel {
                                             String renderType,
                                             ValueTypeDeviceRendering fieldRendering,
                                             FlowableProcessor<RowAction> processor,
-                                            List<Option> options,  String url) {
+                                            List<Option> options,
+                                            String url) {
 
         return new AutoValue_OptionSetViewModel(
                 id,

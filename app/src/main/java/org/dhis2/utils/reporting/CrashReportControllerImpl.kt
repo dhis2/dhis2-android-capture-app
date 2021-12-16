@@ -22,11 +22,11 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
     }
 
     override fun logException(exception: Exception) {
-        Sentry.captureException(exception)
+//        Sentry.captureException(exception)
     }
 
     override fun logMessage(message: String) {
-        Sentry.captureMessage(message)
+//        Sentry.captureMessage(message)
     }
 
     companion object {

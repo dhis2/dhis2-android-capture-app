@@ -61,7 +61,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         }
 
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, processor, null,false, url, hint, lines,
+                value, section, null, editable, null, description, objectStyle, fieldMask, DataEntryViewHolderTypes.EDIT_TEXT, processor, null,false , url, hint, lines,
                 InputType.TYPE_CLASS_TEXT, valueType, null, null, renderType, isBackgroundTransparent, isSearchMode, fieldRendering, legendValue, keyboardActionType);
     }
 

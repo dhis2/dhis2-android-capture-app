@@ -20,7 +20,7 @@ interface SyncPresenter {
 
     void syncReservedValues();
 
-    boolean checkSyncStatus();
+    SyncResult checkSyncStatus();
 
     Observable<D2Progress> syncGranularEvent(String eventUid);
 
@@ -44,9 +44,9 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataSetComplete(String dataSetUid);
 
-    boolean checkSyncEventStatus(String uid);
+    SyncResult checkSyncEventStatus(String uid);
 
-    boolean checkSyncTEIStatus(String uid);
+    SyncResult checkSyncTEIStatus(String uid);
 
     boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period);
 

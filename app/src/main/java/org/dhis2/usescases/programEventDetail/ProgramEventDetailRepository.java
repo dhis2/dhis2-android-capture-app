@@ -21,8 +21,7 @@ import io.reactivex.Single;
 
 public interface ProgramEventDetailRepository {
 
-    @NonNull
-    LiveData<PagedList<EventViewModel>> filteredProgramEvents( TextFilter textFilter);
+    LiveData<PagedList<EventViewModel>> filteredProgramEvents(TextFilter textFilter);
 
     @NonNull
     Flowable<ProgramEventMapData> filteredEventsForMap();

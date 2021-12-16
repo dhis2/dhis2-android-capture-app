@@ -30,42 +30,42 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_OrgUnitViewModel(uid(), label(), true, value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(),  isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(),  isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(),  isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(),  isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),activated(), url(),  isBackgroundTransparent(), renderType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withFocus(boolean isFocused) {
         return new AutoValue_OrgUnitViewModel(uid(), label(), mandatory(), value(), programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),isFocused, url(), isBackgroundTransparent(), renderType());
+                allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, DataEntryViewHolderTypes.ORG_UNIT, processor(), style(),isFocused, url(),  isBackgroundTransparent(), renderType());
     }
 
     @Override

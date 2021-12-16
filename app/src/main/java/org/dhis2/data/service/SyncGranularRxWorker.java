@@ -54,33 +54,11 @@ public class SyncGranularRxWorker extends RxWorker {
                 })
                         .onErrorReturn(error -> Result.failure());
             case TEI:
-                return Single.fromObservable(presenter.syncGranularTEI(uid)).map(d2Progress -> {
-                    if (!presenter.checkSyncTEIStatus(uid)) {
-                        List<TrackerImportConflict> trackerImportConflicts =
-                                presenter.messageTrackerImportConflict(uid);
-                        List<String> mergeDateConflicts = new ArrayList<>();
-                        for (TrackerImportConflict conflict : trackerImportConflicts) {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTimeInMillis(conflict.created().getTime());
-                            String date = DateUtils.databaseDateFormat().format(calendar.getTime());
-                            mergeDateConflicts.add(
-                                    date + "/" + conflict.displayDescription());
-                        }
-                        Data data = new Data.Builder().putStringArray("conflict",
-                                mergeDateConflicts.toArray(new String[mergeDateConflicts.size()])).build();
-                        return Result.failure(data);
-                    }
-                    return Result.success();
-                })
+                return Single.fromObservable(presenter.syncGranularTEI(uid)).map(d2Progress -> checkTEISyncStatusResult(uid))
                         .onErrorReturn(error -> Result.failure());
             case EVENT:
                 return Single.fromObservable(presenter.syncGranularEvent(uid))
-                        .map(d2Progress -> {
-                            if (!presenter.checkSyncEventStatus(uid))
-                                return Result.failure();
-
-                            return Result.success();
-                        })
+                        .map(d2Progress -> checkEventSyncStatusResult(uid))
                         .doOnError(Timber::e)
                         .onErrorReturn(error -> Result.failure());
             case DATA_SET:
@@ -106,5 +84,49 @@ public class SyncGranularRxWorker extends RxWorker {
                 return Single.just(Result.failure());
         }
 
+    }
+
+    private Result checkEventSyncStatusResult(String uid) {
+        switch (presenter.checkSyncEventStatus(uid)) {
+            case ERROR:
+                return Result.failure();
+            case INCOMPLETE:
+                Data data;
+                data = new Data.Builder().putStringArray(
+                        "conflict",
+                        new String[]{"INCOMPLETE"}
+                ).build();
+                return Result.failure(data);
+            default:
+                return Result.success();
+        }
+    }
+
+    private Result checkTEISyncStatusResult(String uid) {
+        Data data;
+        switch (presenter.checkSyncTEIStatus(uid)) {
+            case ERROR:
+                List<TrackerImportConflict> trackerImportConflicts =
+                        presenter.messageTrackerImportConflict(uid);
+                List<String> mergeDateConflicts = new ArrayList<>();
+                for (TrackerImportConflict conflict : trackerImportConflicts) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(conflict.created().getTime());
+                    String date = DateUtils.databaseDateFormat().format(calendar.getTime());
+                    mergeDateConflicts.add(
+                            date + "/" + conflict.displayDescription());
+                }
+                data = new Data.Builder().putStringArray("conflict",
+                        mergeDateConflicts.toArray(new String[mergeDateConflicts.size()])).build();
+                return Result.failure(data);
+            case INCOMPLETE:
+                data = new Data.Builder().putStringArray(
+                        "conflict",
+                        new String[]{"INCOMPLETE"}
+                ).build();
+                return Result.failure(data);
+            default:
+                return Result.success();
+        }
     }
 }

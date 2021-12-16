@@ -26,14 +26,13 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventFilter;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -68,7 +67,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public LiveData<PagedList<EventViewModel>> filteredProgramEvents( TextFilter textFilter) {
+    public LiveData<PagedList<EventViewModel>> filteredProgramEvents(TextFilter textFilter) {
         DataSource<Event, EventViewModel> dataSource = filterPresenter
                 .filteredEventProgram(program().blockingFirst(),textFilter)
                 .getDataSource()
@@ -208,7 +207,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Single<ProgramStage> programStage(){
         return d2.programModule().programStages().byProgramUid().eq(programUid).one().get();
     }
-
 
     @NonNull
     @Override
