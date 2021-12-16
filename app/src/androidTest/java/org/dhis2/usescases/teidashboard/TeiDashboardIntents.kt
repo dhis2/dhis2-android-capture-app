@@ -33,6 +33,8 @@ private const val TEI_UID_VALUE_TO_EDIT_EVENT = "PQfMcpmXeFE"
 private const val ENROLLMENT_VALUE_TO_EDIT_EVENT = "Yf47yST5FF2"
 private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV"
 private const val ENROLLMENT_VALUE_TO_ENROLL = "CCBLMntFuzb"
+private const val TEI_UID_VALUE_ANALYTICS = "wsk89u7zquT"
+private const val ENROLLMENT_UID_VALUE_ANALYTICS = "ITyaPVATEwc"
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(
     rule: ActivityTestRule<TeiDashboardMobileActivity>
@@ -102,6 +104,12 @@ fun prepareTeiToEnrollToOtherProgramAndLaunchActivity(
     rule: ActivityTestRule<TeiDashboardMobileActivity>
 ) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_ENROLL, ENROLLMENT_VALUE_TO_ENROLL, rule)
+}
+
+fun prepareTeiForAnalyticsAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+){
+    startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_ANALYTICS, ENROLLMENT_UID_VALUE_ANALYTICS, rule)
 }
 
 fun startTeiDashboardActivity(

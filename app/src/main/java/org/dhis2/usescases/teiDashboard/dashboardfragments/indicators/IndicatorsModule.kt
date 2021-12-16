@@ -1,54 +1,57 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
-import androidx.annotation.NonNull
 import dagger.Module
 import dagger.Provides
+import dhis2.org.analytics.charts.Charts
 import org.dhis2.data.dagger.PerFragment
-import org.dhis2.data.forms.FormRepository
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @PerFragment
 @Module
 class IndicatorsModule(
     val programUid: String,
-    val teiUid: String,
-    val view: IndicatorsView
+    val recordUid: String,
+    val view: IndicatorsView,
+    private val visualizationType: VisualizationType
 ) {
 
     @Provides
     @PerFragment
     fun providesPresenter(
-        d2: D2,
-        dashboardRepository: DashboardRepository,
-        ruleEngineRepository: RuleEngineRepository,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
+        indicatorRepository: IndicatorRepository
     ): IndicatorsPresenter {
-        return IndicatorsPresenter(
-            d2,
-            programUid, teiUid,
-            dashboardRepository,
-            ruleEngineRepository,
-            schedulerProvider, view
-        )
+        return IndicatorsPresenter(schedulerProvider, view, indicatorRepository)
     }
 
     @Provides
     @PerFragment
-    fun ruleEngineRepository(
-        @NonNull formRepository: FormRepository,
-        d2: D2
-    ): RuleEngineRepository {
-        var enrollmentRepository = d2.enrollmentModule()
-            .enrollments().byTrackedEntityInstance().eq(teiUid)
-        if (programUid.isNotEmpty()) {
-            enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
+    fun provideRepository(
+        d2: D2,
+        ruleEngineRepository: RuleEngineRepository,
+        charts: Charts?,
+        resourceManager: ResourceManager
+    ): IndicatorRepository {
+        return if (visualizationType == VisualizationType.TRACKER) {
+            TrackerAnalyticsRepository(
+                d2,
+                ruleEngineRepository,
+                charts,
+                programUid,
+                recordUid,
+                resourceManager
+            )
+        } else {
+            EventIndicatorRepository(
+                d2,
+                ruleEngineRepository,
+                programUid,
+                recordUid,
+                resourceManager
+            )
         }
-
-        val uid = enrollmentRepository.one().blockingGet().uid()
-        return EnrollmentRuleEngineRepository(formRepository, uid, d2)
     }
 }

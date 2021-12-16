@@ -1,0 +1,74 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">Erro</string>
+    <string name="add_new">Adicionar novo</string>
+    <string name="add">Adicionar</string>
+    <string name="user_hint">Utilizador</string>
+    <string name="password_hint">Password</string>
+    <string name="account_recovery">Recuperar Conta</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Diário</string>
+    <string name="WEEKLY">Semanal</string>
+    <string name="MONTHLY">Mensal</string>
+    <string name="YEARLY">Anual</string>
+    <string name="action_share_zero_items">Partilhar</string>
+    <!-- Input hints -->
+    <string name="search">Pesquisar</string>
+    <string name="read_only">Apenas leitura</string>
+    <string name="complete">Completo</string>
+    <string name="state_error">Erro</string>
+    <!--Event initial-->
+    <string name="create">Criar</string>
+    <string name="update">Actualizar</string>
+    <string name="date">Data</string>
+    <string name="category_option">Opcções de categorias</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <!--DataSet initial-->
+    <string name="report_period">Período de relatório</string>
+    <string name="due_date">Data de vencimento</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Apagar</string>
+    <string name="done_task">Origem</string>
+    <string name="wipe_data_no">Cancelar</string>
+    <string name="SYNC_MANAGER">Configurações</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Pesquisar</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Data do relatório</string>
+    <string name="hint_month">Meses</string>
+    <string name="hint_year">Anos</string>
+    <string name="date_dialog_clear">Limpar</string>
+    <string name="period">Período</string>
+    <string name="next">Próximo</string>
+    <string name="SAVE">Salvar</string>
+    <string name="button_ok">Aprovado</string>
+    <string name="qr_attributes">Atributos</string>
+    <string name="about">Acerca</string>
+    <string name="share">Partilhar</string>
+    <string name="max">Máx</string>
+    <string name="current">Corrente</string>
+    <string name="warning_on_complete_title">Advertência</string>
+    <string name="error_on_complete_title">Erro</string>
+    <string name="save">Salvar</string>
+    <string name="menu_home">Origem</string>
+    <string name="qr_data_values">Valor de Dados</string>
+    <string name="dashboard_indicators">Indicadores</string>
+    <string name="event_overview">Detalhes</string>
+    <string name="event_indicators">Indicadores</string>
+    <string name="please_wait">Por favor aguarde...</string>
+    <string name="state_warning">Advertência</string>
+    <string name="action_close">Fechar</string>
+    <string name="data_every_day">Diário</string>
+    <string name="data_every_week">Semanal</string>
+    <string name="sms_bar_state_sent">Enviar</string>
+    <string name="polygon">Poligono</string>
+    <string name="filters_title_period">Período</string>
+    <string name="filters_title_status">Estado</string>
+    <string name="filter_period_today">Hoje</string>
+    <string name="filter_period_yesterday">Ontém</string>
+    <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_period_last_month">Mês passado</string>
+    <string name="filter_period_other">Outro</string>
+    </resources>

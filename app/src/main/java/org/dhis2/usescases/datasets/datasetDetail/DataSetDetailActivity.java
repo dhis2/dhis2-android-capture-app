@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -10,27 +8,25 @@ import android.transition.TransitionManager;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.orgunitselector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.utils.filters.FilterItem;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
 import java.util.List;
 
@@ -70,7 +66,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         adapter = new DataSetDetailAdapter(presenter);
 
-        ViewExtensionsKt.clipWithRoundedCorners(binding.recycler, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
     }
 
@@ -80,11 +76,11 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         presenter.init();
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
+        presenter.setOpeningFilterToNone();
         presenter.onDettach();
         super.onPause();
     }
@@ -94,7 +90,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.programProgress.setVisibility(View.GONE);
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
-            binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
         if (datasets.size() == 0) {
             binding.emptyData.setVisibility(View.VISIBLE);
@@ -104,15 +99,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             binding.recycler.setVisibility(View.VISIBLE);
             adapter.setDataSets(datasets);
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            filtersAdapter.notifyDataSetChanged();
-            updateFilters(filterManager.getTotalFilters());
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -131,6 +117,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         initSet.applyTo(binding.backdropLayout);
 
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
+        ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
     }
 
     @Override
@@ -146,8 +133,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void openOrgUnitTreeSelector() {
-        Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
-        startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+        OUTreeFragment.Companion.newInstance(true).show(getSupportFragmentManager(), "OUTreeFragment");
     }
 
     @Override
@@ -161,11 +147,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     true
             );
         }
-    }
-
-    @Override
-    public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
-        filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
     }
 
     @SuppressLint("RestrictedApi")
@@ -232,5 +213,21 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                 getSupportFragmentManager(),
                 CategoryDialog.Companion.getTAG()
         );
+    }
+
+    @Override
+    public void setFilters(List<FilterItem> filterItems) {
+        filtersAdapter.submitList(filterItems);
+    }
+
+    @Override
+    public void hideFilters() {
+        binding.filter.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.clearFilterIfDatasetConfig();
+        super.onDestroy();
     }
 }

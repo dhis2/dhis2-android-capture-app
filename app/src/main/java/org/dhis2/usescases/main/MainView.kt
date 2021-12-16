@@ -27,6 +27,7 @@ package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 
 interface MainView : AbstractActivityContracts.View {
@@ -47,4 +48,8 @@ interface MainView : AbstractActivityContracts.View {
     fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest)
 
     fun goToHome()
+
+    fun setFilters(filters: List<FilterItem>)
+
+    fun hideFilters()
 }

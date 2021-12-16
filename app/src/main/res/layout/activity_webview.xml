@@ -19,10 +19,11 @@
 
             <ImageView
                 android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
+                style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="backToLogin"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -31,7 +32,7 @@
                 android:id="@+id/teiName"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:gravity="center_vertical"
                 android:text="@string/account_recovery"
                 android:textColor="?colorAccent"
@@ -46,6 +47,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

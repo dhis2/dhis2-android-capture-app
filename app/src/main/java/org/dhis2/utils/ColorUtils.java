@@ -245,6 +245,7 @@ public class ColorUtils {
         }
     }
 
+    /**/
     public static int getPrimaryColor(Context context, @NonNull ColorType colorType) {
 
         int id;

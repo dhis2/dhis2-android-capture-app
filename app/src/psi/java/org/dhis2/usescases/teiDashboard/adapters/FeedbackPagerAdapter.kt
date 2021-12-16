@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.adapters
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.FeedbackContentFragment
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.HnqisFeedbackFilter
@@ -8,9 +9,9 @@ import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.ProgramType
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.RdqaFeedbackMode
 
 class FeedbackPagerAdapter(
-    fragment: Fragment,
+    fragmentActivity: FragmentActivity,
     private val programType: ProgramType
-) : FragmentStateAdapter(fragment) {
+) : FragmentStateAdapter(fragmentActivity) {
 
     override fun createFragment(position: Int): Fragment {
         return if (programType == ProgramType.RDQA) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/feedback"
+        android:icon="@drawable/ic_feedback"
+        android:title="@string/dashboard_feedback" />
+    <item
+        android:id="@+id/deleteTei"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/dashboard_menu_delete_tei" />
+    <item
+        android:id="@+id/programSelector"
+        android:icon="@drawable/ic_program_border"
+        android:title="@string/program_selector" />
+</menu>

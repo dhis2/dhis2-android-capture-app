@@ -116,7 +116,6 @@
     <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
     <string name="event_was_deleted">Xóa sự kiện thành công</string>
     <string name="total">Tổng số</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Danh sách ghi danh</string>
     <string name="active_programs">Các chương trình đang hoạt động</string>
@@ -355,7 +354,6 @@
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="action_close">Đóng lại</string>
-    <string name="data_set_open">Mở</string>
     <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
     <string name="data_every_day">Hàng ngày</string>
     <string name="data_every_week">Hàng tuần</string>

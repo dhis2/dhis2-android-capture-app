@@ -7,7 +7,6 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -47,10 +46,9 @@ public class ProgramStageSelectionModule {
 
     @Provides
     @PerActivity
-    ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull RuleExpressionEvaluator evaluator,
-                                                                            RulesRepository rulesRepository,
+    ProgramStageSelectionRepository providesProgramStageSelectionRepository(RulesRepository rulesRepository,
                                                                             D2 d2) {
-        return new ProgramStageSelectionRepositoryImpl(evaluator, rulesRepository, programUid, enrollmentUid, eventCreationType, d2);
+        return new ProgramStageSelectionRepositoryImpl(rulesRepository, programUid, enrollmentUid, eventCreationType, d2);
     }
 
     @Provides

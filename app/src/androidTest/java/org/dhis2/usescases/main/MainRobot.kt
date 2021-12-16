@@ -4,15 +4,24 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.NavigationViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
+import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.usescases.about.AboutTest
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.main.program.ProgramModelHolder
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
@@ -68,10 +77,28 @@ class MainRobot : BaseRobot() {
         onView(withId(R.id.filterActionButton)).perform(click())
     }
 
+    fun openProgramByName(program: String){
+        onView(withId(R.id.program_recycler)).perform(actionOnItem<ProgramModelHolder>(
+            hasDescendant(withText(program)), click()))
+    }
+
+    fun openProgramByPosition(position: Int){
+        onView(withId(R.id.program_recycler)).perform(actionOnItemAtPosition<ProgramModelHolder>(position, click()))
+    }
+
     fun filterByPeriodToday() {
         onView(withId(R.id.filter)).perform(click())
         onView(withId(R.id.filterLayout))
         onView(withId(R.id.today)).perform(click())
+    }
+
+    fun checkItemsInProgram(position: Int, program: String, items: String) {
+        onView(withId(R.id.program_recycler))
+            .perform(scrollToPositionRecyclerview(position))
+            .check(matches(allOf(
+                hasDescendant(withText(program)),
+                hasDescendant(withText(items))
+            )))
     }
 
     companion object {

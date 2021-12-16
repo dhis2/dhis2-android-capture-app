@@ -10,6 +10,8 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.TeiMapManager
 
+const val HEATMAP_ICON = "HEATMAP_ICON"
+
 class HeatmapMapLayer(val style: Style) :
     MapLayer {
 
@@ -62,5 +64,9 @@ class HeatmapMapLayer(val style: Style) :
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return null
+    }
+
+    override fun getId(): String {
+        return layerId
     }
 }

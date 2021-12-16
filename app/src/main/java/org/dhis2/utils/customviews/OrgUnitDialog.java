@@ -35,7 +35,7 @@ public class OrgUnitDialog extends DialogFragment {
     DialogOrgunitBinding binding;
     AndroidTreeView treeView;
     boolean isMultiSelection = false;
-    static OrgUnitDialog instace;
+    static OrgUnitDialog instance;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
     private TreeNode.TreeNodeClickListener nodeClickListener;
@@ -46,14 +46,14 @@ public class OrgUnitDialog extends DialogFragment {
     private String programUid;
 
     public static OrgUnitDialog getInstace() {
-        if (instace == null) {
-            instace = new OrgUnitDialog();
+        if (instance == null) {
+            instance = new OrgUnitDialog();
         }
-        return instace;
+        return instance;
     }
 
     public OrgUnitDialog() {
-        instace = null;
+        instance = null;
         isMultiSelection = false;
         possitiveListener = null;
         negativeListener = null;
@@ -192,13 +192,13 @@ public class OrgUnitDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
-        instace = null;
+        instance = null;
         super.dismiss();
     }
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        instace = null;
+        instance = null;
         super.onCancel(dialog);
     }
 }

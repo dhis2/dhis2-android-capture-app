@@ -1,13 +1,10 @@
 package org.dhis2.utils.customviews;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
@@ -19,7 +16,6 @@ public abstract class FieldLayout extends RelativeLayout {
     protected boolean isBgTransparent;
     protected LayoutInflater inflater;
     protected String label;
-    protected OnActivation activationListener;
     protected ValueType valueType;
 
 
@@ -42,29 +38,10 @@ public abstract class FieldLayout extends RelativeLayout {
         inflater = LayoutInflater.from(context);
     }
 
-    @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-
-    }
-
     public void nextFocus(View view) {
         View nextView;
         if ((nextView = view.focusSearch(FOCUS_DOWN)) != null)
             nextView.requestFocus();
-    }
-
-    protected void activate() {
-        if (activationListener != null)
-            activationListener.onActivation();
-    }
-
-    public void setActivationListener(OnActivation onActivationListener) {
-        this.activationListener = onActivationListener;
-    }
-
-    public interface OnActivation {
-        void onActivation();
     }
 
     public void setEditable(boolean editable, View... views) {

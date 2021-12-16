@@ -1,6 +1,4 @@
-# Mobile Implementation Checklist
-
-<!--DHIS2-SECTION-ID:mobile-implementation-checklist-->
+# Mobile Implementation Checklist { #implementation_guide_checklist }
 
 | Task | Completed |
 | -------- | :---: |

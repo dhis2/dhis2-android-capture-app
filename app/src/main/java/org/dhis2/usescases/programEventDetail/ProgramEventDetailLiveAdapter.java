@@ -14,6 +14,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.program.Program;
 
+import kotlin.Pair;
 import kotlin.Unit;
 
 public class ProgramEventDetailLiveAdapter extends PagedListAdapter<EventViewModel, EventViewHolder> {
@@ -30,11 +31,11 @@ public class ProgramEventDetailLiveAdapter extends PagedListAdapter<EventViewMod
         }
     };
     private final Program program;
-    private ProgramEventDetailContract.Presenter presenter;
+    private ProgramEventDetailViewModel eventViewModel;
 
-    public ProgramEventDetailLiveAdapter(Program program, ProgramEventDetailContract.Presenter presenter) {
+    public ProgramEventDetailLiveAdapter(Program program, ProgramEventDetailViewModel eventViewModel) {
         super(DIFF_CALLBACK);
-        this.presenter = presenter;
+        this.eventViewModel = eventViewModel;
         this.program = program;
     }
 
@@ -46,12 +47,12 @@ public class ProgramEventDetailLiveAdapter extends PagedListAdapter<EventViewMod
         return new EventViewHolder(binding,
                 program,
                 eventUid -> {
-                    presenter.onSyncIconClick(eventUid);
+                    eventViewModel.getEventSyncClicked().setValue(eventUid);
                     return Unit.INSTANCE;
                 },
                 (s, view) -> Unit.INSTANCE,
                 (eventUid, orgUnitUid, eventStatus, view) -> {
-                    presenter.onEventClick(eventUid, orgUnitUid);
+                    eventViewModel.getEventClicked().setValue(new Pair<>(eventUid, orgUnitUid));
                     return Unit.INSTANCE;
                 }
         );

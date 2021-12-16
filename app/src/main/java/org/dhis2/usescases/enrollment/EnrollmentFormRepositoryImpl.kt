@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
-import org.hisp.dhis.rules.RuleExpressionEvaluator
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEffect
@@ -37,7 +36,6 @@ import org.hisp.dhis.rules.models.TriggerEnvironment
 class EnrollmentFormRepositoryImpl(
     val d2: D2,
     rulesRepository: RulesRepository,
-    expressionEvaluator: RuleExpressionEvaluator,
     private val enrollmentRepository: EnrollmentObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     teiRepository: TrackedEntityInstanceObjectRepository
@@ -67,10 +65,9 @@ class EnrollmentFormRepositoryImpl(
                     enrollmentRepository.blockingGet().organisationUnit()!!
                 ),
                 Function5 { rules, variables, events, constants, supplData ->
-                    val builder = RuleEngineContext.builder(expressionEvaluator)
+                    val builder = RuleEngineContext.builder()
                         .rules(rules)
                         .ruleVariables(variables)
-                        .calculatedValueMap(HashMap())
                         .supplementaryData(supplData)
                         .constantsValue(constants)
                         .build().toEngineBuilder()
@@ -280,7 +277,7 @@ class EnrollmentFormRepositoryImpl(
             }.toFlowable()
     }
 
-    override fun getOptionsFromGroups(optionGroupUids: ArrayList<String>): List<String> {
+    override fun getOptionsFromGroups(optionGroupUids: List<String>): List<String> {
         val optionsFromGroups = arrayListOf<String>()
         val optionGroups = d2.optionModule().optionGroups()
             .withOptions()

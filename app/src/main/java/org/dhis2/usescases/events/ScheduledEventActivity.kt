@@ -97,7 +97,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding.programStage = programStage
         binding.dateLayout.hint =
             programStage.executionDateLabel() ?: getString(R.string.report_date)
-        binding.dueDateLayout.hint = getString(R.string.due_date)
+        binding.dueDateLayout.hint = programStage.dueDateLabel() ?: getString(R.string.due_date)
 
         if (programStage.hideDueDate() == true) {
             binding.dueDateLayout.visibility = View.GONE

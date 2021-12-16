@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -52,6 +53,6 @@ class DataValueModule(
     @Provides
     @PerFragment
     fun valueStore(d2: D2): ValueStore {
-        return ValueStoreImpl(d2, dataSetUid, DataEntryStore.EntryMode.DV)
+        return ValueStoreImpl(d2, dataSetUid, DataEntryStore.EntryMode.DV, DhisEnrollmentUtils(d2))
     }
 }

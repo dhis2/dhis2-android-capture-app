@@ -11,7 +11,7 @@ class SectionHandler {
         } else {
             var finalPosition = NO_POSITION
             positionLoop@ for (sectionPosition in sectionPositions) {
-                if (sectionPosition < visiblePosition) {
+                if (sectionPosition <= visiblePosition) {
                     finalPosition = sectionPosition
                 } else {
                     break@positionLoop

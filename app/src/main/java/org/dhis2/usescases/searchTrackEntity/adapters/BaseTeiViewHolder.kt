@@ -39,6 +39,7 @@ abstract class BaseTeiViewHolder(
         binding.apply {
             overdue = teiModel.isHasOverdue
             isOnline = teiModel.isOnline
+            orgUnit = teiModel.enrolledOrgUnit
             teiSyncState = teiModel.tei.state()
             attribute = teiModel.attributeValues.values.toList()
             attributeNames = teiModel.attributeValues.keys
@@ -74,7 +75,8 @@ abstract class BaseTeiViewHolder(
                 adapterPosition,
                 teiModel.isAttributeListOpen,
                 teiModel.sortingKey,
-                teiModel.sortingValue
+                teiModel.sortingValue,
+                teiModel.enrolledOrgUnit
             ) {
                 attributeVisibilityCallback()
             }
@@ -87,10 +89,10 @@ abstract class BaseTeiViewHolder(
 
     private fun showAttributeList() {
         binding.attributeBName.visibility = View.GONE
-        binding.attributeCName.visibility = View.GONE
+        binding.enrolledOrgUnit.visibility = View.GONE
         binding.sortingFieldName.visibility = View.GONE
         binding.entityAttribute2.visibility = View.GONE
-        binding.entityAttribute3.visibility = View.GONE
+        binding.entityOrgUnit.visibility = View.GONE
         binding.sortingFieldValue.visibility = View.GONE
         binding.attributeList.visibility = View.VISIBLE
     }
@@ -98,10 +100,10 @@ abstract class BaseTeiViewHolder(
     private fun hideAttributeList() {
         binding.attributeList.visibility = View.GONE
         binding.attributeBName.visibility = View.VISIBLE
-        binding.attributeCName.visibility = View.VISIBLE
+        binding.enrolledOrgUnit.visibility = View.VISIBLE
         binding.sortingFieldName.visibility = View.VISIBLE
         binding.entityAttribute2.visibility = View.VISIBLE
-        binding.entityAttribute3.visibility = View.VISIBLE
+        binding.entityOrgUnit.visibility = View.VISIBLE
         binding.sortingFieldValue.visibility = View.VISIBLE
     }
 }

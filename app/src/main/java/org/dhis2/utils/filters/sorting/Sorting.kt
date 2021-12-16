@@ -1,17 +1,17 @@
 package org.dhis2.utils.filters.sorting
 
 import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.FiltersAdapter
+import org.dhis2.utils.filters.ProgramType
 
 class Sorting {
 
     companion object {
         @JvmStatic
-        fun getSortingOptions(programType: FiltersAdapter.ProgramType) =
+        fun getSortingOptions(programType: ProgramType) =
             when (programType) {
-                FiltersAdapter.ProgramType.EVENT -> eventsSorting()
-                FiltersAdapter.ProgramType.TRACKER -> trackerSearchSorting()
-                FiltersAdapter.ProgramType.DASHBOARD -> trackerDashboardSorting()
+                ProgramType.EVENT -> eventsSorting()
+                ProgramType.TRACKER -> trackerSearchSorting()
+                ProgramType.DASHBOARD -> trackerDashboardSorting()
                 else -> emptyList()
             }
 

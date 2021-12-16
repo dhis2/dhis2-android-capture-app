@@ -7,6 +7,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -15,14 +16,18 @@ import androidx.databinding.ObservableBoolean;
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.handler.SelectionHandler;
 
+import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.Validator;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
+
+import java.util.Map;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -36,6 +41,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     private TableView tableView;
     FlowableProcessor<RowAction> processor;
+    private Map<ValueType, Validator> validators;
+    private Validator validator;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
@@ -48,7 +55,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            selectNext();
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                selectNext();
+            } else {
+                editText.clearFocus();
+                closeKeyboard(editText);
+                tableView.getSelectionHandler().clearSelection();
+            }
             return true;
         });
 
@@ -72,6 +85,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 tableView.scrollToColumnPosition(getAdapterPosition(), DEFAULT_CELL_OFFSET);
             }
         });
+
+        validators = ((Components) binding.getRoot().getContext().getApplicationContext()).appComponent().injectValidators();
     }
 
 
@@ -104,11 +119,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION) {
             closeKeyboard(editText);
             editText.clearFocus();
-        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow() && editTextModel.editable())
             setSelected(SelectionState.SELECTED);
     }
 
     private void setInputType(ValueType valueType) {
+
+        this.validator = validators.get(valueType);
 
         editText.setFilters(new InputFilter[]{});
         editText.setFocusable(true);
@@ -222,21 +239,21 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_negative_number));
                         return false;
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) >= 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                    if (validator.validate(editText.getText().toString()))
                         return true;
                     else {
                         editText.setError(editText.getContext().getString(R.string.invalid_possitive));
@@ -256,6 +273,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                         editText.setError(editText.getContext().getString(R.string.invalid_percentage));
                         return false;
                     }
+                case INTEGER:
+                case NUMBER:
+                    if (validator.validate(editText.getText().toString()))
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.formatting_error));
+                        return false;
+                    }
                 default:
                     return true;
             }
@@ -269,7 +294,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     public void selectNext() {
         editText.clearFocus();
-        closeKeyboard(editText);
 
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
@@ -288,13 +312,15 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
-            editText.post(() -> openKeyboard(editText));
+            openKeyboard(editText);
+        } else if (!editTextModel.editable()) {
+            closeKeyboard(editText);
         }
     }
 
     @Override
     public void handleClickIfNeeded() {
-        if(editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT){
+        if (editTextModel != null && editTextModel.valueType() == ValueType.LONG_TEXT) {
             showEditDialog();
         }
     }

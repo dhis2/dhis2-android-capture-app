@@ -1,4 +1,4 @@
-# Choosing an MDM/EMM
+# Choosing an MDM/EMM { #mdm_choosing }
 
 When deciding which MDM solution to choose it is important to define which set of features will be considered as required and which ones as nice to have. This can vary a lot between implementations; however, we have identified some features as mandatory in the list below due to the nature of DHIS2. While this can be reviewed depending on the implementation, these should be considered as our recommendation.
 
@@ -52,7 +52,7 @@ Nice to have features and their reason:
 
     Some DHIS2 implementations might require the devices to be used by several users (even two DHIS2 users). User management functionality can increase the level of security in this scenario, as each user could have different access codes, allowing multi user accounts for DHIS2 Android Capture App (currently not natively supported), several application policies per user, etc.
 
-## Initial Price and Running Costs
+## Initial Price and Running Costs { #mdm_choosing_initial_price }
 
 One of the critical factors that projects will face while deciding if they want to implement an MDM is the initial price and the running costs. An MDM can bring unexpected costs so it is recommended to evaluate the need and include its costs as early as possible in the definition of the project and budget.
 
@@ -63,7 +63,7 @@ Most of the MDM solutions presented in the following sections include a monthly 
 3. Most of the solutions offer different packages as a pricing model, if the solution will mainly (or only) be used to manage the DHIS2 application (installation and update) the usage will be minimal so choosing the cheapest alternative will most probably suffice.
 4. Due to the nature of most of the projects (health in developing countries, NGO, education, etc) many MDM providers will probably be able to offer a discount. Negotiating before choosing a solution is highly recommended as while writing this document many providers showed interest and already offered better deals than the announced on their sites.
 
-## BYOD / Corporate device
+## BYOD / Corporate device { #mdm_choosing_byod }
 
 Another key factor while deciding which MDM/EMM to use is to consider if the deployment will include a BYOD (Bring Your Own Device) policy or will only work with corporate devices. This might be a critical factor as most of the MDM will differentiate in policies that can be applied to these two types of devices. Many DHIS2 implementations are based on corporate-only devices, but in some implementations a mixed BYOD-Corporate or even a full BYOD device policy could be possible.
 

@@ -37,13 +37,13 @@
 
             <ImageView
                 android:id="@+id/backArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="@dimen/default_start_margin"
-                app:srcCompat="@drawable/ic_arrow_back"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -54,8 +54,8 @@
                 android:gravity="center_vertical"
                 android:text='@{title}'
                 android:textColor="?colorAccent"
-                app:layout_constraintStart_toEndOf="@id/backArrow"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                app:layout_constraintStart_toEndOf="@id/backArrow"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="TEI NAME" />
 
@@ -65,9 +65,9 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                app:layout_constraintEnd_toEndOf="@id/search_filter_general"
+                android:padding="2dp"
                 app:layout_constraintBottom_toBottomOf="@id/search_filter_general"
-                android:padding="2dp">
+                app:layout_constraintEnd_toEndOf="@id/search_filter_general">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -95,12 +95,12 @@
             <ImageView
                 android:id="@+id/relationshipMapIcon"
                 style="@style/ActionIcon"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_map"
-                android:visibility="gone"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -134,11 +134,25 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline25"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".25" />
+
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layout_constraintGuide_percent=".50" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline75"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".75" />
 
         <FrameLayout
             android:id="@+id/tei_main_view"
@@ -149,45 +163,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            style="@style/DhisTabLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:tabTextAppearance="@style/DhisTabText" />
-
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/tei_table_pager"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/navigationBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+            android:id="@+id/navigationBar"
+            style="@style/DhisBottomNavigationView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/dotsIndicator" />
-
-        <TextView
-            android:id="@+id/sectionTitle"
-            android:textColor="@color/colorGreyDefault"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/tab_layout"
-            tools:text="Relationships" />
-
-        <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
-            android:id="@+id/dotsIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:dotsColor="?colorPrimary"
-            app:dotsSize="14dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/sectionTitle" />
+            app:layout_constraintEnd_toEndOf="@id/guideline75"
+            app:layout_constraintStart_toStartOf="@id/guideline25"
+            app:menu="@menu/navigation_dashboard_landscape_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

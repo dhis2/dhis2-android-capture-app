@@ -23,6 +23,18 @@
             name="fieldHint"
             type="String" />
 
+        <variable
+            name="focus"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="legend"
+            type="org.dhis2.form.model.LegendValue" />
+
+        <variable
+            name="keyboardActionType"
+            type="org.dhis2.form.model.KeyboardActionType" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,25 +44,16 @@
         android:paddingTop="12dp"
         android:paddingBottom="12dp">
 
-        <View
-            android:id="@+id/dummyFocusView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            android:focusable="true"
-            app:layout_constraintStart_toStartOf="parent"
-            android:focusableInTouchMode="true" />
-
         <ImageView
             android:id="@+id/renderImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
@@ -61,15 +64,16 @@
             android:layout_height="wrap_content"
             android:text="@{label}"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="@string/lorem" />
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
@@ -82,19 +86,22 @@
             app:tint="?colorPrimary" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            android:layout_marginHorizontal="12dp"
+            android:id="@+id/textContainer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@id/legendLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
-                android:theme="@style/loginInputText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{fieldHint}'
+                android:theme="@style/loginInputText"
                 tools:hint="hint">
 
                 <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
@@ -102,24 +109,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
-                    android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
-                    android:textSize="@dimen/form_edit_text_size"
                     android:textIsSelectable="true"
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:requestFocus="@{focus}"
+                    app:setImeOption="@{keyboardActionType}"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:padding="10dp"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:src="@drawable/ic_form_email"/>
+                tools:src="@drawable/ic_form_email"
+                tools:visibility="visible" />
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/legendLabel"
+            android:layout_width="0dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="12dp"
+            app:legendBadge="@{legend}"
+            app:layout_constraintBottom_toBottomOf="@id/textContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.5"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -110,7 +110,9 @@ class MapTeisToFeatureCollection(
         featureMap: HashMap<String?, ArrayList<Feature>>
     ) {
         val point = mapPointToFeature.map(geometry, bounds)?.first
-        point?.addTeiEnrollmentInfo(searchTeiModel)?.also { featureMap[ENROLLMENT]!!.add(it) }
+        point?.addTeiEnrollmentInfo(searchTeiModel)?.also {
+            featureMap[ENROLLMENT]!!.add(it)
+        }
     }
 
     private fun mapToPolygonEnrollment(
@@ -119,12 +121,12 @@ class MapTeisToFeatureCollection(
         featureMap: HashMap<String?, ArrayList<Feature>>
     ) {
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
-        polygon?.addTeiEnrollmentInfo(searchTeiModel)
-            ?.also { featureMap[ENROLLMENT]!!.add(polygon) }
+        polygon?.addTeiEnrollmentInfo(searchTeiModel)?.also {
+            featureMap[ENROLLMENT]!!.add(polygon)
+        }
 
         val polygonPoint = mapPolygonPointToFeature.map(geometry)
-        polygonPoint?.let {
-            it.addStringProperty(TEI_UID, searchTeiModel.tei.uid())
+        polygonPoint?.addTeiEnrollmentInfo(searchTeiModel)?.also {
             featureMap[ENROLLMENT]!!.add(it)
         }
     }
@@ -133,8 +135,7 @@ class MapTeisToFeatureCollection(
         searchTeiModel.tei.geometry() != null
 
     private fun teiEnrollmentHasCoordinates(searchTeiModel: SearchTeiModel) =
-        searchTeiModel.selectedEnrollment != null &&
-            searchTeiModel.selectedEnrollment.geometry() != null
+        searchTeiModel.selectedEnrollment?.geometry() != null
 
     companion object {
         const val TEI = "TEIS_SOURCE_ID"

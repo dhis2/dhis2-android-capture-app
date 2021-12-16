@@ -29,19 +29,16 @@ package org.dhis2.usescases.orgunitselector
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 
-@PerActivity
 @Module
 class OUTreeModule(
     private val view: OUTreeView
 ) {
 
     @Provides
-    @PerActivity
     internal fun providesPresenter(
         ouTreeRepository: OUTreeRepository,
         schedulerProvider: SchedulerProvider,
@@ -56,7 +53,6 @@ class OUTreeModule(
     }
 
     @Provides
-    @PerActivity
     internal fun providesOUTreeRepository(d2: D2): OUTreeRepository {
         return OUTreeRepository(d2)
     }

@@ -4,7 +4,7 @@ import javax.inject.Inject
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.sorting.FilteredOrgUnitResult
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummaryCollectionRepository
-import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.search.EventQueryCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
 
@@ -31,7 +31,16 @@ class FilterPresenter @Inject constructor(
         return dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
     }
 
-    fun filteredEventProgram(program: Program): EventCollectionRepository {
+    fun filteredEventProgram(
+        program: Program,
+        textFilter: TextFilter?
+    ): EventQueryCollectionRepository {
+       return eventProgramFilterSearchHelper.getFilteredEventRepository(program, textFilter)
+    }
+
+    fun filteredEventProgram(
+        program: Program
+    ): EventQueryCollectionRepository {
         return eventProgramFilterSearchHelper.getFilteredEventRepository(program)
     }
 

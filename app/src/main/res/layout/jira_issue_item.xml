@@ -7,63 +7,73 @@
 
         <variable
             name="issue"
-            type="org.dhis2.utils.jira.JiraIssue" />
+            type="org.dhis2.data.jira.JiraIssue" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/jiraCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="10dp">
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:rippleColor="@color/rippleColor">
 
-        <TextView
-            android:id="@+id/key"
-            style="@style/TextSecondary"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{issue.key}"
-            android:textSize="12sp"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="ANDROAPP-XXXX" />
+            android:paddingStart="5dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/summary"
-            style="@style/TextPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@{issue.fields.summary}"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@id/arrow"
-            app:layout_constraintTop_toBottomOf="@id/key"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="@string/lorem" />
+            <TextView
+                android:id="@+id/key"
+                style="@style/TextSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{issue.key}"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="ANDROAPP-XXXX" />
 
-        <TextView
-            android:id="@+id/status"
-            style="@style/TextSecondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:text="@{issue.fields.status.name}"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@id/arrow"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Done" />
+            <TextView
+                android:id="@+id/summary"
+                style="@style/TextPrimary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{issue.fields.summary}"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@id/arrow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/key"
+                tools:text="@string/lorem" />
 
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_keyboard_arrow_right_black" />
+            <TextView
+                android:id="@+id/status"
+                style="@style/TextSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@{issue.fields.status.name}"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@id/arrow"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Done" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_keyboard_arrow_right_black"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

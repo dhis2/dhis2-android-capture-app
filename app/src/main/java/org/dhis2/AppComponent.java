@@ -1,5 +1,8 @@
 package org.dhis2;
 
+import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
+import org.dhis2.data.location.LocationModule;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -11,10 +14,18 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
+import org.dhis2.utils.Validator;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
+import org.dhis2.utils.filters.FilterModule;
+import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
+import org.hisp.dhis.android.core.common.ValueType;
+
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -25,8 +36,16 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class,
-        MatomoAnalyticsModule.class
+        AppModule.class,
+        SchedulerModule.class,
+        AnalyticsModule.class,
+        PreferenceModule.class,
+        WorkManagerModule.class,
+        MatomoAnalyticsModule.class,
+        ValidatorModule.class,
+        CrashReportModule.class,
+        LocationModule.class,
+        FilterModule.class
 })
 public interface AppComponent {
 
@@ -42,11 +61,23 @@ public interface AppComponent {
 
         Builder workManagerController(WorkManagerModule workManagerModule);
 
+        Builder crashReportModule(CrashReportModule crashReportModule);
+
         AppComponent build();
     }
 
+    Map<ValueType, Validator> injectValidators();
+
+    CrashReportController injectCrashReportController();
+
     PreferenceProvider preferenceProvider();
+
     WorkManagerController workManagerController();
+
+    MatomoAnalyticsController matomoController();
+
+    LocationProvider locationProvider();
+
     //injection targets
     void inject(App app);
 

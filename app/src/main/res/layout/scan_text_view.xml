@@ -27,6 +27,10 @@
             name="initialValue"
             type="java.lang.String" />
 
+        <variable
+            name="focus"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,15 +63,16 @@
             android:layout_height="wrap_content"
             android:text="@{label}"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="@string/lorem" />
 
         <ImageView
             android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
@@ -92,8 +97,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:theme="@style/loginInputText"
-                android:hint="@string/scan_code">
+                android:hint="@string/scan_code"
+                android:theme="@style/loginInputText">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
@@ -101,8 +106,9 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:singleLine="true"
-                    tools:text="111-111-111"
-                    android:textSize="@dimen/form_edit_text_size" />
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:requestFocus="@{focus}"
+                    tools:text="111-111-111" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -115,13 +121,11 @@
 
             <ImageView
                 android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ActionIcon"
                 android:visibility="gone"
-                android:padding="11dp"
-                tools:visibility="visible"
                 app:srcCompat="@drawable/ic_close"
-                app:tint="@color/colorGreyDefault" />
+                app:tint="@color/colorGreyDefault"
+                tools:visibility="visible" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -13,8 +13,6 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -56,7 +54,6 @@ public class SyncMetadataWorker extends Worker {
 
     @NonNull
     @Override
-    @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
         if (((App) getApplicationContext()).userComponent() != null) {
 
@@ -83,17 +80,11 @@ public class SyncMetadataWorker extends Worker {
                 if (!NetworkUtils.isOnline(getApplicationContext()))
                     noNetwork = true;
                 if (e instanceof D2Error) {
-                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e))
-                            .append("\n\n")
-                            .append(errorStackTrace(((D2Error) e).originalException()).split("\n\t")[0])
-                            .append("\n\n")
-                            .append(errorStackTrace(e).split("\n\t")[0]);
+                    D2Error error = (D2Error) e;
+                    message.append(composeErrorMessageInfo(error));
                 } else if (e.getCause() instanceof D2Error) {
-                    message.append(D2ErrorUtils.getErrorMessage(getApplicationContext(), e.getCause()))
-                            .append("\n\n")
-                            .append(errorStackTrace(((D2Error) e.getCause()).originalException()).split("\n\t")[0])
-                            .append("\n\n")
-                            .append(e.toString().split("\n\t")[0]);
+                    D2Error error = (D2Error) e.getCause();
+                    message.append(composeErrorMessageInfo(error));
                 } else {
                     message.append(e.toString().split("\n\t")[0]);
                 }
@@ -127,14 +118,52 @@ public class SyncMetadataWorker extends Worker {
                 .build();
     }
 
-    private String errorStackTrace(@Nullable Exception exception){
-        if(exception == null)
+    private String errorStackTrace(@Nullable Exception exception) {
+        if (exception == null)
             return "";
         Writer writer = new StringWriter();
         exception.printStackTrace(new PrintWriter(writer));
         return writer.toString();
     }
 
+    private StringBuilder composeErrorMessageInfo(D2Error error) {
+        StringBuilder builder = new StringBuilder("Cause: ")
+                .append(D2ErrorUtils.getErrorMessage(getApplicationContext(), error))
+                .append("\n\n")
+                .append("Exception: ")
+                .append(errorStackTrace((error).originalException()).split("\n\t")[0])
+                .append("\n\n");
+
+        if (error.created() != null) {
+            builder.append("Created: ")
+                    .append(error.created().toString())
+                    .append("\n\n");
+        }
+
+        if (error.httpErrorCode() != null) {
+            builder.append("Http Error Code: ")
+                    .append(error.httpErrorCode())
+                    .append("\n\n");
+        }
+
+        if (error.errorComponent() != null) {
+            builder.append("Error component: ")
+                    .append(error.errorComponent())
+                    .append("\n\n");
+        }
+
+        if (error.url() != null) {
+            builder.append("Url: ")
+                    .append(error.url())
+                    .append("\n\n");
+        }
+
+        builder.append("StackTrace: ")
+                .append(errorStackTrace(error).split("\n\t")[0])
+                .append("\n\n");
+
+        return builder;
+    }
 
     private void triggerNotification(String title, String content, int progress) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

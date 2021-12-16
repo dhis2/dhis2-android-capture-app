@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="legend"
+            type="org.dhis2.form.model.LegendValue" />
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="26dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/data_element_legend_background"
+        android:drawablePadding="5dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingStart="5dp"
+        android:paddingEnd="13dp"
+        android:text="@{legend.label}"
+        android:textColor="@color/textPrimary"
+        android:textSize="10sp"
+        app:legendValue="@{legend}"
+        app:drawableStartCompat="@drawable/data_element_legend_badge"
+        tools:text="Good level" />
+</layout>

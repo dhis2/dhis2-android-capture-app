@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Há um erro de configuração do tipo de programa no programa atual. Revise o programa no servidor e execute a configuração de sincronização</string>
     <string name="unexpected_error_message">Ocorreu um erro inesperado. Revise sua configuração ou entre em contato com seu administrador</string>
     <string name="feedback_show_only_failed">Mostrar apenas falhou</string>
+    <string name="feedback_url">"Veja o feedback completo em:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Por indicador"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Por área técnicaa"</string>
+    <string name="feedback_tab_hnqis_all">"Todos"</string>
+    <string name="feedback_tab_hnqis_critical">"Crítico"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Não Crítico"</string>
+    <string name="feedback_malformed_error">"**Erro**: feedback malformado para o elemento de dados %s"</string>
+    <string name="feedback_error">"Erro"</string>
+    <string name="feedback_warning">"Atenção"</string>
+    <string name="feedback_order_with_spaces">"fim de feedback com espaços no elemento de dados %s"</string>
+    <string name="feedback_order_invalid">"fim de feedback inválida no elemento de dados %s"</string>
+    <string name="feedback_order_duplicate">"duplicado ordem realimentação nos elementos de dados %s"</string>
+    <string name="feedback_order_gap">"fase programa %s contém lacunas ordem realimentação"</string>
+    <string name="feedback_share_conducted">"Avaliação realizada em"</string>
+    <string name="feedback_share_assessment_type">"Tipo de avaliação"</string>
 </resources>

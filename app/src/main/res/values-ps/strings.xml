@@ -1,0 +1,115 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">تېروته</string>
+    <string name="sync_events">پېښې</string>
+    <string name="add_new">د نویو مالوماتو ورعلاوه کول</string>
+    <string name="add">اضافه یې کړئ</string>
+    <string name="schedule_new">د نویو مهالوېش وټاکئ</string>
+    <string name="referral">مراجعه</string>
+
+    <string name="user_hint">کارېدونکی نوم</string>
+    <string name="password_hint">پټنوم</string>
+    <string name="account_recovery">حساب بېرته ترلاسه کړئ</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">ورځني [ د مودې ډول ]</string>
+    <string name="WEEKLY">اوونیز</string>
+    <string name="MONTHLY">میاشتنۍ</string>
+    <string name="YEARLY">کلنۍ</string>
+    <string name="action_accept">د منلو وړ</string>
+    <string name="action_share_zero_items">شریک یې کړئ</string>
+    <!-- Input hints -->
+    <string name="search">جستجو</string>
+    <string name="event_open">خلاص یې کړئ</string>
+    <string name="read_only">یوازې یې ولولئ</string>
+    <string name="complete">بشپړ یې کړئ</string>
+    <string name="completed">بشپړ شوی</string>
+    <string name="cancelled">لغوه شوی</string>
+    <string name="state_error">تېروته</string>
+    <!--Event initial-->
+    <string name="create">جوړ یې کړئ</string>
+    <string name="update">تجدید یا نوي یې کړئ</string>
+    <string name="date">نېټه</string>
+    <string name="category_option">د کټګورۍ غوروی</string>
+    <string name="latitude">لېټېټيوډ</string>
+    <string name="longitude">لانګېټيوډ</string>
+    <string name="new_event">نوې پېښه</string>
+    <!--DataSet initial-->
+    <string name="report_period">د راپور ورکولو موده</string>
+    <!--Event Detail-->
+    <string name="event_date">د پېښې نېټه</string>
+    <string name="due_date">ټاکلې نېټه</string>
+    <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="delete">خذف یې کړئ</string>
+    <string name="total">ټولټال</string>
+    <string name="active_programs">فعال پروګرامونه</string>
+    <string name="enroll">نوم لیکنه یا شمولیت</string>
+    <string name="deactivate">غېرې فعال یې کړئ</string>
+    <string name="done_task">کور پاڼه</string>
+    <string name="wipe_data_ok">د منلو وړ</string>
+    <string name="wipe_data_no">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="SYNC_MANAGER">تنظیمات</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">د نوم ثبتونې نېټه</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">جستجو</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">د راپور نېټه</string>
+    <string name="add_note">نوټ ور اضافه کړئ</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">ورځې</string>
+    <string name="hint_month">میاشت</string>
+    <string name="hint_year">کلونه</string>
+    <string name="week">اونۍ</string>
+    <string name="incident_date">د پېښې نېټه</string>
+    <string name="date_dialog_clear">پاک یې کړئ</string>
+    <string name="period">معیاد</string>
+    <string name="next">راتلونکی</string>
+    <string name="SAVE">ثبت یې کړئ [ ژباړه - ثبت کړئ ]</string>
+    <string name="button_ok">سم دی</string>
+    <string name="qr_events">پېښې</string>
+    <string name="qr_relationships">اړیکې</string>
+    <string name="about">په هکله</string>
+    <string name="share">شریک یې کړئ</string>
+    <string name="max">حداعظم</string>
+    <string name="current">اوسنۍ</string>
+    <string name="warning_on_complete_title">خبرداری</string>
+    <string name="error_on_complete_title">تېروته</string>
+    <string name="save">ثبت یې کړئ [ ژباړه - ثبت کړئ ]</string>
+    <string name="menu_home">کور پاڼه</string>
+    <string name="dashboard_relationships">اړیکې</string>
+    <string name="dashboard_indicators">شاخصونه</string>
+    <string name="dashboard_notes">یادداښتونه</string>
+    <string name="event_overview">جزیات [ ژباړه ـ جزیات ]</string>
+    <string name="event_event">پېښه</string>
+    <string name="event_indicators">شاخصونه</string>
+    <string name="event_notes">یادداښتونه</string>
+    <string name="please_wait">لطفاً صبر وکړئ</string>
+    <string name="skip">ترې تېر شئ</string>
+    <string name="reschedule">د مهالوېش له سره ټاکل</string>
+    <string name="event_overdue">ځنډول</string>
+    <string name="table">جدول</string>
+    <string name="local_data_accept">د منلو وړ</string>
+    <string name="state_warning">خبرداری</string>
+    <string name="action_close">بند یې کړئ</string>
+    <string name="unsupported_value_type">د ارزښت نه منل کېدونکی ډول</string>
+    <string name="data_every_day">ورځني [ د مودې ډول ]</string>
+    <string name="data_every_week">اوونیز</string>
+    <string name="period_week">اونۍ</string>
+    <string name="sms_completed">بشپړ شوی</string>
+    <string name="sms_bar_state_sending">دوام لري</string>
+    <string name="sms_bar_state_sent">لېږل شوي</string>
+    <string name="sms_bar_state_failed">ناکام شوي</string>
+
+    <string name="filters_title_period">معیاد</string>
+    <string name="filters_title_status">وضعیت</string>
+    <string name="filter_period_today">نن ورځ</string>
+    <string name="filter_period_yesterday">پرونۍ ورځ</string>
+    <string name="filter_period_this_week">هفته هذا</string>
+    <string name="filter_period_last_week">تېره اونۍ</string>
+    <string name="filter_period_this_month">ماه هذا</string>
+    <string name="filter_period_last_month">تېره میاشت</string>
+    <string name="filter_period_other">نور</string>
+    </resources>

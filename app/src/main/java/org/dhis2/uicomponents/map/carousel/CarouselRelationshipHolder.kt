@@ -15,7 +15,8 @@ class CarouselRelationshipHolder(
     val binding: ItemCarouselRelationshipBinding,
     private val currentTei: String,
     val delete: (String) -> Boolean,
-    val clickListener: (String) -> Boolean
+    val clickListener: (String) -> Boolean,
+    val onNavigate: (teiUid: String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<RelationshipUiComponentModel> {
@@ -61,6 +62,10 @@ class CarouselRelationshipHolder(
                 binding.fromRelationshipName.visibility = View.GONE
             }
         }
+
+        binding.mapNavigateFab.setOnClickListener {
+            onNavigate(data.to.teiUid ?: "")
+        }
     }
 
     private fun setImage(tei: TeiMap, target: ImageView) {
@@ -70,5 +75,13 @@ class CarouselRelationshipHolder(
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(target)
+    }
+
+    override fun showNavigateButton() {
+        binding.mapNavigateFab.show()
+    }
+
+    override fun hideNavigateButton() {
+        binding.mapNavigateFab.hide()
     }
 }

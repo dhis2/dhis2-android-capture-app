@@ -8,25 +8,40 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
+
+        <variable
+            name="filterItem"
+            type="org.dhis2.utils.filters.CatOptionComboFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:background="?colorPrimary">
+        android:background="@color/filter_alpha"
+        android:visibility="gone"
+        app:clipAllCorners="@{8}"
+        app:expand_view="@{filterItem.openFilter == filterItem.type}"
+        app:request_layout="@{filterItem}"
+        tools:visibility="visible">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_top_straight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_bottom_straight"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/orgUnitSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:elevation="1dp"
-            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toTopOf="parent">
 
             <RelativeLayout
@@ -36,7 +51,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_search"
-                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -44,40 +58,26 @@
                     android:id="@+id/catOptCombText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:text="@string/select_option"
                     android:gravity="center_vertical"
+                    android:onClick="@{()->filterItem.showDialog()}"
                     android:paddingStart="16dp"
-                    tools:visibility="visible" />
+                    android:paddingEnd="16dp"
+                    android:text="@string/select_option" />
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/catOptCombSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:visibility="gone" />
             </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/catCombOptRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#32000000"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
-            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout">
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout"
+            app:withCatComboFilterAdapter="@{true}"
+            tools:listitem="@layout/item_selected_ou_filter" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/catCombOptRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_selected_ou_filter" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

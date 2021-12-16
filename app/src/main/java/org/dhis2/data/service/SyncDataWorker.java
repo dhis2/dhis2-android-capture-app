@@ -12,8 +12,6 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -48,7 +46,6 @@ public class SyncDataWorker extends Worker {
 
     @NonNull
     @Override
-    @AddTrace(name = "DataSyncTrace")
     public Result doWork() {
 
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);

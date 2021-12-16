@@ -16,7 +16,6 @@ class SearchSortingValueSetter(
     private val d2: D2,
     val unknownLabel: String,
     private val eventDateLabel: String,
-    private val orgUnitLabel: String,
     private val enrollmentStatusLabel: String,
     private val enrollmentDateDefaultLabel: String,
     private val uiDateFormat: String,
@@ -28,10 +27,11 @@ class SearchSortingValueSetter(
         sortingItem: SortingItem?
     ): Pair<String, String>? {
         val sortingKeyValue: Pair<String, String>?
-        return if (sortingItem != null) {
+        return if (
+            sortingItem != null && sortingItem.filterSelectedForSorting != Filters.ORG_UNIT
+        ) {
             sortingKeyValue = when (sortingItem.filterSelectedForSorting) {
                 Filters.PERIOD -> getTeiSortedEvent(teiModel, sortingItem.sortingStatus)
-                Filters.ORG_UNIT -> getTeiSortedOrgUnit(teiModel)
                 Filters.ENROLLMENT_DATE -> getTeiSortedEnrollmentDate(teiModel)
                 Filters.ENROLLMENT_STATUS -> getTeiSortedStatus(teiModel)
                 else -> Pair(unknownLabel, unknownLabel)
@@ -73,19 +73,6 @@ class SearchSortingValueSetter(
                 .format(sortedDate)
         }
         return Pair(eventDateLabel, eventDate)
-    }
-
-    private fun getTeiSortedOrgUnit(teiModel: SearchTeiModel): Pair<String, String>? {
-        val orgUnitValue: String? = if (teiModel.selectedEnrollment != null) {
-            d2.organisationUnitModule().organisationUnits()
-                .uid(teiModel.selectedEnrollment.organisationUnit())
-                .blockingGet().displayName()
-        } else {
-            d2.organisationUnitModule().organisationUnits()
-                .uid(teiModel.tei.organisationUnit())
-                .blockingGet().displayName()
-        }
-        return Pair(orgUnitLabel, orgUnitValue ?: unknownLabel)
     }
 
     private fun getTeiSortedStatus(teiModel: SearchTeiModel): Pair<String, String>? {

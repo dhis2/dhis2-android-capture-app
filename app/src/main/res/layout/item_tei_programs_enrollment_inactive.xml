@@ -120,7 +120,7 @@
                 android:layout_weight="0.4"
                 android:alpha="0.5"
                 android:contentDescription='@{enrollment.uid()}'
-                android:tint="@color/colorGreyDefault"
+                app:tint="@color/colorGreyDefault"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>
 

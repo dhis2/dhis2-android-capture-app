@@ -40,16 +40,12 @@ class MapGeometryToFeatureTest {
     @Test
     fun `Should map single point to feature`() {
         val geometry = GeometryHelper.createPointGeometry(listOf(longitudePoint, latitudePoint))
-        val boundsGeometry = BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
-        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
-            featurePoint,
-            boundsGeometry
-        )
+        whenever(pointMapper.map(geometry)) doReturn featurePoint
 
         val featureResult =
-            mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
+            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
 
         val property = featureResult?.getStringProperty(EVENT)
         val pointResult = featureResult?.geometry() as Point
@@ -66,16 +62,13 @@ class MapGeometryToFeatureTest {
                 listOf(longitude2Polygon, latitude2Polygon)
             )
         )
-        val boundsGeometry = BoundsGeometry()
+
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val featurePolygon = createFeaturePolygon()
-        whenever(polygonMapper.map(geometry, boundsGeometry)) doReturn Pair(
-            featurePolygon,
-            boundsGeometry
-        )
+        whenever(polygonMapper.map(geometry)) doReturn featurePolygon
 
         val featureResult =
-            mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
+            mapGeometryToFeature.map(geometry, mapOf(EVENT to EVENT_UID_VALUE))
 
         val property = featureResult?.getStringProperty(EVENT)
         val polygonResult = featureResult?.geometry() as Polygon
@@ -99,7 +92,10 @@ class MapGeometryToFeatureTest {
             boundsGeometry
         )
 
-        val result = mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
+        val result = mapGeometryToFeature.map(
+            geometry,
+            mapOf(EVENT to EVENT_UID_VALUE)
+        )
 
         assertEquals(result, null)
     }

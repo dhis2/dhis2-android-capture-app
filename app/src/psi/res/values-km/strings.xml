@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">មានកំហុសក្នុងការកំណត់រចនាសម្ព័ន្ធប្រភេទកម្មវិធីនៅក្នុងកម្មវិធីបច្ចុប្បន្ន។ សូមពិនិត្យមើលកម្មវិធីនៅក្នុងម៉ាស៊ីនមេនិងដើម្បីអនុវត្តការកំណត់រចនាសម្ព័ន្ធសមកាលកម្ម</string>
     <string name="unexpected_error_message">កំហុស​ដែល​មិន​រំពឹង​ទុក​បាន​កើត​ឡើង​។ ពិនិត្យមើលការកំណត់រចនាសម្ព័ន្ធឬទំនាក់ទំនងរបស់អ្នកជាមួយអ្នកគ្រប់គ្រងរបស់អ្នក</string>
     <string name="feedback_show_only_failed">បង្ហាញតែបរាជ័យ</string>
+    <string name="feedback_url">"មើលមតិប្រតិកម្មពេញលេញនៅ៖"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"ដោយសូចនាករ"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"តាមតំបន់បច្ចេកទេស"</string>
+    <string name="feedback_tab_hnqis_all">"ទាំងអស់"</string>
+    <string name="feedback_tab_hnqis_critical">"សំខាន់"</string>
+    <string name="feedback_tab_hnqis_non_critical">"មិនសំខាន់"</string>
+    <string name="feedback_malformed_error">"**កំហុស**៖ មតិប្រតិកម្មមិនត្រឹមត្រូវសម្រាប់ធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_error">"កំហុសក្នុងការ"</string>
+    <string name="feedback_warning">"ការព្រមាន"</string>
+    <string name="feedback_order_with_spaces">"មតិអ្នកបញ្ជាទិញដោយចន្លោះក្នុងធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_invalid">"គោលបំណងមតិអ្នកប្រើមិនត្រឹមត្រូវនៅក្នុងធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_duplicate">"មតិជាលំដាប់នៅក្នុងស្ទួនធាតុទិន្នន័យ %s"</string>
+    <string name="feedback_order_gap">"កម្មវិធីដំណាក់កាល %s បានមានចន្លោះគោលបំណងមតិអ្នកប្រើ"</string>
+    <string name="feedback_share_conducted">"ការវាយតំលៃធ្វើឡើងលើ"</string>
+    <string name="feedback_share_assessment_type">"ប្រភេទវាយតម្លៃ"</string>
 </resources>

@@ -143,13 +143,14 @@ class CategoryDialogPresenter(
                 catOptComboRepository.byDisplayName().like("%$textToSearch%")
         }
 
-        val dataSource =
-            catOptComboRepository
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .dataSource
-                .map { catOption -> catOptCombMapper.map(catOption) }
-
-        return createDataSource(dataSource)
+        return createDataSource(
+            CategoyOptionComboSource(
+                d2,
+                catOptComboRepository,
+                withAccessControl,
+                date
+            ).map { catOptionCombo -> catOptCombMapper.map(catOptionCombo) }
+        )
     }
 
     private fun filterByDate(options: MutableList<CategoryOption>): MutableList<CategoryOption>? {

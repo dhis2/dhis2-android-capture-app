@@ -27,10 +27,11 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
+                style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -38,7 +39,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
@@ -46,20 +47,8 @@
                 android:text="@string/reserved_value"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/filter"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="@string/reserved_value" />
-
-
-            <ImageView
-                android:id="@+id/moreOptions"
-                style="@style/ActionIcon"
-                android:onClick="showMoreOptions"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"

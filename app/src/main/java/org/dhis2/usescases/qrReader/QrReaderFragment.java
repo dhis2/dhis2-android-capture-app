@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -146,7 +147,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             isPermissionRequested = true;
             ActivityCompat.requestPermissions((MainActivity) context, new String[]{Manifest.permission.CAMERA}, 101);
         } else {
-            getAbstractActivity().finish();
+            ((MainActivity) getContext()).goToHome();
+            Toast.makeText(getContext(), getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
         }
     }
 

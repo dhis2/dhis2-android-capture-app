@@ -126,7 +126,7 @@ fun hasCompletedPercentage (percentage: Int): Matcher<View> {
         }
 
         override fun describeTo(description: Description) {
-            description.appendText("Has percentage")
+            description.appendText("There is difference in the percentage values")
         }
     }
 }

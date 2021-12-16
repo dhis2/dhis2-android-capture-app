@@ -1,0 +1,328 @@
+<resources>
+    <!--GENERAL-->
+    <string name="app_name">DHIS2</string>
+    <string name="logo_text">DHIS</string>
+    <string name="logo_number">2</string>
+    <!-- Warnings and error messages -->
+    <string name="error">Хатолик</string>
+    <plurals name="error_message">
+        <item quantity="other">Хатоликлар</item>
+    </plurals>
+    <string name="error_wrong_server_url">Сервер URLи нотўғри</string>
+    <string name="error_wrong_credentials">Нотўғри маълумот</string>
+    <string name="error_unexpected_error">Кутилмаган хатолик</string>
+    <string name="error_internal_server_error">Сервердаги ички хатолик</string>
+    <string name="yes">ҳа</string>
+    <string name="no">йўқ</string>
+    <string name="no_value">қиймат йўқ</string>
+    <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
+    <string name="no_reserved_values_connection">Сақланган бошқа қийматлар йўқ. Уларни тўлдириш учун тармоққа уланинг.</string>
+    <string name="errors">хатоликлар</string>
+    <string name="something_wrong">Нимадир нотўғри бажарилди</string>
+    <!-- SyncService strings: -->
+    <string name="sync_now">Ҳозир синхронлаштиринг</string>
+    <string name="sync_text">Сервер билан синхронлаш</string>
+    <string name="sync_title">Ҳозир синхронлаш</string>
+
+    <string name="sync_metadata">Метадата</string>
+    <string name="sync_events">Ҳодисалар</string>
+    <string name="sync_tei">Кузатувдаги объектлар</string>
+
+    <string name="sync_complete_title">Тугади</string>
+    <string name="sync_complete_text">Синхронлаш тугалланди</string>
+
+    <string name="sync_error_title">Синхронлашда хатолик</string>
+    <string name="sync_error_text">Синхронлаш пайтида хатолик юз берди. Илтимос, қайта уриниб кўринг</string>
+    <string name="metadata_sync_error">Синхронлаш пайтида хатолик юз берди. Агарда тармоққа уланган бўлсангиз, илтимос, қайта уриниб кўринг. Агарда хатолик такрорланса, администраторингизга мурожаат қилинг.</string>
+    <string name="data_sync_warning">ОГОҲЛАНТИРИШ: Маълумотларнинг аксарият қисми синхронлаштирилди. Лекин, баъзи зиддиятлар келиб чиқди. Конфигурацияни синхронланг ва қайтадан уриниб кўринг. Уларнинг синхронлаш ҳолатини текширинг: @ сифатида белгиланган дастурлар, TEIни ва ҳодиса/тадбирларни.</string>
+    <string name="data_sync_warning_program">ОГОҲЛАНТИРИШ: Маълумотларнинг аксарият қисми синхронлаштирилди. Лекин, баъзи зиддиятлар келиб чиқди. Конфигурацияни синхронланг ва қайтадан уриниб кўринг. Агар огоҳлантириш давом этса, уларнинг синхронлаш ҳолатини текширинг: @ сифатида белгиланган дастурлар, TEIни ва ҳодиса/тадбирларни.</string>
+    <string name="data_sync_error">ХАТОЛИК: Баъзи маълумотлар синхронланмади. Уларнинг синхронлаш ҳолатини текширинг: Дастурларнинг @ хатолик деб белгиланганларини, TEI ва ҳодиса/тадбирларда $\" деб белгиланган.</string>
+    <string name="data_sync_error_program">ХАТОЛИК: Баъзи маълумотлар синхронланмади. Уларнинг синхронлаш ҳолатини текширинг: TEI ва ҳодиса/тадбирларда $\" деб белгиланган.</string>
+
+    <string name="add_new">Янгисини қўшиш</string>
+    <string name="add">Қўшиш</string>
+    <string name="schedule_new">Янги режа (жадвал)</string>
+    <string name="referral">Йўналишларга</string>
+
+    <!-- Login -->
+    <string name="url_hint">Сервер URLи</string>
+    <string name="user_hint">Фойдаланувчи исми</string>
+    <string name="password_hint">Парол</string>
+    <string name="log_in_button">Кириш</string>
+    <string name="unlock_button">Сессия очиш</string>
+    <string name="syncing_configuration">Конфигурациянгиз синхронлашмоқда</string>
+    <string name="syncing_data_shortly">Маълумотларингиз тез орада синхронлаштирилади</string>
+    <string name="syncing_data">Маълумотларингиз синхронлашмоқда</string>
+    <string name="configuration_ready">Сизнинг янги конфигурациянгиз тайёр</string>
+    <string name="data_ready">Маълумотингиз тайёр</string>
+    <string name="configuration_sync_failed">Конфигурацияни синхронлаш амалга ошмади</string>
+    <string name="data_sync_failed">Маълумотларни синхронлаш амалга ошмади</string>
+    <string name="account_recovery">Аккаунтни тиклаш</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Кунлик</string>
+    <string name="WEEKLY">Ҳафталик</string>
+    <string name="MONTHLY">Ойлик</string>
+    <string name="YEARLY">Йиллик</string>
+    <string name="clear_filters">Фильтрларни тозалаш</string>
+    <string name="action_accept">Қабул қилинг</string>
+    <string name="action_share_zero_items">Баҳам кўриш</string>
+    <!-- Input hints -->
+    <string name="search">Қидириш</string>
+    <string name="enter_text">Матн киритинг</string>
+    <string name="enter_long_text">Узун матн киритинг</string>
+    <string name="enter_number">Сонни киритинг</string>
+    <string name="enter_integer">Бутун сон киритинг</string>
+    <string name="enter_negative_integer">Бутун манфий сон киритинг</string>
+    <string name="enter_positive_integer_or_zero">Бутун мусбат ёки ноль сонини киритинг</string>
+    <string name="enter_positive_integer">Мусбат сон киритинг</string>
+    <string name="filter_options">Фильтр вариантлари</string>
+    <string name="choose_date">Санани танланг</string>
+    <string name="change_calendar">Календардан танланг</string>
+
+    <!-- Status -->
+    <string name="program_completed">Дастур тугалланди</string>
+    <string name="program_inactive">Дастур нофаол</string>
+
+    <string name="event_open">Очиш</string>
+    <string name="event_completed">Тадбир тугалланди</string>
+    <string name="event_skipped">Тадбир ўтказиб юборилди</string>
+    <string name="event_schedule">Тадбир режаси</string>
+    <string name="event_expired">Тадбир муддати тугаган</string>
+    <string name="event_editing_expired">Таҳрирлаш муддати тугаган</string>
+    <string name="event_accepted">Тадбир қабул қилинган</string>
+    <string name="event_approved">Тадбир тасдиқланди</string>
+    <string name="event_inactive">Тадбир нофаол</string>
+    <string name="read_only">Фақат ўқиш учун</string>
+    <string name="complete">Тўлиқ</string>
+    <string name="finish_and_complete">Тайёр ва тўлиқ</string>
+    <string name="completed">Бажарилди</string>
+    <string name="cancelled">Бекор қилинди</string>
+    <string name="re_open">қайта очиш</string>
+    <string name="activate">Фаоллаштириш</string>
+    <string name="active">Фаол</string>
+
+    <!-- State -->
+    <string name="state_synced">Синхронлаш</string>
+    <string name="state_to_post">Юбориш учун</string>
+    <string name="state_to_update">Янгилаш учун</string>
+    <string name="state_to_delete">Ўчириш учун</string>
+    <string name="state_error">Хатолик</string>
+    <string name="action_sync">СИНХРОНЛАШ</string>
+    <string name="action_send">ЮБОРИШ</string>
+    <string name="action_sync_sms">СМСни СИНХРОНЛАШ</string>
+
+    <!--Completion-->
+    <string name="completion">Тугатиш</string>
+
+    <!--Event initial-->
+    <string name="create">Яратиш</string>
+    <string name="update">Янгилаш</string>
+    <string name="date">Сана</string>
+    <string name="org_unit">Ташкилий бўлим</string>
+    <string name="no_org_units">Танланган саналар учун очиқ Ташкилий бўлимлар мавжуд эмас. Илтимос, бошқа сана ёки бошқа Ташкилий бўлимни танланг.</string>
+    <string name="category_option">Категория вариантлари</string>
+    <string name="latitude">Кенглик</string>
+    <string name="longitude">Узунлик</string>
+    <string name="new_event">Янги тадбир</string>
+    <string name="failed_insert_event">Янги тадбирни киритиш амалга ошмади</string>
+    <string name="event_created">Тадбир яратилди</string>
+    <string name="event_updated">Тадбир янгиланди</string>
+    <string name="one_time">Бир марта</string>
+    <string name="permanent">Доимий</string>
+
+    <!--DataSet initial-->
+    <string name="report_period">Ҳисобот даври</string>
+    <string name="cat_option">Категория варианти</string>
+    <string name="field_required">Агар сиз қийматни ўрнатган бўлсангиз, маълумотлар тўпламини тўлдириш учун қатордаги барча қийматлар бўлиши лозим.</string>
+    <string name="field_mandatory">Баъзи зарурий қийматлар мавжуд эмас. Маълумотлар тўпламини тўлдириш учун сизга барча шарт бўлган қийматлар мавжуд бўлиши лозим.</string>
+    <string name="field_mandatory_v2">Шарт бўлган маълумотлар етишмаяпти. Маълумотлар тўпламини шакллантириш учун уларни тўлдиринг.</string>
+    <string name="datavalue_saved">Қиймат сақланди!</string>
+    <string name="there_is_no_available_period">Танлаш учун яроқли давр мавжуд эмас</string>
+    <!--Event Detail-->
+    <string name="event_date">Ҳодиса/Тадбир санаси</string>
+    <string name="due_date">Муддати</string>
+    <string name="cat_combo">Категория комбинацияси</string>
+    <string name="date_default">КК/ОО/ЙЙЙЙ</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="delete">Ўчириш</string>
+    <string name="delete_event">Тадбирни ўчиринг</string>
+    <string name="confirm_delete_event">Ҳақиқатдан ҳам ушбу ҳодиса/тадбирни ўчирмоқчимисиз?</string>
+    <string name="event_was_deleted">Тадбир муваффақиятли ўчирилди</string>
+    <string name="total">Жами</string>
+    <string name="most_recent_event_date">Охирги тадбир санаси</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Рўйхатга олинганлар рўйхати</string>
+    <string name="active_programs">Фаол дастурлар</string>
+    <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
+    <string name="enroll">Рўйхатдан ўтиш</string>
+    <string name="last_visit">Охирги ташриф</string>
+    <string name="apply">Мурожаат қилиш</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">Тафсилотларни кўринг</string>
+    <string name="view_more">КЎПРОҚ КЎРИШ</string>
+    <string name="edit">ТАҲРИРЛАШ</string>
+    <string name="enrolling_ou">OUга рўйхатга олиш</string>
+    <string name="follow_up">Кузатиб бориш</string>
+    <string name="follow_up_enabled">Кузатув ёқилган</string>
+    <string name="follow_up_disabled">Кузатув ўчирилган</string>
+    <string name="deactivate">Ўчириш</string>
+    <string name="program_not_allow_events">Ушбу дастур яна кўпроқ тадбирларни қабул қилмайди</string>
+
+    <!--DONE TASKS-->
+    <string name="events">ҳодиса/тадбирлар</string>
+    <string name="done_task">Уй</string>
+    <string name="app_info">Илова ҳақида маълумот</string>
+    <string name="log_out">Чиқиш</string>
+    <string name="block_session">Сессияни блоклаш</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">Жойни танланг</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 дақиқа</string>
+    <string name="fifteen_minute">15 дақиқа</string>
+    <string name="thirty_minutes">30 дақиқа</string>
+    <string name="a_hour">1 соат</string>
+    <string name="every_6_hours">6 соат</string>
+    <string name="a_day">1 кун (стандарт)</string>
+    <string name="every_12_hours">12 соат</string>
+    <string name="Automatic_Sync_Data">Маълумотларни автоматик синхронлаш, ҳар:</string>
+    <string name="Manual">Қўлланма</string>
+    <string name="Automatic_Sync_Metadata">Конфигурацияни автоматик синхронлаш, ҳар:</string>
+    <string name="a_week">1 ҳафта</string>
+    <string name="sync_max_parameters">Жорий синхронлаш параметрлари</string>
+    <string name="sync_default_parameters">Стандарт ҳолатга қайтиш</string>
+    <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
+    <string name="wipe_data_ok">Қабул қилинг</string>
+    <string name="wipe_data_no">Бекор қилиш</string>
+    <string name="SYNC_DATA">Маълумотларни синхронлаш, ҳозир</string>
+    <string name="SYNC_META">Конфигурацияни синхронланг, ҳозир</string>
+    <string name="SYNC_MANAGER">Созламалар</string>
+    <string name="refill_reserved_values">Тўлдириш</string>
+    <string name="settings_sms_module_title">СМС модуль:</string>
+    <string name="settings_sms_receiver_number">СМС йўлак</string>
+    <string name="settings_sms_result_sender_number">СМС натижаларини юборувчи</string>
+    <string name="settings_sms_result_timeout">СМС натижаларни юборишда вақтинча тўхташ</string>
+    <string name="settings_sms_result_timeout_hint">сониялар</string>
+    <string name="settings_sms_result_sender_hint">рақам</string>
+    <string name="settings_sms_receiver_number_hint">рақам</string>
+    <string name="settings_sms_module_switch">СМС юборишни ёқиш</string>
+    <string name="settings_sms_response_wait_switch">СМС натижалар тарқатилишини кутиш</string>
+    <string name="settings_sync_period">Синхронизация даври</string>
+    <string name="settings_limit_scope">Созламалар чекланган</string>
+    <string name="settings_limit_globally">Глобал миқёсда</string>
+    <string name="settings_limit_program">дастур бўйича</string>
+    <string name="settings_limit_ou">Ташкилий бирлик томонидан</string>
+    <string name="settings_limit_ou_program">Ташкилий бирлик ва дастур томонидан</string>
+    <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">Маълумотларни синхронлаш</string>
+    <string name="settingsSyncMetadata">Конфигурацияни синхронлаш</string>
+    <string name="settingsSyncParameters">Параметрларни синхронлаш</string>
+    <string name="settingsReservedValues">Олдиндан буюртирилган қийматлар</string>
+    <string name="settingsErrorLog">Синхронлашдаги хатолар журналини очинг</string>
+    <string name="settingsDeleteLocalData">Локал маълумотларни ўчириш</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Қабул қилинган сана</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Излаш</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Ҳисобот санаси</string>
+    <string name="add_note">Изоҳ қолдириш</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Кунлар</string>
+    <string name="hint_month">Ойлар</string>
+    <string name="hint_year">Йиллар</string>
+    <string name="week">Ҳафталар</string>
+    <string name="incident_date">Ҳодиса санаси</string>
+    <string name="date_dialog_clear">Аниқ</string>
+    <string name="period">давр</string>
+    <string name="tuto_main_1">DHIS2 га Хуш келибсиз</string>
+    <string name="next">Кейинги</string>
+    <string name="SAVE">Сақлаш</string>
+    <string name="qr_attributes">Аттрибутлар</string>
+    <string name="qr_events">Ҳодиса/Тадбирлар</string>
+    <string name="qr_relationships">Ўзаро алоқалар</string>
+    <string name="about">Ҳақида</string>
+    <string name="programs_to_enroll">Рўйхатга олиш дастурлари</string>
+    <string name="share">Баҳам кўриш</string>
+    <string name="max">Максимум</string>
+    <string name="current">Жорий</string>
+    <string name="warning_on_complete_title">Огоҳлантириш</string>
+    <string name="error_on_complete_title">Хато</string>
+    <string name="save">Сақлаш</string>
+    <string name="select_option">Вариант танланг</string>
+    <string name="menu_home">Уй</string>
+    <string name="relationships">ўзаро алоқалар</string>
+    <string name="qr_data_values">Маълумотларнинг қийматлари</string>
+    <string name="delete_local_data">Локал маълумотларни ўчириш</string>
+    <string name="dashboard_relationships">Ўзаро алоқалар</string>
+    <string name="dashboard_indicators">Кўрсатгичлар</string>
+    <string name="dashboard_notes">Изоҳлар</string>
+    <string name="event_overview">Тафсилотлари</string>
+    <string name="event_event">Ҳодиса/Тадбир</string>
+    <string name="event_indicators">Индикаторлар</string>
+    <string name="event_notes">Изоҳлар</string>
+    <string name="skip">Ўтказиб юбориш</string>
+    <string name="reschedule">Қайта режаланг</string>
+    <string name="event_overdue">Муддат ўтган</string>
+    <string name="table">Жадвал</string>
+    <string name="local_data_accept">Қабул қилинг</string>
+    <string name="login_server_info_title">Сервер URLи</string>
+    <string name="state_warning">Огоҳлантиришв</string>
+    <string name="action_close">Ёпиқ</string>
+    <string name="data_set_complete">Бажарилди</string>
+    <string name="data_set_open">Очиш</string>
+    <string name="data_every_day">Кунлик</string>
+    <string name="data_every_week">Ҳафталик</string>
+    <string name="period_week">Ҳафта</string>
+    <string name="sms_completed">бажарилди</string>
+    <string name="sms_bar_state_sending">Жараёнда</string>
+    <string name="sms_bar_state_failed">Амалга ошмади</string>
+
+    <string name="polygon_captured">Кўпбурчак ушланди</string>
+    <string name="filters_title_period">Давр</string>
+    <string name="filters_title_org_unit">Ташкилий бўлим</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filters_title_state">Синхронлаш</string>
+    <string name="filters_title_assigned">Менга берилган ваколат</string>
+    <string name="filter_period_today">бугун</string>
+    <string name="filter_period_yesterday">Кеча</string>
+    <string name="filter_period_this_week">Ушбу ҳафта</string>
+    <string name="filter_period_last_week">Охирги ҳафта</string>
+    <string name="filter_period_this_month">Ушбу ой</string>
+    <string name="filter_period_last_month">Охирги ой</string>
+    <string name="filter_period_other">Бошқа</string>
+    <string name="filter_event_status_open">Очиш</string>
+    <string name="filter_event_status_schedule">Режа</string>
+    <string name="filter_event_status_overdue">Муддат ўтган</string>
+    <string name="filter_event_status_completed">бажарилди</string>
+    <string name="filter_event_status_skipped">Ўтказиб юборилди</string>
+    <string name="go_back">Орқага қайтинг</string>
+    <string name="data_sets">Маълумотлар тўплами</string>
+    <string name="interval_yesterday">Кеча</string>
+    <string name="filter_sync_error">Синхронлашда хатолик</string>
+    <string name="dataset_overview">Тафсилотлари</string>
+    <string name="name">Исми</string>
+    <string name="formula">Формула</string>
+    <string name="filters_title_event_status">Воқеа ҳолати</string>
+    <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
+    <string name="enrollment_date">Рўйхатга олинган сана</string>
+    <string name="enrollment_status_active">Очиш</string>
+    <string name="enrollment_status_completed">Бажарилди</string>
+    <string name="enrollment_status_cancelled">Бекор қилинди</string>
+    <string name="no_data">Маълумот йўқ</string>
+    <string name="event_data">Маълумот</string>
+    <string name="are_you_sure">Ишончинигиз комилми?</string>
+    <string name="filters_title_date">Сана</string>
+    <string name="filters_title_event_date">Тадбир санаси</string>
+    <string name="dataset_data">Маълумот</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Ёпиқ</string>
+    </resources>

@@ -1,4 +1,4 @@
-build_time_average=800
+build_time_average=660
 polling_interval=10
 browserstack_username=$BROWSERSTACK_USERNAME
 browserstack_access_key=$BROWSERSTACK_ACCESS_KEY
@@ -11,3 +11,5 @@ browserstack_gps_location="40.730610,-73.935242"
 browserstack_language="en"
 browserstack_locale="en"
 browserstack_deviceLogs=true
+browserstack_number_of_parallel_executions=2
+bitrise_max_parallel_builds=3

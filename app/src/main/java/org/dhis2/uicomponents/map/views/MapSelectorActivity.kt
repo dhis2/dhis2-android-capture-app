@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.views
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -33,7 +33,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
+import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 import org.dhis2.uicomponents.map.camera.moveCameraToPosition
+import org.dhis2.uicomponents.map.extensions.polygonToLatLngBounds
+import org.dhis2.uicomponents.map.extensions.toLatLng
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.point.PointAdapter
 import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.dhis2.uicomponents.map.geometry.polygon.PolygonAdapter
@@ -54,10 +58,13 @@ class MapSelectorActivity :
 
         if (!init) {
             init = true
-            map.moveCameraToPosition(latLng)
+            if (initialCoordinates == null) {
+                map.moveCameraToPosition(latLng)
+            }
         }
     }
 
+    private var fieldUid: String? = null
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     var style: Style? = null
@@ -73,6 +80,7 @@ class MapSelectorActivity :
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
+        fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
@@ -133,10 +141,12 @@ class MapSelectorActivity :
         if (initial_coordinates != null) {
             val initGeometry =
                 Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
-            GeometryHelper.getPoint(initGeometry).let { sdkPoint ->
+            val pointGeometry = GeometryHelper.getPoint(initGeometry)
+            pointGeometry.let { sdkPoint ->
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                 setPointToViewModel(point, viewModel)
             }
+            map.moveCameraToPosition(pointGeometry.toLatLng())
         }
     }
 
@@ -239,7 +249,8 @@ class MapSelectorActivity :
         if (initial_coordinates != null) {
             val initGeometry =
                 Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
-            GeometryHelper.getPolygon(initGeometry).forEach {
+            val polygons = GeometryHelper.getPolygon(initGeometry)
+            polygons.forEach {
                 it.forEach { sdkPoint ->
                     val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                     val polygonPoint = viewModel.createPolygonPoint()
@@ -248,6 +259,9 @@ class MapSelectorActivity :
                     polygonPoint.source = createSource(polygonPoint.uuid, point)
                     viewModel.add(polygonPoint)
                 }
+            }
+            polygons.polygonToLatLngBounds(GetBoundingBox())?.let { bounds ->
+                map.initCameraToViewAllElements(this, bounds)
             }
         }
     }
@@ -374,15 +388,31 @@ class MapSelectorActivity :
         const val DATA_EXTRA = "data_extra"
         const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
+        const val FIELD_UID = "FIELD_UID_EXTRA"
 
-        fun create(activity: Activity, locationType: FeatureType): Intent {
+        fun create(activity: Context, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             return intent
         }
 
-        fun create(activity: Activity, locationType: FeatureType, initialData: String?): Intent {
+        fun create(activity: Context, locationType: FeatureType, initialData: String?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
+            intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            if (initialData != null) {
+                intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
+            }
+            return intent
+        }
+
+        fun create(
+            activity: Context,
+            fieldUid: String,
+            locationType: FeatureType,
+            initialData: String?
+        ): Intent {
+            val intent = Intent(activity, MapSelectorActivity::class.java)
+            intent.putExtra(FIELD_UID, fieldUid)
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             if (initialData != null) {
                 intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
@@ -393,6 +423,7 @@ class MapSelectorActivity :
 
     private fun finishResult(value: String) {
         val intent = Intent()
+        intent.putExtra(FIELD_UID, fieldUid)
         intent.putExtra(DATA_EXTRA, value)
         intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
         setResult(RESULT_OK, intent)

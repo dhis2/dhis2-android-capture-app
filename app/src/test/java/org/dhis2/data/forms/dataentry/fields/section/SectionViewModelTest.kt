@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.section
 
+import androidx.databinding.ObservableField
+import io.reactivex.processors.PublishProcessor
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -49,7 +51,9 @@ class SectionViewModelTest {
         false,
         1,
         1,
-        ""
+        "",
+        PublishProcessor.create(),
+        ObservableField()
     )
 
     private fun givenSectionViewModelWithEmptyDescription() = SectionViewModel.create(
@@ -59,7 +63,9 @@ class SectionViewModelTest {
         false,
         1,
         1,
-        ""
+        "",
+        PublishProcessor.create(),
+        ObservableField()
     )
 
     private fun givenSectionViewModelWithDescription() = SectionViewModel.create(
@@ -69,6 +75,8 @@ class SectionViewModelTest {
         false,
         1,
         1,
-        ""
+        "",
+        PublishProcessor.create(),
+        ObservableField()
     )
 }

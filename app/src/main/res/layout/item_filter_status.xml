@@ -8,33 +8,30 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
+            name="programType"
+            type="org.dhis2.utils.filters.ProgramType" />
 
         <variable
-            name="filterCount"
-            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
+            name="filterItem"
+            type="org.dhis2.utils.filters.EventStatusFilter" />
 
         <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
-
-        <variable
-            name="currentSortItem"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
+            name="workingListScope"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.data.filter.WorkingListScope&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
-        tools:background="?colorPrimary"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:alpha="@{workingListScope.isEventStatusActive() ? 0.65f : 1.0f}"
+        tools:background="?colorPrimary">
 
         <include
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
-            app:filterCount="@{filterCount}"
-            app:currentSortItem="@{currentSortItem}"
+            app:filterCount="@{filterItem.observeCount()}"
+            app:filterItem="@{filterItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 
         <include
@@ -42,9 +39,10 @@
             layout="@layout/filter_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:currentFilter="@{currentFilter}"
-            app:filterType="@{filterType}"
-            app:layout_constraintTop_toBottomOf="@id/filterLayout" />
+            app:filterItem="@{filterItem}"
+            app:filterType="@{filterItem.type}"
+            app:layout_constraintTop_toBottomOf="@id/filterLayout"
+            app:programType="@{filterItem.programType}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

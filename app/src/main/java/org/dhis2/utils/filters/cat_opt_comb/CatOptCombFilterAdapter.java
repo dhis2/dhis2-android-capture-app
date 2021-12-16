@@ -15,6 +15,7 @@ public class CatOptCombFilterAdapter extends RecyclerView.Adapter<SelectedCatOpt
 
 
     public CatOptCombFilterAdapter() {
+        FilterManager.getInstance().setCatComboAdapter(this);
     }
 
     @NonNull

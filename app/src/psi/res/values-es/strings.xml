@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Hay un error de configuración del tipo de programa en el programa actual. Revise el programa en el servidor y ejecute la configuración de sincronización</string>
     <string name="unexpected_error_message">Ha ocurrido un error inesperado. Revise su configuración o contacte con su administrador</string>
     <string name="feedback_show_only_failed">Mostrar solo erroneas</string>
+    <string name="feedback_url">"Ver comentarios completos en:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Por indicador"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Por área técnica"</string>
+    <string name="feedback_tab_hnqis_all">"Todas"</string>
+    <string name="feedback_tab_hnqis_critical">"Críticas"</string>
+    <string name="feedback_tab_hnqis_non_critical">"No Críticas"</string>
+    <string name="feedback_malformed_error">"**Error**: json de retroalimentación con formato incorrecto para el elemento de datos %s"</string>
+    <string name="feedback_error">"Error"</string>
+    <string name="feedback_warning">"Advertencia"</string>
+    <string name="feedback_order_with_spaces">"Retroalimentación con espacios en el elemento de datos %s"</string>
+    <string name="feedback_order_invalid">"Orden de retroalimentación inválido en el elemento de datos %s"</string>
+    <string name="feedback_order_duplicate">"Duplicado en el orden de retroalimentación en los elementos de datos %s"</string>
+    <string name="feedback_order_gap">"Etapa de programa %s contiene lagunas en su orden de realimentación"</string>
+    <string name="feedback_share_conducted">"Evaluación realizada el"</string>
+    <string name="feedback_share_assessment_type">"Tipo de evaluación"</string>
 </resources>

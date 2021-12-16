@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">There is a program type configuration error in the current program. Please review the program in the server and to execute sync configuration</string>
     <string name="unexpected_error_message">An unexpected error has occurred. Review your configuration or contact with your administrator</string>
     <string name="feedback_show_only_failed">Show only failed</string>
+    <string name="feedback_url">"See full feedback at:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"By indicator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"By technical area"</string>
+    <string name="feedback_tab_hnqis_all">"All"</string>
+    <string name="feedback_tab_hnqis_critical">"Critical"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Non Critical"</string>
+    <string name="feedback_malformed_error">"**Error** : Malformed feedback json for Data Element %s"</string>
+    <string name="feedback_error">"Error"</string>
+    <string name="feedback_warning">"Warning"</string>
+    <string name="feedback_order_with_spaces">"Feedback order with spaces in data element %s"</string>
+    <string name="feedback_order_invalid">"Invalid feedback order in data element %s"</string>
+    <string name="feedback_order_duplicate">"Feedback order duplicate in the data elements %s"</string>
+    <string name="feedback_order_gap">"Program stage %s contains feedback order gaps"</string>
+    <string name="feedback_share_conducted">"Assessment conducted on"</string>
+    <string name="feedback_share_assessment_type">"Assessment type"</string>
 </resources>

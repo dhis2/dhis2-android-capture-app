@@ -3,15 +3,13 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesUtilsProviderConfigurationError;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +20,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 
 /**
@@ -35,11 +34,11 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
+        void updatePercentage(float primaryValue);
+
         void updateProgramStageName(String stageName);
 
-        void updatePercentage(float primaryValue, float secondaryValue);
-
-        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
+        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields);
 
         void restartDataEntry();
 
@@ -63,10 +62,6 @@ public class EventCaptureContract {
 
         void updateNoteBadge(int numberOfNotes);
 
-        void showIndicatorsIcon();
-
-        void hideIndicatorsIcon();
-
         void showLoopWarning();
 
         void goBack();
@@ -74,27 +69,27 @@ public class EventCaptureContract {
         void showProgress();
 
         void hideProgress();
+
+        void showNavigationBar();
+
+        void hideNavigationBar();
+
+        void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init();
 
-        BehaviorSubject<List<FieldViewModel>> formFieldsFlowable();
+        BehaviorSubject<List<FieldUiModel>> formFieldsFlowable();
 
         void onBackClick();
 
         void nextCalculation(boolean doNextCalculation);
 
-        void onNextSection();
-
         void attempFinish();
 
-        void onPreviousSection();
-
         boolean isEnrollmentOpen();
-
-        void goToSection(String sectionUid);
 
         void goToSection();
 
@@ -118,11 +113,15 @@ public class EventCaptureContract {
 
         void refreshTabCounters();
 
-        void setLastUpdatedUid(@NotNull String lastUpdatedUid);
-
         void hideProgress();
 
         void showProgress();
+
+        boolean getCompletionPercentageVisibility();
+
+        void setValueChanged(@NotNull String uid);
+
+        void disableConfErrorMessage();
     }
 
     public interface EventCaptureRepository {
@@ -140,7 +139,7 @@ public class EventCaptureContract {
         Flowable<List<FormSectionViewModel>> eventSections();
 
         @NonNull
-        Flowable<List<FieldViewModel>> list();
+        Flowable<List<FieldUiModel>> list(FlowableProcessor<RowAction> processor);
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
@@ -163,8 +162,6 @@ public class EventCaptureContract {
 
         boolean getAccessDataWrite();
 
-        void setLastUpdated(String lastUpdatedUid);
-
         boolean isEnrollmentCancelled();
 
         boolean isEventEditable(String eventUid);
@@ -179,9 +176,9 @@ public class EventCaptureContract {
 
         List<String> getOptionsFromGroups(List<String> optionGroupUids);
 
-        Flowable<List<ProgramIndicator>> getIndicators( String programUid);
+        boolean showCompletionPercentage();
 
-        Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
+        void updateFieldValue(String uid);
     }
 
 }

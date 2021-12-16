@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
+import org.dhis2.form.model.StoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 
 interface ValueStore {

@@ -1,12 +1,10 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -78,6 +76,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
     private final Context context;
+    private final String defaultColumnLabel;
 
     @NonNull
     private List<List<FieldViewModel>> viewModels;
@@ -152,8 +151,9 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     }
 
 
-    public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
+    public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String defaultColumnLabel) {
         super(context);
+        this.defaultColumnLabel = defaultColumnLabel;
         this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
         this.currentTableScale.set(TableScale.DEFAULT);
         this.context = context;
@@ -253,7 +253,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
      */
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
-        ((DataSetRHeaderHeader) holder).bind(((CategoryOption) columnHeaderItemModel).displayName(), currentTableScale);
+        ((DataSetRHeaderHeader) holder).bind(
+                defaultColumnLabel != null ? defaultColumnLabel : ((CategoryOption) columnHeaderItemModel).displayName(),
+                currentTableScale
+        );
         if (((CategoryOption) columnHeaderItemModel).displayName().isEmpty()) {
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
         } else {

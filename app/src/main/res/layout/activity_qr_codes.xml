@@ -32,11 +32,12 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="4dp"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -45,7 +46,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@{ name }"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"

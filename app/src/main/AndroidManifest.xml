@@ -20,6 +20,8 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -28,6 +30,24 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="${sentry_dsn}" />
+        <meta-data
+            android:name="io.sentry.environment"
+            android:value="${sentry_environment}" />
+        <meta-data
+            android:name="io.sentry.debug"
+            android:value="${sentry_debug}" />
+
+        <meta-data
+            android:name="io.sentry.traces.sample-rate"
+            android:value="${sentry_sample_rate}" />
+
+        <meta-data
+            android:name="io.sentry.traces.activity.enable"
+            android:value="false" />
 
         <activity
             android:name=".usescases.splash.SplashActivity"
@@ -72,15 +92,13 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk" />
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
         <activity
             android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher">
             <intent-filter>
@@ -95,11 +113,13 @@
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
+
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
 
@@ -113,27 +133,30 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".usescases.orgunitselector.OUTreeActivity" />
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
-        <activity android:name=".usescases.notes.noteDetail.NoteDetailActivity"
+        <activity
+            android:name=".usescases.notes.noteDetail.NoteDetailActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" />
 
-        <service
-            android:name=".data.notifications.DhisFirebaseMessagingService"
-            android:exported="false">
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="replace">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="*" />
             </intent-filter>
-        </service>
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
+        </activity>
     </application>
 
 </manifest>

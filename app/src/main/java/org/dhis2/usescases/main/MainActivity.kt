@@ -1,24 +1,18 @@
 package org.dhis2.usescases.main
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.view.View.GONE
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import androidx.drawerlayout.widget.DrawerLayout
-import com.android.dbexporterlibrary.ExporterListener
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -41,26 +35,25 @@ import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.extension.navigateTo
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
-private const val PERMISSION_REQUEST = 1987
 
 class MainActivity :
     ActivityGlobalAbstract(),
     MainView,
-    ExporterListener,
     DrawerLayout.DrawerListener {
     private lateinit var binding: ActivityMainBinding
-
+    lateinit var mainComponent: MainComponent
     @Inject
     lateinit var presenter: MainPresenter
 
     @Inject
-    lateinit var adapter: FiltersAdapter
+    lateinit var newAdapter: FiltersAdapter
 
     private var programFragment: ProgramFragment? = null
 
@@ -77,7 +70,9 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         app().userComponent()?.let {
-            it.plus(MainModule(this)).inject(this)
+            mainComponent = it.plus(MainModule(this)).apply {
+                inject(this@MainActivity)
+            }
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -108,13 +103,25 @@ class MainActivity :
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
         )
 
-        if (presenter.hasProgramWithAssignment()) {
-            adapter.addAssignedToMe()
+        binding.filterRecycler.adapter = newAdapter
+
+        binding.navigationBar.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_tasks -> {}
+                R.id.navigation_programs -> {}
+                R.id.navigation_analytics -> {}
+                else -> {}
+            }
+            true
         }
-        binding.filterRecycler.adapter = adapter
+
+        // TODO: remove to display BottomNavigationView
+        binding.fragmentContainer.setPadding(0, 0, 0, 0)
+        binding.navigationBar.visibility = View.GONE
+        // end
 
         if (BuildConfig.DEBUG) {
-            binding.moreOptions.setOnLongClickListener {
+            binding.menu.setOnLongClickListener {
                 startActivity(DevelopmentActivity::class.java, null, false, false, null)
                 false
             }
@@ -132,25 +139,11 @@ class MainActivity :
         presenter.init()
         presenter.initFilters()
 
-        if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA),
-                PERMISSION_REQUEST
-            )
-        }
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        adapter.notifyDataSetChanged()
     }
 
     override fun onPause() {
+        presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
     }
@@ -264,20 +257,12 @@ class MainActivity :
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            adapter.notifyDataSetChanged()
-            updateFilters(FilterManager.getInstance().totalFilters)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun setFilters(filters: List<FilterItem>) {
+        newAdapter.submitList(filters)
     }
 
-    override fun fail(message: String, exception: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun success(s: String) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+    override fun hideFilters() {
+        binding.filterActionButton.visibility = GONE
     }
 
     override fun onDrawerStateChanged(newState: Int) {
@@ -289,6 +274,9 @@ class MainActivity :
     override fun onDrawerClosed(drawerView: View) {
         if (currentFragment.get() != fragId) {
             initCurrentScreen()
+            if (fragId == R.id.menu_home) {
+                presenter.initFilters()
+            }
         }
     }
 
@@ -299,6 +287,7 @@ class MainActivity :
         var tag: String? = null
         when (fragId) {
             R.id.sync_manager -> {
+                presenter.onClickSyncManager()
                 activeFragment = SyncManagerFragment()
                 tag = getString(R.string.SYNC_MANAGER)
                 binding.filterActionButton.visibility = View.GONE

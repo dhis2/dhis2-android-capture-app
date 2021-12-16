@@ -1,13 +1,17 @@
 package org.dhis2.data.forms.dataentry
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
+import org.dhis2.BR
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 
 const val NO_POSITION = -1
@@ -40,11 +44,11 @@ class DataEntryHeaderHelper(
                     ?.findFirstVisibleItemPosition()
         } ?: NO_POSITION
 
-        if (visiblePos != NO_POSITION && dataEntryAdapter.sectionSize > 1) {
+        if (visiblePos != NO_POSITION && dataEntryAdapter.getSectionSize() > 1) {
             dataEntryAdapter.getSectionForPosition(visiblePos)?.let { headerSection ->
                 if (headerSection.isOpen && !dataEntryAdapter.isSection(visiblePos + 1)) {
-                    if (currentSection.value == null || currentSection.value!!
-                        .uid() != headerSection.uid()
+                    if (currentSection.value == null ||
+                        currentSection.value!!.uid() != headerSection.uid()
                     ) {
                         currentSection.value = headerSection
                     }
@@ -58,13 +62,22 @@ class DataEntryHeaderHelper(
     private fun loadHeader(section: SectionViewModel?) {
         val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
         if (section != null && section.isOpen) {
-            val sectionHolder: SectionHolder =
-                dataEntryAdapter.rowSection.onCreate(headerContainer)
-            val sectionPosition: Int = dataEntryAdapter.getSectionPosition(section.uid())
-            dataEntryAdapter.updateSectionData(sectionHolder, sectionPosition, true)
+            val layoutInflater = LayoutInflater.from(headerContainer.context)
+            val binding =
+                DataBindingUtil.inflate<ViewDataBinding>(
+                    layoutInflater,
+                    section.layoutId,
+                    headerContainer,
+                    false
+                )
+            val sectionHolder = FormViewHolder(binding)
+            val sectionPosition: Int? = dataEntryAdapter.getSectionPosition(section.uid())
+            sectionPosition?.let {
+                dataEntryAdapter.updateSectionData(it, true)
+            }
             headerContainer.removeAllViews()
             headerContainer.addView(sectionHolder.itemView)
-            sectionHolder.update(section)
+            binding.setVariable(BR.item, section)
         } else {
             headerContainer.removeAllViews()
         }
@@ -72,12 +85,14 @@ class DataEntryHeaderHelper(
 
     fun onItemsUpdatedCallback() {
         val dataEntryAdapter = recyclerView.adapter as DataEntryAdapter
-        if (currentSection.value != null) {
-            loadHeader(
-                dataEntryAdapter.getSectionForPosition(
-                    dataEntryAdapter.getSectionPosition(currentSection.value!!.uid())
-                )
-            )
+        currentSection.value?.let { section ->
+            dataEntryAdapter.getSectionPosition(section.uid())?.let {
+                loadHeader(dataEntryAdapter.getSectionForPosition(it))
+            }
+        } ?: run {
+            if (dataEntryAdapter.getSectionSize() > 1) {
+                loadHeader(dataEntryAdapter.getSectionForPosition(0))
+            }
         }
     }
 }

@@ -50,11 +50,12 @@
 
             <ImageView
                 android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
+                style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:onClick="@{()->presenter.back()}"
-                android:tint="@color/black_de0"
+                app:tint="@color/black_de0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -66,7 +67,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
-            android:tint="?colorPrimary"
+            app:tint="?colorPrimary"
             android:transitionName="@string/transitionElement_userImage"
             android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
             app:layout_constraintStart_toEndOf="@id/startGuideline"

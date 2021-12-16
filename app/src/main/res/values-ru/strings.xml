@@ -46,7 +46,6 @@
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>
     <string name="total">Всего</string>
-
     <string name="active_programs">Действующие программы</string>
     <string name="enroll">Регистрировать</string>
     <string name="deactivate">Деактивировать</string>
@@ -103,7 +102,6 @@
     <string name="local_data_accept">Принять</string>
     <string name="state_warning">Предупреждение</string>
     <string name="action_close">Закрыть</string>
-    <string name="data_set_open">Открыть</string>
     <string name="unsupported_value_type">Неподдерживаемый тип значения</string>
     <string name="data_every_day">Ежедневно</string>
     <string name="data_every_week">Еженедельно</string>

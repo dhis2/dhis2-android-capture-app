@@ -8,6 +8,7 @@ import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
 import org.dhis2.R
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.ItemDateBinding
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.dhis2.utils.DateUtils
@@ -20,7 +21,8 @@ private class PeriodAdapter(
     val listener: (Date) -> Unit,
     var withInputPeriod: Boolean,
     val organisationUnit: OrganisationUnit?,
-    val inputPeriods: List<DateRangeInputPeriodModel>
+    val inputPeriods: List<DateRangeInputPeriodModel>,
+    val periodUtils: DhisPeriodUtils
 ) : RecyclerView.Adapter<DateViewHolder>() {
 
     companion object {
@@ -65,7 +67,7 @@ private class PeriodAdapter(
             }
         } else {
             holder.bind(
-                DateUtils.getInstance().getPeriodUIString(
+                periodUtils.getPeriodUIString(
                     periodType,
                     datePeriods[position],
                     Locale.getDefault()

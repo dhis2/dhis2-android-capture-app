@@ -11,7 +11,7 @@
         style="@style/ActionIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="#333333"
+        app:tint="#333333"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonRowScaleAdd"
         app:srcCompat="@drawable/ic_reduce_width" />
@@ -21,7 +21,7 @@
         style="@style/ActionIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="#333333"
+        app:tint="#333333"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_increase_width" />

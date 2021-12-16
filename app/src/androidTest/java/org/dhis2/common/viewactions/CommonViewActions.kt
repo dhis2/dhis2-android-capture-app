@@ -1,8 +1,11 @@
 package org.dhis2.common.viewactions
 
+import android.text.SpannableString
+import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
@@ -12,9 +15,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
-import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 
 fun openSpinnerPopup(): ViewAction {
     return object : ViewAction {
@@ -110,7 +113,23 @@ fun scrollToBottomRecyclerView(): ViewAction {
     }
 }
 
-fun clickOnFabChild(): ViewAction {
+fun scrollToPositionRecyclerview(position: Int): ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "Recyclerview scrolling until the end"
+        }
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(RecyclerView::class.java)
+        }
+        override fun perform(uiController: UiController?, view: View?) {
+            val recyclerView = view as RecyclerView
+            recyclerView.scrollToPosition(position)
+            uiController?.loopMainThreadUntilIdle()
+        }
+    }
+}
+
+/*fun clickOnFabChild(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "searching for fab child"
@@ -130,7 +149,7 @@ fun clickOnFabChild(): ViewAction {
             }
         }
     }
-}
+}*/
 
 fun waitForTransitionUntil(idView: Int): ViewAction {
     return object : ViewAction {
@@ -162,3 +181,47 @@ fun waitForTransitionUntil(idView: Int): ViewAction {
         }
     }
 }
+fun clickClickableSpan(textToClick: CharSequence): ViewAction {
+    return object : ViewAction {
+
+        override fun getConstraints(): Matcher<View> {
+            return Matchers.instanceOf(TextView::class.java)
+        }
+
+        override fun getDescription(): String {
+            return "clicking on a ClickableSpan"
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            val textView = view as TextView
+            val spannableString = textView.text as SpannableString
+
+            if (spannableString.isEmpty()) {
+                throw IllegalArgumentException("TextView is empty, nothing to do")
+            }
+
+            // Get the links inside the TextView and check if we find textToClick
+            val spans = spannableString.getSpans(
+                0,
+                spannableString.length,
+                ClickableSpan::class.java
+            )
+            if (spans.isNotEmpty()) {
+                var spanCandidate: ClickableSpan
+                for (span: ClickableSpan in spans) {
+                    spanCandidate = span
+                    val start = spannableString.getSpanStart(spanCandidate)
+                    val end = spannableString.getSpanEnd(spanCandidate)
+                    val sequence = spannableString.subSequence(start, end)
+                    if (textToClick.toString() == sequence.toString()) {
+                        span.onClick(textView)
+                        return
+                    }
+                }
+            }
+            throw IllegalArgumentException("textToClick not found in TextView")
+
+        }
+    }
+}
+

@@ -5,7 +5,9 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
@@ -28,11 +30,11 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
@@ -48,6 +50,7 @@ import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
+import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -68,6 +71,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Inject
     DataSetTableContract.Presenter presenter;
+    @Inject
+    DhisPeriodUtils periodUtils;
+
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
@@ -75,6 +81,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private BottomSheetBehavior<View> behavior;
     private FlowableProcessor<Boolean> reopenProcessor;
+    private boolean isKeyboardOpened = false;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -122,9 +129,53 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
+        ViewExtensionsKt.clipWithRoundedCorners(binding.container, ExtensionsKt.getDp(16));
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        binding.navigationView.setOnNavigationItemSelectedListener(item -> {
+            int pagePosition = viewPagerAdapter.getNavigationPagePosition(item.getItemId());
+            binding.viewPager.postDelayed(() -> {
+                binding.tabLayout.setVisibility(pagePosition == 0 ? View.GONE : View.VISIBLE);
+                binding.viewPager.setCurrentItem(pagePosition);
+            }, 100);
+            return true;
+        });
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
+            if (heightDiff > ExtensionsKt.getDp(200)) {
+                isKeyboardOpened = true;
+                binding.navigationView.setVisibility(View.GONE);
+                binding.saveButton.hide();
+                if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
+                    if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
+            } else if(isKeyboardOpened){
+                isKeyboardOpened = false;
+                new Handler().postDelayed(()->{
+                    binding.navigationView.setVisibility(View.VISIBLE);
+                    binding.saveButton.show();
+                },1000);
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.container.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        binding.container.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
@@ -146,6 +197,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);
+                tab.view.setVisibility(View.GONE);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
@@ -160,6 +212,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             sections.add(getString(R.string.dataset_data));
         }
         viewPagerAdapter.swapData(sections);
+        binding.navigationView.selectItemAt(1);
         binding.viewPager.setCurrentItem(1);
     }
 
@@ -195,7 +248,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void renderDetails(DataSet dataSet, String catComboName, Period period, boolean isComplete) {
         binding.dataSetName.setText(dataSet.displayName());
         StringBuilder subtitle = new StringBuilder(
-                DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
+                periodUtils.getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
         )
                 .append(" | ")
                 .append(orgUnitName);
@@ -373,7 +426,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            if (isKeyboardOpened) {
+                hideKeyboard();
+                new Handler().postDelayed(() -> {
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }, 100);
+            } else {
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
         }
     }
 
@@ -425,7 +485,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .translationY(-ExtensionsKt.getDp(48))
                 .start();
     }
-
 
 
     public void showMoreOptions(View view) {
@@ -484,7 +543,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void saveAndFinish() {
-        Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                this,
+                presenter.isComplete() ? R.string.data_set_quality_check_done : R.string.save,
+                Toast.LENGTH_SHORT
+        ).show();
         finish();
     }
 

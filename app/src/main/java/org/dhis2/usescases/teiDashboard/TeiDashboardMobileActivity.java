@@ -2,8 +2,8 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -22,12 +23,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -35,7 +31,6 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
@@ -46,7 +41,6 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -59,18 +53,19 @@ import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getLandscapeTabTitle;
-import static org.dhis2.usescases.teiDashboard.TeiDashboardFunctionsKt.getPortraitTabTitle;
+import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_LANDSCAPE_POSITION;
+import static org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.RELATIONSHIPS_PORTRAIT_POSITION;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements
-        TeiDashboardContracts.View {
+public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
     public static final int OVERVIEW_POS = 0;
+
+    private int currentOrientation = -1;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
@@ -86,8 +81,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
-    protected DashboardPagerTabletAdapter tabletAdapter;
-    protected FragmentStateAdapter currentAdapter;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
@@ -99,9 +92,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private float elevation = 0f;
 
     public static Intent intent(Context context,
-            String teiUid,
-            String programUid,
-            String enrollmentUid) {
+                                String teiUid,
+                                String programUid,
+                                String enrollmentUid) {
         Intent intent = new Intent(context, TeiDashboardMobileActivity.class);
 
         intent.putExtra(TEI_UID, teiUid);
@@ -115,8 +108,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(
-                Constants.TRACKED_ENTITY_INSTANCE)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(PROGRAM_UID);
         } else {
@@ -139,33 +131,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS);
         binding.setTotalFilters(filterManager.getTotalFilters());
-        binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == getLastTabPosition()) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(Color.WHITE);
-                    }
+        binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
+            if (pagePosition != -1) {
+                if (OrientationUtilsKt.isLandscape()) {
+                    binding.teiTablePager.setCurrentItem(pagePosition);
+                } else {
+                    binding.teiPager.setCurrentItem(pagePosition);
                 }
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == getLastTabPosition()) {
-                    BadgeDrawable badge = tab.getOrCreateBadge();
-                    if (badge.hasNumber() && badge.getNumber() > 0) {
-                        badge.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, R.color.unselected_tab_badge_color));
-                    }
-                }
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                /**/
-            }
+            return true;
         });
+
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
@@ -193,21 +171,30 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     relationshipMap.setValue(showMap);
                 }
         );
-
-        relationshipMap().observe(this, value -> {
-            enablePagerScrolling(!value);
-        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (currentAdapter == null) {
+        if (currentOrientation != -1) {
+            int nextOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+            if (currentOrientation != nextOrientation && adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
+        currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+
+        if (adapter == null) {
             restoreAdapter(programUid);
         }
 
         presenter.refreshTabCounters();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -222,29 +209,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onDestroy();
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        teiUid = savedInstanceState.getString(TEI_UID);
-        programUid = savedInstanceState.getString(PROGRAM_UID);
-        enrollmentUid = savedInstanceState.getString(ENROLLMENT_UID);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NotNull Bundle outState) {
-        outState.clear();
-        outState.putString(TEI_UID, teiUid);
-        outState.putString(PROGRAM_UID, programUid);
-        outState.putString(ENROLLMENT_UID, enrollmentUid);
-        super.onSaveInstanceState(outState);
-    }
-
     private void setViewpagerAdapter() {
+        adapter = new DashboardPagerAdapter(this, programUid, teiUid, enrollmentUid);
+
 
         if (OrientationUtilsKt.isPortrait()) {
             binding.teiPager.setAdapter(null);
-            adapter = new DashboardPagerAdapter(this, programUid, teiUid, enrollmentUid);
-            currentAdapter = adapter;
+            binding.teiPager.setUserInputEnabled(false);
             binding.teiPager.setAdapter(adapter);
             binding.teiPager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
@@ -258,84 +229,41 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
                             }
-                            String pageTitle = getPortraitTabTitle(getContext(), position);
-
-                            if (pageTitle == getString(R.string.dashboard_relationships)){
+                            if (position == RELATIONSHIPS_PORTRAIT_POSITION) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
-                                enablePagerScrolling(!relationshipMap().getValue());
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
-                                enablePagerScrolling(true);
                             }
+                            binding.navigationBar.selectItemAt(position);
                         }
                     }
             );
 
-            if (fromRelationship) {
+            if (fromRelationship)
                 binding.teiPager.setCurrentItem(2, false);
-            }
 
-            tabLayoutMediator(binding.teiPager);
         } else {
-            tabletAdapter = new DashboardPagerTabletAdapter(this, programUid, teiUid,
-                    enrollmentUid);
-            currentAdapter = tabletAdapter;
+            binding.teiTablePager.setAdapter(adapter);
+            binding.teiTablePager.setUserInputEnabled(false);
             binding.teiTablePager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
-
-                            String pageTitle = getLandscapeTabTitle(getContext(), position);
-
-                            if (pageTitle == getString(R.string.dashboard_relationships)){
-                                binding.relationshipMapIcon.setVisibility(View.VISIBLE);
-                            } else {
-                                binding.relationshipMapIcon.setVisibility(View.GONE);
+                            switch (position) {
+                                case RELATIONSHIPS_LANDSCAPE_POSITION:
+                                    binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                                    break;
+                                default:
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
+                                    break;
                             }
-
-                            binding.sectionTitle.post(()-> binding.sectionTitle.setText(pageTitle));
+                            binding.navigationBar.selectItemAt(position);
                         }
                     }
             );
-
-            binding.teiTablePager.setAdapter(tabletAdapter);
-            binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
-
-            binding.dotsIndicator.setViewPager(binding.teiTablePager);
-            if (fromRelationship) {
+            if (fromRelationship)
                 binding.teiTablePager.setCurrentItem(1, false);
-            }
 
-            tabLayoutMediator(binding.teiTablePager);
-        }
-    }
-
-    private void enablePagerScrolling(boolean enable) {
-        if (OrientationUtilsKt.isPortrait()) {
-            binding.teiPager.setUserInputEnabled(enable);
-        } else {
-            binding.teiTablePager.setUserInputEnabled(enable);
-        }
-    }
-
-    private void tabLayoutMediator(ViewPager2 viewPager) {
-        new TabLayoutMediator(binding.tabLayout, viewPager,
-                (tab, position) -> {
-                    if (OrientationUtilsKt.isLandscape()) {
-                        setupTabletTabTitles(tab, position);
-                    } else {
-                        setupTabTitles(tab, position);
-                    }
-                }).attach();
-    }
-
-    private void setupTabTitles(TabLayout.Tab tab, int position) {
-        tab.setText(getPortraitTabTitle(getContext(), position));
-    }
-
-    private void setupTabletTabTitles(TabLayout.Tab tab, int position) {
-        if (programUid != null) {
-            tab.setText(getLandscapeTabTitle(getContext(), position));
         }
     }
 
@@ -350,12 +278,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
-                program.getTrackedEntityAttributeValueBySortOrder(1) != null
-                        ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
-                program.getTrackedEntityAttributeValueBySortOrder(2) != null
-                        ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                program.getCurrentProgram() != null ? program.getCurrentProgram().displayName()
-                        : getString(R.string.dashboard_overview)
+                program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
+                program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
+                program.getCurrentProgram() != null ? program.getCurrentProgram().displayName() : getString(R.string.dashboard_overview)
         );
         binding.setTitle(title);
 
@@ -368,8 +293,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 setViewpagerAdapter();
             }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view,
-                            TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
         } else {
             if (binding.teiPager.getAdapter() == null) {
@@ -377,11 +301,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
         }
 
-        boolean enrollmentStatus = program.getCurrentEnrollment() != null
-                && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
-        if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus) {
+        boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
+        if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
-        }
 
         presenter.initNoteCounter();
     }
@@ -389,8 +311,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void restoreAdapter(String programUid) {
         this.adapter = null;
-        this.tabletAdapter = null;
-        this.currentAdapter = null;
         this.programUid = programUid;
         presenter.init();
     }
@@ -405,9 +325,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (hasMoreEnrollments) {
             startActivity(intent(this, teiUid, null, null));
             finish();
-        } else {
+        } else
             finish();
-        }
     }
 
     @Override
@@ -422,12 +341,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
-                program.getTrackedEntityAttributeValueBySortOrder(1) != null
-                        ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
-                program.getTrackedEntityAttributeValueBySortOrder(2) != null
-                        ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                program.getCurrentProgram() != null ? program.getCurrentProgram().displayName()
-                        : getString(R.string.dashboard_overview)
+                program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
+                program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
+                program.getCurrentProgram() != null ? program.getCurrentProgram().displayName() : getString(R.string.dashboard_overview)
         );
         binding.setTitle(title);
         binding.executePendingBindings();
@@ -437,8 +353,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         if (OrientationUtilsKt.isLandscape()) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view,
-                            TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
 
             binding.filterCounter.setVisibility(View.GONE);
@@ -484,21 +399,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setTutorial() {
         new Handler().postDelayed(() -> {
-            if (getAbstractActivity() != null) {
-                HelpManager.getInstance().show(getActivity(),
-                        HelpManager.TutorialName.TEI_DASHBOARD, null);
-            }
+            if (getAbstractActivity() != null)
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.TEI_DASHBOARD, null);
         }, 500);
     }
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (binding.tabLayout.getSelectedTabPosition() == 0) {
+        if (OrientationUtilsKt.isLandscape()) {
             setTutorial();
         } else {
-            showToast(getString(R.string.no_intructions));
+            if (binding.teiPager.getCurrentItem() == 0)
+                setTutorial();
+            else
+                showToast(getString(R.string.no_intructions));
         }
-
     }
 
     public String getTeiUid() {
@@ -519,19 +434,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private void setProgramColor(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color,
-                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
+        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
         if (programTheme != -1) {
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
-            binding.tabLayout.setBackgroundColor(programColor);
-            if (OrientationUtilsKt.isLandscape()) {
-                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                    binding.dotsIndicator.setDotIndicatorColor(programColor);
-                    binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
-                }
-            }
+            binding.navigationBar.setIconsColor(programColor);
         } else {
             presenter.removeProgramTheme();
             int colorPrimary;
@@ -551,15 +459,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if (OrientationUtilsKt.isLandscape()) {
-                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                    binding.dotsIndicator.setDotIndicatorColor(
-                            ContextCompat.getColor(this, colorPrimary));
-                    binding.dotsIndicator.setStrokeDotsIndicatorColor(
-                            ContextCompat.getColor(this, colorPrimary));
-                }
-            }
+            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
@@ -569,8 +469,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             TypedValue typedValue = new TypedValue();
-            TypedArray a = obtainStyledAttributes(typedValue.data,
-                    new int[]{R.attr.colorPrimaryDark});
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
             int colorToReturn = a.getColor(0, 0);
             a.recycle();
             window.setStatusBarColor(colorToReturn);
@@ -586,8 +485,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     field.setAccessible(true);
                     Object menuPopupHelper = field.get(popupMenu);
                     Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon",
-                            boolean.class);
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
                     setForceIcons.invoke(menuPopupHelper, true);
                     break;
                 }
@@ -647,6 +545,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.deactivate:
                     presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
                     break;
+                default :
+                    TeiDashboardMenuKt.customClick(item.getItemId(), this, programUid, enrollmentUid,  teiUid);
             }
             return true;
 
@@ -656,23 +556,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void updateNoteBadge(int numberOfNotes) {
-        if (binding.tabLayout.getTabCount() > 0) {
-            BadgeDrawable badge = binding.tabLayout.getTabAt(
-                    getLastTabPosition()).getOrCreateBadge();
-            badge.setVisible(numberOfNotes > 0);
-            if (OrientationUtilsKt.isPortrait() && binding.teiPager.getCurrentItem() == 3) {
-                badge.setBackgroundColor(Color.WHITE);
-            } else {
-                badge.setBackgroundColor(ContextCompat.getColor(this, R.color.unselected_tab_badge_color));
-            }
-            badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-            badge.setNumber(numberOfNotes);
-            badge.setMaxCharacterCount(3);
-        }
-    }
-
-    private int getLastTabPosition() {
-        return binding.tabLayout.getTabCount() - 1;
+        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes);
     }
 
     public LiveData<Boolean> observeGrouping() {
@@ -699,15 +583,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void hideTabsAndDisableSwipe() {
-        binding.tabLayout.setVisibility(View.GONE);
-        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
-        binding.tabLayout.setVisibility(View.VISIBLE);
-        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 
@@ -738,5 +618,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
+    }
+
+    public void hideFilter(){
+        binding.searchFilterGeneral.setVisibility(View.GONE);
     }
 }

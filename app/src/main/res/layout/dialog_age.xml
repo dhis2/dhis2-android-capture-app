@@ -23,6 +23,7 @@
             android:imeOptions="actionNext"
             android:inputType="number"
             android:textColorHint="@color/text_black_333"
+            android:maxLength="3"
             tools:text="yyyy" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,6 +42,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
             android:inputType="number"
+            android:maxLength="2"
             android:textColorHint="@color/text_black_333" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,6 +61,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:inputType="number"
+            android:maxLength="2"
             android:textColorHint="@color/text_black_333" />
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.hamcrest.CoreMatchers.`is`
@@ -20,7 +20,7 @@ import org.junit.Test
 class MapEventToFeatureCollectionTest {
 
     private val mapGeometryToFeature: MapGeometryToFeature = mock()
-    private val bounds: BoundsGeometry = mock()
+    private val bounds: GetBoundingBox = mock()
     private lateinit var mapEventToFeatureCollection: MapEventToFeatureCollection
 
     @Before
@@ -45,7 +45,7 @@ class MapEventToFeatureCollectionTest {
         )
 
         whenever(
-            mapGeometryToFeature.map(any(), any(), any(), any())
+            mapGeometryToFeature.map(any(), any())
         ) doReturn firstFeature doReturn secondFeature
 
         val result = mapEventToFeatureCollection.map(listOf(firstEvent, secondEvent))
@@ -63,11 +63,6 @@ class MapEventToFeatureCollectionTest {
         assertThat(secondUid, `is`(UID_SECOND_EVENT_VALUE))
         assertThat(secondCoordinates.longitude(), `is`(SECOND_FEATURE_LONGITUDE))
         assertThat(secondCoordinates.latitude(), `is`(SECOND_FEATURE_LATITUDE))
-
-        assertThat(bounding.north(), `is`(0.0))
-        assertThat(bounding.south(), `is`(0.0))
-        assertThat(bounding.west(), `is`(0.0))
-        assertThat(bounding.east(), `is`(0.0))
     }
 
     private fun createFeatures(): Pair<Feature, Feature> {

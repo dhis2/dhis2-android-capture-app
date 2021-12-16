@@ -1,5 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.databinding.ObservableField
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -8,18 +10,32 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.data.dhislogic.DhisMapUtils
+import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.form.data.FormRepository
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.utils.filters.AssignedFilter
+import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp
+import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.ProgramType
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.validateMockitoUsage
 
 class SearchTEPresenterTest {
 
@@ -32,9 +48,17 @@ class SearchTEPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
     private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection = mock()
+    private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection =
+        mock()
     private val eventToEventUiComponent: EventToEventUiComponent = mock()
     private val initialProgram = "programUid"
     private val preferenceProvider: PreferenceProvider = mock()
+    private val dhisMapUtils: DhisMapUtils = mock()
+    private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
+    private val filterRepository: FilterRepository = mock()
+    private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
+    private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -48,14 +72,22 @@ class SearchTEPresenterTest {
         presenter = SearchTEPresenter(
             view,
             d2,
+            dhisMapUtils,
             repository,
             schedulers,
             analyticsHelper,
             initialProgram,
             mapTeisToFeatureCollection,
             mapTeiEventsToFeatureCollection,
+            mapCoordinateFieldToFeatureCollection,
             eventToEventUiComponent,
-            preferenceProvider
+            preferenceProvider,
+            workingListMapper,
+            filterRepository,
+            null,
+            disableHomeFiltersFromSettingsApp,
+            matomoAnalyticsController,
+            formRepository
         )
     }
 
@@ -184,82 +216,6 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should show assign to me filter`() {
-        presenter.setProgramForTesting(
-            Program.builder()
-                .uid("uid")
-                .displayFrontPageList(true)
-                .minAttributesRequiredToSearch(0)
-                .build()
-        )
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment()
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
-        ) doReturn false
-        presenter.initAssignmentFilter()
-        verify(view, times(1)).showAssignmentFilter()
-        verify(view, times(0)).hideAssignmentFilter()
-    }
-
-    @Test
-    fun `Should not show assign to me filter if no stage is configured`() {
-        presenter.setProgramForTesting(
-            Program.builder()
-                .uid("uid")
-                .displayFrontPageList(true)
-                .minAttributesRequiredToSearch(0)
-                .build()
-        )
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment()
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-        ) doReturn mock()
-        whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq("uid")
-                .byEnableUserAssignment().isTrue
-                .blockingIsEmpty()
-        ) doReturn true
-        presenter.initAssignmentFilter()
-        verify(view, times(0)).showAssignmentFilter()
-        verify(view, times(1)).hideAssignmentFilter()
-    }
-
-    @Test
-    fun `Should not show assign to me filter if no program selected`() {
-        presenter.setProgramForTesting(null)
-        presenter.initAssignmentFilter()
-        verify(view, times(0)).showAssignmentFilter()
-        verify(view, times(1)).hideAssignmentFilter()
-    }
-
-    @Test
     fun `Should clear query data if program is changed to a non null object`() {
         val currentProgram = Program.builder()
             .uid("program1")
@@ -361,12 +317,34 @@ class SearchTEPresenterTest {
 
     @Test
     fun `Should show filters if list is ok`() {
+        val observableSortingInject = ObservableField<SortingItem>()
+        val observableOpenFilter = ObservableField<Filters>()
+        whenever(filterRepository.programFilters(any())) doReturn
+            listOf(
+                AssignedFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    "asignToMe"
+                )
+            )
         presenter.checkFilters(true)
         verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
     fun `Should show filters if list is not ok but filters are active`() {
+        val observableSortingInject = ObservableField<SortingItem>()
+        val observableOpenFilter = ObservableField<Filters>()
+        whenever(filterRepository.programFilters(any())) doReturn
+            listOf(
+                AssignedFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    "asignToMe"
+                )
+            )
         FilterManager.clearAll()
         FilterManager.getInstance().setAssignedToMe(true)
         presenter.checkFilters(false)
@@ -378,5 +356,34 @@ class SearchTEPresenterTest {
         FilterManager.clearAll()
         presenter.checkFilters(false)
         verify(view, times(1)).setFiltersVisibility(false)
+    }
+
+    @Test
+    fun `Should clear other filters if webapp is config`() {
+        val list = listOf<FilterItem>()
+        whenever(filterRepository.homeFilters()) doReturn listOf()
+
+        presenter.clearOtherFiltersIfWebAppIsConfig()
+
+        verify(disableHomeFiltersFromSettingsApp).execute(list)
+    }
+
+    @Test
+    fun `Should populate same list when onItemAction is triggered in FormView`() {
+        presenter.populateList(null)
+        verify(view, times(1)).setFormData(any())
+        verify(view, times(0)).setFabIcon(any())
+    }
+
+    @Test
+    fun `Should populate list for enrollment `() {
+        presenter.populateList(listOf())
+        verify(view, times(1)).setFormData(any())
+        verify(view, times(1)).setFabIcon(any())
+    }
+
+    @After
+    fun validate() {
+        validateMockitoUsage()
     }
 }

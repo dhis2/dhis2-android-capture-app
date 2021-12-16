@@ -1,6 +1,7 @@
 package org.dhis2.common.di
 
 import android.content.Context
+import org.dhis2.DBTestLoader
 import org.dhis2.common.FileReader
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.mockwebserver.MockWebServerRobot
@@ -20,6 +21,9 @@ class TestingInjector {
         }
         fun providesMockWebserverRobot(context: Context): MockWebServerRobot {
             return MockWebServerRobot(Dhis2MockServer(FileReader(context), 8080))
+        }
+        fun provideDBImporter(context: Context): DBTestLoader {
+            return DBTestLoader(context)
         }
     }
 }

@@ -4,8 +4,11 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 public class DataValueContract {
 
@@ -20,12 +23,14 @@ public class DataValueContract {
 
         void update(boolean modified);
 
-        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite);
+        void setTableData(TableData tableData);
 
         void setDataSet(DataSet dataSet);
 
         void setSection(Section section);
 
         void updateTabLayout(int count);
+
+        void renderIndicators(@NotNull SortedMap<String, String> indicators);
     }
 }

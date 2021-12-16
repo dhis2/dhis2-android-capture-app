@@ -1,10 +1,6 @@
-# Android Tracker Capture App
+# Android Tracker Capture App { #capture_app_tracker }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture-->
-
-## Overview
-
-<!--DHIS2-SECTION-ID:android_tracker_capture_overview-->
+## Overview { #capture_app_tracker_overview }
 
 The Tracker Capture Android app allows you capture, modify and list
 tracked entity instances with its enrolments and events. The Tracker
@@ -22,9 +18,8 @@ events with the online DHIS2 server automatically when connectivity is
 present. This makes the app suitable for environments where Internet
 connectivity is scarce or unstable.
 
-## Installing and logging in
+## Installing and logging in { #capture_app_tracker_installing }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_installing-->
 
 The Tracker Capture app can be found on Google Play under the name
 "DHIS2 Tracker Capture".
@@ -53,9 +48,8 @@ you will use when logging into DHIS2 using a Web browser. After logging
 in the first time, the app will download meta-data from the online
 instance.
 
-## Viewing Enrollments
+## Viewing Enrollments { #capture_app_tracker_viewing }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_enrollments-->
 
 The main screen will show an overview of enrollments, as well as links
 to creating new ones. After the first login, there will be *no*
@@ -78,9 +72,8 @@ stored at your device. Locally stored data will be synchronized
 automatically once an Internet connection is present. You can swipe down
 on the screen in order to trigger a synchronization attempt.
 
-## Creating and enrolling a tracked entity instance
+## Creating and enrolling a tracked entity instance { #capture_app_tracker_creating }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_creating-->
 
 Click on the *+* button to go to the new enrollment form. The new
 enrollment will be associated with the organisation unit and program you
@@ -110,9 +103,8 @@ specific option (useful if there is a high number of options).
 
 ![](resources/images/android/tc/android-tc-option-set-selector.png)
 
-## Downloading tracker data from the online DHIS2 instance
+## Downloading tracker data from the online DHIS2 instance { #capture_app_tracker_downloading }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_downloading-->
 
 From the main screen press the middle button for querying the server.
 Since this task requires an Internet connection, please make sure that
@@ -141,9 +133,7 @@ will appear in the list at the bottom of the main screen.
 
 ![](resources/images/android/tc/android-tc-detailed-query.png)
 
-## Modifying enrollment and tracked entity instance attribute values
-
-<!--DHIS2-SECTION-ID:android_tracker_capture_modifying-->
+## Modifying enrollment and tracked entity instance attribute values { #capture_app_tracker_modifying }
 
 After an enrollment has been created you can go back to or modify the
 event by simply clicking on it in the enrollment list. This will open an
@@ -163,9 +153,7 @@ completed or terminated, you will not be able to modify the data
 
 ![](resources/images/android/tc/android-tc-tei-profile.png)
 
-## Creating new events for Enrollment
-
-<!--DHIS2-SECTION-ID:android_tracker_capture_new_events-->
+## Creating new events for Enrollment { #capture_app_tracker_creating_events }
 
 In the main screen click on any enrollment in the list to go into the
 Overview screen. This screen displays the information of the enrollment
@@ -211,9 +199,8 @@ option (useful if there is a high number of options).
 
 ![](resources/images/android/ec/android-ec-option-set-selector.png)
 
-## Create relationships
+## Create relationships { #capture_app_tracker_create_relationships }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_relationships-->
 
 Relationships let you create links between different tracked entity
 instances. This could be useful in cases where you want to map the
@@ -229,9 +216,8 @@ then it will show up in the Overview screen.
 
 ![](resources/images/android/tc/android-tc-register-relationship.png)
 
-## Settings
+## Settings { #capture_app_tracker_settings }
 
-<!--DHIS2-SECTION-ID:android_tracker_capture_settings-->
 
 The settings screen lets you do configure synchronization frequency and
 log out.

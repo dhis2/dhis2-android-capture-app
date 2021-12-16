@@ -4,37 +4,39 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-            name="mapListener"
-            type="org.dhis2.usescases.coodinates.CoordinatesView.OnMapPositionClick" />
+            name="item"
+            type="org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/fieldSelected"
-        android:layout_width="2dp"
-        android:layout_height="50dp"
-        android:background="?colorPrimary"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="6dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:background="?colorPrimary"
+            android:visibility="@{item.activated ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-    <org.dhis2.usescases.coodinates.CoordinatesView
-        android:id="@+id/formCoordinates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:mapListener="@{mapListener}"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <include
+            android:id="@+id/formCoordinates"
+            layout="@layout/form_coordinates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item="@{item}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

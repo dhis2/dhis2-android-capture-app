@@ -7,7 +7,10 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.Coordinates;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -173,7 +176,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
                     // IF FOUND, OPEN DASHBOARD
                     if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
-                        this.dataJson.add(attrValue);
+                        this.teiDataJson.add(attrValue);
                         DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                     } else {
@@ -353,6 +356,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     teiModelBuilder.organisationUnit(teiJson.getString("organisationUnit"));
                 if (teiJson.has("trackedEntityType"))
                     teiModelBuilder.trackedEntityType(teiJson.getString("trackedEntityType"));
+                if (teiJson.has("geometry"))
+                    teiModelBuilder.geometry(
+                            Geometry.builder()
+                                    .type(FeatureType.valueOf(teiJson.getJSONObject("geometry").getString("type")))
+                                    .coordinates(teiJson.getJSONObject("geometry").getString("coordinates"))
+                                    .build()
+                    );
 
                 TrackedEntityInstance teiModel = teiModelBuilder
                         .deleted(false)
@@ -454,12 +464,19 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("status")));
                         if (enrollmentJson.has("enrollmentDate"))
                             enrollmentBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("enrollmentDate")));
-                        if (enrollmentJson.has("dateOfIncident"))
-                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate ")));
+                        if (enrollmentJson.has("incidentDate"))
+                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate")));
                         if (enrollmentJson.has("organisationUnit"))
                             enrollmentBuilder.organisationUnit(enrollmentJson.getString("organisationUnit"));
                         if (enrollmentJson.has("trackedEntityInstance"))
                             enrollmentBuilder.trackedEntityInstance(enrollmentJson.getString("trackedEntityInstance"));
+                        if (enrollmentJson.has("geometry"))
+                            enrollmentBuilder.geometry(
+                                    Geometry.builder()
+                                            .type(FeatureType.valueOf(enrollmentJson.getJSONObject("geometry").getString("type")))
+                                            .coordinates(enrollmentJson.getJSONObject("geometry").getString("coordinates"))
+                                            .build()
+                            );
 
                         Enrollment enrollment = enrollmentBuilder
                                 .deleted(false)
@@ -505,11 +522,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventBuilder.status(EventStatus.valueOf(eventJson.getString("status")));
                     if (eventJson.has("attributeOptionCombo"))
                         eventBuilder.attributeOptionCombo(eventJson.getString("attributeOptionCombo"));
-                    if (eventJson.has("latitude") && eventJson.has("longitude")) {
-                        Coordinates coordinates = Coordinates.create(
-                                Double.parseDouble(eventJson.getString("latitude")),
-                                Double.parseDouble(eventJson.getString("longitude")));
-//                        eventBuilder.coordinate(coordinates);
+                    if (eventJson.has("geometry")) {
+                        eventBuilder.geometry(
+                                Geometry.builder()
+                                        .type(FeatureType.valueOf(eventJson.getJSONObject("geometry").getString("type")))
+                                        .coordinates(eventJson.getJSONObject("geometry").getString("coordinates"))
+                                        .build()
+                        );
                     }
                     if (eventJson.has("completedDate"))
                         eventBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventJson.getString("completedDate")));
@@ -629,11 +648,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (eventWORegistrationJson.has("status")) {
                     eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
                 }
-                if (eventWORegistrationJson.has("latitude") && eventWORegistrationJson.has("longitude")) { //TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
-                    Coordinates coordinates = Coordinates.create(
-                            Double.parseDouble(eventWORegistrationJson.getString("latitude")),
-                            Double.parseDouble(eventWORegistrationJson.getString("longitude")));
-//                    eventBuilder.coordinate(coordinates);
+                if (eventWORegistrationJson.has("geometry")) { //TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
+                    eventBuilder.geometry(
+                            Geometry.builder()
+                                    .type(FeatureType.valueOf(eventWORegistrationJson.getJSONObject("geometry").getString("type")))
+                                    .coordinates(eventWORegistrationJson.getJSONObject("geometry").getString("coordinates"))
+                                    .build()
+                    );
                 }
                 if (eventWORegistrationJson.has("program")) {
                     eventBuilder.program(eventWORegistrationJson.getString("program"));

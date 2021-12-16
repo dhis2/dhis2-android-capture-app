@@ -1,10 +1,12 @@
 package org.dhis2.utils
 
 import android.content.Context
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
+import org.dhis2.R
 import timber.log.Timber
 
 class AppMenuHelper private constructor(
@@ -16,7 +18,8 @@ class AppMenuHelper private constructor(
 ) {
 
     fun show() {
-        val popupMenu = PopupMenu(context, anchor, Gravity.BOTTOM)
+        val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
+        val popupMenu = PopupMenu(contextWrapper, anchor, Gravity.END)
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {

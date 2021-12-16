@@ -1,4 +1,4 @@
-# Annex E - MDM PoC: Miradore
+# Annex E - MDM PoC: Miradore { #mdm_miradore }
 
 This annex presents the outcome of the tested MDM: [https://www.miradore.com/](https://www.miradore.com/)
 
@@ -11,12 +11,12 @@ Quite easy and clean interface
 
 Console:
 
-![Miradore MDM console](resources/images/image3.png)
+![Miradore MDM console](resources/images/mdm-image3.png)
 
 
 Phone
 
-![Miradore MDM running on Android](resources/images/image1.png){ width=25% }
+![Miradore MDM running on Android](resources/images/mdm-image1.png){ width=25% }
 
 
 ## Issues 

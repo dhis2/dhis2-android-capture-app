@@ -1,0 +1,13 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.wangjie.rapidfloatingactionbutton"
+4    android:versionCode="5"
+5    android:versionName="1.0.4" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="19"
+8-->/Users/xurxodev/Workspace/EyeSeeTea/android/dhis2-android-capture-app/customFab/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="29" />
+9-->/Users/xurxodev/Workspace/EyeSeeTea/android/dhis2-android-capture-app/customFab/src/main/AndroidManifest.xml
+10
+11</manifest>

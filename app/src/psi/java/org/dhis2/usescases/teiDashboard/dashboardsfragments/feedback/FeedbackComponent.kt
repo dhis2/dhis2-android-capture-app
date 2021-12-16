@@ -1,12 +1,12 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import dagger.Subcomponent
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.data.dagger.PerActivity
 
-@PerFragment
+@PerActivity
 @Subcomponent(modules = [FeedbackModule::class])
 interface FeedbackComponent {
-    fun inject(feedbackFragment: FeedbackFragment)
-    fun inject(feedbackFragment: FeedbackContentFragment) {
+    fun inject(feedbackActivity: FeedbackActivity)
+    fun inject(feedbackContentFragment: FeedbackContentFragment) {
     }
 }

@@ -89,14 +89,16 @@
 
             <ImageView
                 android:id="@+id/clear"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:srcCompat="@drawable/ic_clear"
                 app:tint="?colorAccent" />
 
             <ImageView
                 android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="@{(description!=null)?View.VISIBLE : View.GONE}"

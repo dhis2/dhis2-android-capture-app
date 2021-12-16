@@ -60,7 +60,6 @@ class EventTest: BaseTest() {
 
         eventRegistrationRobot {
             checkEventFormDetails(eventDetails)
-            openMenuMoreOptions()
             clickOnDetails()
             checkEventDetails(eventDetails)
         }
@@ -131,7 +130,7 @@ class EventTest: BaseTest() {
 
     private fun createEventDetails() = EventDetailsUIModel(
         "Alfa",
-        96,
+        95,
         "1/3/2020",
         "OU TEST PARENT"
     )

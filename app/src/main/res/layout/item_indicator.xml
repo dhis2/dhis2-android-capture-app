@@ -8,25 +8,13 @@
         <import type="android.view.View" />
 
         <variable
-            name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="value"
-            type="java.lang.String" />
-
-        <variable
-            name="description"
-            type="java.lang.String" />
-
-        <variable
-            name="colorBg"
-            type="java.lang.Integer" />
+            name="indicatorModel"
+            type="org.dhis2.data.analytics.IndicatorModel" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="51dp"
         app:cardCornerRadius="3dp"
         app:cardUseCompatPadding="true"
         app:elevation="8dp"
@@ -36,61 +24,59 @@
             android:layout_width="match_parent"
             android:layout_height="48dp">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.6" />
-
             <TextView
                 android:id="@+id/indicator_name"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif"
-                android:gravity="center|start"
+                android:gravity="bottom|start"
                 android:maxLines="2"
-                android:padding="5dp"
-                android:text='@{label}'
-                android:textColor="#787878"
+                android:text='@{indicatorModel.label()}'
+                android:textColor="@color/textPrimary"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Indicator Name" />
 
-
             <TextView
                 android:id="@+id/indicator_value"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:gravity="top"
+                android:text="@{indicatorModel.value}"
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/indicator_name"
+                tools:text="James Johnson" />
+
+            <View
+                android:id="@+id/indicator_legend"
+                android:layout_width="15dp"
                 android:layout_height="0dp"
-                android:paddingStart="10dp"
-                android:background="@{colorBg!=-1? colorBg : @color/gray_e7e}"
-                android:fontFamily="sans-serif"
-                android:gravity="center"
-                android:text="@{value}"
-                android:textColor="#444444"
-                android:textSize="14sp"
-                app:fromResBgColor="@{colorBg!=-1? colorBg : @color/gray_e7e}"
+                android:background="@{indicatorModel.color()!=-1? indicatorModel.color() : @color/gray_e7e}"
+                app:fromResBgColor="@{indicatorModel.color()!=-1? indicatorModel.color() : @color/gray_e7e}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:background="#ff1"
-                tools:text="James Johnson" />
+                tools:background="#ff1" />
 
             <ImageView
                 android:id="@+id/descriptionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:tint="?colorPrimary"
-                android:visibility="@{description!=null? View.VISIBLE: View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/indicator_value"
-                app:srcCompat="@drawable/ic_info_outline" />
+                style="@style/ActionIconUnwrap"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="5dp"
+                android:visibility="@{indicatorModel.description() != null? View.VISIBLE: View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/indicator_name"
+                app:layout_constraintStart_toEndOf="@id/indicator_name"
+                app:layout_constraintTop_toTopOf="@id/indicator_name"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

@@ -13,9 +13,7 @@ import java.util.List;
 
 import androidx.appcompat.widget.PopupMenu;
 
-/**
- * QUADRAM. Created by ppajuelo on 20/02/2019.
- */
+
 public class CategoryOptionPopUp {
 
     private static CategoryOptionPopUp instance;
@@ -69,7 +67,7 @@ public class CategoryOptionPopUp {
             }
             return false;
         });
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category != null ? category.displayName() : categoryName);
+
         for (CategoryOption option : options) {
             if(date == null || ((option.startDate() == null || date.after(option.startDate())) && (option.endDate() == null || date.before(option.endDate()))))
                 menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());

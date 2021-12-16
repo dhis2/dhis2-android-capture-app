@@ -43,7 +43,7 @@ internal class StageViewHolder(
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
 
         binding.addStageButton.visibility =
-            if (eventItem.canAddNewEvent) {
+            if (eventItem.canShowAddButton()) {
                 View.VISIBLE
             } else {
                 View.GONE

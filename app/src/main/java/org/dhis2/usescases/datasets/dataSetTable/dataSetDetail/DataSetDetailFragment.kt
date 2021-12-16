@@ -7,22 +7,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.reactivex.Flowable
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.ColorUtils
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.android.core.period.PeriodType
 
 const val DATASET_UID = "DATASET_UID"
 const val DATASET_ACCESS = "DATASET_ACCESS"
@@ -39,6 +41,9 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     @Inject
     lateinit var presenter: DataSetDetailPresenter
 
+    @Inject
+    lateinit var periodUtils: DhisPeriodUtils
+
     companion object {
         @JvmStatic
         fun create(dataSetUid: String, accessWrite: Boolean): DataSetDetailFragment {
@@ -49,6 +54,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 }
             }
         }
+
         const val FRAGMENT_TAG = "SYNC"
     }
 
@@ -75,7 +81,10 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDatasetDetailBinding.inflate(inflater, container, false)
-        binding.syncStatus.setOnClickListener { openSyncDialog() }
+        binding.syncStatus.setOnClickListener {
+            presenter.onClickSyncStatus()
+            openSyncDialog()
+        }
         return binding.root
     }
 
@@ -144,10 +153,10 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     dataSetInstance.lastUpdated().toDateSpan(mContext)
                 )
             Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state(), false)
-            binding.dataSetPeriod.text = DateUtils.getInstance()
+            binding.dataSetPeriod.text = periodUtils
                 .getPeriodUIString(
-                    period.periodType(),
-                    period.startDate(),
+                    period.periodType() ?: PeriodType.Daily,
+                    period.startDate() ?: Date(),
                     Locale.getDefault()
                 )
             binding.dataSetOrgUnit.text = dataSetInstance.organisationUnitDisplayName()

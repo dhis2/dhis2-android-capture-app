@@ -3,109 +3,206 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+        android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/locale"
-            android:hint="Locale"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button"
-            android:id="@+id/localeButton"
-            android:text="Set locale"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Icon test" />
-
-
-        <EditText
-            android:id="@+id/iconInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Icon name" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iconImageNegative"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                tools:src="@drawable/ic_female_and_male_negative" />
-
-            <ImageView
-                android:id="@+id/iconImageOutline"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                tools:src="@drawable/ic_female_and_male_outline" />
-
-            <ImageView
-                android:id="@+id/iconImagePossitive"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                tools:src="@drawable/ic_female_and_male_positive" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorPrimaryLight">
-
-            <ImageView
-                android:id="@+id/iconImageNegative_tint"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                app:tint="@color/red_060"
-                tools:src="@drawable/ic_female_and_male_negative" />
-
-            <ImageView
-                android:id="@+id/iconImageOutline_tint"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                app:tint="@color/red_060"
-                tools:src="@drawable/ic_female_and_male_outline" />
-
-            <ImageView
-                android:id="@+id/iconImagePossitive_tint"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1"
-                app:tint="@color/red_060"
-                tools:src="@drawable/ic_female_and_male_positive" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/iconButton"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_keyboard_arrow_right" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="5dp">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/automaticErrorCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Automatic error search"/>
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/primaryAlpha"
+                    android:text="Analytics information"
+                    android:textColor="@color/colorAccent" />
+
+                <EditText
+                    android:id="@+id/matomoUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Matomo url"
+                    android:inputType="textUri" />
+
+                <EditText
+                    android:id="@+id/matomoId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Matomo id"
+                    android:inputType="number" />
 
 
-    </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/matomoButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Set matomo tracker" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Change locale"
+                    android:textColor="@color/colorAccent" />
+
+                <EditText
+                    android:id="@+id/locale"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Locale" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/localeButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Set locale" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Icon tester"
+                    android:textColor="@color/colorAccent" />
+
+
+                <EditText
+                    android:id="@+id/iconInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Icon name" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/iconImageNegative"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        tools:src="@drawable/ic_female_and_male_negative" />
+
+                    <ImageView
+                        android:id="@+id/iconImageOutline"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        tools:src="@drawable/ic_female_and_male_outline" />
+
+                    <ImageView
+                        android:id="@+id/iconImagePossitive"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        tools:src="@drawable/ic_female_and_male_positive" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?colorPrimaryLight">
+
+                    <ImageView
+                        android:id="@+id/iconImageNegative_tint"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        app:tint="@color/red_060"
+                        tools:src="@drawable/ic_female_and_male_negative" />
+
+                    <ImageView
+                        android:id="@+id/iconImageOutline_tint"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        app:tint="@color/red_060"
+                        tools:src="@drawable/ic_female_and_male_outline" />
+
+                    <ImageView
+                        android:id="@+id/iconImagePossitive_tint"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        app:tint="@color/red_060"
+                        tools:src="@drawable/ic_female_and_male_positive" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:id="@+id/iconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_right" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/automaticErrorCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Automatic error search" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Break the glass"
+                    android:textColor="@color/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/breakGlassButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Show dialog" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Rule action quality checker"
+                    android:textColor="@color/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ruleActionQualityButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Run check" />
+
+                <TextView
+                    android:id="@+id/ruleActionQualityResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
 </layout>

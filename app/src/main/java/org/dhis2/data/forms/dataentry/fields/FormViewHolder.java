@@ -1,110 +1,83 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import android.app.Activity;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
-
+import org.dhis2.BR;
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
-import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.RecyclerViewUiEvents;
+import org.dhis2.form.ui.intent.FormIntent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+public class FormViewHolder extends RecyclerView.ViewHolder {
 
-
-public abstract class FormViewHolder extends RecyclerView.ViewHolder {
-
-    protected ViewDataBinding binding;
-    protected ImageView description;
-    protected StringBuilder label;
-    protected String descriptionText;
-    protected MutableLiveData<String> currentUid;
-    protected String fieldUid;
-    protected ObjectStyle objectStyle;
-    protected static String selectedFieldUid;
-    protected ImageView fieldSelected;
+    private final ViewDataBinding binding;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
-        this.fieldSelected = binding.getRoot().findViewById(R.id.fieldSelected);
-        if(fieldSelected!=null) {
+        ImageView fieldSelected = binding.getRoot().findViewById(R.id.fieldSelected);
+        if (fieldSelected != null) {
             ViewExtensionsKt.clipWithAllRoundedCorners(fieldSelected, ExtensionsKt.getDp(2));
         }
-        if (description != null) {
-            description.setOnClickListener(v ->
-                    new CustomDialog(
-                            itemView.getContext(),
-                            label.toString(),
-                            descriptionText != null ? descriptionText : itemView.getContext().getString(R.string.empty_description),
-                            itemView.getContext().getString(R.string.action_close),
-                            null,
-                            Constants.DESCRIPTION_DIALOG,
-                            null
-                    ).show());
-        }
     }
 
-    public void initFieldFocus() {
-        if (currentUid != null) {
-            currentUid.observeForever(fieldUid -> {
-                if(fieldWasSelectedManually() || currentSelectedItem(fieldUid)){
-                    fieldSelected.setVisibility(View.VISIBLE);
-                    itemView.setActivated(true);
-                } else {
-                    fieldSelected.setVisibility(View.GONE);
-                    itemView.setActivated(false);
-                }
-            });
+    public void bind(FieldUiModel uiModel, FieldItemCallback callback) {
+        FieldUiModel.Callback itemCallback = new FieldUiModel.Callback() {
+            @Override
+            public void recyclerViewUiEvents(@NotNull RecyclerViewUiEvents uiEvent) {
+                callback.recyclerViewEvent(uiEvent);
+            }
 
-        }
+            @Override
+            public void intent(@NotNull FormIntent intent) {
+                callback.intent(intent);
+            }
+
+            @Override
+            public void mapRequest(@NotNull String coordinateFieldUid, @NotNull String featureType, @Nullable String initialCoordinates) {
+                callback.onMapRequest(coordinateFieldUid, FeatureType.valueOfFeatureType(featureType), initialCoordinates);
+            }
+
+            @Override
+            public void currentLocation(@NotNull String coordinateFieldUid) {
+                callback.onCurrentLocationRequest(coordinateFieldUid);
+            }
+
+            @Override
+            public void onNext() {
+                callback.onNext(getLayoutPosition());
+            }
+
+            @Override
+            public void onItemAction(@NotNull RowAction action) {
+                callback.onAction(action);
+            }
+        };
+        uiModel.setCallback(itemCallback);
+
+        binding.setVariable(BR.item, uiModel);
+        binding.executePendingBindings();
     }
 
-    private boolean fieldWasSelectedManually() {
-        return selectedFieldUid != null && selectedFieldUid.equals(this.fieldUid);
-    }
+    public interface FieldItemCallback {
+        void intent(@NotNull FormIntent intent);
 
-    private boolean currentSelectedItem(String fieldUid) {
-        return selectedFieldUid == null && Objects.equals(fieldUid, this.fieldUid);
-    }
+        void recyclerViewEvent(@NotNull RecyclerViewUiEvents uiEvent);
 
-    public void closeKeyboard(View v) {
-        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
+        void onNext(int layoutPosition);
 
-    public void openKeyboard(View v) {
-        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        boolean shown = imm.showSoftInput(v.findFocus(), InputMethodManager.SHOW_FORCED);
-       /* if (!imm.showSoftInput(v, 0))
-            v.postDelayed(() -> openKeyboard(v), 500);*/
-    }
+        void onMapRequest(@NotNull String coordinateFieldUid, @NotNull FeatureType featureType, @Nullable String initialCoordinates);
 
-    public void clearBackground(boolean isSarchMode) {
-        if (!isSarchMode) {
-            itemView.setBackgroundResource(R.color.form_field_background);
-            itemView.setActivated(false);
-        }
-    }
+        void onCurrentLocationRequest(@NotNull String coordinateFieldUid);
 
-    public void setSelectedBackground(boolean isSarchMode) {
-        if (!isSarchMode) {
-            selectedFieldUid = fieldUid;
-            currentUid.setValue(fieldUid);
-        }
-    }
-
-    public void clearCurrentSelection(){
-        selectedFieldUid = "";
-        currentUid.setValue("");
+        void onAction(RowAction action);
     }
 }

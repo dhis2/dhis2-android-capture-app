@@ -8,7 +8,7 @@ import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.searchTeiRobot
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.POST

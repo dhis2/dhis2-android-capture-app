@@ -7,4 +7,19 @@
     <string name="program_type_configuration_error_message">Det er en konfigurasjonsfeil i programtypen i det gjeldende programmet. Vennligst se gjennom programmet på serveren og utføre synkroniseringskonfigurasjon</string>
     <string name="unexpected_error_message">En uventet feil har oppstått. Gå gjennom konfigurasjonen eller kontakt med administratoren din</string>
     <string name="feedback_show_only_failed">Visningen mislyktes</string>
+    <string name="feedback_url">"Se full tilbakemelding på:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Etter indikator"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Etter teknisk område"</string>
+    <string name="feedback_tab_hnqis_all">"Alle"</string>
+    <string name="feedback_tab_hnqis_critical">"Kritisk"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Ikke kritisk"</string>
+    <string name="feedback_malformed_error">"**Feil**: Feilformet tilbakemelding for dataelementet %s"</string>
+    <string name="feedback_error">"Feil"</string>
+    <string name="feedback_warning">"Advarsel"</string>
+    <string name="feedback_order_with_spaces">"Tilbakemelding rekkefølge med mellomrom i dataelement %s"</string>
+    <string name="feedback_order_invalid">"Ugyldig tilbakemelding rekkefølge i dataelement %s"</string>
+    <string name="feedback_order_duplicate">"Tilbakemelding orden duplikat i dataelementene %s"</string>
+    <string name="feedback_order_gap">"program scenen %s inneholder tilbakemeldinger ordre hull"</string>
+    <string name="feedback_share_conducted">"Vurdering utført på"</string>
+    <string name="feedback_share_assessment_type">"Vurderingstype"</string>
 </resources>

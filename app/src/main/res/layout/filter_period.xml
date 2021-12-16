@@ -8,177 +8,196 @@
         <import type="android.view.View" />
 
         <variable
-            name="currentFilter"
-            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
-
-        <variable
-            name="filterType"
-            type="org.dhis2.utils.filters.Filters" />
+            name="filterItem"
+            type="org.dhis2.utils.filters.FilterItem" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="192dp"
         android:background="@color/filter_alpha"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
-        app:layout_constraintTop_toTopOf="parent">
+        android:visibility="gone"
+        app:clipAllCorners="@{8}"
+        app:expand_view="@{filterItem.openFilter == filterItem.type}"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
 
-        <!--DAILY-->
-
-        <RadioButton
-            android:id="@+id/today"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_today"
-            app:layout_constraintEnd_toStartOf="@+id/yesterday"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:checked="true" />
-
-        <RadioButton
-            android:id="@+id/yesterday"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_yesterday"
-            app:layout_constraintEnd_toStartOf="@+id/tomorrow"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/today"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@drawable/inner_shadow_top_straight"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioButton
-            android:id="@+id/tomorrow"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_tomorrow"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/yesterday"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <!--WEEK-->
-
-        <RadioButton
-            android:id="@+id/this_week"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_this_week"
-            app:layout_constraintEnd_toStartOf="@+id/yesterday"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/optionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/today" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/last_week"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_last_week"
-            app:layout_constraintEnd_toStartOf="@+id/tomorrow"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/today"
-            app:layout_constraintTop_toBottomOf="@id/today" />
+            <!--DAILY-->
 
-        <RadioButton
-            android:id="@+id/next_week"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_perdior_next_week"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/yesterday"
-            app:layout_constraintTop_toBottomOf="@id/today" />
+            <RadioButton
+                android:id="@+id/today"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_today"
+                app:layout_constraintEnd_toStartOf="@+id/yesterday"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:checked="true" />
 
-        <!--MONTH-->
+            <RadioButton
+                android:id="@+id/yesterday"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_yesterday"
+                app:layout_constraintEnd_toStartOf="@+id/tomorrow"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/today"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioButton
-            android:id="@+id/this_month"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_this_month"
-            app:layout_constraintEnd_toStartOf="@+id/yesterday"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/this_week" />
+            <RadioButton
+                android:id="@+id/tomorrow"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_tomorrow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/yesterday"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioButton
-            android:id="@+id/last_month"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_last_month"
-            app:layout_constraintEnd_toStartOf="@+id/tomorrow"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/today"
-            app:layout_constraintTop_toBottomOf="@id/this_week" />
+            <!--WEEK-->
 
-        <RadioButton
-            android:id="@+id/next_month"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_next_month"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/yesterday"
-            app:layout_constraintTop_toBottomOf="@id/this_week" />
+            <RadioButton
+                android:id="@+id/this_week"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_this_week"
+                app:layout_constraintEnd_toStartOf="@+id/yesterday"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/today" />
 
-        <!--OTHER-->
+            <RadioButton
+                android:id="@+id/last_week"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_last_week"
+                app:layout_constraintEnd_toStartOf="@+id/tomorrow"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/today"
+                app:layout_constraintTop_toBottomOf="@id/today" />
 
-        <RadioButton
-            android:id="@+id/fromTo"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_form_to"
-            app:layout_constraintEnd_toStartOf="@+id/yesterday"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/this_month" />
+            <RadioButton
+                android:id="@+id/next_week"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_perdior_next_week"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/yesterday"
+                app:layout_constraintTop_toBottomOf="@id/today" />
 
-        <RadioButton
-            android:id="@+id/other"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_other"
-            app:layout_constraintEnd_toStartOf="@+id/tomorrow"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/today"
-            app:layout_constraintTop_toBottomOf="@id/this_month" />
+            <!--MONTH-->
 
-        <RadioButton
-            android:id="@+id/anytime"
-            style="@style/filterPeriodRadioButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="@string/filter_period_any"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/other"
-            app:layout_constraintTop_toBottomOf="@id/this_month" />
+            <RadioButton
+                android:id="@+id/this_month"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_this_month"
+                app:layout_constraintEnd_toStartOf="@+id/yesterday"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/this_week" />
 
+            <RadioButton
+                android:id="@+id/last_month"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_last_month"
+                app:layout_constraintEnd_toStartOf="@+id/tomorrow"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/today"
+                app:layout_constraintTop_toBottomOf="@id/this_week" />
+
+            <RadioButton
+                android:id="@+id/next_month"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_next_month"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/yesterday"
+                app:layout_constraintTop_toBottomOf="@id/this_week" />
+
+            <!--OTHER-->
+
+            <RadioButton
+                android:id="@+id/fromTo"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_form_to"
+                app:layout_constraintEnd_toStartOf="@+id/yesterday"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/this_month" />
+
+            <RadioButton
+                android:id="@+id/other"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_other"
+                app:layout_constraintEnd_toStartOf="@+id/tomorrow"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/today"
+                app:layout_constraintTop_toBottomOf="@id/this_month" />
+
+            <RadioButton
+                android:id="@+id/anytime"
+                style="@style/filterPeriodRadioButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:text="@string/filter_period_any"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/other"
+                app:layout_constraintTop_toBottomOf="@id/this_month" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/inner_shadow_bottom_straight" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -50,7 +50,8 @@
         <ImageView
             android:onClick="@{() -> viewModel.add(point)}"
             android:visibility="@{isLast ? View.VISIBLE : View.GONE}"
-            android:tint="@color/blue_fab"
+            app:tint="@color/blue_fab"
+            style="@style/ActionIconUnwrap"
             app:srcCompat="@drawable/ic_add_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -61,8 +62,9 @@
         <ImageView
             android:onClick="@{() -> viewModel.remove(point)}"
             android:visibility="@{isLast ? View.GONE : View.VISIBLE}"
-            android:tint="@color/red_a14"
+            app:tint="@color/red_a14"
             app:srcCompat="@drawable/ic_close"
+            style="@style/ActionIconUnwrap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"

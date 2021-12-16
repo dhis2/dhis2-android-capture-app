@@ -73,6 +73,7 @@ class ProgramStageSelectionPresenterTest {
         val calcResult = Result.success(
             listOf(
                 RuleEffect.create(
+                    "ruleUid",
                     RuleActionHideProgramStage.create("programStage")
                 )
             )
@@ -104,6 +105,7 @@ class ProgramStageSelectionPresenterTest {
         val calcResult = Result.success(
             listOf(
                 RuleEffect.create(
+                    "ruleUid",
                     RuleActionHideProgramStage.create("programStage")
                 )
             )

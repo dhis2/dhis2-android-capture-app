@@ -1,6 +1,5 @@
-# Installing the new DHIS 2 Capture App
+# Installing the new DHIS 2 Capture App { #implementation_guide_installing }
 
-<!--DHIS2-SECTION-ID:installing-->
 
 There application can be downloaded and installed from two places:
 
@@ -16,9 +15,8 @@ There application can be downloaded and installed from two places:
 
 Please read the section on App distribution for understanding the implications of using the different distribution channels.
 
-## Migrating from the old apps
+## Migrating from the old apps { #implementation_guide_installing_migrating }
 
-<!--DHIS2-SECTION-ID:installing_migrating-->
 
 Before you start with the installation of the new DHIS 2 Capture Android App in the field, it is important to note that if your users are already using the old generation DHIS 2 Android Event Capture or Tracker Capture, they should follow these steps:
 
@@ -31,9 +29,8 @@ Before you start with the installation of the new DHIS 2 Capture Android App in 
 > Deleting the app without syncing can cause information loss.
 >
 
-## Login into the app
+## Login into the app { #implementation_guide_installing_login }
 
-<!--DHIS2-SECTION-ID:installing_login-->
 
 In order to log in you will need the DHIS 2 server URL, the user name and the password for the user you just created.For testing purposes you can also use the testing servers and credentials:
 

@@ -8,6 +8,7 @@ import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
@@ -22,14 +23,16 @@ class ProgramModule(private val view: ProgramView) {
         homeRepository: HomeRepository,
         schedulerProvider: SchedulerProvider,
         preferenceProvider: PreferenceProvider,
-        filterManager: FilterManager
+        filterManager: FilterManager,
+        matomoAnalyticsController: MatomoAnalyticsController
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
             homeRepository,
             schedulerProvider,
             preferenceProvider,
-            filterManager
+            filterManager,
+            matomoAnalyticsController
         )
     }
 

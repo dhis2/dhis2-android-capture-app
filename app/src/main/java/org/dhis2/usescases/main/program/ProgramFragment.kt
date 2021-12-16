@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -15,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -22,7 +22,7 @@ import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.orgunitselector.OUTreeActivity
+import org.dhis2.usescases.orgunitselector.OUTreeFragment
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.Constants
@@ -71,7 +71,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter
-            programRecycler.clipWithRoundedCorners(16.dp)
+            drawerLayout.clipWithRoundedCorners(16.dp)
             programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(
@@ -109,11 +109,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun showFilterProgress() {
         binding.progressLayout.visibility = View.VISIBLE
+        Bindings.setViewVisibility(
+            binding.clearFilter,
+            FilterManager.getInstance().totalFilters > 0
+        )
     }
 
     override fun renderError(message: String) {
         if (isAdded && activity != null) {
-            AlertDialog.Builder(activity!!)
+            AlertDialog.Builder(requireActivity())
                 .setPositiveButton(android.R.string.ok, null)
                 .setTitle(getString(R.string.error))
                 .setMessage(message)
@@ -122,8 +126,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun openOrgUnitTreeSelector() {
-        val ouTreeIntent = Intent(context, OUTreeActivity::class.java)
-        (context as MainActivity).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE)
+        OUTreeFragment.newInstance(true).show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {
@@ -161,7 +164,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun clearFilters() {
-        (activity as MainActivity).adapter?.notifyDataSetChanged()
+        (activity as MainActivity).newAdapter.notifyDataSetChanged()
     }
 
     override fun navigateTo(program: ProgramViewModel) {

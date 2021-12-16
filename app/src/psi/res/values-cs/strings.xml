@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PSI dhis2</string>
+    <string name="logo_text">PSI dhis2</string>
+    <string name="logo_number"></string>
+    <string name="dashboard_feedback">Feedback</string>
+    <string name="program_type_configuration_error_message">V aktuálním programu došlo k chybě konfigurace typu programu. Zkontrolujte program na serveru a proveďte konfiguraci synchronizace</string>
+    <string name="unexpected_error_message">Došlo k neočekávané chybě. Zkontrolujte svou konfiguraci nebo kontaktujte svého správce</string>
+    <string name="feedback_show_only_failed">Zobrazit pouze se nezdařilo</string>
+    <string name="feedback_url">"Úplnou zpětnou vazbu naleznete na adrese:"</string>
+    <string name="feedback_tab_rdqa_by_indicator">"Podle indikátoru"</string>
+    <string name="feedback_tab_rdqa_by_technical_area">"Podle technické oblasti"</string>
+    <string name="feedback_tab_hnqis_all">"Všechno"</string>
+    <string name="feedback_tab_hnqis_critical">"Kritický"</string>
+    <string name="feedback_tab_hnqis_non_critical">"Není kritický"</string>
+    <string name="feedback_malformed_error">"**Chyba**: Poškozený JSON zpětné vazby pro datový prvek %s"</string>
+    <string name="feedback_error">"Chyba"</string>
+    <string name="feedback_warning">"Varování"</string>
+    <string name="feedback_order_with_spaces">"Zpětná vazba, aby se prostory v datovém prvku %s"</string>
+    <string name="feedback_order_invalid">"Neplatný objednat zpětná vazba v datovém prvku %s"</string>
+    <string name="feedback_order_duplicate">"Zpětná vazba pořadí duplicitní v datových prvcích %s"</string>
+    <string name="feedback_order_gap">"fáze programu %s obsahuje mezery zpětná vazba pořadí"</string>
+    <string name="feedback_share_conducted">"Hodnocení provedeno dne"</string>
+    <string name="feedback_share_assessment_type">"Typ posouzení"</string>
+</resources>

@@ -20,15 +20,20 @@ import org.mockito.Mockito.RETURNS_DEEP_STUBS
 
 class AboutPresenterTest {
 
-    private lateinit var aboutPresenter: AboutPresenterImpl
+    private lateinit var aboutPresenter: AboutPresenter
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val userRepository: UserRepository = mock()
-    private val aboutView: AboutContracts.AboutView = mock()
+    private val aboutView: AboutView = mock()
     private val providesPresenterFactory = TrampolineSchedulerProvider()
 
     @Before
     fun setup() {
-        aboutPresenter = AboutPresenterImpl(d2, providesPresenterFactory, userRepository)
+        aboutPresenter = AboutPresenter(
+            aboutView,
+            d2,
+            providesPresenterFactory,
+            userRepository
+        )
     }
 
     @Test
@@ -44,7 +49,7 @@ class AboutPresenterTest {
             .contextPath("https://url.es").build()
         whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
 
-        aboutPresenter.init(aboutView)
+        aboutPresenter.init()
         verify(aboutView).renderUserCredentials(userCredentials)
         verify(aboutView).renderServerUrl(userName.contextPath())
     }
@@ -53,6 +58,6 @@ class AboutPresenterTest {
     fun `Should clear disposable`() {
         aboutPresenter.onPause()
 
-        assert(aboutPresenter.compositeDisposable.size() == 0)
+        assert(aboutPresenter.disposable.size() == 0)
     }
 }

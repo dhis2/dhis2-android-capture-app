@@ -27,7 +27,9 @@
         app:layout_constraintWidth_percent="0.25"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:gravity="end">
+        android:gravity="end"
+        android:textIsSelectable="true"
+        android:textColorHighlight="?colorPrimary">
         <TextView
             android:id="@+id/value"
             android:layout_width="wrap_content"

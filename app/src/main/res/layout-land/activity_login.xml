@@ -17,68 +17,74 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:focusableInTouchMode="true">
+        android:background="?colorPrimary">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/logo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="92dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/logo_banner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="11dp"
+                android:layout_marginBottom="23dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_dhis_white" />
 
-            <RelativeLayout
-                android:id="@+id/logo"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="?colorPrimary">
+            <TextView
+                android:id="@+id/app_build_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="?colorAccent"
+                android:textSize="9sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="v2.4.X : 2020-09-03 : whatever" />
 
-                <ImageView
-                    android:id="@+id/logo_banner"
-                    android:layout_width="200dp"
-                    android:layout_height="100dp"
-                    android:layout_marginStart="85dp"
-                    app:srcCompat="@drawable/ic_dhis_white" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/app_build_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="16dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="?colorAccent"
-                    android:textSize="9sp"
-                    tools:text="hdkgdkhsdfsdfsdj" />
-
-            </RelativeLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/credentialLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:paddingStart="100dp"
+            android:paddingTop="18dp"
+            android:paddingEnd="100dp"
+            app:clipCorners="@{16}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logo">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/credentialLayout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:gravity="center">
-
-
-                <ImageView
-                    android:id="@+id/logo_front"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:alpha=".3"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/serverUrlContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxWidth="450dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
                     android:id="@+id/clearUrl"
                     style="@style/ActionIconNoPadding"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
-                    app:layout_constraintStart_toEndOf="@id/server_url"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/server_url"
                     app:srcCompat="@drawable/ic_close"
                     tools:ignore="ContentDescription" />
@@ -88,22 +94,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
-                    app:layout_constraintEnd_toStartOf="@id/server_url"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/server_url"
                     app:srcCompat="@drawable/ic_i_url" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/server_url"
-                    android:layout_width="250dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:hint="@string/url_hint"
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
-                    app:layout_constraintBottom_toTopOf="@+id/user_name"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/clearUrl"
+                    app:layout_constraintStart_toEndOf="@id/serverIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed">
 
@@ -122,13 +127,23 @@
                         tools:drawableEnd="@drawable/ic_i_qr_code" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/userNameContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxWidth="450dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serverUrlContainer">
 
                 <ImageView
                     android:id="@+id/userIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@id/user_name"
-                    app:layout_constraintEnd_toStartOf="@id/user_name"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/user_name"
                     app:srcCompat="@drawable/ic_i_user" />
 
@@ -139,13 +154,13 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="@id/user_name"
-                    app:layout_constraintStart_toEndOf="@id/user_name"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/user_name"
                     app:srcCompat="@drawable/ic_close" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_name"
-                    android:layout_width="250dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_marginStart="12dp"
@@ -153,11 +168,9 @@
                     android:hint="@string/user_hint"
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
-                    app:layout_constraintBottom_toTopOf="@+id/user_pass"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/server_url"
-                    app:layout_constraintVertical_chainStyle="spread">
+                    app:layout_constraintEnd_toStartOf="@id/clearUserNameButton"
+                    app:layout_constraintStart_toEndOf="@id/userIcon"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                         android:id="@+id/user_name_edit"
@@ -171,13 +184,24 @@
 
 
                 </com.google.android.material.textfield.TextInputLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/passContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxWidth="450dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/userNameContainer">
+
 
                 <ImageView
                     android:id="@+id/passIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@id/user_pass"
-                    app:layout_constraintEnd_toStartOf="@id/user_pass"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/user_pass"
                     app:srcCompat="@drawable/ic_i_block" />
 
@@ -188,13 +212,13 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="@id/user_pass"
-                    app:layout_constraintStart_toEndOf="@id/user_pass"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/user_pass"
                     app:srcCompat="@drawable/ic_close" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_pass"
-                    android:layout_width="250dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_marginStart="12dp"
@@ -203,11 +227,9 @@
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
                     app:endIconMode="password_toggle"
-                    app:layout_constraintBottom_toTopOf="@+id/biometricButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/user_name"
-                    app:layout_constraintVertical_chainStyle="spread">
+                    app:layout_constraintEnd_toStartOf="@id/clearPassButton"
+                    app:layout_constraintStart_toEndOf="@id/passIcon"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/user_pass_edit"
@@ -220,124 +242,138 @@
                         android:textSize="17sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <ImageButton
-                    android:id="@+id/biometricButton"
-                    style="@style/ActionIcon"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{()-> presenter.onFingerprintClick()}"
-                    android:tint="?colorPrimary"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/user_pass"
-                    app:layout_constraintVertical_chainStyle="spread"
-                    app:srcCompat="@drawable/ic_fingerprint"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/account_recovery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:onClick="@{()->presenter.onAccountRecovery()}"
-                    android:padding="6dp"
-                    android:text="@string/account_recovery"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/textSize_12"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/biometricButton" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/progressLayout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
+
+            <ImageButton
+                android:id="@+id/biometricButton"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="14dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:onClick="@{()->presenter.onFingerprintClick()}"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/passContainer"
+                app:layout_constraintVertical_chainStyle="spread"
+                app:srcCompat="@drawable/ic_fingerprint"
+                app:tint="?colorPrimary"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/account_recovery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:onClick="@{()->presenter.onAccountRecovery()}"
+                android:text="@string/account_recovery"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/textSize_12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/biometricButton" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Authenticating"
-                    android:textColor="@color/text_black_333" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ProgressBar
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    app:progressColor="@{@color/colorPrimary}" />
-            </LinearLayout>
-            <!--style="@style/FullWidthButton"-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/loginButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:maxWidth="450dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/login"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="250dp"
+                style="@style/LoginButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
                 android:onClick="@{()-> presenter.onButtonClick()}"
                 android:text="@string/log_in_button"
-                android:textSize="12sp"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/loginOpenId"
+                style="@style/OpenIdLoginButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                app:icon="@drawable/ic_dhis"
+                app:layout_constraintTop_toBottomOf="@id/login"
+                tools:text="Log in with google" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:onClick="onLogoutClick"
+                android:text="@string/log_out"
+                android:textSize="@dimen/textSize_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/unlock"
+                app:layout_constraintStart_toStartOf="parent"
                 app:strokeColor="#61333333" />
 
-            <LinearLayout
-                android:id="@+id/unlock_layout"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/unlock"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:onClick="onUnlockClick"
+                android:text="@string/unlock_button"
+                android:textSize="@dimen/textSize_12"
                 android:visibility="gone"
-                tools:visibility="visible">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/logout"
+                app:strokeColor="#61333333" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/logout"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:onClick="onLogoutClick"
-                    android:text="@string/log_out"
-                    android:textSize="@dimen/textSize_12"
-                    app:strokeColor="#61333333" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/unlock"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:onClick="onUnlockClick"
-                    android:text="@string/unlock_button"
-                    android:textSize="@dimen/textSize_12"
-                    app:strokeColor="#61333333" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/progressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            app:clipCorners="@{16}"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logo">
 
-            </LinearLayout>
-        </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/authenticating"
+                android:textColor="@color/text_black_333"
+                app:layout_constraintBottom_toTopOf="@id/progress" />
 
-        <!-- PIN LAYOUT -->
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:progressColor="@{@color/colorPrimary}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             android:id="@+id/pin_layout"
             layout="@layout/layout_pin"
             android:visibility="gone" />
-
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

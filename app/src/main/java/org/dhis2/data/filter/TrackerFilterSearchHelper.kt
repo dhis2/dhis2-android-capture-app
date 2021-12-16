@@ -31,6 +31,7 @@ class TrackerFilterSearchHelper @Inject constructor(
         repository: TrackedEntityInstanceQueryCollectionRepository
     ): TrackedEntityInstanceQueryCollectionRepository {
         return repository
+            .withFilter { applyWorkingList(it) }
             .withFilter { applyEnrollmentStatusFilter(it) }
             .withFilter { applyEventStatusFilter(it) }
             .withFilter { applyOrgUnitFilter(it) }
@@ -39,6 +40,23 @@ class TrackerFilterSearchHelper @Inject constructor(
             .withFilter { applyEnrollmentDateFilter(it) }
             .withFilter { applyAssignedToMeFilter(it) }
             .withFilter { applySorting(it) }
+    }
+
+    private fun applyWorkingList(
+        teiQuery: TrackedEntityInstanceQueryCollectionRepository
+    ): TrackedEntityInstanceQueryCollectionRepository {
+        return if (filterManager.workingListActive()) {
+            filterRepository.applyWorkingList(
+                teiQuery,
+                filterManager.currentWorkingList()
+            ).also {
+                filterManager.setWorkingListScope(
+                    it.scope.mapToWorkingListScope(filterRepository.resources)
+                )
+            }
+        } else {
+            teiQuery
+        }
     }
 
     private fun applyEnrollmentStatusFilter(

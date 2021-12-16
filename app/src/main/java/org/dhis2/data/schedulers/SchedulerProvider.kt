@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 interface SchedulerProvider {
     fun computation(): Scheduler
@@ -29,7 +30,7 @@ fun <T> Observable<T>.defaultSubscribe(
 fun <T> Flowable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
-    onError: (Throwable) -> Unit? = {},
+    onError: (Throwable) -> Unit? = { Timber.d(it) },
     onComplete: () -> Unit? = {}
 ): Disposable {
     return subscribeOn(schedulerProvider.io())

@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -63,4 +64,12 @@ public abstract class ProgramEventViewModel implements CarouselItemModel {
         return new AutoValue_ProgramEventViewModel(uid, orgUnitUid, orgUnitName, date, eventState, data, status, isExpired, attributeOptionComboName, geometry, canBeEdited);
     }
 
+
+    public boolean shouldShowNavigationButton() {
+        if(geometry() != null){
+            return geometry().type() == FeatureType.POINT;
+        }else{
+            return false;
+        }
+    }
 }

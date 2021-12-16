@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.Bindings.buildInfo
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.common.idlingresources.FragmentIdlingResource
@@ -47,13 +48,7 @@ class AboutTest : BaseTest() {
     }
 
     private fun getAppVersionName(): String {
-        try {
-            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            return pInfo.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        return ""
+        return context.buildInfo()
     }
 
     private fun getSDKVersionName() =

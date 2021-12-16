@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="dhis2.org.analytics.charts.data.ChartType" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="chartModel"
+            type="org.dhis2.data.analytics.ChartModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp">
+
+        <ImageView
+            android:id="@+id/chart_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconResource="@{chartModel.observableChartType.iconResource}"
+            app:layout_constraintBottom_toBottomOf="@id/chart_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_line_chart" />
+
+        <TextView
+            android:id="@+id/chart_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@{chartModel.graph.title}"
+            android:textColor="@color/textPrimary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+            app:layout_constraintStart_toEndOf="@id/chart_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Chart title" />
+
+        <ImageButton
+            android:id="@+id/chartVisualizationButton"
+            style="@style/ActionIconNoPadding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{(view)->chartModel.showVisualizationOptions(view)}"
+            app:layout_constraintBottom_toBottomOf="@id/chart_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_more"
+            app:tint="@color/text_black_333" />
+        <!--android:visibility="@{chartModel.graph.chartType == ChartType.NUTRITION ? View.GONE : View.VISIBLE}"-->
+
+        <FrameLayout
+            android:id="@+id/chart_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chart_title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

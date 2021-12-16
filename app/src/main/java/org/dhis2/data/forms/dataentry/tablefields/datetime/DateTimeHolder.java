@@ -127,17 +127,25 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     @Override
     public void onDateSelected(Date date) {
-        String dateFormatted = "";
-        if (date != null)
-            if (dateTimeViewModel.valueType() == ValueType.DATE)
-                dateFormatted = DateUtils.uiDateFormat().format(date);
-            else if (dateTimeViewModel.valueType() == ValueType.TIME)
-                dateFormatted = DateUtils.timeFormat().format(date);
-            else {
-                dateFormatted = DateUtils.databaseDateFormatNoSeconds().format(date);
+        String dateFormatted;
+        if(date!=null) {
+            switch (dateTimeViewModel.valueType()) {
+                case DATETIME:
+                    dateFormatted = DateUtils.databaseDateFormatNoSeconds().format(date);
+                    break;
+                case DATE:
+                    dateFormatted = DateUtils.oldUiDateFormat().format(date);
+                    break;
+                case TIME:
+                default:
+                    dateFormatted = DateUtils.timeFormat().format(date);
             }
+        }else{
+            dateFormatted = null;
+        }
+
         processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.categoryOptionCombo(), dateTimeViewModel.catCombo(), dateTimeViewModel.row(), dateTimeViewModel.column())
+                RowAction.create(dateTimeViewModel.uid(), dateFormatted, dateTimeViewModel.dataElement(), dateTimeViewModel.categoryOptionCombo(), dateTimeViewModel.catCombo(), dateTimeViewModel.row(), dateTimeViewModel.column())
         );
     }
 

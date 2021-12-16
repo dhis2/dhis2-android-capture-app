@@ -36,7 +36,8 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
                         oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
                         oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
                         Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
-                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
+                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue()) &&
+                        Objects.equals(oldItem.getEnrolledOrgUnit(), newItem.getEnrolledOrgUnit());
             } else {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         Objects.equals(oldItem.getTei().state(), newItem.getTei().state()) &&
@@ -45,7 +46,8 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
                         oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
                         oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
                         Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
-                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
+                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue()) &&
+                        Objects.equals(oldItem.getEnrolledOrgUnit(), newItem.getEnrolledOrgUnit());
             }
         }
     };
@@ -87,5 +89,10 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
                     return Unit.INSTANCE;
                 }
         );
+    }
+
+    public void clearList() {
+        submitList(null);
+        notifyDataSetChanged();
     }
 }

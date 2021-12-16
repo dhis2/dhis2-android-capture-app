@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.dhis2.App;
 
 import javax.inject.Inject;
@@ -32,7 +30,6 @@ public class SyncInitWorker extends Worker {
 
     @NonNull
     @Override
-    @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
 
         if (((App) getApplicationContext()).userComponent() != null) {

@@ -1,0 +1,56 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">Erru</string>
+    <string name="add_new">Aumenta foun</string>
+    <string name="add">Aumenta</string>
+    <string name="user_hint">Utilizador nia Naran</string>
+    <string name="password_hint">Seña</string>
+    <string name="account_recovery">Restaurasaun konta</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Diáriu</string>
+    <string name="WEEKLY">Semanal</string>
+    <string name="MONTHLY">Mensal</string>
+    <string name="YEARLY">Anual</string>
+    <string name="action_share_zero_items">Partilla</string>
+    <string name="read_only">Le deit</string>
+    <string name="complete">Kompletu</string>
+    <string name="state_error">Erru</string>
+    <!--Event initial-->
+    <string name="create">Kria</string>
+    <string name="update">Atualiza</string>
+    <string name="date">Data</string>
+    <string name="cancel">Kansela</string>
+    <string name="delete">Soe</string>
+    <string name="done_task">Pájina inisial</string>
+    <string name="wipe_data_no">Kansela</string>
+    <string name="SYNC_MANAGER">Konfigurasaun</string>
+    <string name="hint_month">Fulan</string>
+    <string name="hint_year">Tinan</string>
+    <string name="week">Semanas</string>
+    <string name="date_dialog_clear">Hamós</string>
+    <string name="period">Períodu</string>
+    <string name="next">Próximu</string>
+    <string name="SAVE">Rai</string>
+    <string name="about">Konabá</string>
+    <string name="share">Partilla</string>
+    <string name="warning_on_complete_title">Avizu</string>
+    <string name="error_on_complete_title">Erru</string>
+    <string name="save">Rai</string>
+    <string name="select_option">Hili opsaun</string>
+    <string name="menu_home">Pájina inisial</string>
+    <string name="dashboard_indicators">Indikadores</string>
+    <string name="event_overview">Detalles</string>
+    <string name="event_indicators">Indikadores</string>
+    <string name="please_wait">Favor hein</string>
+    <string name="table">Tabela</string>
+    <string name="state_warning">Avizu</string>
+    <string name="action_close">Taka</string>
+    <string name="data_every_day">Diáriu</string>
+    <string name="data_every_week">Semanal</string>
+    <string name="filters_title_period">Períodu</string>
+    <string name="filters_title_status">Estadu</string>
+    <string name="filter_period_last_week">Semana kotuk</string>
+    <string name="filter_period_last_month">Fulan kotuk</string>
+    <string name="filter_period_other">Seluk</string>
+    </resources>

@@ -1,15 +1,17 @@
 package org.dhis2.uicomponents.map.layer
 
 import android.graphics.Color
+import androidx.annotation.ColorRes
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import org.dhis2.R
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.FieldMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
-import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.MapStyle
@@ -21,21 +23,35 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
+    var currentStyle: String = Style.MAPBOX_STREETS
+
     private val relationShipColors =
         mutableListOf(
             Color.parseColor("#E71409"),
-            Color.parseColor("#337DBA"),
             Color.parseColor("#49B044"),
             Color.parseColor("#994BA5"),
+            Color.parseColor("#337DBA"),
             Color.parseColor("#FF7F00"),
             Color.parseColor("#999999"),
-            Color.parseColor("#A85621"),
             Color.parseColor("#F97FC0"),
-            Color.parseColor("#2C2C2C")
+            Color.parseColor("#2C2C2C"),
+            Color.parseColor("#A85621")
         )
+    private val drawableResources = mutableListOf(
+        R.drawable.ic_map_item_1,
+        R.drawable.ic_map_item_2,
+        R.drawable.ic_map_item_3,
+        R.drawable.ic_map_item_4,
+        R.drawable.ic_map_item_5
+    )
+
     private var carouselAdapter: CarouselAdapter? = null
+
     val relationshipUsedColors =
         mutableMapOf<String, Int>()
+
+    val drawableCombinations = drawableColorCombinations()
+    val drawableCombinationsUsed = mutableMapOf<String, Pair<Int, Int>>()
 
     companion object {
         const val TEI_ICON_ID = "TEI_ICON_ID"
@@ -70,23 +86,11 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                 LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
                     style
                 )
-                LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
-                    mapboxMap,
-                    styleChangeCallback,
-                    style.uri.contains("satellite")
-                )
                 LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
                     style,
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
-                    if (relationshipUsedColors.containsKey(sourceId)) {
-                        relationshipUsedColors[sourceId]
-                    } else {
-                        relationShipColors.firstOrNull()?.also {
-                            relationshipUsedColors[sourceId] = relationShipColors[0]
-                            relationShipColors.removeAt(0)
-                        }
-                    }
+                    getNextAvailableDrawable(sourceId)?.second
                 )
                 LayerType.EVENT_LAYER -> EventMapLayer(
                     style,
@@ -98,6 +102,10 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                     featureType ?: FeatureType.POINT,
                     sourceId!!,
                     mapStyle?.programDarkColor!!
+                )
+                LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
+                    style,
+                    sourceId!!
                 )
             }
         }
@@ -137,7 +145,9 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun selectFeature(feature: Feature?) {
         mapLayers.entries.forEach {
-            it.value.setSelectedItem(feature)
+            if (it.value.visible) {
+                it.value.setSelectedItem(feature)
+            }
         }
     }
 
@@ -150,10 +160,10 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
             LayerType.TEI_LAYER -> mapLayers.filterValues { it is TeiMapLayer }
             LayerType.ENROLLMENT_LAYER -> mapLayers.filterValues { it is EnrollmentMapLayer }
             LayerType.HEATMAP_LAYER -> mapLayers.filterValues { it is HeatmapMapLayer }
-            LayerType.SATELLITE_LAYER -> mapLayers.filterValues { it is SatelliteMapLayer }
             LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
             LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
             LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
+            LayerType.FIELD_COORDINATE_LAYER -> mapLayers.filterValues { it is FieldMapLayer }
         }
         filterLayers.keys.forEach {
             if (!sourceIds.contains(it)) {
@@ -169,5 +179,53 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun clearLayers() {
         mapLayers.clear()
+    }
+
+    fun changeStyle(baseMapType: BaseMapType) {
+        currentStyle = when (baseMapType) {
+            BaseMapType.STREET -> Style.MAPBOX_STREETS
+            BaseMapType.SATELLITE -> Style.SATELLITE_STREETS
+        }
+        mapboxMap.setStyle(
+            currentStyle
+        ) {
+            styleChangeCallback?.invoke(it)
+        }
+    }
+
+    @ColorRes
+    fun getNextAvailableColor(sourceId: String): Int? {
+        return if (relationshipUsedColors.containsKey(sourceId)) {
+            relationshipUsedColors[sourceId]
+        } else {
+            relationShipColors.firstOrNull()?.also {
+                relationshipUsedColors[sourceId] = relationShipColors[0]
+                relationShipColors.removeAt(0)
+            }
+        }
+    }
+
+    fun getNextAvailableDrawable(sourceId: String): Pair<Int, Int>? {
+        return if (drawableCombinationsUsed.containsKey(sourceId)) {
+            drawableCombinationsUsed[sourceId]!!
+        } else {
+            drawableCombinations.firstOrNull()?.also {
+                drawableCombinationsUsed[sourceId] = it
+                drawableCombinations.removeAt(0)
+            }
+        }
+    }
+
+    private fun drawableColorCombinations(): MutableList<Pair<Int, Int>> {
+        val combinations = mutableListOf<Pair<Int, Int>>()
+        for (i in 0 until relationShipColors.size * drawableResources.size) {
+            combinations.add(
+                Pair(
+                    drawableResources[i % drawableResources.size],
+                    relationShipColors[i % relationShipColors.size]
+                )
+            )
+        }
+        return combinations
     }
 }

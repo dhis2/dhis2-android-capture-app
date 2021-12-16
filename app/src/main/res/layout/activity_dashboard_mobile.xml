@@ -28,28 +28,28 @@
             type="Integer" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:clipToPadding="false"
             android:elevation="8dp"
             app:elevation="8dp"
-            android:background="?colorPrimary"
-            android:clipToPadding="false">
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/back"
                 style="@style/ActionIcon"
                 android:onClick='@{()->presenter.onBackPressed()}'
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
-                app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -100,12 +100,12 @@
             <ImageView
                 android:id="@+id/relationshipMapIcon"
                 style="@style/ActionIcon"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_map"
-                android:visibility="gone"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -138,23 +138,21 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            style="@style/DhisTabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:elevation="8dp"
-            app:elevation="8dp"
-            app:tabPaddingEnd="16dp"
-            app:tabPaddingStart="16dp"
-            app:tabTextAppearance="@style/DhisTabText" />
-
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/tei_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false" />
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </LinearLayout>
+        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+            android:id="@+id/navigationBar"
+            style="@style/DhisBottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:menu="@menu/navigation_dashboard_menu" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

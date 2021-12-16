@@ -44,7 +44,7 @@
             android:id="@+id/nfcBg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tint="@color/event_green"
+            app:tint="@color/event_green"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

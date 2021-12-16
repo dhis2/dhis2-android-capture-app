@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.mapbox.geojson.BoundingBox;
@@ -20,17 +18,13 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
-import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
-import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
-import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.ExternalMapNavigation;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
@@ -38,10 +32,9 @@ import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
-import org.hisp.dhis.android.core.common.FeatureType;
+import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,14 +46,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
-
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
 
 public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
 
@@ -68,11 +56,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     RelationshipPresenter presenter;
     @Inject
     CarouselViewAnimations animations;
+    @Inject
+    ExternalMapNavigation mapNavigation;
 
     private FragmentRelationshipsBinding binding;
 
     private RelationshipAdapter relationshipAdapter;
-    private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
     private RelationshipMapManager relationshipMapManager;
 
@@ -98,22 +87,25 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
+        getLifecycle().addObserver(relationshipMapManager);
+        relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
-        relationshipMapManager.init(() -> {
+        relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
+            permissionManager.requestLocationPermissions(activity);
             return Unit.INSTANCE;
         });
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(this, showMap -> {
+        activity.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
-            binding.rfabLayout.setVisibility(showMap ? View.GONE : View.VISIBLE);
+            binding.dialFabLayout.setFabVisible(!showMap);
         });
 
         binding.mapLayerButton.setOnClickListener(view -> {
-            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager.mapLayerManager);
+            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager);
             layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
         });
 
@@ -121,26 +113,37 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        relationshipMapManager.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (binding.mapView.getVisibility() == View.VISIBLE && relationshipMapManager.getPermissionsManager() != null) {
+            relationshipMapManager.getPermissionsManager().onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if(binding.mapView.getVisibility() == View.VISIBLE){
+        if (binding.mapView.getVisibility() == View.VISIBLE) {
             animations.initMapLoading(binding.mapCarousel);
         }
         presenter.init();
-        relationshipMapManager.onResume();
     }
 
     @Override
     public void onPause() {
         presenter.onDettach();
-        relationshipMapManager.onPause();
         super.onPause();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        relationshipMapManager.onDestroy();
+    public void onLowMemory() {
+        super.onLowMemory();
+        relationshipMapManager.onLowMemory();
     }
 
     @Override
@@ -185,49 +188,29 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void initFab(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
-
-        RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getAbstracContext());
-        rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
-            @Override
-            public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
-            }
-
-            @Override
-            public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
-            }
-        });
-        List<RFACLabelItem> items = new ArrayList<>();
+        List<DialItem> items = new ArrayList<>();
+        int dialItemIndex = 1;
         for (Trio<RelationshipType, String, Integer> trio : relationshipTypes) {
             RelationshipType relationshipType = trio.val0();
             int resource = trio.val2();
-            items.add(new RFACLabelItem<Pair<RelationshipType, String>>()
-                    .setLabel(relationshipType.displayName())
-                    .setResId(resource)
-                    .setLabelTextBold(true)
-                    .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
-                    .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
-                    .setWrapper(Pair.create(relationshipType, trio.val1()))
+            items.add(
+                    new DialItem(
+                            dialItemIndex++,
+                            relationshipType.displayName(),
+                            resource)
             );
         }
 
-        if (!items.isEmpty()) {
-            rfaContent
-                    .setItems(items)
-                    .setIconShadowRadius(RFABTextUtil.dip2px(getAbstracContext(), 5))
-                    .setIconShadowColor(0xff888888)
-                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 1));
+        binding.dialFabLayout.addDialItems(items, clickedId -> {
+            Trio<RelationshipType, String, Integer> selectedRelationShip = relationshipTypes.get(clickedId - 1);
+            goToRelationShip(selectedRelationShip.val0(), selectedRelationShip.val1());
+            return Unit.INSTANCE;
+        });
 
-            rfaHelper = new RapidFloatingActionHelper(getAbstracContext(), binding.rfabLayout, binding.rfab, rfaContent).build();
-        }
     }
 
     private void goToRelationShip(@NonNull RelationshipType relationshipTypeModel,
                                   @NonNull String teiTypeUid) {
-        rfaHelper.toggleContent();
         relationshipType = relationshipTypeModel;
         presenter.goToAddRelationship(teiTypeUid);
     }
@@ -288,8 +271,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void setFeatureCollection(
-           @NonNull String currentTei,
-           @NonNull List<RelationshipUiComponentModel> relationships,
+            @NonNull String currentTei,
+            @NonNull List<RelationshipUiComponentModel> relationships,
             @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
         relationshipMapManager.update(
                 map.getFirst(),
@@ -301,20 +284,27 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                 new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.deleteRelationship(relationshipUid);
                             }
                             return true;
                         })
                         .addOnRelationshipClickListener(teiUid -> {
-                            if(binding.mapCarousel.getCarouselEnabled()) {
+                            if (binding.mapCarousel.getCarouselEnabled()) {
                                 presenter.openDashboard(teiUid);
                             }
                             return true;
                         })
+                        .addOnNavigateClickListener(uid -> {
+                            Feature feature = relationshipMapManager.findFeature(uid);
+                            if (feature != null) {
+                                startActivity(mapNavigation.navigateToMapIntent(feature));
+                            }
+                            return Unit.INSTANCE;
+                        })
                         .build();
         binding.mapCarousel.setAdapter(carouselAdapter);
-        binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager);
         carouselAdapter.addItems(relationships);
 
         animations.endMapLoading(binding.mapCarousel);

@@ -6,6 +6,8 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -75,10 +77,16 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     FormRepository formRepository(
-            @NonNull RuleExpressionEvaluator evaluator,
             @NonNull RulesRepository rulesRepository,
             D2 d2) {
         String enrollmentUidToUse = enrollmentUid != null ? enrollmentUid : "";
-        return new EnrollmentFormRepository(evaluator, rulesRepository, enrollmentUidToUse, d2);
+        return new EnrollmentFormRepository(rulesRepository, enrollmentUidToUse, d2);
+    }
+
+    @Provides
+    @PerActivity
+    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
+        String enrollmentUidToUse = enrollmentUid != null ? enrollmentUid : "";
+        return new EnrollmentRuleEngineRepository(formRepository, enrollmentUidToUse, d2);
     }
 }
