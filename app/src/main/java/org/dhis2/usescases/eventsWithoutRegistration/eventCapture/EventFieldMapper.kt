@@ -4,9 +4,9 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 import org.hisp.dhis.android.core.common.ValueType
 
@@ -39,10 +39,10 @@ class EventFieldMapper(
         }
 
         if (eventSectionModels.first().sectionName() == "NO_SECTION") {
-            finalFieldList.add(SectionViewModel.createClosingSection())
+            finalFieldList.add(fieldFactory.createClosingSection())
         }
 
-        val sections = finalFieldList.filterIsInstance<SectionViewModel>()
+        val sections = finalFieldList.filterIsInstance<SectionUiModelImpl>()
 
         sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errorCounter = 0
@@ -51,35 +51,35 @@ class EventFieldMapper(
                 repeat(
                     warnings.filter { warning ->
                         fields.firstOrNull { field ->
-                            field.uid == warning.key && field.programStageSection == section.uid()
+                            field.uid == warning.key && field.programStageSection == section.uid
                         } != null
                     }.size +
                         emptyMandatoryFields
-                            .filter { it.value.programStageSection == section.uid() }.size
+                            .filter { it.value.programStageSection == section.uid }.size
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
                 repeat(
                     errors.filter { error ->
                         fields.firstOrNull { field ->
-                            field.uid == error.key && field.programStageSection == section.uid()
+                            field.uid == error.key && field.programStageSection == section.uid
                         } != null
                     }.size
                 ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
-                section.withErrorsAndWarnings(
-                    if (errorCounter != 0) {
+                section.apply {
+                    this.errors = if (errorCounter != 0) {
                         errorCounter
                     } else {
-                        null
-                    },
-                    if (mandatoryCounter != 0) {
+                        0
+                    }
+                    this.warnings = if (mandatoryCounter != 0) {
                         mandatoryCounter
                     } else {
-                        null
+                        0
                     }
-                )
+                }
         }
 
         return Pair(eventSectionModels, finalFieldList)

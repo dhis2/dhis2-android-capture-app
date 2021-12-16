@@ -18,4 +18,9 @@
         <item name="android:textColor">@color/textPrimary</item>
         <item name="colorControlActivated">?colorPrimary</item>
     </style>
+    <style name="dataInputTextAccent" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
 </resources>
