@@ -162,7 +162,7 @@ android {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode 9
-            versionName "2.4.2-psi-fork-1"
+            versionName "2.4.2-psi-fork-2"
         }
     }
 
