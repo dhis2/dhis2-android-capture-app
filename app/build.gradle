@@ -36,6 +36,7 @@ android {
 
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
+
     defaultConfig {
         applicationId "com.dhis2"
         minSdkVersion versions.minSdk
@@ -48,8 +49,10 @@ android {
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
+        def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
+
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
-        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
 
         javaCompileOptions {
@@ -155,14 +158,14 @@ android {
             applicationId "com.eyeseetea.widp"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.4.2-widp-fork-1"
+            versionName "2.4.3-widp-fork-1"
         }
 
         psi {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode 9
-            versionName "2.4.1-psi-fork-1"
+            versionName "2.4.2-psi-fork-1"
         }
     }
 
@@ -226,18 +229,24 @@ dependencies {
     implementation project(':tableview')
     implementation project(":dhis_android_analytics")
     implementation project(":form")
+    implementation project(":commons")
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    implementation "androidx.annotation:annotation:${libraries.annotation}"
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "androidx.cardview:cardview:${libraries.cardview}"
+    implementation "androidx.legacy:legacy-support-v4:${libraries.legacysupport}"
     implementation "androidx.multidex:multidex:${libraries.multidex}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
-    implementation "androidx.work:work-runtime:2.2.0"
-    implementation "androidx.work:work-rxjava2:2.2.0"
-    implementation "androidx.exifinterface:exifinterface:1.2.0"
+    implementation "androidx.work:work-runtime:${libraries.work}"
+    implementation "androidx.work:work-rxjava2:${libraries.work}"
+    implementation "androidx.exifinterface:exifinterface:${libraries.exif}"
+    implementation "androidx.core:core-ktx:${libraries.corektx}"
+    implementation "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
+    implementation "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libraries.coroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${libraries.coroutines}"
@@ -252,16 +261,28 @@ dependencies {
         exclude group: "junit", module: "junit"
     }*/
     //region UI LIBRARIES
+    //Google
+    implementation "com.google.android.material:material:${libraries.material}"
+    implementation "com.google.android.flexbox:flexbox:${libraries.flexbox}"
+
     //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
-
-    //FLEXBOX
-    implementation "com.google.android:flexbox:${libraries.flexbox}"
 
     implementation "io.noties.markwon:core:${libraries.markwon}"
 
     //PIN LOCK
-    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+    implementation "com.andrognito.pinlockview:pinlockview:${libraries.pinlock}"
+
+    //FancyShowCase
+    implementation "me.toptas.fancyshowcase:fancyshowcaseview:${libraries.fancyshowcase}"
+
+    //Lottie animations
+    implementation "com.airbnb.android:lottie:${libraries.lottie}"
+    //endregion
+
+    //region DEPENDENCY INJECTION
+    implementation "com.google.dagger:dagger:${libraries.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
     //region RXJAVA
@@ -269,14 +290,10 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
-
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
-
-    //region DAGGER
-    implementation "com.google.dagger:dagger:${libraries.dagger}"
-    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    //endregion
 
     //region GOOGLE AUTO VALUE
     // Google's auto-value. Annotations are used only during compilation time, as well as
@@ -289,75 +306,56 @@ dependencies {
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
     //endregion
 
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+    //region Mapbox
+    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:${libraries.mapboxsdk}"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:${libraries.mapboxmarkerview}"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}"
+    //endregion
 
-
-    // Jake Wharton libraries
-    //timber
-    implementation "com.jakewharton.timber:timber:${libraries.timber}"
-
-    //GSON
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
-
-    implementation 'org.matomo.sdk:tracker:4.1.2'
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "androidx.core:core-ktx:1.3.2"
-    implementation "androidx.fragment:fragment-ktx:1.2.5"
-
-    debugImplementation 'com.facebook.flipper:flipper:0.72.0'
-    debugImplementation 'com.facebook.soloader:soloader:0.9.0'
-    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.72.0'
-    debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:0.72.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
-    releaseImplementation 'com.facebook.flipper:flipper-noop:0.72.0'
-
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-
-    //RXLint
-    implementation 'nl.littlerobots.rxlint:rxlint:1.6'
-
-    //JODA-TIME
-    implementation 'joda-time:joda-time:2.9.9'
-
-    // Zxing library
-    implementation 'com.google.zxing:core:3.3.0'
-    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
-    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
-
-    //FancyShowCase
-    implementation 'me.toptas.fancyshowcase:fancyshowcaseview:1.1.5'
-
-    //Lottie animations
-    implementation 'com.airbnb.android:lottie:3.4.0'
-
-    //Glide load images
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    kapt 'com.github.bumptech.glide:compiler:4.9.0'
-
-    //Paperwork
-    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
-    implementation 'com.google.guava:guava:27.0.1-android'
-    implementation 'cat.ereza:customactivityoncrash:2.3.0'
-    implementation 'co.infinum:goldfinger-rx:2.0.1'
-    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-
-    /*region SECURITY*/
-    implementation 'com.scottyab:rootbeer-lib:0.0.7'
-
-    /*openId*/
-    implementation 'net.openid:appauth:0.7.1'
-
-    /*Sentry*/
+    //region Analytics
+    implementation "org.matomo.sdk:tracker:${libraries.matomo}"
     implementation "io.sentry:sentry-android:${libraries.sentry}"
+    //endregion
 
-    //Test
+    //region Debug
+    //Timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+    //Flipper
+    debugImplementation "com.facebook.flipper:flipper:${libraries.flipper}"
+    debugImplementation "com.facebook.soloader:soloader:${libraries.soloader}"
+    debugImplementation "com.facebook.flipper:flipper-network-plugin:${libraries.flippernetwork}"
+    debugImplementation "com.facebook.flipper:flipper-leakcanary-plugin:${libraries.flipperleak}"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:${libraries.leakcannary}"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcannarynoop}"
+    releaseImplementation "com.facebook.flipper:flipper-noop:${libraries.flippernoop}"
+    //RXLint
+    implementation "nl.littlerobots.rxlint:rxlint:${libraries.rxlint}"
+    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+    implementation "cat.ereza:customactivityoncrash:${libraries.crashactivity}"
+    //endregion
+
+    //region QR/Barcode scanner
+    implementation "com.google.zxing:core:${libraries.zxing}"
+    implementation "me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"
+    implementation "com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"
+    //endregion
+
+    //region Security
+    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+    implementation "co.infinum:goldfinger-rx:${libraries.goldfinger}"
+    implementation "com.scottyab:rootbeer-lib:${libraries.root}"
+    implementation "net.openid:appauth:${libraries.openid}"
+    //endregion
+
+    //region Other
+    implementation "com.google.code.gson:gson:${libraries.gson}"
+    implementation "com.squareup.retrofit2:converter-gson:${libraries.gsonconverter}"
+    implementation "com.squareup.okhttp3:okhttp:${libraries.okhttp}"
+    implementation "joda-time:joda-time:${libraries.jodatime}"
+    implementation "com.google.guava:guava:${libraries.guava}"
+    //endregion
+
+    //region Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
     implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
@@ -388,4 +386,5 @@ dependencies {
     androidTestImplementation 'com.android.support:support-annotations:28.0.0'
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
     androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
+    //endregion
 }

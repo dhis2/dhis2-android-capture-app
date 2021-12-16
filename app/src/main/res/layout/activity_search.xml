@@ -40,8 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
-            android:paddingHorizontal="8dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp">
 
             <ImageButton
                 android:id="@+id/back_button"
@@ -209,6 +209,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
+            <FrameLayout
+                android:id="@+id/mainComponent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
                 android:layout_width="match_parent"
@@ -242,14 +250,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
-                        android:onClick="@{()->presenter.clearFilterClick()}"
-                        app:viewVisibility="@{totalFilters>0}"
                         android:background="?selectableItemBackgroundBorderless"
+                        android:onClick="@{()->presenter.clearFilterClick()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/close_filter"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_refresh"
-                        app:tint="?colorPrimary" />
+                        app:tint="?colorPrimary"
+                        app:viewVisibility="@{totalFilters>0}" />
 
                     <ImageView
                         android:id="@+id/close_filter"
@@ -286,11 +294,11 @@
                     android:layout_height="0dp"
                     android:layout_marginBottom="40dp"
                     android:visibility="gone"
-                    app:mapbox_uiLogoGravity="top|start"
-                    app:mapbox_uiAttributionGravity="top|start"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@+id/filterOpen"
+                    app:mapbox_uiAttributionGravity="top|start"
+                    app:mapbox_uiLogoGravity="top|start" />
 
                 <org.dhis2.uicomponents.map.views.CarouselView
                     android:id="@+id/map_carousel"
@@ -315,6 +323,17 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     app:srcCompat="@drawable/ic_map_layers_ripple" />
+
+                <ImageView
+                    android:id="@+id/mapPositionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mapLayerButton"
+                    app:srcCompat="@drawable/ic_map_position_ripple" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
@@ -352,16 +371,16 @@
                         android:layout_margin="5dp"
                         app:progressColor="@{@color/colorPrimary}" />
                 </RelativeLayout>
-
-                <org.dhis2.utils.customviews.DhisBottomNavigationBar
-                    android:id="@+id/navigationBar"
-                    style="@style/DhisBottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:elevation="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:menu="@menu/navigation_search_menu" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+                android:id="@+id/navigationBar"
+                style="@style/DhisBottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:elevation="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/navigation_search_menu" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/clearFilterSearchButton"
@@ -369,10 +388,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:onClick="@{()->presenter.clearFilterClick()}"
-                app:fabVisibility="@{showClear}"
                 app:backgroundTint="@color/white"
                 app:elevation="4dp"
                 app:fabSize="mini"
+                app:fabVisibility="@{showClear}"
                 app:layout_constraintBottom_toTopOf="@id/enrollmentButton"
                 app:layout_constraintEnd_toEndOf="@id/enrollmentButton"
                 app:layout_constraintStart_toStartOf="@id/enrollmentButton"

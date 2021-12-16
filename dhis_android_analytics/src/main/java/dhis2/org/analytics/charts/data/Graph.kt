@@ -1,25 +1,37 @@
 package dhis2.org.analytics.charts.data
 
 import java.util.Date
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 
 data class Graph(
     val title: String,
-    val isOnline: Boolean,
     val series: List<SerieData>,
-    val periodToDisplay: String,
+    val periodToDisplayDefault: RelativePeriod?,
     val eventPeriodType: PeriodType,
     val periodStep: Long,
-    val chartType: ChartType? = ChartType.LINE_CHART
+    val chartType: ChartType? = ChartType.LINE_CHART,
+    val categories: List<String> = emptyList(),
+    val orgUnitsDefault: List<String> = emptyList(),
+    val orgUnitsSelected: List<String> = emptyList(),
+    val periodToDisplaySelected: RelativePeriod? = null
 ) {
+    fun xAxixMaximun(): Float {
+        return if (categories.isNotEmpty()) {
+            categories.size.toFloat()
+        } else {
+            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+        }
+    }
+
     fun numberOfStepsToDate(date: Date): Float {
         return if (baseSeries().isEmpty() || baseSeries().first().coordinates.isEmpty()) {
-            return 0f
+            0f
         } else {
-            (
-                (date.time - baseSeries().first().coordinates.first().eventDate.time) /
-                    periodStep
-                ).toFloat()
+            val initialDate = baseSeries().first().coordinates.first().eventDate.time
+            val dateDiff = date.time - initialDate
+            val stepsFromInitialDate = (dateDiff / periodStep).toFloat()
+            stepsFromInitialDate
         }
     }
 
@@ -67,7 +79,8 @@ data class SerieData(
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
-    val fieldValue: Float
+    val fieldValue: Float,
+    val legend: String? = null
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {

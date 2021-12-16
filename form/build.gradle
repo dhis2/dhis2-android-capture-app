@@ -5,18 +5,19 @@ plugins {
 }
 
 def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion versions.sdk
+    buildToolsVersion versions.tools
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 30
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
         versionCode 1
         versionName "1.0"
 
@@ -51,19 +52,30 @@ android {
 }
 
 dependencies {
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
 
-    releaseImplementation project(':core')
     debugImplementation project(':core')
+    releaseImplementation project(':core')
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation "com.google.android.material:material:${libraries.material}"
+    implementation "androidx.core:core-ktx:${libraries.corektx}"
+    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
+
+    //region Test
     testImplementation "junit:junit:${libraries.junit}"
     testImplementation 'org.mockito:mockito-core:3.4.6'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'app.cash.turbine:turbine:0.3.0'
+    testImplementation "androidx.test:core:1.3.0"
+    testImplementation 'androidx.test:rules:1.3.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+
+    //endregion
 }

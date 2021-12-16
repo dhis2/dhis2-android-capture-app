@@ -20,3 +20,11 @@ DHIS 2 is licensed under [BSD](http://www.linfo.org/bsdlicense.html), an open so
 - Powerful hardware with potential for scaling together with increased system usage.
 
 The DHIS 2 Capture Android App runs in mobile devices, including smartphones, tablets and Chromebooks. It is important to keep an eye on the number of programs, number of data elements and number of program rules that are made available to a user on those mobile devices. You should also budget sufficient time for creating the necessary translations for your metadata configuration. For the app dialogues, menus and other prompts, if the app is not translated to the language that you need, please send us a message in the [DHIS 2 community](https://community.dhis2.org) and we will let you know how to contribute to the app translations.
+
+> **Caution**
+>
+>  In addition to the DHIS2 Server requirements listed here note that the DHIS2 Android App might require connections to additional services and by blocking those the application might not fully function. This can apply in implementations where you might use strict firewall rules like in a zero-rate URL environment by an agreement with an ISP provider. In those cases you might want to include in the list of allowed URLs the following:
+>  * Your DHIS2 URL server
+>  * [Mapbox addresses](https://docs.mapbox.com/help/troubleshooting/firewalls/)
+>  * The public and/or private Matomo server for statistics as explained in the [guide](https://docs.dhis2.org/en/full/implement/dhis2-android-configuration-guide.html#capture_app_andoid_settings_webapp)
+

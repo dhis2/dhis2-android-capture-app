@@ -2,6 +2,7 @@
     <!--GENERAL-->
     <string name="app_name">ລະບົບ DHIS2</string>
     <string name="logo_text">ລະບົບຂໍ້ມູນຂ່າວສານດ້ານສຸຂະພາບຂັ້ນເມືອງ</string>
+    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">ເກີດການຜິດພາດ</string>
     <string name="error_wrong_server_url">ຄວາມຜິດພາດຈາກການເຊື່ອມຕໍ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -29,7 +30,7 @@
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
     <string name="schedule_new">ສ້າງແຜນໃໝ່</string>
-    <string name="referral">ການນໍາສົ່ງ</string>
+    <string name="referral">ການສົ່ງຕໍ່</string>
 
     <!-- Login -->
     <string name="url_hint">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -52,19 +53,22 @@
     <string name="MONTHLY">ລາຍເດືອນ</string>
     <string name="YEARLY">ລາຍປີ</string>
     <string name="clear_filters">ປັບປຸງເຄື່ອງມືຄັດຈ້ອນ</string>
-    <string name="action_accept">​ການ​ຮັບ​ຮອງ</string>
-    <string name="action_share_zero_items">ແຈກ</string>
+    <string name="action_accept">ຍອມຮັບ</string>
+    <string name="action_share_zero_items">ແລກປ່ຽນ</string>
+    <string name="action_share_single_item">ແລກປ່ຽນ %d </string>
+    <string name="action_share_multiple_item">ແລກປ່ຽນ %d </string>
+
     <!-- Input hints -->
     <string name="search">ຄົນຫາ</string>
-    <string name="enter_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມ</string>
+    <string name="enter_text">ຂຽນຄໍາຕອບ</string>
     <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
-    <string name="enter_number">ປ້ອນຂໍ້ມູນເປັນຕົວເລກ</string>
+    <string name="enter_number">ຕື່ມຕົວເລກ</string>
     <string name="enter_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນ</string>
     <string name="enter_negative_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າລົບ</string>
-    <string name="enter_positive_integer_or_zero">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າບວກ ຫຼື ສູນ</string>
+    <string name="enter_positive_integer_or_zero">ຕື່ມຕົວເລກ</string>
     <string name="enter_positive_integer">ປ້ອນຂໍ້ມູນເປັນຈໍານວນຖ້ວນຄ່າບວກ</string>
     <string name="filter_options">ຄັດກອງເອົາຕົວເລືອກ</string>
-    <string name="choose_date">ເລືອກເອົາວັນທີ</string>
+    <string name="choose_date">ເລືອກວັນທີ</string>
     <!-- Status -->
     <string name="program_completed">ໂປຣແກຣມດໍາເນີນການສໍາເລັດແລ້ວ</string>
     <string name="program_inactive">ໂປຣແກຣມທີ່ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
@@ -78,16 +82,21 @@
     <string name="event_accepted">ກໍລະນີທີ່ຖືກຮັບຮອງແລ້ວ</string>
     <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
     <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
+    <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="re_open">ເປີດຄືນໃໝ່</string>
+    <string name="activate">ເປິດໃຊ້ງານ</string>
+    <string name="active">ທີ່ຍັງນໍາໃຊ້ຢູ່</string>
+
     <!-- State -->
-    <string name="state_synced">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
-    <string name="state_to_update">ເພື່ອປັບປຸງ</string>
+    <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="state_to_update">ຕ້ອງການອັບເດດ</string>
     <string name="state_to_delete">ເພື່ອລືບອອກ</string>
     <string name="state_error">ເກີດການຜິດພາດ</string>
-    <string name="action_sync">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
+    <string name="action_sync">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <!--Completion-->
     <string name="completion">ການສໍາເລັດ</string>
 
@@ -97,8 +106,8 @@
     <string name="date">ວັນທີ່</string>
     <string name="org_unit">ສະຖານທີ່</string>
     <string name="category_option">Category Option</string>
-    <string name="latitude">ເສັ້ນແວ້ງ</string>
-    <string name="longitude">ເສັ້ນຂະໜານ</string>
+    <string name="latitude">ເສັ້ນຂະໜານ</string>
+    <string name="longitude">ເສັ້ນແວງ</string>
     <string name="new_event">ກໍລະນີໃໝ່</string>
     <string name="failed_insert_event">ການເພີ່ມກໍລະນີໃໝ່ເຂົ້າຫຼົມເຫວ</string>
     <string name="event_created">ກໍລະນີທີ່ໄດ້ຖືກສ້າງຂື້ນ</string>
@@ -109,7 +118,7 @@
     <!--DataSet initial-->
     <string name="report_period">ຊ່ວງເວລາ ການລາຍງານ</string>
     <!--Event Detail-->
-    <string name="event_date">ວັນທີເດືອນປີທີກໍລະນີນັ້ນເກີດຂື້ນ</string>
+    <string name="event_date">ວັນທີເຫດການ</string>
     <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     <string name="date_default">ວ/ດ/ປ</string>
@@ -128,18 +137,18 @@
     <string name="apply">ນໍາໃຊ້</string>
 
     <!--TEI DASHBOARD-->
-    <string name="see_details">ເບີ່ງລາຍລະອຽດ</string>
+    <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
     <string name="edit">ດັດແປງ</string>
-    <string name="enrolling_ou">ຂື້ນທະບຽນສະຖານທີ່</string>
+    <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="follow_up">ຕິດຕາມ</string>
-    <string name="follow_up_enabled">ການຕິດຕາມສາມາດນໍາໃຊ້ໄດ້</string>
+    <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>
     <string name="follow_up_disabled">ການຕິດຕາມບໍ່ສາມາດນໍາໃຊ້ໄດ້</string>
     <string name="deactivate">ຢຸດນໍາໃຊ້</string>
     <string name="program_not_allow_events">ໂປຣແກຣມນີ້ບໍ່ອະນຸຍາດຕື່ມກໍລະນີເຂົ້າອີກ</string>
 
     <!--DONE TASKS-->
-    <string name="events">ກໍລະນີ</string>
+    <string name="events">ເຫດການ</string>
     <string name="done_task">ໜ້າຫຼັກ</string>
     <string name="app_info">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມ</string>
     <string name="log_out">ອອກຈາກລະບົບ</string>
@@ -151,8 +160,9 @@
     <!-- SYNC -->
     <string name="a_minute">1 ນາທີ</string>
     <string name="fifteen_minute">15 ນາທີ</string>
+    <string name="thirty_minutes">30 ນາທີ</string>
     <string name="a_hour">1 ຊົ່ວໂມງ</string>
-    <string name="a_day">1 ວັນ (ຄ່າປົກະຕິ)</string>
+    <string name="a_day">1 ມື້ (ຄ່າມາດຕະຖານ)</string>
     <string name="Automatic_Sync_Data">ສົ່ງຂໍ້ມູນໂອໂຕມະຕິກ ແຕ່ລະ:</string>
     <string name="Manual">ຄູ່ມື</string>
     <string name="Automatic_Sync_Metadata">ປັບປຸງການຕັ້ງຄ່າແບບໂອໂຕມຕິກ ທຸກໆ: </string>
@@ -160,13 +170,23 @@
     <string name="sync_max_parameters">ຂອບເຂດທີ່ຕັ້ງໄວ້ໃຫ້ລະບົບທໍາງານຮ່ວມກັນໃນປະຈຸບັນ</string>
     <string name="sync_default_parameters">ປັບລະບົບໃຫ້ທໍາງານໃນຄ່າປົກະຕິ</string>
     <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
-    <string name="wipe_data_ok">​ການ​ຮັບ​ຮອງ</string>
+    <string name="wipe_data_ok">ຍອມຮັບ</string>
     <string name="wipe_data_no">ຍົກເລີກ</string>
-    <string name="SYNC_DATA">ສົ່ງຂໍ້ມູນອອກດຽວນີ້</string>
+    <string name="SYNC_DATA">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນນະຕອນນີ້</string>
     <string name="SYNC_META">ປັບການຕັ້ງຄ່າດຽວນີ້</string>
     <string name="SYNC_MANAGER">ຕັ້ງຄ່າ</string>
-    <string name="last_data_sync_date">ການສົ່ງຂໍ້ມູນທີ່ຜ່ານມາມີ: %s</string>
-    <string name="last_metadata_sync_date">ການສົ່ງຂໍ້ມູນທີ່ຜ່ານມາມີ: %s</string>
+    <string name="last_data_sync_date">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍເມື່ອ:%s</string>
+    <string name="last_metadata_sync_date">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍເມື່ອ:%s</string>
+    <string name="settings_sync_period">ໄລຍະເວລາການອັບເດດຂໍ້ມູນ</string>
+    <string name="settings_limit_globally">ໃນທົ່ວໂລກ</string>
+    <string name="settings_limit_program">ຕໍ່ແຜນງານ</string>
+    <string name="settings_limit_ou">ຕໍ່ໜ່ວຍງານ</string>
+    <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="settingsSyncMetadata">ການຕັ້ງຄ່າການຊີ້ງຂໍ້ມູນ</string>
+    <string name="settingsSyncParameters">ຂອບເຂດການອັບເດດຂໍ້ມູນ</string>
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <!--endregion-->
 
@@ -242,12 +262,12 @@
     <string name="qr_error_event">ກໍລະນີນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
 
     <string name="jira_report">ລາຍງານບັນຫາໃຫ້ Jira</string>
-    <string name="about">ຂໍ້ມູນເພີ່ມເຕີມ</string>
+    <string name="about">ກ່ຽວກັບ</string>
     <string name="programs_to_enroll">ໂປຣແກຣມເພື່ອລົງທະບຽນ</string>
     <string name="select_all">ເລືອກທັງໝົດ</string>
     <string name="empty_program_list">ບໍ່ມີຂໍ້ມູນສໍາລັບການຄັດຈ້ອນທີ່ເລືອກມາ. ກະລຸນາພະຍາຍາມປ່ຽນຕົວຄັດຈ້ອນເບີ່ງ</string>
-    <string name="share">ແຈກ</string>
-    <string name="share_qr">ແບ່ງປັນລະຫັດ QR</string>
+    <string name="share">ແລກປ່ຽນ</string>
+    <string name="share_qr">ແລກປ່ຽນ QR</string>
     <string name="teiType_search_online">ການຊອກຫາຕາມປະເພດແມ່ນເປັນໄປບໍ່ໄດ້ສໍາລັບການຄົ້ນຫາທາງອອນລາຍ\nກະລຸນາເລືອກໂປຣແກຣຈາກລາຍການ</string>
     <string name="max">ຄ່າໃຫ່ຍສຸດ</string>
     <string name="current">ປະຈຸບັນ</string>
@@ -311,7 +331,7 @@
     <string name="menu_home">ໜ້າຫຼັກ</string>
     <string name="appwidget_text">ຕົວຢ່າງ</string>
     <string name="add_widget">ເພີມອົງປະກອບຂອງໂປຣແກຣມ</string>
-    <string name="showHelp">ສະແດງຕົວຊ່ວຍເຫຼືອ</string>
+    <string name="showHelp">ຊ່ວຍເຫຼືອ</string>
     <string name="tuto_settings_1">ສົ່ງຂໍ້ມູນຂອງທ່ານ</string>
     <string name="tuto_settings_2">...ການປັບແລະຕັ້ງຄ່າຂອງທ່ານ...</string>
     <string name="tuto_settings_3">...ຕັ້ງຄ່າຂີດຄວາມສາມາດໃນການບັນທຶກຂອງໂທລະສັບຂອງທ່ານ...</string>
@@ -339,21 +359,28 @@
     <string name="relationships">ສາຍພົວພັນ</string>
     <string name="dashboard_relationships">ສາຍພົວພັນ</string>
     <string name="dashboard_indicators">ຕົວຊີ້ວັດ</string>
-    <string name="dashboard_notes">ບົດບັນທຶກ</string>
+    <string name="dashboard_notes">ຂໍ້ຄວາມ</string>
     <string name="event_overview">ລາຍລະອຽດ</string>
     <string name="event_event">ເຫດການ</string>
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
-    <string name="event_notes">ບົດບັນທຶກ</string>
+    <string name="event_notes">ຂໍ້ຄວາມ</string>
+    <string name="finish">ສີ້ນສຸດ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
     <string name="event_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
     <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
-    <string name="local_data_accept">​ການ​ຮັບ​ຮອງ</string>
+    <string name="local_data_accept">ຍອມຮັບ</string>
+    <string name="action_continue">ຕໍ່ໄປ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
+    <string name="event_form_end_options_title">ທ່ານຕ້ອງເຮັດຫຍັງສໍາລັບເຫດການນີ້?</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
+    <string name="state_relationship">ຄວາມສໍາພັນ</string>
     <string name="action_close">ປິດ</string>
+    <string name="data_set_complete">ສຳເລັດແລ້ວ</string>
+    <string name="data_set_open">ເປີດ</string>
     <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
+    <string name="data_every_fifteen_minutes">15 ນາທີ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
     <string name="data_every_week">ເປັນອາທິດ</string>
     <string name="period_week">ອາທິດ</string>
@@ -363,6 +390,7 @@
 
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_status">ສະຖານະ</string>
+    <string name="filters_title_state">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
     <string name="filter_period_today">ມື້ນີ້</string>
     <string name="filter_period_yesterday">ມື້ວານນີ</string>
     <string name="filter_period_this_week">ທິດນີ້</string>
@@ -370,4 +398,57 @@
     <string name="filter_period_this_month">ເດືອນນີ້</string>
     <string name="filter_period_last_month">ເດືອນຜ່ານມາ</string>
     <string name="filter_period_other">ອື່ນໆ</string>
+    <string name="filter_event_status_open">ເປີດ</string>
+    <string name="filter_event_status_schedule">ກຳນົດເວລາ</string>
+    <string name="filter_event_status_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
+    <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
+    <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
+    <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
+    <string name="go_back">ກັບຄືນ</string>
+    <string name="data_sets">ແບບຟອມ</string>
+    <string name="no_notes">ບໍ່ຂໍ້ຄວາມ</string>
+    <string name="interval_yesterday">ມື້ວານນີ</string>
+    <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
+    <string name="choose_option">ເລືອກຄໍາຕອບ</string>
+    <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
+    <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="dataset_overview">ລາຍລະອຽດ</string>
+    <string name="dataset_comments">ຄຳເຫັນ</string>
+    <string name="name">ຊື່</string>
+    <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
+    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
+    <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="action_apply">ນຳໃຊ້</string>
+    <string name="enrollment_status_active">ເປີດ</string>
+    <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
+    <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
+    <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="event_data">ຂໍ້ມູນ</string>
+    <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
+    <string name="filters_title_date">ວັນທີ່</string>
+    <string name="filters_title_event_date">ວັນທີເຫດການ</string>
+    <string name="dataset_data">ຂໍ້ມູນ</string>
+    <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
+    <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="navigation_programs">ສາຍງານ</string>
+    <string name="navigation_events">ເຫດການ</string>
+    <string name="navigation_relationships">ສາຍພົວພັນ</string>
+    <string name="navigation_notes">ຂໍ້ຄວາມ</string>
+    <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
+    <string name="navigation_tei_data">ລາຍລະອຽດ</string>
+    <string name="filter_period_this_year">ປີນີ້</string>
+    <string name="filter_period_this_quarter">ໄຕມານີ້</string>
+    <string name="filter_period_last_quarter">ໄຕມາດຜ່ານມາ</string>
+    <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
+    <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
+    <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
+    <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
+    <string name="filter_period_last_year">ປີກາຍ</string>
+    <string name="filter_period_this_financial_year">ສົກປີງົບປະມານຂອງປິນີ້</string>
+    <string name="filter_period_last_financial_year">​ສົກ​ປີ​ງົບ​ປະ​ມານ​ປີ​ກາຍ</string>
+    <string name="section_feedback">ຜົນຕອບຮັບ</string>
+    <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
     </resources>

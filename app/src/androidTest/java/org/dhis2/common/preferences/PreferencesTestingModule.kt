@@ -4,8 +4,8 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
-import org.dhis2.data.prefs.PreferenceModule
-import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.PreferenceModule
+import org.dhis2.commons.prefs.PreferenceProvider
 
 @Module
 class PreferencesTestingModule : PreferenceModule() {

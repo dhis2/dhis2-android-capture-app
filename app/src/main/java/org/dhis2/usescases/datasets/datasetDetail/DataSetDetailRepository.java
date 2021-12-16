@@ -17,4 +17,6 @@ public interface DataSetDetailRepository {
     Flowable<Boolean> canWriteAny();
 
     CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
+
+    boolean dataSetHasAnalytics();
 }

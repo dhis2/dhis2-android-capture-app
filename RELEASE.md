@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.4.2) - Patch version
+Android Capture App for DHIS 2 (v2.4.3) - Patch version
 <table>
 <tr>
 <td>
@@ -13,18 +13,25 @@ It includes no functional improvements neither changes in the User Interface. It
 <td colspan="2" bgcolor="white">
 
 ## Bugs fixed
-* [ANDROAPP-4093](https://jira.dhis2.org/browse/ANDROAPP-4093) Sync error message in dashboard and home
-* [ANDROAPP-4089](https://jira.dhis2.org/browse/ANDROAPP-4089) Sync error message update
-* [ANDROAPP-4088](https://jira.dhis2.org/browse/ANDROAPP-4088) Date filter not returning correct number of records
-* [ANDROAPP-4086](https://jira.dhis2.org/browse/ANDROAPP-4086) Sync filter not returning correct records in tracker
-* [ANDROAPP-4085](https://jira.dhis2.org/browse/ANDROAPP-4085) Option group rule actions not working for option set with more than 15 options
-* [ANDROAPP-4084](https://jira.dhis2.org/browse/ANDROAPP-4084) Tracker Events sync fix
-* [ANDROAPP-4076](https://jira.dhis2.org/browse/ANDROAPP-4076) Polygon field appears when the feature type is point for auto-generated events
-* [ANDROAPP-4070](https://jira.dhis2.org/browse/ANDROAPP-4070) Autovalue null in form repository
-* [ANDROAPP-4069](https://jira.dhis2.org/browse/ANDROAPP-4069) FormView RuntimeException
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.4.2.
+* [ANDROAPP-4274](https://jira.dhis2.org/browse/ANDROAPP-4274) Wrong behavior of the selector of org units with open/close dates
+* [ANDROAPP-4273](https://jira.dhis2.org/browse/ANDROAPP-4273) App displays incorrect screen in "Notes" tab
+* [ANDROAPP-4271](https://jira.dhis2.org/browse/ANDROAPP-4271) App crashes after exiting an event using "Delete and go back" button
+* [ANDROAPP-4269](https://jira.dhis2.org/browse/ANDROAPP-4269) Unable to select future dates when scheduling an event
+* [ANDROAPP-4267](https://jira.dhis2.org/browse/ANDROAPP-4267) Crash when logout
+* [ANDROAPP-4256](https://jira.dhis2.org/browse/ANDROAPP-4256) Sections with indicators only goes into endless loop
+* [ANDROAPP-4255](https://jira.dhis2.org/browse/ANDROAPP-4255) No headers for indicator sections
+* [ANDROAPP-4254](https://jira.dhis2.org/browse/ANDROAPP-4254) If a render type is used in an attribute with an option set, the registration form does not display any attributes
+* [ANDROAPP-4249](https://jira.dhis2.org/browse/ANDROAPP-4249) POSTing TEI with an error in a UNIQUE attribute doesn't show error in the TEI card
+* [ANDROAPP-4246](https://jira.dhis2.org/browse/ANDROAPP-4246) Totals don't update values correctly
+* [ANDROAPP-4241](https://jira.dhis2.org/browse/ANDROAPP-4241) Cards do not update in the map with only Data Element layer
+* [ANDROAPP-4235](https://jira.dhis2.org/browse/ANDROAPP-4235) App doesn't receive updates while syncing TEIs modified in another device
+* [ANDROAPP-4117](https://jira.dhis2.org/browse/ANDROAPP-4117) Analytics wrong bottom button
+* [ANDROAPP-4107](https://jira.dhis2.org/browse/ANDROAPP-4107) AutoValue_D2Error
+* [ANDROAPP-4102](https://jira.dhis2.org/browse/ANDROAPP-4102) DS - Even when the whole row has value, the app keeps asking for values to complete the data set
+* [ANDROAPP-4075](https://jira.dhis2.org/browse/ANDROAPP-4075) Maps: TEIs selection doesn't work if there are relationships in the map
+* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.4.3.
 
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=12074) in this version.
+You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=12099) in this version.
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed
 information of the features included in the App and how to configure DHIS2 to use it.

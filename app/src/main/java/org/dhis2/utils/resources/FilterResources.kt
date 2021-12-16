@@ -71,6 +71,8 @@ class FilterResources(val context: Context) {
     fun filterAssignedToMeLabel(): String = context.getString(R.string.filters_title_assigned)
     fun filterEnrollmentStatusLabel(): String =
         context.getString(R.string.filters_title_enrollment_status)
+    fun filterFollowUpLabel(teTypeName: String): String =
+        context.getString(R.string.filter_follow_up_label).format(teTypeName)
 
     fun filterEventStatusLabel(): String = context.getString(R.string.filters_title_event_status)
 

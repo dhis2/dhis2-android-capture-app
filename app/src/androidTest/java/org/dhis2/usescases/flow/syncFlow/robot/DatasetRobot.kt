@@ -6,7 +6,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailViewHolder
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewHolder
 
 fun dataSetRobot(dataSetRobot: DataSetRobot.() -> Unit) {
     DataSetRobot().apply {
@@ -19,7 +19,7 @@ class DataSetRobot : BaseRobot() {
     fun clickOnDataSetAtPosition(position: Int) {
         onView(withId(R.id.recycler))
             .perform(
-                actionOnItemAtPosition<DataSetDetailViewHolder>(position, click())
+                actionOnItemAtPosition<DataSetListViewHolder>(position, click())
             )
     }
 

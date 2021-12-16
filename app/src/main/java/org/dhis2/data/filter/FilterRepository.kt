@@ -11,6 +11,7 @@ import org.dhis2.utils.filters.EventStatusFilter
 import org.dhis2.utils.filters.FilterItem
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.FollowUpFilter
 import org.dhis2.utils.filters.OrgUnitFilter
 import org.dhis2.utils.filters.PeriodFilter
 import org.dhis2.utils.filters.SyncStateFilter
@@ -143,6 +144,12 @@ class FilterRepository @Inject constructor(
         repository: TrackedEntityInstanceQueryCollectionRepository
     ): TrackedEntityInstanceQueryCollectionRepository {
         return repository.byAssignedUserMode().eq(AssignedUserMode.CURRENT)
+    }
+
+    fun applyFollowUp(
+        repository: TrackedEntityInstanceQueryCollectionRepository
+    ): TrackedEntityInstanceQueryCollectionRepository {
+        return repository.byFollowUp().isTrue
     }
 
     fun sortByPeriod(
@@ -489,13 +496,15 @@ class FilterRepository @Inject constructor(
 
         val trackerFiltersWebApp: Map<ProgramFilter, FilterSetting> =
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid())
-        val filtersToShow =
+        val filterPreList =
             getFiltersApplyingWebAppConfig.execute(defaultFilters, trackerFiltersWebApp)
         val workingListFilter: WorkingListFilter? = getTrackerWorkingList(program, showWorkingLists)
 
-        if (filtersToShow.isEmpty() && workingListFilter == null) {
+        if (filterPreList.isEmpty() && workingListFilter == null) {
             return mutableListOf()
         }
+
+        val filtersToShow = setupUpFollowUpFilter(program, filterPreList.toMutableList())
 
         if (workingListFilter != null) {
             return filtersToShow.toMutableList().apply {
@@ -503,6 +512,31 @@ class FilterRepository @Inject constructor(
             }
         }
         return filtersToShow
+    }
+
+    private fun setupUpFollowUpFilter(
+        program: Program,
+        filtersToShow: MutableList<FilterItem>
+    ): List<FilterItem> {
+        val teTypeName = d2.trackedEntityModule()
+            .trackedEntityTypes()
+            .uid(program.trackedEntityType()?.uid())
+            .blockingGet()
+            .displayName() ?: ""
+        val followUpFilter = FollowUpFilter(
+            org.dhis2.utils.filters.ProgramType.TRACKER,
+            observableSortingInject,
+            observableOpenFilter,
+            resources.filterResources.filterFollowUpLabel(teTypeName)
+        )
+
+        if (filtersToShow.any { it.type == Filters.ASSIGNED_TO_ME }) {
+            val index = filtersToShow.indexOfFirst { it.type == Filters.ASSIGNED_TO_ME }
+            filtersToShow.add(index, followUpFilter)
+        } else {
+            filtersToShow.add(followUpFilter)
+        }
+        return filtersToShow.toList()
     }
 
     private fun createGetDefaultTrackerFilter(

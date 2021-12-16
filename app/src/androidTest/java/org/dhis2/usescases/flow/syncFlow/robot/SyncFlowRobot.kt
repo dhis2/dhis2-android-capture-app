@@ -10,7 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailViewHolder
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hamcrest.Matchers.allOf
@@ -51,6 +51,6 @@ class SyncFlowRobot : BaseRobot() {
 
     fun clickOnDataSetToSync(position: Int) {
         onView(withId(R.id.recycler))
-            .perform(actionOnItemAtPosition<DataSetDetailViewHolder>(position, clickChildViewWithId(R.id.sync_icon)))
+            .perform(actionOnItemAtPosition<DataSetListViewHolder>(position, clickChildViewWithId(R.id.sync_icon)))
     }
 } 

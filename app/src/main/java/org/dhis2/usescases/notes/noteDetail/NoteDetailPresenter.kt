@@ -1,7 +1,7 @@
 package org.dhis2.usescases.notes.noteDetail
 
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import timber.log.Timber
 
 class NoteDetailPresenter(

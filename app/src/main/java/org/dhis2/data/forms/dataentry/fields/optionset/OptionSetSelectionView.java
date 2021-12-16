@@ -19,7 +19,7 @@ import org.dhis2.databinding.FormSpinnerSelectionBinding;
 import org.dhis2.databinding.OptionSetSelectCheckItemBinding;
 import org.dhis2.databinding.OptionSetSelectItemBinding;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;

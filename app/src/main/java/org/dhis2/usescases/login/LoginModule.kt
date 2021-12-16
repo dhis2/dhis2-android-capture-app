@@ -3,10 +3,10 @@ package org.dhis2.usescases.login
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.fingerprint.FingerPrintController
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController

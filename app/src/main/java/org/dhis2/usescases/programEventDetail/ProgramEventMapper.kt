@@ -9,6 +9,7 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -18,11 +19,21 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-class ProgramEventMapper @Inject constructor(val d2: D2, val periodUtils: DhisPeriodUtils) {
+class ProgramEventMapper @Inject constructor(
+    val d2: D2,
+    val periodUtils: DhisPeriodUtils,
+    val crashReportController: CrashReportController
+) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
+
+        crashReportController.addBreadCrumb(
+            "ProgramEventMapper.eventToEventViewModel",
+            "Event: $event"
+        )
+
         return EventViewModel(
             EventViewModelType.EVENT,
             programStage,

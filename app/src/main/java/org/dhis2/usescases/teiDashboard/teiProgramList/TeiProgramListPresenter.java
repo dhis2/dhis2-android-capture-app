@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.enrollment.EnrollmentService;

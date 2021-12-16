@@ -412,6 +412,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         val message = errorOnCompletion.content() + " " + data
         if (model != null) {
             fieldViewModels[errorOnCompletion.field()] = model.setError(message)
+            fieldsWithErrors.add(
+                FieldWithError(errorOnCompletion.field(), message)
+            )
         }
 
         canComplete = false

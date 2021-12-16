@@ -3,7 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
@@ -36,12 +36,12 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { result ->
                         result.valueStoreResult?.let {
-                            if (result.valueStoreResult == ValueStoreResult.VALUE_CHANGED
-                            ) {
-                                activityPresenter.setValueChanged(result.uid)
-                                activityPresenter.nextCalculation(true)
-                            } else {
-                                populateList()
+                            when (result.valueStoreResult) {
+                                ValueStoreResult.VALUE_CHANGED -> {
+                                    activityPresenter.setValueChanged(result.uid)
+                                    activityPresenter.nextCalculation(true)
+                                }
+                                else -> populateList()
                             }
                         } ?: activityPresenter.hideProgress()
                     },
@@ -84,7 +84,7 @@ class EventCaptureFormPresenter(
     }
 
     fun onActionButtonClick() {
-        activityPresenter.attempFinish()
+        activityPresenter.attemptFinish()
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =

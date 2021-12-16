@@ -9,6 +9,10 @@
         <import type="android.graphics.drawable.Drawable" />
 
         <variable
+            name="viewModel"
+            type="org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewModel" />
+
+        <variable
             name="dataset"
             type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
     </data>
@@ -19,6 +23,7 @@
         app:cardBackgroundColor="@android:color/transparent"
         app:cardElevation="0dp"
         app:rippleColor="@color/rippleColor"
+        android:onClick="@{() -> viewModel.openDataSet(dataset)}"
         tools:style="@style/CardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -92,6 +97,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:stateIcon='@{dataset.state}'
+                android:onClick="@{() -> viewModel.syncDataSet(dataset)}"
                 tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_sync" />
 

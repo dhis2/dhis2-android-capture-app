@@ -6,13 +6,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import org.dhis2.data.schedulers.SchedulerProvider
+import io.reactivex.Single
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
-import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -37,7 +35,7 @@ class RelationshipPresenterTest {
     lateinit var presenter: RelationshipPresenter
     private val view: RelationshipView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val dashboardRepository: DashboardRepository = mock()
+    private val repository: RelationshipRepository = mock()
     private val schedulerProvider: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapRelationshipToRelationshipMapModel = MapRelationshipToRelationshipMapModel()
@@ -56,7 +54,8 @@ class RelationshipPresenterTest {
             d2,
             "programUid",
             "teiUid",
-            dashboardRepository,
+            null,
+            repository,
             schedulerProvider,
             analyticsHelper,
             mapRelationshipToRelationshipMapModel,
@@ -67,11 +66,11 @@ class RelationshipPresenterTest {
 
     @Test
     fun `Should set relationships and init fab`() {
-        whenever(dashboardRepository.listTeiRelationships()) doReturn Flowable.just(arrayListOf())
-        whenever(dashboardRepository.relationshipsForTeiType("teiType")) doReturn Observable.just(
+        whenever(repository.relationships()) doReturn Single.just(arrayListOf())
+        whenever(repository.relationshipTypes()) doReturn Single.just(
             arrayListOf()
         )
-        whenever(dashboardRepository.getObjectStyle(any())) doReturn -1
+        whenever(repository.getTeiTypeDefaultRes(any())) doReturn -1
 
         presenter.init()
 

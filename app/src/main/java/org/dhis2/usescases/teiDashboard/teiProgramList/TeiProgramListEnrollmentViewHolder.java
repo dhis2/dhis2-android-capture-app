@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -15,7 +14,7 @@ import org.dhis2.databinding.ItemTeiProgramsEnrollmentBinding;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;
 import org.dhis2.databinding.ItemTeiProgramsProgramsBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.resources.ResourceManager;
 
 import timber.log.Timber;

@@ -7,6 +7,6 @@ data class RowAction(
     val optionCode: String? = null,
     val optionName: String? = null,
     val extraData: String? = null,
-    val error: String? = null,
+    val error: Throwable? = null,
     val type: ActionType
 )

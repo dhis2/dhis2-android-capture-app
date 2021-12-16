@@ -12,29 +12,23 @@ class DataElementD2Repository(private val d2: D2) : DataElementRepository {
         val feedbackOrderAttributeCode = "FeedbackOrder"
 
         val dataElementsWithFeedbackOrder =
-            getDataElementsWithFeedbackOrder(
-                d2.dataElementModule().dataElements().get().blockingGet(),
-                feedbackOrderAttributeCode
-            )
+            getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode)
 
         val d2ProgramStageDataElements =
             d2.programModule().programStageDataElements().byProgramStage().eq(programStageUid)
                 .blockingGet()
 
         val d2DataElements = d2ProgramStageDataElements.map { it.dataElement() }
-            .filter { dataElementsWithFeedbackOrder.any { uid -> uid == it!!.uid() } }
+            .filter { dataElementsWithFeedbackOrder.any { entry -> entry.key == it!!.uid() } }
 
         val dataElements = d2DataElements.map { d2DataElement ->
             val dataElementUid = d2DataElement!!.uid()
-            val deAttributeValues = getDataElementAttributeValues(dataElementUid)
 
-            val feedbackOrderAttValue = deAttributeValues.firstOrNull {
-                it.attribute().code() == feedbackOrderAttributeCode
-            }
+            val feedbackOrder = dataElementsWithFeedbackOrder[dataElementUid]
 
-            if (feedbackOrderAttValue != null) {
+            if (feedbackOrder != null) {
                 val feedbackOrder = try {
-                    FeedbackOrder(feedbackOrderAttValue.value())
+                    FeedbackOrder(feedbackOrder)
                 } catch (e: Exception) {
                     validations.add(
                         Validation.DataElementError(dataElementUid, FeedbackOrderInvalid)
@@ -55,59 +49,22 @@ class DataElementD2Repository(private val d2: D2) : DataElementRepository {
         }
     }
 
-    private fun getDataElementAttributeValues(dataElementUid: String): List<AttributeValue> {
-        val attributes = getDataElementAttributes()
+    private fun getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode: String): Map<String, String> {
+        var result = mutableMapOf<String, String>()
 
-        val attributesValues = mutableListOf<AttributeValue>()
-        val attributeValueSelect = "SELECT attribute, value FROM DataElementAttributeValueLink " +
-            "Where dataElement = ?"
+        val select = "SELECT dataElement, value  FROM DataElementAttributeValueLink  \n" +
+            "LEFT JOIN Attribute ON DataElementAttributeValueLink.Attribute = Attribute.uid\n" +
+            "where Attribute.code = ?"
 
-        d2.databaseAdapter().rawQuery(attributeValueSelect, dataElementUid)
+        d2.databaseAdapter().rawQuery(select, feedbackOrderAttributeCode)
             .use { cursor ->
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
-                        val attribute = attributes.first { it.uid() == cursor.getString(0) }
-                        attributesValues.add(
-                            AttributeValue.builder()
-                                .attribute(attribute)
-                                .value(cursor.getString(1)).build()
-                        )
+                        result[cursor.getString(0)] = cursor.getString(1)
                     }
                 }
             }
 
-
-        return attributesValues;
-    }
-
-    private fun getDataElementAttributes(): List<Attribute> {
-        val attributes = mutableListOf<Attribute>()
-        val attributeSelect = "SELECT * FROM Attribute WHERE dataElementAttribute = 1";
-
-        d2.databaseAdapter().rawQuery(attributeSelect).use { cursor ->
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    attributes.add(Attribute.create(cursor))
-                }
-            }
-        }
-
-        return attributes
-    }
-
-    private fun getDataElementsWithFeedbackOrder(
-        dataElements: List<org.hisp.dhis.android.core.dataelement.DataElement>,
-        feedbackOrderAttributeCode: String
-    ): List<String> {
-        return dataElements.map {
-            val deAttributeValues = getDataElementAttributeValues(it.uid())
-
-            it.toBuilder().attributeValues(deAttributeValues).build()
-        }.filter {
-            if (it.attributeValues() == null) false else it.attributeValues()!!
-                .any { attributeValue ->
-                    attributeValue.attribute().code() == feedbackOrderAttributeCode
-                }
-        }.map { it.uid() }
+        return result
     }
 }

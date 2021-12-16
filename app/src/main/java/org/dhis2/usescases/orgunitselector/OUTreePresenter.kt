@@ -3,7 +3,7 @@ package org.dhis2.usescases.orgunitselector
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber

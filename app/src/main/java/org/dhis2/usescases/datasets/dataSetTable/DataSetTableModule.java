@@ -1,8 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;

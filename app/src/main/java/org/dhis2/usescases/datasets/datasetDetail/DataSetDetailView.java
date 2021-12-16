@@ -39,8 +39,6 @@ import java.util.List;
 
 interface DataSetDetailView extends AbstractActivityContracts.View {
 
-    void setData(List<DataSetDetailModel> dataSetDetailModels);
-
     void renderError(String message);
 
     void showHideFilter();
@@ -52,14 +50,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void openOrgUnitTreeSelector();
 
     void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
-
-    void setWritePermission(Boolean canWrite);
-
-    void startNewDataSet();
-
-    void openDataSet(DataSetDetailModel dataSet);
-
-    void showSyncDialog(DataSetDetailModel dataSet);
 
     void showCatOptComboDialog(String catComboUid);
 

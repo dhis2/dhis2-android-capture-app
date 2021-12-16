@@ -130,7 +130,7 @@ On the map view of the program, a carousel of cards is displayed, one for each e
 
 Each card displays Tracked Entity Attributes (for Tracker Programs) and Data Elements (for Event programs) configured as 'Display in list'.
 
-![](resources/images/image147.png){ width=25%}
+![](resources/images/capture-app-image147.png){ width=25%}
 
 #### Map Relationships { #capture_app_programs_map_relationships }
 
@@ -212,8 +212,8 @@ All tracker programs will take the user to the search screen. The search fields 
 
 At first, the user is obligated to do a search. if there are no coincidences, the search button will change to an ‘Add’ button for the user to create a new enrollment.
 
-![](resources/images/capture-app-image78.png){ width=25%}
-![](resources/images/capture-app-image79.png){ width=25%}
+![](resources/images/capture-app-image78.PNG){ width=25%}
+![](resources/images/capture-app-image79.PNG){ width=25%}
 
 ### Search screen for all Tracked Entity Type { #capture_app_programs_search_screen }
 
@@ -261,10 +261,14 @@ To delete a TEI or an enrollment, select In the TEI dashboard, the three dots me
 
 Local TEI or Enrollment will be deleted from the database. Records that has been previously synced with the server will be marked for deletion if the user has the authority:
 
-F_ENROLLMENT_CASCADE_DELETE</br>
-F_TEI_CASCADE_DELETE
+- F_ENROLLMENT_CASCADE_DELETE
+- F_TEI_CASCADE_DELETE
 
 They will show in the TEI search list, but will not be accessible.
+
+> **Note**
+>
+> When users enter a TEI and while it is not synced to the server they will be able to delete the TEI and the enrollment even if they have not been asigned these authorities. This is by design and to allow users rolling back in case of having entered wrong data (TEI and/or enrollment) and thus preventing it reaching the server and requiring another user with higher privileges to fix the issue.
 
 ![](resources/images/capture-app-image86.jpg){ width=25%}
 

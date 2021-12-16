@@ -10,9 +10,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisMapUtils
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection

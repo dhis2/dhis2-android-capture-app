@@ -2,7 +2,7 @@ package org.dhis2.usescases.settingsprogram
 
 import io.reactivex.disposables.CompositeDisposable
 import java.util.Locale
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
 

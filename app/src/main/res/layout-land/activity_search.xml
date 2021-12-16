@@ -235,6 +235,15 @@
                 app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <FrameLayout
+                android:id="@+id/mainComponent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
                 android:layout_width="0dp"
@@ -337,6 +346,18 @@
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     app:srcCompat="@drawable/ic_map_layers_ripple" />
 
+                <ImageView
+                    android:id="@+id/mapPositionButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mapLayerButton"
+                    app:srcCompat="@drawable/ic_map_position_ripple" />
+
+
                 <RelativeLayout
                     android:id="@+id/messageContainer"
                     android:layout_width="match_parent"
@@ -354,7 +375,6 @@
                         android:gravity="center_horizontal"
                         android:textSize="18sp"
                         tools:text="You need to enter at least N attributes to do a search" />
-
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -374,7 +394,7 @@
                         app:progressColor="@{@color/colorPrimary}" />
                 </RelativeLayout>
 
-                <org.dhis2.utils.customviews.DhisBottomNavigationBar
+                <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
                     android:id="@+id/navigationBar"
                     style="@style/DhisBottomNavigationView"
                     android:layout_width="match_parent"

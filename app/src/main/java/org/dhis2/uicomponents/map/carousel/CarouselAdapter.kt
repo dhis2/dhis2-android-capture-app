@@ -10,6 +10,7 @@ import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.uicomponents.map.extensions.FeatureSource
 import org.dhis2.uicomponents.map.extensions.source
+import org.dhis2.uicomponents.map.geometry.TEI_UID
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
@@ -295,7 +296,7 @@ class CarouselAdapter private constructor(
 
     fun indexOfFeature(feature: Feature): Int {
         val item = when (feature.source()) {
-            FeatureSource.TEI, FeatureSource.ENROLLMENT, FeatureSource.FIELD ->
+            FeatureSource.TEI, FeatureSource.ENROLLMENT ->
                 items.filterIsInstance<SearchTeiModel>()
                     .firstOrNull {
                         it.tei.uid() == feature.getStringProperty(
@@ -323,6 +324,11 @@ class CarouselAdapter private constructor(
                             MapEventToFeatureCollection.EVENT
                         )
                     }
+            FeatureSource.FIELD ->
+                items.firstOrNull {
+                    it.uid() == feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+                        ?: feature.getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
+                }
 
             null -> null
         }
@@ -362,8 +368,10 @@ class CarouselAdapter private constructor(
         var items: MutableList<CarouselItemModel> = arrayListOf(),
         var program: Program? = null
     ) {
-        fun addCurrentTei(currentTei: String) = apply {
-            this.currentTei = currentTei
+        fun addCurrentTei(currentTei: String?) = apply {
+            if (currentTei != null) {
+                this.currentTei = currentTei
+            }
         }
 
         fun addOnTeiClickListener(

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.formatters.CategoryFormatter
 import dhis2.org.analytics.charts.formatters.DateLabelFormatter
 
 const val DEFAULT_VALUE = 0f
@@ -35,10 +36,15 @@ class GraphToLineChart {
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = DateLabelFormatter { graph.dateFromSteps(it) }
+                valueFormatter = if (graph.categories.isNotEmpty()) {
+                    CategoryFormatter(graph.categories)
+                } else {
+                    DateLabelFormatter { graph.dateFromSteps(it) }
+                }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
-                axisMaximum = graph.numberOfStepsToLastDate() + 1f
+                axisMaximum = graph.xAxixMaximun() + 1
+                labelRotationAngle = 15f
             }
 
             axisLeft.apply {

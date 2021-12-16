@@ -19,14 +19,14 @@ There are two ways to access the application:
     >
     > You are able to make an *offline* login only if using the same user as the last online session.
  
-![](resources/images/capture-app-image62.png){ width=25%}
+![](resources/images/capture-app-image62.PNG){ width=25%}
 ![](resources/images/capture-app-image63.jpg){ width=25%}
 
 > **Warning**
 > 
 > In DHIS2 versions up to 2.30 if a user attemps an on-line login and their account has been disabled as explained in the [DHIS 2 Manual - Disable User](https://docs.dhis2.org/master/en/user/html/dhis2_user_manual_en_full.html#disable_user) all the data will be wiped from the phone. Make sure that before disabling a user all the data has been synced or that you are using this feature to remotely wipe sensitive data in case of a device getting lost.
 >
-> Due to a change in the login API this feature is not available in 2.31, 2.32 and 2.33.
+> Due to a change in the login API this feature is not available in 2.31 and above versions.
 
 
 ## Account Recovery { #capture_app_generic_recovery }
@@ -34,7 +34,7 @@ There are two ways to access the application:
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
 
-![](resources/images/image64.PNG){ width=25%}
+![](resources/images/capture-app-image64.PNG){ width=25%}
 
 ## Blocking session (PIN) { #capture_app_generic_PIN }
 
@@ -272,7 +272,7 @@ For TEIs, the first data element/attribute with this value type and marked as di
 
 Open the TEI profile image by clicking on it.
 
-![](resources/images/image138.png){ width=25%}
+![](resources/images/capture-app-image138.png){ width=25%}
 
 ## Display events and TEIs in maps { #capture_app_generic_display_events }
 

@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import org.dhis2.Bindings.setTeiImage
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemCarouselEventBinding
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.program.Program

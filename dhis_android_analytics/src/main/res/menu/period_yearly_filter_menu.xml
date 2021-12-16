@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back_yearly"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/yearly"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/thisyear"
+            android:title="@string/thisyear" />
+        <item
+            android:id="@+id/lastyear"
+            android:title="@string/lastyear" />
+        <item
+            android:id="@+id/last5year"
+            android:title="@string/last5years" />
+    </group>
+</menu>

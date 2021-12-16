@@ -5,7 +5,7 @@ import co.infinum.goldfinger.rx.RxGoldfinger
 import dagger.Module
 import dagger.Provides
 import org.dhis2.BuildConfig
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
 
 @Module
 @PerActivity

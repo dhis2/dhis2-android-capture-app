@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormModule;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsComponent;

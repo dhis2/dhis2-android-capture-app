@@ -1,7 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -251,7 +249,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+            DateUtils.getInstance().fromCalendarSelector(this, FilterManager.getInstance()::addPeriod);
         } else {
             DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
                         FilterManager.getInstance().addPeriod(datePeriods);

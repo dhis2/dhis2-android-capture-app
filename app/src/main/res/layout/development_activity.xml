@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/dialFabLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -202,7 +202,24 @@
                     android:id="@+id/ruleActionQualityResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
+                    android:text="Feature configuration"
+                    android:textColor="@color/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/featureConfigButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Features list" />
             </LinearLayout>
         </ScrollView>
-    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
