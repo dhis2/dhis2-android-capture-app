@@ -4,7 +4,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
@@ -230,7 +229,7 @@ class EventFieldMapper(
     }
 
     private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.optionSet == null || field !is MatrixOptionSetModel
+        return field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
     }
 
     fun completedFieldsPercentage(): Float {

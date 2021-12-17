@@ -91,6 +91,8 @@ interface FieldUiModel {
 
     fun onSaveBoolean(boolean: Boolean)
 
+    fun onSaveOption(option: Option)
+
     fun invokeUiEvent(uiEventType: UiEventType)
 
     fun invokeIntent(intent: FormIntent)

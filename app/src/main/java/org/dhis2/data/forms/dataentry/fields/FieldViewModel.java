@@ -347,6 +347,11 @@ public abstract class FieldViewModel implements FieldUiModel {
         //Do not use until migrate to FieldUIModel
     }
 
+    @Override
+    public void onSaveOption(@NonNull Option option) {
+        //Do not use until migrate to FieldUIModel
+    }
+
     @Deprecated
     @Override
     public void invokeUiEvent(UiEventType uiEventType) {
