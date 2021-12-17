@@ -82,7 +82,7 @@ private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawabl
         Timber.log(1, e)
         iconImage = AppCompatResources.getDrawable(
             context,
-            R.drawable.ic_program_default
+            R.drawable.ic_default_outline
         )
         iconImage!!.mutate()
     }

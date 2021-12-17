@@ -488,7 +488,7 @@ public class Bindings {
 
         if (objectStyle != null) {
             int icon = new ResourceManager(view.getContext())
-                    .getObjectStyleDrawableResource(objectStyle.icon(), R.drawable.ic_program_default);
+                    .getObjectStyleDrawableResource(objectStyle.icon(), R.drawable.ic_default_outline);
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
         }
@@ -510,7 +510,7 @@ public class Bindings {
         }
 
         if (objectStyle == null) {
-            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            Drawable drawable = resources.getDrawable(R.drawable.ic_default_outline);
             if (view instanceof ImageView)
                 ((ImageView) view).setImageDrawable(drawable);
             int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
