@@ -546,8 +546,6 @@ workflows:
 
             cd scripts/
 
-            apt-get install "-y" "jq"
-
             chmod +x ./browserstackBitrise.sh
             ./browserstackBitrise.sh
     - slack@3.1.3:
