@@ -64,11 +64,11 @@ ext {
 
             //Debug
             timber                    : "4.7.1",
-            flipper                   : "0.72.0",
-            flippernoop               : "0.72.0",
+            flipper                   : "0.75.1",
+            flippernoop               : "0.75.1",
             soloader                  : "0.9.0",
-            flippernetwork            : "0.72.0",
-            flipperleak               : "0.72.0",
+            flippernetwork            : "0.75.1",
+            flipperleak               : "0.75.1",
             leakcannary               : "1.6.1",
             leakcannarynoop           : "1.6.1",
             rxlint                    : "1.6",
