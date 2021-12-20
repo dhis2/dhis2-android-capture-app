@@ -22,6 +22,8 @@ trigger_map:
   workflow: primary
 - push_branch: release/2.5
   workflow: primary
+- push_branch: release/2.5.1
+  workflow: primary
 - pull_request_target_branch: '*'
   workflow: primary
 workflows:
