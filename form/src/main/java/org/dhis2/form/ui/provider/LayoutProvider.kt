@@ -12,4 +12,5 @@ interface LayoutProvider {
         renderingType: ValueTypeRenderingType?,
         sectionRenderingType: ProgramStageSectionRenderingType?
     ): Int
+    fun getLayoutForSection(): Int
 }

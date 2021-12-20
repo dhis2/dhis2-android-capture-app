@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
@@ -10,7 +9,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>(
-    SectionViewModel::class to R.layout.form_section,
     SpinnerViewModel::class to R.layout.form_option_set_spinner
 )
 
@@ -64,4 +62,6 @@ class LayoutProviderImpl : LayoutProvider {
             else -> R.layout.form_edit_text_custom
         }
     }
+
+    override fun getLayoutForSection() = R.layout.form_section
 }

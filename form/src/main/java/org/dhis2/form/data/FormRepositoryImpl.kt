@@ -2,8 +2,8 @@ package org.dhis2.form.data
 
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
@@ -108,9 +108,7 @@ class FormRepositoryImpl(
         if (isEmpty()) {
             return this
         }
-        // TODO: This check was added when trying to collapse an open section.
-        //       When SectionViewModel is removed then this needs to be looked at.
-        return if (!this.none { it is FieldUiModelImpl }) {
+        return if (this.all { it is SectionUiModelImpl }) {
             val lastItem = getLastSectionItem(this)
             return if (usesKeyboard(lastItem.valueType) && lastItem.valueType != LONG_TEXT) {
                 updated(indexOf(lastItem), lastItem.setKeyBoardActionDone())
@@ -129,7 +127,11 @@ class FormRepositoryImpl(
     }
 
     private fun getLastSectionItem(list: List<FieldUiModel>): FieldUiModel {
-        return list.asReversed().first { it.valueType != null }
+        return if (list.all { it is SectionUiModelImpl }) {
+            list.asReversed().first()
+        } else {
+            list.asReversed().first { it.valueType != null }
+        }
     }
 
     private fun ruleEffects() = try {

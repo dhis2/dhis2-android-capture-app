@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.SectionUiModelImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
@@ -21,11 +21,13 @@ abstract class DataEntryBaseRepository(
         errorCount: Int,
         warningCount: Int
     ): FieldUiModel {
-        return (sectionToUpdate as SectionViewModel)
-            .setOpen(isSectionOpen)
-            .setTotalFields(totalFields)
-            .setCompletedFields(fieldsWithValue)
-            .withErrorsAndWarnings(errorCount, warningCount)
+        return (sectionToUpdate as SectionUiModelImpl).apply {
+            isOpen = isSectionOpen
+            this.totalFields = totalFields
+            completedFields = fieldsWithValue
+            errors = errorCount
+            warnings = warningCount
+        }
     }
 
     override fun updateField(

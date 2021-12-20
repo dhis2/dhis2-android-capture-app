@@ -1,18 +1,19 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import static org.dhis2.commons.extensions.Preconditions.isNull;
-import static org.dhis2.data.forms.dataentry.EnrollmentRepository.SINGLE_SECTION_UID;
+import static org.dhis2.form.model.SectionUiModelImpl.CLOSING_SECTION_UID;
+import static org.dhis2.form.model.SectionUiModelImpl.SINGLE_SECTION_UID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.model.SectionUiModelImpl;
 import org.dhis2.form.ui.event.UiEventFactoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.HintProvider;
@@ -188,16 +189,36 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     @Override
     public FieldUiModel createSingleSection(String singleSectionName) {
-        return SectionViewModel.create(
+        return new SectionUiModelImpl(
                 SINGLE_SECTION_UID,
-                getLayout(SectionViewModel.class),
-                singleSectionName,
+                layoutProvider.getLayoutForSection(),
                 null,
                 false,
+                null,
+                false,
+                null,
+                false,
+                singleSectionName,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                0,
+                0,
                 0,
                 0,
                 ProgramStageSectionRenderingType.LISTING.name(),
-                sectionProcessor,
                 currentSection
         );
     }
@@ -206,16 +227,36 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @Override
     public FieldUiModel createSection(String sectionUid, String sectionName, String description,
                                       boolean isOpen, int totalFields, int completedFields, String rendering) {
-        return SectionViewModel.create(
+        return new SectionUiModelImpl(
                 sectionUid,
-                getLayout(SectionViewModel.class),
+                layoutProvider.getLayoutForSection(),
+                null,
+                false,
+                null,
+                false,
+                null,
+                false,
                 sectionName,
+                null,
+                null,
+                null,
                 description,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 isOpen,
                 totalFields,
                 completedFields,
+                0,
+                0,
                 rendering,
-                sectionProcessor,
                 currentSection
         );
     }
@@ -223,7 +264,38 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     @Override
     public FieldUiModel createClosingSection() {
-        return SectionViewModel.createClosingSection();
+        return new SectionUiModelImpl(
+                CLOSING_SECTION_UID,
+                layoutProvider.getLayoutForSection(),
+                null,
+                false,
+                null,
+                false,
+                null,
+                false,
+                CLOSING_SECTION_UID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                0,
+                0,
+                0,
+                0,
+                ProgramStageSectionRenderingType.LISTING.name(),
+                currentSection
+        );
     }
 
     @NonNull
