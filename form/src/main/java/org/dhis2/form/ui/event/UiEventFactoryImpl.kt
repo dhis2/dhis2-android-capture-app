@@ -120,16 +120,6 @@ class UiEventFactoryImpl(
                         )
                     }
                 }
-                ValueType.IMAGE -> {
-                    when (uiEventType) {
-                        UiEventType.ADD_PICTURE -> RecyclerViewUiEvents.AddImage(uid)
-                        UiEventType.SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
-                            label,
-                            value ?: ""
-                        )
-                        else -> null
-                    }
-                }
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
                 else -> null
             }
