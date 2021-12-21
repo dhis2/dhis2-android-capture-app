@@ -1,24 +1,19 @@
 package org.dhis2.common.filters
 
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.DatePickerMatchers.Companion.matchesDate
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
-import org.dhis2.usescases.orgunitselector.OrgUnitSelectorHolder
-import org.dhis2.utils.filters.FilterHolder
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorHolder
+import org.dhis2.commons.filters.FilterHolder
 import org.hamcrest.Matchers.allOf
 
 fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
@@ -42,8 +37,8 @@ class FiltersRobot : BaseRobot() {
         onView(withId(R.id.ouTreeButton)).perform(click())
     }
 
-    fun returnToSearch() {
-        onView(withId(R.id.menu)).perform(click())
+    fun confirmSelection() {
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun selectDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {

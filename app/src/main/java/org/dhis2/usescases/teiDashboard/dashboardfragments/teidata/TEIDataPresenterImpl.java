@@ -12,7 +12,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.dataentry.ValueStore;
@@ -33,7 +33,7 @@ import org.dhis2.utils.Result;
 import org.dhis2.utils.RuleUtilsProviderResult;
 import org.dhis2.utils.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -515,6 +515,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 
     private boolean canAddNewEvents() {

@@ -18,7 +18,7 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.prefs.Preference
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After

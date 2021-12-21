@@ -59,6 +59,57 @@ fun RelativePeriod.isInOther(): Boolean {
         this == RelativePeriod.QUARTERS_THIS_YEAR
 }
 
+fun getDailyPeriods(): List<RelativePeriod> {
+    return listOf(
+        RelativePeriod.TODAY,
+        RelativePeriod.YESTERDAY,
+        RelativePeriod.LAST_3_DAYS,
+        RelativePeriod.LAST_7_DAYS,
+        RelativePeriod.LAST_14_DAYS,
+        RelativePeriod.LAST_30_DAYS,
+        RelativePeriod.LAST_60_DAYS,
+        RelativePeriod.LAST_90_DAYS,
+        RelativePeriod.LAST_180_DAYS
+    )
+}
+
+fun getWeeklyPeriods(): List<RelativePeriod> {
+    return listOf(
+        RelativePeriod.THIS_WEEK,
+        RelativePeriod.LAST_WEEK,
+        RelativePeriod.LAST_4_WEEKS,
+        RelativePeriod.LAST_12_WEEKS,
+        RelativePeriod.LAST_52_WEEKS
+    )
+}
+
+fun getMonthlyPeriods(): List<RelativePeriod> {
+    return listOf(
+        RelativePeriod.THIS_MONTH,
+        RelativePeriod.LAST_MONTH,
+        RelativePeriod.LAST_3_MONTHS,
+        RelativePeriod.LAST_6_MONTHS,
+        RelativePeriod.LAST_12_MONTHS,
+        RelativePeriod.MONTHS_THIS_YEAR
+    )
+}
+
+fun getYearlyPeriods(): List<RelativePeriod> {
+    return listOf(
+        RelativePeriod.THIS_YEAR,
+        RelativePeriod.LAST_YEAR,
+        RelativePeriod.LAST_5_YEARS
+    )
+}
+
+fun getOtherPeriods(): List<RelativePeriod> {
+    return listOf(
+        RelativePeriod.LAST_QUARTER,
+        RelativePeriod.LAST_4_QUARTERS,
+        RelativePeriod.QUARTERS_THIS_YEAR
+    )
+}
+
 fun RelativePeriod.getThisFromPeriod(): RelativePeriod {
     return when {
         this.isInDaily() -> {

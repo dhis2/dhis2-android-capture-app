@@ -3,6 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
 
@@ -93,6 +95,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
         setUpViewPagerAdapter();
         setUpNavigationBar();
+        showProgress();
         presenter.initNoteCounter();
         presenter.init();
     }
@@ -382,7 +385,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showMoreOptions(View view) {
         new AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
                 .onMenuInflated(popupMenu -> {
-                    popupMenu.getMenu().getItem(0).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    popupMenu.getMenu().findItem(R.id.menu_delete).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
+                    popupMenu.getMenu().findItem(R.id.menu_share).setVisible(false);
                     return Unit.INSTANCE;
                 })
                 .onMenuItemClicked(itemId -> {
@@ -469,20 +473,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showProgress() {
-        runOnUiThread(() -> {
-            binding.toolbarProgress.setVisibility(View.VISIBLE);
-            binding.toolbarProgress.show();
-        });
-
+        runOnUiThread(() -> binding.toolbarProgress.show());
     }
 
     @Override
     public void hideProgress() {
-        runOnUiThread(() -> {
-            binding.toolbarProgress.hide();
-            binding.toolbarProgress.setVisibility(View.GONE);
-        });
-
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                        runOnUiThread(() ->
+                                binding.toolbarProgress.hide()),
+                1000);
     }
 
     @Override

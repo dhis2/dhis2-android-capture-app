@@ -1,7 +1,6 @@
-
 [main]
 host = https://www.transifex.com
-lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR	
+lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR
 
 [dhis2-android-capture-app.strings-xml]
 file_filter = app/src/main/res/values-<lang>/strings.xml
@@ -9,3 +8,25 @@ minimum_perc = 0
 source_file = app/src/main/res/values/strings.xml
 source_lang = en
 type = ANDROID
+
+[dhis2-android-capture-app.commons-strings-xml]
+file_filter = commons/src/main/res/values-<lang>/strings.xml
+minimum_perc = 0
+source_file = commons/src/main/res/values/strings.xml
+source_lang = en
+type = ANDROID
+
+[dhis2-android-capture-app.form-strings-xml]
+file_filter = form/src/main/res/values-<lang>/strings.xml
+minimum_perc = 0
+source_file = form/src/main/res/values/strings.xml
+source_lang = en
+type = ANDROID
+
+[dhis2-android-capture-app.analytics-strings-xml]
+file_filter = dhis_android_analytics/src/main/res/values-<lang>/strings.xml
+minimum_perc = 0
+source_file = dhis_android_analytics/src/main/res/values/strings.xml
+source_lang = en
+type = ANDROID
+

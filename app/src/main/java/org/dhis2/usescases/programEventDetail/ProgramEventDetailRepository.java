@@ -43,5 +43,9 @@ public interface ProgramEventDetailRepository {
 
     Single<ProgramStage> programStage();
 
+    boolean programHasCoordinates();
+
+    boolean programHasAnalytics();
+
     Observable<List<DataElement>> textTypeDataElements();
 }

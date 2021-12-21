@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="item"
             type="org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel" />
@@ -12,9 +14,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.formattedLabel}"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="XX MAL RDT TRK - Diagnosos Method" />
+
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="visible"
+            android:onClick="@{v -> item.onDescriptionClick()}"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textSize="10sp"
+            app:error_message="@{item.error()}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:warning_message="@{item.warning()}"
+            tools:text="This is a error warning"
+            tools:textAppearance="@style/error_appearance"
+            tools:visibility="visible" />
+
         <org.dhis2.data.forms.dataentry.fields.visualOptionSet.VisualOptionSetView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/errorMessage"
             app:matrixViewModel="@{item}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

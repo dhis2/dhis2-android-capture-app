@@ -20,6 +20,7 @@ package com.evrencoskun.tableview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -153,6 +154,8 @@ public class TableView extends FrameLayout implements ITableView {
                 .table_view_default_shadow_background_color);
         mHeadersColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_header_background_color);
+        mSeparatorColor = ContextCompat.getColor(getContext(), R.color
+                .table_view_default_separator_color);
 
         if (attrs == null) {
             // That means TableView is created programmatically.
@@ -276,7 +279,6 @@ public class TableView extends FrameLayout implements ITableView {
         if (isShowHorizontalSeparators()) {
             // Add vertical item decoration to display column line
             recyclerView.addItemDecoration(getHorizontalItemDecoration());
-            recyclerView.addItemDecoration(getVerticalItemDecoration());
         }
 
         return recyclerView;
@@ -300,7 +302,6 @@ public class TableView extends FrameLayout implements ITableView {
             if (isShowHorizontalSeparators()) {
                 // Add vertical item decoration to display column line
                 recyclerView.addItemDecoration(getHorizontalItemDecoration());
-                recyclerView.addItemDecoration(getVerticalItemDecoration());
             }
 
             ColumnHeaderRecyclerViewAdapter adapter = (ColumnHeaderRecyclerViewAdapter) mColumnHeaderRecyclerViews.get(i).getAdapter();
@@ -328,7 +329,6 @@ public class TableView extends FrameLayout implements ITableView {
             if (isShowVerticalSeparators()) {
                 // Add vertical item decoration to display row line
                 mRowHeaderRecyclerView.addItemDecoration(getVerticalItemDecoration());
-                mRowHeaderRecyclerView.addItemDecoration(getHorizontalItemDecoration());
             }
 
         }
@@ -344,6 +344,8 @@ public class TableView extends FrameLayout implements ITableView {
 
             // Set layout manager
             mCellRecyclerView.setLayoutManager(getCellLayoutManager());
+
+//            mCellRecyclerView.setBackgroundResource(R.drawable.cell_bg);
         } else {
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
@@ -591,7 +593,7 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     @Override
-    public void scrollToNextField(){
+    public void scrollToNextField() {
         mScrollHandler.scrollToNextField();
     }
 
@@ -750,7 +752,7 @@ public class TableView extends FrameLayout implements ITableView {
         // That means; There is a custom separator color from user.
         if (mSeparatorColor != -1) {
             // Change its color
-            divider.setColorFilter(mSeparatorColor, PorterDuff.Mode.SRC_ATOP);
+            divider.setColorFilter(new PorterDuffColorFilter(mSeparatorColor, PorterDuff.Mode.SRC_IN));
         }
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), orientation);

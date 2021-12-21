@@ -16,7 +16,7 @@ import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.databinding.ItemFieldValueBinding;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.DhisTextUtils;
-import org.dhis2.utils.resources.ResourceManager;
+import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;

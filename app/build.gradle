@@ -34,6 +34,7 @@ android {
         abortOnError false
     }
 
+    ndkVersion versions.ndk
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
 
@@ -158,14 +159,14 @@ android {
             applicationId "com.eyeseetea.widp"
             dimension "default"
             versionCode versions.vCode
-            versionName "2.4.2-widp-fork-1"
+            versionName "2.5-widp-fork-1"
         }
 
         psi {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode 9
-            versionName "2.4.3-psi-fork-1"
+            versionName "2.5-psi-fork-1"
         }
     }
 
@@ -252,14 +253,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${libraries.coroutines}"
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
 
-    /*
-    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-        exclude group: "org.hisp.dhis", module: "core-rules"
-    }*/
-
-  /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
-        exclude group: "junit", module: "junit"
-    }*/
     //region UI LIBRARIES
     //Google
     implementation "com.google.android.material:material:${libraries.material}"

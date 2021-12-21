@@ -10,9 +10,11 @@ import org.dhis2.form.model.RowAction
 class FormViewFragmentFactory(
     val formRepository: FormRepository,
     val locationProvider: LocationProvider?,
-    val onItemChangeListener: ((action: RowAction) -> Unit)?,
+    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val needToForceUpdate: Boolean = false,
-    val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
+    private val onFocused: (() -> Unit)?,
+    private val onActivityForResult: (() -> Unit)?,
     val dispatchers: DispatcherProvider
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
@@ -22,6 +24,8 @@ class FormViewFragmentFactory(
                 onItemChangeListener,
                 locationProvider,
                 onLoadingListener,
+                onFocused,
+                onActivityForResult,
                 needToForceUpdate,
                 dispatchers
             )

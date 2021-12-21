@@ -11,14 +11,15 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import org.dhis2.commons.R
 import java.util.ArrayList
 import kotlin.math.pow
+import org.dhis2.commons.R
 
 @BindingAdapter("scrollingTextView")
 fun TextView.setScrollingTextView(canScroll: Boolean) {
@@ -123,4 +124,14 @@ fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
         }
         clipToOutline = true
     }
+}
+
+fun HorizontalScrollView.scrollToPosition(viewTag: String) {
+    val view = findViewWithTag<View>(viewTag) ?: return
+    val xScroll = when (context.resources.configuration.layoutDirection) {
+        View.LAYOUT_DIRECTION_RTL -> view.right - view.paddingRight
+        View.LAYOUT_DIRECTION_LTR -> view.left - view.paddingLeft
+        else -> 0
+    }
+    smoothScrollTo(xScroll, view.top)
 }

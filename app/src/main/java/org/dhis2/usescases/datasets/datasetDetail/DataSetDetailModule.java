@@ -29,14 +29,13 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -86,10 +85,7 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator providePageConfigurator(
-            DataSetDetailRepository dataSetDetailRepository,
-            FeatureConfigRepository featureConfigRepository
-    ) {
-        return new DataSetPageConfigurator(dataSetDetailRepository, featureConfigRepository);
+    NavigationPageConfigurator providePageConfigurator(DataSetDetailRepository dataSetDetailRepository) {
+        return new DataSetPageConfigurator(dataSetDetailRepository);
     }
 }

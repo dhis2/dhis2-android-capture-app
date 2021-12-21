@@ -2,17 +2,18 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.filter.FilterPresenter;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.workingLists.EventFilterToWorkingListItemMapper;
-import org.dhis2.utils.filters.workingLists.WorkingListItem;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper;
+import org.dhis2.commons.filters.workingLists.WorkingListItem;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
@@ -86,14 +87,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         catComboUid -> view.showCatOptComboDialog(catComboUid),
-                        Timber::e
-                )
-        );
-        compositeDisposable.add(eventRepository.featureType()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        view::setFeatureType,
                         Timber::e
                 )
         );
@@ -225,5 +218,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public String getStageUid() {
         return eventRepository.programStage().blockingGet().uid();
+    }
+
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 }

@@ -52,24 +52,29 @@ class AppMenuHelper private constructor(
         popupMenu.show()
     }
 
-    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int){
-        popupMenu.menu.findItem(id).icon = ContextCompat.getDrawable(this.context, icon)
+    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int) {
+        popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
     }
 
-    fun changeItemText(@IdRes id: Int, text: String){
-        popupMenu.menu.findItem(id).title = text
+    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int){
+        popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
+        popupMenu.menu.findItem(id)?.icon?.alpha = 0
     }
 
-    fun getItemText(@IdRes id: Int): String{
-        return popupMenu.menu.findItem(id).title.toString()
+    fun changeItemText(@IdRes id: Int, text: String) {
+        popupMenu.menu.findItem(id)?.title = text
     }
 
-    fun hideItem(@IdRes id:Int){
-        popupMenu.menu.findItem(id).isVisible = false
+    fun getItemText(@IdRes id: Int): String {
+        return popupMenu.menu.findItem(id)?.title.toString()
     }
 
-    fun showItem(@IdRes id: Int){
-        popupMenu.menu.findItem(id).isVisible = true
+    fun hideItem(@IdRes id: Int) {
+        popupMenu.menu.findItem(id)?.isVisible = false
+    }
+
+    fun showItem(@IdRes id: Int) {
+        popupMenu.menu.findItem(id)?.isVisible = true
     }
 
     data class Builder(

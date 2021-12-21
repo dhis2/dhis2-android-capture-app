@@ -7,16 +7,22 @@ import dhis2.org.analytics.charts.data.GraphPoint
 class GraphCoordinatesToEntry {
     fun map(
         graph: Graph,
-        coordinates: List<GraphPoint>
+        coordinates: List<GraphPoint>,
+        serieLabel: String
     ): List<Entry> {
         return coordinates.mapIndexed { index, graphPoint ->
-            Entry(
-                if (index > 0) {
-                    graphPoint.position ?: graph.numberOfStepsToDate(graphPoint.eventDate)
+
+            val entryIndex = graphPoint.position
+                ?: if (index == 0) {
+                    0f
                 } else {
-                    index.toFloat()
-                },
-                graphPoint.fieldValue
+                    graph.numberOfStepsToDate(graphPoint.eventDate)
+                }
+
+            Entry(
+                entryIndex,
+                graphPoint.fieldValue,
+                serieLabel
             )
         }
     }

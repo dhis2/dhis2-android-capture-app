@@ -4,18 +4,13 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
@@ -46,8 +41,7 @@ class EnrollmentRepository(
     private val enrollmentCoordinatesLabel: String,
     private val reservedValuesWarning: String,
     private val enrollmentDateDefaultLabel: String,
-    private val incidentDateDefaultLabel: String,
-    private val onRowActionProccesor: FlowableProcessor<RowAction>
+    private val incidentDateDefaultLabel: String
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
@@ -230,8 +224,10 @@ class EnrollmentRepository(
             }
         }
 
-        if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
-            dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
+        if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
+            !DhisTextUtils.isEmpty(dataValue)
+        ) {
+            dataValue = attrValueRepository.blockingGet().value()
         }
 
         val fieldViewModel = fieldFactory.create(
@@ -251,8 +247,8 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             null,
-            onRowActionProccesor,
             emptyList(),
+            if (valueType == ValueType.COORDINATE) FeatureType.POINT else null,
             null
         )
 
@@ -374,23 +370,27 @@ class EnrollmentRepository(
         enrollmentDateLabel: String,
         allowFutureDates: Boolean?
     ): FieldUiModel {
-        return DateTimeViewModel.create(
+        return fieldFactory.create(
             ENROLLMENT_DATE_UID,
             enrollmentDateLabel,
-            true,
             ValueType.DATE,
+            true, // check in constructor of dateviewmodel
+            null,
             when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
                 null -> null
-                else -> DateUtils.databaseDateFormat().format(date)
+                else -> DateUtils.oldUiDateFormat().format(date)
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            true,
+            canEditAttributes,
+            null,
+            null,
+            null,
             null,
             ObjectStyle.builder().build(),
-            true,
-            false,
-            onRowActionProccesor,
+            null,
+            null,
+            null,
             null
         )
     }
@@ -399,39 +399,50 @@ class EnrollmentRepository(
         incidentDateLabel: String,
         allowFutureDates: Boolean?
     ): FieldUiModel {
-        return DateTimeViewModel.create(
+        return fieldFactory.create(
             INCIDENT_DATE_UID,
             incidentDateLabel,
-            true,
             ValueType.DATE,
-            DateUtils.databaseDateFormat().format(
-                enrollmentRepository.blockingGet()!!.incidentDate()
-            ),
-            ENROLLMENT_DATA_SECTION_UID,
-            allowFutureDates,
             true,
             null,
+            when (val date = enrollmentRepository.blockingGet()!!.incidentDate()) {
+                null -> null
+                else -> DateUtils.oldUiDateFormat().format(date)
+            },
+            ENROLLMENT_DATA_SECTION_UID,
+            allowFutureDates,
+            canEditAttributes,
+            null,
+            null,
+            null,
+            null,
             ObjectStyle.builder().build(),
-            true,
-            false,
-            onRowActionProccesor,
+            null,
+            null,
+            null,
             null
         )
     }
 
     private fun getOrgUnitField(editable: Boolean): FieldUiModel {
-        return OrgUnitViewModel.create(
+        return fieldFactory.create(
             ORG_UNIT_UID,
             enrollmentOrgUnitLabel,
+            ValueType.ORGANISATION_UNIT,
             true,
-            getOrgUnitValue(enrollmentRepository.blockingGet()!!.organisationUnit()),
+            null,
+            enrollmentRepository.blockingGet()?.organisationUnit(),
             ENROLLMENT_DATA_SECTION_UID,
+            null,
             editable,
+            ProgramStageSectionRenderingType.LISTING,
+            null,
+            null,
             null,
             ObjectStyle.builder().build(),
-            true,
-            ProgramStageSectionRenderingType.LISTING.name,
-            onRowActionProccesor,
+            null,
+            null,
+            null,
             null
         )
     }
@@ -445,45 +456,54 @@ class EnrollmentRepository(
             ).blockingGet()
         val teiType = d2.trackedEntityModule().trackedEntityTypes()
             .uid(tei.trackedEntityType()).blockingGet()
-        return CoordinateViewModel.create(
+        return fieldFactory.create(
             TEI_COORDINATES_UID,
             "$teiCoordinatesLabel ${teiType.displayName()}",
+            ValueType.COORDINATE,
             false,
+            null,
             if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
             ENROLLMENT_DATA_SECTION_UID,
-            true,
+            null,
+            canEditAttributes,
+            null,
+            null,
+            null,
             null,
             ObjectStyle.builder().build(),
-            featureType,
-            true,
-            false,
-            onRowActionProccesor,
-            fieldFactory.style(),
-            null
+            null,
+            null,
+            null,
+            featureType
         )
     }
 
     private fun getEnrollmentCoordinatesField(
         featureType: FeatureType?
     ): FieldUiModel {
-        return CoordinateViewModel.create(
+        return fieldFactory.create(
             ENROLLMENT_COORDINATES_UID,
             enrollmentCoordinatesLabel,
+            ValueType.COORDINATE,
             false,
+            null,
             if (enrollmentRepository.blockingGet()!!.geometry() != null) {
                 enrollmentRepository.blockingGet()!!.geometry()!!.coordinates()
             } else {
                 null
             },
             ENROLLMENT_DATA_SECTION_UID,
-            true, null,
+            null,
+            canEditAttributes,
+            null,
+            null,
+            null,
+            null,
             ObjectStyle.builder().build(),
-            featureType,
-            true,
-            false,
-            onRowActionProccesor,
-            fieldFactory.style(),
-            null
+            null,
+            null,
+            null,
+            featureType
         )
     }
 
@@ -497,16 +517,6 @@ class EnrollmentRepository(
             0,
             ProgramStageSectionRenderingType.LISTING.name
         )
-    }
-
-    private fun getOrgUnitValue(currentValueUid: String?): String? {
-        return if (currentValueUid != null) {
-            currentValueUid + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(
-                currentValueUid
-            ).blockingGet()!!.displayName()
-        } else {
-            null
-        }
     }
 
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {

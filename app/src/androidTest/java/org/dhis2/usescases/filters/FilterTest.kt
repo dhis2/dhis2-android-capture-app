@@ -4,11 +4,9 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.form.FormTest
 import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
-import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -84,7 +82,7 @@ class FilterTest: BaseTest() {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
             selectTreeOrgUnit("OU TEST PARENT")
-            returnToSearch()
+            confirmSelection()
         }
         homeRobot {
             openFilters()

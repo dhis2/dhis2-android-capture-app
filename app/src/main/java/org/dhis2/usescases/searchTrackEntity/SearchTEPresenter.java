@@ -1,5 +1,15 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import static android.app.Activity.RESULT_OK;
+import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
+import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
+import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
+import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -16,14 +26,20 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.dhislogic.DhisMapUtils;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.form.data.FormRepository;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
@@ -37,7 +53,6 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
@@ -45,12 +60,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.dhis2.utils.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
@@ -79,16 +89,6 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static android.app.Activity.RESULT_OK;
-import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
-import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
-
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private static final Program ALL_TE_TYPES = null;
@@ -104,32 +104,32 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final FilterRepository filterRepository;
     private Program selectedProgram;
 
-    private CompositeDisposable compositeDisposable;
+    private final CompositeDisposable compositeDisposable;
     private TrackedEntityType trackedEntity;
     private HashMap<String, String> queryData;
 
     private Date selectedEnrollmentDate;
 
-    private FlowableProcessor<HashMap<String, String>> queryProcessor;
+    private final FlowableProcessor<HashMap<String, String>> queryProcessor;
     private String trackedEntityType;
-    private FlowableProcessor<Unit> mapProcessor;
-    private FlowableProcessor<Unit> enrollmentMapProcessor;
+    private final FlowableProcessor<Unit> mapProcessor;
+    private final FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
-    private FlowableProcessor<Unit> mapDataProcessor;
-    private FlowableProcessor<Unit> listDataProcessor;
+    private final FlowableProcessor<Unit> mapDataProcessor;
+    private final FlowableProcessor<Unit> listDataProcessor;
 
     private boolean showList = true;
-    private MapTeisToFeatureCollection mapTeisToFeatureCollection;
-    private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
-    private MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
-    private EventToEventUiComponent eventToEventUiComponent;
+    private final MapTeisToFeatureCollection mapTeisToFeatureCollection;
+    private final MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
+    private final MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection;
+    private final EventToEventUiComponent eventToEventUiComponent;
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
-    private DhisMapUtils mapUtils;
+    private final DhisMapUtils mapUtils;
     private final Flowable<RowAction> fieldProcessor;
-    private DisableHomeFiltersFromSettingsApp disableHomeFilters;
-    private MatomoAnalyticsController matomoAnalyticsController;
-    private final FormRepository formRepository;
+    private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
+    private final MatomoAnalyticsController matomoAnalyticsController;
+    private final SearchMessageMapper searchMessageMapper;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -148,7 +148,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
-                             FormRepository formRepository) {
+                             SearchMessageMapper searchMessageMapper) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -160,7 +160,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
         this.fieldProcessor = fieldProcessor;
-
+        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
         this.filterRepository = filterRepository;
@@ -175,7 +175,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         listDataProcessor = PublishProcessor.create();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
-        this.formRepository = formRepository;
     }
 
     //-----------------------------------
@@ -241,8 +240,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(rowAction -> {
-                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE || rowAction.getType() == ActionType.ON_SAVE) {
-                        formRepository.processUserAction(rowAction);
+                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE ||
+                            rowAction.getType() == ActionType.ON_SAVE
+                    ) {
                         Map<String, String> queryDataBU = new HashMap<>(queryData);
                         view.setFabIcon(true);
                         updateQueryData(rowAction);
@@ -251,6 +251,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             updateQueryData(rowAction);
                         }
                         view.showClearSearch(!queryData.isEmpty());
+
+                        if (rowAction.getType() == ActionType.ON_SAVE) {
+                            populateList(null);
+                        }
                     }
                 }, Timber::d)
         );
@@ -294,7 +298,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             trackedEntityType,
                                             queryData
                                     ),
-                                    NetworkUtils.isOnline(view.getContext())));
+                                    canSearchOnline()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
@@ -311,7 +315,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                 trackedEntityType,
                                                 queryData
                                         ),
-                                        NetworkUtils.isOnline(view.getContext())))
+                                        canSearchOnline()))
                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                         .map(teis -> {
                                     Map<String, FeatureCollection> coordinateFields = new HashMap<>();
@@ -397,66 +401,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public Pair<String, Boolean> getMessage(List<SearchTeiModel> list) {
-
-        int size = list.size();
-
-        String messageId = "";
-        boolean canRegister = false;
-
-        if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
-                if (isSearching) {
-                    if (size == 0) {
-                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        canRegister = true;
-                    }
-                } else {
-                    messageId = view.getContext().getString(R.string.search_init);
-                }
-            } else if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-            } else if (size == 0 && !queryData.isEmpty()) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0) {
-                messageId = view.getContext().getString(R.string.search_init);
-            }
-        } else if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
-            if (!showList && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            } else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            }
-        } else if (selectedProgram == null) {
-            if (!teiTypeHasAttributesToDisplay) {
-                messageId = String.format(view.getContext().getString(R.string.tei_type_has_no_attributes), getTrackedEntityName().displayName());
-            } else if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
-                messageId = view.getContext().getString(R.string.search_init);
-            else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-        } else {
-            if (size == 0 && !queryData.isEmpty()) {
-                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID) ? queryData.size() - 1 : queryData.size();
-                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
-                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                else
-                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0)
-                messageId = view.getContext().getString(R.string.search_init);
-        }
-
-        if (messageId.isEmpty())
-            canRegister = true;
-
-        return Pair.create(messageId, canRegister);
+    public SearchMessageResult getMessage(List<SearchTeiModel> list) {
+        return searchMessageMapper.getSearchMessage(
+                list,
+                selectedProgram,
+                queryData,
+                teiTypeHasAttributesToDisplay,
+                MAX_NO_SELECTED_PROGRAM_RESULTS,
+                getTrackedEntityName().displayName()
+        );
     }
 
     private void handleError(Throwable throwable) {
@@ -522,15 +475,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (otherProgramSelected) {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
+            searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
+            view.updateNavigationBar();
         }
 
-        searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
         currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
     }
 
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
         return previousProgramUid != null && previousProgramUid.equals(currentProgramUid) ||
                 programSelected == selectedProgram;
+    }
+
+    @Override
+    public void resetSearch() {
+        showList = true;
+        queryData.clear();
+        listDataProcessor.onNext(new Unit());
     }
 
     @Override
@@ -551,9 +512,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onFabClick(boolean needsSearch) {
-        if (!needsSearch)
+        if (!needsSearch) {
             onEnrollClick();
-        else {
+        } else if (!selectedProgramMinNumberOfAttributesCheck()) {
+            view.displayMinNumberOfAttributesMessage(selectedProgram.minAttributesRequiredToSearch());
+        } else {
             isSearching = true;
             analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             view.clearData();
@@ -961,7 +924,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (list != null) {
             view.setFabIcon(!list.isEmpty());
         }
-        view.setFormData(formRepository.composeList(list));
+        view.setFormData(list);
+    }
+
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 
     @Override
@@ -1009,5 +977,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    @Override
+    public boolean selectedProgramMinNumberOfAttributesCheck() {
+        if (selectedProgram == null) {
+            return true;
+        } else {
+            int minAttributes = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
+            return minAttributes <= queryData.size();
+        }
+    }
+
+    private boolean canSearchOnline() {
+        return NetworkUtils.isOnline(view.getContext()) && selectedProgramMinNumberOfAttributesCheck();
     }
 }

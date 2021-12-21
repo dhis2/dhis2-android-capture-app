@@ -18,7 +18,7 @@ fun View.closeKeyboard() {
 
 fun View.openKeyboard() {
     val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this.findFocus(), InputMethodManager.SHOW_FORCED)
+    imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
 }
 
 fun View.getThemePrimaryColor(): Int {

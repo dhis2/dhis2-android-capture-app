@@ -9,21 +9,27 @@
     <group android:id="@+id/filters">
         <item
             android:id="@+id/today"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/today" />
         <item
             android:id="@+id/yesterday"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/yesterday" />
         <item
             android:id="@+id/last3days"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last3Days" />
         <item
             android:id="@+id/last7days"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last7Days" />
         <item
             android:id="@+id/last14days"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last14Days" />
         <item
             android:id="@+id/last30days"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last30Days" />
     </group>
 </menu>

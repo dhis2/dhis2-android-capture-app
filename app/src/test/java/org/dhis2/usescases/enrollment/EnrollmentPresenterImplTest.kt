@@ -15,11 +15,9 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -38,6 +36,8 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
+import org.hisp.dhis.rules.models.RuleActionShowError
+import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -56,10 +56,8 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val onRowActionProcessor: FlowableProcessor<RowAction> = PublishProcessor.create()
     private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
-    private val formRepository: FormRepository = mock()
 
     @Before
     fun setUp() {
@@ -75,10 +73,8 @@ class EnrollmentPresenterImplTest {
             valueStore,
             analyticsHelper,
             "This field is mandatory",
-            onRowActionProcessor,
             sectionProcessor,
-            matomoAnalyticsController,
-            formRepository
+            matomoAnalyticsController
         )
     }
 
@@ -136,40 +132,26 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        val fields = arrayListOf(
-            dummyEditTextViewModel("uid1", "error_field").withError("Error")
+        val fields = arrayListOf(dummyEditTextViewModel("uid1", "error_field"))
+        val calcResult = Result.success(
+            listOf(
+                RuleEffect.create(
+                    "ruleUid",
+                    RuleActionShowError.create("content", "error_field", "uid1"),
+                    "data"
+                )
+            )
         )
-
         mockTrackedEntityAttributes()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
         ) doReturn false
 
-        presenter.setFieldsToShow("testSection", fields)
+        presenter.applyRuleEffects(fields, calcResult)
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("error_field"))
-    }
-
-    @Test
-    fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
-        val action = RowAction("fieldUid", "123", false, null, null, null, null, ActionType.ON_SAVE)
-
-        whenever(formRepository.processUserAction(action)) doReturn StoreResult(
-            "fieldUid",
-            ValueStoreResult.VALUE_NOT_UNIQUE
-        )
-        whenever(enrollmentView.context) doReturn mock()
-
-        presenter.listenToActions()
-        onRowActionProcessor.onNext(
-            action
-        )
-        val checkUnique = presenter.dataIntegrityCheck()
-
-        Assert.assertFalse(checkUnique)
-        verify(enrollmentView, times(2)).showInfoDialog(null, null)
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("content data"))
     }
 
     @Test
@@ -343,6 +325,7 @@ class EnrollmentPresenterImplTest {
     ) =
         EditTextViewModel.create(
             uid,
+            1,
             label,
             mandatory,
             value,
@@ -358,7 +341,6 @@ class EnrollmentPresenterImplTest {
             "any",
             false,
             false,
-            null,
             null,
             null
         )

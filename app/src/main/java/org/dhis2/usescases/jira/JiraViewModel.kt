@@ -4,11 +4,11 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.jira.ClickedIssueData
 import org.dhis2.data.jira.JiraIssuesResult
 import org.dhis2.data.jira.toJiraIssueUri
-import org.dhis2.utils.resources.ResourceManager
 import timber.log.Timber
 
 const val MEDIA_TYPE_APPLICATION_JSON = "application/json"
