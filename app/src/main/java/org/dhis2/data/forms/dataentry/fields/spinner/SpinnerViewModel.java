@@ -94,9 +94,9 @@ public abstract class SpinnerViewModel extends FieldViewModel {
                 DataEntryViewHolderTypes.OPTION_SET_SPINNER,
                 style(),
                 hint(),
-                url(),
                 activated(),
                 valueType(),
+                url(),
                 legendValue(),
                 optionSet(),
                 optionsToHide(),
@@ -112,7 +112,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning(), error, description(), objectStyle(),
-                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(), url(),activated(), valueType(), legendValue(), optionSet(),
+                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(),activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -123,7 +123,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), warning, error(), description(), objectStyle(),
                 null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(),
-                hint(), url(), activated(), valueType(), legendValue(), optionSet(),
+                hint(), activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -133,7 +133,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), data, programStageSection(),
                 allowFutureDate(), editable(), warning(), error(), description(), objectStyle(),
-                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(), url(), activated(), valueType(), legendValue(), optionSet(),
+                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(), activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -143,7 +143,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public FieldViewModel withEditMode(boolean isEditable) {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(),
-                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(), url(), activated(), valueType(), legendValue(), optionSet(),
+                null, DataEntryViewHolderTypes.OPTION_SET_SPINNER, style(), hint(), activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -154,7 +154,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
-                style(), hint(), isFocused, url(), valueType(), legendValue(), optionSet(),
+                style(), hint(), isFocused, valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -164,7 +164,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
-                style(), hint(), activated(), url(), valueType(), legendValue, optionSet(),
+                style(), hint(), activated(), valueType(), url(), legendValue, optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -174,7 +174,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
-                style(), hint(), activated(), url(), valueType(), legendValue(), optionSet(),
+                style(), hint(), activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide, optionsGroupsToHide, optionGroupsToShow(),
                 isBackgroundTransparent(), renderType());
     }
@@ -184,7 +184,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(), layoutId(), label(), mandatory(), value(),
                 programStageSection(), allowFutureDate(), editable(), warning(), error(),
                 description(), objectStyle(), null, dataEntryViewType(),
-                style(), hint(), activated(), url(), valueType(), legendValue(), optionSet(),
+                style(), hint(), activated(), valueType(), url(), legendValue(), optionSet(),
                 optionsToHide(), optionGroupsToHide(), optionGroupsToShow,
                 isBackgroundTransparent(), renderType());
     }

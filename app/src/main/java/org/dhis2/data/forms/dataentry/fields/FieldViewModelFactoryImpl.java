@@ -218,10 +218,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         optionSet,
                         description,
                         objectStyle,
-                        url
                         options,
                         renderingType == ProgramStageSectionRenderingType.MATRIX ? 2 : 1,
-                        type
+                        type,
+                        url
                 );
             }
         }
@@ -335,8 +335,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                         null,
                         allowFutureDates,
                         new UiEventFactoryImpl(id, label, type, allowFutureDates),
-                        displayNameProvider.provideDisplayName(type, value),
-                        url
+                        displayNameProvider.provideDisplayName(type, value)
                 );
             case COORDINATE:
                 return CoordinateViewModel.create(

@@ -6,7 +6,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.data.filter.TextFilter
+import org.dhis2.commons.filters.data.TextFilter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber

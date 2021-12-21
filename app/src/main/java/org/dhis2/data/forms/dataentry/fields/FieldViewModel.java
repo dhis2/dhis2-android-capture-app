@@ -98,7 +98,6 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     public abstract ValueType valueType();
 
-    @Override
     @Nullable
     public abstract String url();
 

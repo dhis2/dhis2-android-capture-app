@@ -391,6 +391,7 @@ class EnrollmentRepository(
             null,
             null,
             null,
+            null,
             null
         )
     }
@@ -420,6 +421,7 @@ class EnrollmentRepository(
             null,
             null,
             null,
+            null,
             null
         )
     }
@@ -440,6 +442,7 @@ class EnrollmentRepository(
             null,
             null,
             ObjectStyle.builder().build(),
+            null,
             null,
             null,
             null,
@@ -474,7 +477,8 @@ class EnrollmentRepository(
             null,
             null,
             null,
-            featureType
+            featureType,
+            null
         )
     }
 
@@ -503,7 +507,8 @@ class EnrollmentRepository(
             null,
             null,
             null,
-            featureType
+            featureType,
+            null
         )
     }
 

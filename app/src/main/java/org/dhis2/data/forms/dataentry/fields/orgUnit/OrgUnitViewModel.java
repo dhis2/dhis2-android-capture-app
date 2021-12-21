@@ -59,7 +59,8 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 null,
                 null,
                 false,
-                ValueType.ORGANISATION_UNIT, url
+                ValueType.ORGANISATION_UNIT,
+                url,
                 isBackgroundTransparent,
                 renderType,
                 displayName
@@ -88,7 +89,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 activated(),
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -118,7 +119,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 activated(),
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -148,7 +149,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 activated(),
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -178,7 +179,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 activated(),
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -208,7 +209,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 activated(),
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -238,7 +239,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 isFocused,
                 valueType(),
-                url
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName()
@@ -266,6 +267,7 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
                 hint(),
                 getFocused(),
                 valueType(),
+                url(),
                 isBackgroundTransparent(),
                 renderType(),
                 displayName
