@@ -40,14 +40,9 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.eventUid = eventUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DATA_ENTRY);
-        if (displayAnalyticScreen) {
-            pages.add(EventPageType.ANALYTICS);
-        }
-        if (displayRelationshipScreen) {
-            pages.add(EventPageType.RELATIONSHIPS);
-        }
+        pages.add(EventPageType.ANALYTICS);
+        pages.add(EventPageType.RELATIONSHIPS);
         pages.add(EventPageType.NOTES);
-
     }
 
     @NonNull
