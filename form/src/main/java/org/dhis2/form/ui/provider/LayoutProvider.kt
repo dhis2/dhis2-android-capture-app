@@ -10,6 +10,7 @@ interface LayoutProvider {
     fun getLayoutByType(
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
+        optionSet: String?,
         sectionRenderingType: ProgramStageSectionRenderingType?
     ): Int
     fun getLayoutForSection(): Int

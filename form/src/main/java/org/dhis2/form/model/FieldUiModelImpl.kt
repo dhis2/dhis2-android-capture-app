@@ -87,9 +87,17 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnSave(uid, result, valueType))
     }
 
+    override fun onSaveOption(option: Option) {
+        val nextValue = when (displayName) {
+            option.displayName() -> null
+            else -> option.code()
+        }
+        callback?.intent(FormIntent.OnSave(uid, nextValue, valueType))
+    }
+
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
-        uiEventFactory?.generateEvent(value, uiEventType, renderingType)?.let {
+        uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
     }

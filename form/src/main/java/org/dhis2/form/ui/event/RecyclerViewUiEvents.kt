@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.event
 
 import java.util.Date
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 
@@ -74,5 +75,9 @@ sealed class RecyclerViewUiEvents {
 
     data class CopyToClipboard(
         val value: String?
+    ) : RecyclerViewUiEvents()
+
+    data class OpenOptionSetDialog(
+        val field: FieldUiModel
     ) : RecyclerViewUiEvents()
 }

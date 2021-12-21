@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.event
 
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.UiEventType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.ValueType
@@ -15,7 +16,8 @@ class UiEventFactoryImplTest {
 
         val event = uiEventFactory?.generateEvent(
             value = "2021-09-27",
-            uiEventType = UiEventType.DATE_TIME
+            uiEventType = UiEventType.DATE_TIME,
+            fieldUiModel = provideFieldUiModel()
         )
         assertThat(
             "Event is OpenCustomCalendar",
@@ -29,7 +31,8 @@ class UiEventFactoryImplTest {
 
         val event = uiEventFactory?.generateEvent(
             value = "2021-09-27T10:20",
-            uiEventType = UiEventType.DATE_TIME
+            uiEventType = UiEventType.DATE_TIME,
+            fieldUiModel = provideFieldUiModel()
         )
         assertThat(
             "Event is OpenCustomCalendar",
@@ -43,7 +46,8 @@ class UiEventFactoryImplTest {
 
         val event = uiEventFactory?.generateEvent(
             value = "10:20",
-            uiEventType = UiEventType.DATE_TIME
+            uiEventType = UiEventType.DATE_TIME,
+            fieldUiModel = provideFieldUiModel()
         )
         assertThat(
             "Event is OpenTimePicker",
@@ -59,5 +63,12 @@ class UiEventFactoryImplTest {
         true,
         null,
         true
+    )
+
+    private fun provideFieldUiModel() = FieldUiModelImpl(
+        uid = "uid",
+        label = "label",
+        layoutId = 1,
+        valueType = ValueType.TEXT
     )
 }

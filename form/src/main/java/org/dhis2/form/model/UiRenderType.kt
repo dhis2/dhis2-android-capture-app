@@ -17,4 +17,5 @@ enum class UiRenderType {
 
     fun isRadioButton() = this == VERTICAL_RADIOBUTTONS || this == HORIZONTAL_RADIOBUTTONS
     fun isCheckBox() = this == VERTICAL_CHECKBOXES || this == HORIZONTAL_CHECKBOXES
+    fun isVisualOptionSet() = this == MATRIX || this == SEQUENCIAL
 }

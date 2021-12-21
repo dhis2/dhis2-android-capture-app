@@ -66,7 +66,10 @@ public class SpinnerHolder extends FormViewHolder {
 
             if (dialog.showDialog()) {
                 dialog.setListener(binding.optionSetView);
-                dialog.setClearListener((view) -> binding.optionSetView.deleteSelectedOption());
+                dialog.setClearListener((view) -> processor.onNext(
+                        RowAction.create(viewModel.uid(), null, null, viewModel.dataElement(),
+                                viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column())
+                ));
                 dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
             } else {
                 dialog.dismiss();

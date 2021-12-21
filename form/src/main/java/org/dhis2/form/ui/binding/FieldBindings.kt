@@ -2,6 +2,7 @@ package org.dhis2.form.ui.binding
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
@@ -25,6 +26,7 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -249,14 +251,20 @@ fun setLegendBadge(legendLayout: FrameLayout, legendValue: LegendValue?) {
 }
 
 @BindingAdapter("legendValue")
-fun setLegend(textView: TextView, legendValue: LegendValue?) {
-    if (legendValue != null) {
-        val bg = textView.background
-        DrawableCompat.setTint(bg, ColorUtils.withAlpha(legendValue.color, 38))
-        val drawables = textView.compoundDrawables
-        for (drawable in drawables) {
-            if (drawable != null) DrawableCompat.setTint(drawable, legendValue.color)
-        }
+fun TextView.setLegend(legendValue: LegendValue?) {
+    legendValue?.let {
+        DrawableCompat.setTint(background, ColorUtils.withAlpha(it.color, 38))
+        compoundDrawables
+            .filterNotNull()
+            .forEach { drawable -> DrawableCompat.setTint(drawable, it.color) }
+    }
+}
+
+@BindingAdapter("drawable_color")
+fun TextInputEditText.setDrawableColor(color: Int) {
+    compoundDrawablesRelative.filterNotNull().forEach {
+        val wrapDrawable: Drawable = DrawableCompat.wrap(it)
+        DrawableCompat.setTint(wrapDrawable, color)
     }
 }
 

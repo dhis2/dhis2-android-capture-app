@@ -650,5 +650,4 @@ public class Bindings {
             ViewAnimationsKt.hide(view);
         }
     }
-
 }

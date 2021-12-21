@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableField;
 
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.FieldUiModelImpl;
 import org.dhis2.form.model.LegendValue;
@@ -134,34 +133,9 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         isNull(type, "type must be supplied");
         if (searchMode)
             mandatory = false;
-        if (DhisTextUtils.Companion.isNotEmpty(optionSet)) {
-            if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
-                if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
-                } else {
-                    return SpinnerViewModel.create(
-                            id,
-                            getLayout(SpinnerViewModel.class),
-                            label,
-                            valueTypeHintMap.get(type),
-                            mandatory,
-                            optionSet,
-                            value,
-                            section,
-                            editable,
-                            description,
-                            objectStyle,
-                            !searchMode,
-                            ProgramStageSectionRenderingType.LISTING.toString(),
-                            legendValue,
-                            type
-                    );
-                }
-            }
-        }
         return new FieldUiModelImpl(
                 id,
-                layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, renderingType),
+                layoutProvider.getLayoutByType(type, fieldRendering != null ? fieldRendering.type() : null, optionSet, renderingType),
                 value,
                 false,
                 null,

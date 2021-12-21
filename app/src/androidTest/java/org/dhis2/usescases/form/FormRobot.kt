@@ -1,14 +1,16 @@
 package org.dhis2.usescases.form
 
+import android.app.Activity
 import android.view.MenuItem
-import androidx.appcompat.widget.MenuPopupWindow
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -23,10 +25,12 @@ import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
+import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
+
 
 fun formRobot(formRobot: FormRobot.() -> Unit) {
     FormRobot().apply {
@@ -45,7 +49,7 @@ class FormRobot : BaseRobot() {
     private fun clickOnSpinner(position: Int) {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<FormViewHolder>(
-                position, clickChildViewWithId(R.id.input_editText))
+                position, clickChildViewWithId(R.id.inputEditText))
             )
     }
 
@@ -111,20 +115,17 @@ class FormRobot : BaseRobot() {
 
     fun checkHiddenOption(label: String, position: Int) {
         clickOnSpinner(position)
-        onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
-            .check(matches(not(hasDescendant(withText(label)))))
-            .also {
-                it.perform(click())
-            }
+        onView(allOf(instanceOf(MenuItem::class.java), hasDescendant(withText(label))))
+            .check(doesNotExist())
+        selectAction("", 0)
     }
 
-    fun checkDisplayedOption(label: String, position: Int) {
+    fun checkDisplayedOption(label: String, position: Int, activity: Activity) {
         clickOnSpinner(position)
-        onView(instanceOf(MenuPopupWindow.MenuDropDownListView::class.java))
-            .check(matches(hasDescendant(withText(label))))
-            .also {
-                it.perform(click())
-            }
+        onView(withText(label))
+            .inRoot(withDecorView(not(`is`(activity.window.decorView))))
+            .check(matches(isDisplayed()))
+        selectAction("", 0)
     }
 
     fun clickOnFinish() {

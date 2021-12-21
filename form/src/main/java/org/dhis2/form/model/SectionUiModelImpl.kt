@@ -165,6 +165,8 @@ data class SectionUiModelImpl(
 
     override fun onSaveBoolean(boolean: Boolean) {}
 
+    override fun onSaveOption(option: Option) {}
+
     override fun setValue(value: String?) = this.copy(value = value)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)

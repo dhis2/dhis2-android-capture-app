@@ -57,7 +57,7 @@ fun RadioGroup.setRenderingType(renderingType: UiRenderType?) {
 fun LinearLayout.addOptions(item: FieldUiModel) {
     if (item.renderingType?.isCheckBox() == true) {
         removeAllViews()
-        item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
+        item.optionsToDisplay?.forEach { option ->
             val optionBinding: OptionSetSelectCheckItemBinding =
                 OptionSetSelectCheckItemBinding.inflate(LayoutInflater.from(context), this, false)
             optionBinding.apply {
@@ -83,7 +83,7 @@ fun LinearLayout.addOptions(item: FieldUiModel) {
 fun RadioGroup.addOptions(item: FieldUiModel) {
     if (item.renderingType?.isRadioButton() == true) {
         removeAllViews()
-        item.options?.filter { item.canShowOption(it.uid()) }?.forEach { option ->
+        item.optionsToDisplay?.forEach { option ->
             val optionBinding: OptionSetSelectItemBinding =
                 OptionSetSelectItemBinding.inflate(LayoutInflater.from(context), this, false)
             optionBinding.apply {
@@ -100,14 +100,5 @@ fun RadioGroup.addOptions(item: FieldUiModel) {
             }
             addView(optionBinding.root)
         }
-    }
-}
-
-private fun FieldUiModel.canShowOption(optionUid: String): Boolean {
-    val inOptionsToShow: Boolean = optionsToShow?.contains(optionUid) ?: false
-    val inOptionsToHide: Boolean = optionsToHide?.contains(optionUid) ?: false
-    return when {
-        optionsToShow?.isNotEmpty() ?: false -> inOptionsToShow
-        else -> !inOptionsToHide
     }
 }

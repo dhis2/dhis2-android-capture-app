@@ -1,8 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
@@ -41,24 +39,6 @@ abstract class DataEntryBaseRepository(
         val optionsInGroupsToShow = optionsFromGroups(optionGroupsToShow)
 
         return when {
-            fieldUiModel is MatrixOptionSetModel -> {
-                val hiddenMatrixModel = fieldUiModel.setOptionsToHide(
-                    optionsToHide,
-                    optionsInGroupsToHide,
-                    optionsInGroupsToShow
-                )
-                hiddenMatrixModel
-            }
-            fieldUiModel is SpinnerViewModel -> {
-                var mappedSpinnerModel = fieldUiModel.setOptionsToHide(
-                    optionsToHide,
-                    optionsInGroupsToHide
-                ) as SpinnerViewModel
-                mappedSpinnerModel = mappedSpinnerModel.setOptionGroupsToShow(
-                    optionsInGroupsToShow
-                ) as SpinnerViewModel
-                mappedSpinnerModel
-            }
             fieldUiModel.optionSet != null -> {
                 fieldUiModel.apply {
                     this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
