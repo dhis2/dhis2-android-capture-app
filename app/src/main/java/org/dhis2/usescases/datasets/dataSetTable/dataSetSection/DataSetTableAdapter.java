@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -49,13 +51,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 import kotlin.Triple;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -75,6 +76,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
+    public static final String DEFAULT = "default";
     private final Context context;
     private final String defaultColumnLabel;
 
@@ -254,7 +256,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(
-                defaultColumnLabel != null ? defaultColumnLabel : ((CategoryOption) columnHeaderItemModel).displayName(),
+                getColumnName((CategoryOption) columnHeaderItemModel),
                 currentTableScale,
                 position
         );
@@ -266,6 +268,14 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                     (currentWidth * i + (int) (context.getResources().getDisplayMetrics().density * (i - 1)));
         }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
+    }
+
+    private String getColumnName(@NonNull CategoryOption columnHeaderItemModel) {
+        if (columnHeaderItemModel.displayName() != null &&
+                Objects.requireNonNull(columnHeaderItemModel.displayName()).equals(DEFAULT)) {
+            return defaultColumnLabel != null ? defaultColumnLabel : columnHeaderItemModel.displayName();
+        }
+        return columnHeaderItemModel.displayName();
     }
 
     /**
@@ -309,7 +319,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public View onCreateCornerView() {
         int layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout;
-        return LayoutInflater.from(context).inflate(layout,null);
+        return LayoutInflater.from(context).inflate(layout, null);
     }
 
     @Override
