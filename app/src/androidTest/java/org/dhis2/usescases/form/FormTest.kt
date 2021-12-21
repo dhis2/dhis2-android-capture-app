@@ -69,24 +69,6 @@ class FormTest: BaseTest() {
         }
 
         formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
-            scrollToBottomForm()
-            clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Warning")
-            pressBack()
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
-            scrollToBottomForm()
-            clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Error")
-            pressBack()
-        }
-
-        formRobot {
             val nonMandatoryLabel = "ZZ TEST NUMBER"
             val mandatoryLabel = "ZZ TEST NUMBER *"
             val position = 4
@@ -115,20 +97,6 @@ class FormTest: BaseTest() {
             checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
             checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
         }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
-            scrollToPositionForm(0)
-            scrollToBottomForm()
-            clickOnSaveForm()
-            clickOnFinish()
-        }
-        teiDashboardRobot {
-            checkProgramStageIsHidden("Delta")
-            clickOnStageGroup("Gamma")
-            clickOnEventWithPosition(1)
-        }
     }
 
     @Test
@@ -155,6 +123,55 @@ class FormTest: BaseTest() {
             waitToDebounce(3000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
+        }
+    }
+
+    @Test
+    fun shouldApplyWarningAndErrorOnComplete(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
+            scrollToBottomForm()
+            waitToDebounce(1000)
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Warning")
+            pressBack()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
+            scrollToBottomForm()
+            waitToDebounce(1000)
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("Error")
+            pressBack()
+        }
+    }
+
+    @Test
+    fun shouldApplyHideProgramStage(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
+            scrollToPositionForm(0)
+            scrollToBottomForm()
+            waitToDebounce(1000)
+            clickOnSaveForm()
+            clickOnFinish()
+        }
+        teiDashboardRobot {
+            checkProgramStageIsHidden("Delta")
+            clickOnStageGroup("Gamma")
+            clickOnEventWithPosition(1)
         }
     }
 
