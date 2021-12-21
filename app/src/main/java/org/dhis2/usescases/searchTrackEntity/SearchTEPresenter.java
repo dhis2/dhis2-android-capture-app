@@ -840,9 +840,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public Drawable getEnrollmentSymbolIcon() {
         if (selectedProgram != null) {
             if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
-                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
+                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_default_outline);
             } else
-                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_program_default);
+                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_outline);
         }
 
         return null;

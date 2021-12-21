@@ -184,7 +184,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         binding.dataSetIcon.setImageResource(
             ResourceManager(mContext).getObjectStyleDrawableResource(
                 style?.icon(),
-                R.drawable.ic_program_default
+                R.drawable.ic_default_outline
             )
         )
         binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))
