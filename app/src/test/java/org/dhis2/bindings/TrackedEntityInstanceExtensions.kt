@@ -38,16 +38,16 @@ class TrackedEntityInstanceExtensions {
         )
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byState().neq(State.RELATIONSHIP)
+                .byAggregatedSyncState().neq(State.RELATIONSHIP)
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byState().neq(State.RELATIONSHIP)
+                .byAggregatedSyncState().neq(State.RELATIONSHIP)
                 .uid(anyString())
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byState().neq(State.RELATIONSHIP)
+                .byAggregatedSyncState().neq(State.RELATIONSHIP)
                 .uid(anyString())
                 .blockingExists()
         ) doReturn true
