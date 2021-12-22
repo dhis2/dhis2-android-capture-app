@@ -111,6 +111,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     return true;
                 case R.id.navigation_analytics:
                     showAnalytics();
+                    return true;
                 default:
                     return false;
             }
