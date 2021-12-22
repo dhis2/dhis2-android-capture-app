@@ -1,7 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Evento</string>
-    <string name="no_data">No hay datos</string>
-    <string name="enrolled_in">Inscrito en:</string>
-    <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
-</resources>
+    </resources>

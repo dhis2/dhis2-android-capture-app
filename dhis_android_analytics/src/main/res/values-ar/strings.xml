@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_bar_graph">عرض كشريط</string>
+    <string name="show_line_graph">مشاهدة على شكل خطي</string>
+    <string name="show_table_graph">عرض كجدول</string>
+    <string name="show_table_value">عرض كقيمة</string>
+    <string name="action_accept">قبول</string>
+    <string name="period">الفترة الزمنية</string>
+    <string name="none">لا شيء</string>
+    <string name="daily">يومي</string>
+    <string name="today">اليوم</string>
+    <string name="other">أخرى</string>
+    <string name="yesterday">الأمس</string>
+    <string name="last3Days">آخر 3 ايام</string>
+    <string name="last7Days">اخر 7 ايام</string>
+    <string name="last14Days">آخر 14 يومًا</string>
+    <string name="last30Days">آخر 30 يومًا</string>
+    <string name="thisweek">هذا الاسبوع</string>
+    <string name="lastweek">الأسبوع الماضي</string>
+    <string name="last4weeks">آخر 4 اسابيع</string>
+    <string name="last12weeks">آخر 12 أسبوعًا</string>
+    <string name="thismonth">هذا الشهر</string>
+    <string name="lastmonth">الشهر الماضي</string>
+    <string name="last3months">آخر 3 أشهر</string>
+    <string name="last6months">آخر 6 أشهر</string>
+    <string name="last12months">آخر 12 شهرًا</string>
+    <string name="monthsthisyear">أشهر هذا العام</string>
+    <string name="thisquarter">هذا الربع</string>
+    <string name="lastquarter">الربع الأخير</string>
+    <string name="last4quarters">الأرباع الأربعة الأخيرة</string>
+    <string name="quartersthisyear">ربع هذا العام</string>
+    <string name="thisyear">العام الحالي</string>
+    <string name="lastyear">العام الماضي</string>
+    <string name="last5years">آخر 5 سنوات</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="monthly">شهري</string>
+    <string name="yearly">سنوي</string>
+    <string name="all">الجميع</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="include_this_period_title">هل تريد تضمين الفترة الحالية؟</string>
+    <string name="include_this_period_body">سيعرض الفترة الحالية في الرسم البياني.</string>
+    <string name="no_data_for_selected_filters">لا تُرجع عوامل التصفية التي قمت بتطبيقها أية بيانات</string>
+    <string name="no_data_to_display">ليس لديك أي بيانات ليتم عرضها</string>
+    <string name="pie_chart_no_data">كل البيانات صفر</string>
+    <string name="error_database">لا يمكن الوصول إلى قاعدة البيانات. الرجاء الاتصال بالمسؤول الخاص بك.</string>
+</resources>

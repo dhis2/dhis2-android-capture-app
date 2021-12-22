@@ -436,7 +436,6 @@
     <string name="dashboard_indicators">Indicadores</string>
     <string name="empty_indicators">Não há indicadores para este programa.</string>
     <string name="dashboard_notes">Notas</string>
-    <string name="unable_to_complete">Não foi possível concluir</string>
     <string name="field_errors">Alguns campos possuem erros. Por favor, verifique-os para poder concluir</string>
     <string name="unselect_enrollment">Todas as inscrições</string>
     <string name="unselect_enrollment_description">Mostrar painel com todos os programas ativos</string>
@@ -569,7 +568,6 @@
     <string name="polygon">Poligono</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">Não é um formato correto.</string>
     <string name="fingerprint_title">Impressão digital</string>
     <string name="fingerprint_message">Por favor, coloque o dedo no seu leitor de impressões digitais.</string>
     <string name="security_title">Segurança</string>

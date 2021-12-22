@@ -456,7 +456,6 @@
     <string name="dashboard_analytics">التحليلات</string>
     <string name="empty_indicators">لا توجد مؤشرات لهذا البرنامج.</string>
     <string name="dashboard_notes">الملاحظات</string>
-    <string name="unable_to_complete">غير قادر على الإكمال</string>
     <string name="field_errors">تحتوي بعض الحقول على أخطاء. من فضلك، تحقق منها حتى تتمكن من الإكمال</string>
     <string name="unselect_enrollment">كل التسجيلات</string>
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
@@ -595,7 +594,6 @@
     <string name="polygon">مضلع</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">ليس تنسيقاً صحيحاً.</string>
     <string name="fingerprint_title">البصمة</string>
     <string name="fingerprint_message">من فضلك ، ضع إصبعك في قارئ بصمة الإصبع الخاص بك.</string>
     <string name="security_title">الأمان</string>
