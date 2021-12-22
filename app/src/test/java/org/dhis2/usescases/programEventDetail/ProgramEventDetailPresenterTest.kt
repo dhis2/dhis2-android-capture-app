@@ -122,7 +122,7 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(
-            repository.filteredProgramEvents()
+            repository.filteredProgramEvents(null)
         ) doReturn events
         whenever(
             repository.filteredEventsForMap()

@@ -742,7 +742,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null,true
             )
         ).thenReturn(Single.just(listOf()))
     }
@@ -767,7 +767,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null,true
             )
         ).thenReturn(Single.just(events))
 
@@ -784,7 +784,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null,true
             )
         ).thenReturn(
             Single.just(

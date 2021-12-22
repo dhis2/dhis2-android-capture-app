@@ -24,7 +24,8 @@ class RadioButtonViewModelTest {
             ObjectStyle.builder().build(),
             ValueTypeRenderingType.DEFAULT,
             false,
-            false
+            false,
+            null
         )
         val radioButtonMandatory = radioButtonViewModel.setMandatory()
 

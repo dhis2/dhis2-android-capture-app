@@ -73,6 +73,7 @@ class MatrixOptionSetModelTest {
             Option.builder().uid("5").build()
         ),
         5,
-        ValueType.TEXT
+        ValueType.TEXT,
+        null
     )
 }
