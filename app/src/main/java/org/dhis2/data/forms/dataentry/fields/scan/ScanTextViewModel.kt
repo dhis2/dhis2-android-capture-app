@@ -1,13 +1,16 @@
 package org.dhis2.data.forms.dataentry.fields.scan
 
+import android.view.View
+import com.google.android.material.textfield.TextInputEditText
 import com.google.auto.value.AutoValue
-import io.reactivex.processors.FlowableProcessor
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.style.FormUiModelStyle
+import org.dhis2.utils.Preconditions
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 
 @AutoValue
@@ -15,13 +18,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
 
     abstract val fieldRendering: ValueTypeDeviceRendering?
 
-    abstract val hint: String?
-
     companion object {
 
         @JvmStatic
         fun create(
             id: String,
+            layoutId: Int,
             label: String?,
             mandatory: Boolean?,
             value: String?,
@@ -34,11 +36,13 @@ abstract class ScanTextViewModel : FieldViewModel() {
             hint: String?,
             isBackgroundTransparent: Boolean,
             isSearchMode: Boolean,
-            processor: FlowableProcessor<RowAction>,
+            style: FormUiModelStyle,
+            valueType: ValueType,
             url: String?
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,
+                layoutId,
                 label,
                 mandatory,
                 value,
@@ -52,12 +56,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 objectStyle,
                 null,
                 DataEntryViewHolderTypes.SCAN_CODE,
-                processor,
-                null,
+                style,
+                hint,
                 false,
+                valueType,
                 url,
                 fieldRendering,
-                hint,
                 isBackgroundTransparent,
                 isSearchMode
             )
@@ -66,6 +70,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun setMandatory(): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             true,
             value(),
@@ -79,12 +84,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -92,6 +97,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withError(error: String): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -105,12 +111,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -118,6 +124,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withWarning(warning: String): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -131,12 +138,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -144,6 +151,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withValue(data: String?): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             data,
@@ -157,12 +165,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -170,6 +178,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withEditMode(isEditable: Boolean): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -183,12 +192,12 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             null,
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             activated(),
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
@@ -196,6 +205,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
     override fun withFocus(isFocused: Boolean): FieldViewModel =
         AutoValue_ScanTextViewModel(
             uid(),
+            layoutId(),
             label(),
             mandatory(),
             value(),
@@ -209,30 +219,85 @@ abstract class ScanTextViewModel : FieldViewModel() {
             objectStyle(),
             fieldMask(),
             DataEntryViewHolderTypes.SCAN_CODE,
-            processor(),
             style(),
+            hint(),
             isFocused,
+            valueType(),
             url(),
             fieldRendering,
-            hint,
             isBackgroundTransparent(),
             isSearchMode()
         )
-
-    override val layoutId: Int
-        get() = R.layout.form_scan
 
     abstract fun isBackgroundTransparent(): Boolean
 
     abstract fun isSearchMode(): Boolean
 
     fun onScanSelected(value: String?) {
-        processor()?.onNext(
-            RowAction(
-                id = uid(),
-                value = value,
-                type = ActionType.ON_SAVE
+        if (valueHasChanged(value)) {
+            callback.intent(
+                FormIntent.OnSave(
+                    uid = uid(),
+                    value = value,
+                    valueType = null,
+                    fieldMask = fieldMask()
+                )
             )
+        }
+    }
+
+    fun scan() {
+        if (value().isNullOrEmpty()) {
+            onItemClick()
+            callback.recyclerViewUiEvents(
+                RecyclerViewUiEvents.ScanQRCode(
+                    uid(),
+                    optionSet(),
+                    fieldRendering?.type()
+                )
+            )
+        } else {
+            callback.recyclerViewUiEvents(
+                RecyclerViewUiEvents.DisplayQRCode(
+                    uid(),
+                    optionSet(),
+                    value()!!,
+                    fieldRendering?.type(),
+                    editable
+                )
+            )
+        }
+    }
+
+    private fun valueHasChanged(newValue: String?): Boolean {
+        return !Preconditions.equals(newValue, value()) || error() != null
+    }
+
+    fun canShowDeleteButton(): Boolean = value() != null && editable
+
+    fun onClearValue() {
+        onItemClick()
+        onScanSelected(null)
+    }
+
+    fun onTextChanged(text: CharSequence?) {
+        super.onTextChange(
+            when {
+                text?.isEmpty() == true -> null
+                else -> text?.toString()
+            }
         )
+    }
+
+    fun onFocusChanged(hasFocus: Boolean, textView: View) {
+        val text = (textView as TextInputEditText).text.toString()
+        if (!hasFocus) {
+            onScanSelected(
+                when {
+                    text.isEmpty() -> null
+                    else -> text
+                }
+            )
+        }
     }
 }

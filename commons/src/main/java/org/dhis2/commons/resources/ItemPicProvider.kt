@@ -10,21 +10,19 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import org.dhis2.commons.bindings.clipWithAllRoundedCorners
-import org.dhis2.commons.bindings.clipWithRoundedCorners
-import org.dhis2.commons.bindings.dp
 import java.io.File
 import java.util.Locale
+import org.dhis2.commons.bindings.clipWithAllRoundedCorners
+import org.dhis2.commons.bindings.dp
 
 fun ImageView.setItemPic(
     imagePath: String?,
     defaultImageRes: Int,
     defaultColorRes: Int,
     defaultValue: String?,
-    isSingleEvent:Boolean =false,
+    isSingleEvent: Boolean = false,
     textView: TextView?
 ) {
-
     when {
         imagePath?.isNotEmpty() == true -> {
             visibility = View.VISIBLE

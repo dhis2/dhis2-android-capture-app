@@ -18,7 +18,6 @@
             android:id="@+id/inputEditText"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/cell_edit_bg"
             android:ellipsize="end"
             android:gravity="end|center_vertical"
             android:lines="1"

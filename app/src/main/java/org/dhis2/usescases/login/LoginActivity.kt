@@ -38,6 +38,7 @@ import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
@@ -51,7 +52,6 @@ import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
-import org.dhis2.utils.D2ErrorUtils
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
@@ -76,6 +76,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @Inject
     lateinit var openIdProviders: OpenIdProviders
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
 
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
@@ -244,7 +247,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun renderError(throwable: Throwable) {
         showInfoDialog(
             getString(R.string.login_error),
-            D2ErrorUtils.getErrorMessage(this, throwable)
+            resourceManager.parseD2Error(throwable)
         )
     }
 
@@ -291,6 +294,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             override fun onClick(p0: View) {
                 navigateToPrivacyPolicy()
             }
+
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = ContextCompat.getColor(context, R.color.colorPrimary)
                 ds.isUnderlineText = true

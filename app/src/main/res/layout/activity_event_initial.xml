@@ -152,41 +152,33 @@
                                 android:textSize="12sp"
                                 android:visibility="@{programStage.displayDescription()!=null?View.VISIBLE:View.GONE}"
                                 tools:text="@tools:sample/lorem" />
-
-
-                            <LinearLayout
-                                android:id="@+id/shareContainer"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end"
-                                android:layout_marginTop="30dp"
-                                android:onClick="@{()->presenter.onShareClick()}">
-
-                                <ImageView
-                                    android:id="@+id/shareIcon"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_share"
-                                    app:tint="@color/text_black_333" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginTop="2dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:text="@string/share"
-                                    android:textColor="@color/text_black_4d4d4d"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
                         </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/editionLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/editionReason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:gravity="bottom|start"
+                            android:layout_marginStart="4dp"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="12sp"
+                            android:textStyle="italic"
+                            tools:text="Not available" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.textfield.TextInputLayout

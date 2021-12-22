@@ -2,12 +2,13 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
+import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterPresenter
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 
@@ -79,7 +80,8 @@ internal class ProgramRepositoryImpl(
 
     private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {
         return Pair(
-            filterPresenter.filteredEventProgram(program).blockingCount(),
+            filterPresenter.filteredEventProgram(program)
+                .blockingGet().filter { event -> event.syncState() != State.RELATIONSHIP }.size,
             false
         )
     }

@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -129,6 +129,8 @@ public class TEIDataContracts {
         boolean enrollmentOrgUnitInCaptureScope(String enrollmentOrgUnit);
 
         void setOpeningFilterToNone();
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
     }
 
 }

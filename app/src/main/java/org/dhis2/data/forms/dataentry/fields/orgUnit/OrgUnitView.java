@@ -25,7 +25,7 @@ import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
-import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.dhis2.commons.customviews.TextInputAutoCompleteTextView;
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -234,15 +234,8 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         setDescription(description);
         setWarning(viewModel.warning(), viewModel.error());
 
-        String uid_value_name = viewModel.value();
-        String ouUid = null;
-        String ouName = null;
-        if (!isEmpty(uid_value_name)) {
-            ouUid = uid_value_name.split("_ou_")[0];
-            ouName = uid_value_name.split("_ou_")[1];
-        }
-        setValue(ouUid, ouName);
-        getEditText().setText(ouName);
+        setValue(viewModel.value(), viewModel.displayName());
+        getEditText().setText(viewModel.displayName());
 
         updateEditable(viewModel.editable());
         setListener(viewModel::onDataChange);

@@ -90,4 +90,9 @@ public class UserManagerImpl implements UserManager {
     public Completable logout() {
         return d2.userModule().logOut();
     }
+
+    @Override
+    public boolean allowScreenShare() {
+        return repository.allowScreenShare();
+    }
 }

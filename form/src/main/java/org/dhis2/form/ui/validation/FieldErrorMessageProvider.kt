@@ -38,6 +38,7 @@ class FieldErrorMessageProvider(private val context: Context) {
     private fun getFieldMaskError(error: FieldMaskFailure) =
         when (error) {
             FieldMaskFailure.WrongPatternException -> R.string.wrong_pattern
+            FieldMaskFailure.InvalidPatternException -> R.string.pattern_error
         }
 
     private fun getPhoneNumberError(error: PhoneNumberFailure) =

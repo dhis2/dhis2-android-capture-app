@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import io.reactivex.processors.PublishProcessor
+import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -44,8 +45,8 @@ class EventInitialRepositoryImplTest {
     @Test
     fun `Should return editable geometry model`() {
         whenever(
-            d2.eventModule().eventService().blockingIsEditable(eventUid)
-        ) doReturn true
+            d2.eventModule().eventService().isEditable(eventUid)
+        ) doReturn Single.just(true)
         val event = Event.builder()
             .uid(eventUid)
             .geometry(Geometry.builder().type(FeatureType.POINT).coordinates("[0,0]").build())
@@ -61,11 +62,19 @@ class EventInitialRepositoryImplTest {
         mockProgramAccess(true)
         mockEnrollment(null)
 
-        val result =
-            repository.getGeometryModel("programUid", PublishProcessor.create()).blockingGet()
+        val accessDataWrite = repository
+            .accessDataWrite("programUid")
+            .blockingFirst() && repository.isEnrollmentOpen
+        val nonEditableStatus = ArrayList<EventStatus>()
+        nonEditableStatus.add(EventStatus.COMPLETED)
+        nonEditableStatus.add(EventStatus.SKIPPED)
+        val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
+            nonEditableStatus.contains(
+                d2.eventModule().events().uid(eventUid).blockingGet().status()
+            )
 
-        assertTrue(result != null)
-        assertTrue(result.editable() == true)
+        val editableField = accessDataWrite && !shouldBlockEdition
+        assertTrue(editableField)
     }
 
     @Test
@@ -88,11 +97,20 @@ class EventInitialRepositoryImplTest {
         mockProgramAccess(true)
         mockEnrollment(null)
 
-        val result =
-            repository.getGeometryModel("programUid", PublishProcessor.create()).blockingGet()
+        val accessDataWrite =
+            repository
+                .accessDataWrite("programUid")
+                .blockingFirst() && repository.isEnrollmentOpen
+        val nonEditableStatus = ArrayList<EventStatus>()
+        nonEditableStatus.add(EventStatus.COMPLETED)
+        nonEditableStatus.add(EventStatus.SKIPPED)
+        val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
+            nonEditableStatus.contains(
+                d2.eventModule().events().uid(eventUid).blockingGet().status()
+            )
 
-        assertTrue(result != null)
-        assertTrue(result.editable() == false)
+        val editableField = accessDataWrite && !shouldBlockEdition
+        assertFalse(editableField)
     }
 
     @Test
@@ -115,11 +133,20 @@ class EventInitialRepositoryImplTest {
         mockProgramAccess(false)
         mockEnrollment(null)
 
-        val result =
-            repository.getGeometryModel("programUid", PublishProcessor.create()).blockingGet()
+        val accessDataWrite =
+            repository
+                .accessDataWrite("programUid")
+                .blockingFirst() && repository.isEnrollmentOpen
+        val nonEditableStatus = ArrayList<EventStatus>()
+        nonEditableStatus.add(EventStatus.COMPLETED)
+        nonEditableStatus.add(EventStatus.SKIPPED)
+        val shouldBlockEdition = !d2.eventModule().eventService().blockingIsEditable(eventUid) &&
+            nonEditableStatus.contains(
+                d2.eventModule().events().uid(eventUid).blockingGet().status()
+            )
 
-        assertTrue(result != null)
-        assertTrue(result.editable() == false)
+        val editableField = accessDataWrite && !shouldBlockEdition
+        assertFalse(editableField)
     }
 
     private fun mockProgramAccess(hasAccess: Boolean) {

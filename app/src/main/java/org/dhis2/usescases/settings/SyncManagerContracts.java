@@ -118,5 +118,7 @@ public class SyncManagerContracts {
         void saveWaitForSmsResponse(boolean shouldWait);
 
         void enableSmsModule(boolean enableSms);
+
+        void resetFilters();
     }
 }

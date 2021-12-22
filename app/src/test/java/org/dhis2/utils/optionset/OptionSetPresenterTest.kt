@@ -40,6 +40,7 @@ import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionGroup
 import org.junit.Assert.assertTrue
@@ -120,7 +121,10 @@ class OptionSetPresenterTest {
 
     private fun getTestSpinnerModel(): SpinnerViewModel {
         return SpinnerViewModel.create(
-            "id", "label", "hint",
+            "id",
+            1,
+            "label",
+            "hint",
             false,
             "optionSet",
             "value",
@@ -131,6 +135,7 @@ class OptionSetPresenterTest {
             false,
             "any",
             null,
+            ValueType.TEXT,
             null
         )
     }

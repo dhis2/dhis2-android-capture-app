@@ -1,7 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType

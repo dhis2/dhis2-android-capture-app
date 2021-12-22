@@ -8,7 +8,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
 

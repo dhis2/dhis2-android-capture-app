@@ -2,9 +2,9 @@ package org.dhis2.utils.customviews;
 
 import android.annotation.SuppressLint;
 
+import org.dhis2.commons.date.Period;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Period;
 
 import java.util.Date;
 import java.util.List;

@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.Bindings.toDate
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid

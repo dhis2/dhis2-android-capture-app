@@ -14,8 +14,8 @@ import androidx.paging.PagedList
 import org.dhis2.BuildConfig
 import javax.inject.Inject
 import org.dhis2.R
-import org.dhis2.animations.collapse
-import org.dhis2.animations.expand
+import org.dhis2.commons.animations.collapse
+import org.dhis2.commons.animations.expand
 import org.dhis2.databinding.FragmentProgramEventDetailListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity

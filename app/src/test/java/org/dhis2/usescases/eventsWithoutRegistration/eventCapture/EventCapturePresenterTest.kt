@@ -30,6 +30,7 @@ import org.dhis2.utils.Result
 import org.dhis2.utils.RuleUtilsProviderResult
 import org.dhis2.utils.RulesUtilsProvider
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -106,6 +107,7 @@ class EventCapturePresenterTest {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(
                 "ID",
+                1,
                 "Label",
                 "options",
                 false,
@@ -118,6 +120,7 @@ class EventCapturePresenterTest {
                 false,
                 "any",
                 null,
+                ValueType.TEXT,
                 null
             )
         )
@@ -130,6 +133,7 @@ class EventCapturePresenterTest {
         val section = presenter.getFieldSection(
             SpinnerViewModel.create(
                 "ID",
+                1,
                 "Label",
                 "options",
                 false,
@@ -142,6 +146,7 @@ class EventCapturePresenterTest {
                 false,
                 "any",
                 null,
+                ValueType.TEXT,
                 null
             )
         )
@@ -388,9 +393,17 @@ class EventCapturePresenterTest {
 
         whenever(eventRepository.list(onRowActionProcessor)) doReturn Flowable.just(listOf())
         whenever(eventRepository.calculate()) doReturn Flowable.just(Result.success(listOf()))
-        whenever(eventRepository.getOptionsFromGroups(mutableListOf())) doReturn options
         whenever(
-            rulesUtilProvider.applyRuleEffects(any(), any(), any(), any(), any())
-        ) doReturn RuleUtilsProviderResult(true, "", listOf(), listOf(), listOf(), listOf())
+            rulesUtilProvider.applyRuleEffects(any(), any(), any(), any())
+        ) doReturn RuleUtilsProviderResult(
+            true,
+            "",
+            listOf(),
+            listOf(),
+            listOf(),
+            listOf(),
+            listOf(),
+            listOf()
+        )
     }
 }

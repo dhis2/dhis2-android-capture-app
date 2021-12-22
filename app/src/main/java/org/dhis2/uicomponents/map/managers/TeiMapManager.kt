@@ -150,10 +150,16 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     override fun setLayer() {
         mapLayerManager
             .withMapStyle(mapStyle)
-            .withCarousel(carouselAdapter)
-            .addStartLayer(LayerType.TEI_LAYER, teiFeatureType, TEIS_SOURCE_ID)
-            .addLayer(LayerType.ENROLLMENT_LAYER, enrollmentFeatureType, ENROLLMENT_SOURCE_ID)
-            .addLayer(LayerType.HEATMAP_LAYER)
+
+        if (teiFeatureType != null && teiFeatureType != FeatureType.NONE) {
+            mapLayerManager.addStartLayer(LayerType.TEI_LAYER, teiFeatureType, TEIS_SOURCE_ID)
+        }
+        if (enrollmentFeatureType != null && enrollmentFeatureType != FeatureType.NONE) {
+            mapLayerManager
+                .addLayer(LayerType.ENROLLMENT_LAYER, enrollmentFeatureType, ENROLLMENT_SOURCE_ID)
+        }
+
+        mapLayerManager.addLayer(LayerType.HEATMAP_LAYER)
     }
 
     override fun setSource() {

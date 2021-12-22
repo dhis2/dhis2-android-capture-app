@@ -38,10 +38,25 @@
             android:text="@{chartModel.graph.title}"
             android:textColor="@color/textPrimary"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+            app:layout_constraintEnd_toStartOf="@id/chartFilters"
             app:layout_constraintStart_toEndOf="@id/chart_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Chart title" />
+
+        <ImageView
+            android:id="@+id/chartFilters"
+            style="@style/ActionIconNoPadding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:onClick="@{(view)->chartModel.showFilters(view)}"
+            app:filter_visualization="@{chartModel}"
+            app:layout_constraintBottom_toBottomOf="@id/chart_title"
+            app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_visualization_filter"
+            app:tint="?colorPrimary" />
+
 
         <ImageButton
             android:id="@+id/chartVisualizationButton"
@@ -60,8 +75,95 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:visibility="@{chartModel.hideChart() ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chart_title" />
+
+        <ImageView
+            android:id="@+id/no_data_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:visibility="@{chartModel.displayNoData() ? View.VISIBLE:View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chart_title"
+            app:srcCompat="@drawable/ic_empty_folder" />
+
+        <ImageView
+            android:id="@+id/error_data_icon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="70dp"
+            android:visibility="@{chartModel.displayErrorData() ? View.VISIBLE : View.GONE}"
+            app:iconResource="@{chartModel.observableChartType.iconResource}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chart_title"
+            app:tint="@color/visualization_error_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingStart="52dp"
+            android:paddingEnd="52dp"
+            android:text="@string/no_data_for_selected_filters"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showNoDataForFiltersMessage() ? View.VISIBLE : View.GONE}"
+            app:clipAllCorners="@{8}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_data_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingStart="52dp"
+            android:paddingEnd="52dp"
+            android:text="@string/no_data_to_display"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showNoDataMessage() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_data_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingStart="52dp"
+            android:paddingEnd="52dp"
+            android:text="@{chartModel.graph.errorMessage}"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.showError() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_data_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:paddingHorizontal="52dp"
+            android:text="@string/pie_chart_no_data"
+            android:textColor="@color/textSecondary"
+            android:textSize="17sp"
+            android:visibility="@{chartModel.pieChartDataIsZero() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_data_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

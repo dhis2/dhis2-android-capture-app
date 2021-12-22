@@ -19,7 +19,7 @@ class AnalyticsAdapter :
                 oldItem: AnalyticsModel,
                 newItem: AnalyticsModel
             ): Boolean {
-                return oldItem === newItem
+                return oldItem.uid == newItem.uid
             }
 
             override fun areContentsTheSame(
@@ -37,7 +37,7 @@ class AnalyticsAdapter :
 
     var onRelativePeriodCallback: ((ChartModel, RelativePeriod?, RelativePeriod?) -> Unit)? = null
     var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
-    var onResetFilterCallback: ((ChartFilter) -> Unit)? = null
+    var onResetFilterCallback: ((ChartModel, ChartFilter) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -83,7 +83,7 @@ class AnalyticsAdapter :
         onOrgUnitCallback?.invoke(chart, filters)
     }
 
-    override fun resetFilter(filter: ChartFilter) {
-        onResetFilterCallback?.invoke(filter)
+    override fun resetFilter(chart: ChartModel, filter: ChartFilter) {
+        onResetFilterCallback?.invoke(chart, filter)
     }
 }

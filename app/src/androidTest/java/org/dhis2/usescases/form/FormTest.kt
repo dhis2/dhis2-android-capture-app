@@ -10,6 +10,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,36 +27,17 @@ class FormTest: BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    @After
+    override fun teardown() {
+        cleanLocalDatabase()
+        super.teardown()
+    }
+
     @Test
     fun shouldSuccessfullyUseForm() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
         val firstSectionPosition = 1
-        startSearchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnSearchFilter()
-            typeAttributeAtPosition("abc", 1)
-            clickOnFab()
-            clickOnFab()
-            selectAnOrgUnit("Ngelehun CHC")
-            clickOnAcceptButton()
-            acceptDate()
-        }
-
-        enrollmentRobot {
-            clickOnPersonAttributes("Attributes - Person")
-            scrollToBottomProgramForm()
-            clickOnDatePicker()
-            clickOnAcceptEnrollmentDate()
-            clickOnInputDate("DD TEST DATE *")
-            clickOnAcceptEnrollmentDate()
-            clickOnSaveEnrollment()
-        }
-
-        eventRobot {
-            clickOnUpdate()
-            waitToDebounce(3000)
-        }
+        initTest()
 
         formRobot {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_FIELD, HIDE_FIELD_POSITION)
@@ -136,25 +118,6 @@ class FormTest: BaseTest() {
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
-            pressBack()
-            goToAnalytics()
-            checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
-            goToDataEntry()
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
-            pressBack()
-            goToAnalytics()
-            waitToDebounce(1000)
-            checkIndicatorIsDisplayed("Current Option", "DKVP")
-            goToDataEntry()
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
             scrollToPositionForm(0)
             scrollToBottomForm()
@@ -165,6 +128,33 @@ class FormTest: BaseTest() {
             checkProgramStageIsHidden("Delta")
             clickOnStageGroup("Gamma")
             clickOnEventWithPosition(1)
+        }
+    }
+
+    @Test
+    fun shouldApplyIndicatorRelatedActions(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
+            pressBack()
+            goToAnalytics()
+            waitToDebounce(3000)
+            checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
+            goToDataEntry()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
+            pressBack()
+            goToAnalytics()
+            waitToDebounce(3000)
+            checkIndicatorIsDisplayed("Current Option", "DKVP")
+            goToDataEntry()
         }
     }
 
@@ -207,6 +197,35 @@ class FormTest: BaseTest() {
         }
     }
 
+    private fun initTest(){
+
+        startSearchActivity(ruleSearch)
+
+        searchTeiRobot {
+            clickOnSearchFilter()
+            typeAttributeAtPosition("abc", 1)
+            clickOnFab()
+            clickOnFab()
+            selectAnOrgUnit("Ngelehun CHC")
+            clickOnAcceptButton()
+            acceptDate()
+        }
+
+        enrollmentRobot {
+            clickOnPersonAttributes("Attributes - Person")
+            scrollToBottomProgramForm()
+            clickOnDatePicker()
+            clickOnAcceptEnrollmentDate()
+            clickOnInputDate("DD TEST DATE *")
+            clickOnAcceptEnrollmentDate()
+            clickOnSaveEnrollment()
+        }
+
+        eventRobot {
+            clickOnUpdate()
+            waitToDebounce(3000)
+        }
+    }
 
     companion object {
         const val NO_ACTION = "No Action"
