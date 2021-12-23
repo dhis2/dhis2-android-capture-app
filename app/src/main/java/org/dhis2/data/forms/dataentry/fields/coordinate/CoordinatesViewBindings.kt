@@ -69,8 +69,6 @@ private fun onLatOrLonChangeFocus(
             errorTextView?.setErrorMessage(error, null)
             valueCallback(coordinate.toString())
         }
-    } else {
-        viewModel?.onItemClick()
     }
 }
 
