@@ -385,11 +385,14 @@ class RelationshipRepositoryImpl(
             }
 
         val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
+        val teiTypeUid = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(teiUid).blockingGet().trackedEntityType()
+        val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
+            .uid(teiTypeUid).blockingGet().name()!!
+
         if (attrValuesFromType.isEmpty()) {
-            val teType = d2.trackedEntityModule().trackedEntityInstances()
-                .uid(teiUid).blockingGet().trackedEntityType()
             val program = d2.programModule().programs()
-                .byTrackedEntityTypeUid().eq(teType).blockingGet()[0]
+                .byTrackedEntityTypeUid().eq(teiTypeUid).blockingGet()[0]
             val attrFromProgramTrackedEntityAttribute =
                 d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(program.uid()).byDisplayInList().isTrue
@@ -423,7 +426,7 @@ class RelationshipRepositoryImpl(
                 attrValueFromProgramTrackedEntityAttribute
             }
             else -> {
-                listOf(Pair("uid", teiUid))
+                listOf(Pair("uid", teiTypeName))
             }
         }
     }
