@@ -2,7 +2,7 @@
 
 ##  Local Analytics (New 2.5)
 
-The android app can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
+The DHIS2 Android App can now render analytics that have been created in the Data Visualizer app in DHIS2. Analytics to be displayed require to be configured using the Android Settings WebApp where administrators will be able to decide the charts and tables to be displayed for end users.
 
 To configure analytics open the Android Settings WebApp on your DHIS2 server and follow the steps below:
 
@@ -91,21 +91,8 @@ Translations set up in DHIS2 for metadata will also be shown according to the la
 
 ![](resources/images/capture-app-image182.png){ width=25%}
 
-## Meta data sync error { #capture_app_visual_sync_error }
-
-
-In case of errors during the sync process, a message is displayed in the settings menu ('Sync data' or 'Sync configuration' section). Also, a red sync icon is displayed next to the program in the Home screen. The sync error log gives details about the error and is prepared to be shared with admins.
-
-![](resources/images/capture-app-image43.jpg){ width=25%}
-![](resources/images/capture-app-image11.png){ width=25%}
-
-You can also open the sync errors log from **Settings**:
-
-![](resources/images/capture-app-image15.jpg){ width=25%}
-
 
 ## Personalize your Icon { #capture_app_visual_icon }
-
 
 You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon will be the flag configured in your server.
 
@@ -123,7 +110,6 @@ You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon wil
 > It will add a shortcut to your app.
 
 ## Personalise the colour of the App { #capture_app_visual_colour }
-
 
 You can set the generic theme of the app by configuring the them in our server:
 
@@ -147,7 +133,6 @@ You can set the generic theme of the app by configuring the them in our server:
 
 ## Icon library for metadata { #capture_app_visual_icon_lib }
 
-
 There are currently 134 icons available that you can choose from. You can search by name in the icon picker widget. Icons are available in positive, negative and outlined shapes. We will be adding many more icons in future releases.
 
 Icons can be associated to programs, stages, data elements and the options of an option set. This is  configurable through the Maintenance App.
@@ -158,7 +143,7 @@ Icons can be associated to programs, stages, data elements and the options of an
 
 ![](resources/images/capture-app-image13.png){ .center width=80% }
 
-In the Android App icons render in the home screen to illustrate all the programs available to a user, or while adding an stage. For data elements and options, the icons render for single event programs, when a section contains a single DE, showing the option set as a matrix or sequence of images.
+In the DHIS2 Android App icons render in the home screen to illustrate all the programs available to a user, or while adding an stage. For data elements and options, the icons render for single event programs, when a section contains a single DE, showing the option set as a matrix or sequence of images.
 
 ![](resources/images/capture-app-image19.png){ width=25%}
 ![](resources/images/capture-app-image26.png){ width=25%}
@@ -167,7 +152,7 @@ In the Android App icons render in the home screen to illustrate all the program
 >
 > Icons will initially only render in the new Android app. The new web-based Capture App will incorporate them in the near future.
 
-We plan to expand the collection of icons on each future version of DHIS2- for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://www.google.com/url?q=https://drive.google.com/open?id%3D1LmfYJQAu3KyDfkY3X6ne7qSsuTa9jXZhoQHzkDxeCdg&sa=D&ust=1557433016147000).
+We plan to expand the collection of icons on each future version of DHIS2 for that we need your help: we are seeking ideas for new icons - please submit yours using [this form](https://www.google.com/url?q=https://drive.google.com/open?id%3D1LmfYJQAu3KyDfkY3X6ne7qSsuTa9jXZhoQHzkDxeCdg&sa=D&ust=1557433016147000).
 
 ## Colour palette for metadata { #capture_app_visual_colour_palette }
 

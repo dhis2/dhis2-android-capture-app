@@ -1,5 +1,5 @@
-# Android Settings Web App { #capture_app_andoid_settings_webapp }
-## Overview { #capture_app_andoid_settings_webapp_overview }
+# Android Settings Web App { #capture_app_android_settings_webapp }
+## Overview { #capture_app_android_settings_webapp_overview }
 
 This section focuses on the Android Settings Web App implementation.
 
@@ -12,7 +12,7 @@ Please note that in this version of the web app, only users with 'ALL' authority
 > This version comes with improvements and disruptive features, so previous versions are no longer supported, the settings stored there will be removed.
 
 
-## General settings { #capture_app_andoid_settings_webapp_general }
+## General settings { #capture_app_android_settings_webapp_general }
 
 Includes configurations such as the Matomo URL and project ID, the number of reserved values to download per TEI, and encrypt the device database.
 
@@ -36,12 +36,12 @@ Includes configurations such as the Matomo URL and project ID, the number of res
 **Disable all settings:** By clicking this button, the user will remove all android configuration settings. No configuration will be applied to the Android Capture app (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
 
 
-## Synchronization { #capture_app_andoid_settings_webapp_synchronization }
+## Synchronization { #capture_app_android_settings_webapp_synchronization }
 
 It offers additional parameters to control metadata/data synchronization.
 
 
-### Global { #capture_app_andoid_settings_webapp_synchronization_global }
+### Global { #capture_app_android_settings_webapp_synchronization_global }
 
 **Metadata sync:** Admin users can choose how often the metadata will sync. e.g. Sync metadata every 24 hours.
 
@@ -50,11 +50,11 @@ It offers additional parameters to control metadata/data synchronization.
 ![](resources/images/capture-app-sync-global.png)
 
 
-### Program { #capture_app_andoid_settings_webapp_synchronization_program }
+### Program { #capture_app_android_settings_webapp_synchronization_program }
 
 This section controls the program data synchronization parameters. It has a section to define global or default parameters to be used in the synchronization of all programs.
 
-#### Global settings { #capture_app_andoid_settings_webapp_synchronization_program_global }
+#### Global settings { #capture_app_android_settings_webapp_synchronization_program_global }
 
 Global settings apply to all programs that an android user has access to. 
 
@@ -69,7 +69,7 @@ Global settings apply to all programs that an android user has access to.
 
 **Event download period:** It downloads Events which event date belongs to a specific period.
 
-#### Specific settings { #capture_app_andoid_settings_webapp_synchronization_program_specific }
+#### Specific settings { #capture_app_android_settings_webapp_synchronization_program_specific }
 
 This section allows the admin users to specify the behaviour of a particular program/s when syncing the data. The specific configuration overwrites the general settings for the programs listed in this section. To add a setting for a specific program:
  
@@ -108,18 +108,18 @@ In the case that any specific settings has been saved, a table will show a summa
 > ![](resources/images/capture-app-program-specific-example-mobile2.png)
 >
 
-#### Reset all values { #capture_app_andoid_settings_webapp_synchronization_program_reset_all }
+#### Reset all values { #capture_app_android_settings_webapp_synchronization_program_reset_all }
 
 By clicking on *Reset all values*, the admin user will restore the default settings values of the program section. Please note that in this case it means no specific settings per program. 
 
 To save any configuration, the admin user needs to click on the *Save* button (this button is disabled for the users who don't have the 'ALL' authority)
 
 
-### Data set { #capture_app_andoid_settings_webapp_synchronization_data }
+### Data set { #capture_app_android_settings_webapp_synchronization_data }
 
 This section controls the aggregated data synchronization parameters.
 
-#### Global settings { #capture_app_andoid_settings_webapp_synchronization_data_global }
+#### Global settings { #capture_app_android_settings_webapp_synchronization_data_global }
 
 The first part is for global settings that apply to all data sets an android user has access to. 
 
@@ -127,7 +127,7 @@ The first part is for global settings that apply to all data sets an android use
 
 **Number of Periods:** Maximum number of periods to download.
 
-#### Specific Settings { #capture_app_andoid_settings_webapp_synchronization_data_specific }
+#### Specific Settings { #capture_app_android_settings_webapp_synchronization_data_specific }
 
 To add a specific setting:
 
@@ -140,7 +140,7 @@ To add a specific setting:
 ![](resources/images/capture-app-dataset-specific-table.png)
 
 
-### User Sync Test { #capture_app_andoid_settings_webapp_synchronization_user_sync_test }
+### User Sync Test { #capture_app_android_settings_webapp_synchronization_user_sync_test }
 
 This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc., that an android user has access to (so the resources that the android app will download), and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
@@ -151,7 +151,7 @@ This section checks the amount of data and metadata a user would sync to his/her
 > The values that are highlighted in red are because the value is considered greater than the maximum recommended value.
 
 
-## Appearance { #capture_app_andoid_settings_webapp_appearance }
+## Appearance { #capture_app_android_settings_webapp_appearance }
 
 These settings give control over the appearance of the data entry and list forms.
 
@@ -161,24 +161,24 @@ These settings give control over the appearance of the data entry and list forms
 These settings refer to visual components, so they must be consumed by the app.
 
 
-### Home screen { #capture_app_andoid_settings_webapp_appearance_home_screen }
+### Home screen { #capture_app_android_settings_webapp_appearance_home_screen }
 
 It allows the admin user to enable or disable the option to show the filters related to Date, Organisation Unit, Sync Status, and Assigned to me on the Home screen.
 
 ![](resources/images/capture-app-appearance-home.png)
 
 
-### Program { #capture_app_andoid_settings_webapp_appearance_program }
+### Program { #capture_app_android_settings_webapp_appearance_program }
 
 It allows the admin user to specify which filters should be shown and enable or disable the option to show the completion percentage of the data entry form.
 
-#### Global settings { #capture_app_andoid_settings_webapp_appearance_program_global }
+#### Global settings { #capture_app_android_settings_webapp_appearance_program_global }
 
 Global settings apply to all programs that an android user has access to.
 
 ![](resources/images/capture-app-appearance-program-global.png)
 
-#### Specific settings { #capture_app_andoid_settings_webapp_appearance_program_specific }
+#### Specific settings { #capture_app_android_settings_webapp_appearance_program_specific }
 
 This section allows to admin user to customize the filter and percentage completion appearance option. To add a specific setting:
 
@@ -193,17 +193,17 @@ If any specific settings have been saved, a table will summarize the particular 
 ![](resources/images/capture-app-appearance-program-table.png)
 
 
-### Data set { #capture_app_andoid_settings_webapp_appearance_data }
+### Data set { #capture_app_android_settings_webapp_appearance_data }
 
 It allows admins to enable/disable filters for the data set section
 
-#### Global settings { #capture_app_andoid_settings_webapp_appearance_data_global }
+#### Global settings { #capture_app_android_settings_webapp_appearance_data_global }
 
 The first part is for global settings that apply to all data sets an android user has access to.
 
 ![](resources/images/capture-app-appearance-dataset-global.png)
 
-#### Specific settings { #capture_app_andoid_settings_webapp_appearance_data_specific }
+#### Specific settings { #capture_app_android_settings_webapp_appearance_data_specific }
 
 To add a specific setting:
 
@@ -215,7 +215,7 @@ To add a specific setting:
 ![](resources/images/capture-app-appearance-dataset-table.png)
 
 
-## Analytics { #capture_app_andoid_settings_webapp_analytics }
+## Analytics { #capture_app_android_settings_webapp_analytics }
 
 Analytics settings define TEI, Home, Program and Data Set analytics items (charts, tables) that will be displayed to the user. Any item defined in the settings app will overwrite the default behaviour of the android app, only showing the items defined in the settings app. 
 
@@ -425,7 +425,7 @@ Since the aggregations and calculations displayed are calculated in the device, 
 There are many more restrictions which apply to Android Analytics regarding the many configuration options available in the Web Visualizer as well as the supported functions and calculations related to indicators and program indicators. [This table](https://docs.google.com/spreadsheets/d/1127cz7M0K4fux5CU0V54V2Z77NZWCr0BTrZ6jcCec4Q) summarises all supported features.
 
 
-## Installation { #capture_app_andoid_settings_webapp_installation }
+## Installation { #capture_app_android_settings_webapp_installation }
 
 A user can easily install the Android Settings Web App by logging into the DHIS2 and going to **App Management**.
 
@@ -436,7 +436,7 @@ A user can easily install the Android Settings Web App by logging into the DHIS2
 ![](resources/images/capture-app-app-hub-install.png)
 
 
-## Log in and first time setup { #capture_app_andoid_settings_webapp_login }
+## Log in and first time setup { #capture_app_android_settings_webapp_login }
 
 After a user installs and launches the Android Settings Web App for the first time, the web app will require setting and saving the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
@@ -456,9 +456,9 @@ After a user installs and launches the Android Settings Web App for the first ti
 ![](resources/images/capture-app-first-setup-no-authorities.png)
 
 
-## Enter and save configuration parameters { #capture_app_andoid_settings_webapp_enter_and_save }
+## Enter and save configuration parameters { #capture_app_android_settings_webapp_enter_and_save }
 
-### Datastore { #capture_app_andoid_settings_webapp_datastore }
+### Datastore { #capture_app_android_settings_webapp_datastore }
 
 Internally all settings are stored in [Datastore](https://docs.dhis2.org/master/en/developer/html/webapi_data_store.html) in JSON format.
 
@@ -470,7 +470,7 @@ Datastore structure:
 | Key         | Key for identification of values | String |
 | Value       | Value holding the information for the entry | JSON |
 
-### Save configuration parameters { #capture_app_andoid_settings_webapp_save_config }
+### Save configuration parameters { #capture_app_android_settings_webapp_save_config }
 
 At the form footer of all settings sections, admin users can find a *Save* button.
 
@@ -484,7 +484,7 @@ In case an admin user wants to go to another section when there are still some u
 
 ![](resources/images/capture-app-unsaved-changes.png)
  
-#### Reset all values to default { #capture_app_andoid_settings_webapp_reset_all }
+#### Reset all values to default { #capture_app_android_settings_webapp_reset_all }
 
 An admin user can restore the settings at any time. There is a *Reset all values to default* button at the form footer of all settings sections. 
 
