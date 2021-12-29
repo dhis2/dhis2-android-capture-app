@@ -1,7 +1,8 @@
 # Android Settings Web App { #capture_app_android_settings_webapp }
 ## Overview { #capture_app_android_settings_webapp_overview }
 
-This section focuses on the Android Settings Web App implementation.
+This section focuses on the [Android Settings Web App](https://apps.dhis2.org/app/a1bd6b5b-de8c-4998-8d34-56c18a139683) implementation.
+
 
 The [https://apps.dhis2.org/app/a1bd6b5b-de8c-4998-8d34-56c18a139683](Android Settings Web App) allows admins to configure synchronization parameters for the DHIS2 Android App, encrypt the local database of the Android devices, customize the appearance of Programs, Data sets, and Home screen, and add TEI Analytics items. The configuration parameters defined within this web app will overwrite the settings of all Android devices using the DHIS2 Android Capture App.
 
@@ -18,17 +19,28 @@ Includes configurations such as the Matomo URL and project ID, the number of res
 
 ![](resources/images/capture-app-general-settings.png)
 
-Matomo configuration
-:	If you already have a Matomo instance, add the Matomo URL and the project ID.
+### Matomo configuration
 
-Mobile configuration
-:	This section allows admin users to edit the SMS gateway ad result sender phone number.
+The DHIS2 Android App sends anonymised analytics that can be used to evaluate performance and/or detect problems at an early stage. [Matomo](https: //matomo.org) is the tool used for this and running in a specific server not accessible to the general public. However, implementations can set up their own
+ Matomo instance (or using the cloud version) in order to collect and analyse the statistics. 
 
-Reserved values
-:	This will specify the number of values per TEI attribute reserved to download in the devices.
+Once you have your Matomo instance ready you should get the URLs and the project ID like shown in the picture below (left). The ID can be introduced direct ly but the URL needs to be followed with */matomo.php* as shown below (right).
 
-Encrypt device database
-:	This will force all the devices to store the database encrypted increasing the security level against data theft attacks.
+![](resources/images/capture-app-matomo-instance.png){width=33%}
+![](resources/images/capture-app-matomo-settings.png){width=33%}
+
+
+### Encrypt device database
+This will force all the devices to store the database encrypted increasing the security level against data theft attacks.
+
+### Mobile configuration
+This section allows admin users to edit the SMS gateway ad result sender phone number.
+
+### Reserved values
+This will specify the number of values per TEI attribute reserved to download in the devices.
+
+### Encrypt device database
+By default, the DHIS2 Android App database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance (degradation between 10-15%) of the Android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
 
 > **Warning**
 >
@@ -37,7 +49,8 @@ Encrypt device database
 > By default, the Android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the Android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** By clicking this button, the user will remove all Android configuration settings. No configuration will be applied to the Android App (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
+### Disable all settings
+By clicking this button, the user will remove all Android configuration settings. No configuration will be applied to the Android App (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
 
 
 ## Synchronization { #capture_app_android_settings_webapp_synchronization }
@@ -47,11 +60,13 @@ It offers additional parameters to control metadata/data synchronization.
 
 ### Global { #capture_app_android_settings_webapp_synchronization_global }
 
-**Metadata sync:** Admin users can choose how often the metadata will sync. e.g. Sync metadata every 24 hours.
+Metadata sync
+:	Admin users can choose how often the metadata will sync. e.g. Sync metadata every 24 hours.
 
-**Data sync:** Admin users can choose how often the data will sync. e.g. Syncing data every 6 hours.
+Data sync
+:	Admin users can choose how often the data will sync. e.g. Syncing data every 6 hours.
 
-![](resources/images/capture-app-sync-global.png)
+![](resources/images/capture-app-sync-global.png){width=33%}
 
 
 ### Program { #capture_app_android_settings_webapp_synchronization_program }
@@ -60,18 +75,21 @@ This section controls the program data synchronization parameters. It has a sect
 
 #### Global settings { #capture_app_android_settings_webapp_synchronization_program_global }
 
-Global settings apply to all programs that an android user has access to. 
+Global settings apply to all programs that an Android user has access to. The settings can be enabled globally, per Org Unit, per program or per OU and program.
 
+![](resources/images/capture-app-program-global-settings.png){width=33%}
 
-![](resources/images/capture-app-program-global-settings.png)
+TEI to download
+:	Maximum number of TEIs to download from the server.
 
-**TEI to download:** Maximum number of TEIs to download from the server.
+TEI download period
+:	It downloads the TEIs that have been updated within a period. e.g. TEIs that have been updated within last month
 
-**TEI download period:** It downloads the TEIs that have been updated within a period. e.g. TEIs that have been updated within last month
+Event to download
+:	Maximum number of Events to download.
 
-**Event to download:** Maximum number of Events to download.
-
-**Event download period:** It downloads Events which event date belongs to a specific period.
+Event download period
+:	It downloads Events which event date belongs to a specific period.
 
 #### Specific settings { #capture_app_android_settings_webapp_synchronization_program_specific }
 
@@ -83,15 +101,15 @@ This section allows the admin users to specify the behaviour of a particular pro
 
 **Settings for Program Without Registration**
 
-![](resources/images/capture-app-program-specific-dialog-without_registration.png)
+![](resources/images/capture-app-program-specific-dialog-without_registration.png){width=50%}
 
 **Settings for a Program With Registration**
 
-![](resources/images/capture-app-program-specific-dialog-with_registration.png)
+![](resources/images/capture-app-program-specific-dialog-with_registration.png){width=50%}
 
 In the case that any specific settings has been saved, a table will show a summary with the specific configuration per program, and the options to edit or delete these settings.
 
-![](resources/images/capture-app-program-specific-table.png)
+![](resources/images/capture-app-program-specific-table.png){width=50%}
 
 > **Caution**
 >
@@ -101,15 +119,15 @@ In the case that any specific settings has been saved, a table will show a summa
 >
 > Imagine an implementation where it must be ensured that the Android user has all the TEIs of a specific program in a server where the same user has access to other Organisation Units where other TEIs might be enrolled in another program. The program is called Community Care and it has 17 TEIs which have been updated very long time ago. The administrator can ensure that the 17 TEIs will be donwloaded by setting anything in Global Settings (if needed to reduce bandwidth a very low value should be set) and a at least 17 for the specific program as show in the image below:
 >
-> ![](resources/images/capture-app-program-specific-example-web.png)
+> ![](resources/images/capture-app-program-specific-example-web.png){width=50%}
 >
 > When the initial synchronization is triggered the Android device will first download the last TEIs updated on the server (which according to our example do not belong to the specific program) and secondly up to 20 TEI from the specific program resulting in the following (notice all the TEIs for the program were downloaded):
 >
-> ![](resources/images/capture-app-program-specific-example-mobile1.png)
+> ![](resources/images/capture-app-program-specific-example-mobile1.png){width=33%}
 >
 > And by going to the settings it can be appreciated how the total number of TEIs is the expected 37, 20 from the Global Setting, and 17 from the program specific.
 >
-> ![](resources/images/capture-app-program-specific-example-mobile2.png)
+> ![](resources/images/capture-app-program-specific-example-mobile2.png){width=33%}
 >
 
 #### Reset all values { #capture_app_android_settings_webapp_synchronization_program_reset_all }
@@ -125,30 +143,30 @@ This section controls the aggregated data synchronization parameters.
 
 #### Global settings { #capture_app_android_settings_webapp_synchronization_data_global }
 
-The first part is for global settings that apply to all data sets an android user has access to. 
+The first part is for global settings that apply to all data sets an Android user has access to. 
 
-![](resources/images/capture-app-dataset-global-settings.png)
+![](resources/images/capture-app-dataset-global-settings.png){width=50%}
 
-**Number of Periods:** Maximum number of periods to download.
+Number of Periods
+:	Maximum number of periods to download.
 
 #### Specific Settings { #capture_app_android_settings_webapp_synchronization_data_specific }
 
 To add a specific setting:
 
- - Click on *Add a Data set specific setting*, a dialog with a list of data sets will appear. 
- - Click on a data set, and this field will be autocompleted with the default value based on the dataset period type.
+- Click on *Add a Data set specific setting*, a dialog with a list of data sets will appear. 
+- Click on a data set, and this field will be autocompleted with the default value based on the dataset period type.
 
+![](resources/images/capture-app-dataset-specific-dialog.png){width=50%}
 
-![](resources/images/capture-app-dataset-specific-dialog.png)
-
-![](resources/images/capture-app-dataset-specific-table.png)
+![](resources/images/capture-app-dataset-specific-table.png){width=50%}
 
 
 ### User Sync Test { #capture_app_android_settings_webapp_synchronization_user_sync_test }
 
 This section checks the amount of data and metadata a user would sync to his/her device. You can run this test on any user that you have access to. This test shows up the number of organisation units, data sets, program rules, programs, etc., that an android user has access to (so the resources that the android app will download), and the metadata and data download size (approx estimation). Please note that a user doesn't need to have the 'ALL' authority to run this test.
 
-![](resources/images/user-sync-test.png)
+![](resources/images/capture-app-user-sync-test.png){width=50%}
 
 > **Note:** 
 >
@@ -169,7 +187,7 @@ These settings refer to visual components, so they must be consumed by the app.
 
 It allows the admin user to enable or disable the option to show the filters related to Date, Organisation Unit, Sync Status, and Assigned to me on the Home screen.
 
-![](resources/images/capture-app-appearance-home.png)
+![](resources/images/capture-app-appearance-home.png){width=75%}
 
 
 ### Program { #capture_app_android_settings_webapp_appearance_program }
@@ -180,7 +198,7 @@ It allows the admin user to specify which filters should be shown and enable or 
 
 Global settings apply to all programs that an android user has access to.
 
-![](resources/images/capture-app-appearance-program-global.png)
+![](resources/images/capture-app-appearance-program-global.png){width=75%}
 
 #### Specific settings { #capture_app_android_settings_webapp_appearance_program_specific }
 
@@ -190,22 +208,22 @@ This section allows to admin user to customize the filter and percentage complet
 - Click on the dropdown that will show a list of programs.
 - Clicking on a program will show the different filters to configure. The category combo filter depends on the category combo name. 
 
-![](resources/images/capture-app-appearance-program-specific.png)
+![](resources/images/capture-app-appearance-program-specific.png){width=75%}
 
 If any specific settings have been saved, a table will summarize the particular configuration per program, and the options to edit or delete these settings. 
 
-![](resources/images/capture-app-appearance-program-table.png)
+![](resources/images/capture-app-appearance-program-table.png){width=75%}
 
 
 ### Data set { #capture_app_android_settings_webapp_appearance_data }
 
-It allows admins to enable/disable filters for the data set section
+It allows admins to enable/disable filters for the Data set section
 
 #### Global settings { #capture_app_android_settings_webapp_appearance_data_global }
 
 The first part is for global settings that apply to all data sets an android user has access to.
 
-![](resources/images/capture-app-appearance-dataset-global.png)
+![](resources/images/capture-app-appearance-dataset-global.png){width=75%}
 
 #### Specific settings { #capture_app_android_settings_webapp_appearance_data_specific }
 
@@ -214,9 +232,9 @@ To add a specific setting:
 - Click on *Add a Data set Settings*. A dialog box will pop up with a dropdown with a list of data sets.
 - Click on a data set, and a list of options to enable or disable filters will be displayed.
 
-![](resources/images/capture-app-appearance-dataset-specific.png)
+![](resources/images/capture-app-appearance-dataset-specific.png){width=75%}
 
-![](resources/images/capture-app-appearance-dataset-table.png)
+![](resources/images/capture-app-appearance-dataset-table.png){width=75%}
 
 
 ## Analytics { #capture_app_android_settings_webapp_analytics }
@@ -417,14 +435,14 @@ To run the test:
 
 Since the aggregations and calculations displayed are calculated in the device, the implementation of analytics is limited compared to web. In summary the compatible and suported objects and features are:
 
-   - Well formed analytic objects (series, categories, filters)
-   - User has view access
-   - Limitations for Pivot Tables
-      - Number of header lines: 1
-      - Number of header columns: 1
-   - Limitations for Charts
-      - Number of Series: No limit (but remember you are rendering in a small screen)
-      - Number of Categories (doesn’t apply for pie chart): No limit
+- Well formed analytic objects (series, categories, filters)
+- User has view access
+- Limitations for Pivot Tables
+  - Number of header lines: 1
+  - Number of header columns: 1
+- Limitations for Charts
+  - Number of Series: No limit (but remember you are rendering in a small screen)
+  - Number of Categories (doesn’t apply for pie chart): No limit
 
 There are many more restrictions which apply to Android Analytics regarding the many configuration options available in the Web Visualizer as well as the supported functions and calculations related to indicators and program indicators. [This table](https://docs.google.com/spreadsheets/d/1127cz7M0K4fux5CU0V54V2Z77NZWCr0BTrZ6jcCec4Q) summarises all supported features.
 
@@ -435,7 +453,7 @@ A user can easily install the Android Settings Web App by logging into the DHIS2
 
 - Click on **App Store**
 - Go to *Android Settings App*
-- Click on *Install V2.0.0*
+- Click on *Install V2.X.X*
 
 ![](resources/images/capture-app-app-hub-install.png)
 
@@ -444,20 +462,20 @@ A user can easily install the Android Settings Web App by logging into the DHIS2
 
 After a user installs and launches the Android Settings Web App for the first time, the web app will require setting and saving the default values of the configuration. This will apply default settings to all android devices connected to the instance. 
 
-![](resources/images/capture-app-first-time-setup.png)
+![](resources/images/capture-app-first-time-setup.png){width=50%}
 
 > **Warning**
 >
 > Be aware that previous versions are deprecated, so you will start with a new default configuration.
 
-![](resources/images/capture-app-first-setup-with-deprecation-message.png)
+![](resources/images/capture-app-first-setup-with-deprecation-message.png){width=50%}
 
 > **Warning** 
 >
 > Only users will 'ALL' authority are able to *save or update* the configuration, but any user will have view access once it's created.
 
 
-![](resources/images/capture-app-first-setup-no-authorities.png)
+![](resources/images/capture-app-first-setup-no-authorities.png){width=50%}
 
 
 ## Enter and save configuration parameters { #capture_app_android_settings_webapp_enter_and_save }
@@ -482,9 +500,8 @@ At the form footer of all settings sections, admin users can find a *Save* butto
 
 Only when an admin user clicks on this button, all changes made on the current section are saved on the Datastore. These changes will apply to the Android Capture Apps when they synchronize their configuration.
  
-**Unsaved changes:** 
- 
-In case an admin user wants to go to another section when there are still some unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
+Unsaved changes
+:	In case an admin user wants to go to another section when there are still some unsaved changes, an alert will be displayed before navigating away from the current section. In case the user accepts leaving the page, the unsaved changes will be lost.
 
 ![](resources/images/capture-app-unsaved-changes.png)
  
