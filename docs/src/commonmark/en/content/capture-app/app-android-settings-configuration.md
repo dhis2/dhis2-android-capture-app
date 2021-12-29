@@ -3,9 +3,9 @@
 
 This section focuses on the Android Settings Web App implementation.
 
-The Android Settings Web App allows admins to configure synchronization parameters for the DHIS2 Android Capture App, encrypt the local database of the android devices, customize the appearance of Programs, Data sets, and Home screen, and add TEI Analytics items. The configuration parameters defined within this web app will overwrite the settings of all android devices using the DHIS2 Android Capture App.
+The [https://apps.dhis2.org/app/a1bd6b5b-de8c-4998-8d34-56c18a139683](Android Settings Web App) allows admins to configure synchronization parameters for the DHIS2 Android App, encrypt the local database of the Android devices, customize the appearance of Programs, Data sets, and Home screen, and add TEI Analytics items. The configuration parameters defined within this web app will overwrite the settings of all Android devices using the DHIS2 Android Capture App.
 
-Please note that in this version of the web app, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
+Please note that in this version of the Web App, only users with 'ALL' authority are able to define those parameters in the configuration. Other users having access to the web app can see the value of the parameters, but cannot edit them. 
 
 > **Warning**
 >
@@ -18,22 +18,26 @@ Includes configurations such as the Matomo URL and project ID, the number of res
 
 ![](resources/images/capture-app-general-settings.png)
 
-**Matomo configuration:** If you already have a Matomo instance, add the Matomo URL and the project ID.
+Matomo configuration
+:	If you already have a Matomo instance, add the Matomo URL and the project ID.
 
-**Mobile configuration:** This section allows admin users to edit the SMS gateway ad result sender phone number.
+Mobile configuration
+:	This section allows admin users to edit the SMS gateway ad result sender phone number.
 
-**Reserved values:** This will specify the number of values per TEI attribute reserved to download in the devices.
+Reserved values
+:	This will specify the number of values per TEI attribute reserved to download in the devices.
 
-**Encrypt device database:** 
+Encrypt device database
+:	This will force all the devices to store the database encrypted increasing the security level against data theft attacks.
 
 > **Warning**
 >
-> This is a critical action and will affect the local database of all android devices synchronizing with the server (it won't affect the server DHIS2 database).
+> This is a critical action and will affect the local database of all Android devices synchronizing with the server (it won't affect the server DHIS2 database).
 >
-> By default, the android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
+> By default, the Android app database is not encrypted, but an admin can check the *Encrypt device database* to encrypt the metadata and data stored in every device. Encrypting the database will have an impact on the database volume and performance of the Android app. Note that at the moment of selecting or unselecting this option, no data is lost (even if it hasn't been previously synchronized with the server)
 
  
-**Disable all settings:** By clicking this button, the user will remove all android configuration settings. No configuration will be applied to the Android Capture app (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
+**Disable all settings:** By clicking this button, the user will remove all Android configuration settings. No configuration will be applied to the Android App (if this is the case, the sync parameters applied are the ones defined in the Android Capture app).
 
 
 ## Synchronization { #capture_app_android_settings_webapp_synchronization }
