@@ -211,7 +211,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 null,
                 false,
                 sectionName,
-                null,
+                sectionUid,
                 null,
                 null,
                 description,
