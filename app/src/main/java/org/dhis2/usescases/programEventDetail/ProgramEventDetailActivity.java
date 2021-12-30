@@ -77,7 +77,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
     private ProgramEventDetailViewModel programEventsViewModel;
     public ProgramEventDetailComponent component;
-    private boolean isMapVisible = false;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -100,14 +99,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    if (isMapVisible) {
-                        showMap(false);
-                    }
+                    programEventsViewModel.showList();
                     return true;
                 case R.id.navigation_map_view:
-                    if (!isMapVisible) {
-                        showMap(true);
-                    }
+                    programEventsViewModel.showMap();
                     return true;
                 case R.id.navigation_analytics:
                     showAnalytics();
@@ -119,7 +114,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
-        showMap(false);
     }
 
     private void initExtras() {
@@ -158,9 +152,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
         });
 
-        programEventsViewModel.getWritePermission().observe(this, canWrite ->
-                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE));
+        programEventsViewModel.getWritePermission().observe(this, canWrite -> {
+            if (!canWrite){
+                binding.addEventButton.setVisibility(GONE);
+            }
+        });
 
+        programEventsViewModel.getShowMap().observe(this, this::showMap);
     }
 
     @Override
@@ -314,7 +312,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void showMap(boolean showMap) {
-        isMapVisible = showMap;
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
                 showMap ? new EventMapFragment() : new EventListFragment()
