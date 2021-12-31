@@ -366,8 +366,8 @@ class FormRepositoryImpl(
         return map { item ->
             if (item.mandatory && item.value == null) {
                 mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
-            } else if (item.mandatory) {
-                mandatoryItemsWithoutValue.remove(item.label ?: item.uid)
+            } else {
+                mandatoryItemsWithoutValue.remove(item.label)
             }
             fieldsWithError.find { it.id == item.uid }?.let { action ->
                 val error = action.error?.let {
