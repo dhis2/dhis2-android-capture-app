@@ -297,22 +297,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onResume();
         FilterManager.getInstance().clearUnsupportedFilters();
 
-        if (isMapVisible()) {
-            animations.initMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.show();
-            binding.progressLayout.setVisibility(GONE);
-            if (updateTei != null) {
-                if (updateEvent != null) {
-                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getEventInfo(updateEvent, updateTei));
-                } else {
-                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getTeiInfo(updateTei));
-                }
-                updateEvent = null;
-                updateTei = null;
-            }
-            animations.endMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.hide();
-        }
+        binding.navigationBar.onResume();
 
         if (initSearchNeeded) {
             presenter.init(tEType);
