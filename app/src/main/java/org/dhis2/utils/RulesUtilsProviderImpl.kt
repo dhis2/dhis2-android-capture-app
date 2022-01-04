@@ -39,6 +39,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val optionGroupsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToShow = mutableMapOf<String, MutableList<String>>()
     var fieldsToUpdate = mutableListOf<String>()
+    var hiddenFields = mutableListOf<String>()
     val configurationErrors = mutableListOf<RulesUtilsProviderConfigurationError>()
     var valueStore: ValueStore? = null
     var currentRuleUid: String? = null
@@ -60,6 +61,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         optionGroupsToHide.clear()
         optionGroupsToShow.clear()
         fieldsToUpdate.clear()
+        hiddenFields.clear()
         configurationErrors.clear()
         this.valueStore = valueStore
 
@@ -276,6 +278,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             fieldViewModels.remove(hideField.field())
             if (save(hideField.field(), null) == ValueStoreResult.VALUE_CHANGED) {
                 fieldsToUpdate.add(hideField.field())
+                hiddenFields.add(hideField.field())
             }
         }
     }
@@ -369,7 +372,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 fieldViewModels[assign.field()]!!
                     .setValue(valueToShow)
                     .setEditable(false)
-        } else {
+        } else if (!hiddenFields.contains(assign.field())) {
             save(assign.field(), ruleEffect.data())
         }
     }
