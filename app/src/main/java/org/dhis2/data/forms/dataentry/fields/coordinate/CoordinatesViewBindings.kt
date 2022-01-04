@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.coordinate
 
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -142,10 +143,12 @@ fun TextInputEditText.setOnGeometryEditorActionListener(
     editTextToActivate: TextInputEditText
 ) {
     if (viewModel != null) {
-        setOnEditorActionListener { _, _, _ ->
+        setOnEditorActionListener { _, actionId, _ ->
             val result = viewModel.onFilledCoordinate(context.getString(R.string.coordinates_error))
-            if (result) {
+            if (!result) {
                 closeKeyboard()
+            } else if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.onNext()
             } else {
                 editTextToActivate.requestFocus()
                 editTextToActivate.performClick()
