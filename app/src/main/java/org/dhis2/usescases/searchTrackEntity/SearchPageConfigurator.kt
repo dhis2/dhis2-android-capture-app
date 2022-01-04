@@ -1,6 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
@@ -18,16 +20,11 @@ class SearchPageConfigurator(
     }
 
     override fun displayMapView(): Boolean {
-       return Single.fromCallable { searchRepository.programHasCoordinates() }
-           .subscribeOn(schedulerProvider.ui())
-           .observeOn(schedulerProvider.ui())
-           .blockingGet()
-      /*  Observable.fromCallable(searchRepository.programHasCoordinates())
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.ui())
-*/
-
-        //Observable.fromCallable(() -> decompress(decodeData(inputData).getBytes()))
+        return runBlocking {
+            return@runBlocking withContext(Dispatchers.IO) {
+                searchRepository.programHasCoordinates()
+            }
+        }
     }
 
     override fun displayAnalytics(): Boolean {
