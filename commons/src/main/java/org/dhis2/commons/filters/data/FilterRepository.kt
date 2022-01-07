@@ -331,18 +331,6 @@ class FilterRepository @Inject constructor(
                 observableSortingInject,
                 observableOpenFilter,
                 resources.filterResources.filterSyncLabel()
-            ),
-            ProgramFilter.ENROLLMENT_STATUS to EnrollmentStatusFilter(
-                org.dhis2.commons.filters.ProgramType.TRACKER,
-                observableSortingInject,
-                observableOpenFilter,
-                resources.filterResources.filterEnrollmentStatusLabel()
-            ),
-            ProgramFilter.EVENT_STATUS to EventStatusFilter(
-                org.dhis2.commons.filters.ProgramType.TRACKER,
-                observableSortingInject,
-                observableOpenFilter,
-                resources.filterResources.filterEventStatusLabel()
             )
         )
     }

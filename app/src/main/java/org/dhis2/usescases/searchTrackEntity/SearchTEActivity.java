@@ -877,7 +877,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setFilters(List<FilterItem> filtersToDisplay) {
+    public void setInitialFilters(List<FilterItem> filtersToDisplay) {
         filtersAdapter.submitList(filtersToDisplay);
     }
 
@@ -1072,6 +1072,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         return false;
     }
-
     /*endregion*/
 }
