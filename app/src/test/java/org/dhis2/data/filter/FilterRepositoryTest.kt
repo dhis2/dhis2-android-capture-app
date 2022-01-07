@@ -145,9 +145,7 @@ class FilterRepositoryTest {
         assert(result[0].type == Filters.PERIOD)
         assert(result[1].type == Filters.ORG_UNIT)
         assert(result[2].type == Filters.SYNC_STATE)
-        assert(result[3].type == Filters.ENROLLMENT_STATUS)
-        assert(result[4].type == Filters.EVENT_STATUS)
-        assert(result.size == 5)
+        assert(result.size == 3)
     }
 
     @Test
