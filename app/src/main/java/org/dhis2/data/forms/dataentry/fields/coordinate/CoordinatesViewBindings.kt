@@ -148,6 +148,7 @@ fun TextInputEditText.setOnGeometryEditorActionListener(
             if (!result) {
                 closeKeyboard()
             } else if (actionId == EditorInfo.IME_ACTION_DONE) {
+                clearFocus()
                 viewModel.onNext()
             } else {
                 editTextToActivate.requestFocus()
