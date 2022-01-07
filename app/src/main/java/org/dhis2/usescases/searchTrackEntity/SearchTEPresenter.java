@@ -450,15 +450,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setProgram(Program newProgramSelected) {
         if (newProgramSelected != ALL_TE_TYPES) {
-       //     view.setProgramFilters();
             String previousProgramUid = selectedProgram != null ? selectedProgram.uid() : "";
             String currentProgramUid = newProgramSelected.uid();
             if (isPreviousAndCurrentProgramTheSame(newProgramSelected,
                     previousProgramUid,
                     currentProgramUid))
                 return;
-        } else {
-        //    view.setNonProgramFilters();
         }
 
         boolean otherProgramSelected;
