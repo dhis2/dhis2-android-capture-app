@@ -4,7 +4,7 @@ The following is a comprehensive list of all value types available in DHIS 2, an
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark \!.
 
-|||
+|Legend|Description|
 | :-: | :------ |
 | ![](resources/images/../../admin/icon-complete.png) | Value type implemented |
 | ![](resources/images/../../admin/icon-incomplete.png) | Value type not implemented, but will be safely ignored (if not compulsory) |
@@ -12,7 +12,7 @@ Any issues around using a particular feature with Android are highlighted with a
 
 
 | Value type | Description of value type | Program with registration | Program with registration | Program without registration | Data Set| Notes on implementation |
-| :-- | :---- | :-: | :-: | :-: | :-: | :-- |
+| :--| :----|:-:|:-:|:-:|:-:|:--|
 | | | **Attributes** | **Data Elements** | **Data Elements** | **Data Elements** |
 | Time | Time only | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) |![](resources/images/../../admin/icon-complete.png) | |
 | Date & Time | Date plus time | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png)| |
