@@ -145,9 +145,7 @@ fun TextInputEditText.setOnGeometryEditorActionListener(
     if (viewModel != null) {
         setOnEditorActionListener { _, actionId, _ ->
             val result = viewModel.onFilledCoordinate(context.getString(R.string.coordinates_error))
-            if (!result) {
-                closeKeyboard()
-            } else if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (result && actionId == EditorInfo.IME_ACTION_DONE) {
                 clearFocus()
                 viewModel.onNext()
             } else {
