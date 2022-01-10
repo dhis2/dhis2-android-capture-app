@@ -815,8 +815,6 @@
     <string name="dataset_column_default">Valores</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
     <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
-    <string name="conf_error_value_to_assign_option_set">La regla de programa %s está intentando asignar el valor %s que no pertenece al conjunto de opciones %s</string>
-    <string name="conf_error_value_option_set">El valor del campo %s no pertenece al conjunto de opciones en %s</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="show_radar_graph">Ver como gráfico de radar</string>
