@@ -5,6 +5,10 @@ import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent : MviIntent {
 
+    data class OnClear(
+        val extraData: String? = null
+    ) : FormIntent()
+
     data class OnFocus(
         val uid: String,
         val value: String?
@@ -48,5 +52,9 @@ sealed class FormIntent : MviIntent {
         val uid: String,
         val value: String?,
         val featureType: String
+    ) : FormIntent()
+
+    data class OnSection(
+        val sectionUid: String
     ) : FormIntent()
 }

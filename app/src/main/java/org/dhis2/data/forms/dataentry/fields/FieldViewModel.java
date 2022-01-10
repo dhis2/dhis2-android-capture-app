@@ -4,18 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.DataEntryViewHolderTypes;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.form.model.FieldUiModel;
+import org.dhis2.form.model.KeyboardActionType;
 import org.dhis2.form.model.LegendValue;
+import org.dhis2.form.model.UiEventType;
+import org.dhis2.form.model.UiRenderType;
 import org.dhis2.form.ui.event.RecyclerViewUiEvents;
 import org.dhis2.form.ui.event.UiEventFactory;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.form.ui.style.FormUiModelStyle;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.option.Option;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+import kotlin.Pair;
 
 public abstract class FieldViewModel implements FieldUiModel {
 
@@ -206,10 +211,14 @@ public abstract class FieldViewModel implements FieldUiModel {
         ));
     }
 
-    public void onTextChange(String value) {
+    public void onTextChange(CharSequence value) {
+        String text = null;
+        if (value != null) {
+            text = value.toString();
+        }
         callback.intent(new FormIntent.OnTextChange(
                 uid(),
-                value
+                text
         ));
     }
 
@@ -237,14 +246,10 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withError(error);
     }
 
-    public FieldViewModel withLegend(LegendValue legendValue) {
-        if (this instanceof EditTextViewModel) {
-            return ((EditTextViewModel) this).withlegendValue(legendValue);
-        } else if (this instanceof SpinnerViewModel) {
-            return ((SpinnerViewModel) this).withlegendValue(legendValue);
-        } else {
-            return this;
-        }
+    @NotNull
+    @Override
+    public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
+        return this;
     }
 
     @NotNull
@@ -253,24 +258,10 @@ public abstract class FieldViewModel implements FieldUiModel {
         return withEditMode(editable);
     }
 
-    @NotNull
-    @Override
-    public FieldUiModel setLegend(@Nullable LegendValue legendValue) {
-        return withLegend(legendValue);
-    }
-
     @NonNull
     @Override
     public FieldUiModel setDisplayName(@Nullable String displayName) {
-        return withDisplayName(displayName);
-    }
-
-    public FieldUiModel withDisplayName(String displayName) {
-        if (this instanceof OrgUnitViewModel) {
-            return ((OrgUnitViewModel) this).withDisplayName(displayName);
-        } else {
-            return this;
-        }
+        return this;
     }
 
     @Nullable
@@ -346,9 +337,24 @@ public abstract class FieldViewModel implements FieldUiModel {
         callback.intent(new FormIntent.ClearValue(uid()));
     }
 
+    @Override
+    public void onSave(String value) {
+        //Do not use until migrate to FieldUIModel
+    }
+
+    @Override
+    public void onSaveBoolean(boolean b) {
+        //Do not use until migrate to FieldUIModel
+    }
+
+    @Override
+    public void onSaveOption(@NonNull Option option) {
+        //Do not use until migrate to FieldUIModel
+    }
+
     @Deprecated
     @Override
-    public void invokeUiEvent() {
+    public void invokeUiEvent(UiEventType uiEventType) {
         //Do not use until migrate to FieldUIModel
     }
 
@@ -364,6 +370,117 @@ public abstract class FieldViewModel implements FieldUiModel {
     @Nullable
     @Override
     public String getDisplayName() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Integer getTextColor() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public Pair<Integer[], Integer> getBackGroundColor() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public UiRenderType getRenderingType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Override
+    public void invokeIntent(@NonNull FormIntent intent) {
+        //Do not use until migrate to FieldUIModel
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<Option> getOptions() {
+        //Do not use until migrate to FieldUIModel
+
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<String> getOptionsToHide() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<String> getOptionsToShow() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Deprecated
+    @Override
+    public void setOptionsToHide(@Nullable List<String> optionsToHide) {
+    }
+
+    @Deprecated
+    @Override
+    public void setOptionsToShow(@Nullable List<String> optionsToShow) {
+    }
+
+    @Deprecated
+    @Override
+    public boolean getHasImage() {
+        return false;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public KeyboardActionType getKeyboardActionType() {
+        //Do not use until migrate to FieldUIModel
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getFieldMask() {
+        return fieldMask();
+    }
+
+    @Deprecated
+    @NonNull
+    @Override
+    public FieldUiModel setKeyBoardActionDone() {
+        //Do not use until migrate to FieldUIModel
+        return this;
+    }
+
+    @Override
+    public boolean isAffirmativeChecked() {
+        return false;
+    }
+
+    @Override
+    public boolean isNegativeChecked() {
+        return false;
+    }
+
+    @Deprecated
+    @Nullable
+    @Override
+    public List<Option> getOptionsToDisplay() {
         //Do not use until migrate to FieldUIModel
         return null;
     }

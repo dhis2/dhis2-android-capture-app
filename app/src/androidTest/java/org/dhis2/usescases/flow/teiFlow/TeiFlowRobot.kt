@@ -47,7 +47,6 @@ class TeiFlowRobot : BaseRobot() {
         enrollmentRobot {
             clickOnSameProgramForEnrollment(program)
             clickOnAcceptEnrollmentDate()
-            waitToDebounce(5000)
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }

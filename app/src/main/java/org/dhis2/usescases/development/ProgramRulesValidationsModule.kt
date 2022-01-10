@@ -14,7 +14,10 @@ import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.form.ui.provider.UiStyleProviderImpl
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Manager
@@ -40,23 +43,21 @@ class ProgramRulesValidationsModule(val context: ProgramRulesValidationActivity)
     @PerActivity
     fun fieldViewModelFactory(
         context: Context,
-        colorFactory: FormUiColorFactory,
         d2: D2
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             context.valueTypeHintMap(),
             true,
-            colorFactory,
+            UiStyleProviderImpl(
+                FormUiModelColorFactoryImpl(context, true),
+                LongTextUiColorFactoryImpl(context, true)
+            ),
             LayoutProviderImpl(),
             HintProviderImpl(context),
-            DisplayNameProviderImpl(d2)
+            DisplayNameProviderImpl(d2),
+            UiEventTypesProviderImpl(),
+            KeyboardActionProviderImpl()
         )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideFormUiColorFactory(): FormUiColorFactory {
-        return FormUiModelColorFactoryImpl(context, false)
     }
 
     @Provides
@@ -66,7 +67,10 @@ class ProgramRulesValidationsModule(val context: ProgramRulesValidationActivity)
             FormRepositoryImpl(
                 null,
                 FieldErrorMessageProvider(context),
-                DisplayNameProviderImpl(D2Manager.getD2())
+                DisplayNameProviderImpl(D2Manager.getD2()),
+                dataEntryRepository = null,
+                ruleEngineRepository = null,
+                rulesUtilsProvider = null
             )
         )
         .dispatcher(FormDispatcher())

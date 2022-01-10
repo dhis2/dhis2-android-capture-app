@@ -39,7 +39,7 @@ import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;

@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -24,6 +25,7 @@ import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
+import org.dhis2.form.data.RuleUtilsProviderResultKt;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -31,16 +33,11 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
-import org.dhis2.utils.FileResourcesUtil;
-import org.dhis2.utils.ImageUtils;
-import org.dhis2.utils.RuleUtilsProviderResultKt;
-import org.dhis2.utils.RulesUtilsProviderConfigurationError;
+import org.dhis2.form.data.RulesUtilsProviderConfigurationError;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -197,39 +194,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case Constants.GALLERY_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    Uri imageUri = data.getData();
-                    try {
-                        presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
-                        presenter.nextCalculation(true);
-                    } catch (Exception e) {
-                        crashReportController.logException(e);
-                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
-            case Constants.CAMERA_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    File imageFile = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
-                    File file = new ImageUtils().rotateImage(this, imageFile);
-                    try {
-                        presenter.saveImage(uuid, file.exists() ? file.getPath() : null);
-                        presenter.nextCalculation(true);
-                    } catch (Exception e) {
-                        crashReportController.logException(e);
-                        Toast.makeText(this, getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
-        }
-    }
-
-    @Override
     public void updatePercentage(float primaryValue) {
         binding.completion.setCompletionPercentage(primaryValue);
         if (!presenter.getCompletionPercentageVisibility()) {
@@ -238,7 +202,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldUiModel> emptyMandatoryFields) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
@@ -312,7 +276,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 reschedule();
                 break;
             case CHECK_FIELDS:
-                presenter.goToSection();
                 break;
             case FINISH:
             default:
@@ -456,17 +419,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showLoopWarning() {
-        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-                .setTitle("Program rules warning")
-                .setMessage("There is a configuration issue causing a loop in the rules. Contact you administrator.")
-                .setPositiveButton(R.string.action_accept, (dialogInterface, i) -> {
-                })
-                .setCancelable(false)
-                .show();
-    }
-
-    @Override
     public void showProgress() {
         runOnUiThread(() -> binding.toolbarProgress.show());
     }
@@ -487,20 +439,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void hideNavigationBar() {
         binding.navigationBar.hide();
-    }
-
-    @Override
-    public void displayConfigurationErrors(List<RulesUtilsProviderConfigurationError> configurationError) {
-        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-                .setTitle(R.string.warning_on_complete_title)
-                .setMessage(RuleUtilsProviderResultKt.toMessage(configurationError, this))
-                .setPositiveButton(R.string.action_close, (dialogInterface, i) -> {
-                })
-                .setNegativeButton(R.string.action_do_not_show_again, (dialogInterface, i) -> {
-                    presenter.disableConfErrorMessage();
-                })
-                .setCancelable(false)
-                .show();
     }
 
     @NotNull

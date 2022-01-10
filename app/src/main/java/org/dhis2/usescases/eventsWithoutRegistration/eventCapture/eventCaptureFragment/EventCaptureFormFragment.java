@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.location.LocationProvider;
@@ -77,21 +78,24 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .repository(formRepository)
                 .locationProvider(locationProvider)
                 .dispatcher(coroutineDispatcher)
-                .onItemChangeListener(action -> {
-                    activity.getPresenter().setValueChanged(action.getId());
-                    activity.getPresenter().nextCalculation(true);
-                    return Unit.INSTANCE;
-                })
                 .onLoadingListener(loading -> {
-                    if(loading){
+                    if (loading) {
                         activity.showProgress();
-                    } else{
+                    } else {
                         activity.hideProgress();
                     }
                     return Unit.INSTANCE;
                 })
                 .onFocused(() -> {
                     activity.hideNavigationBar();
+                    return Unit.INSTANCE;
+                })
+                .onPercentageUpdate(percentage -> {
+                    activity.updatePercentage(percentage);
+                    return Unit.INSTANCE;
+                })
+                .onDataIntegrityResult(result -> {
+                    presenter.handleDataIntegrityResult(result);
                     return Unit.INSTANCE;
                 })
                 .factory(activity.getSupportFragmentManager())
@@ -106,11 +110,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
         binding.setPresenter(activity.getPresenter());
         binding.actionButton.setOnClickListener(view -> {
-            ViewExtensionsKt.closeKeyboard(view);
+            closeKeyboard(view);
             performSaveClick();
         });
-
-        presenter.init();
 
         return binding.getRoot();
     }
@@ -132,19 +134,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.onDetach();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void showFields(@Nullable List<? extends FieldUiModel> fields) {
-        formView.processItems(fields);
     }
 
     private void animateFabButton(boolean sectionIsVisible) {
@@ -157,10 +148,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void performSaveClick() {
         if (activity.getCurrentFocus() instanceof EditText) {
-            presenter.setFinishing();
             activity.getCurrentFocus().clearFocus();
         } else {
-            presenter.onActionButtonClick();
+            formView.requestDataIntegrityCheck();
         }
     }
 

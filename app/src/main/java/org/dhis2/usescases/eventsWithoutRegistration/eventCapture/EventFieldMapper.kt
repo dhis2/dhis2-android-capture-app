@@ -4,14 +4,10 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
-
-const val DISPLAY_FIELD_KEY = "DISPLAY_FIELD_KEY"
+import org.hisp.dhis.android.core.common.ValueType
 
 class EventFieldMapper(
     private val fieldFactory: FieldViewModelFactory,
@@ -42,13 +38,10 @@ class EventFieldMapper(
         }
 
         if (eventSectionModels.first().sectionName() == "NO_SECTION") {
-            finalFieldList.add(SectionViewModel.createClosingSection())
-        }
-        if (fieldMap.containsKey(DISPLAY_FIELD_KEY) && fieldMap[DISPLAY_FIELD_KEY] != null) {
-            finalFieldList.addAll(fieldMap[DISPLAY_FIELD_KEY] as Collection<FieldUiModel>)
+            finalFieldList.add(fieldFactory.createClosingSection())
         }
 
-        val sections = finalFieldList.filterIsInstance<SectionViewModel>()
+        val sections = finalFieldList.filterIsInstance<SectionUiModelImpl>()
 
         sections.takeIf { showErrors.first || showErrors.second }?.forEach { section ->
             var errorCounter = 0
@@ -57,35 +50,35 @@ class EventFieldMapper(
                 repeat(
                     warnings.filter { warning ->
                         fields.firstOrNull { field ->
-                            field.uid == warning.key && field.programStageSection == section.uid()
+                            field.uid == warning.key && field.programStageSection == section.uid
                         } != null
                     }.size +
                         emptyMandatoryFields
-                            .filter { it.value.programStageSection == section.uid() }.size
+                            .filter { it.value.programStageSection == section.uid }.size
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
                 repeat(
                     errors.filter { error ->
                         fields.firstOrNull { field ->
-                            field.uid == error.key && field.programStageSection == section.uid()
+                            field.uid == error.key && field.programStageSection == section.uid
                         } != null
                     }.size
                 ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
-                section.withErrorsAndWarnings(
-                    if (errorCounter != 0) {
+                section.apply {
+                    this.errors = if (errorCounter != 0) {
                         errorCounter
                     } else {
-                        null
-                    },
-                    if (mandatoryCounter != 0) {
+                        0
+                    }
+                    this.warnings = if (mandatoryCounter != 0) {
                         mandatoryCounter
                     } else {
-                        null
+                        0
                     }
-                )
+                }
         }
 
         return Pair(eventSectionModels, finalFieldList)
@@ -120,26 +113,19 @@ class EventFieldMapper(
                         field
                     }
                 )
-                if (field !is DisplayViewModel) {
-                    if (fieldIsNotVisualOptionSet(field)) {
-                        totalFields++
-                    } else if (!visualDataElements.contains(field.uid)) {
-                        visualDataElements.add(field.uid)
-                        totalFields++
-                    }
+
+                if (fieldIsNotVisualOptionSet(field)) {
+                    totalFields++
+                } else if (!visualDataElements.contains(field.uid)) {
+                    visualDataElements.add(field.uid)
+                    totalFields++
                 }
-                if (field is UnsupportedViewModel) totalFields--
+                if (isUnsupported(field.valueType)) totalFields--
             }
         }
     }
 
-    private fun getFieldSection(field: FieldUiModel): String {
-        return if (field is DisplayViewModel) {
-            DISPLAY_FIELD_KEY
-        } else {
-            return field.programStageSection ?: ""
-        }
-    }
+    private fun getFieldSection(field: FieldUiModel) = field.programStageSection ?: ""
 
     private fun updateFieldMap(fieldSection: String, field: FieldUiModel) {
         if (!fieldMap.containsKey(fieldSection)) {
@@ -226,10 +212,7 @@ class EventFieldMapper(
         sectionModel: FormSectionViewModel
     ) {
         for (fieldViewModel in fields) {
-            if (fieldViewModel !is DisplayViewModel) {
-                finalFields[fieldViewModel.uid] =
-                    !isEmpty(fieldViewModel.value)
-            }
+            finalFields[fieldViewModel.uid] = !isEmpty(fieldViewModel.value)
         }
 
         var cont = 0
@@ -246,7 +229,7 @@ class EventFieldMapper(
     }
 
     private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.optionSet == null || field !is MatrixOptionSetModel
+        return field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
     }
 
     fun completedFieldsPercentage(): Float {
@@ -254,8 +237,13 @@ class EventFieldMapper(
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
-    fun unsupportedFieldsPercentage(): Float {
-        return calculateCompletionPercentage(unsupportedFields, totalFields)
+    private fun isUnsupported(type: ValueType?): Boolean {
+        return when (type) {
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.USERNAME,
+            ValueType.FILE_RESOURCE -> true
+            else -> false
+        }
     }
 
     private fun calculateCompletionPercentage(

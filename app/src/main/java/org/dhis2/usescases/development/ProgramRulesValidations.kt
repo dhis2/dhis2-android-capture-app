@@ -4,7 +4,6 @@ import android.os.Build
 import java.util.HashMap
 import org.dhis2.Bindings.toRuleEngineObject
 import org.dhis2.Bindings.toRuleVariableList
-import org.dhis2.data.forms.RuleActionUnsupported
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.D2
@@ -24,6 +23,7 @@ import org.hisp.dhis.rules.models.RuleActionHideProgramStage
 import org.hisp.dhis.rules.models.RuleActionHideSection
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField
 import org.hisp.dhis.rules.models.RuleActionShowOptionGroup
+import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariableAttribute
 import org.hisp.dhis.rules.models.RuleVariableCalculatedValue

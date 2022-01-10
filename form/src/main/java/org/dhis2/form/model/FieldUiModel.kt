@@ -5,6 +5,7 @@ import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.option.Option
 
 interface FieldUiModel {
 
@@ -48,6 +49,30 @@ interface FieldUiModel {
 
     val displayName: String?
 
+    val textColor: Int?
+
+    val backGroundColor: Pair<Array<Int>, Int>?
+
+    val renderingType: UiRenderType?
+
+    val options: List<Option>?
+
+    var optionsToHide: List<String>?
+
+    var optionsToShow: List<String>?
+
+    val hasImage: Boolean
+
+    val keyboardActionType: KeyboardActionType?
+
+    val fieldMask: String?
+
+    val isAffirmativeChecked: Boolean
+
+    val isNegativeChecked: Boolean
+
+    val optionsToDisplay: List<Option>?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -56,13 +81,21 @@ interface FieldUiModel {
 
     fun onNext()
 
-    fun onTextChange(value: String?)
+    fun onTextChange(value: CharSequence?)
 
     fun onDescriptionClick()
 
     fun onClear()
 
-    fun invokeUiEvent()
+    fun onSave(value: String?)
+
+    fun onSaveBoolean(boolean: Boolean)
+
+    fun onSaveOption(option: Option)
+
+    fun invokeUiEvent(uiEventType: UiEventType)
+
+    fun invokeIntent(intent: FormIntent)
 
     fun setValue(value: String?): FieldUiModel
 
@@ -79,6 +112,8 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     fun setDisplayName(displayName: String?): FieldUiModel
+
+    fun setKeyBoardActionDone(): FieldUiModel
 
     interface Callback {
         fun intent(intent: FormIntent)

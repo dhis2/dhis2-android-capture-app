@@ -1,25 +1,14 @@
 package org.dhis2.Bindings
 
-import android.app.Activity
 import android.graphics.Outline
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.tbuonomo.viewpagerdotsindicator.R
-
-fun View.closeKeyboard() {
-    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
-}
-
-fun View.openKeyboard() {
-    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
-}
+import org.dhis2.commons.extensions.closeKeyboard
 
 fun View.getThemePrimaryColor(): Int {
     val value = TypedValue()
@@ -30,7 +19,7 @@ fun View.getThemePrimaryColor(): Int {
 fun View.onFocusRemoved(onFocusRemovedCallback: () -> Unit) {
     setOnFocusChangeListener { view, hasFocus ->
         if (!hasFocus) {
-            view.closeKeyboard()
+            closeKeyboard()
             onFocusRemovedCallback.invoke()
         }
     }

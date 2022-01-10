@@ -4,12 +4,12 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,6 +24,7 @@ class SearchFlowTest : BaseTest() {
     private val dateEnrollment = createEnrollmentDate()
 
     @Test
+    @Ignore
     fun shouldCreateTEIAndFilterByEnrollment() {
         setDatePicker()
         val registerTEIDetails = createRegisterTEI()

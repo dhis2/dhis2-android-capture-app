@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.DataEntryDiff
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
@@ -21,7 +21,11 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     private val refactoredViews = intArrayOf(
         R.layout.form_age_custom,
-        R.layout.form_date_time, R.layout.form_scan
+        R.layout.form_date_time,
+        R.layout.form_scan,
+        R.layout.form_org_unit,
+        R.layout.form_coordinate_custom,
+        R.layout.form_edit_text_custom
     )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null
@@ -48,30 +52,30 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     }
 
     override fun onBindViewHolder(holder: FormViewHolder, position: Int) {
-        if (getItem(position) is SectionViewModel) {
+        if (getItem(position) is SectionUiModelImpl) {
             updateSectionData(position, false)
         }
         holder.bind(getItem(position), this)
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
-        (getItem(position) as SectionViewModel?)!!.setShowBottomShadow(
+        (getItem(position) as SectionUiModelImpl?)!!.setShowBottomShadow(
             !isHeader && position > 0 && getItem(
                 position - 1
-            ) !is SectionViewModel
+            ) !is SectionUiModelImpl
         )
-        (getItem(position) as SectionViewModel?)!!.sectionNumber = getSectionNumber(position)
-        (getItem(position) as SectionViewModel?)!!.setLastSectionHeight(
+        (getItem(position) as SectionUiModelImpl?)!!.setSectionNumber(getSectionNumber(position))
+        (getItem(position) as SectionUiModelImpl?)!!.setLastSectionHeight(
             position > 0 && position == itemCount - 1 && getItem(
                 position - 1
-            ) !is SectionViewModel
+            ) !is SectionUiModelImpl
         )
     }
 
     private fun getSectionNumber(sectionPosition: Int): Int {
         var sectionNumber = 1
         for (i in 0 until sectionPosition) {
-            if (getItem(i) is SectionViewModel) {
+            if (getItem(i) is SectionUiModelImpl) {
                 sectionNumber++
             }
         }
@@ -85,7 +89,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     fun swap(updates: List<FieldUiModel>, commitCallback: Runnable) {
         sectionPositions = LinkedHashMap()
         for (fieldViewModel in updates) {
-            if (fieldViewModel is SectionViewModel) {
+            if (fieldViewModel is SectionUiModelImpl) {
                 sectionPositions[fieldViewModel.uid] = updates.indexOf(fieldViewModel)
             }
         }
@@ -99,7 +103,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         return sectionPositions.size
     }
 
-    fun getSectionForPosition(visiblePos: Int): SectionViewModel? {
+    fun getSectionForPosition(visiblePos: Int): SectionUiModelImpl? {
         val sectionPosition = sectionHandler.getSectionPositionFromVisiblePosition(
             visiblePos,
             isSection(visiblePos),
@@ -111,7 +115,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
             null
         }
 
-        return if (model is SectionViewModel) {
+        return if (model is SectionUiModelImpl) {
             model
         } else {
             null

@@ -40,11 +40,15 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -52,6 +56,9 @@ import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
+
+import java.util.Collections;
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
@@ -64,15 +71,18 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
+    private final Map<String, String> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
-                          Context context) {
+                          Context context,
+                          Map<String, String> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
         this.moduleContext = context;
+        this.initialQuery = initialQuery;
     }
 
     @Provides
@@ -101,7 +111,7 @@ public class SearchTEModule {
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
                 teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper);
+                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper,initialQuery);
     }
 
     @Provides
@@ -137,20 +147,33 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter, ResourceManager resources, SearchSortingValueSetter searchSortingValueSetter, FieldViewModelFactory fieldFactory, DhisPeriodUtils periodUtils, Charts charts, CrashReportController crashReportController) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources, searchSortingValueSetter, fieldFactory, periodUtils, charts, crashReportController);
+    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+                                      ResourceManager resources,
+                                      SearchSortingValueSetter searchSortingValueSetter,
+                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      CrashReportController crashReportController) {
+        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
+                searchSortingValueSetter, periodUtils, charts, crashReportController);
     }
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldViewModelFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
-        return new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context), true, colorFactory, new LayoutProviderImpl(), new HintProviderImpl(context), new DisplayNameProviderImpl(d2));
-    }
+    FieldViewModelFactory fieldViewModelFactory(
+            Context context,
+            D2 d2) {
+        return new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context),
+                true,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(moduleContext, false),
+                        new LongTextUiColorFactoryImpl(moduleContext, false)
 
-    @Provides
-    @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(moduleContext, false);
+                ),
+                new LayoutProviderImpl(),
+                new HintProviderImpl(context),
+                new DisplayNameProviderImpl(d2),
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl());
     }
 
     @Provides
@@ -208,11 +231,28 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormRepository provideFormRepository(D2 d2) {
+    FormRepository provideFormRepository(D2 d2, DataEntryRepository dataEntryRepository) {
         return new FormRepositoryImpl(
                 null,
                 new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(d2)
+                new DisplayNameProviderImpl(d2),
+                dataEntryRepository,
+                null,
+                null
+        );
+    }
+
+    @Provides
+    @PerActivity
+    DataEntryRepository provideDataEntryRepository(
+            D2 d2,
+            FieldViewModelFactory fieldViewModelFactory) {
+        return new SearchRepositoy(
+                d2,
+                fieldViewModelFactory,
+                initialProgram,
+                teiType,
+                initialQuery
         );
     }
 

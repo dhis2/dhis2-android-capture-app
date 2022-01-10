@@ -1,10 +1,12 @@
 package org.dhis2.form.model
 
+import java.io.File
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.option.Option
 
 data class FieldUiModelImpl(
     override val uid: String,
@@ -25,7 +27,11 @@ data class FieldUiModelImpl(
     override val optionSet: String? = null,
     override val allowFutureDates: Boolean? = null,
     override val uiEventFactory: UiEventFactory? = null,
-    override val displayName: String? = null
+    override val displayName: String? = null,
+    override val renderingType: UiRenderType? = null,
+    override val options: List<Option>? = null,
+    override val keyboardActionType: KeyboardActionType? = null,
+    override val fieldMask: String? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -45,8 +51,12 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnNext(uid, value))
     }
 
-    override fun onTextChange(value: String?) {
-        callback?.intent(FormIntent.OnTextChange(uid, value))
+    override fun onTextChange(value: CharSequence?) {
+        val text = when {
+            value?.isEmpty() == true -> null
+            else -> value?.toString()
+        }
+        callback?.intent(FormIntent.OnTextChange(uid, text))
     }
 
     override fun onDescriptionClick() {
@@ -63,16 +73,73 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.ClearValue(uid))
     }
 
-    override fun invokeUiEvent() {
+    override fun onSave(value: String?) {
         onItemClick()
-        uiEventFactory?.generateEvent(value)?.let {
+        callback?.intent(FormIntent.OnSave(uid, value, valueType))
+    }
+
+    override fun onSaveBoolean(boolean: Boolean) {
+        onItemClick()
+        val result = when {
+            value == null || value != boolean.toString() -> boolean.toString()
+            else -> null
+        }
+        callback?.intent(FormIntent.OnSave(uid, result, valueType))
+    }
+
+    override fun onSaveOption(option: Option) {
+        val nextValue = when (displayName) {
+            option.displayName() -> null
+            else -> option.code()
+        }
+        callback?.intent(FormIntent.OnSave(uid, nextValue, valueType))
+    }
+
+    override fun invokeUiEvent(uiEventType: UiEventType) {
+        onItemClick()
+        uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
     }
 
+    override fun invokeIntent(intent: FormIntent) {
+        callback?.intent(intent)
+    }
+
+    override val textColor: Int?
+        get() = style?.textColor(error, warning)
+
+    override val backGroundColor: Pair<Array<Int>, Int>?
+        get() = style?.backgroundColor(valueType, error, warning)
+
+    override var optionsToHide: List<String>? = null
+
+    override var optionsToShow: List<String>? = null
+
+    override val hasImage: Boolean
+        get() = value?.let { File(it).exists() } ?: false
+
+    override val isAffirmativeChecked: Boolean
+        get() = value?.toBoolean() == true
+
+    override val isNegativeChecked: Boolean
+        get() = value?.toBoolean() == false
+
+    override val optionsToDisplay: List<Option>?
+        get() = options?.filter { option ->
+            when {
+                optionsToShow?.isNotEmpty() == true ->
+                    optionsToShow?.contains(option.uid()) ?: false
+                else ->
+                    !(optionsToHide?.contains(option.uid()) ?: false)
+            }
+        }?.sortedBy { it.sortOrder() }
+
     override fun setValue(value: String?) = this.copy(value = value)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
+
+    override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
 
     override fun setFocus() = this.copy(focused = true)
 

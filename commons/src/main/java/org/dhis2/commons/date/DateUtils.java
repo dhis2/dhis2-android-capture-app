@@ -567,4 +567,12 @@ public class DateUtils {
         }
         return calendar.getTime();
     }
+
+    /**********************
+     COMPARE DATES REGION*/
+
+    public static int[] getDifference(Date startDate, Date endDate) {
+        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
+        return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+    }
 }

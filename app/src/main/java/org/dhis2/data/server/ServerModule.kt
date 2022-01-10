@@ -14,8 +14,8 @@ import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.utils.RulesUtilsProvider
-import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.dhis2.utils.reporting.SentryOkHttpInterceptor

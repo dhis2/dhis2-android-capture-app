@@ -13,13 +13,13 @@ import java.util.Date
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.EventCreationType
 import org.dhis2.utils.Result
-import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
@@ -669,10 +670,24 @@ class EventInitialPresenterTest {
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)
         whenever(eventInitialRepository.getGeometryModel(uid, null)) doReturn Single.just(
-            CoordinateViewModel.create(
-                "id", 1, "", false, null, null,
-                true, null, ObjectStyle.builder().build(), null, false,
-                false, null
+            FieldUiModelImpl(
+                uid = "id",
+                layoutId = 1,
+                value = "",
+                focused = false,
+                error = null,
+                editable = true,
+                warning = null,
+                mandatory = false,
+                label = "",
+                programStageSection = null,
+                style = null,
+                hint = "",
+                description = null,
+                valueType = ValueType.COORDINATE,
+                legend = null,
+                optionSet = null,
+                allowFutureDates = null
             )
         )
         whenever(eventInitialRepository.getProgramWithId(uid)) doReturn Observable.just(program)

@@ -10,7 +10,6 @@ import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl
@@ -19,12 +18,18 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
+import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
+import org.dhis2.form.data.RulesRepository
+import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.form.ui.provider.UiStyleProviderImpl
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -103,29 +108,26 @@ class EnrollmentModule(
     @PerActivity
     fun fieldFactory(
         context: Context,
-        colorFactory: FormUiColorFactory,
         d2: D2
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             context.valueTypeHintMap(),
             false,
-            colorFactory,
+            UiStyleProviderImpl(
+                FormUiModelColorFactoryImpl(activityContext, true),
+                LongTextUiColorFactoryImpl(activityContext, true)
+            ),
             LayoutProviderImpl(),
             HintProviderImpl(context),
-            DisplayNameProviderImpl(d2)
+            DisplayNameProviderImpl(d2),
+            UiEventTypesProviderImpl(),
+            KeyboardActionProviderImpl()
         )
     }
 
     @Provides
     @PerActivity
-    fun provideFormUiColorFactory(): FormUiColorFactory {
-        return FormUiModelColorFactoryImpl(activityContext, true)
-    }
-
-    @Provides
-    @PerActivity
     fun providePresenter(
-        context: Context,
         d2: D2,
         enrollmentObjectRepository: EnrollmentObjectRepository,
         dataEntryRepository: EnrollmentRepository,
@@ -135,7 +137,6 @@ class EnrollmentModule(
         enrollmentFormRepository: EnrollmentFormRepository,
         valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
-        fieldViewModelFactory: FieldViewModelFactory,
         matomoAnalyticsController: MatomoAnalyticsController
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
@@ -149,8 +150,6 @@ class EnrollmentModule(
             enrollmentFormRepository,
             valueStore,
             analyticsHelper,
-            context.getString(R.string.field_is_mandatory),
-            fieldViewModelFactory.sectionProcessor(),
             matomoAnalyticsController
         )
     }
@@ -208,7 +207,8 @@ class EnrollmentModule(
     fun provideEnrollmentFormRepository(
         d2: D2,
         enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
+        dataEntryRepository: EnrollmentRepository
     ): FormRepository {
         return FormRepositoryImpl(
             ValueStoreImpl(
@@ -220,7 +220,10 @@ class EnrollmentModule(
                 crashReportController
             ),
             FieldErrorMessageProvider(activityContext),
-            DisplayNameProviderImpl(d2)
+            DisplayNameProviderImpl(d2),
+            dataEntryRepository,
+            EnrollmentRuleEngineRepository(d2, enrollmentUid),
+            RulesUtilsProviderImpl(d2)
         )
     }
 }

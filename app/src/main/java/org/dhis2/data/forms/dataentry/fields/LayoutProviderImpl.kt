@@ -2,36 +2,13 @@ package org.dhis2.data.forms.dataentry.fields
 
 import kotlin.reflect.KClass
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.file.FileViewModel
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
 import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.utils.DhisTextUtils.Companion.isNotEmpty
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 
-private val layouts = mapOf<KClass<*>, Int>(
-    AgeViewModel::class to R.layout.form_age_custom,
-    CoordinateViewModel::class to R.layout.custom_form_coordinate,
-    DisplayViewModel::class to R.layout.custom_form_display,
-    FileViewModel::class to R.layout.form_button,
-    OptionSetViewModel::class to R.layout.form_option_set_selector,
-    OrgUnitViewModel::class to R.layout.form_org_unit,
-    PictureViewModel::class to R.layout.custom_form_picture,
-    ScanTextViewModel::class to R.layout.form_scan,
-    SectionViewModel::class to R.layout.form_section,
-    SpinnerViewModel::class to R.layout.form_option_set_spinner,
-    UnsupportedViewModel::class to R.layout.form_unsupported,
-    MatrixOptionSetModel::class to R.layout.matrix_option_set
-)
+private val layouts = mapOf<KClass<*>, Int>()
 
 class LayoutProviderImpl : LayoutProvider {
 
@@ -39,34 +16,59 @@ class LayoutProviderImpl : LayoutProvider {
         return layouts[modelClass]!!
     }
 
-    override fun getLayoutByValueType(valueType: ValueType): Int {
+    override fun getLayoutByType(
+        valueType: ValueType?,
+        renderingType: ValueTypeRenderingType?,
+        optionSet: String?,
+        sectionRenderingType: ProgramStageSectionRenderingType?
+    ): Int {
         return when (valueType) {
+            ValueType.AGE -> R.layout.form_age_custom
             ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
             ValueType.LONG_TEXT -> R.layout.form_long_text_custom
+            ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
+            ValueType.COORDINATE -> R.layout.form_coordinate_custom
+            ValueType.IMAGE -> R.layout.form_picture
+            ValueType.FILE_RESOURCE,
+            ValueType.USERNAME,
+            ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
+            ValueType.TEXT ->
+                return if (isNotEmpty(optionSet)) {
+                    when (sectionRenderingType) {
+                        ProgramStageSectionRenderingType.SEQUENTIAL,
+                        ProgramStageSectionRenderingType.MATRIX ->
+                            R.layout.form_option_set_matrix
+                        else -> when (renderingType) {
+                            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                            ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
+                                R.layout.form_option_set_selector
+                            ValueTypeRenderingType.QR_CODE,
+                            ValueTypeRenderingType.BAR_CODE ->
+                                R.layout.form_scan
+                            else -> R.layout.form_option_set_spinner
+                        }
+                    }
+                } else {
+                    R.layout.form_edit_text_custom
+                }
+            ValueType.TRUE_ONLY,
+            ValueType.BOOLEAN -> return when (renderingType) {
+                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+                ValueTypeRenderingType.DEFAULT -> R.layout.form_radio_button
+                ValueTypeRenderingType.TOGGLE -> when (valueType) {
+                    ValueType.TRUE_ONLY -> R.layout.form_toggle
+                    else -> R.layout.form_radio_button
+                }
+                ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_check_button
+                else -> R.layout.form_radio_button
+            }
             else -> R.layout.form_edit_text_custom
         }
     }
 
-    override fun getLayoutByValueRenderingType(
-        renderingType: ValueTypeRenderingType,
-        valueType: ValueType
-    ): Int {
-        if (renderingType == ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS ||
-            renderingType == ValueTypeRenderingType.DEFAULT ||
-            renderingType == ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ||
-            renderingType == ValueTypeRenderingType.TOGGLE &&
-            valueType !== ValueType.TRUE_ONLY
-        ) {
-            return R.layout.form_radio_button_horizontal
-        } else if (renderingType == ValueTypeRenderingType.HORIZONTAL_CHECKBOXES ||
-            renderingType == ValueTypeRenderingType.VERTICAL_CHECKBOXES
-        ) {
-            return R.layout.form_check_button
-        } else if (renderingType == ValueTypeRenderingType.TOGGLE &&
-            valueType === ValueType.TRUE_ONLY
-        ) {
-            return R.layout.form_toggle
-        }
-        return R.layout.form_yes_no
-    }
+    override fun getLayoutForSection() = R.layout.form_section
 }

@@ -109,13 +109,6 @@ class ProgramRulesValidationActivity : ActivityGlobalAbstract() {
             }
         )
 
-        rulesValidationsModel.programVariables.observe(
-            this,
-            {
-                formView.processItems(it)
-            }
-        )
-
         rulesValidationsModel.expressionValidationResult.observe(
             this,
             {
