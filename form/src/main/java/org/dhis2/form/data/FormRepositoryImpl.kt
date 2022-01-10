@@ -174,9 +174,9 @@ class FormRepositoryImpl(
                 )
             }
             ruleEffectsResult?.fieldsWithErrors?.isNotEmpty() == true -> {
-                showErrors =
-                    showErrors || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
-                showWarnigns = true
+                showWarnigns =
+                    showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
+                showErrors = true
                 FieldsWithErrorResult(
                     fieldsWithError(),
                     ruleEffectsResult?.canComplete ?: true,
@@ -184,7 +184,7 @@ class FormRepositoryImpl(
                 )
             }
             ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
-                showErrors = true
+                showWarnigns = true
                 FieldsWithWarningResult(
                     fieldsWithWarning(),
                     ruleEffectsResult?.canComplete ?: true,
