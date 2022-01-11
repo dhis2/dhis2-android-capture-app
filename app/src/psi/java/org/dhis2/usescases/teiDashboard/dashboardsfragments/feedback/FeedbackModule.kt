@@ -3,9 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository

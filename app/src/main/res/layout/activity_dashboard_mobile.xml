@@ -143,14 +143,15 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="40dp"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <org.dhis2.utils.customviews.DhisBottomNavigationBar
+        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
             android:id="@+id/navigationBar"
             style="@style/DhisBottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:forceShowAnalytics="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/navigation_dashboard_menu" />
 

@@ -47,7 +47,7 @@ class FiltersRobot : BaseRobot() {
     }
 
     fun selectDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.widget_datepicker)).perform(
+        onView(withId(R.id.datePicker)).perform(
             PickerActions.setDate(year, monthOfYear, dayOfMonth)
         )
     }
@@ -72,11 +72,11 @@ class FiltersRobot : BaseRobot() {
     }
 
     fun acceptDateSelected(){
-        onView(withId(R.id.acceptButton)).perform(click())
+        onView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun checkDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.widget_datepicker)).check(matches(matchesDate(year, monthOfYear, dayOfMonth)))
+        onView(withId(R.id.datePicker)).check(matches(matchesDate(year, monthOfYear, dayOfMonth)))
     }
 
 

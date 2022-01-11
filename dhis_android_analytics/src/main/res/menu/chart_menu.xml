@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+    <item
+        android:id="@+id/showBarGraph"
+        android:icon="@drawable/ic_bar_chart"
+        android:title="@string/show_bar_graph"/>
+    <item
+        android:id="@+id/showLineGraph"
+        android:icon="@drawable/ic_line_chart"
+        android:title="@string/show_line_graph"/>
+
+    <item android:id="@+id/showRadarGraph"
+        android:icon="@drawable/ic_radar_chart"
+        android:title="@string/show_radar_graph"/>
+
+    <item
+        android:id="@+id/showTableGraph"
+        android:icon="@drawable/ic_table_chart"
+        android:title="@string/show_table_graph"/>
+    <item
+        android:id="@+id/showTableValue"
+        android:icon="@drawable/ic_single_value"
+        android:title="@string/show_table_value"/>
+
+    <item
+        android:id="@+id/showPieChart"
+        android:icon="@drawable/ic_pie_chart"
+        android:title="@string/show_pie_value"/>
+
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/periodFilter"
+            android:icon="@drawable/ic_calendar_chart"
+            android:title="@string/period" />
+        <item
+            android:id="@+id/orgFilter"
+            android:icon="@drawable/ic_orgunit_chart"
+            android:title="@string/orgUnit" />
+    </group>
+</menu>

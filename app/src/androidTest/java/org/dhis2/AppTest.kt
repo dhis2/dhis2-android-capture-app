@@ -2,17 +2,17 @@ package org.dhis2
 
 import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
+import org.dhis2.common.coroutine.DispatcherTestingModule
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
-import org.dhis2.data.schedulers.SchedulerModule
-import org.dhis2.data.schedulers.SchedulersProviderImpl
+import org.dhis2.commons.schedulers.SchedulerModule
+import org.dhis2.commons.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.user.UserModule
 import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.usescases.sync.MockedWorkManagerController
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
-import org.matomo.sdk.Tracker
 
 class AppTest : App() {
 
@@ -60,6 +60,7 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
+            .coroutineDispatchers(DispatcherTestingModule())
             .workManagerController(
                 MockedWorkManagerModule(
                     MockedWorkManagerController(

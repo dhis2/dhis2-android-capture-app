@@ -2,7 +2,7 @@ package org.dhis2.usescases.settingsprogram
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 

@@ -28,7 +28,7 @@ package org.dhis2.utils.category
 import dagger.Module
 import dagger.Provides
 import java.util.Date
-import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 
 @Module

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.databinding.ItemFieldValueBinding;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;

@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.DialogMapLayerBinding
 import org.dhis2.databinding.ItemLayerBinding
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
@@ -26,7 +27,6 @@ import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.managers.EventMapManager
 import org.dhis2.uicomponents.map.managers.MapManager
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
-import org.dhis2.utils.ColorUtils
 
 class MapLayerDialog(
     private val mapManager: MapManager

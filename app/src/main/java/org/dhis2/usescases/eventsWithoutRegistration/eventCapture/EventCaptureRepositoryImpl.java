@@ -36,9 +36,13 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.ProgramRule;
+import org.hisp.dhis.android.core.program.ProgramRuleAction;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.relationship.RelationshipEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -464,20 +468,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public List<String> getOptionsFromGroups(List<String> optionGroupUids) {
-        List<String> optionsFromGroups = new ArrayList<>();
-        List<OptionGroup> optionGroups = d2.optionModule().optionGroups().withOptions().byUid().in(optionGroupUids).blockingGet();
-        for (OptionGroup optionGroup : optionGroups) {
-            for (ObjectWithUid option : optionGroup.options()) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid());
-                }
-            }
-        }
-        return optionsFromGroups;
-    }
-
-    @Override
     public boolean showCompletionPercentage() {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
             return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
@@ -527,6 +517,30 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 Timber.d("DONE FOR FIELD %s", uid);
             }
         }
+    }
+
+    @Override
+    public boolean hasAnalytics() {
+        boolean hasProgramIndicators = d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
+        List<ProgramRule> programRules = d2.programModule().programRules().withProgramRuleActions()
+                .byProgramUid().eq(currentEvent.program()).blockingGet();
+        boolean hasProgramRules = false;
+        for (ProgramRule rule : programRules) {
+            for (ProgramRuleAction action : rule.programRuleActions()) {
+                if (action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                    action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT){
+                    hasProgramRules = true;
+                }
+            }
+        }
+        return hasProgramIndicators || hasProgramRules;
+    }
+
+    @Override
+    public boolean hasRelationships() {
+        return !d2.relationshipModule().relationshipTypes()
+                .byAvailableForEvent(eventUid)
+                .blockingIsEmpty();
     }
 }
 

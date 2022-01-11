@@ -11,8 +11,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
-import org.dhis2.utils.ColorUtils
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 

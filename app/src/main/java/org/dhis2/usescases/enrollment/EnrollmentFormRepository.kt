@@ -12,7 +12,6 @@ interface EnrollmentFormRepository {
     fun calculate(): Flowable<Result<RuleEffect>>
     fun useFirstStageDuringRegistration(): Single<Pair<String, String>>
     fun autoGenerateEvents(): Single<Boolean>
-    fun getOptionsFromGroups(optionGroupUids: List<String>): List<String>
     fun getProfilePicture(): String
     fun getProgramStageUidFromEvent(eventUi: String): String?
 }

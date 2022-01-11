@@ -6,6 +6,8 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import com.evrencoskun.tableview.TableView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.charts.RadarChart
 import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.hamcrest.Description
@@ -28,6 +30,9 @@ class ChartMatchers {
                         ChartType.TABLE -> view is TableView
                         ChartType.SINGLE_VALUE -> view.findViewById<View>(R.id.singleValueTitle) != null
                         ChartType.NUTRITION -> view is LineChart
+                        ChartType.RADAR -> view is RadarChart
+                        ChartType.RADAR -> view is RadarChart
+                        ChartType.PIE_CHART -> view is PieChart
                     }
                 }
             }

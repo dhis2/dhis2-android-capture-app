@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/visualization">
+        <item
+            android:id="@+id/back_weekly"
+            android:icon="@drawable/ic_arrowback_chart"
+            android:title="@string/weekly"/>
+    </group>
+    <group android:id="@+id/filters">
+        <item
+            android:id="@+id/thisweek"
+            android:title="@string/thisweek" />
+        <item
+            android:id="@+id/lastweek"
+            android:title="@string/lastweek" />
+        <item
+            android:id="@+id/last4weeks"
+            android:title="@string/last4weeks" />
+        <item
+            android:id="@+id/last12weeks"
+            android:title="@string/last12weeks" />
+    </group>
+</menu>

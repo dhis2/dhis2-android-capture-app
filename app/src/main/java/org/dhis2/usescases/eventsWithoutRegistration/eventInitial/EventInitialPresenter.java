@@ -8,10 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.FieldUiModel;
@@ -30,13 +29,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
-import org.hisp.dhis.rules.models.RuleActionShowError;
-import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +42,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Pair;
-import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
@@ -384,7 +376,7 @@ public class EventInitialPresenter {
         }
 
         Map<String, FieldUiModel> fieldViewModels = toMap(viewModels);
-        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null, options -> new ArrayList<>());
+        ruleUtils.applyRuleEffects(true, fieldViewModels, calcResult, null);
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -422,6 +414,9 @@ public class EventInitialPresenter {
         compositeDisposable.add(eventInitialRepository
                 .filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
                 .flatMap(filteredOrgUnits -> {
+                    if (orgUnits.size() > 1) {
+                        orgUnits = filteredOrgUnits;
+                    }
                     if (getCurrentOrgUnit(null) != null) {
                         String prevOrgUnitUid = getCurrentOrgUnit(null);
                         for (OrganisationUnit ou : orgUnits) {

@@ -9,22 +9,20 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import androidx.core.app.ActivityCompat
-import timber.log.Timber
 
 class LocationProviderImpl(val context: Context) : LocationProvider {
 
     private val locationManager: LocationManager by lazy { initLocationManager() }
     private val locationCriteria: Criteria by lazy { initHighAccuracyCriteria() }
-    private val locationProvider: String by lazy { initLocationProvider() }
+    private val locationProvider: String? by lazy { initLocationProvider() }
 
     private fun initLocationManager(): LocationManager {
         return context.getSystemService(LOCATION_SERVICE) as LocationManager
     }
 
-    private fun initLocationProvider(): String {
-        return locationManager.getBestProvider(locationCriteria, false).toString()
+    private fun initLocationProvider(): String? {
+        return locationManager.getBestProvider(locationCriteria, false)
     }
 
     private fun initHighAccuracyCriteria(): Criteria {
@@ -46,7 +44,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
             onLocationDisabled()
             requestLocationUpdates(onNewLocation)
         } else {
-            locationManager.getLastKnownLocation(locationProvider).apply {
+            locationManager.getLastKnownLocation(locationProvider!!).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
                 } else {
@@ -65,22 +63,10 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                 locationCriteria,
                 object : LocationListener {
                     override fun onLocationChanged(location: Location) {
-                        location?.let {
+                        location.let {
                             onNewLocation(it)
                             locationManager.removeUpdates(this)
                         }
-                    }
-
-                    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-                        Timber.d("Location status changed, %s, %s", p0, p1)
-                    }
-
-                    override fun onProviderEnabled(p0: String) {
-                        Timber.d("Provider %s enabled", p0)
-                    }
-
-                    override fun onProviderDisabled(p0: String) {
-                        Timber.d("Provider %s disabled", p0)
                     }
                 },
                 null
@@ -96,6 +82,6 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     }
 
     private fun hasLocationEnabled(): Boolean {
-        return locationManager.isProviderEnabled(locationProvider)
+        return locationProvider?.let { locationManager.isProviderEnabled(it) } ?: false
     }
 }

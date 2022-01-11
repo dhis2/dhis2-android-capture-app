@@ -97,6 +97,10 @@ For the purposes of web debugging problems with your users it is recommended tha
 
 ![](resources/images/implementation-guide-image3.png)
 
+> **Note**
+>
+> When users enter a TEI and while it is not synced to the server they will be able to delete the TEI and the enrollment even if they have not been asigned the specific authorities. This is by design and to allow users rolling back in case of having entered wrong data (TEI and/or enrollment) and thus preventing it reaching the server and requiring another user with higher privileges to fix the issue.
+
 ### Create user { #implementation_guide_dhis2_config_creating_user_user }
 
 

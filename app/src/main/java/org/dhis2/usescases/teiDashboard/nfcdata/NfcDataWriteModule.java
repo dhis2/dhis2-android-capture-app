@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.nfcdata;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.data.qr.QRCodeGenerator;
 import org.dhis2.data.qr.QRInterface;
 import org.hisp.dhis.android.core.D2;

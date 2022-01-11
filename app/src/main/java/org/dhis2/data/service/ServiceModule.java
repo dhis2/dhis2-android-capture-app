@@ -5,8 +5,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.dagger.PerService;
-import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.commons.di.dagger.PerService;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;

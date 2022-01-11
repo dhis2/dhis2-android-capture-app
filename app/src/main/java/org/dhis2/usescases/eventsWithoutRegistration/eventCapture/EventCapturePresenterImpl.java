@@ -7,13 +7,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
@@ -62,7 +61,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final SchedulerProvider schedulerProvider;
     private final ValueStore valueStore;
     private final EventFieldMapper fieldMapper;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private ObservableField<String> currentSection;
     private FlowableProcessor<Boolean> showCalculationProcessor;
@@ -362,9 +361,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 true,
                 fieldViewModels,
                 calcResult,
-                valueStore,
-                options -> eventCaptureRepository.getOptionsFromGroups(options)
-        );
+                valueStore);
 
         assignedValueChanged = !ruleResults.getFieldsToUpdate().isEmpty();
         for (String fieldUid : ruleResults.getFieldsToUpdate()) {
@@ -390,7 +387,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void attempFinish() {
+    public void attemptFinish() {
 
         qualityCheck();
 
@@ -446,8 +443,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 success -> {
                                     if (addNew)
                                         view.restartDataEntry();
-                                    else
+                                    else {
+                                        preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid);
                                         view.finishDataEntry();
+                                    }
                                 },
                                 Timber::e
                         ));
@@ -617,5 +616,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void disableConfErrorMessage() {
         showConfigurationError = false;
+    }
+
+    public CompositeDisposable getDisposable() {
+        return compositeDisposable;
     }
 }

@@ -813,44 +813,6 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should return options from optionGroup uids`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        val optionGroupUids = listOf("optionGroup1", "optionGroup3")
-
-        whenever(
-            d2.optionModule().optionGroups().withOptions()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups().withOptions()
-                .byUid()
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups().withOptions()
-                .byUid().`in`(optionGroupUids)
-        ) doReturn mock()
-        whenever(
-            d2.optionModule().optionGroups().withOptions()
-                .byUid().`in`(optionGroupUids)
-                .blockingGet()
-        ) doReturn mockedOptions()
-
-        repository.getOptionsFromGroups(optionGroupUids).apply {
-            assertTrue(size == 4)
-            assertTrue(containsAll(listOf("option1", "option2", "option3", "option4")))
-        }
-    }
-
-    @Test
     fun `Should return true if no settings is available`() {
         mockEvent()
         mockSections()

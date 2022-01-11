@@ -2,11 +2,15 @@ package org.dhis2.usescases.settings
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.TypeTextAction
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.supportsInputMethods
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -14,6 +18,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.usescases.reservedValue.ReservedValueAdapter
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.not
 
 fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
@@ -97,7 +102,12 @@ class SettingsRobot : BaseRobot() {
                 .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
         onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
-            .perform(actionOnItemAtPosition<ReservedValueAdapter.ReservedValueViewHolder>(position, click()))
+            .perform(
+                actionOnItemAtPosition<ReservedValueAdapter.ReservedValueViewHolder>(
+                    position,
+                    click()
+                )
+            )
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
@@ -134,10 +144,14 @@ class SettingsRobot : BaseRobot() {
         onView(withId(R.id.resetButton)).perform(click())
     }
 
-    fun checkGatewayNumberFieldIsDisable() {
+    fun checkGatewayNumberFieldIsNotEnabled() {
         onView(withId(R.id.settings_sms_receiver))
-            // .perform(scrollTo())
-            .check(matches(allOf(isDisplayed())))
+            .check(matches(allOf(not(isEnabled()))))
+    }
+
+    fun checkGatewayNumberFieldIs(number: String){
+        onView(withId(R.id.settings_sms_receiver))
+            .check(matches(withText(containsString(number))))
     }
 
     fun checkSMSSubmissionIsEnable() {

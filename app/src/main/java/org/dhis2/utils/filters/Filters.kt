@@ -13,5 +13,6 @@ enum class Filters(@LayoutRes val layoutId: Int) {
     ENROLLMENT_DATE(R.layout.item_filter_period),
     ENROLLMENT_STATUS(R.layout.item_filter_enrollment_status),
     WORKING_LIST(R.layout.item_filter_working_list),
+    FOLLOW_UP(R.layout.item_filter_followup),
     NON(-1)
 }

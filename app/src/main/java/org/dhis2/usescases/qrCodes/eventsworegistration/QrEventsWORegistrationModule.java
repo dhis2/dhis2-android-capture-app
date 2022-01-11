@@ -1,9 +1,9 @@
 package org.dhis2.usescases.qrCodes.eventsworegistration;
 
-import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.data.qr.QRCodeGenerator;
 import org.dhis2.data.qr.QRInterface;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;

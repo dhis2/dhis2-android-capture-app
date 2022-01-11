@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
+import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
@@ -51,7 +52,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadIconsDevTools();
         loadBreakTheGlass();
         loadProgramRuleCheck();
-        loadFabItems();
+        loadFeatureConfig();
     }
 
     private void loadProgramRuleCheck() {
@@ -226,14 +227,15 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                                 BreakTheGlassBottomDialog.class.getName()));
     }
 
-    private void loadFabItems() {
-        ArrayList<DialItem> items = new ArrayList<>();
-        items.add(new DialItem(1, "Item 1 with a very very looooooon name that should not be fully shown", R.drawable.ic_note_add));
-        items.add(new DialItem(2, "Item 2", R.drawable.ic_note_add));
-        items.add(new DialItem(3, "Item 3", R.drawable.ic_note_add));
-        binding.dialFabLayout.addDialItems(items, integer -> {
-            Toast.makeText(this, String.format("item %s clicked", integer.toString()), Toast.LENGTH_LONG).show();
-            return Unit.INSTANCE;
+    private void loadFeatureConfig() {
+        binding.featureConfigButton.setOnClickListener(view -> {
+            startActivity(FeatureConfigView.class, null, false, false, null);
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        finish();
     }
 }

@@ -3,12 +3,12 @@ package org.dhis2.usescases.main
 import android.view.Gravity
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.filter.FilterRepository
-import org.dhis2.data.prefs.Preference
-import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
@@ -16,7 +16,6 @@ import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
@@ -24,7 +23,7 @@ const val DEFAULT = "default"
 
 class MainPresenter(
     private val view: MainView,
-    private val d2: D2,
+    private val repository: HomeRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -38,7 +37,7 @@ class MainPresenter(
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
-            d2.userModule().user().get()
+            repository.user()
                 .map { username(it) }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -49,7 +48,7 @@ class MainPresenter(
         )
 
         disposable.add(
-            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
+            repository.defaultCatCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
@@ -60,9 +59,7 @@ class MainPresenter(
         )
 
         disposable.add(
-            d2
-                .categoryModule()
-                .categoryOptionCombos().byCode().eq(DEFAULT).one().get()
+            repository.defaultCatOptCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryOptionCombo ->
@@ -116,8 +113,8 @@ class MainPresenter(
 
     fun logOut() {
         disposable.add(
-            d2.userModule().logOut()
-                .subscribeOn(schedulerProvider.io())
+            repository.logOut()
+                .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
@@ -157,11 +154,7 @@ class MainPresenter(
     }
 
     fun hasProgramWithAssignment(): Boolean {
-        if (d2.userModule().isLogged.blockingGet()) {
-            return !d2.programModule().programStages().byEnableUserAssignment()
-                .isTrue.blockingIsEmpty()
-        }
-        return false
+        return repository.hasProgramWithAssignment()
     }
 
     fun onNavigateBackToHome() {

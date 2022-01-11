@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import mock
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
@@ -24,10 +25,11 @@ class ProgramEventMapperTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
+    private val crashReportController: CrashReportController = mock()
 
     @Before
     fun setUp() {
-        mapper = ProgramEventMapper(d2, periodUtil)
+        mapper = ProgramEventMapper(d2, periodUtil, crashReportController)
     }
 
     @Test

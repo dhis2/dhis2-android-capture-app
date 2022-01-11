@@ -79,12 +79,16 @@ class MapSelectorActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
-        location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA)?:"")
+        location_type = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
+            FeatureType.valueOf(featureName)
+        } ?: FeatureType.POINT
+
         fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
+            mapView.contentDescription = "LOADED"
             map = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
                 this.style = style

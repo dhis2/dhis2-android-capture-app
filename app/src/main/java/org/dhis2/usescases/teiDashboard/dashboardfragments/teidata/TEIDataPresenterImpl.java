@@ -10,11 +10,12 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.prefs.Preference;
+import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.filter.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.prefs.Preference;
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -29,6 +30,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RuleUtilsProviderResult;
+import org.dhis2.utils.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
@@ -77,10 +80,12 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final TEIDataContracts.View view;
     private final CompositeDisposable compositeDisposable;
     private final FilterRepository filterRepository;
+    private final ValueStore valueStore;
 
     private String programUid;
     private DashboardProgramModel dashboardModel;
     private String currentStage = null;
+    private List<String> stagesToHide;
 
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
                                 DashboardRepository dashboardRepository,
@@ -91,7 +96,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 PreferenceProvider preferenceProvider,
                                 AnalyticsHelper analyticsHelper,
                                 FilterManager filterManager,
-                                FilterRepository filterRepository) {
+                                FilterRepository filterRepository,
+                                ValueStore valueStore) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -107,6 +113,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
+        this.valueStore = valueStore;
     }
 
     @Override
@@ -194,7 +201,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    view.setEvents(),
+                                    events ->
+                                            view.setEvents(
+                                                    events,
+                                                    canAddNewEvents()
+                                            ),
                                     Timber::d
                             )
             );
@@ -261,14 +272,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             return events;
         }
 
-        List<String> stagesToHide = new ArrayList<>();
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            if (ruleEffect.ruleAction() instanceof RuleActionHideProgramStage) {
-                RuleActionHideProgramStage hideStageAction =
-                        (RuleActionHideProgramStage) ruleEffect.ruleAction();
-                stagesToHide.add(hideStageAction.programStage());
-            }
-        }
+        RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
+                false,
+                new HashMap<>(),
+                calcResult,
+                valueStore);
+
+        stagesToHide = rulesResult.getStagesToHide();
 
         Iterator<EventViewModel> iterator = events.iterator();
         while (iterator.hasNext()) {
@@ -503,7 +513,16 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void setOpeningFilterToNone(){
+    public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    private boolean canAddNewEvents() {
+        return d2.enrollmentModule()
+                .enrollmentService()
+                .blockingGetAllowEventCreation(
+                        enrollmentUid,
+                        stagesToHide
+                );
     }
 }

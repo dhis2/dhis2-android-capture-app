@@ -26,23 +26,24 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import org.dhis2.utils.ColorUtils;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.Filters;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,15 +62,9 @@ import static org.dhis2.utils.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
+public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
     public static final int OVERVIEW_POS = 0;
-    public static final int INDICATORS_POS = 1;
-    public static final int RELATIONSHIPS_POS = 2;
-    public static final int NOTES_POS = 3;
-    public static final int INDICATORS_LANDSCAPE_POS = 0;
-    public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
-    public static final int NOTES_LANDSCAPE_POS = 2;
 
     private int currentOrientation = -1;
 
@@ -78,6 +73,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Inject
     public FilterManager filterManager;
+
+    @Inject
+    public NavigationPageConfigurator pageConfigurator;
 
     protected DashboardProgramModel programModel;
 
@@ -123,7 +121,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait())).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -138,7 +136,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS);
         binding.setTotalFilters(filterManager.getTotalFilters());
         binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
+        binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+            if(adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape()) {
@@ -216,8 +216,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void setViewpagerAdapter() {
-        adapter = new DashboardPagerAdapter(this, programUid, teiUid, enrollmentUid);
-
+        adapter = new DashboardPagerAdapter(this,
+                programUid,
+                teiUid,
+                enrollmentUid,
+                pageConfigurator.displayAnalytics(),
+                pageConfigurator.displayRelationships()
+        );
 
         if (OrientationUtilsKt.isPortrait()) {
             binding.teiPager.setAdapter(null);
@@ -231,11 +236,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
                             } else {
-
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
                             }
-                            if (position == RELATIONSHIPS_POS) {
+                            if (adapter.pageType(position) == DashboardPagerAdapter.DashboardPageType.RELATIONSHIPS) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
@@ -255,12 +259,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
-                            switch (position) {
-                                case INDICATORS_LANDSCAPE_POS:
-                                case NOTES_LANDSCAPE_POS:
+                            switch (adapter.pageType(position)) {
+                                case ANALYTICS:
+                                case NOTES:
                                     binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
-                                case RELATIONSHIPS_LANDSCAPE_POS:
+                                case RELATIONSHIPS:
                                     binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 default:
@@ -572,6 +576,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return groupByStage;
     }
 
+    @NotNull
+    @Override
     public LiveData<Boolean> relationshipMap() {
         return relationshipMap;
     }
@@ -625,11 +631,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     }
 
+    @Override
     public void onRelationshipMapLoaded() {
         binding.toolbarProgress.hide();
     }
 
-    public void hideFilter(){
+    public void hideFilter() {
         binding.searchFilterGeneral.setVisibility(View.GONE);
     }
 }

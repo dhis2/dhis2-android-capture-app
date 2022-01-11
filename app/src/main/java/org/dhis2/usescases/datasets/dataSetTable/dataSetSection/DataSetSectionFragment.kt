@@ -27,13 +27,13 @@ import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
@@ -251,6 +251,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             false
         )
         binding.tableLayout.addView(indicatorsTable)
+        binding.programProgress.visibility = View.GONE
     }
 
     override fun setSection(section: Section) {

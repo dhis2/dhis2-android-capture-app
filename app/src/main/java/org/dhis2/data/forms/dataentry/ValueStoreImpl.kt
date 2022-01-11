@@ -12,18 +12,21 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
+import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.maintenance.D2Error
 
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
     private val entryMode: DataEntryStore.EntryMode,
-    private val dhisEnrollmentUtils: DhisEnrollmentUtils
+    private val dhisEnrollmentUtils: DhisEnrollmentUtils,
+    private val crashReportController: CrashReportController
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
 
@@ -32,12 +35,14 @@ class ValueStoreImpl(
         recordUid: String,
         entryMode: DataEntryStore.EntryMode,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
-        enrollmentRepository: EnrollmentObjectRepository
+        enrollmentRepository: EnrollmentObjectRepository,
+        crashReportController: CrashReportController
     ) : this(
         d2,
         recordUid,
         entryMode,
-        dhisEnrollmentUtils
+        dhisEnrollmentUtils,
+        crashReportController
     ) {
         this.enrollmentRepository = enrollmentRepository
     }
@@ -385,13 +390,24 @@ class ValueStoreImpl(
                                 .build()
                         }
                     }
-                    saveEnrollmentGeometry(geometry)
-                    Flowable.just(
-                        StoreResult(
-                            "",
-                            ValueStoreResult.VALUE_CHANGED
+                    try {
+                        saveEnrollmentGeometry(geometry)
+                        return Flowable.just(
+                            StoreResult(
+                                "",
+                                ValueStoreResult.VALUE_CHANGED
+                            )
                         )
-                    )
+                    } catch (d2Error: D2Error) {
+                        val errorMessage = d2Error.errorDescription() + ": $geometry"
+                        crashReportController.trackError(d2Error, errorMessage)
+                        Flowable.just(
+                            StoreResult(
+                                "",
+                                ValueStoreResult.ERROR_UPDATING_VALUE
+                            )
+                        )
+                    }
                 }
                 else -> save(uid, value)
             }

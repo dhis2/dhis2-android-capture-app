@@ -73,7 +73,8 @@ sealed class FilterItem(
     }
 
     fun displayExpandArrow(): Boolean {
-        return type != Filters.ASSIGNED_TO_ME
+        val filters = listOf(Filters.FOLLOW_UP, Filters.ASSIGNED_TO_ME)
+        return !filters.any { it == type }
     }
 }
 
@@ -315,4 +316,21 @@ data class WorkingListFilter(
     override fun icon(): Int {
         return -1
     }
+}
+
+data class FollowUpFilter(
+    override val programType: ProgramType,
+    override val sortingItem: ObservableField<SortingItem>,
+    override val openFilter: ObservableField<Filters>,
+    override val filterLabel: String
+) : FilterItem(Filters.FOLLOW_UP, programType, sortingItem, openFilter, filterLabel) {
+    fun activate(setActive: Boolean) {
+        FilterManager.getInstance().setFollowUp(setActive)
+    }
+
+    fun observeFollowUp(): ObservableField<Boolean> {
+        return FilterManager.getInstance().observeFollowUp()
+    }
+
+    override fun icon() = R.drawable.ic_follow_up_filter
 }

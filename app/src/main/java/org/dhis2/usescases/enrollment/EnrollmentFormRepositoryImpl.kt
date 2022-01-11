@@ -277,22 +277,6 @@ class EnrollmentFormRepositoryImpl(
             }.toFlowable()
     }
 
-    override fun getOptionsFromGroups(optionGroupUids: List<String>): List<String> {
-        val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = d2.optionModule().optionGroups()
-            .withOptions()
-            .byUid().`in`(optionGroupUids)
-            .blockingGet()
-        for (optionGroup in optionGroups) {
-            for (option in optionGroup.options()!!) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid())
-                }
-            }
-        }
-        return optionsFromGroups
-    }
-
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
 
     override fun getProgramStageUidFromEvent(eventUi: String) =

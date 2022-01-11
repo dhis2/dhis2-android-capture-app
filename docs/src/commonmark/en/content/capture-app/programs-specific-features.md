@@ -6,7 +6,7 @@
 
 Use the new navigation bar to switch between the data entry form and the overview screen.
 
-![](resources/images/image139.png){ width=25%}
+![](resources/images/capture-app-image139.png){ width=25%}
 
 ### Overview Screen
 
@@ -54,7 +54,7 @@ The length of the first column in datasets is now calculated to show the full te
 
 Indicators are now available in default and section forms and are displayed at the bottom of the data entry form.
 
-![](resources/images/image140.png){ width=25%}
+![](resources/images/capture-app-image140.png){ width=25%}
 
 ## Supported features overview { #capture_app_datsets_supported_features }
 

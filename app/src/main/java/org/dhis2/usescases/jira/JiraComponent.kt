@@ -1,7 +1,7 @@
 package org.dhis2.usescases.jira
 
 import dagger.Subcomponent
-import org.dhis2.data.dagger.PerFragment
+import org.dhis2.commons.di.dagger.PerFragment
 
 @PerFragment
 @Subcomponent(modules = [JiraModule::class])
