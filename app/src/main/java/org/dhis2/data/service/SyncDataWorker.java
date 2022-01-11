@@ -135,6 +135,12 @@ public class SyncDataWorker extends Worker {
         return Result.success(createOutputData(true));
     }
 
+    @Override
+    public void onStopped() {
+        cancelNotification();
+        super.onStopped();
+    }
+
     private Data createOutputData(boolean state) {
         return new Data.Builder()
                 .putBoolean("DATA_STATE", state)
