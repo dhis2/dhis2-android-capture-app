@@ -2,11 +2,13 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import org.dhis2.R;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
@@ -40,9 +42,26 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.eventUid = eventUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DATA_ENTRY);
-        pages.add(EventPageType.ANALYTICS);
-        pages.add(EventPageType.RELATIONSHIPS);
+
+        if (displayAnalyticScreen) {
+            pages.add(EventPageType.ANALYTICS);
+        }
+
+        if (displayRelationshipScreen) {
+            pages.add(EventPageType.RELATIONSHIPS);
+        }
         pages.add(EventPageType.NOTES);
+    }
+
+    public int getDynamicTabIndex(@IntegerRes int tabClicked){
+        if (tabClicked == R.id.navigation_analytics) {
+            return pages.indexOf(EventPageType.ANALYTICS);
+        } else if (tabClicked == R.id.navigation_relationships){
+            return pages.indexOf(EventPageType.RELATIONSHIPS);
+        } else if (tabClicked == R.id.navigation_notes){
+           return pages.indexOf(EventPageType.NOTES);
+        }
+        return 0;
     }
 
     @NonNull
