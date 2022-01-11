@@ -19,13 +19,13 @@ abstract class DataEntryBaseRepository(
         errorCount: Int,
         warningCount: Int
     ): FieldUiModel {
-        return (sectionToUpdate as SectionUiModelImpl).apply {
-            isOpen = isSectionOpen
-            this.totalFields = totalFields
-            completedFields = fieldsWithValue
-            errors = errorCount
+        return (sectionToUpdate as SectionUiModelImpl).copy(
+            isOpen = isSectionOpen,
+            totalFields = totalFields,
+            completedFields = fieldsWithValue,
+            errors = errorCount,
             warnings = warningCount
-        }
+        )
     }
 
     override fun updateField(
