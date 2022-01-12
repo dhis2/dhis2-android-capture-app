@@ -6,6 +6,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
+import org.dhis2.data.forms.EventRepository
+import org.dhis2.data.forms.RulesRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository
 import org.dhis2.utils.JsonCheckResult
 import org.dhis2.utils.JsonChecker
 import org.hisp.dhis.android.core.D2
@@ -14,9 +17,14 @@ import org.hisp.dhis.android.core.attribute.AttributeValue
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.legendset.Legend
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField
 import java.util.Locale
 
-class ValuesD2Repository(private val d2: D2, private val context: Context) : ValuesRepository {
+class ValuesD2Repository(
+    private val d2: D2,
+    private val context: Context,
+    private val rulesRepository: RulesRepository
+) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
 
     override fun getByEvent(eventUid: String): List<Value> {
@@ -29,10 +37,21 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
                 .get().blockingGet()
 
         val dataElementsWithFeedbackOrder =
-            getDataElementsWithFeedbackOrder( feedbackOrderAttributeCode)
+            getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode)
 
         val dataElementsWithMandatory =
             getDataElementsWithMandatoryFilter(eventUid, dataElementsWithFeedbackOrder)
+
+        val eventRuleEngineRepository = EventRuleEngineRepository(
+            d2,
+            EventRepository(rulesRepository, eventUid, d2),
+            eventUid
+        )
+
+        val rulesResult = eventRuleEngineRepository.calculate().blockingFirst()
+        val mandatoryFieldsByRules =
+            rulesResult.items().filter { it.ruleAction() is RuleActionSetMandatoryField }
+                .map { (it.ruleAction() as RuleActionSetMandatoryField).field() }
 
         return teiDataValues.filter { dataElementsWithFeedbackOrder.keys.contains(it.dataElement()) }
             .map { teiValue ->
@@ -54,6 +73,8 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
                 val deName: String =
                     if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
 
+                val mandatory = dataElementsWithMandatory.contains(teiValue.dataElement()) ||
+                    mandatoryFieldsByRules.contains(teiValue.dataElement())
 
                 Value(
                     teiValue.dataElement()!!,
@@ -63,7 +84,7 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
                     assignedLegend?.color(),
                     deFeedbackHelp,
                     assignedLegend?.name()?.split("_")?.last() != failLegendSuffix,
-                    dataElementsWithMandatory.contains(teiValue.dataElement()!!),
+                    mandatory,
                     eventUid,
                     isNumeric(teiValue)
                 )
@@ -133,7 +154,7 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
 
     private fun getDataElementsWithMandatoryFilter(
         eventUid: String,
-        dataElementsWithFeedbackOrder:  Map<String, String>
+        dataElementsWithFeedbackOrder: Map<String, String>
     ): List<String> {
         val event = d2.eventModule().events().byUid().eq(eventUid)
             .one().blockingGet()
