@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.parseToDouble
 import org.dhis2.Bindings.truncate
 import org.dhis2.R
