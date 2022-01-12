@@ -313,12 +313,6 @@ class FilterRepository @Inject constructor(
 
     private fun createDefaultTrackedEntityFilters(): LinkedHashMap<ProgramFilter, FilterItem> {
         return linkedMapOf(
-            ProgramFilter.EVENT_DATE to PeriodFilter(
-                org.dhis2.commons.filters.ProgramType.TRACKER,
-                observableSortingInject,
-                observableOpenFilter,
-                resources.filterResources.filterEventDateLabel()
-            ),
             ProgramFilter.ORG_UNIT to OrgUnitFilter(
                 FilterManager.getInstance().observeOrgUnitFilters(),
                 org.dhis2.commons.filters.ProgramType.TRACKER,
