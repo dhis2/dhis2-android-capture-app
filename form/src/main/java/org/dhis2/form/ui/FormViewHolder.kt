@@ -1,12 +1,12 @@
-package org.dhis2.data.forms.dataentry.fields
+package org.dhis2.form.ui
 
 import android.widget.ImageView
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.BR
-import org.dhis2.Bindings.clipWithAllRoundedCorners
-import org.dhis2.Bindings.dp
-import org.dhis2.R
+import org.dhis2.commons.bindings.clipWithAllRoundedCorners
+import org.dhis2.commons.bindings.dp
+import org.dhis2.form.BR
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent

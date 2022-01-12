@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.LegendValue;
 import org.dhis2.form.model.RowAction;
-import org.dhis2.form.ui.style.BasicFormUiModelStyle;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -19,7 +18,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import java.util.List;
 
 import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
-import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 
 public interface FieldViewModelFactory {
@@ -61,9 +59,6 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FieldUiModel createClosingSection();
-
-    @NonNull
-    Flowable<String> sectionProcessor();
 
     @NonNull
     FlowableProcessor<RowAction> fieldProcessor();

@@ -1,12 +1,11 @@
-package org.dhis2.data.forms.dataentry.fields
+package org.dhis2.form.ui
 
-import kotlin.reflect.KClass
-import org.dhis2.R
+import org.dhis2.form.R
 import org.dhis2.form.ui.provider.LayoutProvider
-import org.dhis2.utils.DhisTextUtils.Companion.isNotEmpty
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
+import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>()
 
@@ -33,7 +32,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
             ValueType.TEXT ->
-                return if (isNotEmpty(optionSet)) {
+                return if (!optionSet.isNullOrEmpty()) {
                     when (sectionRenderingType) {
                         ProgramStageSectionRenderingType.SEQUENTIAL,
                         ProgramStageSectionRenderingType.MATRIX ->

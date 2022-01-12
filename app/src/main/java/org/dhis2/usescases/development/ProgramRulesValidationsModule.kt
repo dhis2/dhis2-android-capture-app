@@ -5,13 +5,13 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.coroutine.FormDispatcher
+import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl

@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,8 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.BR
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
+import org.dhis2.form.BR
 import org.dhis2.form.model.SectionUiModelImpl
 
 const val NO_POSITION = -1

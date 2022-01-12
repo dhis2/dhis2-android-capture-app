@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.maps.geometry.bound.BoundsGeometry;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
@@ -35,10 +36,9 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
@@ -57,7 +57,6 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
-import java.util.Collections;
 import java.util.Map;
 
 import dagger.Module;

@@ -20,7 +20,6 @@ import org.dhis2.form.ui.provider.KeyboardActionProvider;
 import org.dhis2.form.ui.provider.LayoutProvider;
 import org.dhis2.form.ui.provider.UiEventTypesProvider;
 import org.dhis2.form.ui.provider.UiStyleProvider;
-import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import autovalue.shaded.org.checkerframework$.checker.nullness.qual.$NonNull;
-import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.jvm.JvmClassMappingKt;
@@ -47,7 +45,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final Map<ValueType, String> valueTypeHintMap;
 
     private final FlowableProcessor<RowAction> fieldProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> sectionProcessor = PublishProcessor.create();
     private final ObservableField<String> currentSection = new ObservableField<>("");
 
     private final List<ValueTypeRenderingType> optionSetTextRenderings = Arrays.asList(
@@ -270,12 +267,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 ProgramStageSectionRenderingType.LISTING.name(),
                 currentSection
         );
-    }
-
-    @NonNull
-    @Override
-    public Flowable<String> sectionProcessor() {
-        return sectionProcessor;
     }
 
     @NonNull

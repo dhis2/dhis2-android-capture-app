@@ -4,18 +4,15 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.FormSectionViewModel
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.hisp.dhis.android.core.event.EventStatus
@@ -23,6 +20,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
+import java.util.Date
 
 class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl
@@ -33,7 +31,6 @@ class EventCapturePresenterTest {
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
     private val getNextVisibleSection: GetNextVisibleSection = GetNextVisibleSection()
-    private val fieldFactory: FieldViewModelFactory = mock()
 
     @Before
     fun setUp() {
@@ -286,7 +283,5 @@ class EventCapturePresenterTest {
         whenever(eventRepository.catOption()) doReturn Flowable.just(catOption)
         doNothing().`when`(preferences).setValue(any(), any())
         whenever(eventRepository.programStage()) doReturn Observable.just(stage.uid())
-
-        whenever(fieldFactory.sectionProcessor()) doReturn Flowable.just("SectionProcessor")
     }
 }
