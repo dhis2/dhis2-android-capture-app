@@ -11,7 +11,7 @@ mkdocs==1.1.0
 mkdocs-material==4.6.3
 mkdocs-minify-plugin==0.2.1
 pdfrw==0.4
-Pillow==7.1.1
+Pillow==9.0.0
 ply==3.11
 pycparser==2.18
 Pyphen==0.9.5
