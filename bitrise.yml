@@ -1523,16 +1523,16 @@ workflows:
   UITestingSpecific:
     description: "Workflow that:\n\n1) Run UI test on Browserstack\n\n\n2) Notify through slack in #android-capture-app-ci with the next build variant: \n   - $SLACK : yes|no"
     steps:
-    - script@1:
-        title: Sets JAVA 8
-        inputs:
-        - content: |
-            chmod +x ./scripts/change_java_version.sh
-            ./scripts/change_java_version.sh
     - activate-ssh-key@4.0.5:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.0.18: {}
     - cache-pull@2.1.4: {}
+    - script@1:
+        title: Sets JAVA 8
+        inputs:
+          - content: |
+              chmod +x ./scripts/change_java_version.sh
+              ./scripts/change_java_version.sh
     - install-missing-android-tools:
         inputs:
         - gradlew_path: ./gradlew
