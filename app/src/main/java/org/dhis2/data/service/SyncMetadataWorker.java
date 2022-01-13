@@ -114,6 +114,12 @@ public class SyncMetadataWorker extends Worker {
         }
     }
 
+    @Override
+    public void onStopped() {
+        cancelNotification();
+        super.onStopped();
+    }
+
     private Data createOutputData(boolean state, String message) {
         return new Data.Builder()
                 .putBoolean(METADATA_STATE, state)
