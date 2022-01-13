@@ -451,7 +451,6 @@
     <string name="dashboard_analytics">Analíticas</string>
     <string name="empty_indicators">No hay indicadores para este programa.</string>
     <string name="dashboard_notes">Notas</string>
-    <string name="unable_to_complete">No se puede completar</string>
     <string name="field_errors">Algunos campos contienen errores. Por favor, revíselos para poder completar.</string>
     <string name="unselect_enrollment">Deseleccionar inscripción</string>
     <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
@@ -593,7 +592,6 @@
     <string name="polygon">Polígono</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">No tiene el formato correcto</string>
     <string name="fingerprint_title">Huella dactilar</string>
     <string name="fingerprint_message">Por favor, toque con el dedo el lector de huellas.</string>
     <string name="security_title">Seguridad</string>
@@ -817,8 +815,6 @@
     <string name="dataset_column_default">Valores</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
     <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
-    <string name="conf_error_value_to_assign_option_set">La regla de programa %s está intentando asignar el valor %s que no pertenece al conjunto de opciones %s</string>
-    <string name="conf_error_value_option_set">El valor del campo %s no pertenece al conjunto de opciones en %s</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="show_radar_graph">Ver como gráfico de radar</string>
@@ -836,4 +832,4 @@
     <string name="edition_enrollment_is_no_open">Los datos no son editables por que el registro está cerrado o cancelado.</string>
     <string name="edition_orgunit_capture_scope">No puedes editar datos en esta unidad organizativa.</string>
     <string name="reload_list">Reiniciar búsqueda</string>
-</resources>
+    </resources>
