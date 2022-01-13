@@ -142,10 +142,9 @@ class FilterRepositoryTest {
 
         val result = filterRepository.globalTrackedEntityFilters()
 
-        assert(result[0].type == Filters.PERIOD)
-        assert(result[1].type == Filters.ORG_UNIT)
-        assert(result[2].type == Filters.SYNC_STATE)
-        assert(result.size == 3)
+        assert(result[0].type == Filters.ORG_UNIT)
+        assert(result[1].type == Filters.SYNC_STATE)
+        assert(result.size == 2)
     }
 
     @Test
