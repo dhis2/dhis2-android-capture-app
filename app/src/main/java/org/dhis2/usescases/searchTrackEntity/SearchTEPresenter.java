@@ -39,7 +39,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
@@ -53,7 +52,6 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -201,7 +199,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribe(
                         filters -> {
                             if (!filters.isEmpty()) {
-                                view.setFilters(filters);
+                                view.setInitialFilters(filters);
                             }
                         }
                         , Timber::e

@@ -89,7 +89,7 @@ public class SearchTEContractsModule {
 
         void setFormData(List<FieldUiModel> data);
 
-        void setFilters(List<FilterItem> filtersToDisplay);
+        void setInitialFilters(List<FilterItem> filtersToDisplay);
 
         void showClearSearch(boolean empty);
 
