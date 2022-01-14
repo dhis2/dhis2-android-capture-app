@@ -1,11 +1,11 @@
 package org.dhis2.form.ui
 
+import kotlin.reflect.KClass
 import org.dhis2.form.R
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
-import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>()
 

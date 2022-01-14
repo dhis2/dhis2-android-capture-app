@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.FormSectionViewModel
@@ -20,7 +21,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 class EventCapturePresenterTest {
     private lateinit var presenter: EventCapturePresenterImpl

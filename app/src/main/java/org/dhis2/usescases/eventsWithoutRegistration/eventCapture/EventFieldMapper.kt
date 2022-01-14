@@ -3,9 +3,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.data.forms.FormSectionViewModel
-import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.utils.DhisTextUtils.Companion.isEmpty
 import org.hisp.dhis.android.core.common.ValueType
 

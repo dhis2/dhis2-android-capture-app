@@ -1,6 +1,7 @@
 package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
+import java.util.Arrays
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -22,7 +23,6 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
-import java.util.Arrays
 
 class FieldViewModelFactoryImpl(
     private val valueTypeHintMap: Map<ValueType, String>,
@@ -136,7 +136,9 @@ class FieldViewModelFactoryImpl(
             fieldMask = trackedEntityAttribute.fieldMask(),
             legendValue = null,
             options = options!!,
-            featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) FeatureType.POINT else null
+            featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
+                FeatureType.POINT
+            } else null
         )
     }
 
@@ -176,8 +178,13 @@ class FieldViewModelFactoryImpl(
     }
 
     override fun createSection(
-        sectionUid: String, sectionName: String?, description: String?,
-        isOpen: Boolean, totalFields: Int, completedFields: Int, rendering: String?
+        sectionUid: String,
+        sectionName: String?,
+        description: String?,
+        isOpen: Boolean,
+        totalFields: Int,
+        completedFields: Int,
+        rendering: String?
     ): FieldUiModel {
         return SectionUiModelImpl(
             sectionUid,

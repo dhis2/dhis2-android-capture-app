@@ -7,9 +7,9 @@ import java.util.ArrayList
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

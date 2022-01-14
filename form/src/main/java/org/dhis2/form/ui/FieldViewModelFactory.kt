@@ -44,8 +44,13 @@ interface FieldViewModelFactory {
     fun createSingleSection(singleSectionName: String): FieldUiModel
 
     fun createSection(
-        sectionUid: String, sectionName: String?, description: String?,
-        isOpen: Boolean, totalFields: Int, completedFields: Int, rendering: String?
+        sectionUid: String,
+        sectionName: String?,
+        description: String?,
+        isOpen: Boolean,
+        totalFields: Int,
+        completedFields: Int,
+        rendering: String?
     ): FieldUiModel
 
     fun createClosingSection(): FieldUiModel
