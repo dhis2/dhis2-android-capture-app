@@ -1,6 +1,8 @@
 package org.dhis2.form.ui.binding
 
 import android.content.res.ColorStateList
+import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -98,5 +100,13 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
             this.error = warning
         }
         else -> this.error = null
+    }
+}
+
+@BindingAdapter("setOnTouchListener")
+fun bindOnTouchListener(editText: EditText, item: FieldUiModel?) {
+    editText.setOnTouchListener { _: View?, event: MotionEvent ->
+        if (MotionEvent.ACTION_UP == event.action) item?.onItemClick()
+        false
     }
 }
