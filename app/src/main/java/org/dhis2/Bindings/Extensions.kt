@@ -77,6 +77,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     } else {
         null
     }
+
     if (attributeValue != null) {
         val fileResource =
             d2.fileResourceModule().fileResources().uid(attributeValue.value()).blockingGet()
