@@ -282,9 +282,9 @@ fun bindRequestFocus(editText: EditText, focused: Boolean) {
 }
 
 @BindingAdapter("setOnTouchListener")
-fun bindOnTouchListener(editText: EditText, item: FieldUiModel) {
+fun bindOnTouchListener(editText: EditText, item: FieldUiModel?) {
     editText.setOnTouchListener { _: View?, event: MotionEvent ->
-        if (MotionEvent.ACTION_UP == event.action) item.onItemClick()
+        if (MotionEvent.ACTION_UP == event.action) item?.onItemClick()
         false
     }
 }

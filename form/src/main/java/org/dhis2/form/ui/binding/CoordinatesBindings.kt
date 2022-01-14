@@ -70,8 +70,6 @@ private fun onLatOrLonChangeFocus(
             errorTextView?.setWarningOrError(null, error)
             valueCallback(coordinate.toString())
         }
-    } else {
-        viewModel?.onItemClick()
     }
 }
 
@@ -152,19 +150,15 @@ fun TextInputEditText.setOnGeometryLatitudeEditorActionListener(
     errorText: TextView
 ) {
     setOnEditorActionListener { _, _, _ ->
-        val result = onFilledCoordinate(
+        onFilledCoordinate(
             context = context,
             lat = this.text.toString(),
             long = editTextToActivate.text.toString(),
             item = item,
             errorTextView = errorText
         )
-        if (result) {
-            closeKeyboard()
-        } else {
-            editTextToActivate.requestFocus()
-            editTextToActivate.performClick()
-        }
+        editTextToActivate.requestFocus()
+        editTextToActivate.performClick()
         true
     }
 }
@@ -192,6 +186,8 @@ fun TextInputEditText.setOnGeometryLongitudeEditorActionListener(
         )
         if (result) {
             closeKeyboard()
+            clearFocus()
+            item?.onNext()
         } else {
             editTextToActivate.requestFocus()
             editTextToActivate.performClick()
@@ -222,7 +218,12 @@ private fun onFilledCoordinate(
                     )
                 )
             } else {
-                errorTextView.text = context.getString(R.string.coordinates_error)
+                errorTextView.apply {
+                    text = context.getString(R.string.coordinates_error)
+                    visibility = View.VISIBLE
+                    setTextColor(resources.getColor(R.color.error_color))
+                }
+                return false
             }
         } else {
             item?.invokeIntent(
