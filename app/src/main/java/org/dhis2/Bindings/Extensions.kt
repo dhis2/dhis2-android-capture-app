@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import org.dhis2.App
 import org.dhis2.data.user.UserComponent
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
@@ -33,15 +34,27 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
         .byTrackedEntityTypeUid().eq(trackedEntityType())
         .byDisplayInList().isTrue
         .byTrackedEntityAttributeUid().`in`(imageAttributes)
+        .bySortOrder().isNotNull
         .blockingGet().map { it.trackedEntityAttribute()?.uid() }
 
     if (attributes.isEmpty() && programUid != null) {
-        attributes = d2.programModule().programTrackedEntityAttributes()
-            .byDisplayInList().isTrue
-            .byProgram().eq(programUid)
-            .byTrackedEntityAttribute().`in`(imageAttributes)
-            .blockingGet().filter { it.trackedEntityAttribute() != null }
-            .map { it.trackedEntityAttribute()!!.uid() }
+        val sections = d2.programModule().programSections().withAttributes().byProgramUid()
+            .eq(programUid).blockingGet()
+        attributes = if (sections.isEmpty()) {
+            d2.programModule().programTrackedEntityAttributes()
+                .byDisplayInList().isTrue
+                .byProgram().eq(programUid)
+                .byTrackedEntityAttribute().`in`(imageAttributes)
+                .blockingGet().filter { it.trackedEntityAttribute() != null }
+                .map { it.trackedEntityAttribute()!!.uid() }
+        } else {
+            d2.programModule().programSections().withAttributes().byProgramUid().eq(programUid)
+                .blockingGet()
+                .mapNotNull { section ->
+                    section.attributes()?.filter { imageAttributes.contains(it.uid()) }
+                        ?.map { it.uid() }
+                }.flatten()
+        }
     } else if (attributes.isEmpty() && programUid == null) {
         val enrollmentProgramUids = d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq(uid())
@@ -50,15 +63,21 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
             .byDisplayInList().isTrue
             .byProgram().`in`(enrollmentProgramUids)
             .byTrackedEntityAttribute().`in`(imageAttributes)
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet().filter { it.trackedEntityAttribute() != null }
             .map { it.trackedEntityAttribute()!!.uid() }
     }
 
-    val attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-        .byTrackedEntityInstance().eq(uid())
-        .byTrackedEntityAttribute().`in`(attributes)
-        .byValue().isNotNull
-        .one().blockingGet()
+    val attributeValue = if (attributes.isNotEmpty()) {
+        d2.trackedEntityModule().trackedEntityAttributeValues()
+            .byTrackedEntityInstance().eq(uid())
+            .byTrackedEntityAttribute().`in`(attributes[0])
+            .byValue().isNotNull
+            .one().blockingGet()
+    } else {
+        null
+    }
+
     if (attributeValue != null) {
         val fileResource =
             d2.fileResourceModule().fileResources().uid(attributeValue.value()).blockingGet()
