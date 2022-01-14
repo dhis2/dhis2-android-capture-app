@@ -7,8 +7,8 @@ import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.data.forms.dataentry.FormView
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.LayoutProviderImpl

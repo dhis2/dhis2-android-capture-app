@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl

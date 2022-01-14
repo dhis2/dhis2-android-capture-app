@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;

@@ -8,8 +8,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import java.util.ArrayList
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl

@@ -7,7 +7,7 @@ import java.util.ArrayList
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
 import org.hisp.dhis.android.core.D2

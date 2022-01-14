@@ -15,8 +15,8 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl

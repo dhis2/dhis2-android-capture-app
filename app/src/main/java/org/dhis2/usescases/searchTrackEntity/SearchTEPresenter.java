@@ -122,7 +122,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean teiTypeHasAttributesToDisplay = true;
     private boolean isSearching;
     private final DhisMapUtils mapUtils;
-    private final Flowable<RowAction> fieldProcessor;
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
     private final SearchMessageMapper searchMessageMapper;
@@ -141,7 +140,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              PreferenceProvider preferenceProvider,
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
-                             Flowable<RowAction> fieldProcessor,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
                              SearchMessageMapper searchMessageMapper,
@@ -156,7 +154,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
         this.mapCoordinateFieldToFeatureCollection = mapCoordinateFieldToFeatureCollection;
-        this.fieldProcessor = fieldProcessor;
         this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.eventToEventUiComponent = eventToEventUiComponent;
@@ -220,30 +217,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     view.setPrograms(programs);
                                 }, Timber::d
                         ));
-
-        compositeDisposable.add(fieldProcessor
-                .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(rowAction -> {
-                    if (rowAction.getType() == ActionType.ON_TEXT_CHANGE ||
-                            rowAction.getType() == ActionType.ON_SAVE
-                    ) {
-                        Map<String, String> queryDataBU = new HashMap<>(queryData);
-                        view.setFabIcon(true);
-                        updateQueryData(rowAction);
-
-                        if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                            updateQueryData(rowAction);
-                        }
-                        view.showClearSearch(!queryData.isEmpty());
-
-                        if (rowAction.getType() == ActionType.ON_SAVE) {
-                            populateList(null);
-                        }
-                    }
-                }, Timber::d)
-        );
-
 
         ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(program ->
@@ -969,6 +942,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setAttributesEmpty(Boolean attributesEmpty) {
         teiTypeHasAttributesToDisplay = !attributesEmpty;
+    }
+
+    @Override
+    public void processQuery(RowAction rowAction) {
+        if (rowAction.getType() == ActionType.ON_TEXT_CHANGE ||
+                rowAction.getType() == ActionType.ON_SAVE
+        ) {
+            Map<String, String> queryDataBU = new HashMap<>(queryData);
+            view.setFabIcon(true);
+            updateQueryData(rowAction);
+
+            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                updateQueryData(rowAction);
+            }
+            view.showClearSearch(!queryData.isEmpty());
+
+            if (rowAction.getType() == ActionType.ON_SAVE) {
+                populateList(null);
+            }
+        }
     }
 
     private boolean canSearchOnline() {
