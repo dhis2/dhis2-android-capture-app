@@ -80,7 +80,13 @@ class GraphToBarChart {
             })
             extraBottomOffset = 10f
 
-            marker = ChartMarker(context, viewPortHandler, xAxis, axisLeft)
+            marker = ChartMarker(
+                context,
+                viewPortHandler,
+                xAxis,
+                axisLeft,
+                forceTopMarkerPlacement = true
+            )
 
             data = barData
 
