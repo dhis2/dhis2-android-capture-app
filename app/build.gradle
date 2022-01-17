@@ -44,7 +44,8 @@ android {
         versionCode versions.vCode
         versionName versions.vName
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
-        testInstrumentationRunnerArguments class: 'org.dhis2.usecases.UseCaseTestsSuite'
+     //   testInstrumentationRunnerArguments "-e class org.dhis2.usecases.FlowTestsSuite"
+     //   testInstrumentationRunnerArguments class: "org.dhis2.usecases.FlowTestsSuite"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
