@@ -25,7 +25,6 @@ import org.junit.runners.Suite
     EnrollmentTest::class,
     EventTest::class,
     FilterTest::class,
-    FormTest::class,
     JiraTest::class,
     LoginTest::class,
     MainTest::class,
