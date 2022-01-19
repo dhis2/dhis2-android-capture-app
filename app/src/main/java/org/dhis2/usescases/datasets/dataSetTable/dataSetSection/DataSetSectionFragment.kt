@@ -131,6 +131,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
         adapters.add(adapter)
 
+        val hasNumericDataElement = tableData.dataTableModel.rows()
+            ?.any { it.valueType()?.isNumeric == true} ?: false
+
         adapter.apply {
             showColumnTotal = if (section.uid().isEmpty()) {
                 false
@@ -140,7 +143,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             showRowTotal = if (section.uid().isEmpty()) {
                 false
             } else {
-                section.showRowTotals()
+                section.showRowTotals() == true && hasNumericDataElement
             }
         }
 
@@ -209,7 +212,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             columnHeaders,
             tableData.rows(),
             tableData.cells,
-            adapter.showRowTotal!!
+            adapter.showRowTotal && hasNumericDataElement
         )
 
         presenterFragment.initializeProcessor(this)
