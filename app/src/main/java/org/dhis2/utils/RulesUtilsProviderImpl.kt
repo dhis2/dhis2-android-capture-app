@@ -342,7 +342,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     field.value
                 }
 
-            valuesToChange[assign.field()] = ruleEffect.data()
+            if (value == null || value != ruleEffect.data()) {
+                valuesToChange[assign.field()] = ruleEffect.data()
+            }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
                     val effectOption =
