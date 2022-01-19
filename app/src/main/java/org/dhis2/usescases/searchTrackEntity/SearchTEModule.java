@@ -6,6 +6,33 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
+import org.dhis2.data.sorting.SearchSortingValueSetter;
+import org.dhis2.form.data.DataEntryRepository;
+import org.dhis2.form.data.FormRepository;
+import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.ui.LayoutProviderImpl;
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
+import org.dhis2.form.ui.provider.HintProviderImpl;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.maps.geometry.bound.BoundsGeometry;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
@@ -23,33 +50,6 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.EventToEventUiComponent;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.utils.DhisMapUtils;
-import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
-import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
-import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.form.data.DataEntryRepository;
-import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.data.FormRepositoryImpl;
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
-import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
-import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
-import org.dhis2.form.ui.provider.UiStyleProviderImpl;
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -57,7 +57,6 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
-import java.util.Collections;
 import java.util.Map;
 
 import dagger.Module;
@@ -104,14 +103,13 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       FieldViewModelFactory fieldViewModelFactory,
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SearchMessageMapper searchMessageMapper) {
         return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(), preferenceProvider,
-                teiWorkingListMapper, filterRepository, fieldViewModelFactory.fieldProcessor(),
-                new DisableHomeFiltersFromSettingsApp(), matomoAnalyticsController, searchMessageMapper,initialQuery);
+                teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
+                matomoAnalyticsController, searchMessageMapper, initialQuery);
     }
 
     @Provides

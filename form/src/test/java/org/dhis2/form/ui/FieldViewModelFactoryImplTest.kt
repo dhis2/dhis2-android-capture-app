@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields
+package org.dhis2.form.ui
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

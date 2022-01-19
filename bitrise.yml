@@ -529,7 +529,6 @@ workflows:
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
-        - module: app
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -1733,7 +1732,6 @@ workflows:
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
-        - module: app
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug

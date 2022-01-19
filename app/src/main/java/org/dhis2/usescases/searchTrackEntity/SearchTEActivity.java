@@ -12,27 +12,20 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
@@ -57,7 +50,6 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.model.MapStyle;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.data.CarouselItemModel;
-import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -68,12 +60,11 @@ import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
@@ -195,7 +186,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .locationProvider(locationProvider)
                 .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
-                    fieldViewModelFactory.fieldProcessor().onNext(action);
+                    presenter.processQuery(action);
                     return Unit.INSTANCE;
                 })
                 .activityForResultListener(() -> {

@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.ui
 
 enum class DataEntryViewHolderTypes {
     AGE_VIEW,

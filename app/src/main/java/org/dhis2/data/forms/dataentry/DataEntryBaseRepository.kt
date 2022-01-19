@@ -1,9 +1,9 @@
 package org.dhis2.data.forms.dataentry
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 

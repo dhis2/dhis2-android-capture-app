@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.ui
 
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -6,12 +6,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
-import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder.FieldItemCallback
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
-import org.dhis2.form.ui.DataEntryDiff
+import org.dhis2.form.ui.FormViewHolder.FieldItemCallback
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 

@@ -83,7 +83,6 @@ class SearchTEPresenterTest {
             preferenceProvider,
             workingListMapper,
             filterRepository,
-            null,
             disableHomeFiltersFromSettingsApp,
             matomoAnalyticsController,
             searchMessageMapper,

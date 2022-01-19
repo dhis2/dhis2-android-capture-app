@@ -4,8 +4,8 @@ import android.os.Build
 import java.util.HashMap
 import org.dhis2.Bindings.toRuleEngineObject
 import org.dhis2.Bindings.toRuleVariableList
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle

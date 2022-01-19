@@ -17,10 +17,8 @@ import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
-import org.dhis2.usescases.event.entity.EventDetailsUIModel
+import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 

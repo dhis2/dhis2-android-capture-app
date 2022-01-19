@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import org.dhis2.form.model.RowAction;
 import org.dhis2.maps.model.EventUiComponentModel;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.commons.data.tuples.Trio;
@@ -192,5 +193,7 @@ public class SearchTEContractsModule {
         boolean selectedProgramMinNumberOfAttributesCheck();
 
         void setAttributesEmpty(Boolean attributesEmpty);
+
+        void processQuery(RowAction action);
     }
 }
