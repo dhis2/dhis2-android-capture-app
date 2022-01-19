@@ -39,7 +39,7 @@ json=$(jq -n \
                 --argjson package ["$browserstack_package"] \
                 --argjson class ["$browserstack_class"] \
                 --argjson annotation ["$browserstack_annotation"] \
-                --arg size "$browserstack_size" \
+                --argjson size ["$browserstack_size"] \
                 --arg logs "$browserstack_device_logs" \
                 --arg video "$browserstack_video" \
                 --arg loc "$browserstack_local" \
@@ -51,7 +51,7 @@ json=$(jq -n \
                 --argjson shards "$shards" \
                 '{devices: $devices, app: $app_url, testSuite: $test_url, package: $package, class: $class, annotation: $annotation, size: $size, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, shards: $shards}')
 
-test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/build -d \ "$json" -H "Content-Type: application/json" -u "$browserstack_username:$browserstack_access_key")"
+test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$browserstack_username:$browserstack_access_key")"
 
 # Get build
 build_id=$(echo "$test_execution_response" | jq -r .build_id)

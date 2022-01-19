@@ -348,6 +348,54 @@ workflows:
             git "branch" "-d" "$BRANCH_RELEASE"
             git "push" "origin" "--delete" "$BRANCH_RELEASE"
     - cache-push: {}
+  FlowUITest:
+    description: "Workflow that \n\n1)Choose random reviewers for a PR\n\n2)Run tests\n\n3)Publish Results on slack\n\n"
+    steps:
+    - script@1:
+        title: Configure parameters
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            cd scripts/
+            chmod +x flow_tests_configurator.sh
+            ./flow_tests_configurator.sh
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: dhisUITestingDebug
+        - module: app
+    - script@1:
+        title: BrowserStack Tests
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+    - slack@3.1.3:
+        inputs:
+        - channel: '#android-capture-app-ci'
+        - emoji: ':white_check_mark:'
+        - from_username: Continuous integration
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
+            View UITests|${BROWSERSTACK_TEST_REPORTS}
+            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+        - emoji_on_error: ':laptop:'
+        - from_username_on_error: Local Continuous integration
+        - color_on_error: '#f01f33'
+        - pretext: '*Local Build Succeeded!*'
+        - pretext_on_error: '*Local Build Failed!*'
+        - webhook_url: $SLACK_CI_WEBHOOK
   GithubDeployment:
     envs:
     - GITHUB_RELEASES_LIST: https://github.com/dhis2/dhis2-android-capture-app/releases
@@ -529,6 +577,43 @@ workflows:
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: dhisUITestingDebug
+        - module: app
+    - script@1:
+        title: BrowserStack Tests
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            cd scripts/
+
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+    - slack@3.1.3:
+        inputs:
+        - channel: '#android-capture-app-ci'
+        - emoji: ':white_check_mark:'
+        - from_username: Continuous integration
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
+            View UITests|${BROWSERSTACK_TEST_REPORTS}
+            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
+        - emoji_on_error: ':laptop:'
+        - from_username_on_error: Local Continuous integration
+        - color_on_error: '#f01f33'
+        - pretext: '*Local Build Succeeded!*'
+        - pretext_on_error: '*Local Build Failed!*'
+        - webhook_url: $SLACK_CI_WEBHOOK
+  LocalUITest:
+    description: "Workflow that \n\n1)Choose random reviewers for a PR\n\n2)Run tests\n\n3)Publish Results on slack\n\n"
+    steps:
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -1522,16 +1607,16 @@ workflows:
   UITestingSpecific:
     description: "Workflow that:\n\n1) Run UI test on Browserstack\n\n\n2) Notify through slack in #android-capture-app-ci with the next build variant: \n   - $SLACK : yes|no"
     steps:
+    - activate-ssh-key@4.0.5:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@4.0.18: {}
+    - cache-pull@2.1.4: {}
     - script@1:
         title: Sets JAVA 8
         inputs:
         - content: |
             chmod +x ./scripts/change_java_version.sh
             ./scripts/change_java_version.sh
-    - activate-ssh-key@4.0.5:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@4.0.18: {}
-    - cache-pull@2.1.4: {}
     - install-missing-android-tools:
         inputs:
         - gradlew_path: ./gradlew
