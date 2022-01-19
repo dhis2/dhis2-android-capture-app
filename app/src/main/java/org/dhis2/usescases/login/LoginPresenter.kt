@@ -41,6 +41,8 @@ import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
 
+const val VERSION = "version"
+
 class LoginPresenter(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
@@ -90,6 +92,12 @@ class LoginPresenter(
                     )
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+    }
+
+    fun trackServerVersion() {
+        val dhisVersion =
+            userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()!!
+        analyticsHelper.trackMatomoEvent(SERVER, VERSION, dhisVersion)
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -307,6 +315,7 @@ class LoginPresenter(
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
+            trackServerVersion()
             if (view.isNetworkAvailable()) {
                 preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
             }
