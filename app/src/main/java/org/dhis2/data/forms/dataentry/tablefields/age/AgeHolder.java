@@ -44,8 +44,12 @@ public class AgeHolder extends FormViewHolder {
         this.ageViewModel = ageViewModel;
 
         if (!isEmpty(ageViewModel.value())) {
-            Date date = StringExtensionsKt.toDate(ageViewModel.value());
-            textView.setText(DateUtils.uiDateFormat().format(date));
+            try {
+                Date date = StringExtensionsKt.toDate(ageViewModel.value());
+                textView.setText(DateUtils.uiDateFormat().format(date));
+            } catch (Exception e) {
+                textView.setError(e.getMessage());
+            }
         } else
             textView.setText(null);
 
