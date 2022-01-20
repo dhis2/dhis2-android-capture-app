@@ -95,9 +95,8 @@ class LoginPresenter(
     }
 
     fun trackServerVersion() {
-        val dhisVersion =
-            userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()!!
-        analyticsHelper.trackMatomoEvent(SERVER, VERSION, dhisVersion)
+        userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()
+            ?.let { analyticsHelper.trackMatomoEvent(SERVER, VERSION, it) }
     }
 
     fun checkServerInfoAndShowBiometricButton() {
