@@ -132,7 +132,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         adapters.add(adapter)
 
         val hasNumericDataElement = tableData.dataTableModel.rows()
-            ?.any { it.valueType()?.isNumeric == true} ?: false
+            ?.any { it.valueType()?.isNumeric == true } ?: false
 
         adapter.apply {
             showColumnTotal = if (section.uid().isEmpty()) {
