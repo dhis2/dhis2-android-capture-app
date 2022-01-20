@@ -423,7 +423,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                setFabVisibility(!needsSearch.get() && !showMap, true);
+                setFabVisibility(
+                        backDropActive || (!needsSearch.get() && !showMap),
+                        !backDropActive
+                );
             }
         }
     }
