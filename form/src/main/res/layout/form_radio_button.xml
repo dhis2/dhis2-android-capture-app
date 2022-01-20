@@ -123,7 +123,7 @@
                             android:layout_marginEnd="16dp"
                             android:alpha="@{item.editable ? 1.0f : 0.5f}"
                             android:enabled="@{item.editable}"
-                            android:text="@string/yes"
+                            android:text='@{item.valueType != ValueType.TRUE_ONLY ? @string/yes : ""}'
                             android:textSize="@dimen/form_edit_text_size"
                             app:optionTint="@{item.style}"
                             tools:checked="true" />

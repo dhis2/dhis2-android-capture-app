@@ -92,7 +92,6 @@
                 android:enabled="@{item.editable}"
                 android:onClick="@{v -> item.onSaveBoolean(true)}"
                 android:paddingTop="4dp"
-                android:text="@string/yes"
                 android:textSize="@dimen/form_edit_text_size"
                 app:optionTint="@{item.style}"
                 app:layout_constraintStart_toStartOf="@+id/label"
