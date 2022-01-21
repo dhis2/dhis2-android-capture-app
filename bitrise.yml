@@ -351,6 +351,7 @@ workflows:
   FlowUITest:
     description: "Workflow that \n\n1)Choose random reviewers for a PR\n\n2)Run tests\n\n3)Publish Results on slack\n\n"
     steps:
+    - git-clone@4.1: {}
     - script@1:
         title: Configure parameters
         inputs:
