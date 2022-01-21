@@ -13,6 +13,7 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -149,9 +150,10 @@ public class SearchTEModule {
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
                                       DhisPeriodUtils periodUtils, Charts charts,
-                                      CrashReportController crashReportController) {
+                                      CrashReportController crashReportController,
+                                      NetworkUtils networkUtils) {
         return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController);
+                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils);
     }
 
     @Provides

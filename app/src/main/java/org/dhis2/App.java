@@ -13,6 +13,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.maps.MapController;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
@@ -167,6 +168,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
+                .networkUtilsModule(new NetworkUtilsModule())
                 .workManagerController(new WorkManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule())

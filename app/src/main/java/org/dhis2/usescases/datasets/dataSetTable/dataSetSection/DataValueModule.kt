@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -53,13 +54,18 @@ class DataValueModule(
 
     @Provides
     @PerFragment
-    fun valueStore(d2: D2, crashReportController: CrashReportController): ValueStore {
+    fun valueStore(
+        d2: D2,
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils
+    ): ValueStore {
         return ValueStoreImpl(
             d2,
             dataSetUid,
             DataEntryStore.EntryMode.DV,
             DhisEnrollmentUtils(d2),
-            crashReportController
+            crashReportController,
+            networkUtils
         )
     }
 }

@@ -8,6 +8,7 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
@@ -165,14 +166,16 @@ class EnrollmentModule(
     fun valueStore(
         d2: D2,
         enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils
     ): ValueStore {
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet().trackedEntityInstance()!!,
             DataEntryStore.EntryMode.ATTR,
             DhisEnrollmentUtils(d2),
-            crashReportController
+            crashReportController,
+            networkUtils
         )
     }
 
@@ -208,7 +211,8 @@ class EnrollmentModule(
         d2: D2,
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
-        dataEntryRepository: EnrollmentRepository
+        dataEntryRepository: EnrollmentRepository,
+        networkUtils: NetworkUtils
     ): FormRepository {
         return FormRepositoryImpl(
             ValueStoreImpl(
@@ -217,7 +221,8 @@ class EnrollmentModule(
                 DataEntryStore.EntryMode.ATTR,
                 DhisEnrollmentUtils(d2),
                 enrollmentRepository,
-                crashReportController
+                crashReportController,
+                networkUtils
             ),
             FieldErrorMessageProvider(activityContext),
             DisplayNameProviderImpl(d2),

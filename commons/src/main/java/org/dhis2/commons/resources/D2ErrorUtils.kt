@@ -80,6 +80,7 @@ class D2ErrorUtils(private val context: Context) {
             D2ErrorCode.SMS_NOT_SUPPORTED -> context.getString(R.string.error_sms_not_supported)
             D2ErrorCode.MIN_SEARCH_ATTRIBUTES_REQUIRED -> context.getString(R.string.error_min_attributes)
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE -> context.getString(R.string.error_org_unit_scope)
+            else -> context.getString(R.string.login_error_unsuccessful_response)
         }
     }
 }

@@ -19,6 +19,7 @@ import org.dhis2.commons.data.RelationshipViewModel;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
@@ -95,6 +96,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
+    private final NetworkUtils networkUtils;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -104,7 +106,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          SearchSortingValueSetter sortingValueSetter,
                          DhisPeriodUtils periodUtils,
                          Charts charts,
-                         CrashReportController crashReportController) {
+                         CrashReportController crashReportController,
+                         NetworkUtils networkUtils) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
@@ -114,6 +117,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.charts = charts;
         this.crashReportController = crashReportController;
         this.currentProgram = initialProgram;
+        this.networkUtils = networkUtils;
     }
 
     @Override
@@ -235,7 +239,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
-                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2), crashReportController);
+                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2), crashReportController, networkUtils);
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);

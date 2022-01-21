@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -117,13 +118,14 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController) {
+    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController, NetworkUtils networkUtils) {
         return new ValueStoreImpl(
                 d2,
                 eventUid,
                 DataEntryStore.EntryMode.DE,
                 new DhisEnrollmentUtils(d2),
-                crashReportController
+                crashReportController,
+                networkUtils
         );
     }
 
@@ -138,7 +140,8 @@ public class EventCaptureModule {
     org.dhis2.form.data.FormRepository provideEventsFormRepository(
             @NonNull D2 d2,
             org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
-            CrashReportController crashReportController
+            CrashReportController crashReportController,
+            NetworkUtils networkUtils
     ) {
         return new FormRepositoryImpl(
                 new ValueStoreImpl(
@@ -146,7 +149,8 @@ public class EventCaptureModule {
                         eventUid,
                         DataEntryStore.EntryMode.DE,
                         new DhisEnrollmentUtils(d2),
-                        crashReportController
+                        crashReportController,
+                        networkUtils
                 ),
                 new FieldErrorMessageProvider(activityContext),
                 new DisplayNameProviderImpl(d2),
