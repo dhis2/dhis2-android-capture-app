@@ -6,7 +6,7 @@ import timber.log.Timber
 import java.lang.Exception
 
 class NetworkUtils(val context: Context) {
-    fun isOnline(context: Context): Boolean {
+    fun isOnline(): Boolean {
         var isOnline = false
         try {
             val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

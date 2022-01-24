@@ -180,7 +180,11 @@ class ValueStoreImpl(
     }
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        if (!networkUtils.isOnline()){
+            return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        } else {
+
+        }
     }
 
     private fun saveFileResource(path: String): String {
