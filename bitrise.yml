@@ -379,11 +379,13 @@ workflows:
             # debug log
             set -x
 
+            ls
+            cd scripts/
             chmod +x ./browserstackBitrise.sh
             ./browserstackBitrise.sh
     - slack@3.1.3:
         inputs:
-        - channel: '#android-capture-app-ci'
+        - channel: '#android-app-dev'
         - emoji: ':white_check_mark:'
         - from_username: Continuous integration
         - buttons: |
@@ -394,8 +396,8 @@ workflows:
         - emoji_on_error: ':laptop:'
         - from_username_on_error: Local Continuous integration
         - color_on_error: '#f01f33'
-        - pretext: '*Local Build Succeeded!*'
-        - pretext_on_error: '*Local Build Failed!*'
+        - pretext: '*Flow Build Succeeded!*'
+        - pretext_on_error: '*Flow Build Failed!*'
         - webhook_url: $SLACK_CI_WEBHOOK
   GithubDeployment:
     envs:
