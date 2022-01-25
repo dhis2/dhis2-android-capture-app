@@ -32,25 +32,17 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
             ValueType.TEXT ->
-                return if (!optionSet.isNullOrEmpty()) {
-                    when (sectionRenderingType) {
-                        SectionRenderingType.SEQUENTIAL,
-                        SectionRenderingType.MATRIX ->
-                            R.layout.form_option_set_matrix
-                        else -> when (renderingType) {
-                            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                            ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
-                                R.layout.form_option_set_selector
-                            ValueTypeRenderingType.QR_CODE,
-                            ValueTypeRenderingType.BAR_CODE ->
-                                R.layout.form_scan
-                            else -> R.layout.form_option_set_spinner
-                        }
-                    }
-                } else {
-                    R.layout.form_edit_text_custom
+                return when {
+                    shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
+                        R.layout.form_option_set_matrix
+                    shouldRenderAsSelector(optionSet, renderingType) ->
+                        R.layout.form_option_set_selector
+                    shouldRenderAsSpinner(optionSet) ->
+                        R.layout.form_option_set_spinner
+                    shouldRenderAsScan(renderingType) ->
+                        R.layout.form_scan
+                    else ->
+                        R.layout.form_edit_text_custom
                 }
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
@@ -67,6 +59,47 @@ class LayoutProviderImpl : LayoutProvider {
             }
             else -> R.layout.form_edit_text_custom
         }
+    }
+
+    private fun shouldRenderAsScan(renderingType: ValueTypeRenderingType?): Boolean {
+        return when (renderingType) {
+            ValueTypeRenderingType.QR_CODE, ValueTypeRenderingType.BAR_CODE -> true
+            else -> false
+        }
+    }
+
+    private fun shouldRenderAsSpinner(optionSet: String?): Boolean {
+        return optionSet != null
+    }
+
+    private fun shouldRenderAsSelector(
+        optionSet: String?,
+        renderingType: ValueTypeRenderingType?
+    ): Boolean {
+        val isOptionSet = optionSet != null
+        val isSelectorRendering = when (renderingType) {
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+            ValueTypeRenderingType.VERTICAL_CHECKBOXES -> {
+                true
+            }
+            else -> false
+        }
+        return isOptionSet && isSelectorRendering
+    }
+
+    private fun shouldRenderAsMatrixImage(
+        optionSet: String?,
+        sectionRenderingType: SectionRenderingType?,
+        renderingType: ValueTypeRenderingType?
+    ): Boolean {
+        val isOptionSet = optionSet != null
+        val isDefaultRendering =
+            renderingType == null || renderingType == ValueTypeRenderingType.DEFAULT
+        val isSectionRenderingMatrix =
+            sectionRenderingType?:SectionRenderingType.LISTING != SectionRenderingType.LISTING
+        return isOptionSet && isDefaultRendering && isSectionRenderingMatrix
     }
 
     override fun getLayoutForSection() = R.layout.form_section
