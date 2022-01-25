@@ -137,7 +137,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         if (add) {
             rowWidth += 50;
         } else {
-            rowWidth -= 50;
+            int minRowHeaderWidth = (int) context.getResources().getDimension(R.dimen.row_header_min_width);
+            if (rowWidth - 50 > minRowHeaderWidth) {
+                rowWidth -= 50;
+            }
         }
 
         Triple<String, Integer, Integer> measures =
