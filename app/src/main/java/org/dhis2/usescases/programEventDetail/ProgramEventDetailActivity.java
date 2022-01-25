@@ -112,6 +112,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
+        showList();
     }
 
     private void initExtras() {
