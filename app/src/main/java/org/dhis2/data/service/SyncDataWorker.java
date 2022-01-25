@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
+import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -166,7 +167,8 @@ public class SyncDataWorker extends Worker {
                         .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build());
+        setForegroundAsync(new ForegroundInfo(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build()));
+
     }
 
     private void cancelNotification() {
