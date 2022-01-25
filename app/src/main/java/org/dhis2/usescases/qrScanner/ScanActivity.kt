@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,6 +28,8 @@ import com.google.zxing.BarcodeFormat.UPC_A
 import com.google.zxing.BarcodeFormat.UPC_E
 import com.google.zxing.BarcodeFormat.UPC_EAN_EXTENSION
 import com.google.zxing.Result
+import com.journeyapps.barcodescanner.CaptureManager
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import javax.inject.Inject
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
@@ -38,7 +41,8 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     private lateinit var binding: ActivityScanBinding
-    private lateinit var mScannerView: ZXingScannerView
+    private lateinit var mScannerView: DecoratedBarcodeView
+    private lateinit var capture: CaptureManager
     private var isPermissionRequested = false
     private var uid: String? = null
     private var optionSetUid: String? = null
@@ -64,7 +68,10 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
         renderingType =
             intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType?
         mScannerView = binding.scannerView
-        mScannerView.apply {
+        capture = CaptureManager(this, mScannerView)
+        capture.initializeFromIntent(intent, savedInstanceState)
+        capture.decode()
+        /*mScannerView.apply {
             setAutoFocus(true)
             when (renderingType) {
                 ValueTypeRenderingType.BAR_CODE -> {
@@ -81,15 +88,19 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
                 }
                 else -> setFormats(ZXingScannerView.ALL_FORMATS)
             }
-        }
+        }*/
+    }
+
+    override fun finish() {
+        super.finish()
     }
 
     override fun onResume() {
         super.onResume()
-        if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
+        /*if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             initScanner()
         } else if (!isPermissionRequested) {
@@ -101,25 +112,39 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             )
         } else {
             abstractActivity.finish()
-        }
+        }*/
+        capture.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        mScannerView.stopCamera()
+//        mScannerView.stopCamera()
+        capture.onPause()
     }
 
-    private fun initScanner() {
-        mScannerView.setResultHandler(this)
-        mScannerView.startCamera()
+    override fun onDestroy() {
+        super.onDestroy()
+        capture.onDestroy()
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        capture.onSaveInstanceState(outState)
+    }
+
+    /*private fun initScanner() {
+        *//*mScannerView.setResultHandler(this)
+        mScannerView.startCamera()*//*
+        capture.decode()
+    }*/
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        when (requestCode) {
+        capture.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        /*when (requestCode) {
             REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
@@ -134,7 +159,11 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
                     ).show()
                 }
             }
-        }
+        }*/
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return mScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
     }
 
     override fun handleResult(result: Result) {
@@ -144,8 +173,8 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             val option = scanRepository.getOptions()
                 .firstOrNull {
                     it.displayName() == result.text ||
-                        it.name() == result.text ||
-                        it.code() == result.text
+                            it.name() == result.text ||
+                            it.code() == result.text
                 }
             if (option != null) {
                 url = option.displayName()

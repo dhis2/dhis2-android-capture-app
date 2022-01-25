@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import java.io.File
-import java.util.Calendar
+import com.journeyapps.barcodescanner.ScanOptions
+import org.apache.commons.text.StringEscapeUtils
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.getFileFromGallery
@@ -42,6 +42,7 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
+import org.dhis2.data.forms.ScanContract
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
@@ -84,6 +85,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
+import java.io.File
+import java.util.Calendar
 
 class FormView(
     formRepository: FormRepository,
@@ -100,17 +103,17 @@ class FormView(
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
-    private val qrScanContent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-                val intent = FormIntent.OnSave(
-                    it.data?.getStringExtra(Constants.UID)!!,
-                    it.data?.getStringExtra(Constants.EXTRA_DATA),
-                    ValueType.TEXT
-                )
-                intentHandler(intent)
-            }
+    private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
+        result.contents?.let { qrData ->
+            val intent = FormIntent.OnSave(
+                result.originalIntent.getStringExtra(Constants.UID)!!,
+                qrData,
+                ValueType.TEXT
+            )
+            intentHandler(intent)
         }
+    }
+
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -481,9 +484,9 @@ class FormView(
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
+                lastVisiblePosition == adapter.itemCount - 1 ||
+                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+                )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
@@ -498,8 +501,8 @@ class FormView(
 
     private fun needsKeyboard(valueType: ValueType): Boolean {
         return valueType.isText ||
-            valueType.isNumeric ||
-            valueType.isInteger
+                valueType.isNumeric ||
+                valueType.isInteger
     }
 
     private fun intentHandler(intent: FormIntent) {
@@ -659,11 +662,16 @@ class FormView(
                 else -> ValueTypeRenderingType.DEFAULT
             }
         }
+
         qrScanContent.launch(
-            Intent(context, ScanActivity::class.java).apply {
-                putExtra(Constants.UID, event.uid)
-                putExtra(Constants.OPTION_SET, event.optionSet)
-                putExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
+            ScanOptions().apply {
+                setDesiredBarcodeFormats()
+                setPrompt("Hello there")
+                setBeepEnabled(true)
+                setBarcodeImageEnabled(false)
+                addExtra(Constants.UID, event.uid)
+                event.optionSet?.let { addExtra(Constants.OPTION_SET, event.optionSet) }
+                addExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
             }
         )
     }

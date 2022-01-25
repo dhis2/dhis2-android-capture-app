@@ -1,12 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields
 
-import kotlin.reflect.KClass
 import org.dhis2.R
 import org.dhis2.form.ui.provider.LayoutProvider
-import org.dhis2.utils.DhisTextUtils.Companion.isNotEmpty
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
+import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>()
 
@@ -33,25 +32,17 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
             ValueType.TEXT ->
-                return if (isNotEmpty(optionSet)) {
-                    when (sectionRenderingType) {
-                        ProgramStageSectionRenderingType.SEQUENTIAL,
-                        ProgramStageSectionRenderingType.MATRIX ->
-                            R.layout.form_option_set_matrix
-                        else -> when (renderingType) {
-                            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                            ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
-                                R.layout.form_option_set_selector
-                            ValueTypeRenderingType.QR_CODE,
-                            ValueTypeRenderingType.BAR_CODE ->
-                                R.layout.form_scan
-                            else -> R.layout.form_option_set_spinner
-                        }
-                    }
-                } else {
-                    R.layout.form_edit_text_custom
+                return when {
+                    shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
+                        R.layout.form_option_set_matrix
+                    shouldRenderAsSelector(optionSet, renderingType) ->
+                        R.layout.form_option_set_selector
+                    shouldRenderAsSpinner(optionSet) ->
+                        R.layout.form_option_set_spinner
+                    shouldRenderAsScan(renderingType) ->
+                        R.layout.form_scan
+                    else ->
+                        R.layout.form_edit_text_custom
                 }
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
@@ -68,6 +59,47 @@ class LayoutProviderImpl : LayoutProvider {
             }
             else -> R.layout.form_edit_text_custom
         }
+    }
+
+    private fun shouldRenderAsScan(renderingType: ValueTypeRenderingType?): Boolean {
+        return when (renderingType) {
+            ValueTypeRenderingType.QR_CODE, ValueTypeRenderingType.BAR_CODE -> true
+            else -> false
+        }
+    }
+
+    private fun shouldRenderAsSpinner(optionSet: String?): Boolean {
+        return optionSet != null
+    }
+
+    private fun shouldRenderAsSelector(
+        optionSet: String?,
+        renderingType: ValueTypeRenderingType?
+    ): Boolean {
+        val isOptionSet = optionSet != null
+        val isSelectorRendering = when (renderingType) {
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
+            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+            ValueTypeRenderingType.VERTICAL_CHECKBOXES -> {
+                true
+            }
+            else -> false
+        }
+        return isOptionSet && isSelectorRendering
+    }
+
+    private fun shouldRenderAsMatrixImage(
+        optionSet: String?,
+        sectionRenderingType: ProgramStageSectionRenderingType?,
+        renderingType: ValueTypeRenderingType?
+    ): Boolean {
+        val isOptionSet = optionSet != null
+        val isDefaultRendering =
+            renderingType == null || renderingType == ValueTypeRenderingType.DEFAULT
+        val isSectionRenderingMatrix =
+            sectionRenderingType?:ProgramStageSectionRenderingType.LISTING != ProgramStageSectionRenderingType.LISTING
+        return isOptionSet && isDefaultRendering && isSectionRenderingMatrix
     }
 
     override fun getLayoutForSection() = R.layout.form_section
