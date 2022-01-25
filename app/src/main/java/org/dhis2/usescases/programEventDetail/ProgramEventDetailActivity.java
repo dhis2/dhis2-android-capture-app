@@ -1,5 +1,10 @@
 package org.dhis2.usescases.programEventDetail;
 
+import static android.view.View.GONE;
+import static org.dhis2.R.layout.activity_program_event_detail;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -13,19 +18,21 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
@@ -35,23 +42,14 @@ import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.commons.filters.FilterItem;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import static android.view.View.GONE;
-import static org.dhis2.R.layout.activity_program_event_detail;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 
@@ -99,10 +97,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    programEventsViewModel.showList();
+                    showList();
                     return true;
                 case R.id.navigation_map_view:
-                    programEventsViewModel.showMap();
+                    showMap();
                     return true;
                 case R.id.navigation_analytics:
                     showAnalytics();
@@ -153,12 +151,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         programEventsViewModel.getWritePermission().observe(this, canWrite -> {
-            if (!canWrite){
-                binding.addEventButton.setVisibility(GONE);
-            }
+            binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE);
         });
-
-        programEventsViewModel.getShowMap().observe(this, this::showMap);
     }
 
     @Override
@@ -311,12 +305,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         dialog.show(getSupportFragmentManager(), FRAGMENT_TAG);
     }
 
-    private void showMap(boolean showMap) {
+    private void showList() {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                showMap ? new EventMapFragment() : new EventListFragment()
+                new EventListFragment()
         ).commitNow();
-        binding.addEventButton.setVisibility(showMap && programEventsViewModel.getWritePermission().getValue() ? GONE : View.VISIBLE);
+        binding.addEventButton.setVisibility(programEventsViewModel.getWritePermission().getValue() ? View.VISIBLE : GONE);
+        binding.filter.setVisibility(View.VISIBLE);
+    }
+
+    private void showMap() {
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.fragmentContainer,
+                new EventMapFragment()
+        ).commitNow();
+        binding.addEventButton.setVisibility(GONE);
         binding.filter.setVisibility(View.VISIBLE);
     }
 
