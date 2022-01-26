@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
@@ -112,7 +113,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
-        showList();
     }
 
     private void initExtras() {
