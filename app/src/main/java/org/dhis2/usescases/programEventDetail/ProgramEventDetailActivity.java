@@ -97,13 +97,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    showList();
+                    programEventsViewModel.showList();
                     return true;
                 case R.id.navigation_map_view:
-                    showMap();
+                    programEventsViewModel.showMap();
                     return true;
                 case R.id.navigation_analytics:
-                    showAnalytics();
+                    programEventsViewModel.showAnalytics();
                     return true;
                 default:
                     return false;
@@ -153,6 +153,20 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         programEventsViewModel.getWritePermission().observe(this, canWrite -> {
             binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE);
+        });
+
+        programEventsViewModel.getCurrentScreen().observe(this,currentScreen->{
+        switch(currentScreen){
+            case LIST:
+                showList();
+                break;
+            case MAP:
+                showMap();
+                break;
+            case ANALYTICS:
+                showAnalytics();
+                break;
+        }
         });
     }
 
