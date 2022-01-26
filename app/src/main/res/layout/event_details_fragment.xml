@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".usescases.eventsWithoutRegistration.eventInitial.EventDetailsFragment">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventDetailsViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/programStageIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_square"
+                android:contentDescription='@{viewModel.programStage.name()}'
+                android:padding="4dp"
+                app:srcCompat="@drawable/ic_clinical_f_outline" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/programStageName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{viewModel.programStage.displayName()}'
+                    android:textColor="@color/text_black_333"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Program Stage Name" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.programStage.displayDescription()}"
+                    android:textSize="12sp"
+                    android:visibility="@{viewModel.programStage.displayDescription()!=null ? View.VISIBLE:View.GONE}"
+                    tools:text="@tools:sample/lorem" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_fab"
+            android:padding="10dp"
+            android:text="Hola"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+</layout>
+

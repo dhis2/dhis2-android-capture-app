@@ -8,4 +8,5 @@ import dagger.Subcomponent;
 @Subcomponent(modules = EventInitialModule.class)
 public interface EventInitialComponent {
     void inject(EventInitialActivity activity);
+    EventDetailsComponent plus(EventDetailsModule eventDetailsModule);
 }
