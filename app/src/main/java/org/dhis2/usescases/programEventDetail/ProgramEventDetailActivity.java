@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.dhis2.App;
@@ -155,18 +154,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : GONE);
         });
 
-        programEventsViewModel.getCurrentScreen().observe(this,currentScreen->{
-        switch(currentScreen){
-            case LIST:
-                showList();
-                break;
-            case MAP:
-                showMap();
-                break;
-            case ANALYTICS:
-                showAnalytics();
-                break;
-        }
+        programEventsViewModel.getCurrentScreen().observe(this, currentScreen -> {
+            switch (currentScreen) {
+                case LIST:
+                    showList();
+                    break;
+                case MAP:
+                    showMap();
+                    break;
+                case ANALYTICS:
+                    showAnalytics();
+                    break;
+            }
         });
     }
 
