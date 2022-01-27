@@ -180,7 +180,7 @@ android {
         resolutionStrategy {
             preferProjectModules()
 
-            force 'junit:junit:4.12', 'com.squareup.okhttp3:okhttp:3.12.0', 'org.hisp.dhis.parser:dhis-antlr-expression-parser:1.0.21'
+            force 'junit:junit:4.12', 'com.squareup.okhttp3:okhttp:3.12.0'
             forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
         }
     }
