@@ -31,7 +31,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
-import org.apache.commons.text.StringEscapeUtils
+import java.io.File
+import java.util.Calendar
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.getFileFromGallery
@@ -71,7 +72,6 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
-import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
@@ -87,8 +87,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
-import java.io.File
-import java.util.Calendar
 
 class FormView(
     formRepository: FormRepository,
@@ -115,7 +113,6 @@ class FormView(
             intentHandler(intent)
         }
     }
-
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -486,9 +483,9 @@ class FormView(
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-                lastVisiblePosition == adapter.itemCount - 1 ||
-                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-                )
+            lastVisiblePosition == adapter.itemCount - 1 ||
+                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+            )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
@@ -503,8 +500,8 @@ class FormView(
 
     private fun needsKeyboard(valueType: ValueType): Boolean {
         return valueType.isText ||
-                valueType.isNumeric ||
-                valueType.isInteger
+            valueType.isNumeric ||
+            valueType.isInteger
     }
 
     private fun intentHandler(intent: FormIntent) {

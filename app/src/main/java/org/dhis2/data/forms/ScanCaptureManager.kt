@@ -13,7 +13,6 @@ const val SCAN_SYMBOLOGY_ID = "SCAN_SYMBOLOGY_ID"
 class ScanCaptureManager(val activity: Activity, barcodeView: DecoratedBarcodeView) :
     CaptureManager(activity, barcodeView) {
 
-
     override fun returnResult(rawResult: BarcodeResult?) {
         val intent = resultIntent(rawResult, null)
         activity.setResult(Activity.RESULT_OK, intent)

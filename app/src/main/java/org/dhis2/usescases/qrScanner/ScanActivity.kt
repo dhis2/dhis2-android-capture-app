@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.zxing.Result
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import javax.inject.Inject
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
 import org.dhis2.R
@@ -15,7 +16,6 @@ import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import javax.inject.Inject
 
 class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     private lateinit var binding: ActivityScanBinding
@@ -85,8 +85,8 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             val option = scanRepository.getOptions()
                 .firstOrNull {
                     it.displayName() == result.text ||
-                            it.name() == result.text ||
-                            it.code() == result.text
+                        it.name() == result.text ||
+                        it.code() == result.text
                 }
             if (option != null) {
                 url = option.displayName()
