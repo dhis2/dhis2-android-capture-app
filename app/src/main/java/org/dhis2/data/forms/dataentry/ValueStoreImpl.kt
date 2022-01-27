@@ -187,7 +187,7 @@ class ValueStoreImpl(
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
             val programUid = enrollmentRepository?.blockingGet()?.program()
-            searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid!!)
+            searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid)
         }
     }
 

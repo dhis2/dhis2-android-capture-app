@@ -1,8 +1,5 @@
 package org.dhis2.data.forms.dataentry
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
@@ -12,20 +9,11 @@ class SearchTEIRepositoryImpl(
     private val enrollmentUtils: DhisEnrollmentUtils
 ) : SearchTEIRepository {
 
-    /*
-    //val tei = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
-
-    d2.trackedEntityModule().trackedEntityInstanceQuery()
-            .byProgram().eq(programUid)
-     */
-
-    val scope = CoroutineScope(Job() + Dispatchers.Main)
-
     override fun isUniqueTEIAttributeOnline(
         uid: String,
         value: String?,
         teiUid: String,
-        programUid: String
+        programUid: String?
     ): Boolean {
         if (value == null || programUid == null) {
             return true
@@ -54,15 +42,24 @@ class SearchTEIRepositoryImpl(
         } else if (isUnique && orgUnitScope) {
             val orgUnit = enrollmentUtils.getOrgUnit(teiUid)
 
-            val result = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+            val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache()
                 .eq(true)
+                .byProgram()
+                .eq(programUid)
                 .byAttribute(attribute.uid())
                 .eq(value)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.DESCENDANTS)
                 .byOrgUnits()
                 .`in`(orgUnit)
                 .blockingGet()
-            return result.isNullOrEmpty()
+
+            if (teiList.isNullOrEmpty()) {
+                return true
+            }
+
+            return teiList.none { it.uid() != teiUid }
         }
         return false
     }
