@@ -183,7 +183,7 @@ class ValueStoreImpl(
         if (!networkUtils.isOnline()){
             return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
-
+            return false
         }
     }
 
