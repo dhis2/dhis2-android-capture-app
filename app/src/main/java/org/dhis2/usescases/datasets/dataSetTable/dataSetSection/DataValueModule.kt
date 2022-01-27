@@ -8,8 +8,11 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
+import org.dhis2.data.forms.dataentry.SearchTEIRepository
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.usescases.searchTrackEntity.SearchRepositoryImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
@@ -54,10 +57,17 @@ class DataValueModule(
 
     @Provides
     @PerFragment
+    internal fun searchRepository(d2: D2): SearchTEIRepository {
+        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2))
+    }
+
+    @Provides
+    @PerFragment
     fun valueStore(
         d2: D2,
         crashReportController: CrashReportController,
-        networkUtils: NetworkUtils
+        networkUtils: NetworkUtils,
+        searchRepository: SearchTEIRepository
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -65,7 +75,8 @@ class DataValueModule(
             DataEntryStore.EntryMode.DV,
             DhisEnrollmentUtils(d2),
             crashReportController,
-            networkUtils
+            networkUtils,
+            searchRepository
         )
     }
 }

@@ -13,6 +13,8 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
+import org.dhis2.data.forms.dataentry.SearchTEIRepository
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
@@ -167,7 +169,8 @@ class EnrollmentModule(
         d2: D2,
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
-        networkUtils: NetworkUtils
+        networkUtils: NetworkUtils,
+        searchTEIRepository: SearchTEIRepository
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -175,8 +178,15 @@ class EnrollmentModule(
             DataEntryStore.EntryMode.ATTR,
             DhisEnrollmentUtils(d2),
             crashReportController,
-            networkUtils
+            networkUtils,
+            searchTEIRepository
         )
+    }
+
+    @Provides
+    @PerActivity
+    internal fun searchRepository(d2: D2): SearchTEIRepository {
+        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2))
     }
 
     @Provides
@@ -212,7 +222,8 @@ class EnrollmentModule(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
         dataEntryRepository: EnrollmentRepository,
-        networkUtils: NetworkUtils
+        networkUtils: NetworkUtils,
+        searchTEIRepository: SearchTEIRepository
     ): FormRepository {
         return FormRepositoryImpl(
             ValueStoreImpl(
@@ -222,7 +233,8 @@ class EnrollmentModule(
                 DhisEnrollmentUtils(d2),
                 enrollmentRepository,
                 crashReportController,
-                networkUtils
+                networkUtils,
+                searchTEIRepository
             ),
             FieldErrorMessageProvider(activityContext),
             DisplayNameProviderImpl(d2),

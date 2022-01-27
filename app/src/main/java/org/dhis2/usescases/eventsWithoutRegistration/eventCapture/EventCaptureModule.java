@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
@@ -15,6 +16,8 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -118,15 +121,22 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController, NetworkUtils networkUtils) {
+    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController, NetworkUtils networkUtils, SearchTEIRepository searchTEIRepository) {
         return new ValueStoreImpl(
                 d2,
                 eventUid,
                 DataEntryStore.EntryMode.DE,
                 new DhisEnrollmentUtils(d2),
                 crashReportController,
-                networkUtils
+                networkUtils,
+                searchTEIRepository
         );
+    }
+
+    @Provides
+    @PerActivity
+    SearchTEIRepository searchTEIRepository(D2 d2){
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
     }
 
     @Provides
@@ -141,7 +151,8 @@ public class EventCaptureModule {
             @NonNull D2 d2,
             org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
             CrashReportController crashReportController,
-            NetworkUtils networkUtils
+            NetworkUtils networkUtils,
+            SearchTEIRepository searchTEIRepository
     ) {
         return new FormRepositoryImpl(
                 new ValueStoreImpl(
@@ -150,7 +161,8 @@ public class EventCaptureModule {
                         DataEntryStore.EntryMode.DE,
                         new DhisEnrollmentUtils(d2),
                         crashReportController,
-                        networkUtils
+                        networkUtils,
+                        searchTEIRepository
                 ),
                 new FieldErrorMessageProvider(activityContext),
                 new DisplayNameProviderImpl(d2),

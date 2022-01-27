@@ -9,6 +9,8 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.form.data.FormValueStore;
@@ -71,6 +73,12 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
+    SearchTEIRepository searchTEIRepository(D2 d2){
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
+    }
+
+    @Provides
+    @PerFragment
     TeiDataRepository providesRepository(D2 d2, DhisPeriodUtils periodUtils) {
         return new TeiDataRepositoryImpl(d2,
                 programUid,
@@ -90,7 +98,8 @@ public class TEIDataModule {
     FormValueStore valueStore(
             D2 d2,
             CrashReportController crashReportController,
-            NetworkUtils networkUtils
+            NetworkUtils networkUtils,
+            SearchTEIRepository searchTEIRepository
     ){
         return new ValueStoreImpl(
                 d2,
@@ -98,7 +107,8 @@ public class TEIDataModule {
                 DataEntryStore.EntryMode.ATTR,
                 new DhisEnrollmentUtils(d2),
                 crashReportController,
-                networkUtils
+                networkUtils,
+                searchTEIRepository
         );
     }
 }

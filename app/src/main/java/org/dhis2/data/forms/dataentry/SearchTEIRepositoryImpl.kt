@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 
 class SearchTEIRepositoryImpl(
     private val d2: D2,
@@ -20,10 +21,16 @@ class SearchTEIRepositoryImpl(
 
     val scope = CoroutineScope(Job() + Dispatchers.Main)
 
-    override fun isUniqueTEIAttributeOnline(uid: String, value: String?, teiUid: String): Boolean {
-        if (value == null) {
+    override fun isUniqueTEIAttributeOnline(
+        uid: String,
+        value: String?,
+        teiUid: String,
+        programUid: String
+    ): Boolean {
+        if (value == null || programUid == null) {
             return true
         }
+
         val attribute =
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
         val isUnique = attribute.unique() ?: false
@@ -33,6 +40,10 @@ class SearchTEIRepositoryImpl(
             val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
                 .allowOnlineCache()
                 .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram()
+                .eq(programUid)
                 .byAttribute(attribute.uid()).eq(value).blockingGet()
 
             if (teiList.isNullOrEmpty()) {
