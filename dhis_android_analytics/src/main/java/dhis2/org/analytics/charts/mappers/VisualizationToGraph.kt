@@ -47,6 +47,7 @@ class VisualizationToGraph(
     }
 
     fun mapToGraph(
+        customTitle: String?,
         visualization: Visualization,
         gridAnalyticsResponse: GridAnalyticsResponse,
         selectedRelativePeriod: RelativePeriod?,
@@ -57,7 +58,7 @@ class VisualizationToGraph(
         val formattedCategory = formatCategories(period, categories, gridAnalyticsResponse.metadata)
 
         return Graph(
-            title = visualization.displayName() ?: "",
+            title = customTitle ?: visualization.displayName() ?: "",
             series = getSeries(gridAnalyticsResponse, categories),
             periodToDisplayDefault = null,
             eventPeriodType = PeriodType.Monthly,
@@ -71,13 +72,14 @@ class VisualizationToGraph(
     }
 
     fun addErrorGraph(
+        customTitle: String?,
         visualization: Visualization,
         selectedRelativePeriod: RelativePeriod?,
         selectedOrgUnits: List<String>?,
         errorMessage: String
     ): Graph {
         return Graph(
-            title = visualization.displayName() ?: "",
+            title = customTitle ?: visualization.displayName() ?: "",
             series = emptyList(),
             periodToDisplayDefault = null,
             eventPeriodType = PeriodType.Monthly,

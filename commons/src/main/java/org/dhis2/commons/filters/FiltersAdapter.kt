@@ -23,7 +23,7 @@ class FiltersAdapter :
         viewType: Int
     ): FilterHolder {
         return FilterHolder(
-            DataBindingUtil.inflate<ViewDataBinding>(
+            DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
                 Filters.values()[viewType].layoutId,
                 parent,

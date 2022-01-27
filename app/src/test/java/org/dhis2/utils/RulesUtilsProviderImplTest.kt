@@ -611,6 +611,44 @@ class RulesUtilsProviderImplTest {
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
     }
 
+    @Test
+    fun `Should not assign value to a hidden field`() {
+        val testingUid = "uid3"
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionHideField.create("content", testingUid),
+                "data"
+            )
+        )
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid2",
+                RuleActionAssign.create("content", "data", testingUid),
+                "data"
+            )
+        )
+
+        whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
+            StoreResult(
+                testingUid,
+                ValueStoreResult.VALUE_CHANGED
+            )
+        )
+
+        val result = ruleUtils.applyRuleEffects(
+            true,
+            testFieldViewModels,
+            Result.success(testRuleEffects),
+            valueStore
+        )
+
+        Assert.assertFalse(testFieldViewModels.contains(testingUid))
+        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
+        verify(valueStore, times(0)).saveWithTypeCheck(testingUid, "data")
+        assertTrue(result.fieldsToUpdate.contains(testingUid))
+    }
+
     private fun mockD2OptionGroupCalls(optionGroupUid: String, vararg optionUidsToReturn: String) {
         whenever(
             d2.optionModule().optionGroups()

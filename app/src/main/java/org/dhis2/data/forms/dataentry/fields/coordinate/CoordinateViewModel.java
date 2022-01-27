@@ -160,6 +160,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
                     onCurrentLocationClick(GeometryHelper.createPointGeometry(lon, lat));
                 } else {
                     observableErrorMessage.set(coordinatesErrorMessage);
+                    return false;
                 }
             } else {
                 onCurrentLocationClick(null);

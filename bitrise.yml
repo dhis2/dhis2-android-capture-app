@@ -22,6 +22,8 @@ trigger_map:
   workflow: primary
 - push_branch: release/2.5
   workflow: primary
+- push_branch: release/2.5.1
+  workflow: primary
 - pull_request_target_branch: '*'
   workflow: primary
 workflows:
@@ -1436,7 +1438,7 @@ workflows:
             set -x
 
             if [[ -z "${TESTING_INDIVIDUAL}" ]]; then
-              envman add --key TESTING_INDIVIDUAL_INTERNAL --value "nancym.esp@gmail.com"
+              envman add --key TESTING_INDIVIDUAL_INTERNAL --value "nancy@dhis2.org"
             else
               envman add --key TESTING_INDIVIDUAL_INTERNAL --value "$TESTING_INDIVIDUAL"
             fi
