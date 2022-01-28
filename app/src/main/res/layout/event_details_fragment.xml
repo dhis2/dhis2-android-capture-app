@@ -31,6 +31,7 @@
                 android:background="@drawable/rounded_square"
                 android:contentDescription='@{viewModel.programStage.name()}'
                 android:padding="4dp"
+                app:set_icon_style='@{viewModel.objectStyle}'
                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 
             <LinearLayout
@@ -60,13 +61,10 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
+        <FrameLayout
+            android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blue_fab"
-            android:padding="10dp"
-            android:text="Hola"
-            android:textColor="@color/white" />
+            android:layout_height="300dp" />
 
     </LinearLayout>
 </layout>

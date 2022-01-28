@@ -2,6 +2,8 @@ package org.dhis2.form.data
 
 import io.reactivex.Flowable
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -11,7 +13,8 @@ import org.hisp.dhis.android.core.common.ValueType
 class EventInitialRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
-    private val d2: D2
+    private val d2: D2,
+    private val resourceManager: ResourceManager
 ) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val programStage = d2.eventModule()
@@ -36,7 +39,7 @@ class EventInitialRepository(
     private fun getEventReportDate(): FieldUiModel {
         return fieldFactory.create(
             id = UID,
-            label = programStage.dueDateLabel() ?:"Due date",
+            label = programStage.dueDateLabel() ?: resourceManager.getString(R.string.due_date),
             valueType = ValueType.DATE,
             mandatory = true,
             optionSet = null,
@@ -51,7 +54,7 @@ class EventInitialRepository(
             objectStyle = ObjectStyle.builder().build(),
             fieldMask = null,
             legendValue = null,
-            options =  null,
+            options = null,
             featureType = null
         )
     }
