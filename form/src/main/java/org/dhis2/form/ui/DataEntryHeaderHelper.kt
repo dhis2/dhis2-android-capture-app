@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.form.BR
-import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 
