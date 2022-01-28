@@ -89,8 +89,6 @@ public class SearchTEContractsModule {
 
         void couldNotDownload(String typeName);
 
-        void setFormData(List<FieldUiModel> data);
-
         void setInitialFilters(List<FilterItem> filtersToDisplay);
 
         void showClearSearch(boolean empty);

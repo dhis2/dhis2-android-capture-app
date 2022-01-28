@@ -3,7 +3,7 @@ ext {
             ndk     : "21.4.7075529",
             sdk     : 30,
             tools   : "30.0.3",
-            minSdk  : 19,
+            minSdk  : 21,
             vCode: 108,
             vName: "2.5.1"
     ]

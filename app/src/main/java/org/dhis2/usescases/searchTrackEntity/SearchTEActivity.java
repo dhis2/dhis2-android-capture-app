@@ -42,6 +42,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;
