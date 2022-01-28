@@ -183,7 +183,7 @@ class ValueStoreImpl(
     }
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return if (!networkUtils.isOnline()){
+        return if (!networkUtils.isOnline()) {
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
             val programUid = enrollmentRepository?.blockingGet()?.program()

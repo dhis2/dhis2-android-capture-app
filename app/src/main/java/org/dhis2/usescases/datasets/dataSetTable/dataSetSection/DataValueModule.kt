@@ -12,7 +12,6 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.usescases.searchTrackEntity.SearchRepositoryImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
