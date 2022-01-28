@@ -660,7 +660,7 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
         )
 
