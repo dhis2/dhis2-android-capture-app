@@ -31,6 +31,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -156,6 +158,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private FieldUiModel currentGeometryModel;
     private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
 
+    public EventInitialComponent eventInitialComponent;
+
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
                                    String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
@@ -191,12 +195,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         initVariables();
-        ((App) getApplicationContext()).userComponent().plus(
+        eventInitialComponent = ((App) getApplicationContext()).userComponent().plus(
                 new EventInitialModule(this,
                         eventUid,
                         programStageUid,
                         getContext())
-        ).inject(this);
+        );
+        eventInitialComponent.inject(this);
         setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
@@ -206,6 +211,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         initProgressBar();
 
         setUpScreenByCreationType();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("eventUid", eventUid);
+
+        Fragment eventDetailsFragment = new EventDetailsFragment();
+        eventDetailsFragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.formViewContainer, eventDetailsFragment).commit();
 
         initActionButton();
         binding.actionButton.setEnabled(true);

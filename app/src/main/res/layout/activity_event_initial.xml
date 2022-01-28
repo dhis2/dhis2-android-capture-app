@@ -113,6 +113,12 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <FrameLayout
+                        android:id="@+id/formViewContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/form_field_background"/>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
