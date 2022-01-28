@@ -18,7 +18,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventCreationType
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.event.Event

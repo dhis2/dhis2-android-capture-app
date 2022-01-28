@@ -27,7 +27,7 @@ import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.utils.EventCreationType;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
 import org.dhis2.form.data.RuleUtilsProviderResult;

@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.EventCreationType;
+import org.dhis2.commons.data.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
