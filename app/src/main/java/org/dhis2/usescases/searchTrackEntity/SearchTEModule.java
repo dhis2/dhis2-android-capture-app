@@ -256,7 +256,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository) {
-        return new SearchPageConfigurator(searchRepository);
+    NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
+        return new SearchPageConfigurator(searchRepository, schedulerProvider);
     }
 }

@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.form.BR
 import org.dhis2.form.model.SectionUiModelImpl
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 
 const val NO_POSITION = -1
 
@@ -76,6 +79,17 @@ class DataEntryHeaderHelper(
             }
             headerContainer.removeAllViews()
             headerContainer.addView(sectionHolder.itemView)
+            section.setCallback(
+                object : FieldUiModel.Callback {
+                    override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
+                        dataEntryAdapter.recyclerViewEvent(uiEvent)
+                    }
+
+                    override fun intent(intent: FormIntent) {
+                        dataEntryAdapter.intent(intent)
+                    }
+                }
+            )
             binding.setVariable(BR.item, section)
         } else {
             headerContainer.removeAllViews()

@@ -248,18 +248,21 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setInitialValue(String initialValue) {
-        Date initialDate = StringExtensionsKt.toDate(initialValue);
+        try {
+            Date initialDate = StringExtensionsKt.toDate(initialValue);
+            if (initialDate != null) {
+                String result = dateFormat.format(initialDate);
+                selectedCalendar.setTime(initialDate);
 
-        if (initialDate != null) {
-            String result = dateFormat.format(initialDate);
-            selectedCalendar.setTime(initialDate);
+                int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+                day.setText(String.valueOf(dateDifference[2]));
+                month.setText(String.valueOf(dateDifference[1]));
+                year.setText(String.valueOf(dateDifference[0]));
 
-            int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-            day.setText(String.valueOf(dateDifference[2]));
-            month.setText(String.valueOf(dateDifference[1]));
-            year.setText(String.valueOf(dateDifference[0]));
-
-            date.setText(result);
+                date.setText(result);
+            }
+        } catch (Exception e) {
+            date.setError(e.getMessage());
         }
     }
 

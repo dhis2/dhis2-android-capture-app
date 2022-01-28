@@ -36,7 +36,7 @@ internal class StageViewHolder(
         binding.programStageIcon.setImageResource(
             ResourceManager(itemView.context).getObjectStyleDrawableResource(
                 stage.style().icon(),
-                R.drawable.ic_program_default
+                R.drawable.ic_default_outline
             )
         )
         binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color))

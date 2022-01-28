@@ -40,6 +40,7 @@ import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.search.SearchParametersModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
@@ -52,6 +53,7 @@ import org.dhis2.maps.model.EventUiComponentModel;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModelExtensionsKt;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelKt;
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -196,7 +198,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribe(
                         filters -> {
                             if (!filters.isEmpty()) {
-                                view.setFilters(filters);
+                                view.setInitialFilters(filters);
                             }
                         }
                         , Timber::e
@@ -790,9 +792,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public Drawable getEnrollmentSymbolIcon() {
         if (selectedProgram != null) {
             if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
-                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
+                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_default_outline);
             } else
-                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_program_default);
+                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_outline);
         }
 
         return null;

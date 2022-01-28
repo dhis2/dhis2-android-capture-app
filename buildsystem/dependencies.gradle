@@ -3,13 +3,13 @@ ext {
             ndk     : "21.4.7075529",
             sdk     : 30,
             tools   : "30.0.3",
-            minSdk  : 21,
-            vCode: 107,
-            vName: "2.5"
+            minSdk  : 19,
+            vCode: 108,
+            vName: "2.5.1"
     ]
     libraries = [
             //DHIS2
-            dhis2sdk                  : "1.5.0",
+            dhis2sdk                  : "1.5.1",
             ruleEngine                : "2.0.27",
 
             //androidX
