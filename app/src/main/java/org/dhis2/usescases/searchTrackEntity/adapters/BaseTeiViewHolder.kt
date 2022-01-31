@@ -53,7 +53,7 @@ abstract class BaseTeiViewHolder(
             binding.setFollowUp(enrollments.hasFollowUp())
             programInfo.addEnrollmentIcons(
                 itemView.context,
-                binding.programList,
+                binding.composeProgramList,
                 if (selectedEnrollment != null) selectedEnrollment.program() else null
             )
             if (selectedEnrollment != null) {

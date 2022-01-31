@@ -30,17 +30,12 @@
                     android:layout_height="match_parent"
                     android:layout_margin="8dp">
 
-                    <ImageView
-                        android:id="@+id/dataSetIcon"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/rounded_square_4dp"
-                        android:padding="4dp"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/composeDataSetIcon"
+                        android:layout_width="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_clinical_f_outline"
-                        tools:backgroundTint="?colorPrimary"
-                        tools:tint="@color/white" />
+                        android:layout_height="wrap_content"/>
 
                     <TextView
                         android:id="@+id/dataSetStatus"
@@ -53,7 +48,7 @@
                         android:textColor="@color/textPrimary"
                         android:textSize="9sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dataSetIcon"
+                        app:layout_constraintTop_toBottomOf="@id/composeDataSetIcon"
                         tools:backgroundTint="@color/green_7ed"
                         tools:text="Open" />
 
@@ -75,8 +70,8 @@
                         android:layout_marginStart="8dp"
                         android:textColor="@color/textPrimary"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@id/dataSetIcon"
-                        app:layout_constraintTop_toTopOf="@id/dataSetIcon"
+                        app:layout_constraintStart_toEndOf="@id/composeDataSetIcon"
+                        app:layout_constraintTop_toTopOf="@id/composeDataSetIcon"
                         tools:text="Child Health" />
 
                     <TextView

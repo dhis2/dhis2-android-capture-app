@@ -14,26 +14,35 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.commons.R
 import org.dhis2.commons.bindings.dp
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
+import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.data.SearchTeiModel
-import org.dhis2.commons.databinding.ItemFieldValueBinding
+import org.dhis2.commons.ui.MetadataIcon
+import org.dhis2.commons.ui.MetadataIconData
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
@@ -43,32 +52,42 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
     } ?: false
 }
 
-fun List<Program>.addEnrollmentIcons(context: Context, parent: ViewGroup, currentProgram: String?) {
-    parent.removeAllViews()
-    filter { it.uid() != currentProgram }
-        .forEach { program ->
-            val color = ColorUtils.getColorFrom(
-                program.style().color(),
-                ColorUtils.getPrimaryColor(
-                    context,
-                    ColorUtils.ColorType.PRIMARY
-                )
-            )
-            val imageResource =
-                ResourceManager(context)
-                    .getObjectStyleDrawableResource(
-                        program.style().icon(),
-                        -1
-                    )
-            val imageView =
-                ImageView(context)
-            val params = LinearLayout.LayoutParams(24.dp, 24.dp)
-            params.marginEnd = 4
-            imageView.layoutParams = params
-            imageView.setImageDrawable(getProgramDrawable(context, color, imageResource))
-            imageView.setPadding(0, 0, 0, 0)
-            parent.addView(imageView)
+fun List<Program>.addEnrollmentIcons(context: Context, parent: ComposeView, currentProgram: String?) {
+
+    parent.apply {
+        setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        setContent {
+            MdcTheme {
+                Row(horizontalArrangement = spacedBy(Dp(4f))) {
+                    filter { it.uid() != currentProgram }
+                        .forEach { program ->
+                            val color = ColorUtils.getColorFrom(
+                                program.style().color(),
+                                ColorUtils.getPrimaryColor(
+                                    context,
+                                    ColorUtils.ColorType.PRIMARY
+                                )
+                            )
+                            val imageResource =
+                                ResourceManager(context)
+                                    .getObjectStyleDrawableResource(
+                                        program.style().icon(),
+                                        -1
+                                    )
+                            MetadataIcon(
+                                metadataIconData = MetadataIconData(
+                                    programColor = color,
+                                    iconResource = imageResource,
+                                    sizeInDp = 24
+                                )
+                            )
+                        }
+                }
+            }
         }
+    }
 }
 
 private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawable? {

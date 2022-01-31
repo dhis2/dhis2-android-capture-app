@@ -55,6 +55,8 @@ import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.ui.intent.FormIntent;
+import org.dhis2.commons.ui.MetadataIconData;
+import org.dhis2.commons.ui.MetadataIconKt;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -704,20 +706,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void renderObjectStyle(ObjectStyle data) {
         int color = ColorUtils.getColorFrom(data.color(),
                 ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT));
-        binding.programStageIcon.setBackground(
-                ColorUtils.tintDrawableWithColor(
-                        binding.programStageIcon.getBackground(),
-                        color
-                )
-        );
-        binding.programStageIcon.setImageResource(
-                new ResourceManager(this).getObjectStyleDrawableResource(
-                        data.icon(),
-                        R.drawable.ic_default_outline
-                )
-        );
-        binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color));
 
+        int resource = new ResourceManager(this).getObjectStyleDrawableResource(
+                data.icon(),
+                R.drawable.ic_default_outline
+        );
+
+        MetadataIconKt.setUpMetadataIcon(
+                binding.composeStageIcon,
+                new MetadataIconData(
+                        color,
+                        resource,
+                        48
+                )
+        );
     }
 
     @Override

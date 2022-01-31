@@ -1,6 +1,8 @@
 package org.dhis2.usescases.main.program
 
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -16,7 +18,7 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         val color = ColorUtils.getColorFrom(
             programViewModel.color(),
             ColorUtils.getPrimaryColor(
-                binding.programImage.context,
+                itemView.context,
                 ColorUtils.ColorType.PRIMARY_LIGHT
             )
         )
@@ -33,9 +35,7 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
             )
         )
 
-        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color))
-
-        itemView.setOnClickListener { v ->
+        itemView.setOnClickListener {
             val programTheme = ColorUtils.getThemeFromColor(programViewModel.color())
             presenter.onItemClick(programViewModel, programTheme)
         }
