@@ -13,23 +13,16 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class EventDetailRepository(
     private val fieldFactory: FieldViewModelFactory,
-    eventUid: String,
+    eventUid: String?,
     private val d2: D2,
     private val resourceManager: ResourceManager,
-    eventCreationType: String?
+    eventCreationType: String?,
+    programStageUid: String
 ) : DataEntryBaseRepository(d2, fieldFactory) {
 
-    private val programStage = d2.eventModule()
-        .events()
-        .byUid()
-        .eq(eventUid).one().blockingGet().let {
-            d2.programModule()
-                .programStages()
-                .byUid()
-                .eq(it.programStage()).one().blockingGet()
-        }
+    private val programStage = d2.programModule().programStages().uid(programStageUid).blockingGet()
 
-    private val event = d2.eventModule().events().uid(eventUid).blockingGet()
+    private val event = eventUid?.let { d2.eventModule().events().uid(it).blockingGet() }
 
     private val creationType = eventCreationType?.let {
         EventCreationType.valueOf(it)
@@ -48,7 +41,7 @@ class EventDetailRepository(
             label = getEventLabel(),
             valueType = ValueType.DATE,
             mandatory = false,
-            value = event.eventDate()?.let { DateUtils.oldUiDateFormat().format(it) },
+            value = event?.eventDate()?.let { DateUtils.oldUiDateFormat().format(it) },
             allowFutureDates = false,
             editable = true,
             description = programStage.description(),

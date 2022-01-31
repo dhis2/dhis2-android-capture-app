@@ -35,9 +35,10 @@ class EventDetailsFragment : Fragment() {
     ): View {
         (activity as EventInitialActivity).eventInitialComponent.plus(
             EventDetailsModule(
-                eventUid = requireArguments().getString(Constants.EVENT_UID)!!,
+                eventUid = requireArguments().getString(Constants.EVENT_UID),
                 context = requireContext(),
-                eventCreationType = requireArguments().getString(Constants.EVENT_CREATION_TYPE)
+                eventCreationType = requireArguments().getString(Constants.EVENT_CREATION_TYPE),
+                programStageUid = requireArguments().getString(Constants.PROGRAM_STAGE_UID)!!
             )
         ).inject(this)
         binding = DataBindingUtil.inflate(

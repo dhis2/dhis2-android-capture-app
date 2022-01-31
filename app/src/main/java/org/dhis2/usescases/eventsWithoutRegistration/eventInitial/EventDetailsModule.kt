@@ -25,15 +25,16 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 class EventDetailsModule(
-    val eventUid: String,
+    val eventUid: String?,
     val context: Context,
-    val eventCreationType: String?
+    val eventCreationType: String?,
+    val programStageUid: String
 ) {
 
     @Provides
     @PerFragment
     fun eventDetailsViewModelFactory(d2: D2): EventDetailsViewModelFactory {
-        return EventDetailsViewModelFactory(eventUid, d2)
+        return EventDetailsViewModelFactory(programStageUid, d2)
     }
 
     @Provides
@@ -71,6 +72,7 @@ class EventDetailsModule(
             eventUid,
             d2,
             resourceManager,
-            eventCreationType
+            eventCreationType,
+            programStageUid
         )
 }

@@ -215,6 +215,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
 
         Fragment eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);

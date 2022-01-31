@@ -13,7 +13,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.ProgramStage
 
 class EventDetailsViewModel(
-    eventUid: String,
+    programStageUid: String,
     val d2: D2
 ) : ViewModel() {
 
@@ -26,15 +26,7 @@ class EventDetailsViewModel(
     init {
         viewModelScope.launch {
             _programStage.value = withContext(IO) {
-                d2.eventModule()
-                    .events()
-                    .byUid()
-                    .eq(eventUid).one().blockingGet().let {
-                        d2.programModule()
-                            .programStages()
-                            .byUid()
-                            .eq(it.programStage()).one().blockingGet()
-                    }
+                d2.programModule().programStages().uid(programStageUid).blockingGet()
             }
 
             programStage.collect { programStage ->
