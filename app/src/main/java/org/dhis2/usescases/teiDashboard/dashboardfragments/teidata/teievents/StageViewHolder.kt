@@ -33,15 +33,18 @@ internal class StageViewHolder(
             )
         )
 
-        binding.programStageIcon.background =
-            ColorUtils.tintDrawableWithColor(binding.programStageIcon.background, color)
-        binding.programStageIcon.setImageResource(
-            ResourceManager(itemView.context).getObjectStyleDrawableResource(
-                stage.style().icon(),
-                R.drawable.ic_default_outline
+        val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
+            stage.style().icon(),
+            R.drawable.ic_default_outline
+        )
+
+        binding.composeProgramStageIcon.setUpMetadataIcon(
+            MetadataIconData(
+                programColor = color,
+                iconResource = iconResource,
+                sizeInDp = 40
             )
         )
-        binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color))
 
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
 
