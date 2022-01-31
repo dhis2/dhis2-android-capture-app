@@ -213,7 +213,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         setUpScreenByCreationType();
 
         Bundle bundle = new Bundle();
-        bundle.putString("eventUid", eventUid);
+        bundle.putString(Constants.EVENT_UID, eventUid);
+        bundle.putString(Constants.EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
 
         Fragment eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);

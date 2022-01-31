@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -10,11 +11,12 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 
-class EventInitialRepository(
+class EventDetailRepository(
     private val fieldFactory: FieldViewModelFactory,
-    private val eventUid: String,
+    eventUid: String,
     private val d2: D2,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
+    eventCreationType: String?
 ) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val programStage = d2.eventModule()
@@ -29,6 +31,10 @@ class EventInitialRepository(
 
     private val event = d2.eventModule().events().uid(eventUid).blockingGet()
 
+    private val creationType = eventCreationType?.let {
+        EventCreationType.valueOf(it)
+    } ?: EventCreationType.DEFAULT
+
     override fun list(): Flowable<MutableList<FieldUiModel>> {
         val eventInitialList = ArrayList<FieldUiModel>().apply {
             add(getEventReportDate())
@@ -39,29 +45,30 @@ class EventInitialRepository(
     private fun getEventReportDate(): FieldUiModel {
         return fieldFactory.create(
             id = UID,
-            label = programStage.dueDateLabel() ?: resourceManager.getString(R.string.due_date),
+            label = getEventLabel(),
             valueType = ValueType.DATE,
-            mandatory = true,
-            optionSet = null,
+            mandatory = false,
             value = event.eventDate()?.let { DateUtils.oldUiDateFormat().format(it) },
-            programStageSection = null,
             allowFutureDates = false,
             editable = true,
-            renderingType = null,
             description = programStage.description(),
-            fieldRendering = null,
-            optionCount = null,
-            objectStyle = ObjectStyle.builder().build(),
-            fieldMask = null,
-            legendValue = null,
-            options = null,
-            featureType = null
+            objectStyle = ObjectStyle.builder().build()
         )
     }
 
     override fun sectionUids() = Flowable.just(emptyList<String>())
 
     override fun isEvent() = true
+
+    private fun getEventLabel(): String {
+        return when (creationType) {
+            EventCreationType.SCHEDULE ->
+                programStage.dueDateLabel() ?: resourceManager.getString(R.string.due_date)
+            else -> {
+                programStage.executionDateLabel() ?: resourceManager.getString(R.string.event_date)
+            }
+        }
+    }
 
     companion object {
         const val UID = "EVENT_INITIAL_UID"

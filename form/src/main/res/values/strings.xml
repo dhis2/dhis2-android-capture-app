@@ -47,4 +47,5 @@
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_text">Enter text</string>
     <string name="due_date">Due date</string>
+    <string name="event_date">Event date</string>
 </resources>

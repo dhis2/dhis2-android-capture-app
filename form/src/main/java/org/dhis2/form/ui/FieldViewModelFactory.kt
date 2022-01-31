@@ -16,19 +16,19 @@ interface FieldViewModelFactory {
         label: String,
         valueType: ValueType,
         mandatory: Boolean,
-        optionSet: String?,
-        value: String?,
-        programStageSection: String?,
-        allowFutureDates: Boolean?,
+        optionSet: String? = null,
+        value: String? = null,
+        programStageSection: String? = null,
+        allowFutureDates: Boolean? = null,
         editable: Boolean,
-        renderingType: SectionRenderingType?,
+        renderingType: SectionRenderingType? = null,
         description: String?,
-        fieldRendering: ValueTypeDeviceRendering?,
-        optionCount: Int?,
+        fieldRendering: ValueTypeDeviceRendering? = null,
+        optionCount: Int? = null,
         objectStyle: ObjectStyle,
-        fieldMask: String?,
-        options: List<Option>?,
-        featureType: FeatureType?
+        fieldMask: String? = null,
+        options: List<Option>? = null,
+        featureType: FeatureType? = null
     ): FieldUiModel
 
     fun createForAttribute(

@@ -11,6 +11,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.form.data.FormRepository
+import org.dhis2.utils.Constants
 import javax.inject.Inject
 
 class EventDetailsFragment : Fragment() {
@@ -34,8 +35,9 @@ class EventDetailsFragment : Fragment() {
     ): View {
         (activity as EventInitialActivity).eventInitialComponent.plus(
             EventDetailsModule(
-                eventUid = requireArguments().getString("eventUid")!!,
-                context = requireContext()
+                eventUid = requireArguments().getString(Constants.EVENT_UID)!!,
+                context = requireContext(),
+                eventCreationType = requireArguments().getString(Constants.EVENT_CREATION_TYPE)
             )
         ).inject(this)
         binding = DataBindingUtil.inflate(

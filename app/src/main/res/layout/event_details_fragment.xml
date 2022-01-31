@@ -64,7 +64,7 @@
         <FrameLayout
             android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="150dp" />
 
     </LinearLayout>
 </layout>
