@@ -1666,7 +1666,7 @@ workflows:
     - script@1:
         title: Clone Settings Web App
         inputs:
-        - content: |+
+        - content: |-
             #!/usr/bin/env bash
             set -e
             set -x
