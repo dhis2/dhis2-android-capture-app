@@ -1693,7 +1693,7 @@ workflows:
         - command: install
     - script@1:
         inputs:
-        - content: |
+        - content: |-
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
@@ -1712,6 +1712,8 @@ workflows:
             #cd ..
 
             ls -la
+
+            d2 --version
     - npm@1:
         inputs:
         - command: run start
