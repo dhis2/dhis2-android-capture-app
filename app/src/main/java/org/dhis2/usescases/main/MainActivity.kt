@@ -325,6 +325,9 @@ class MainActivity :
             R.id.menu_home -> {
                 mainNavigator.openHome(binding.navigationBar)
             }
+            R.id.menu_troubleshooting -> {
+                mainNavigator.openTroubleShooting()
+            }
         }
 
         if (backDropActive && mainNavigator.isPrograms()) {

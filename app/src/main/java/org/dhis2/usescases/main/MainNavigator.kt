@@ -14,6 +14,7 @@ import org.dhis2.usescases.jira.JiraFragment
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
+import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
 import org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
 
 class MainNavigator(
@@ -30,6 +31,7 @@ class MainNavigator(
         VISUALIZATIONS(R.string.done_task, R.id.menu_home),
         QR(R.string.QR_SCANNER, R.id.qr_scan),
         SETTINGS(R.string.SYNC_MANAGER, R.id.sync_manager),
+        TROUBLESHOOTING(R.string.main_menu_troubleshooting, R.id.menu_troubleshooting),
         JIRA(R.string.jira_report, R.id.menu_jira),
         ABOUT(R.string.about, R.id.menu_about)
     }
@@ -85,6 +87,7 @@ class MainNavigator(
             MainScreen.SETTINGS -> openSettings()
             MainScreen.JIRA -> openJira()
             MainScreen.ABOUT -> openAbout()
+            MainScreen.TROUBLESHOOTING -> openTroubleShooting()
         }
     }
 
@@ -125,6 +128,12 @@ class MainNavigator(
     fun openAbout() {
         beginTransaction(
             AboutFragment(), MainScreen.ABOUT
+        )
+    }
+
+    fun openTroubleShooting(){
+        beginTransaction(
+            TroubleshootingFragment(), MainScreen.TROUBLESHOOTING
         )
     }
 
