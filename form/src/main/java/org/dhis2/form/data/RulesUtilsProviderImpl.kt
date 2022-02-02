@@ -35,10 +35,12 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val optionGroupsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToShow = mutableMapOf<String, MutableList<String>>()
     var fieldsToUpdate = mutableListOf<String>()
+    var hiddenFields = mutableListOf<String>()
     val configurationErrors = mutableListOf<RulesUtilsProviderConfigurationError>()
     var valueStore: FormValueStore? = null
     var currentRuleUid: String? = null
     val stagesToHide = mutableListOf<String>()
+    private val valuesToChange = mutableMapOf<String, String?>()
 
     override fun applyRuleEffects(
         applyForEvent: Boolean,
@@ -56,7 +58,9 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
         optionGroupsToHide.clear()
         optionGroupsToShow.clear()
         fieldsToUpdate.clear()
+        hiddenFields.clear()
         configurationErrors.clear()
+        valuesToChange.clear()
         this.valueStore = valueStore
 
         calcResult.forEach {
@@ -126,6 +130,12 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     it.ruleAction() as RuleActionShowOptionGroup
                 )
                 else -> it.ruleId()?.let { ruleUid -> unsupportedRuleActions.add(ruleUid) }
+            }
+        }
+
+        valuesToChange.entries.forEach {
+            if (save(it.key, it.value) == ValueStoreResult.VALUE_CHANGED) {
+                fieldsToUpdate.add(it.key)
             }
         }
 
@@ -225,9 +235,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     ) {
         if (fieldViewModels[hideField.field()]?.mandatory != true) {
             fieldViewModels.remove(hideField.field())
-            if (save(hideField.field(), null) == ValueStoreResult.VALUE_CHANGED) {
-                fieldsToUpdate.add(hideField.field())
-            }
+            valuesToChange[hideField.field()] = null
+            hiddenFields.add(hideField.field())
         }
     }
 
@@ -284,12 +293,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                     field.value
                 }
 
-            if ((value == null || value != ruleEffect.data()) && save(
-                assign.field(),
-                ruleEffect.data()
-            ) == ValueStoreResult.VALUE_CHANGED
-            ) {
-                fieldsToUpdate.add(assign.field())
+            if (value == null || value != ruleEffect.data()) {
+                valuesToChange[assign.field()] = ruleEffect.data()
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
@@ -320,8 +325,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 fieldViewModels[assign.field()]!!
                     .setValue(valueToShow)
                     .setEditable(false)
-        } else {
-            save(assign.field(), ruleEffect.data())
+        } else if (!hiddenFields.contains(assign.field())) {
+            valuesToChange[assign.field()] = ruleEffect.data()
         }
     }
 

@@ -2,7 +2,6 @@
 
 ## Login { #capture_app_generic_login }
 
-
 There are two ways to access the application:
 
 1. Manual: The user must type the corresponding URL of the server to be used and enter the username and password.
@@ -11,32 +10,32 @@ There are two ways to access the application:
     >
     > Take note that login is only possible with servers from version 2.29.
 
-2. QR: The user can use a QR code instead of typing the URL. Username and password must be entered manually.
+2. QR: The user can use a QR code instead of typing the URL but username and password must be entered manually.
 
-    > **Note**
-    >
-    > After the first login, the app will suggest URL and username of all successful connections.
-    >
-    > You are able to make an *offline* login only if using the same user as the last online session.
- 
 ![](resources/images/capture-app-image63.png){ width=25%}
+
+> **Note**
+>
+> 1. After a succesful login the DHIS2 Android App will keep these values cached (URL and username) and will suggest them for future connections without having to type them.
+>
+
+After a succesful login the user should be able to perform an *offline* login only (only avaialble for the last combination of URL/Username). Offline usage gives the possiblity of using the application withou any type of connectivity. All data will still be stored and user can perform a synchornization once the connection is restablished or avaialble.
+ 
 
 > **Warning**
 > 
 > In DHIS2 versions up to 2.30 if a user attemps an on-line login and their account has been disabled as explained in the [DHIS 2 Manual - Disable User](https://docs.dhis2.org/master/en/user/html/dhis2_user_manual_en_full.html#disable_user) all the data will be wiped from the phone. Make sure that before disabling a user all the data has been synced or that you are using this feature to remotely wipe sensitive data in case of a device getting lost.
 >
-> Due to a change in the login API this feature is not available in 2.31, 2.32 and 2.33.
+> Due to a change in the login API this feature is not available in 2.31, 2.32, 2.33, 2.34, 2.35 and 2.36.
 
 
 ## Account Recovery { #capture_app_generic_recovery }
-
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
 
 ![](resources/images/capture-app-image64.PNG){ width=25%}
 
 ## Blocking session (PIN) { #capture_app_generic_PIN }
-
 
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
@@ -45,7 +44,6 @@ If the user forgets the PIN number, log in by entering the credentials is also a
 ![](resources/images/capture-app-image63.jpg){width=25%}
 
 ## Fingerprint { #capture_app_generic_fingerprint }
-
 
 User is able to use the fingerprint scanner if the feature is activated in the device.
 
@@ -56,7 +54,6 @@ User is able to use the fingerprint scanner if the feature is activated in the d
 ![](resources/images/capture-app-image105.jpg){width=25%}
 
 ## Instructions/information buttons { #capture_app_generic_instructions }
-
 
 A contextual guide is available in Event details and TEI dashboard screen.
 
@@ -69,11 +66,7 @@ A contextual guide is available in Event details and TEI dashboard screen.
 
 ## Filter { #capture_app_generic_filter }
 
-
-<!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
-The app has new and improved filters for all listing screens (home, event listing, tei search and dataSets).
-
-Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
+A filter can be applied in all listing screens (home, event listing, tei search and dataSets) which narrows down the data displayed. The filters available are: period, org. unit, sync state, event status, category option combination and "assigned to me".
 
 ![](resources/images/capture-app-image19.png){ width=25%}
 ![](resources/images/capture-app-image123.png){ width=25%}
@@ -107,7 +100,7 @@ Filter the Events, TEIs(based on their events) and data sets, the following peri
 
 ### Org. Unit (Improved 2.5) { #capture_app_generic_filter_orgunit }
 
-Allows the user to type the search or select an org unit from the tree. The filter will not be visible if the user has only one Organisation Unit configured.
+Allows the user to type the search or select an organisation unit from the tree. The filter will not be visible if the user has only one Organisation Unit configured.
 
 ### Sync { #capture_app_generic_filter_sync }
 
@@ -164,7 +157,7 @@ The sorting button will be on the filter bars with the following behavior:
 - Event Date preceds due date, only use due date when there is no event date.
 - Order from most recent to less recent. Future events (due date) goes first.
 
-### Org units { #capture_app_generic_sorting_orgunits }
+### Org. Unit { #capture_app_generic_sorting_orgunits }
 
 - List will be sorted in alphabetical order by org unit name.
 
@@ -175,16 +168,15 @@ The sorting button will be on the filter bars with the following behavior:
 
 ## Sync Information { #capture_app_generic_sync_info }
 
-
-Allows the user to check sync information for a specific program. Now the synced records will not show any icon. Only unsynced, error or SMS icons will be displayed.
+Next to each program or data set an icon will be displayed which allows the user to check sync information. Synced records will not show display any icon. Unsynced (grey arrows), error (red arrows), warning (orange) or SMS (blue and including the SMS word inside) icons are be displayed according to the status.
 
 ![](resources/images/capture-app-image67.png){ width=20%}
 ![](resources/images/capture-app-image69.png){ width=20%}
+![](resources/images/capture-app-sync-status.png){ width=20%}
 
 ### Granular Sync { #capture_app_generic_sync_granular }
 
-
-Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) with the server.
+Users can click on the grey arrows (which means record(s) stored online in the device) to perform a sync. These options are available at top level (programs/dataset) or individually (TEI, events, datavalues).
 
 ![](resources/images/capture-app-image89.png){ width=25%}
 ![](resources/images/capture-app-image161.png){ width=25%}
@@ -192,24 +184,33 @@ Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) wit
 
 ### SMS Sync { #capture_app_generic_sync_sms }
 
-
-When there is no internet conexion, it allows to send a record though several SMS messages.
-The record is marked as “SMS synced”.
+When there is no Internet conection (either via WiFi or Mobile Data) but there is still mobile conectivity, users can synchronize via SMS if the gateway has been previously established in the app and properly configured at server level. The information will be sent via one or more SMS messages and the status will be updated to display either error or marked as “SMS synced”.
 
 ![](resources/images/capture-app-image91.png){ width=25%}
 
 > **Tip**
 >
->  Edit parameters related to SMS gateway in the SMS Settings (Settings Menu)
+>  Edit parameters related to SMS gateway in the SMS Settings (Settings Menu) or set this globally via the [#capture_app_android_settings_webapp_general](Android Settings Web App)
 
 ![](resources/images/capture-app-image90.png){ width=25%}
 
 > **Note**
 >
->  Note that in order to user the SMS sync capabilities the SMS services needs to be enabled in the server side as described in the (official documentation)[https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html#sms-service]. You can also find more information on how to use different gateways in the (Android Implementation Guidelines)[https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/about-this-guide.html].
+>  Note that in order to user the SMS sync capabilities the SMS services needs to be enabled in the server side as described in the [https://docs.dhis2.org/master/en/dhis2_user_manual_en/mobile.html#sms-service](oficial documentation). You can also find more information on how to use different gateways in the [https://docs.dhis2.org/master/en/dhis2_android_implementation_guideline/about-this-guide.html](Android Implementation Guidelines)
+
+### Meta data sync error { #capture_app_visual_sync_error }
+
+In case of errors during the sync process, a message is displayed in the settings menu ('Sync data' or 'Sync configuration' section). Also, a red sync icon is displayed next to the program in the Home screen. The sync error log gives details about the error and is prepared to be shared with admins.
+
+![](resources/images/capture-app-image43.jpg){ width=25%}
+![](resources/images/capture-app-image11.png){ width=25%}
+
+You can also open the sync errors log from **Settings**:
+
+![](resources/images/capture-app-image15.jpg){ width=25%}
+
 
 ## Org unit { #capture_app_generic_orgunit }
-
 
 ![](resources/images/capture-app-image30.png){ width=25%}
 
@@ -221,8 +222,8 @@ User must check the box to select the org unit wanted.
 >
 >  Mobile users are not expected to access the org. unit hierarchy of a whole country. Maximum number of org units is difficult to set, as the App does not set the limit, but the resources on the device (memory, processor). We could say below 250 org units should be safe, but still believe that is a very big number for a mobile use case.
 
-## Data Sets { #capture_app_generic_datasets }
 
+## Data Sets { #capture_app_generic_datasets }
 
 The user can now enter aggregate data for an organisation Unit, a period and a set of data elements and send it to the server.
 
@@ -230,8 +231,8 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 ![](resources/images/capture-app-image93.png){ width=25%}
 ![](resources/images/capture-app-image92.png){ width=25%}
 
-## Differentiating Data Sets, Tracker and Event programs { #capture_app_generic_differentiating }
 
+## Differentiating Data Sets, Tracker and Event programs { #capture_app_generic_differentiating }
 
 ![](resources/images/capture-app-image87.png){ width=25%}
 
@@ -239,17 +240,18 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 >
 >  An easy way to differentiate them is by looking at the word at the bottom left corner. The word 'Event' will always be in event programs. In tracker will appear the name of the tracked entity type (person, patient, building, etc.). For data sets, the word 'DataSets' will be shown next to the number of records.
 
+
 ## Sharing Data { #capture_app_generic_shargin }
 
+Users can share TEI via QR codes. This allows transferring/sharing information between devices without the need of transferring via the server (useful when connecitivity might be missing). To do this users should open any TEI and click on the *SHARE* button.
 
 ![](resources/images/capture-app-image72.png){ width=25%}
 ![](resources/images/capture-app-image73.png){ width=25%}
 
+
 ## Capture Coordinates { #capture_app_generic_capture_coord }
 
-
 ### TEI coordinates { #capture_app_generic_capture_coord_tei }
-
 
 Capture the TEI coordinates in the registration form.  Enable this feature in the TET feature type.
 
@@ -261,12 +263,10 @@ The app now supports the geoJSON format and the user is able to capture polygons
 
 ![](resources/images/capture-app-image95.png){ width=25%}
 
+
 ## Images { #capture_app_generic_images }
 
-
-ValueType image has been implemented app side.
-This allows to pick an image for a data element or attribute and send it to the server.
-For TEIs, the first data element/attribute with this value type and marked as displayed in list will be used as the TEI profile image.
+ValueType image can be used in Android to capture data and also, depending on the program configuration to be displayed in the TEI dashboard. When this value type the first data element/attribute marked as displayed in the program configuration it will be used as the TEI profile image.
 
 ![](resources/images/capture-app-image99.png){ width=25%}
 ![](resources/images/capture-app-image98.png){ width=25%}
@@ -276,8 +276,8 @@ Open the TEI profile image by clicking on it.
 
 ![](resources/images/capture-app-image138.png){ width=25%}
 
-## Display events and TEIs in maps { #capture_app_generic_display_events }
 
+## Display events and TEIs in maps { #capture_app_generic_display_events }
 
 When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map. Make the switch by clicking on the map icon in the navigation panel.
 

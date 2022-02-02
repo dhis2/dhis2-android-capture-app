@@ -100,7 +100,7 @@ class CarouselEventHolder(
             setImageResource(
                 ResourceManager(target.context).getObjectStyleDrawableResource(
                     icon,
-                    R.drawable.ic_program_default
+                    R.drawable.ic_default_outline
                 )
             )
             setColorFilter(ColorUtils.getContrastColor(stageColor))

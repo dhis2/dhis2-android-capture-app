@@ -150,7 +150,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.stageIconImage.setImageResource(
                 new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(
                         style.icon(),
-                        R.drawable.ic_program_default
+                        R.drawable.ic_default_outline
                 ));
         binding.stageIconImage.setColorFilter(ColorUtils.getContrastColor(color));
     }

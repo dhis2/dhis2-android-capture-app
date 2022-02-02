@@ -713,7 +713,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.programStageIcon.setImageResource(
                 new ResourceManager(this).getObjectStyleDrawableResource(
                         data.icon(),
-                        R.drawable.ic_program_default
+                        R.drawable.ic_default_outline
                 )
         );
         binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color));

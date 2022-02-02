@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
+import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -114,6 +115,12 @@ public class SyncMetadataWorker extends Worker {
         }
     }
 
+    @Override
+    public void onStopped() {
+        cancelNotification();
+        super.onStopped();
+    }
+
     private Data createOutputData(boolean state, String message) {
         return new Data.Builder()
                 .putBoolean(METADATA_STATE, state)
@@ -185,7 +192,7 @@ public class SyncMetadataWorker extends Worker {
                         .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        notificationManager.notify(SyncMetadataWorker.SYNC_METADATA_ID, notificationBuilder.build());
+        setForegroundAsync(new ForegroundInfo(SyncMetadataWorker.SYNC_METADATA_ID, notificationBuilder.build()));
     }
 
     private void cancelNotification() {

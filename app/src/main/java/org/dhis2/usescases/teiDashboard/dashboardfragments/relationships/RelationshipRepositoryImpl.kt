@@ -387,10 +387,50 @@ class RelationshipRepositoryImpl(
                 }
             }
 
-        return if (attrValuesFromType.isNotEmpty()) {
-            attrValuesFromType
-        } else {
-            listOf(Pair("uid", teiUid))
+        val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
+        val teiTypeUid = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(teiUid).blockingGet().trackedEntityType()
+        val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
+            .uid(teiTypeUid).blockingGet().name()!!
+
+        if (attrValuesFromType.isEmpty()) {
+            val program = d2.programModule().programs()
+                .byTrackedEntityTypeUid().eq(teiTypeUid).blockingGet()[0]
+            val attrFromProgramTrackedEntityAttribute =
+                d2.programModule().programTrackedEntityAttributes()
+                    .byProgram().eq(program.uid()).byDisplayInList().isTrue
+                    .blockingGet().mapNotNull {
+                        it.trackedEntityAttribute()?.uid() to it
+                    }.toMap()
+
+            d2.trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byTrackedEntityAttribute().`in`(
+                    attrFromProgramTrackedEntityAttribute.keys.toList()
+                ).blockingGet().mapNotNull { attributeValue ->
+                    val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                        .uid(attributeValue.trackedEntityAttribute())
+                        .blockingGet().displayFormName()
+                    val value = attributeValue.userFriendlyValue(d2)
+                    if (fieldName != null && value != null) {
+                        attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
+                    } else {
+                        null
+                    }
+                }
+        }
+
+        return when {
+            attrValuesFromType.isNotEmpty() -> {
+                attrValuesFromType
+            }
+            attrValuesFromType.isEmpty() -> {
+                attrValueFromProgramTrackedEntityAttribute
+            }
+            else -> {
+                listOf(Pair("uid", teiTypeName))
+            }
         }
     }
 

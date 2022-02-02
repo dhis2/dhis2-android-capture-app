@@ -13,7 +13,7 @@ fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
         while (iterator.hasNext()) {
             val tei = iterator.next()
             val isLocal = d2.trackedEntityModule().trackedEntityInstances()
-                .byState().neq(State.RELATIONSHIP)
+                .byAggregatedSyncState().neq(State.RELATIONSHIP)
                 .uid(tei.uid())
                 .blockingExists()
             val hasEnrollmentInProgram =
