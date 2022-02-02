@@ -33,7 +33,6 @@ import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
 import org.dhis2.usescases.login.accounts.AccountsActivity.Companion.MAX_ACCOUNTS
 
-
 @Composable
 fun AccountsScreen(
     accounts: List<AccountModel>,
@@ -75,7 +74,7 @@ fun AccountsScreen(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = colorResource(id = R.color.colorPrimary),
-                        contentColor = Color.White,
+                        contentColor = Color.White
                     ),
                     elevation = ButtonDefaults.elevation(
                         defaultElevation = 5.dp,
@@ -89,7 +88,6 @@ fun AccountsScreen(
                 }
             }
         }
-
     }
 }
 
@@ -130,6 +128,8 @@ fun AccountsPreview() {
             AccountModel("android", "https://play.dhis2.com/android-dev"),
             AccountModel("android", "https://play.dhis2.com/android-current"),
             AccountModel("admin", "https://play.dhis2.com/android-dev")
-        ), {}, {}
+        ),
+        {},
+        {}
     )
 }

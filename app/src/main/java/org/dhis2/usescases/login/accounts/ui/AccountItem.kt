@@ -51,7 +51,7 @@ fun AccountItem(
                 Text(
                     text = account.name.first().uppercaseChar().toString(),
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = 20.sp
                 )
             }
             Column(
