@@ -333,7 +333,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
                 new EventMapFragment(),
-                "EVENT_LIST"
+                "EVENT_MAP"
         ).commitNow();
         binding.addEventButton.setVisibility(GONE);
         binding.filter.setVisibility(View.VISIBLE);
