@@ -322,7 +322,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showList() {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                new EventListFragment()
+                new EventListFragment(),
+                "EVENT_LIST"
         ).commitNow();
         binding.addEventButton.setVisibility(programEventsViewModel.getWritePermission().getValue() ? View.VISIBLE : GONE);
         binding.filter.setVisibility(View.VISIBLE);
@@ -331,7 +332,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showMap() {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                new EventMapFragment()
+                new EventMapFragment(),
+                "EVENT_LIST"
         ).commitNow();
         binding.addEventButton.setVisibility(GONE);
         binding.filter.setVisibility(View.VISIBLE);
