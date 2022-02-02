@@ -853,4 +853,6 @@
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
     <string name="program_rules_loop_warning_title">Program rules warning</string>
     <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
+    <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
+    <string name="add_accout">Add Account</string>
 </resources>
