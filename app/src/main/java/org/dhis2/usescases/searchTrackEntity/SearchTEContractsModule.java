@@ -89,7 +89,7 @@ public class SearchTEContractsModule {
 
         void couldNotDownload(String typeName);
 
-        void setFilters(List<FilterItem> filtersToDisplay);
+        void setInitialFilters(List<FilterItem> filtersToDisplay);
 
         void showClearSearch(boolean empty);
 

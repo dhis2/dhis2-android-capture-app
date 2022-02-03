@@ -1523,7 +1523,7 @@ workflows:
             set -x
 
             if [[ -z "${TESTING_INDIVIDUAL}" ]]; then
-              envman add --key TESTING_INDIVIDUAL_INTERNAL --value "nancym.esp@gmail.com"
+              envman add --key TESTING_INDIVIDUAL_INTERNAL --value "nancy@dhis2.org"
             else
               envman add --key TESTING_INDIVIDUAL_INTERNAL --value "$TESTING_INDIVIDUAL"
             fi
@@ -1716,6 +1716,20 @@ workflows:
             ls -la
 
             d2 --version
+    - script@1:
+        title: Install basic app
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            d2 --version
+            d2 app scripts init myapp
+            cd myapp/
+            npm "run" "build"
     - npm@1:
         inputs:
         - command: run start

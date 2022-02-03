@@ -54,9 +54,9 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
             .blockingGet().isNotEmpty() ||
-            enrollmentRepository.byState().`in`(State.ERROR, State.WARNING)
+            enrollmentRepository.byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
                 .blockingGet().isNotEmpty()
     }
 
@@ -65,7 +65,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            .byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
             .blockingGet().isNotEmpty()
     }
 
@@ -74,7 +74,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
+            .byAggregatedSyncState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
             .blockingGet().isNotEmpty() ||
             teiRepository
                 .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -94,14 +94,14 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     private fun hasEventWithErrorState(eventRepository: EventCollectionRepository): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
             .blockingGet().isNotEmpty()
     }
 
     private fun hasEventWithSMSState(eventRepository: EventCollectionRepository): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            .byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
             .blockingGet().isNotEmpty()
     }
 
@@ -110,7 +110,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
+            .byAggregatedSyncState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
             .blockingGet().isNotEmpty() ||
             eventRepository
                 .byDeleted().isTrue

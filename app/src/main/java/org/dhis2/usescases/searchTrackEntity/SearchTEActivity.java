@@ -42,6 +42,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;
@@ -315,22 +316,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onResume();
         FilterManager.getInstance().clearUnsupportedFilters();
 
-        if (isMapVisible()) {
-            animations.initMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.show();
-            binding.progressLayout.setVisibility(GONE);
-            if (updateTei != null) {
-                if (updateEvent != null) {
-                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getEventInfo(updateEvent, updateTei));
-                } else {
-                    ((CarouselAdapter) binding.mapCarousel.getAdapter()).updateItem(presenter.getTeiInfo(updateTei));
-                }
-                updateEvent = null;
-                updateTei = null;
-            }
-            animations.endMapLoading(binding.mapCarousel);
-            binding.toolbarProgress.hide();
-        }
+        binding.navigationBar.onResume();
 
         if (initSearchNeeded) {
             presenter.init(tEType);
@@ -456,9 +442,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                setFabVisibility(!needsSearch.get() && !showMap, true);
+                setFabVisibility(shouldDisplayButton(), !binding.navigationBar.isHidden());
             }
         }
+    }
+
+    public boolean shouldDisplayButton() {
+        return (backDropActive && switchOpenClose == 1) || (!needsSearch.get() && !isMapVisible());
     }
 
     private void removeCarousel() {
@@ -853,10 +843,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
-        setFabVisibility(
-                backDropActive && !general || (!needsSearch.get() && !isMapVisible()),
-                !backDropActive || general
-        );
+        setFabVisibility(shouldDisplayButton(), !backDropActive || general);
         setCarouselVisibility(backDropActive);
         if (backDropActive) {
             binding.navigationBar.hide();
@@ -868,7 +855,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setFilters(List<FilterItem> filtersToDisplay) {
+    public void setInitialFilters(List<FilterItem> filtersToDisplay) {
         filtersAdapter.submitList(filtersToDisplay);
     }
 
@@ -1065,6 +1052,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         return false;
     }
-
     /*endregion*/
 }

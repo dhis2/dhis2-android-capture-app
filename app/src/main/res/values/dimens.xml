@@ -26,4 +26,5 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="item_carousel_height">72dp</dimen>
     <dimen name="item_carousel_corner_radius">6dp</dimen>
     <dimen name="padding_16">16dp</dimen>
+    <dimen name="row_header_min_width">90dp</dimen>
 </resources>

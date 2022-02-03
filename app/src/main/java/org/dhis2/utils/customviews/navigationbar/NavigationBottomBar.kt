@@ -62,6 +62,10 @@ class NavigationBottomBar @JvmOverloads constructor(
         setIconsColor(currentItemIndicatorColor)
     }
 
+    fun onResume() {
+        selectedItemId = selectedItemId
+    }
+
     fun hide() {
         hidden = true
         animations.hide {
