@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.evrencoskun.tableview.TableView
+import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED
 import io.reactivex.Flowable
@@ -294,57 +295,44 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                     (binding.headerContainer.childCount - 2) *
                     binding.headerContainer.getChildAt(0).layoutParams.height
             }
-            cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener {
-                for (i in 0 until binding.tableLayout.childCount) {
-                    if (binding.tableLayout.getChildAt(i) is TableView) {
-                        val table = binding.tableLayout.getChildAt(i) as TableView
-                        if (table.adapter is DataSetTableAdapter) {
-                            val adapter = table.adapter as DataSetTableAdapter
-                            adapter.scaleRowWidth(true)
-                            val params = cornerView.layoutParams
-                            params.width = adapter.rowHeaderWidth
-                            cornerView.layoutParams = params
-                            if (i == 0) {
-                                presenterFragment.saveCurrentSectionMeasures(
-                                    adapter.rowHeaderWidth,
-                                    adapter.columnHeaderHeight
-                                )
-                                val scrollPos = table.scrollHandler.columnPosition
-                                table.scrollToColumnPosition(scrollPos)
-                                for (rv in rvs) {
-                                    rv.layoutManager!!.scrollToPosition(scrollPos)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            cornerView.findViewById<View>(R.id.buttonRowScaleMinus).setOnClickListener { view ->
-                for (i in 0 until binding.tableLayout.childCount) {
-                    if (binding.tableLayout.getChildAt(i) is TableView) {
-                        val table = binding.tableLayout.getChildAt(i) as TableView
-                        if (table.adapter is DataSetTableAdapter) {
-                            val adapter = table.adapter as DataSetTableAdapter
-                            adapter.scaleRowWidth(false)
-                            val params = cornerView.layoutParams
-                            params.width = adapter.rowHeaderWidth
-                            cornerView.layoutParams = params
-                            if (i == 0) {
-                                presenterFragment.saveCurrentSectionMeasures(
-                                    adapter.rowHeaderWidth,
-                                    adapter.columnHeaderHeight
-                                )
-                                val scrollPos = table.scrollHandler.columnPosition
-                                table.scrollToColumnPosition(scrollPos)
-                                for (rv in rvs) {
-                                    rv.layoutManager!!.scrollToPosition(scrollPos)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
+            val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
+            val buttonMinusWidth = cornerView.findViewById<View>(R.id.buttonRowScaleMinus)
+
+            buttonAddWidth.setOnClickListener { resizeHeaderRowWidth(true, cornerView, rvs) }
+            buttonMinusWidth.setOnClickListener { resizeHeaderRowWidth(false, cornerView, rvs) }
+
             binding.headerContainer.addView(cornerView)
+        }
+    }
+
+    private fun resizeHeaderRowWidth(
+        add: Boolean,
+        cornerView: View,
+        rvs: MutableList<CellRecyclerView>
+    ) {
+        for (i in 0 until binding.tableLayout.childCount) {
+            if (binding.tableLayout.getChildAt(i) is TableView) {
+                val table = binding.tableLayout.getChildAt(i) as TableView
+                if (table.adapter is DataSetTableAdapter) {
+                    val adapter = table.adapter as DataSetTableAdapter
+                    adapter.scaleRowWidth(add)
+                    val params = cornerView.layoutParams
+                    params.width = adapter.rowHeaderWidth
+                    cornerView.layoutParams = params
+                    if (i == 0) {
+                        presenterFragment.saveCurrentSectionMeasures(
+                            adapter.rowHeaderWidth,
+                            adapter.columnHeaderHeight
+                        )
+                        val scrollPos = table.scrollHandler.columnPosition
+                        table.scrollToColumnPosition(scrollPos)
+                        for (rv in rvs) {
+                            rv.layoutManager!!.scrollToPosition(scrollPos)
+                        }
+                    }
+                }
+            }
         }
     }
 
