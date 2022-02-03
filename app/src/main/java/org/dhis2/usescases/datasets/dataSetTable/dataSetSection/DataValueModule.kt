@@ -3,10 +3,13 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
+import org.dhis2.data.forms.dataentry.SearchTEIRepository
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -53,13 +56,26 @@ class DataValueModule(
 
     @Provides
     @PerFragment
-    fun valueStore(d2: D2, crashReportController: CrashReportController): ValueStore {
+    internal fun searchRepository(d2: D2): SearchTEIRepository {
+        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2))
+    }
+
+    @Provides
+    @PerFragment
+    fun valueStore(
+        d2: D2,
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils,
+        searchRepository: SearchTEIRepository
+    ): ValueStore {
         return ValueStoreImpl(
             d2,
             dataSetUid,
             DataEntryStore.EntryMode.DV,
             DhisEnrollmentUtils(d2),
-            crashReportController
+            crashReportController,
+            networkUtils,
+            searchRepository
         )
     }
 }

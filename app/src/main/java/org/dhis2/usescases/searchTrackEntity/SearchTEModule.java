@@ -8,16 +8,21 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
@@ -149,9 +154,17 @@ public class SearchTEModule {
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
                                       DhisPeriodUtils periodUtils, Charts charts,
-                                      CrashReportController crashReportController) {
+                                      CrashReportController crashReportController,
+                                      NetworkUtils networkUtils,
+                                      SearchTEIRepository searchTEIRepository) {
         return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController);
+                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository);
+    }
+
+    @Provides
+    @PerActivity
+    SearchTEIRepository searchTEIRepository(D2 d2){
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
     }
 
     @Provides

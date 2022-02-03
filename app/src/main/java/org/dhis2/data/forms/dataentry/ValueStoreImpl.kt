@@ -5,6 +5,7 @@ import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.model.EnrollmentDetail
@@ -27,7 +28,9 @@ class ValueStoreImpl(
     private val recordUid: String,
     private val entryMode: DataEntryStore.EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
-    private val crashReportController: CrashReportController
+    private val crashReportController: CrashReportController,
+    private val networkUtils: NetworkUtils,
+    private val searchTEIRepository: SearchTEIRepository
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
 
@@ -37,13 +40,17 @@ class ValueStoreImpl(
         entryMode: DataEntryStore.EntryMode,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
         enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils,
+        searchTEIRepository: SearchTEIRepository
     ) : this(
         d2,
         recordUid,
         entryMode,
         dhisEnrollmentUtils,
-        crashReportController
+        crashReportController,
+        networkUtils,
+        searchTEIRepository
     ) {
         this.enrollmentRepository = enrollmentRepository
     }
@@ -176,7 +183,12 @@ class ValueStoreImpl(
     }
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        return if (!networkUtils.isOnline()) {
+            dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        } else {
+            val programUid = enrollmentRepository?.blockingGet()?.program()
+            searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid)
+        }
     }
 
     private fun saveFileResource(path: String): String {

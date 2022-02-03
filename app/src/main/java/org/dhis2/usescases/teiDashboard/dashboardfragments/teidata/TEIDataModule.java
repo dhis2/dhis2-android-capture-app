@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -8,6 +9,8 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.form.data.FormValueStore;
@@ -70,6 +73,12 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
+    SearchTEIRepository searchTEIRepository(D2 d2){
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
+    }
+
+    @Provides
+    @PerFragment
     TeiDataRepository providesRepository(D2 d2, DhisPeriodUtils periodUtils) {
         return new TeiDataRepositoryImpl(d2,
                 programUid,
@@ -88,14 +97,18 @@ public class TEIDataModule {
     @PerFragment
     FormValueStore valueStore(
             D2 d2,
-            CrashReportController crashReportController
+            CrashReportController crashReportController,
+            NetworkUtils networkUtils,
+            SearchTEIRepository searchTEIRepository
     ){
         return new ValueStoreImpl(
                 d2,
                 teiUid,
                 DataEntryStore.EntryMode.ATTR,
                 new DhisEnrollmentUtils(d2),
-                crashReportController
+                crashReportController,
+                networkUtils,
+                searchTEIRepository
         );
     }
 }
