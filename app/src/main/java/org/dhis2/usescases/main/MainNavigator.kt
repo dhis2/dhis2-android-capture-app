@@ -79,7 +79,7 @@ class MainNavigator(
         )
     }
 
-    fun restoreScreen(screenToRestoreName: String) {
+    fun restoreScreen(screenToRestoreName: String, languageSelectorOpened: Boolean = false) {
         when (MainScreen.valueOf(screenToRestoreName)) {
             MainScreen.PROGRAMS -> openPrograms()
             MainScreen.VISUALIZATIONS -> openVisualizations()
@@ -87,7 +87,7 @@ class MainNavigator(
             MainScreen.SETTINGS -> openSettings()
             MainScreen.JIRA -> openJira()
             MainScreen.ABOUT -> openAbout()
-            MainScreen.TROUBLESHOOTING -> openTroubleShooting()
+            MainScreen.TROUBLESHOOTING -> openTroubleShooting(languageSelectorOpened)
         }
     }
 
@@ -131,9 +131,9 @@ class MainNavigator(
         )
     }
 
-    fun openTroubleShooting(){
+    fun openTroubleShooting(languageSelectorOpened: Boolean = false) {
         beginTransaction(
-            TroubleshootingFragment(), MainScreen.TROUBLESHOOTING
+            TroubleshootingFragment.instance(languageSelectorOpened), MainScreen.TROUBLESHOOTING
         )
     }
 

@@ -1,9 +1,15 @@
 package org.dhis2.usescases.troubleshooting
 
+import java.util.HashMap
 import org.dhis2.Bindings.toRuleEngineObject
 import org.dhis2.Bindings.toRuleVariableList
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.rules.ItemValueType
@@ -27,16 +33,19 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
 import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
-import java.util.HashMap
 
-class TroubleshootingRepository(val d2:D2) {
+class TroubleshootingRepository(
+    val d2: D2,
+    val resourceManager: ResourceManager
+) {
 
-    fun validateProgramRules(): List<RuleValidation> {
-        return programRules().mapNotNull { programAndRule ->
+    fun validateProgramRules(): List<ProgramRuleValidation> {
+        val programRulesMap = mutableMapOf<Program, MutableList<RuleValidation>>()
+        programRules().mapNotNull { programAndRule ->
             val rule = programAndRule.second
             val program = program(programAndRule.first?.uid())
             val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program.uid())
-            var ruleValidationItem = RuleValidation(rule, program, ruleExternalLink(rule.uid()))
+            var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
             val ruleConditionResult = process(rule.condition(), valueMap)
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
@@ -52,11 +61,31 @@ class TroubleshootingRepository(val d2:D2) {
                 ruleValidationItem = ruleValidationItem.copy(actionsError = ruleActionConditions)
             }
             if (ruleValidationItem.hasError()) {
-                ruleValidationItem
+                Pair(program, ruleValidationItem)
             } else {
                 null
             }
-        }.sortedBy { it.program.displayName() }
+        }.forEach { (program, ruleValidation) ->
+            if (programRulesMap.containsKey(program)) {
+                programRulesMap[program]?.add(ruleValidation)
+            } else {
+                programRulesMap[program] = mutableListOf(ruleValidation)
+            }
+        }
+        return programRulesMap.map { (program, validationList) ->
+            ProgramRuleValidation(
+                programUid = program.uid(),
+                programName = program.displayName() ?: program.uid(),
+                metadataIconData = MetadataIconData(
+                    programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
+                    iconResource = resourceManager.getObjectStyleDrawableResource(
+                        program.style().icon(), R.drawable.ic_default_outline
+                    ),
+                    sizeInDp = 24
+                ),
+                validations = validationList
+            )
+        }.sortedBy { it.programName }
     }
 
     private fun program(programUid: String?) =
@@ -203,14 +232,14 @@ class TroubleshootingRepository(val d2:D2) {
             ruleAction is RuleActionHideField && ruleAction.field().isEmpty() ->
                 "Missing field"
             ruleAction is RuleActionHideOption && (
-                    ruleAction.field()
-                        .isEmpty() || ruleAction.option().isEmpty()
-                    ) ->
+                ruleAction.field()
+                    .isEmpty() || ruleAction.option().isEmpty()
+                ) ->
                 "Missing field or option"
             ruleAction is RuleActionHideOptionGroup && (
-                    ruleAction.field()
-                        .isEmpty() || ruleAction.optionGroup().isEmpty()
-                    ) ->
+                ruleAction.field()
+                    .isEmpty() || ruleAction.optionGroup().isEmpty()
+                ) ->
                 "Missing field or option group"
             ruleAction is RuleActionHideProgramStage && ruleAction.programStage().isEmpty() ->
                 "Missing program stage"
@@ -223,5 +252,4 @@ class TroubleshootingRepository(val d2:D2) {
             else -> null
         }
     }
-
 }
