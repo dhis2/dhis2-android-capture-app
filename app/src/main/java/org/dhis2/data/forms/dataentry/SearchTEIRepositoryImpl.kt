@@ -61,6 +61,6 @@ class SearchTEIRepositoryImpl(
 
             return teiList.none { it.uid() != teiUid }
         }
-        return false
+        return true
     }
 }
