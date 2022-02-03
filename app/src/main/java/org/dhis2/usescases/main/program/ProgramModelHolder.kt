@@ -13,6 +13,12 @@ import org.dhis2.databinding.ItemProgramModelBinding
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
+    init {
+        binding.composeProgramImage.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
+
     fun bind(presenter: ProgramPresenter, programViewModel: ProgramViewModel) {
         binding.program = programViewModel
         binding.presenter = presenter
@@ -30,19 +36,14 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
             R.drawable.ic_default_outline
         )
 
-        binding.composeProgramImage.apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-            )
-            setContent {
-                MdcTheme {
-                    MetadataIcon(
-                        MetadataIconData(
-                            programColor = color,
-                            iconResource = iconResource
-                        )
+        binding.composeProgramImage.setContent {
+            MdcTheme {
+                MetadataIcon(
+                    MetadataIconData(
+                        programColor = color,
+                        iconResource = iconResource
                     )
-                }
+                )
             }
         }
 
