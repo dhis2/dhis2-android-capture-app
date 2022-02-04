@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
@@ -19,6 +20,12 @@ internal class StageViewHolder(
     private val presenter: TEIDataContracts.Presenter
 ) :
     RecyclerView.ViewHolder(binding.root) {
+
+    init {
+        binding.composeProgramStageIcon.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     fun bind(eventItem: EventViewModel) {
         val stage = eventItem.stage!!
@@ -43,7 +50,8 @@ internal class StageViewHolder(
                 programColor = color,
                 iconResource = iconResource,
                 sizeInDp = 40
-            )
+            ),
+            false
         )
 
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)

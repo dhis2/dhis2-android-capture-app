@@ -58,6 +58,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onSyncClick = syncClick;
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
+        MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
     }
 
     public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
@@ -154,7 +155,8 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                         color,
                         imageResource,
                         40
-                )
+                ),
+                false
         );
     }
 

@@ -37,15 +37,24 @@ fun MetadataIcon(
     )
 }
 
-fun ComposeView.setUpMetadataIcon(metadataIconData: MetadataIconData) {
-    setViewCompositionStrategy(
-        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-    )
+fun ComposeView.setUpMetadataIcon(
+    metadataIconData: MetadataIconData,
+    handleDispose: Boolean = true
+) {
+    if (handleDispose) {
+        handleComposeDispose()
+    }
     setContent {
         MdcTheme {
             MetadataIcon(metadataIconData)
         }
     }
+}
+
+fun ComposeView.handleComposeDispose(){
+    setViewCompositionStrategy(
+        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+    )
 }
 
 @Preview

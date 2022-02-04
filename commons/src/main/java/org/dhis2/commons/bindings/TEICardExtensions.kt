@@ -55,9 +55,6 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
 fun List<Program>.addEnrollmentIcons(context: Context, parent: ComposeView, currentProgram: String?) {
 
     parent.apply {
-        setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-        )
         setContent {
             MdcTheme {
                 Row(horizontalArrangement = spacedBy(Dp(4f))) {

@@ -718,7 +718,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         color,
                         resource,
                         48
-                )
+                ),
+                true
         );
     }
 
