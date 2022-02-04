@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.addEnrollmentIcons
 import org.dhis2.Bindings.hasFollowUp
@@ -22,6 +23,12 @@ abstract class BaseTeiViewHolder(
     abstract fun itemViewClick()
 
     abstract fun itemConfiguration()
+
+    init {
+        binding.composeProgramList.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
@@ -53,7 +60,7 @@ abstract class BaseTeiViewHolder(
             binding.setFollowUp(enrollments.hasFollowUp())
             programInfo.addEnrollmentIcons(
                 itemView.context,
-                binding.programList,
+                binding.composeProgramList,
                 if (selectedEnrollment != null) selectedEnrollment.program() else null
             )
             if (selectedEnrollment != null) {

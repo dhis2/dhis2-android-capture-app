@@ -380,24 +380,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <LinearLayout
-                        android:id="@+id/programList"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/compose_program_list"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="16dp"
-                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/showAttributesButton">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/rounded_square"
-                            android:backgroundTint="?colorPrimaryLight"
-                            android:padding="2dp"
-                            app:srcCompat="@drawable/ic_menu_info" />
-                    </LinearLayout>
+                        app:layout_constraintEnd_toStartOf="@id/showAttributesButton"/>
 
                     <ImageView
                         android:id="@+id/showAttributesButton"

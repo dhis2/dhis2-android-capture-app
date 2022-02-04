@@ -2,8 +2,8 @@ package org.dhis2.maps.carousel
 
 import android.view.View
 import android.widget.Toast
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Locale
 import org.dhis2.Bindings.addEnrollmentIcons
 import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.setAttributeList
@@ -13,6 +13,7 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselTeiBinding
+import java.util.Locale
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
@@ -26,6 +27,12 @@ class CarouselTeiHolder(
     CarouselBinder<SearchTeiModel> {
 
     private var dataModel: SearchTeiModel? = null
+
+    init {
+        binding.composeProgramList.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     override fun bind(data: SearchTeiModel) {
         dataModel = data
@@ -56,7 +63,7 @@ class CarouselTeiHolder(
             binding.setFollowUp(enrollments.hasFollowUp())
             programInfo.addEnrollmentIcons(
                 itemView.context,
-                binding.programList,
+                binding.composeProgramList,
                 selectedEnrollment?.program()
             )
             selectedEnrollment?.setStatusText(
