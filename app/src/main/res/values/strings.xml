@@ -855,4 +855,6 @@
     <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
     <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
     <string name="add_accout">Add Account</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="manage_accounts">Manage Accounts</string>
 </resources>

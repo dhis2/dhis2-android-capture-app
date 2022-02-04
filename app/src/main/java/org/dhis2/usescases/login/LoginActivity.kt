@@ -19,6 +19,8 @@ import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -44,6 +46,8 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.login.accounts.AccountsActivity
+import org.dhis2.usescases.login.accounts.AccountsActivity.Companion.RESULT_ACCOUNT
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
@@ -52,6 +56,8 @@ import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.Constants.SERVER
+import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
@@ -432,6 +438,24 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun showBiometricButton() {
         binding.biometricButton.visibility = View.VISIBLE
+    }
+
+    private val requestAccount = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_ACCOUNT) {
+            binding.serverUrlEdit.setText(
+                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol()
+            )
+            binding.userNameEdit.setText(result.data?.extras?.getString(USER))
+        }
+    }
+
+    private fun showManageAccountsButton() {
+        binding.manageAccounts.visibility = View.VISIBLE
+        binding.manageAccounts.setOnClickListener {
+            requestAccount.launch(Intent(this, AccountsActivity::class.java))
+        }
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
