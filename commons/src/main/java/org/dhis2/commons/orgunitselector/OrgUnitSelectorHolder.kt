@@ -1,8 +1,11 @@
 package org.dhis2.commons.orgunitselector
 
+import android.graphics.Typeface
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.R
+import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.bindings.setTextStyle
 import org.dhis2.commons.databinding.ItemOuTreeBinding
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -21,9 +24,13 @@ class OrgUnitSelectorHolder(
         binding.checkBox.setOnCheckedChangeListener(null)
 
         binding.ouName.text = node.displayName()
+        binding.ouName.setTextStyle(when {
+            node.selectedChildrenCount > 0 -> Typeface.BOLD
+            else -> Typeface.NORMAL
+        })
         node.isChecked = preselected
         val marginParams = binding.root.layoutParams as ViewGroup.MarginLayoutParams
-        marginParams.leftMargin = (node.level - 1) * 40
+        marginParams.leftMargin = (node.level - 1) * 16.dp
         binding.checkBox.isChecked = node.isChecked
 
         if (!node.hasChild) {

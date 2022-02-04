@@ -146,7 +146,7 @@ class OUTreePresenter(
 
     private fun rebuildOrgUnitList(location: Int, nodes: List<TreeNode>): List<TreeNode> {
         val nodesCopy: MutableList<TreeNode> = ArrayList<TreeNode>(view.getCurrentList())
-        nodesCopy[location].isOpen = !nodesCopy[location].isOpen
+        nodesCopy[location] = nodesCopy[location].copy(isOpen = !nodesCopy[location].isOpen)
 
         if (!nodesCopy[location].isOpen) {
             val (_, _, _, _, level) = nodesCopy[location]
