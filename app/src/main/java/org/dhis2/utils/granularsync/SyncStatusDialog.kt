@@ -32,6 +32,7 @@ import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
+import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
@@ -211,8 +212,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         state: State,
         conflicts: MutableList<TrackerImportConflict>
     ) {
-        Bindings.setStateIcon(binding!!.syncIcon, state, true)
-        binding!!.syncStatusName.setText(getTextByState(state))
+        binding!!.syncIcon.setStateIcon(state, true)
         binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
         when (state) {
             State.TO_POST,
@@ -273,8 +273,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         } else {
             binding!!.connectionMessage.text = null
             binding!!.syncButton.setText(R.string.action_send)
-            if (binding!!.syncStatusName.text == getString(R.string.state_synced)) {
-                binding!!.syncButton.visibility = View.GONE
+            if (binding!!.syncIcon.tag == org.dhis2.commons.R.drawable.ic_status_synced) {
+                binding!!.syncButton.text = "REFRESH"
             }
 
             binding!!.syncButton.setOnClickListener { syncGranular() }
@@ -347,17 +347,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.noConflictMessage.visibility = View.VISIBLE
 
         binding!!.noConflictMessage.text = getString(R.string.data_values_error_sync_message)
-    }
-
-    private fun getTextByState(state: State): Int {
-        return when (state) {
-            State.SYNCED_VIA_SMS, State.SENT_VIA_SMS -> R.string.sync_by_sms
-            State.WARNING -> R.string.state_warning
-            State.ERROR -> R.string.state_error
-            State.TO_UPDATE, State.UPLOADING -> R.string.state_to_update
-            State.TO_POST -> R.string.state_to_post
-            else -> R.string.state_synced
-        }
     }
 
     private fun getColorForState(state: State): Int {
@@ -544,7 +533,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     )
                 )
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
-                Bindings.setStateIcon(binding!!.syncIcon, State.SYNCED, true)
+                binding!!.syncIcon.setStateIcon(State.SYNCED, true)
                 dismissListenerDialog!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
@@ -589,7 +578,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                         )
                     )
                 }
-                Bindings.setStateIcon(binding!!.syncIcon, State.ERROR, true)
+                binding!!.syncIcon.setStateIcon(State.ERROR, true)
                 dismissListenerDialog!!.onDismiss(false)
             }
             WorkInfo.State.CANCELLED ->
