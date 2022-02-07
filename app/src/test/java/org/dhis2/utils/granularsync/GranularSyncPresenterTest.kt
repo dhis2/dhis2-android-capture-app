@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.time.Instant
-import java.util.Collections
 import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -95,36 +94,9 @@ class GranularSyncPresenterTest {
             preferenceProvider
         )
 
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programs()) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid")) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid").get()) doReturn Single.just(
-            getProgram()
-        )
-
-        whenever(d2.trackedEntityModule()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            )
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR)
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR).blockingGet()
-        ) doReturn getListOfTEIsWithError()
+            programUtils.getProgramState("test_uid")
+        )doReturn State.ERROR
         val testSubscriber = presenter.getState().test()
 
         testSubscriber.assertSubscribed()
