@@ -69,7 +69,7 @@ class FieldViewModelFactoryImpl(
             id,
             layoutProvider.getLayoutByType(
                 valueType,
-                if (fieldRendering != null) fieldRendering.type() else null,
+                fieldRendering?.type(),
                 optionSet,
                 renderingType
             ),
