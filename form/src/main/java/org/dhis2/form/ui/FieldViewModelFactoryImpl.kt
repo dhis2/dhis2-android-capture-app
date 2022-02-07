@@ -20,8 +20,8 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.option.Option
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 class FieldViewModelFactoryImpl(
@@ -52,7 +52,7 @@ class FieldViewModelFactoryImpl(
         programStageSection: String?,
         allowFutureDates: Boolean?,
         editable: Boolean,
-        renderingType: ProgramStageSectionRenderingType?,
+        renderingType: SectionRenderingType?,
         description: String?,
         fieldRendering: ValueTypeDeviceRendering?,
         optionCount: Int?,
@@ -127,7 +127,7 @@ class FieldViewModelFactoryImpl(
             programStageSection = null,
             allowFutureDates = programTrackedEntityAttribute?.allowFutureDate() ?: true,
             editable = editable,
-            renderingType = ProgramStageSectionRenderingType.LISTING,
+            renderingType = SectionRenderingType.LISTING,
             description = programTrackedEntityAttribute?.displayDescription()
                 ?: trackedEntityAttribute.displayDescription(),
             fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
@@ -172,7 +172,7 @@ class FieldViewModelFactoryImpl(
             0,
             0,
             0,
-            ProgramStageSectionRenderingType.LISTING.name,
+            SectionRenderingType.LISTING.name,
             currentSection
         )
     }
@@ -250,7 +250,7 @@ class FieldViewModelFactoryImpl(
             0,
             0,
             0,
-            ProgramStageSectionRenderingType.LISTING.name,
+            SectionRenderingType.LISTING.name,
             currentSection
         )
     }

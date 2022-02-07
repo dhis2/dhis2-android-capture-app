@@ -22,8 +22,8 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramSection
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
 
@@ -340,7 +340,7 @@ class EnrollmentRepository(
             false,
             0,
             0,
-            ProgramStageSectionRenderingType.LISTING.name
+            SectionRenderingType.LISTING.name
         )
     }
 
@@ -413,7 +413,7 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             null,
             editable,
-            ProgramStageSectionRenderingType.LISTING,
+            SectionRenderingType.LISTING,
             null,
             null,
             null,
