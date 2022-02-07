@@ -129,6 +129,10 @@ class MainPresenter(
         )
     }
 
+    fun onSyncAllClick() {
+        view.showGranularSync()
+    }
+
     fun blockSession() {
         workManagerController.cancelAllWork()
         view.back()

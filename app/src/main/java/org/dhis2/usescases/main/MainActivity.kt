@@ -32,6 +32,8 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
+import org.dhis2.utils.granularsync.GranularSyncContracts
+import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
@@ -160,6 +162,21 @@ class MainActivity :
         super.onPause()
     }
 
+    override fun showGranularSync() {
+        SyncStatusDialog.Builder()
+            .setConflictType(SyncStatusDialog.ConflictType.ALL)
+            .setUid("")
+            .onDismissListener(
+                object : GranularSyncContracts.OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) {
+                            mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
+                        }
+                    }
+                })
+            .build().show(supportFragmentManager, "ALL_SYNC")
+    }
+
     override fun renderUsername(username: String) {
         binding.userName = username
         (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
@@ -261,6 +278,11 @@ class MainActivity :
 
     private fun setFilterButtonVisibility(showFilterButton: Boolean) {
         binding.filterActionButton.visibility = if (showFilterButton) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+        binding.syncActionButton.visibility = if (showFilterButton) {
             View.VISIBLE
         } else {
             View.GONE

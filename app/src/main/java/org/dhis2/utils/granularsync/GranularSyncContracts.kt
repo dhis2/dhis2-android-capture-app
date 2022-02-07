@@ -42,6 +42,7 @@ class GranularSyncContracts {
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
         fun emptyEnrollmentError(): String
         fun unsupportedTask(): String
+        fun setLastUpdated(result: SyncDate)
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {

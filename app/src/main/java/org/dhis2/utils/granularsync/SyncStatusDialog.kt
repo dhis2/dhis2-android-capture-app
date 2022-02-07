@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -17,7 +16,6 @@ import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -28,18 +26,18 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
+import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.usescases.sms.StatusText
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SYNC_GRANULAR
@@ -59,6 +57,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    @Inject
+    lateinit var networkUtils: NetworkUtils
+
     private lateinit var recordUid: String
     private lateinit var conflictType: ConflictType
     private var orgUnitDataValue: String? = null
@@ -71,7 +72,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var syncing: Boolean = false
 
     enum class ConflictType {
-        PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
+        ALL, PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
 
     companion object {
@@ -184,7 +185,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false)
         adapter = SyncConflictAdapter(ArrayList()) { showErrorLog() }
         val layoutManager = LinearLayoutManager(context)
@@ -220,7 +221,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             State.UPLOADING -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
             State.SYNCED -> {
                 setNoConflictMessage(getString(R.string.no_conflicts_synced_message))
-                binding!!.syncButton.visibility = View.GONE
                 binding!!.connectionMessage.visibility = View.GONE
             }
             State.WARNING, State.ERROR ->
@@ -245,7 +245,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     private fun setNetworkMessage() {
-        if (!NetworkUtils.isOnline(context)) {
+        if (!networkUtils.isOnline()) {
             if (presenter.isSMSEnabled(conflictType == ConflictType.TEI) &&
                 context?.showSMS() == true
             ) {
@@ -274,7 +274,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             binding!!.connectionMessage.text = null
             binding!!.syncButton.setText(R.string.action_send)
             if (binding!!.syncIcon.tag == org.dhis2.commons.R.drawable.ic_status_synced) {
-                binding!!.syncButton.text = "REFRESH"
+                binding!!.syncButton.text = getString(R.string.granular_sync_refresh)
             }
 
             binding!!.syncButton.setOnClickListener { syncGranular() }
@@ -385,7 +385,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
 
         if (checkPermissions()) {
-            presenter.initSMSSync().observe(this, Observer { this.stateChanged(it) })
+            presenter.initSMSSync().observe(this, { this.stateChanged(it) })
         } else {
             closeDialog()
         }
@@ -492,7 +492,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         syncing = true
         presenter.initGranularSync().observe(
             this,
-            Observer { workInfo ->
+            { workInfo ->
+
                 if (workInfo != null && workInfo.isNotEmpty()) {
                     manageWorkInfo(workInfo[0])
                 }
@@ -504,11 +505,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
         when (workInfo.state) {
             WorkInfo.State.ENQUEUED -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    binding!!.syncIcon.setImageResource(R.drawable.animator_sync_grey)
-                    if (binding!!.syncIcon.drawable is AnimatedVectorDrawable) {
-                        (binding!!.syncIcon.drawable as AnimatedVectorDrawable).start()
-                    }
+                binding!!.syncIcon.setImageResource(R.drawable.animator_sync_grey)
+                if (binding!!.syncIcon.drawable is AnimatedVectorDrawable) {
+                    (binding!!.syncIcon.drawable as AnimatedVectorDrawable).start()
                 }
                 adapter!!.addItem(
                     StatusLogItem.create(
@@ -534,6 +533,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 )
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 binding!!.syncIcon.setStateIcon(State.SYNCED, true)
+                setLastUpdated(SyncDate(Date()))
                 dismissListenerDialog!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
@@ -600,6 +600,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     override fun unsupportedTask(): String {
         return getString(R.string.granular_sync_unsupported_task)
+    }
+
+    override fun setLastUpdated(result: SyncDate) {
+        binding?.lastUpdated?.text = result.date?.let {
+            it.toDateSpan(requireContext())
+        } ?: "Unknown"
     }
 
     override fun onRequestPermissionsResult(

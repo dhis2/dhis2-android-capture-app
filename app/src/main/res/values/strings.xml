@@ -853,4 +853,5 @@
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
     <string name="program_rules_loop_warning_title">Program rules warning</string>
     <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
+    <string name="granular_sync_refresh">REFRESH</string>
 </resources>

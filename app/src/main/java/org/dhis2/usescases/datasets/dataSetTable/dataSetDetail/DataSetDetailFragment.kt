@@ -10,7 +10,6 @@ import io.reactivex.Flowable
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
