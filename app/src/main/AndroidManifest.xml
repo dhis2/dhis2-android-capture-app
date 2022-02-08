@@ -158,6 +158,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".usescases.development.ProgramRulesValidationActivity" />
+        <activity android:name=".usescases.login.accounts.AccountsActivity" />
     </application>
 
 </manifest>

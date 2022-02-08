@@ -48,6 +48,13 @@
         <item name="rippleColor">?colorPrimaryLight</item>
     </style>
 
+    <style name="NoBackgroundButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <style name="OpenIdLoginButton" parent="Widget.MaterialComponents.Button.Icon">
         <item name="android:textSize">12sp</item>
         <item name="iconSize">24dp</item>

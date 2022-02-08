@@ -299,6 +299,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageAccounts"
+                style="@style/NoBackgroundButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:text="@string/manage_accounts"
+                app:layout_constraintTop_toBottomOf="@id/login"
+                tools:text="Manage Accounts" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/loginOpenId"
                 style="@style/OpenIdLoginButton"
                 android:layout_width="match_parent"
