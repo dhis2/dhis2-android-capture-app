@@ -7,8 +7,8 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
 import org.hisp.dhis.android.core.option.Option
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
+import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 interface FieldViewModelFactory {
@@ -22,7 +22,7 @@ interface FieldViewModelFactory {
         programStageSection: String?,
         allowFutureDates: Boolean?,
         editable: Boolean,
-        renderingType: ProgramStageSectionRenderingType?,
+        renderingType: SectionRenderingType?,
         description: String?,
         fieldRendering: ValueTypeDeviceRendering?,
         optionCount: Int?,

@@ -5,7 +5,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
+import org.hisp.dhis.android.core.program.SectionRenderingType
 
 abstract class DataEntryBaseRepository(
     private val d2: D2,
@@ -85,7 +85,7 @@ abstract class DataEntryBaseRepository(
             isOpen,
             totalFields,
             completedFields,
-            ProgramStageSectionRenderingType.LISTING.name
+            SectionRenderingType.LISTING.name
         )
     }
 }

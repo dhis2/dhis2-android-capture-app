@@ -171,6 +171,7 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot {
+            waitToDebounce(5000)
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()

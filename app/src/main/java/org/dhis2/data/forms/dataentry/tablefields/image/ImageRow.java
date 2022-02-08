@@ -10,7 +10,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.form.databinding.FormImageBinding;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -41,9 +41,9 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     public ImageHolder onCreate(@NonNull ViewGroup parent, int count, FlowableProcessor<String> imageSelector) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
         Integer height = null;
-        if (renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
+        if (renderType.equals(SectionRenderingType.SEQUENTIAL.name())) {
             height = parent.getMeasuredHeight() / (count > 2 ? 3 : count);
-        } else if (renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+        } else if (renderType.equals(SectionRenderingType.MATRIX.name())) {
             height = parent.getMeasuredHeight() / (count > 2 ? 2 : count);
         }
 

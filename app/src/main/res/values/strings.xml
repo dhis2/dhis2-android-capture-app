@@ -856,4 +856,16 @@
     <string name="granular_sync_refresh">REFRESH</string>
     <string name="unknown_date">Unknown</string>
     <string name="granular_sync_refresh_title">Refresh all data</string>
+    <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
+    <string name="add_accout">Add Account</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="manage_accounts">Manage Accounts</string>
+    <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
+    <string name="troubleshooting_language_title">Language</string>
+    <string name="troubleshooting_language_description">Tap here to change the language of the application</string>
+    <string name="troubleshooting_rules_title">Program rule validation</string>
+    <string name="troubleshooting_rules_description">This action will check all the rules configured and display bad configurations if any</string>
+    <string name="troubleshooting_ongoing_rule_validation">Validating program rules…</string>
+    <string name="troubleshooting_pass_rule_validation">No warnings found</string>
+    <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
 </resources>

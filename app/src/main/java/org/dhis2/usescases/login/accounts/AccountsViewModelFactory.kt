@@ -1,12 +1,13 @@
-package org.dhis2.usescases.development
+package org.dhis2.usescases.login.accounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class RulesValidationsModelFactory(
-    private val ruleValidator: ProgramRulesValidations
+class AccountsViewModelFactory(
+    val repository: AccountRepository
 ) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return RulesValidationsModel(ruleValidator) as T
+        return AccountsViewModel(repository) as T
     }
 }

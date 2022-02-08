@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.journeyapps.barcodescanner.ScanOptions
 import java.io.File
 import java.util.Calendar
 import org.dhis2.BuildConfig
@@ -42,6 +43,7 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
+import org.dhis2.data.forms.ScanContract
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
@@ -70,7 +72,6 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
-import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
@@ -102,17 +103,16 @@ class FormView(
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
-    private val qrScanContent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-                val intent = FormIntent.OnSave(
-                    it.data?.getStringExtra(Constants.UID)!!,
-                    it.data?.getStringExtra(Constants.EXTRA_DATA),
-                    ValueType.TEXT
-                )
-                intentHandler(intent)
-            }
+    private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
+        result.contents?.let { qrData ->
+            val intent = FormIntent.OnSave(
+                result.originalIntent.getStringExtra(Constants.UID)!!,
+                qrData,
+                ValueType.TEXT
+            )
+            intentHandler(intent)
         }
+    }
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -661,11 +661,16 @@ class FormView(
                 else -> ValueTypeRenderingType.DEFAULT
             }
         }
+
         qrScanContent.launch(
-            Intent(context, ScanActivity::class.java).apply {
-                putExtra(Constants.UID, event.uid)
-                putExtra(Constants.OPTION_SET, event.optionSet)
-                putExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
+            ScanOptions().apply {
+                setDesiredBarcodeFormats()
+                setPrompt("Hello there")
+                setBeepEnabled(true)
+                setBarcodeImageEnabled(false)
+                addExtra(Constants.UID, event.uid)
+                event.optionSet?.let { addExtra(Constants.OPTION_SET, event.optionSet) }
+                addExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
             }
         )
     }

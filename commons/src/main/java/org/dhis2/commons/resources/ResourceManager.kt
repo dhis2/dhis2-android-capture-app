@@ -42,6 +42,13 @@ class ResourceManager(val context: Context) {
         } ?: -1
     }
 
+    fun getColorOrDefaultFrom(hexColor: String?): Int {
+        return ColorUtils.getColorFrom(
+            hexColor,
+            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
+        )
+    }
+
     fun parseD2Error(throwable: Throwable) = D2ErrorUtils(context).getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = context.getString(R.string.events)

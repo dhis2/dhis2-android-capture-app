@@ -15,6 +15,8 @@ import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -177,17 +179,17 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 ColorUtils.ColorType.PRIMARY
             )
         )
-        binding.dataSetIcon.background = ColorUtils.tintDrawableWithColor(
-            binding.dataSetIcon.background,
-            color
+        val imageResource = ResourceManager(mContext).getObjectStyleDrawableResource(
+            style?.icon(),
+            R.drawable.ic_default_outline
         )
-        binding.dataSetIcon.setImageResource(
-            ResourceManager(mContext).getObjectStyleDrawableResource(
-                style?.icon(),
-                R.drawable.ic_default_outline
+
+        binding.composeDataSetIcon.setUpMetadataIcon(
+            MetadataIconData(
+                programColor = color,
+                iconResource = imageResource
             )
         )
-        binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))
     }
 
     override fun observeReopenChanges(): Flowable<Boolean> {

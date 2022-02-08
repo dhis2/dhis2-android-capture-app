@@ -61,19 +61,14 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:id="@+id/stageIconImage"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/composeStageIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/rounded_square"
-                        android:padding="4dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:backgroundTint="@color/blue_4fa"
-                        tools:ignore="ContentDescription"
-                        tools:src="@drawable/ic_mosquito_positive" />
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
                         android:id="@+id/eventStatus"

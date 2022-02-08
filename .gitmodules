@@ -5,3 +5,6 @@
 	path = dhis2-rule-engine
 	url = https://github.com/dhis2/dhis2-rule-engine.git
 
+[submodule "zxing-core"]
+	path = zxing-core
+	url = https://github.com/zxing/zxing.git
