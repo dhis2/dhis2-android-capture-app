@@ -46,7 +46,8 @@ class DataValuePresenterTest {
                 schedulers,
                 analyticsHelper,
                 prefsProvider,
-                "dataSetUid"
+                "dataSetUid",
+                updateProcessor
             )
     }
 

@@ -85,6 +85,10 @@ public class DataSetTableContract {
         boolean shouldAllowCompleteAnyway();
 
         boolean isComplete();
+
+        void updateData();
+
+        void onClickSyncStatus();
     }
 
 }

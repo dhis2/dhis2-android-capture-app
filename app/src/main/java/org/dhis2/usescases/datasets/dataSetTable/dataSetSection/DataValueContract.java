@@ -29,5 +29,7 @@ public class DataValueContract {
         void updateTabLayout(int count);
 
         void renderIndicators(@NotNull SortedMap<String, String> indicators);
+
+        void refreshTableData();
     }
 }

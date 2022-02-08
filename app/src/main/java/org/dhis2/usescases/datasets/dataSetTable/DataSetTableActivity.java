@@ -40,6 +40,8 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
@@ -82,7 +84,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private FlowableProcessor<Boolean> reopenProcessor;
     private boolean isKeyboardOpened = false;
 
-    private static int MAX_ITEM_CACHED_VIEWPAGER2 = 2;
+    private static final int MAX_ITEM_CACHED_VIEWPAGER2 = 2;
+    private static final String DATAVALUE_SYNC = "DATAVALUE_SYNC";
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -139,6 +142,23 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             }, 100);
             return true;
         });
+
+        binding.syncButton.setOnClickListener(view-> showGranularSync());
+    }
+
+    private void showGranularSync(){
+        presenter.onClickSyncStatus();
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setPeriodId(periodId)
+                .setOrgUnit(orgUnitUid)
+                .setAttributeOptionCombo(catOptCombo)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged) presenter.updateData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), DATAVALUE_SYNC);
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {

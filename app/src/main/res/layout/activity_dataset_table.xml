@@ -58,6 +58,17 @@
                         tools:ignore="ContentDescription" />
 
                     <ImageView
+                        android:id="@+id/syncButton"
+                        style="@style/ActionIcon"
+                        android:onClick="showMoreOptions"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_sync"
+                        app:tint="?colorOnPrimary"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageView
                         android:id="@+id/moreOptions"
                         style="@style/ActionIcon"
                         android:onClick="showMoreOptions"
@@ -78,7 +89,7 @@
                         android:maxLines="1"
                         android:textColor="?colorAccent"
                         app:layout_constraintBottom_toTopOf="@+id/dataSetSubtitle"
-                        app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                        app:layout_constraintEnd_toStartOf="@id/syncButton"
                         app:layout_constraintStart_toEndOf="@id/menu"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="DATA_SET_TITLE" />
@@ -94,7 +105,7 @@
                         android:maxLines="1"
                         android:textColor="?colorAccent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                        app:layout_constraintEnd_toStartOf="@id/syncButton"
                         app:layout_constraintStart_toEndOf="@id/menu"
                         app:layout_constraintTop_toBottomOf="@+id/dataSetName"
                         tools:text="DATA_SET_SUBTITLE" />

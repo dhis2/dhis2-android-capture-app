@@ -10,7 +10,6 @@ import io.reactivex.Flowable
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
@@ -21,8 +20,6 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.granularsync.GranularSyncContracts
-import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
@@ -56,8 +53,6 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                 }
             }
         }
-
-        const val FRAGMENT_TAG = "SYNC"
     }
 
     override fun onAttach(context: Context) {
@@ -69,7 +64,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             dataSetUid = it.getString(DATASET_UID, "")
             accessWrite = it.getBoolean(DATASET_ACCESS)
         } ?: throw IllegalArgumentException("Arguments can't be null")
-        (context as DataSetTableActivity).dataSetTableComponent.plus(
+        context.dataSetTableComponent.plus(
             DataSetDetailModule(
                 this,
                 dataSetUid
@@ -81,12 +76,8 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentDatasetDetailBinding.inflate(inflater, container, false)
-        binding.syncStatus.setOnClickListener {
-            presenter.onClickSyncStatus()
-            openSyncDialog()
-        }
         return binding.root
     }
 
@@ -98,27 +89,6 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     override fun onPause() {
         super.onPause()
         presenter.detach()
-    }
-
-    override fun openSyncDialog() {
-        dataSetInstance?.let {
-            val syncDialog = SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
-                .setUid(dataSetUid)
-                .setPeriodId(it.period())
-                .setOrgUnit(it.organisationUnitUid())
-                .setAttributeOptionCombo(it.attributeOptionComboUid())
-                .onDismissListener(
-                    object : GranularSyncContracts.OnDismissListener {
-                        override fun onDismiss(hasChanged: Boolean) {
-                            if (hasChanged) {
-                                presenter.updateData()
-                            }
-                        }
-                    })
-                .build()
-            syncDialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
-        }
     }
 
     override fun setCatOptComboName(catComboName: String) {
@@ -154,7 +124,6 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     getString(R.string.updated_time),
                     dataSetInstance.lastUpdated().toDateSpan(mContext)
                 )
-            Bindings.setStateIcon(binding.syncStatus, dataSetInstance.state(), false)
             binding.dataSetPeriod.text = periodUtils
                 .getPeriodUIString(
                     period.periodType() ?: PeriodType.Daily,
