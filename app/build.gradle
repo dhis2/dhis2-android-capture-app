@@ -156,8 +156,9 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = "8"
-        sourceCompatibility = "8"
+        coreLibraryDesugaringEnabled true
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -184,7 +185,6 @@ android {
             preferProjectModules()
 
             force 'junit:junit:4.12', 'com.squareup.okhttp3:okhttp:3.12.0'
-
             forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
         }
     }
@@ -304,9 +304,15 @@ dependencies {
     //endregion
 
     //region QR/Barcode scanner
-    implementation "com.google.zxing:core:${libraries.zxing}"
-    implementation "me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"
-    implementation "com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"
+    releaseImplementation "com.google.zxing:core:${libraries.zxing}"
+    debugImplementation project(':zxing-android')
+    implementation ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
+        exclude group: "com.google.zxing", module: "core"
+    }
+    implementation ("com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"){
+        exclude group: "com.google.zxing", module: "core"
+    }
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     //endregion
 
     //region Security

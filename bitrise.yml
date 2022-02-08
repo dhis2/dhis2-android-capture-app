@@ -2096,24 +2096,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
