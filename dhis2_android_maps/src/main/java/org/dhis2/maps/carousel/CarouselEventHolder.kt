@@ -1,19 +1,22 @@
 package org.dhis2.maps.carousel
 
 import android.view.View
-import android.widget.ImageView
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Locale
 import org.dhis2.Bindings.setTeiImage
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.model.EventUiComponentModel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import java.util.Locale
 
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,
@@ -24,6 +27,12 @@ class CarouselEventHolder(
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<EventUiComponentModel> {
+
+    init {
+        binding.composeProgramStageIcon.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     override fun bind(data: EventUiComponentModel) {
         val attribute: String
@@ -54,7 +63,7 @@ class CarouselEventHolder(
         setStageStyle(
             data.programStage?.style()?.color(),
             data.programStage?.style()?.icon(),
-            binding.programStageImage
+            binding.composeProgramStageIcon
         )
         SearchTeiModel().apply {
             setProfilePicture(data.teiImage)
@@ -84,7 +93,7 @@ class CarouselEventHolder(
         }
     }
 
-    private fun setStageStyle(color: String?, icon: String?, target: ImageView) {
+    private fun setStageStyle(color: String?, icon: String?, target: ComposeView) {
         val stageColor = ColorUtils.getColorFrom(
             color,
             ColorUtils.getPrimaryColor(
@@ -92,19 +101,17 @@ class CarouselEventHolder(
                 ColorUtils.ColorType.PRIMARY_LIGHT
             )
         )
-        target.apply {
-            background = ColorUtils.tintDrawableWithColor(
-                target.background,
-                stageColor
+        val resource = ResourceManager(target.context).getObjectStyleDrawableResource(
+            icon,
+            R.drawable.ic_default_outline
+        )
+        target.setUpMetadataIcon(
+            MetadataIconData(
+                stageColor,
+                resource,
+                40
             )
-            setImageResource(
-                ResourceManager(target.context).getObjectStyleDrawableResource(
-                    icon,
-                    R.drawable.ic_default_outline
-                )
-            )
-            setColorFilter(ColorUtils.getContrastColor(stageColor))
-        }
+        )
     }
 
     override fun showNavigateButton() {

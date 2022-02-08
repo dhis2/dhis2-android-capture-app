@@ -54,28 +54,37 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/eventInfoCard"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="81dp"
-            app:rippleColor="@color/rippleColor"
             android:layout_marginStart="4.3dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="6dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:rippleColor="@color/rippleColor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="16dp">
 
-                <ImageView
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/composeProgramStageIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_width="40dp"
+                    tools:layout_height="40dp" />
+
+                <!--<ImageView
                     android:id="@+id/programStageImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/square_rounded_corners_2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@tools:sample/avatars" />-->
 
                 <ImageView
                     android:id="@+id/borderImage"
@@ -84,8 +93,8 @@
                     android:src="@drawable/ic_oval_shape_white"
                     android:translationX="4dp"
                     android:translationY="4dp"
-                    app:layout_constraintBottom_toBottomOf="@id/programStageImage"
-                    app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                    app:layout_constraintBottom_toBottomOf="@id/composeProgramStageIcon"
+                    app:layout_constraintEnd_toEndOf="@id/composeProgramStageIcon"
                     tools:src="@tools:sample/avatars" />
 
                 <ImageView
@@ -123,8 +132,8 @@
                     android:textColor="@color/textPrimary"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toStartOf="@id/status_icon"
-                    app:layout_constraintStart_toEndOf="@id/programStageImage"
-                    app:layout_constraintTop_toTopOf="@id/programStageImage"
+                    app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
+                    app:layout_constraintTop_toTopOf="@id/composeProgramStageIcon"
                     tools:text="@tools:sample/full_names" />
 
                 <TextView
@@ -138,7 +147,7 @@
                     android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@id/status_icon"
-                    app:layout_constraintStart_toEndOf="@id/programStageImage"
+                    app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
                     app:layout_constraintTop_toBottomOf="@id/teiAttribute"
                     tools:text="@tools:sample/full_names" />
 
@@ -152,7 +161,7 @@
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/programStageImage"
+                    app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
                     app:layout_constraintTop_toBottomOf="@id/programStageName"
                     tools:text="03/01/2019 at Ngelehun CHC" />
 
@@ -166,7 +175,7 @@
                     app:eventProgramStage="@{programStage}"
                     app:eventStatusIcon="@{event}"
                     app:layout_constraintEnd_toStartOf="@+id/sync_icon"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/sync_icon"
@@ -174,7 +183,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:stateIcon='@{event.state()}'
-                    tools:ignore="ContentDescription"/>
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
