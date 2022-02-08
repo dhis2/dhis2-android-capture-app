@@ -6,6 +6,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailPresenter
@@ -26,6 +28,7 @@ class DataSetDetailPresenterTest {
     private val scheduler = TrampolineSchedulerProvider()
     private lateinit var presenter: DataSetDetailPresenter
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
 
     @Before
     fun setUp() {

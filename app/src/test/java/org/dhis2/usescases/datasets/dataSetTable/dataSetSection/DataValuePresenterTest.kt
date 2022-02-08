@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -35,6 +37,7 @@ class DataValuePresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val valueStore: ValueStore = mock()
     private val prefsProvider: PreferenceProvider = mock()
+    private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
 
     @Before
     fun setup() {
