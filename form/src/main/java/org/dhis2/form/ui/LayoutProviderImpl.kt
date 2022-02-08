@@ -5,7 +5,7 @@ import org.dhis2.form.R
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
+import org.hisp.dhis.android.core.program.SectionRenderingType
 
 private val layouts = mapOf<KClass<*>, Int>()
 
@@ -19,7 +19,7 @@ class LayoutProviderImpl : LayoutProvider {
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
         optionSet: String?,
-        sectionRenderingType: ProgramStageSectionRenderingType?
+        sectionRenderingType: SectionRenderingType?
     ): Int {
         return when (valueType) {
             ValueType.AGE -> R.layout.form_age_custom
@@ -34,8 +34,8 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.TEXT ->
                 return if (!optionSet.isNullOrEmpty()) {
                     when (sectionRenderingType) {
-                        ProgramStageSectionRenderingType.SEQUENTIAL,
-                        ProgramStageSectionRenderingType.MATRIX ->
+                        SectionRenderingType.SEQUENTIAL,
+                        SectionRenderingType.MATRIX ->
                             R.layout.form_option_set_matrix
                         else -> when (renderingType) {
                             ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
