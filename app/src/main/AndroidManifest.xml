@@ -159,6 +159,7 @@
         </activity>
         <activity android:name=".usescases.development.ProgramRulesValidationActivity" />
         <activity android:name=".data.forms.ScanCaptureActivity"/>
+        <activity android:name=".usescases.login.accounts.AccountsActivity" />
     </application>
 
 </manifest>
