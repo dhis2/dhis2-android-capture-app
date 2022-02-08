@@ -8,8 +8,6 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
-import org.dhis2.usescases.development.ProgramRulesValidationsComponent;
-import org.dhis2.usescases.development.ProgramRulesValidationsModule;
 import org.dhis2.usescases.login.accounts.AccountsComponent;
 import org.dhis2.usescases.login.accounts.AccountsModule;
 import org.dhis2.utils.category.CategoryDialogComponent;
@@ -49,8 +47,6 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     DhisPeriodUtils dhisPeriodUtils();
-
-    ProgramRulesValidationsComponent plus(@NonNull ProgramRulesValidationsModule module);
 
     AccountsComponent plus(@NonNull AccountsModule module);
 }

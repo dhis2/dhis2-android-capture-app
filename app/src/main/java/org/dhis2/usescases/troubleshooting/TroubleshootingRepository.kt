@@ -1,15 +1,14 @@
-package org.dhis2.usescases.development
+package org.dhis2.usescases.troubleshooting
 
-import android.os.Build
 import java.util.HashMap
 import org.dhis2.Bindings.toRuleEngineObject
 import org.dhis2.Bindings.toRuleVariableList
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.usescases.development.ProgramRuleValidation
+import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.ObjectStyle
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.antlr.Parser
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
@@ -35,17 +34,18 @@ import org.hisp.dhis.rules.parser.expression.CommonExpressionVisitor
 import org.hisp.dhis.rules.parser.expression.ParserUtils
 import org.hisp.dhis.rules.utils.RuleEngineUtils
 
-class ProgramRulesValidations(
+class TroubleshootingRepository(
     val d2: D2,
-    val fieldViewModelFactory: FieldViewModelFactory
+    val resourceManager: ResourceManager
 ) {
 
-    fun validateProgramRules(): List<RuleValidation> {
-        return programRules().mapNotNull { programAndRule ->
+    fun validateProgramRules(): List<ProgramRuleValidation> {
+        val programRulesMap = mutableMapOf<Program, MutableList<RuleValidation>>()
+        programRules().mapNotNull { programAndRule ->
             val rule = programAndRule.second
             val program = program(programAndRule.first?.uid())
             val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program.uid())
-            var ruleValidationItem = RuleValidation(rule, program, ruleExternalLink(rule.uid()))
+            var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
             val ruleConditionResult = process(rule.condition(), valueMap)
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
@@ -61,179 +61,32 @@ class ProgramRulesValidations(
                 ruleValidationItem = ruleValidationItem.copy(actionsError = ruleActionConditions)
             }
             if (ruleValidationItem.hasError()) {
-                ruleValidationItem
+                Pair(program, ruleValidationItem)
             } else {
                 null
             }
-        }.sortedBy { it.program.displayName() }
-    }
-
-    fun programVariables(programUid: String): List<FieldUiModel> {
-        return d2.programModule().programRuleVariables()
-            .byProgramUid().eq(programUid)
-            .blockingGet().map {
-                when {
-                    it.dataElement()?.uid() != null -> ruleVariableToDataElementField(
-                        it.displayName()!!,
-                        it.dataElement()!!.uid()
-                    )
-                    it.trackedEntityAttribute()?.uid() != null -> ruleVariableToAttributeField(
-                        it.displayName()!!,
-                        it.trackedEntityAttribute()!!.uid()
-                    )
-                    else -> ruleVariableToCalculatedValueField(it.displayName()!!)
-                }
-            }.plus(
-                fieldViewModelFactory.create(
-                    "Rule Expression",
-                    "Rule Expression",
-                    ValueType.TEXT,
-                    false,
-                    null,
-                    null,
-                    null,
-                    true,
-                    true,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    null,
-                    null,
-                    FeatureType.POINT
-                )
+        }.forEach { (program, ruleValidation) ->
+            if (programRulesMap.containsKey(program)) {
+                programRulesMap[program]?.add(ruleValidation)
+            } else {
+                programRulesMap[program] = mutableListOf(ruleValidation)
+            }
+        }
+        return programRulesMap.map { (program, validationList) ->
+            ProgramRuleValidation(
+                programUid = program.uid(),
+                programName = program.displayName() ?: program.uid(),
+                metadataIconData = MetadataIconData(
+                    programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
+                    iconResource = resourceManager.getObjectStyleDrawableResource(
+                        program.style().icon(), R.drawable.ic_default_outline
+                    ),
+                    sizeInDp = 24
+                ),
+                validations = validationList
             )
+        }.sortedBy { it.programName }
     }
-
-    private fun ruleVariableToDataElementField(
-        variableLabel: String,
-        dataElementUid: String
-    ): FieldUiModel {
-        val de = d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
-
-        return fieldViewModelFactory.create(
-            de.uid(),
-            variableLabel,
-            de.valueType() ?: ValueType.TEXT,
-            false,
-            de.optionSetUid(),
-            null,
-            null,
-            true,
-            true,
-            null,
-            de.displayDescription(),
-            null,
-            null,
-            de.style(),
-            de.fieldMask(),
-            null,
-            null,
-            FeatureType.POINT
-        )
-    }
-
-    private fun ruleVariableToAttributeField(
-        variableLabel: String,
-        attributeUid: String
-    ): FieldUiModel {
-        val attr =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(attributeUid).blockingGet()
-        return fieldViewModelFactory.create(
-            attr.uid(),
-            variableLabel,
-            attr.valueType() ?: ValueType.TEXT,
-            false,
-            attr.optionSet()?.uid(),
-            null,
-            null,
-            true,
-            true,
-            null,
-            attr.displayDescription(),
-            null,
-            null,
-            attr.style(),
-            attr.fieldMask(),
-            null,
-            null,
-            FeatureType.POINT
-        )
-    }
-
-    private fun ruleVariableToCalculatedValueField(variableLabel: String): FieldUiModel {
-        return fieldViewModelFactory.create(
-            variableLabel,
-            variableLabel,
-            ValueType.TEXT,
-            false,
-            null,
-            null,
-            null,
-            true,
-            true,
-            null,
-            null,
-            null,
-            null,
-            ObjectStyle.builder().build(),
-            null,
-            null,
-            null,
-            FeatureType.POINT
-        )
-    }
-
-    private fun evaluateAction(
-        ruleAction: RuleAction,
-        valueMap: Map<String, RuleVariableValue?>
-    ): String? {
-        return if (ruleAction.needsContent()) {
-            val actionConditionResult =
-                process(ruleAction.data(), valueMap, ruleAction.ruleActionType())
-            if (actionConditionResult.isNotEmpty()) {
-                actionConditionResult
-            } else {
-                null
-            }
-        } else {
-            checkActionVariables(ruleAction)
-        }
-    }
-
-    private fun checkActionVariables(ruleAction: RuleAction): String? {
-        return when {
-            ruleAction is RuleActionHideField && ruleAction.field().isEmpty() ->
-                "Missing field"
-            ruleAction is RuleActionHideOption && (
-                ruleAction.field()
-                    .isEmpty() || ruleAction.option().isEmpty()
-                ) ->
-                "Missing field or option"
-            ruleAction is RuleActionHideOptionGroup && (
-                ruleAction.field()
-                    .isEmpty() || ruleAction.optionGroup().isEmpty()
-                ) ->
-                "Missing field or option group"
-            ruleAction is RuleActionHideProgramStage && ruleAction.programStage().isEmpty() ->
-                "Missing program stage"
-            ruleAction is RuleActionHideSection && ruleAction.programStageSection().isEmpty() ->
-                "Missing program stage section"
-            ruleAction is RuleActionSetMandatoryField && ruleAction.field().isEmpty() ->
-                "Missing field"
-            ruleAction is RuleActionShowOptionGroup && ruleAction.optionGroup().isEmpty() ->
-                "Missing option group"
-            else -> null
-        }
-    }
-
-    private fun ruleExternalLink(uid: String) =
-        "%s/api/programRules/%s?fields=*,programRuleActions[*]".format(
-            d2.systemInfoModule().systemInfo().blockingGet().contextPath(),
-            uid
-        )
 
     private fun program(programUid: String?) =
         d2.programModule().programs().uid(programUid).blockingGet()
@@ -242,6 +95,12 @@ class ProgramRulesValidations(
         d2.programModule().programRules().withProgramRuleActions().blockingGet().map {
             Pair(it.program(), it.toRuleEngineObject())
         }
+
+    private fun ruleExternalLink(uid: String) =
+        "%s/api/programRules/%s?fields=*,programRuleActions[*]".format(
+            d2.systemInfoModule().systemInfo().blockingGet().contextPath(),
+            uid
+        )
 
     private fun ruleVariableMap(programUid: String, values: Map<String, String>? = null) =
         d2.programModule().programRuleVariables()
@@ -324,7 +183,7 @@ class ProgramRulesValidations(
             val result = Parser.visit(
                 condition,
                 commonExpressionVisitor,
-                !isOldAndroidVersion()
+                true
             )
             convertInteger(result).toString()
             ""
@@ -335,11 +194,7 @@ class ProgramRulesValidations(
         }
     }
 
-    private fun isOldAndroidVersion(): Boolean {
-        return Build.VERSION.SDK_INT < 21
-    }
-
-    private fun convertInteger(result: Any): Any? {
+    private fun convertInteger(result: Any): Any {
         return if (result is Double && result % 1 == 0.0) {
             result.toInt()
         } else result
@@ -355,16 +210,46 @@ class ProgramRulesValidations(
         else -> true
     }
 
-    fun runValidation(programUid: String, variableValueMap: HashMap<String, String>): Boolean {
-        return process(
-            condition = variableValueMap["Rule Expression"] ?: "",
-            valueMap = ruleVariableMap(programUid, variableValueMap)
-        ).isEmpty()
+    private fun evaluateAction(
+        ruleAction: RuleAction,
+        valueMap: Map<String, RuleVariableValue?>
+    ): String? {
+        return if (ruleAction.needsContent()) {
+            val actionConditionResult =
+                process(ruleAction.data(), valueMap, ruleAction.ruleActionType())
+            if (actionConditionResult.isNotEmpty()) {
+                actionConditionResult
+            } else {
+                null
+            }
+        } else {
+            checkActionVariables(ruleAction)
+        }
     }
 
-    fun programsWithRules(): List<Program> {
-        return d2.programModule().programs().blockingGet().filter { program ->
-            !d2.programModule().programRules().byProgramUid().eq(program.uid()).blockingIsEmpty()
+    private fun checkActionVariables(ruleAction: RuleAction): String? {
+        return when {
+            ruleAction is RuleActionHideField && ruleAction.field().isEmpty() ->
+                "Missing field"
+            ruleAction is RuleActionHideOption && (
+                ruleAction.field()
+                    .isEmpty() || ruleAction.option().isEmpty()
+                ) ->
+                "Missing field or option"
+            ruleAction is RuleActionHideOptionGroup && (
+                ruleAction.field()
+                    .isEmpty() || ruleAction.optionGroup().isEmpty()
+                ) ->
+                "Missing field or option group"
+            ruleAction is RuleActionHideProgramStage && ruleAction.programStage().isEmpty() ->
+                "Missing program stage"
+            ruleAction is RuleActionHideSection && ruleAction.programStageSection().isEmpty() ->
+                "Missing program stage section"
+            ruleAction is RuleActionSetMandatoryField && ruleAction.field().isEmpty() ->
+                "Missing field"
+            ruleAction is RuleActionShowOptionGroup && ruleAction.optionGroup().isEmpty() ->
+                "Missing option group"
+            else -> null
         }
     }
 }
