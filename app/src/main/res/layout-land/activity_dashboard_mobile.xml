@@ -83,6 +83,16 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
                 android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
                 android:onClick="@{ () -> presenter.generalFiltersClick() }"
@@ -101,6 +111,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_map"
                 app:tint="@color/white"
+                tools:visibility="visible"
                 tools:ignore="ContentDescription" />
 
             <ImageView
