@@ -94,10 +94,15 @@ class GranularSyncPresenterImpl(
 
         disposable.add(
             getTitle()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.showTitle(it) },
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { title ->
+                        if (title.isNotEmpty()) {
+                            view.showTitle(title)
+                        } else {
+                            view.showRefreshTitle()
+                        }
+                    },
                     { view.closeDialog() }
                 )
         )
@@ -343,7 +348,7 @@ class GranularSyncPresenterImpl(
     @VisibleForTesting
     fun getTitle(): Single<String> {
         return when (conflictType) {
-            ALL -> Single.just("Refresh all data")
+            ALL -> Single.just("")
             PROGRAM -> d2.programModule().programs().uid(recordUid).get().map { it.displayName() }
             TEI ->
                 d2.trackedEntityModule().trackedEntityTypes().uid(

@@ -209,6 +209,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.programName.text = displayName
     }
 
+    override fun showRefreshTitle() {
+        binding!!.programName.text = getString(R.string.granular_sync_refresh_title)
+    }
+
     override fun setState(
         state: State,
         conflicts: MutableList<TrackerImportConflict>
@@ -605,7 +609,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     override fun setLastUpdated(result: SyncDate) {
         binding?.lastUpdated?.text = result.date?.let {
             it.toDateSpan(requireContext())
-        } ?: "Unknown"
+        } ?: getString(R.string.unknown_date)
     }
 
     override fun onRequestPermissionsResult(

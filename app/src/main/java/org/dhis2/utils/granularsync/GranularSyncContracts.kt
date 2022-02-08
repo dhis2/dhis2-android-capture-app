@@ -43,6 +43,7 @@ class GranularSyncContracts {
         fun emptyEnrollmentError(): String
         fun unsupportedTask(): String
         fun setLastUpdated(result: SyncDate)
+        fun showRefreshTitle()
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {

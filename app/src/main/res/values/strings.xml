@@ -854,4 +854,6 @@
     <string name="program_rules_loop_warning_title">Program rules warning</string>
     <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
     <string name="granular_sync_refresh">REFRESH</string>
+    <string name="unknown_date">Unknown</string>
+    <string name="granular_sync_refresh_title">Refresh all data</string>
 </resources>
