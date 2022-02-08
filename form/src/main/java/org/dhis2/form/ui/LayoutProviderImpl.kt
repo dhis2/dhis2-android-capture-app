@@ -98,7 +98,7 @@ class LayoutProviderImpl : LayoutProvider {
         val isDefaultRendering =
             renderingType == null || renderingType == ValueTypeRenderingType.DEFAULT
         val isSectionRenderingMatrix =
-            sectionRenderingType?:SectionRenderingType.LISTING != SectionRenderingType.LISTING
+            sectionRenderingType ?: SectionRenderingType.LISTING != SectionRenderingType.LISTING
         return isOptionSet && isDefaultRendering && isSectionRenderingMatrix
     }
 
