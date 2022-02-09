@@ -967,4 +967,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean canSearchOnline() {
         return NetworkUtils.isOnline(view.getContext()) && selectedProgramMinNumberOfAttributesCheck();
     }
+
+    @Override
+    public void refreshData() {
+        queryProcessor.onNext(queryData);
+    }
 }
