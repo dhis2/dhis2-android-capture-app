@@ -309,14 +309,19 @@ fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
 @BindingAdapter("setOnFocusChangeListener")
 fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
     setOnFocusChangeListener { _, hasFocus ->
+        val value = if(text.isEmpty()){
+            null
+        }else{
+            text.toString()
+        }
         if (hasFocus) {
             openKeyboard()
         } else if (valueHasChanged(text, item.value)) {
-            checkAutocompleteRendering(context, item, text.toString())
+            checkAutocompleteRendering(context, item, value)
             item.invokeIntent(
                 FormIntent.OnSave(
                     uid = item.uid,
-                    value = text.toString(),
+                    value = value,
                     valueType = item.valueType,
                     fieldMask = item.fieldMask
                 )
@@ -398,8 +403,8 @@ fun getListFromPreference(context: Context, uid: String): MutableList<String> {
     return gson.fromJson(json, type)
 }
 
-fun checkAutocompleteRendering(context: Context, item: FieldUiModel, value: String) {
-    if (item.renderingType == UiRenderType.AUTOCOMPLETE) {
+fun checkAutocompleteRendering(context: Context, item: FieldUiModel, value: String?) {
+    if (item.renderingType == UiRenderType.AUTOCOMPLETE && value != null) {
         val autoCompleteValues = getListFromPreference(context, item.uid)
         if (!autoCompleteValues.contains(value)) {
             autoCompleteValues.add(value)
