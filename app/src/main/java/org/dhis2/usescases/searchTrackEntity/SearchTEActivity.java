@@ -769,7 +769,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        startActivity(SearchTEActivity.class, updateBundle(programUid), true, false, null);
+        Intent intent = new Intent(this,SearchTEActivity.class);
+        if (fromRelationshipTeiUid != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        }
+        intent.putExtras(updateBundle(programUid));
+        startActivity(intent);
+        finish();
+
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
