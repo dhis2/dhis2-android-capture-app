@@ -26,10 +26,33 @@ class MapRelationshipToRelationshipMapModel {
                 RelationshipDirection.TO
             }
 
-        val teiFromUid = relationshipViewModel.relationship.from()?.trackedEntityInstance()
-            ?.trackedEntityInstance()
-        val teiToUid = relationshipViewModel.relationship.to()?.trackedEntityInstance()
-            ?.trackedEntityInstance()
+        val fromUid = relationshipViewModel.relationship.from()?.let {
+            when {
+                it.hasTrackedEntityInstance() -> {
+                    it.trackedEntityInstance()?.trackedEntityInstance()
+                }
+                it.hasEvent() -> {
+                    it.event()?.event()
+                }
+                else -> {
+                    it.enrollment()?.enrollment() ?: ""
+                }
+            }
+        }
+
+        val toUid = relationshipViewModel.relationship.to()?.let {
+            when {
+                it.hasTrackedEntityInstance() -> {
+                    it.trackedEntityInstance()?.trackedEntityInstance()
+                }
+                it.hasEvent() -> {
+                    it.event()?.event()
+                }
+                else -> {
+                    it.enrollment()?.enrollment() ?: ""
+                }
+            }
+        }
 
         val fromAttr =
             relationshipViewModel.fromValues.firstOrNull()?.let { it.second ?: "-" } ?: "-"
@@ -37,14 +60,14 @@ class MapRelationshipToRelationshipMapModel {
             relationshipViewModel.toValues.firstOrNull()?.let { it.second ?: "-" } ?: "-"
 
         val teiFrom = TeiMap(
-            teiFromUid,
+            fromUid,
             relationshipViewModel.fromGeometry,
             relationshipViewModel.fromImage,
             relationshipViewModel.fromDefaultImageResource,
             fromAttr
         )
         val teiTo = TeiMap(
-            teiToUid,
+            toUid,
             relationshipViewModel.toGeometry,
             relationshipViewModel.toImage,
             relationshipViewModel.toDefaultImageResource,
