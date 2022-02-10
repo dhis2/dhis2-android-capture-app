@@ -2367,6 +2367,8 @@ workflows:
                     }
                 })
 
+                console.log("Reading current PRs")
+
                 if(response.ok){
                     let pull_requests = JSON.parse(await response.text())
                     var devs = []
@@ -2388,9 +2390,21 @@ workflows:
                         if(dev == "JaimeToca") JaimeTocaCount = JaimeTocaCount +1
                         if(dev == "andresmr") andresmrCount = andresmrCount +1
                     }
-                    console.log("Ferdy: " + ferdyrodCount)
-                    console.log("Pablo: "+ BalcanCount)
-                    console.log("Manu: "+mmmateosCount)
-                    console.log("Jaime: "+JaimeTocaCount)
-                    console.log("Andres: "+andresmrCount)
+                    message = "Ferdy: ${ferdyrodCount}\nPablo: ${BalcanCount}\nManu: ${mmmateosCount}\nJaime: ${JaimeTocaCount}\nAndres: ${andresmrCount}"
+                    process.env.$CODE_REVIEW_MESSAGE = message
+                    await $`echo $CODE_REVIEW_MESSAGE
+                }else{
+                    console.log("fetching PRs failed")
                 }
+      - slack@3:
+          inputs:
+            - channel: '#android-app-dev'
+            - text: $CODE_REVIEW_MESSAGE
+            - icon_url: 'https://c.tenor.com/T4YneTxIzUAAAAAC/im-watching-you-eyes-on-you.gif'
+            - pretext: '*Code review reminder!*'
+            - author_name: Watcher Cat
+            - title: I'm watching you!
+            - message: ''
+            - webhook_url: $SLACK_CI_WEBHOOK
+      envs:
+          - CODE_REVIEW_MESSAGE: No new message
