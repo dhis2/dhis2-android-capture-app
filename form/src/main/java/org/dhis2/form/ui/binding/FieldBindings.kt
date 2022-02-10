@@ -309,9 +309,9 @@ fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
 @BindingAdapter("setOnFocusChangeListener")
 fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
     setOnFocusChangeListener { _, hasFocus ->
-        val value = if(text.isEmpty()){
+        val value = if (text.isEmpty()) {
             null
-        }else{
+        } else {
             text.toString()
         }
         if (hasFocus) {
