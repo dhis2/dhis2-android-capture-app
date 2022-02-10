@@ -190,9 +190,9 @@ workflows:
                     message = "Ferdy: ${ferdyrodCount}\nPablo: ${BalcanCount}\nManu: ${mmmateosCount}\nJaime: ${JaimeTocaCount}\nAndres: ${andresmrCount}"
                     process.env.$CODE_REVIEW_MESSAGE = message
                     await $`echo $CODE_REVIEW_MESSAGE
-                }else{
-                    console.log("fetching PRs failed")
                 }
+
+                console.log("Finished!")
       - slack@3:
           inputs:
             - channel: '#android-app-dev'
@@ -511,7 +511,7 @@ workflows:
       - cache-push: {}
   FlowUITest:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -829,7 +829,7 @@ workflows:
       - cache-push: {}
   LocalPrimary:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -916,7 +916,7 @@ workflows:
             - webhook_url: $SLACK_CI_WEBHOOK
   LocalUITest:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -1203,7 +1203,7 @@ workflows:
       - cache-push: {}
   primary:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -1376,7 +1376,7 @@ workflows:
       - cache-push@2: {}
   primary-j11:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -1544,7 +1544,7 @@ workflows:
       - cache-push@2: {}
   PrimaryCopy:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -1740,7 +1740,7 @@ workflows:
       - cache-push@2: {}
   ReviewersTest:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -1906,7 +1906,7 @@ workflows:
       - cache-push: {}
   Sonarqube_coverage:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -2641,7 +2641,7 @@ workflows:
           is_always_run: true
   Translations:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
@@ -2704,7 +2704,7 @@ workflows:
 
 
       2) Notify through slack in #android-capture-app-ci with the next build
-      variant: 
+      variant:
          - $SLACK : yes|no
     steps:
       - activate-ssh-key@4.0.5:
@@ -2783,7 +2783,7 @@ workflows:
       - cache-push@2.2.3: {}
   WebSettingsAppDeployment:
     description: |+
-      Workflow that 
+      Workflow that
 
       1)Choose random reviewers for a PR
 
