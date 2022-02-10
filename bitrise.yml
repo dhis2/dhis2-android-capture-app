@@ -150,21 +150,24 @@ workflows:
             - content: >-
                 #!/usr/bin/env zx
 
+
                 const pr_api =
                 "https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls"
 
                 const GITHUB_RELEASE_API_TOKEN =
                 process.env.GITHUB_RELEASE_API_TOKEN
 
+
                 console.log("Counting code reviews")
 
 
-                let response = await fetch(pr_api,{
+                let response = await fetch(pr_api, {
                     method: "get",
                     headers: {
                         "Authorization": "Token ${GITHUB_RELEASE_API_TOKEN}"
                     }
                 })
+
 
                 if(response.ok){
                     let pull_requests = JSON.parse(await response.text())
@@ -189,7 +192,7 @@ workflows:
                     }
                     message = "Ferdy: ${ferdyrodCount}\nPablo: ${BalcanCount}\nManu: ${mmmateosCount}\nJaime: ${JaimeTocaCount}\nAndres: ${andresmrCount}"
                     process.env.$CODE_REVIEW_MESSAGE = message
-                    await $`echo $CODE_REVIEW_MESSAGE
+                    await $`echo $CODE_REVIEW_MESSAGE`
                 }
 
                 console.log("Finished!")
