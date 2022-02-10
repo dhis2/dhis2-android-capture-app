@@ -2342,7 +2342,7 @@ workflows:
             - node_version: 17.4.0
       - npm@1:
           inputs:
-            - command: npm install -g zx
+            - command: install -g zx
           title: Install zx
       - script@1:
           inputs:
