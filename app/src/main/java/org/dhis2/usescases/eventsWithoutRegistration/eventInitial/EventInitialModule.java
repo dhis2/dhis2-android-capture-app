@@ -9,10 +9,12 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -81,7 +83,7 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, D2 d2) {
+    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
@@ -93,7 +95,9 @@ public class EventInitialModule {
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
                 new UiEventTypesProviderImpl(),
-                new KeyboardActionProviderImpl());
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager)
+        );
     }
 
     @Provides

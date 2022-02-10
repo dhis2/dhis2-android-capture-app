@@ -9,6 +9,7 @@ import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
@@ -29,6 +30,7 @@ import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
+import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
@@ -111,7 +113,8 @@ class EnrollmentModule(
     @PerActivity
     fun fieldFactory(
         context: Context,
-        d2: D2
+        d2: D2,
+        resourceManager: ResourceManager
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             context.valueTypeHintMap(),
@@ -124,7 +127,8 @@ class EnrollmentModule(
             HintProviderImpl(context),
             DisplayNameProviderImpl(d2),
             UiEventTypesProviderImpl(),
-            KeyboardActionProviderImpl()
+            KeyboardActionProviderImpl(),
+            LegendValueProviderImpl(d2, resourceManager)
         )
     }
 
@@ -223,7 +227,8 @@ class EnrollmentModule(
         crashReportController: CrashReportController,
         dataEntryRepository: EnrollmentRepository,
         networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository
+        searchTEIRepository: SearchTEIRepository,
+        resourceManager: ResourceManager
     ): FormRepository {
         return FormRepositoryImpl(
             ValueStoreImpl(
@@ -240,7 +245,8 @@ class EnrollmentModule(
             DisplayNameProviderImpl(d2),
             dataEntryRepository,
             EnrollmentRuleEngineRepository(d2, enrollmentUid),
-            RulesUtilsProviderImpl(d2)
+            RulesUtilsProviderImpl(d2),
+            LegendValueProviderImpl(d2, resourceManager)
         )
     }
 }

@@ -8,7 +8,6 @@ import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.LegendValue
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -172,7 +171,6 @@ class EventRepository(
         if (!isOrgUnit && !isDate) {
             dataValue = friendlyValue
         }
-        val legendValue = getColorByLegend(rawValue, uid)
         val renderingType = if (programStageSection?.renderType() != null &&
             programStageSection.renderType()!!.mobile() != null
         ) {
@@ -201,7 +199,6 @@ class EventRepository(
             optionCount,
             objectStyle,
             de.fieldMask(),
-            legendValue,
             options,
             featureType
         )
@@ -221,40 +218,5 @@ class EventRepository(
                     conflict.dataElement() == dataElementUid &&
                     conflict.value() == value
             }?.displayDescription() ?: ""
-    }
-
-    private fun getColorByLegend(value: String?, dataElementUid: String): LegendValue? {
-        return if (value == null) {
-            null
-        } else try {
-            val dataElement = d2.dataElementModule().dataElements()
-                .byUid().eq(dataElementUid)
-                .withLegendSets()
-                .one().blockingGet()
-            if (dataElement?.valueType()?.isNumeric == true &&
-                dataElement.legendSets()?.isNotEmpty() == true
-            ) {
-                val legendSet = dataElement.legendSets()!![0]
-                val legend = d2.legendSetModule().legends()
-                    .byStartValue().smallerThan(java.lang.Double.valueOf(value))
-                    .byEndValue().biggerThan(java.lang.Double.valueOf(value))
-                    .byLegendSet().eq(legendSet.uid())
-                    .one()
-                    .blockingGet() ?: d2.legendSetModule().legends()
-                    .byEndValue().eq(java.lang.Double.valueOf(value))
-                    .byLegendSet().eq(legendSet.uid())
-                    .one()
-                    .blockingGet()
-                if (legend != null) {
-                    return LegendValue(
-                        resourceManager.getColorFrom(legend.color()),
-                        legend.displayName()
-                    )
-                }
-            }
-            null
-        } catch (e: Exception) {
-            null
-        }
     }
 }

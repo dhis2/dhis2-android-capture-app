@@ -245,7 +245,6 @@ class EnrollmentRepository(
             optionCount,
             attribute.style(),
             attribute.fieldMask(),
-            null,
             options,
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
@@ -372,7 +371,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            null,
             null
         )
     }
@@ -401,7 +399,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            null,
             null
         )
     }
@@ -422,7 +419,6 @@ class EnrollmentRepository(
             null,
             null,
             ObjectStyle.builder().build(),
-            null,
             null,
             null,
             null
@@ -455,7 +451,6 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            null,
             featureType
         )
     }
@@ -482,7 +477,6 @@ class EnrollmentRepository(
             null,
             null,
             ObjectStyle.builder().build(),
-            null,
             null,
             null,
             featureType

@@ -21,6 +21,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.D2
@@ -62,6 +63,7 @@ class RulesUtilsProviderImplTest {
     private val displayNameProvider: DisplayNameProvider = mock()
     private val uiEventTypesProvider: UiEventTypesProvider = mock()
     private val keyboardActionProvider: KeyboardActionProvider = mock()
+    private val legendValueProvider: LegendValueProvider = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
@@ -76,7 +78,8 @@ class RulesUtilsProviderImplTest {
             hintProvider,
             displayNameProvider,
             uiEventTypesProvider,
-            keyboardActionProvider
+            keyboardActionProvider,
+            legendValueProvider
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
@@ -115,7 +118,6 @@ class RulesUtilsProviderImplTest {
             null,
             ObjectStyle.builder().build(),
             "",
-            null,
             null,
             null
         )

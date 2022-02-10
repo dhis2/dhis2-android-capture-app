@@ -505,7 +505,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFutureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null, null);
+                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null);
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
@@ -550,7 +550,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     null,
                     null,
                     ObjectStyle.builder().build(),
-                    null,
                     null,
                     null,
                     featureType
