@@ -81,38 +81,27 @@ workflows:
             cd ..
             echo "Rule engine build gradle created"
     - script:
-            title: zxing build.gradle
-            asset_urls:
-              icon.svg: >-
-                https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-            is_always_run: true
-            inputs:
-            - content: |
-                #!/usr/bin/env bash
-                # fail if any commands fails
-                set -e
-                # debug log
-                set -x
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
 
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
 
-                if ! [[ -d /zxing-core ]]; then
-                    echo "zxing module does not exist"
-                    exit 0
-                fi
-
-                cd zxing-core
-                cd core
-
-                FILE=build.gradle
-                if [ -f "$FILE" ]; then
-                    echo "$FILE rule engine exist"
-                    exit 0
-                fi
-
-                echo "apply plugin: 'java'" > build.gradle
-
-                cd ..
-                echo "zxing build gradle created"
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -209,23 +198,13 @@ workflows:
               # debug log
               set -x
 
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
@@ -336,24 +315,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
@@ -463,6 +431,28 @@ workflows:
             cd scripts/
             chmod +x flow_tests_configurator.sh
             ./flow_tests_configurator.sh
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
+
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -566,24 +556,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
@@ -708,6 +687,28 @@ workflows:
         - mapping_file_include_filter: ""
         - retry_on_failure: "no"
         - gradle_task: :app:ktlintCheck :form:ktlintCheck :dhis_android_analytics:ktlintCheck
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
+
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
@@ -748,6 +749,28 @@ workflows:
   LocalUITest:
     description: "Workflow that \n\n1)Choose random reviewers for a PR\n\n2)Run tests\n\n3)Publish Results on slack\n\n"
     steps:
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
+
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -851,24 +874,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
@@ -1063,24 +1075,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
@@ -1260,24 +1261,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
@@ -1354,6 +1344,28 @@ workflows:
 
             cd ..
             echo "Rule engine build gradle created"
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
+
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -1743,24 +1755,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
@@ -1877,6 +1878,28 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.0.18: {}
     - cache-pull@2.1.4: {}
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: >-
+            https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+          - content: |
+              #!/usr/bin/env bash
+              # fail if any commands fails
+              set -e
+              # debug log
+              set -x
+
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
     - script@1:
         title: Sets JAVA 8
         inputs:
@@ -2247,24 +2270,13 @@ workflows:
               # debug log
               set -x
 
-
-              if ! [[ -d /zxing-core ]]; then
-                  echo "zxing module does not exist"
-                  exit 0
-              fi
-
-              cd zxing-core
-              cd core
-
-              FILE=build.gradle
+              FILE=zxing-core/core/build.gradle
               if [ -f "$FILE" ]; then
-                  echo "$FILE rule engine exist"
+                  echo "$FILE exist"
                   exit 0
               fi
 
-              echo "apply plugin: 'java'" > build.gradle
-
-              cd ..
+              echo "apply plugin: 'java'" > $FILE
               echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
