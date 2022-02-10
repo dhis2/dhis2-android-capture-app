@@ -2354,14 +2354,16 @@ workflows:
 
                 const pr_api =
                 "https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls"
-                const GITHUB_RELEASE_API_TOKEN = os.environ.get('GITHUB_RELEASE_API_TOKEN')
+
+                const GITHUB_RELEASE_API_TOKEN = process.env.GITHUB_RELEASE_API_TOKEN
+
                 console.log("Counting code reviews")
 
 
                 let response = await fetch(pr_api,{
                     method: "get",
                     headers: {
-                        "Authorization": "Token "+GITHUB_RELEASE_API_TOKEN
+                        "Authorization": "Token ${GITHUB_RELEASE_API_TOKEN}"
                     }
                 })
 
