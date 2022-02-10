@@ -150,7 +150,6 @@ workflows:
             - content: >-
                 #!/usr/bin/env zx
 
-
                 const pr_api =
                 "https://api.github.com/repos/dhis2/dhis2-android-capture-app/pulls"
 
@@ -188,11 +187,11 @@ workflows:
                         if(dev == "JaimeToca") JaimeTocaCount = JaimeTocaCount +1
                         if(dev == "andresmr") andresmrCount = andresmrCount +1
                     }
-                    console.log("Ferdy: " + ferdyrodCount)
-                    console.log("Pablo: "+ BalcanCount)
-                    console.log("Manu: "+mmmateosCount)
-                    console.log("Jaime: "+JaimeTocaCount)
-                    console.log("Andres: "+andresmrCount)
+                    message = "Ferdy: ${ferdyrodCount}\nPablo: ${BalcanCount}\nManu: ${mmmateosCount}\nJaime: ${JaimeTocaCount}\nAndres: ${andresmrCount}"
+                    process.env.$CODE_REVIEW_MESSAGE = message
+                    await $`echo $CODE_REVIEW_MESSAGE
+                }else{
+                    console.log("fetching PRs failed")
                 }
       - slack@3:
           inputs:
