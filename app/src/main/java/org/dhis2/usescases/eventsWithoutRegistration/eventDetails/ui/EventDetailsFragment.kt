@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.databinding.EventDetailsFragmentBinding
@@ -14,7 +15,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.period.PeriodType
-import javax.inject.Inject
 
 class EventDetailsFragment : Fragment() {
 
@@ -28,7 +28,8 @@ class EventDetailsFragment : Fragment() {
     private lateinit var binding: EventDetailsFragmentBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         (activity as EventInitialActivity).eventInitialComponent.plus(
@@ -40,7 +41,8 @@ class EventDetailsFragment : Fragment() {
                 ),
                 programStageUid = requireArguments().getString(Constants.PROGRAM_STAGE_UID)!!,
                 programId = requireArguments().getString(Constants.PROGRAM_UID)!!,
-                periodType = requireArguments().getSerializable(Constants.EVENT_PERIOD_TYPE) as PeriodType?
+                periodType = requireArguments()
+                    .getSerializable(Constants.EVENT_PERIOD_TYPE) as PeriodType?
             )
         ).inject(this)
         binding = DataBindingUtil.inflate(

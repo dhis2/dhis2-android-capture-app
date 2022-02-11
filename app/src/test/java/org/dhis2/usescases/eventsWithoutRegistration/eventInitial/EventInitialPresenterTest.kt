@@ -10,6 +10,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.Date
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -18,7 +19,6 @@ import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
 import org.dhis2.utils.DateUtils
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController

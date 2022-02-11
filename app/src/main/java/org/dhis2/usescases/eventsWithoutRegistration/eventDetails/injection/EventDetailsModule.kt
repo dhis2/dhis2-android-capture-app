@@ -6,9 +6,10 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModelFactory
@@ -34,7 +35,6 @@ class EventDetailsModule(
         resourceManager: ResourceManager
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
-            eventCreationType,
             periodType,
             ConfigureEventDetails(d2, programStageUid),
             ConfigureEventReportDate(
@@ -52,6 +52,9 @@ class EventDetailsModule(
             ConfigureEventCoordinates(
                 d2 = d2,
                 programStageId = programStageUid
+            ),
+            ConfigureEventTemp(
+                creationType = eventCreationType
             )
         )
     }

@@ -11,6 +11,7 @@ import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.ActivityEventScheduledBinding
@@ -18,7 +19,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.DateUtils
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.event.Event
