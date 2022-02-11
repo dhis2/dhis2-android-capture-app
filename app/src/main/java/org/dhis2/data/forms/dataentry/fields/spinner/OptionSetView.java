@@ -224,7 +224,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     public void onClick(View v) {
         requestFocus();
         closeKeyboard(v);
-        viewModel.onItemClick();
         OptionSetDialog dialog = new OptionSetDialog();
         dialog.create(getContext());
         dialog.setOptionSet(viewModel);
@@ -235,9 +234,11 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
         } else {
             dialog.dismiss();
-            new OptionSetPopUp(getContext(), v, viewModel,
+            new OptionSetPopUp(getContext(), editText, viewModel,
                     this);
         }
+
+//        viewModel.onItemClick();
     }
 
     public TextView textView() {
