@@ -25,7 +25,7 @@ interface FieldViewModelFactory {
         description: String?,
         fieldRendering: ValueTypeDeviceRendering? = null,
         optionCount: Int? = null,
-        objectStyle: ObjectStyle,
+        objectStyle: ObjectStyle = ObjectStyle.builder().build(),
         fieldMask: String? = null,
         options: List<Option>? = null,
         featureType: FeatureType? = null

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
+package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import org.dhis2.R
-import org.dhis2.data.forms.dataentry.FormView
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.databinding.EventDetailsFragmentBinding
-import org.dhis2.form.data.FormRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.utils.Constants
+import org.hisp.dhis.android.core.period.PeriodType
 import javax.inject.Inject
 
 class EventDetailsFragment : Fragment() {
@@ -19,15 +21,11 @@ class EventDetailsFragment : Fragment() {
     @Inject
     lateinit var factory: EventDetailsViewModelFactory
 
-    @Inject
-    lateinit var repository: FormRepository
-
     private val viewModel: EventDetailsViewModel by viewModels {
         factory
     }
 
     private lateinit var binding: EventDetailsFragmentBinding
-    private lateinit var formView: FormView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +35,12 @@ class EventDetailsFragment : Fragment() {
             EventDetailsModule(
                 eventUid = requireArguments().getString(Constants.EVENT_UID),
                 context = requireContext(),
-                eventCreationType = requireArguments().getString(Constants.EVENT_CREATION_TYPE),
-                programStageUid = requireArguments().getString(Constants.PROGRAM_STAGE_UID)!!
+                eventCreationType = getEventCreationType(
+                    requireArguments().getString(Constants.EVENT_CREATION_TYPE)
+                ),
+                programStageUid = requireArguments().getString(Constants.PROGRAM_STAGE_UID)!!,
+                programId = requireArguments().getString(Constants.PROGRAM_UID)!!,
+                periodType = requireArguments().getSerializable(Constants.EVENT_PERIOD_TYPE) as PeriodType?
             )
         ).inject(this)
         binding = DataBindingUtil.inflate(
@@ -51,13 +53,9 @@ class EventDetailsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        formView = FormView.Builder()
-            .repository(repository)
-            .factory(requireActivity().supportFragmentManager)
-            .build()
-        val transaction = childFragmentManager.beginTransaction()
-        transaction.replace(R.id.formViewContainer, formView).commit()
+    private fun getEventCreationType(typeString: String?): EventCreationType {
+        return typeString?.let {
+            EventCreationType.valueOf(it)
+        } ?: EventCreationType.DEFAULT
     }
 }

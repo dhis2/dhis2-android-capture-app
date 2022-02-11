@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
+package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter

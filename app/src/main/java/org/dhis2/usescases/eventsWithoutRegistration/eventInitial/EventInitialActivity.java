@@ -59,6 +59,7 @@ import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.commons.ui.MetadataIconData;
 import org.dhis2.commons.ui.MetadataIconKt;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -216,6 +217,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
+        bundle.putString(PROGRAM_UID, programUid);
 
         Fragment eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);
