@@ -13,6 +13,25 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionR
 
 class DhisProgramUtils @Inject constructor(val d2: D2) {
 
+    fun getServerState(): State {
+        val states = d2.programModule().programs().blockingGet().map {
+            getProgramState(it)
+        }.plus(
+            d2.dataSetModule().dataSetInstanceSummaries().blockingGet().map {
+                it.state()
+            }
+        ).distinct()
+
+        return when {
+            states.contains(State.ERROR) or states.contains(State.WARNING) -> State.WARNING
+            states.contains(State.TO_POST) -> State.TO_POST
+            states.contains(State.TO_UPDATE) -> State.TO_UPDATE
+            states.contains(State.SENT_VIA_SMS) or states.contains(State.SYNCED_VIA_SMS) ->
+                State.SENT_VIA_SMS
+            else -> State.SYNCED
+        }
+    }
+
     fun getProgramState(program: Program): State {
         return when (program.programType()) {
             ProgramType.WITH_REGISTRATION -> getTrackerProgramState(program)

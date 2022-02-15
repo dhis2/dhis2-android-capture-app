@@ -140,9 +140,6 @@ public interface UserComponent {
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
 
     @NonNull
-    DataValueComponent plus(DataValueModule dataValueModule);
-
-    @NonNull
     ReservedValueComponent plus(ReservedValueModule reservedValueModule);
 
     @NonNull

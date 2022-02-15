@@ -61,6 +61,16 @@
                 tools:text="TITLE" />
 
             <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                android:onClick="showMoreOptions"
+                app:layout_constraintEnd_toStartOf="@id/filter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
                 android:id="@+id/filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilter()}"

@@ -3,8 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Function5
-import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
@@ -25,7 +23,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.category.Category
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ValueType
@@ -44,7 +41,8 @@ class DataValuePresenter(
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val prefs: PreferenceProvider,
-    private val dataSetUid: String
+    private val dataSetUid: String,
+    private val updateProcessor: FlowableProcessor<Unit>
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -89,27 +87,32 @@ class DataValuePresenter(
         this.attributeOptionCombo = attributeOptionCombo
         this.periodId = periodId
         this.sectionName = sectionName
+        val refreshData = false
 
         disposable.add(
-            Flowable.zip<Boolean, DataSet, Section, Period, List<DataInputPeriod>,
-                Boolean, Sextet<Boolean, DataSet, Section, Period, List<DataInputPeriod>, Boolean>>(
-                repository.canWriteAny(),
-                repository.getDataSet(),
-                repository.getSectionByDataSet(sectionName),
-                repository.getPeriod(periodId),
-                repository.getDataInputPeriod(),
-                repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
-                Function6 { canWrite, dataSet, section, period, dataInputPeriod, isApproval ->
-                    Sextet.create(
-                        canWrite,
-                        dataSet,
-                        section,
-                        period,
-                        dataInputPeriod,
-                        isApproval
+            updateProcessor.startWith(Unit)
+                .switchMap {
+                    Flowable.zip<Boolean, DataSet, Section, Period, List<DataInputPeriod>,
+                        Boolean, Sextet<Boolean, DataSet, Section, Period,
+                            List<DataInputPeriod>, Boolean>>(
+                        repository.canWriteAny(),
+                        repository.getDataSet(),
+                        repository.getSectionByDataSet(sectionName),
+                        repository.getPeriod(periodId),
+                        repository.getDataInputPeriod(),
+                        repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
+                        { canWrite, dataSet, section, period, dataInputPeriod, isApproval ->
+                            Sextet.create(
+                                canWrite,
+                                dataSet,
+                                section,
+                                period,
+                                dataInputPeriod,
+                                isApproval
+                            )
+                        }
                     )
                 }
-            )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -122,6 +125,7 @@ class DataValuePresenter(
                         this.isApproval = data.val5()
                         view.setDataSet(dataSet)
                         view.setSection(section)
+                        if (refreshData) view.refreshTableData()
                         initTable()
                     },
                     { Timber.e(it) }
@@ -142,7 +146,7 @@ class DataValuePresenter(
     private fun initTable() {
         disposable.add(
             repository.getCatCombo(sectionName)
-                .flatMapIterable<CategoryCombo> { categoryCombos -> categoryCombos }
+                .flatMapIterable { categoryCombos -> categoryCombos }
                 .map { categoryCombo ->
                     Flowable.zip<List<DataElement>,
                         Map<String, List<List<Pair<CategoryOption, Category>>>>,
@@ -161,7 +165,7 @@ class DataValuePresenter(
                         ),
                         repository.getGreyFields(sectionName),
                         repository.getCompulsoryDataElements(),
-                        Function5 { dataElements: List<DataElement>,
+                        { dataElements: List<DataElement>,
                             optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
                                             Category>>>>,
                             dataValues: List<DataSetTableModel>,
@@ -516,54 +520,6 @@ class DataValuePresenter(
             )
         }
     }
-
-    /*fun complete() {
-        if ((!isApproval)) {
-            analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
-            if (view.isOpenOrReopen) {
-                if ((!dataSet!!.fieldCombinationRequired()!! || checkAllFieldRequired(
-                            tableCells,
-                            dataTableModel?.dataValues()
-                        ) && dataSet!!.fieldCombinationRequired()!!) &&
-                    checkMandatoryField(tableCells, dataTableModel?.dataValues())
-                ) {
-                    disposable.add(
-                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                { completed ->
-                                    view.update(completed!!)
-                                },
-                                { Timber.e(it) }
-                            )
-                    )
-                } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues())) {
-                    view.showAlertDialog(
-                        view.context.getString(R.string.missing_mandatory_fields_title),
-                        view.context.resources.getString(R.string.field_mandatory)
-                    )
-                } else {
-                    view.showAlertDialog(
-                        view.context.getString(R.string.missing_mandatory_fields_title),
-                        view.context.resources.getString(R.string.field_required)
-                    )
-                }
-            } else {
-                disposable.add(
-                    repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                            { reopen ->
-                                view.update(reopen!!)
-                            },
-                            { Timber.e(it) }
-                        )
-                )
-            }
-        }
-    }*/
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkAllFieldRequired(

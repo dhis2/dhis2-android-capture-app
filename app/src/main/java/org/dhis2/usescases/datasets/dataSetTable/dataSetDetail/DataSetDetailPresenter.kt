@@ -2,14 +2,10 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Function3
-import io.reactivex.processors.PublishProcessor
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
-import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_DATASET
-import org.dhis2.utils.analytics.matomo.Categories.Companion.DATASET_DETAIL
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
@@ -19,11 +15,11 @@ class DataSetDetailPresenter(
     val view: DataSetDetailView,
     val repository: DataSetTableRepositoryImpl,
     val schedulers: SchedulerProvider,
-    val matomoAnalyticsController: MatomoAnalyticsController
+    val matomoAnalyticsController: MatomoAnalyticsController,
+    val updateProcessor: FlowableProcessor<Unit>
 ) {
 
     private val disposable = CompositeDisposable()
-    private val updateProcessor = PublishProcessor.create<Boolean>()
 
     fun init() {
         disposable.add(
@@ -43,7 +39,7 @@ class DataSetDetailPresenter(
         )
 
         disposable.add(
-            updateProcessor.startWith(true)
+            updateProcessor.startWith(Unit)
                 .switchMap {
                     Flowable.combineLatest<
                         DataSetInstance,
@@ -53,7 +49,7 @@ class DataSetDetailPresenter(
                         repository.dataSetInstance(),
                         repository.getPeriod().toFlowable(),
                         repository.isComplete().toFlowable(),
-                        Function3 { t1, t2, t3 -> Trio.create(t1, t2, t3) }
+                        { t1, t2, t3 -> Trio.create(t1, t2, t3) }
                     )
                 }
                 .subscribeOn(schedulers.io())
@@ -85,7 +81,7 @@ class DataSetDetailPresenter(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.io())
                 .subscribe(
-                    { updateData() },
+                    { updateProcessor.onNext(Unit) },
                     { Timber.e(it) }
                 )
         )
@@ -93,13 +89,5 @@ class DataSetDetailPresenter(
 
     fun detach() {
         disposable.clear()
-    }
-
-    fun updateData() {
-        updateProcessor.onNext(true)
-    }
-
-    fun onClickSyncStatus() {
-        matomoAnalyticsController.trackEvent(DATASET_DETAIL, SYNC_DATASET, CLICK)
     }
 }

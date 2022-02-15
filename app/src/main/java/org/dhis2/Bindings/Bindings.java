@@ -370,45 +370,6 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter(value = {"stateIcon", "showSynced"}, requireAll = false)
-    public static void setStateIcon(ImageView imageView, State state, boolean showSynced) {
-        if (state != null) {
-            switch (state) {
-                case TO_POST:
-                case TO_UPDATE:
-                case UPLOADING:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_problem_grey);
-                    break;
-                case ERROR:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_problem_red);
-                    break;
-                case SYNCED:
-                    imageView.setImageResource(R.drawable.ic_sync);
-                    if (!showSynced) {
-                        imageView.setVisibility(View.GONE);
-                    }
-                    imageView.setTag(R.drawable.ic_sync);
-                    break;
-                case WARNING:
-                    imageView.setImageResource(R.drawable.ic_sync_warning);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_warning);
-                    break;
-                case SENT_VIA_SMS:
-                case SYNCED_VIA_SMS:
-                    imageView.setImageResource(R.drawable.ic_sync_sms);
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.setTag(R.drawable.ic_sync_sms);
-                default:
-                    break;
-            }
-        }
-    }
-
     @BindingAdapter("fromResBgColor")
     public static void setFromResBgColor(View view, int color) {
         String tintedColor;
