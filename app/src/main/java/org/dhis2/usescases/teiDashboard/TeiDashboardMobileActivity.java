@@ -41,6 +41,8 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -94,6 +96,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
     private float elevation = 0f;
+    private static final String TEI_SYNC = "SYNC_TEI";
+    private boolean restartingActivity = false;
 
     public static Intent intent(Context context,
                                 String teiUid,
@@ -139,12 +143,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
         binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-            if(adapter == null) return true;
+            if (adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape()) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
+                    binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
                     binding.teiPager.setCurrentItem(pagePosition);
                 }
             }
@@ -178,6 +183,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     relationshipMap.setValue(showMap);
                 }
         );
+
+        binding.syncButton.setOnClickListener(v -> {
+            openSyncDialog();
+        });
     }
 
     @Override
@@ -214,6 +223,22 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onDestroy() {
         ((App) getApplicationContext()).releaseDashboardComponent();
         super.onDestroy();
+    }
+
+    private void openSyncDialog() {
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setUid(teiUid)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged && !restartingActivity) {
+                        restartingActivity = true;
+                        startActivity(intent(getContext(), teiUid, programUid, enrollmentUid));
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), TEI_SYNC);
     }
 
     private void setViewpagerAdapter() {
@@ -283,10 +308,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
     }
 
-    private void showLoadingProgress(boolean showProgress){
-        if(showProgress){
+    private void showLoadingProgress(boolean showProgress) {
+        if (showProgress) {
             binding.toolbarProgress.show();
-        }else{
+        } else {
             binding.toolbarProgress.hide();
         }
     }
