@@ -11,7 +11,6 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.R
-import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
