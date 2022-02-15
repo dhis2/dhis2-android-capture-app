@@ -237,6 +237,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             new OptionSetPopUp(getContext(), editText, viewModel,
                     this);
         }
+
+        if(viewModel.isBackgroundTransparent()){
+            viewModel.onItemClick();
+        }
     }
 
     public TextView textView() {
