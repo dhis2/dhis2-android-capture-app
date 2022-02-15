@@ -21,37 +21,35 @@ import java.util.Date
 
 @BindingAdapter(value = ["stateIcon", "showSynced"], requireAll = false)
 fun ImageView.setStateIcon(state: State?, showSynced: Boolean?) {
-    if (state != null) {
-        when (state) {
-            State.TO_POST, State.TO_UPDATE, State.UPLOADING -> {
-                setImageResource(R.drawable.ic_sync_problem_grey)
-                visibility = View.VISIBLE
-                tag = R.drawable.ic_sync_problem_grey
+    when (state) {
+        State.TO_POST, State.TO_UPDATE, State.UPLOADING -> {
+            setImageResource(R.drawable.ic_sync_problem_grey)
+            visibility = View.VISIBLE
+            tag = R.drawable.ic_sync_problem_grey
+        }
+        State.ERROR -> {
+            setImageResource(R.drawable.ic_sync_problem_red)
+            visibility = View.VISIBLE
+            tag = R.drawable.ic_sync_problem_red
+        }
+        State.SYNCED -> {
+            setImageResource(R.drawable.ic_status_synced)
+            if (showSynced != true) {
+                visibility = View.GONE
             }
-            State.ERROR -> {
-                setImageResource(R.drawable.ic_sync_problem_red)
-                visibility = View.VISIBLE
-                tag = R.drawable.ic_sync_problem_red
-            }
-            State.SYNCED -> {
-                setImageResource(R.drawable.ic_sync)
-                if (showSynced != true) {
-                    visibility = View.GONE
-                }
-                tag = R.drawable.ic_sync
-            }
-            State.WARNING -> {
-                setImageResource(R.drawable.ic_sync_warning)
-                visibility = View.VISIBLE
-                tag = R.drawable.ic_sync_warning
-            }
-            State.SENT_VIA_SMS, State.SYNCED_VIA_SMS -> {
-                setImageResource(R.drawable.ic_sync_sms)
-                visibility = View.VISIBLE
-                tag = R.drawable.ic_sync_sms
-            }
-            else -> {
-            }
+            tag = R.drawable.ic_status_synced
+        }
+        State.WARNING -> {
+            setImageResource(R.drawable.ic_sync_warning)
+            visibility = View.VISIBLE
+            tag = R.drawable.ic_sync_warning
+        }
+        State.SENT_VIA_SMS, State.SYNCED_VIA_SMS -> {
+            setImageResource(R.drawable.ic_sync_sms)
+            visibility = View.VISIBLE
+            tag = R.drawable.ic_sync_sms
+        }
+        else -> {
         }
     }
 }

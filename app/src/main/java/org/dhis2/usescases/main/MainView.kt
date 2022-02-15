@@ -52,4 +52,6 @@ interface MainView : AbstractActivityContracts.View {
     fun setFilters(filters: List<FilterItem>)
 
     fun hideFilters()
+
+    fun showGranularSync()
 }
