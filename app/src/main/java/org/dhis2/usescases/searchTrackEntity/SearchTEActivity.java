@@ -42,15 +42,9 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.maps.ExternalMapNavigation;
-import org.dhis2.maps.carousel.CarouselAdapter;
-import org.dhis2.maps.layer.MapLayerDialog;
-import org.dhis2.maps.managers.TeiMapManager;
-import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
-import org.dhis2.maps.model.MapStyle;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.data.CarouselItemModel;
+import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -61,15 +55,20 @@ import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.maps.ExternalMapNavigation;
+import org.dhis2.maps.carousel.CarouselAdapter;
+import org.dhis2.maps.layer.MapLayerDialog;
+import org.dhis2.maps.managers.TeiMapManager;
+import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.maps.model.MapStyle;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
-import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -79,6 +78,8 @@ import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -194,7 +195,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     initSearchNeeded = false;
                     return Unit.INSTANCE;
                 })
-                .onFieldItemsRendered(isEmpty->{
+                .onFieldItemsRendered(isEmpty -> {
                     presenter.setAttributesEmpty(isEmpty);
                     return Unit.INSTANCE;
                 })
@@ -309,6 +310,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setVisibility(View.VISIBLE);
             binding.progressLayout.setVisibility(GONE);
         });
+
+        binding.syncButton.setVisibility(initialProgram != null ? View.VISIBLE : GONE);
+        binding.syncButton.setOnClickListener(v -> {
+            openSyncDialog();
+        });
     }
 
     @Override
@@ -392,6 +398,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSearchNeeded = false;
         }
 
+    }
+
+    private void openSyncDialog() {
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.PROGRAM)
+                .setUid(initialProgram)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged) presenter.refreshData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), "PROGRAM_SYNC");
     }
 
     @Override
@@ -685,12 +702,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()), selectedProgram.uid());
-                    presenter.setProgram(selectedProgram);
                 } else if (programs.size() == 1 && pos != 0) {
                     Program selectedProgram = programs.get(0);
-                    presenter.setProgram(selectedProgram);
+                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()), selectedProgram.uid());
                 } else {
-                    presenter.setProgram(null);
+                    setProgramColor(presenter.getTrackedEntityType(tEType).style().color(), null);
                     binding.navigationBar.hide();
                 }
             }
@@ -753,14 +769,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        startActivity(SearchTEActivity.class, updateBundle(programUid), true, false, null);
+        Intent intent = new Intent(this,SearchTEActivity.class);
+        if (fromRelationshipTeiUid != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        }
+        intent.putExtras(updateBundle(programUid));
+        startActivity(intent);
+        finish();
+
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     private Bundle updateBundle(String programUid) {
         Bundle bundle = getIntent().getExtras();
         bundle.putString(Extra.PROGRAM_UID.key(), programUid);
-        Map<String,String> currentQueryData = presenter.getQueryData();
+        Map<String, String> currentQueryData = presenter.getQueryData();
         bundle.putStringArrayList(Extra.QUERY_ATTR.key(), new ArrayList<>(currentQueryData.keySet()));
         bundle.putStringArrayList(Extra.QUERY_VALUES.key(), new ArrayList<>(currentQueryData.values()));
         return bundle;
