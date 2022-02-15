@@ -126,7 +126,6 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     dataSetInstance.lastUpdated().toDateSpan(mContext)
                 )
 
-            binding.syncStatus.setStateIcon(dataSetInstance.state(), false)
             binding.dataSetPeriod.text = periodUtils
                 .getPeriodUIString(
                     period.periodType() ?: PeriodType.Daily,
