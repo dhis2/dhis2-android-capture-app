@@ -2786,7 +2786,7 @@ workflows:
                 set -ex
 
                 chmod +x deploy_settings_app.sh
-                ./deploy_settings_app
+                ./deploy_settings_app.sh
       - deploy-to-bitrise-io@1:
           inputs:
             - notify_email_list: "$APP_DEVS_MAILS"
