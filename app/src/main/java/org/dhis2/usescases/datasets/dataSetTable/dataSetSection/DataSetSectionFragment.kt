@@ -24,7 +24,6 @@ import io.reactivex.processors.FlowableProcessor
 import java.util.ArrayList
 import java.util.SortedMap
 import javax.inject.Inject
-import org.dhis2.Bindings.app
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
@@ -79,7 +78,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         "Before initializing the fragment make sure to set the correct arguments"
                 )
         }
-        app().userComponent()!!.plus(DataValueModule(dataSetUid, this)).inject(this)
+        activity.dataSetTableComponent.plus(
+            DataValueModule(dataSetUid, this)
+        ).inject(this)
     }
 
     override fun onCreateView(
@@ -115,6 +116,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun onDestroyView() {
         super.onDestroyView()
         presenterFragment.onDettach()
+    }
+
+    override fun refreshTableData() {
+        adapters.clear()
+        binding.tableLayout.removeAllViews()
+        binding.programProgress.visibility = View.VISIBLE
     }
 
     override fun setTableData(tableData: TableData) {

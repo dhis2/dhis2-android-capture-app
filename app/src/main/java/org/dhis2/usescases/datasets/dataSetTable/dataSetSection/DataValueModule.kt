@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import dagger.Module
 import dagger.Provides
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -35,7 +36,8 @@ class DataValueModule(
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
         analyticsHelper: AnalyticsHelper,
-        preferenceProvider: PreferenceProvider
+        preferenceProvider: PreferenceProvider,
+        updateProcessor: FlowableProcessor<Unit>
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
@@ -44,7 +46,8 @@ class DataValueModule(
             schedulerProvider,
             analyticsHelper,
             preferenceProvider,
-            dataSetUid
+            dataSetUid,
+            updateProcessor
         )
     }
 

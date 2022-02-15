@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
 import dagger.Module
 import dagger.Provides
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
@@ -17,13 +18,15 @@ class DataSetDetailModule(
     fun providePresenter(
         dataSetTableRepository: DataSetTableRepositoryImpl,
         schedulers: SchedulerProvider,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
+        updateProcessor: FlowableProcessor<Unit>
     ): DataSetDetailPresenter {
         return DataSetDetailPresenter(
             dataSetDetailView,
             dataSetTableRepository,
             schedulers,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            updateProcessor
         )
     }
 }

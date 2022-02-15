@@ -8,6 +8,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import java.util.Date
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -32,10 +34,17 @@ class DataSetTablePresenterTest {
     private val repository: DataSetTableRepositoryImpl = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
 
     @Before
     fun setUp() {
-        presenter = DataSetTablePresenter(view, repository, scheduler, analyticsHelper)
+        presenter = DataSetTablePresenter(
+            view,
+            repository,
+            scheduler,
+            analyticsHelper,
+            updateProcessor
+        )
     }
 
     @Test

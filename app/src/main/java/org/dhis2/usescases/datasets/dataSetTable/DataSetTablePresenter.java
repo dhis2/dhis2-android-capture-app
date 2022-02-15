@@ -2,11 +2,14 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.Actions;
+import org.dhis2.utils.analytics.matomo.Categories;
+import org.dhis2.utils.analytics.matomo.Labels;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
@@ -18,6 +21,7 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
 import timber.log.Timber;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
@@ -34,17 +38,20 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private String catCombo;
     private String periodId;
     private FlowableProcessor<Boolean> validationProcessor;
+    private FlowableProcessor<Unit> updateProcessor;
 
     public DataSetTablePresenter(
             DataSetTableContract.View view,
             DataSetTableRepositoryImpl dataSetTableRepository,
             SchedulerProvider schedulerProvider,
-            AnalyticsHelper analyticsHelper) {
+            AnalyticsHelper analyticsHelper,
+            FlowableProcessor<Unit> updateProcessor) {
         this.view = view;
         this.tableRepository = dataSetTableRepository;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.validationProcessor = PublishProcessor.create();
+        this.updateProcessor = updateProcessor;
         disposable = new CompositeDisposable();
     }
 
@@ -108,9 +115,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @VisibleForTesting
     public void handleValidationResult(ValidationRuleResult result) {
         if (result.getValidationResultStatus() == ValidationResultStatus.OK) {
-            if(!isComplete()) {
+            if (!isComplete()) {
                 view.showSuccessValidationDialog();
-            }else{
+            } else {
                 view.saveAndFinish();
             }
         } else {
@@ -129,9 +136,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
             } else {
                 view.showValidationRuleDialog();
             }
-        } else if(!isComplete()){
+        } else if (!isComplete()) {
             view.showSuccessValidationDialog();
-        }else{
+        } else {
             view.saveAndFinish();
         }
     }
@@ -258,7 +265,20 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public boolean isComplete(){
+    public boolean isComplete() {
         return tableRepository.isComplete().blockingGet();
+    }
+
+    @Override
+    public void updateData() {
+        updateProcessor.onNext(Unit.INSTANCE);
+    }
+
+    @Override
+    public void onClickSyncStatus() {
+        analyticsHelper.trackMatomoEvent(
+                Categories.DATASET_DETAIL,
+                Actions.SYNC_DATASET,
+                Labels.CLICK);
     }
 }

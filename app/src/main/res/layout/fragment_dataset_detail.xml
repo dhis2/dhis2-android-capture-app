@@ -52,16 +52,6 @@
                         tools:backgroundTint="@color/green_7ed"
                         tools:text="Open" />
 
-                    <ImageView
-                        android:id="@+id/sync_status"
-                        style="@style/ActionIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:src="@drawable/ic_sync" />
-
-
                     <TextView
                         android:id="@+id/dataSetName"
                         style="@style/TextPrimary"
