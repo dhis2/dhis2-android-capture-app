@@ -112,6 +112,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
+        binding.syncButton.setOnClickListener(view-> showSyncDialogProgram());
     }
 
     private void initExtras() {
@@ -174,6 +175,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         super.onResume();
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+    }
+
+    private void showSyncDialogProgram(){
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.PROGRAM)
+                .setUid(programUid)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged)
+                        FilterManager.getInstance().publishData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
 
     @Override
