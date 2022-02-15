@@ -2752,87 +2752,89 @@ workflows:
       - script@1:
           title: Clone Settings Web App
           inputs:
-            - content: >+
+            - content: |+
                 #!/usr/bin/env bash
-
                 set -e
-
                 set -x
 
-
                 # write your script here
-
                 echo "Hello World!"
-
 
                 git "init"
-
-                git "remote" "add" "origin"
-                "https://github.com/dhis2/android-settings-app.git"
-
+                git "remote" "add" "origin" "https://github.com/dhis2/android-settings-app.git"
                 git "fetch" "origin" "refs/heads/master"
-
                 git "checkout" "master"
-
                 git "merge" "origin/master"
-
                 pwd
-
                 ls -la
 
-      - cache-pull@2: {}
-      - get-npm-package-version@1: {}
-      - npm@1:
+      - cache-pull@2: { }
+      - yarn@0:
           inputs:
-            - command: install --global @dhis2/cli
-      - npm@1:
-          title: npm install
+            - args: install --frozen-lockfile
+      - yarn@0:
           inputs:
-            - command: install
+            - args: build
+      - apt-get-install@0:
+          inputs:
+            - packages: curl
       - script@1:
-          inputs:
-            - content: |-
-                #!/usr/bin/env bash
-                # fail if any commands fails
-                set -e
-                # debug log
-                set -x
-
-                # write your script here
-                echo "Hello World!"
-
-                #d2 --version
-                #d2 app scripts init myapp
-                #cd myapp
-                #npm install
-                #npm run build
-
-                #cd ..
-
-                ls -la
-
-                d2 --version
-      - script@1:
-          title: Install basic app
+          title: Deploy to dhis2 server
           inputs:
             - content: |
-                #!/usr/bin/env bash
-                # fail if any commands fails
-                set -e
-                # debug log
-                set -x
+                #!/bin/bash
+                set -ex
 
-                d2 --version
-                d2 app scripts init myapp
-                cd myapp/
-                npm "run" "build"
-      - npm@1:
-          inputs:
-            - command: run start
-      - script@1:
-          title: Deploy zip to dhis2
+                # check every argument is filled
+                if [[ -z "$USERNAME_DHIS" || -z "$PASSWORD_DHIS" || -z "$SERVER_URL" ]];
+                then
+                  echo "USERNAME_DHIS, PASSWORD_DHIS OR SERVER_URL Missing"
+                  exit -1
+                else
+                  echo "Enviroment variables setup"
+                fi
+
+                SERVER_URL_LAST_CHAR=${SERVER_URL: -1}
+
+                # check if the last url character is / if not it will be added
+                if  [ "$SERVER_URL_LAST_CHAR" = "/" ]
+                then
+                    SERVER_URL=${SERVER_URL::-1}
+                    echo "Removing last character from SERVER_URL"
+                    echo "$SERVER_URL"
+                else
+                    echo "URL is correct ..."
+                fi
+
+                # find zip file
+                cd build/bundle/
+                ls
+                app_file=$(ls *.zip)
+
+                # rename zip removing version numbers
+                mv $app_file dhis2-android-settings-app.zip
+
+                # get list of apps
+                echo "List of apps /api/apps"
+                curl -X GET -u $USERNAME_DHIS:$PASSWORD_DHIS $SERVER_URL/api/apps
+
+                echo -e "\n"
+
+                # upload zip to server
+                echo "Uploading settings app to the server ..."
+                upload_app_response="$(curl -X POST -u $USERNAME_DHIS:$PASSWORD_DHIS -F file=@dhis2-android-settings-app.zip $SERVER_URL/api/apps)"
+
+                if [ -z "$upload_app_response" ]
+                then
+                      echo "The Android Settings App was upload successfully"
+                      exit 0
+                else
+                      echo "There was an error uploading the settings app ..."
+                      echo $upload_app_response
+                      exit -1
+                fi
       - deploy-to-bitrise-io@1:
           inputs:
-            - notify_email_list: $APP_DEVS_MAILS
+            - notify_email_list: "$APP_DEVS_MAILS"
             - notify_user_groups: none
-      - cache-push@2: {}
+      - cache-push@2: { }
