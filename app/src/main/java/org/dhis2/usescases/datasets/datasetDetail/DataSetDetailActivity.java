@@ -25,6 +25,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -197,5 +199,15 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     public void setProgress(boolean active) {
         binding.programProgress.setVisibility(active ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showGranularSync() {
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_SET)
+                .setUid(dataSetUid)
+                .onDismissListener(hasChanged -> presenter.refreshList()).build();
+
+        dialog.show(getSupportFragmentManager(), "DATASET_SYNC");
     }
 }
