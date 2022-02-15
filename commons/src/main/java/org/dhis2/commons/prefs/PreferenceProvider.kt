@@ -2,6 +2,7 @@ package org.dhis2.commons.prefs
 
 import android.content.SharedPreferences
 import com.google.gson.reflect.TypeToken
+import java.util.Date
 
 interface PreferenceProvider {
 
@@ -26,4 +27,7 @@ interface PreferenceProvider {
     fun getSet(key: String, default: Set<String>): Set<String>?
     fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T
     fun <T> saveAsJson(key: String, objectToSave: T)
+    fun lastMetadataSync():Date?
+    fun lastDataSync():Date?
+    fun lastSync():Date?
 }

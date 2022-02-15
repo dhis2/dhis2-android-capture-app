@@ -36,7 +36,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -434,7 +434,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                     eventUid,
                                     "",
                                     "",
-                                    ProgramStageSectionRenderingType.LISTING.name()));
+                                    SectionRenderingType.LISTING.name()));
                         }
                     }
                     return formSection;

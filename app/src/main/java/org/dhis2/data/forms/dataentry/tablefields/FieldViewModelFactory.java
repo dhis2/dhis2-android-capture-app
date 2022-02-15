@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface FieldViewModelFactory {
                           @Nullable String programStageSection,
                           @Nullable Boolean AllowFutureDate,
                           @NonNull Boolean editable,
-                          @Nullable ProgramStageSectionRenderingType renderingType,
+                          @Nullable SectionRenderingType renderingType,
                           @Nullable String description,
                           @Nullable String dataElement,
                           @Nullable List<String> listCategoryOption,

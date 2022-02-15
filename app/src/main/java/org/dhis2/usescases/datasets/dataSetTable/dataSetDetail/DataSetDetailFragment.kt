@@ -11,6 +11,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.R
+import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -124,6 +125,8 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
                     getString(R.string.updated_time),
                     dataSetInstance.lastUpdated().toDateSpan(mContext)
                 )
+
+            binding.syncStatus.setStateIcon(dataSetInstance.state(), false)
             binding.dataSetPeriod.text = periodUtils
                 .getPeriodUIString(
                     period.periodType() ?: PeriodType.Daily,

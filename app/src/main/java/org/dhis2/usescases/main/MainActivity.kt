@@ -32,6 +32,8 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
+import org.dhis2.utils.granularsync.GranularSyncContracts
+import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
@@ -77,8 +79,17 @@ class MainActivity :
         setBottomNavigationVisibility(showBottomNavigation)
     }
 
-    //region LIFECYCLE
+    companion object {
+        fun intent(context: Context, initScreen: MainNavigator.MainScreen?): Intent {
+            return Intent(context, MainActivity::class.java).apply {
+                initScreen?.let {
+                    putExtra(FRAGMENT, initScreen.name)
+                }
+            }
+        }
+    }
 
+    //region LIFECYCLE
     override fun onCreate(savedInstanceState: Bundle?) {
         app().userComponent()?.let {
             mainComponent = it.plus(MainModule(this)).apply {
@@ -131,12 +142,26 @@ class MainActivity :
         elevation = ViewCompat.getElevation(binding.toolbar)
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        if (restoreScreenName != null) {
-            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
-            mainNavigator.restoreScreen(restoreScreenName)
-        } else {
-            changeFragment(R.id.menu_home)
-            initCurrentScreen()
+        val openScreen = intent.getStringExtra(FRAGMENT)
+
+        when {
+            openScreen != null || restoreScreenName != null -> {
+                changeFragment(
+                    mainNavigator.currentNavigationViewItemId(
+                        openScreen ?: restoreScreenName!!
+                    )
+                )
+                mainNavigator.restoreScreen(
+                    screenToRestoreName = openScreen ?: restoreScreenName!!,
+                    languageSelectorOpened = openScreen != null &&
+                        MainNavigator.MainScreen.valueOf(openScreen) ==
+                        MainNavigator.MainScreen.TROUBLESHOOTING
+                )
+            }
+            else -> {
+                changeFragment(R.id.menu_home)
+                initCurrentScreen()
+            }
         }
     }
 
@@ -158,6 +183,21 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    override fun showGranularSync() {
+        SyncStatusDialog.Builder()
+            .setConflictType(SyncStatusDialog.ConflictType.ALL)
+            .setUid("")
+            .onDismissListener(
+                object : GranularSyncContracts.OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) {
+                            mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
+                        }
+                    }
+                })
+            .build().show(supportFragmentManager, "ALL_SYNC")
     }
 
     override fun renderUsername(username: String) {
@@ -265,6 +305,11 @@ class MainActivity :
         } else {
             View.GONE
         }
+        binding.syncActionButton.visibility = if (showFilterButton) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     private fun setBottomNavigationVisibility(showBottomNavigation: Boolean) {
@@ -324,6 +369,9 @@ class MainActivity :
             }
             R.id.menu_home -> {
                 mainNavigator.openHome(binding.navigationBar)
+            }
+            R.id.menu_troubleshooting -> {
+                mainNavigator.openTroubleShooting()
             }
         }
 

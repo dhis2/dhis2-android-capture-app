@@ -195,5 +195,7 @@ public class SearchTEContractsModule {
         void setAttributesEmpty(Boolean attributesEmpty);
 
         void processQuery(RowAction action);
+
+        void refreshData();
     }
 }

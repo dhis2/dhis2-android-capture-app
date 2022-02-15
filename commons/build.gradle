@@ -89,6 +89,9 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
 
+    //compose
+    debugApi "androidx.compose.ui:ui-tooling:1.0.4"
+
     //Timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
 

@@ -82,6 +82,10 @@ public class DataSetDetailPresenter {
         );
     }
 
+    public void onSyncClicked(){
+        view.showGranularSync();
+    }
+
     public void onBackClick() {
         view.back();
     }
@@ -134,5 +138,9 @@ public class DataSetDetailPresenter {
 
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    public void refreshList() {
+        filterManager.publishData();
     }
 }

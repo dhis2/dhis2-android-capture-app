@@ -1,46 +1,52 @@
 package org.dhis2.usescases.programStageSelection
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import androidx.core.view.ViewCompat
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.Bindings
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.databinding.ItemProgramStageBinding
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.ProgramStage
-import timber.log.Timber
 
 class ProgramStageSelectionViewHolder(
     private val binding: ItemProgramStageBinding,
     val onItemClick: (ProgramStage) -> Unit
-) :
-    RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
+
+    init {
+        binding.composeProgramStageIcon.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
+
     fun bind(programStage: ProgramStage) {
         binding.programStage = programStage
         binding.executePendingBindings()
-        val style: ObjectStyle = if (programStage.style() != null) {
-            programStage.style()
-        } else {
-            ObjectStyle.builder().build()
-        }
-        if (style.icon() != null) {
-            try {
-                val icon = ResourceManager(binding.programStageIcon.context)
-                    .getObjectStyleDrawableResource(style.icon(), R.drawable.ic_default_icon)
-                binding.programStageIcon.setImageResource(icon)
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
-        if (style.color() != null) {
-            val color = if (style.color()!!.startsWith("#")) style.color() else "#" + style.color()
-            val colorRes = Color.parseColor(color)
-            val colorStateList = ColorStateList.valueOf(colorRes)
-            ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList)
-            Bindings.setFromResBgColor(binding.programStageIcon, colorRes)
-        }
+
+        val color = ColorUtils.getColorFrom(
+            programStage.style().color(),
+            ColorUtils.getPrimaryColor(
+                itemView.context,
+                ColorUtils.ColorType.PRIMARY
+            )
+        )
+
+        val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
+            programStage.style().icon(),
+            R.drawable.ic_default_outline
+        )
+
+        binding.composeProgramStageIcon.setUpMetadataIcon(
+            MetadataIconData(
+                programColor = color,
+                iconResource = iconResource,
+                sizeInDp = 80
+            ),
+            false
+        )
+
         itemView.setOnClickListener {
             onItemClick(programStage)
         }

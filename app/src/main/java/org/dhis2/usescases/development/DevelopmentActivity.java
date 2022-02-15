@@ -50,15 +50,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadLocaleDevTools();
         loadIconsDevTools();
         loadBreakTheGlass();
-        loadProgramRuleCheck();
         loadFeatureConfig();
-    }
-
-    private void loadProgramRuleCheck() {
-        binding.ruleActionQualityButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this,ProgramRulesValidationActivity.class);
-            startActivity(intent);
-        });
     }
 
     private void loadAnalyticsDevTools() {

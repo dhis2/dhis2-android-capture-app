@@ -12,12 +12,12 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/syncStatusBar"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="72dp"
             tools:background="@color/state_synced">
 
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 app:srcCompat="@drawable/ic_oval_shape_white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -26,24 +26,24 @@
 
             <ImageView
                 android:id="@+id/syncIcon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_sync" />
+                tools:src="@drawable/ic_status_synced" />
 
             <TextView
                 android:id="@+id/programName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="26dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/text_black_333"
-                android:textSize="10sp"
-                android:fontFamily="@font/rubik_medium"
+                android:textColor="@color/textPrimary"
+                android:textSize="14sp"
+                android:fontFamily="@font/rubik_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/syncIcon"
                 app:layout_constraintTop_toTopOf="parent"
@@ -55,26 +55,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="26dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/text_black_333"
-                android:textSize="10sp"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:fontFamily="@font/rubik_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/syncIcon"
                 app:layout_constraintTop_toBottomOf="@id/programName"
                 tools:text="Last update: 4 feb 2019 16:32" />
-
-            <TextView
-                android:id="@+id/syncStatusName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="26dp"
-                android:layout_marginEnd="16dp"
-                android:textColor="@color/text_black_333"
-                android:textSize="10sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/syncIcon"
-                app:layout_constraintTop_toBottomOf="@id/lastUpdated"
-                tools:text="Synced" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -88,10 +76,12 @@
             android:id="@+id/noConflictMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="14dp"
             android:text="@string/no_conflicts_message"
             app:layout_constraintBottom_toTopOf="@id/syncButton"
             app:layout_constraintEnd_toEndOf="parent"
+            android:fontFamily="@font/rubik_regular"
+            android:textColor="#99000000"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/syncStatusBar" />
 
@@ -110,7 +100,9 @@
                 android:layout_marginBottom="14dp"
                 android:background="@android:color/transparent"
                 android:text="@string/action_sync"
-                android:textColor="@color/blue_4fa"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"
+                android:fontFamily="@font/rubik_medium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

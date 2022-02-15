@@ -164,6 +164,16 @@
                 app:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
+            <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/search_filter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
+
             <Spinner
                 android:id="@+id/program_spinner"
                 android:layout_width="0dp"
@@ -173,7 +183,7 @@
                 android:dropDownHorizontalOffset="10dp"
                 android:dropDownVerticalOffset="?actionBarSize"
                 android:padding="10dp"
-                app:layout_constraintEnd_toStartOf="@id/search_filter"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/title"
                 tools:listitem="@layout/spinner_program_layout" />
 

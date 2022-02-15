@@ -29,7 +29,9 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.R
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.hisp.dhis.android.core.D2
@@ -48,17 +50,21 @@ class GranularSyncModule(
         context: Context,
         d2: D2,
         schedulerProvider: SchedulerProvider,
-        workManagerController: WorkManagerController
+        workManagerController: WorkManagerController,
+        preferenceProvider: PreferenceProvider
     ): GranularSyncContracts.Presenter {
         return GranularSyncPresenterImpl(
-            d2, schedulerProvider,
+            d2,
+            DhisProgramUtils(d2),
+            schedulerProvider,
             conflictType,
             recordUid,
             dvOrgUnit,
             dvAttrCombo,
             dvPeriodId,
             workManagerController,
-            ErrorModelMapper(context.getString(R.string.fk_message))
+            ErrorModelMapper(context.getString(R.string.fk_message)),
+            preferenceProvider
         )
     }
 }

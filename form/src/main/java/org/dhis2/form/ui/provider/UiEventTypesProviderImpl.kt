@@ -3,22 +3,22 @@ package org.dhis2.form.ui.provider
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
+import org.hisp.dhis.android.core.program.SectionRenderingType
 
 class UiEventTypesProviderImpl : UiEventTypesProvider {
 
     override fun provideUiRenderType(
         featureType: FeatureType?,
         valueTypeRenderingType: ValueTypeRenderingType?,
-        sectionRenderingType: ProgramStageSectionRenderingType?
+        sectionRenderingType: SectionRenderingType?
     ): UiRenderType {
         return when (featureType) {
             FeatureType.POINT -> UiRenderType.POINT
             FeatureType.POLYGON -> UiRenderType.POLYGON
             FeatureType.MULTI_POLYGON -> UiRenderType.MULTI_POLYGON
             else -> when (sectionRenderingType) {
-                ProgramStageSectionRenderingType.SEQUENTIAL -> UiRenderType.SEQUENCIAL
-                ProgramStageSectionRenderingType.MATRIX -> UiRenderType.MATRIX
+                SectionRenderingType.SEQUENTIAL -> UiRenderType.SEQUENCIAL
+                SectionRenderingType.MATRIX -> UiRenderType.MATRIX
                 else -> when (valueTypeRenderingType) {
                     ValueTypeRenderingType.VERTICAL_RADIOBUTTONS ->
                         UiRenderType.VERTICAL_RADIOBUTTONS
