@@ -11,22 +11,22 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 @Suppress("UNCHECKED_CAST")
 class EventDetailsViewModelFactory(
-    private val periodType: PeriodType?,
     private val configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
     private val configureOrgUnit: ConfigureOrgUnit,
     private val configureEventCoordinates: ConfigureEventCoordinates,
-    private val configureEventTemp: ConfigureEventTemp
+    private val configureEventTemp: ConfigureEventTemp,
+    private val periodType: PeriodType?
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EventDetailsViewModel(
-            periodType,
             configureEventDetails,
             configureEventReportDate,
             configureOrgUnit,
             configureEventCoordinates,
-            configureEventTemp
+            configureEventTemp,
+            periodType
         ) as T
     }
 }

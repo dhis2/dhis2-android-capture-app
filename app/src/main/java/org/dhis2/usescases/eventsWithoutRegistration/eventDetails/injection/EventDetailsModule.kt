@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
@@ -24,7 +25,9 @@ class EventDetailsModule(
     val eventCreationType: EventCreationType,
     val programStageUid: String,
     val programId: String,
-    val periodType: PeriodType?
+    val periodType: PeriodType?,
+    val enrollmentId: String?,
+    val scheduleInterval: Int
 ) {
 
     @Provides
@@ -32,17 +35,28 @@ class EventDetailsModule(
     fun eventDetailsViewModelFactory(
         d2: D2,
         eventInitialRepository: EventInitialRepository,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
+        periodUtils: DhisPeriodUtils
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
-            periodType,
-            ConfigureEventDetails(d2, programStageUid),
-            ConfigureEventReportDate(
+            ConfigureEventDetails(
                 d2 = d2,
+                eventInitialRepository = eventInitialRepository,
+                programStageId = programStageUid,
+                eventId = eventUid,
+                programId = programId
+            ),
+            ConfigureEventReportDate(
                 eventId = eventUid,
                 programStageId = programStageUid,
                 creationType = eventCreationType,
-                resourceProvider = EventDetailResourcesProvider(resourceManager)
+                resourceProvider = EventDetailResourcesProvider(resourceManager),
+                eventInitialRepository = eventInitialRepository,
+                periodType = periodType,
+                periodUtils = periodUtils,
+                enrollmentId = enrollmentId,
+                programId = programId,
+                scheduleInterval = scheduleInterval
             ),
             ConfigureOrgUnit(
                 creationType = eventCreationType,
@@ -55,7 +69,8 @@ class EventDetailsModule(
             ),
             ConfigureEventTemp(
                 creationType = eventCreationType
-            )
+            ),
+            periodType = periodType
         )
     }
 }

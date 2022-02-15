@@ -5,5 +5,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 data class EventDetails(
     val name: String?,
     val description: String?,
-    val style: ObjectStyle?
+    val style: ObjectStyle?,
+    val enabled: Boolean = true
 )

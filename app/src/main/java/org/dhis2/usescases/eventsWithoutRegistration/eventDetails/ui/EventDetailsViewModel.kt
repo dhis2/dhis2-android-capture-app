@@ -11,26 +11,31 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.ReportingDate
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Calendar
+import java.util.Date
 
 class EventDetailsViewModel(
-    periodType: PeriodType?,
     configureEventDetails: ConfigureEventDetails,
-    configureEventReportDate: ConfigureEventReportDate,
+    private val configureEventReportDate: ConfigureEventReportDate,
     configureOrgUnit: ConfigureOrgUnit,
     configureEventCoordinates: ConfigureEventCoordinates,
-    configureEventTemp: ConfigureEventTemp
+    configureEventTemp: ConfigureEventTemp,
+    private val periodType: PeriodType?
 ) : ViewModel() {
+
+    var showCalendar: (() -> Unit)? = null
+    var showPeriods: (() -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails?> = MutableStateFlow(null)
     val eventDetails: StateFlow<EventDetails?> get() = _eventDetails
 
-    private val _reportingDate: MutableStateFlow<ReportingDate> = MutableStateFlow(ReportingDate())
-    val reportingDate: StateFlow<ReportingDate> get() = _reportingDate
+    private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
+    val eventDate: StateFlow<EventDate> get() = _eventDate
 
     private val _eventOrgUnit: MutableStateFlow<EventOrgUnit> = MutableStateFlow(EventOrgUnit())
     val eventOrgUnit: StateFlow<EventOrgUnit> get() = _eventOrgUnit
@@ -45,7 +50,7 @@ class EventDetailsViewModel(
     init {
         viewModelScope.launch {
             _eventDetails.value = configureEventDetails()
-            _reportingDate.value = configureEventReportDate()
+            _eventDate.value = configureEventReportDate()
             _eventOrgUnit.value = configureOrgUnit()
             _eventCoordinates.value = configureEventCoordinates()
             _eventTemp.value = configureEventTemp()
@@ -56,9 +61,24 @@ class EventDetailsViewModel(
     }
 
     fun onDateClick() {
+        periodType?.let {
+            showPeriods?.invoke()
+        } ?: showCalendar?.invoke()
     }
 
     fun onOrgUnitClick() {
         // TODO filter orgunits by opening selected dates EventInitialActivity 791 and show dialog
+    }
+
+    fun onDateSet(year: Int, month: Int, day: Int) {
+        val calendar = Calendar.getInstance()
+        calendar[year, month, day, 0, 0] = 0
+        calendar[Calendar.MILLISECOND] = 0
+        val selectedDate = calendar.time
+        _eventDate.value = configureEventReportDate(selectedDate)
+    }
+
+    fun onDateSet(selectedDate: Date) {
+        _eventDate.value = configureEventReportDate(selectedDate)
     }
 }

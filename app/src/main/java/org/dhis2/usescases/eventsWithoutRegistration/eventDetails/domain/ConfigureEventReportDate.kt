@@ -1,58 +1,193 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.data.EventCreationType.ADDNEW
+import org.dhis2.commons.data.EventCreationType.DEFAULT
 import org.dhis2.commons.data.EventCreationType.SCHEDULE
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.ReportingDate
+import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
-import org.hisp.dhis.android.core.D2
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
+import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Calendar.DAY_OF_YEAR
+import java.util.Date
+import java.util.Locale
 
 class ConfigureEventReportDate(
-    private val d2: D2,
-    private val eventId: String?,
+    private val eventId: String? = null,
     private val programStageId: String,
-    private val creationType: EventCreationType,
-    private val resourceProvider: EventDetailResourcesProvider
+    private val creationType: EventCreationType = DEFAULT,
+    private val resourceProvider: EventDetailResourcesProvider,
+    private val eventInitialRepository: EventInitialRepository,
+    private val periodType: PeriodType? = null,
+    private val periodUtils: DhisPeriodUtils,
+    private val enrollmentId: String? = null,
+    private val programId: String? = null,
+    private val scheduleInterval: Int = 0
 ) {
 
-    operator fun invoke(): ReportingDate {
-        return ReportingDate(
+    operator fun invoke(selectedDate: Date? = null): EventDate {
+        return EventDate(
             active = isActive(),
-            hint = getLabel(),
-            value = getValue()
+            label = getLabel(),
+            dateValue = getDateValue(selectedDate),
+            currentDate = getDate(selectedDate),
+            minDate = getMinDate(),
+            maxDate = getMaxDate(),
+            scheduleInterval = getScheduleInterval(),
+            allowFutureDates = getAllowFutureDates(),
+            periodType = periodType
         )
     }
 
     private fun isActive(): Boolean {
-        getProgramStageById()?.let {
-            if (creationType == SCHEDULE && it.hideDueDate() == true) {
-                return false
-            }
+        if (creationType == SCHEDULE && getProgramStage().hideDueDate() == true) {
+            return false
         }
         return true
     }
 
     private fun getLabel(): String {
+        val programStage = getProgramStage()
         return when (creationType) {
             SCHEDULE ->
-                getProgramStageById()?.dueDateLabel()
-                    ?: resourceProvider.provideDueDate()
+                programStage.dueDateLabel() ?: resourceProvider.provideDueDate()
             else -> {
-                getProgramStageById()?.executionDateLabel()
-                    ?: resourceProvider.provideEventDate()
+                programStage.executionDateLabel() ?: resourceProvider.provideEventDate()
             }
         }
     }
 
-    private fun getValue(): String? {
-        return getEventById()?.eventDate()?.let {
-            DateUtils.uiDateFormat().format(it)
+    private fun getDate(selectedDate: Date?) = when {
+        selectedDate != null -> selectedDate
+        eventId != null -> getStoredEvent()?.eventDate()
+        periodType != null -> getDateBasedOnPeriodType()
+        creationType == SCHEDULE -> getNextScheduleDate()
+        else -> getCurrentDay()
+    }
+
+    private fun getDateValue(selectedDate: Date?) = getDate(selectedDate)?.let { date ->
+        when {
+            periodType != null ->
+                periodUtils.getPeriodUIString(periodType, date, Locale.getDefault())
+            else -> DateUtils.uiDateFormat().format(date)
         }
     }
 
-    private fun getEventById() =
-        d2.eventModule().events().uid(eventId).blockingGet()
+    private fun getStoredEvent(): Event? =
+        eventInitialRepository.event(eventId).blockingFirst()
 
-    private fun getProgramStageById() =
-        d2.programModule().programStages().uid(programStageId).blockingGet()
+    private fun getProgram(): Program? =
+        programId?.let { eventInitialRepository.getProgramWithId(programId).blockingFirst() }
+
+    private fun getProgramStage(): ProgramStage =
+        eventInitialRepository.programStageWithId(programStageId).blockingFirst()
+
+    private fun getDateBasedOnPeriodType(): Date {
+        getProgramStage().hideDueDate()?.let { hideDueDate ->
+            if (creationType == SCHEDULE && hideDueDate) {
+                return if (periodType != null) {
+                    DateUtils.getInstance().today
+                } else {
+                    val calendar = DateUtils.getInstance().calendar
+                    calendar.add(DAY_OF_YEAR, getScheduleInterval())
+                    org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                        null,
+                        calendar.time, 0
+                    )
+                }
+            }
+        }
+
+        return DateUtils.getInstance()
+            .getNextPeriod(
+                periodType,
+                DateUtils.getInstance().today,
+                if (creationType != SCHEDULE) 0 else 1
+            )
+    }
+
+    private fun getNextScheduleDate(): Date {
+        val now = DateUtils.getInstance().calendar
+        now.time = eventInitialRepository.getStageLastDate(programStageId, enrollmentId)
+        val minDateFromStart =
+            eventInitialRepository.getMinDaysFromStartByProgramStage(programStageId)
+        if (minDateFromStart > 0) {
+            now.add(DAY_OF_YEAR, minDateFromStart)
+        }
+        return DateUtils.getInstance().getNextPeriod(null, now.time, 0)
+    }
+
+    private fun getCurrentDay() = DateUtils.getInstance().today
+
+    private fun getMinDate(): Date? {
+        getProgram()?.let { program ->
+            if (periodType == null) {
+                if (program.expiryPeriodType() != null) {
+                    val expiryDays = program.expiryDays() ?: 0
+                    return org.dhis2.utils.DateUtils.getInstance().expDate(
+                        null,
+                        expiryDays,
+                        program.expiryPeriodType()
+                    )
+                }
+            } else {
+                var minDate = org.dhis2.utils.DateUtils.getInstance().expDate(
+                    null,
+                    program.expiryDays() ?: 0,
+                    periodType
+                )
+                val lastPeriodDate = org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                    periodType,
+                    minDate,
+                    -1,
+                    true
+                )
+
+                if (lastPeriodDate.after(
+                        org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                            program.expiryPeriodType(),
+                            minDate,
+                            0
+                        )
+                    )
+                ) {
+                    minDate = org.dhis2.utils.DateUtils.getInstance()
+                        .getNextPeriod(periodType, lastPeriodDate, 0)
+                }
+                return minDate
+            }
+        }
+        return null
+    }
+
+    private fun getMaxDate(): Date? {
+        return if (periodType == null) {
+            when (creationType) {
+                ADDNEW,
+                DEFAULT -> Date(System.currentTimeMillis() - 1000)
+                else -> null
+            }
+        } else {
+            when (creationType) {
+                ADDNEW,
+                DEFAULT -> DateUtils.getInstance().today
+                else -> null
+            }
+        }
+    }
+
+    private fun getAllowFutureDates() = when (creationType) {
+        SCHEDULE -> true
+        else -> false
+    }
+
+    private fun getScheduleInterval() = when (creationType) {
+        SCHEDULE -> scheduleInterval
+        else -> 0
+    }
 }

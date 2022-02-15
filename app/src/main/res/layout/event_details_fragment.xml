@@ -105,18 +105,19 @@
                         android:id="@+id/date_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@{viewModel.reportingDate.hint}"
+                        android:hint="@{viewModel.eventDate.label}"
                         android:textColorHint="@color/text_black_808"
-                        android:visibility="@{viewModel.reportingDate.active ? View.VISIBLE:View.GONE}">
+                        android:visibility="@{viewModel.eventDate.active ? View.VISIBLE:View.GONE}">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/date"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:enabled="@{viewModel.eventDetails.enabled}"
                             android:focusable="false"
                             android:onClick="@{() -> viewModel.onDateClick()}"
                             android:onTextChanged="@{viewModel::onFieldChanged}"
-                            android:text="@{viewModel.reportingDate.value}"
+                            android:text="@{viewModel.eventDate.dateValue}"
                             android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
