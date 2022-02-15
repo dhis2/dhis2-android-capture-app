@@ -33,6 +33,7 @@ class ValueStoreImpl(
     private val searchTEIRepository: SearchTEIRepository
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
+    var overrideProgramUid: String? = null
 
     constructor(
         d2: D2,
@@ -53,6 +54,10 @@ class ValueStoreImpl(
         searchTEIRepository
     ) {
         this.enrollmentRepository = enrollmentRepository
+    }
+
+    override fun overrideProgram(programUid: String?) {
+        overrideProgramUid = programUid
     }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
@@ -186,7 +191,7 @@ class ValueStoreImpl(
         return if (!networkUtils.isOnline()) {
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
-            val programUid = enrollmentRepository?.blockingGet()?.program()
+            val programUid = overrideProgramUid ?: enrollmentRepository?.blockingGet()?.program()
             searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid)
         }
     }

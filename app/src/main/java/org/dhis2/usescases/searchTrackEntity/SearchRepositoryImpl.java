@@ -255,6 +255,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
 
                             if (!isGenerated) {
+                                valueStore.overrideProgram(programUid);
                                 StoreResult toreResult = valueStore.save(key, dataValue).blockingFirst();
                             }
                         }
