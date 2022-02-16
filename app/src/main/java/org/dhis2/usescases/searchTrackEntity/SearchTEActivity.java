@@ -465,7 +465,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     }
                     return true;
                 })
-                .addOnRelationshipClickListener(teiUid -> {
+                .addOnRelationshipClickListener((teiUid, ownerType) -> {
                     if (binding.mapCarousel.getCarouselEnabled()) {
                         presenter.onTEIClick(teiUid, null, false);
                     }

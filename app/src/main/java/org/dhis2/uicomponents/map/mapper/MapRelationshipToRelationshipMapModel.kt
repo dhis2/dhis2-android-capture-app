@@ -74,6 +74,8 @@ class MapRelationshipToRelationshipMapModel {
             toAttr
         )
 
+        val ownerType = relationshipViewModel.ownerType
+
         return RelationshipUiComponentModel(
             displayName,
             relationshipUid,
@@ -81,7 +83,8 @@ class MapRelationshipToRelationshipMapModel {
             direction,
             bidirectional,
             teiFrom,
-            teiTo
+            teiTo,
+            ownerType
         )
     }
 }
