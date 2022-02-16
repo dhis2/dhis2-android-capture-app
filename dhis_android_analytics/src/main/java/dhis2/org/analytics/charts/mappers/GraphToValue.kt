@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
@@ -34,6 +35,16 @@ class GraphToValue {
                     ItemSingleValueBinding.inflate(LayoutInflater.from(this.context)).apply {
                         singleValueTitle.text = it.fieldName
                         singleValue.text = it.coordinates.lastOrNull()?.fieldValue?.toString() ?: ""
+
+                        val coordinate = it.coordinates.lastOrNull()
+
+                        if (coordinate?.legendValue != null) {
+                            singleValueLegend.setBackgroundColor(coordinate?.legendValue.color)
+                        } else {
+                            singleValueLegend.setBackgroundColor(
+                                (ContextCompat.getColor(context, R.color.gray_e7e))
+                            )
+                        }
                     }.root
                 )
             }

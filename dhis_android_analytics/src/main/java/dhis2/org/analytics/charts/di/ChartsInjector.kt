@@ -22,6 +22,7 @@ import dhis2.org.analytics.charts.providers.NutritionDataProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
+import org.dhis2.commons.resources.ResourceManager
 import javax.inject.Singleton
 import org.hisp.dhis.android.core.D2
 
@@ -118,9 +119,17 @@ class ChartsModule {
     @Provides
     internal fun chartCoordinatesProvider(
         d2: D2,
-        periodStepProvider: PeriodStepProvider
+        periodStepProvider: PeriodStepProvider,
+        resourceManager: ResourceManager
     ): ChartCoordinatesProvider {
-        return ChartCoordinatesProviderImpl(d2, periodStepProvider)
+        return ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
+    }
+
+    @Provides
+    internal fun provideResourceManager(
+        context: Context,
+    ): ResourceManager {
+        return ResourceManager(context)
     }
 
     @Provides
