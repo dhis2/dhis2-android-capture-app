@@ -8,6 +8,7 @@ import android.widget.DatePicker
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.unnamed.b.atv.model.TreeNode
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
@@ -20,8 +21,10 @@ import org.dhis2.utils.Constants.EVENT_CREATION_TYPE
 import org.dhis2.utils.Constants.EVENT_PERIOD_TYPE
 import org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL
 import org.dhis2.utils.Constants.EVENT_UID
+import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PROGRAM_STAGE_UID
 import org.dhis2.utils.Constants.PROGRAM_UID
+import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
@@ -55,7 +58,8 @@ class EventDetailsFragment : Fragment() {
                 periodType = requireArguments()
                     .getSerializable(EVENT_PERIOD_TYPE) as PeriodType?,
                 enrollmentId = requireArguments().getString(ENROLLMENT_UID),
-                scheduleInterval = requireArguments().getInt(EVENT_SCHEDULE_INTERVAL)
+                scheduleInterval = requireArguments().getInt(EVENT_SCHEDULE_INTERVAL),
+                initialOrgUnitUid = requireArguments().getString(ORG_UNIT)
             )
         ).inject(this)
         binding = DataBindingUtil.inflate(
@@ -102,6 +106,30 @@ class EventDetailsFragment : Fragment() {
                     viewModel.onDateSet(selectedDate)
                 }
                 .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+        }
+
+        viewModel.showOrgUnits = {
+            val dialog = OrgUnitDialog.getInstace()
+                .setTitle(
+                    viewModel.eventOrgUnit.value.selectedOrgUnit?.displayName()
+                        ?: getString(R.string.org_unit)
+                )
+                .setMultiSelection(false)
+                .setOrgUnits(viewModel.eventOrgUnit.value.orgUnits)
+                .setProgram(viewModel.eventOrgUnit.value.programUid)
+
+            dialog.setPossitiveListener {
+                viewModel.onOrgUnitSet(
+                    dialog.selectedOrgUnit,
+                    dialog.selectedOrgUnitName
+                )
+                dialog.dismiss()
+            }
+            dialog.setNegativeListener { dialog.dismiss() }
+            dialog.setNodeClickListener { node: TreeNode, _: Any? ->
+                if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
+            }
+            dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
         }
     }
 

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -27,7 +28,8 @@ class EventDetailsModule(
     val programId: String,
     val periodType: PeriodType?,
     val enrollmentId: String?,
-    val scheduleInterval: Int
+    val scheduleInterval: Int,
+    val initialOrgUnitUid: String?
 ) {
 
     @Provides
@@ -36,7 +38,8 @@ class EventDetailsModule(
         d2: D2,
         eventInitialRepository: EventInitialRepository,
         resourceManager: ResourceManager,
-        periodUtils: DhisPeriodUtils
+        periodUtils: DhisPeriodUtils,
+        preferencesProvider: PreferenceProvider
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -61,7 +64,10 @@ class EventDetailsModule(
             ConfigureOrgUnit(
                 creationType = eventCreationType,
                 eventInitialRepository = eventInitialRepository,
-                programId = programId
+                preferencesProvider = preferencesProvider,
+                programUid = programId,
+                eventUid = eventUid,
+                initialOrgUnitUid = initialOrgUnitUid
             ),
             ConfigureEventCoordinates(
                 d2 = d2,

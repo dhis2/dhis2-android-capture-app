@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
@@ -38,17 +37,16 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.maps.views.MapSelectorActivity;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
-import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.ui.MetadataIconData;
+import org.dhis2.commons.ui.MetadataIconKt;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
@@ -57,22 +55,19 @@ import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.ui.intent.FormIntent;
-import org.dhis2.commons.ui.MetadataIconData;
-import org.dhis2.commons.ui.MetadataIconKt;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
+import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CatOptionPopUp;
 import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.dhis2.utils.customviews.PeriodDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -91,12 +86,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -307,24 +299,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.temp.setVisibility(View.GONE);
         }
 
-        if (eventCreationType == EventCreationType.SCHEDULE) {
-            fixedOrgUnit = true;
-            binding.orgUnitLayout.setVisibility(View.GONE);
-        } else {
-            fixedOrgUnit = false;
-            binding.orgUnitLayout.setVisibility(View.VISIBLE);
-            binding.orgUnit.setOnClickListener(v -> {
-                if (!fixedOrgUnit)
-                    presenter.onOrgUnitButtonClick();
-            });
-        }
 
         if (eventUid == null) {
             binding.actionButton.setText(R.string.next);
             binding.editionLayout.setVisibility(View.GONE);
         } else {
-            fixedOrgUnit = true;
-            binding.orgUnitLayout.setEnabled(false);
             binding.actionButton.setText(R.string.update);
         }
 
@@ -396,17 +375,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         setUpActivityTitle();
 
-        if (eventModel == null) {
-            if (selectedOrgUnit == null && eventUid == null)
-                presenter.initOrgunit(selectedDate);
-
-        } else {
-            if (!isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
-                binding.orgUnit.setEnabled(false);
-                binding.orgUnitLayout.setVisibility(View.GONE);
-            }
-        }
-
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
                         eventModel.completedDate(), eventModel.status(),
@@ -415,7 +383,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         program.expiryDays()) || eventModel.status() == EventStatus.COMPLETED || eventModel.status() == EventStatus.SKIPPED)) {
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
-            binding.orgUnit.setEnabled(false);
             binding.temp.setEnabled(false);
             if (presenter.isEventEditable()) {
                 binding.actionButton.setText(getString(R.string.action_close));
@@ -433,10 +400,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
-            if (eventModel != null && !isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
-                binding.orgUnit.setEnabled(false);
-                binding.orgUnitLayout.setVisibility(View.GONE);
-            }
 
             activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         }
@@ -449,8 +412,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         catOptionComboUid = event.attributeOptionCombo();
 
         eventModel = event;
-
-        presenter.getEventOrgUnit(event.organisationUnit());
     }
 
     @Override
@@ -571,10 +532,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-
-        if (!fixedOrgUnit) {
-            presenter.initOrgunit(selectedDate);
-        }
     }
 
     @Override
@@ -624,21 +581,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setInitialOrgUnit(OrganisationUnit organisationUnit) {
-        if (organisationUnit != null) {
-            this.selectedOrgUnit = organisationUnit.uid();
-            binding.orgUnit.setText(organisationUnit.displayName());
-            if (eventCreationType != EventCreationType.DEFAULT) {
-                binding.orgUnit.setEnabled(eventUid == null);
-            }
-        } else
-            binding.orgUnit.setText("");
+
     }
 
     @Override
     public void setOrgUnit(String orgUnitId, String orgUnitName) {
-        preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitId);
-        this.selectedOrgUnit = orgUnitId;
-        binding.orgUnit.setText(orgUnitName);
     }
 
     @Override
@@ -655,7 +602,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setAccessDataWrite(Boolean canWrite) {
         this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
-            binding.orgUnit.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.action_close));
@@ -665,36 +611,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showOrgUnitSelector(List<OrganisationUnit> orgUnits) {
-        if (orgUnits != null && !orgUnits.isEmpty()) {
 
-            Iterator<OrganisationUnit> iterator = orgUnits.iterator();
-            while (iterator.hasNext()) {
-                OrganisationUnit organisationUnit = iterator.next();
-                if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(selectedDate)
-                        || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(selectedDate))
-                    iterator.remove();
-            }
-
-            orgUnitDialog = OrgUnitDialog.getInstace()
-                    .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
-                    .setMultiSelection(false)
-                    .setOrgUnits(orgUnits)
-                    .setProgram(programUid)
-                    .setPossitiveListener(data -> {
-                        setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
-                        orgUnitDialog.dismiss();
-                    })
-                    .setNegativeListener(data -> orgUnitDialog.dismiss())
-                    .setNodeClickListener((node, value) -> {
-                        if (!node.getChildren().isEmpty())
-                            node.setExpanded(node.isExpanded());
-                    });
-
-            if (!orgUnitDialog.isAdded())
-                orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
-        } else {
-            showNoOrgUnits();
-        }
     }
 
     @Override

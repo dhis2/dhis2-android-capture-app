@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -22,7 +23,7 @@ import java.util.Date
 class EventDetailsViewModel(
     configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
-    configureOrgUnit: ConfigureOrgUnit,
+    private val configureOrgUnit: ConfigureOrgUnit,
     configureEventCoordinates: ConfigureEventCoordinates,
     configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?
@@ -30,6 +31,7 @@ class EventDetailsViewModel(
 
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
+    var showOrgUnits: (() -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails?> = MutableStateFlow(null)
     val eventDetails: StateFlow<EventDetails?> get() = _eventDetails
@@ -50,8 +52,13 @@ class EventDetailsViewModel(
     init {
         viewModelScope.launch {
             _eventDetails.value = configureEventDetails()
+
             _eventDate.value = configureEventReportDate()
-            _eventOrgUnit.value = configureOrgUnit()
+            eventDate.collect {
+                eventDate
+                _eventOrgUnit.value = configureOrgUnit(eventDate.value.currentDate)
+            }
+
             _eventCoordinates.value = configureEventCoordinates()
             _eventTemp.value = configureEventTemp()
         }
@@ -66,19 +73,32 @@ class EventDetailsViewModel(
         } ?: showCalendar?.invoke()
     }
 
-    fun onOrgUnitClick() {
-        // TODO filter orgunits by opening selected dates EventInitialActivity 791 and show dialog
-    }
-
     fun onDateSet(year: Int, month: Int, day: Int) {
         val calendar = Calendar.getInstance()
         calendar[year, month, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
         val selectedDate = calendar.time
-        _eventDate.value = configureEventReportDate(selectedDate)
+        onDateSet(selectedDate)
     }
 
     fun onDateSet(selectedDate: Date) {
-        _eventDate.value = configureEventReportDate(selectedDate)
+        viewModelScope.launch {
+            _eventDate.value = configureEventReportDate(selectedDate)
+            eventDate.collect { eventDate ->
+                _eventOrgUnit.value = configureOrgUnit(eventDate.currentDate)
+            }
+        }
+    }
+
+    fun onOrgUnitClick() {
+        if (!_eventOrgUnit.value.fixed) {
+            showOrgUnits?.invoke()
+        }
+    }
+
+    fun onOrgUnitSet(selectedOrgUnit: String, selectedOrgUnitName: String?) {
+        viewModelScope.launch {
+            _eventOrgUnit.value = configureOrgUnit.invoke(selectedOrgUnit = selectedOrgUnit)
+        }
     }
 }

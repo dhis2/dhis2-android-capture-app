@@ -172,18 +172,6 @@ public class EventInitialPresenter {
 
         if (eventId != null)
             getSectionCompletion();
-
-        if (getCurrentOrgUnit(orgInitId) != null) {
-            compositeDisposable.add(
-                    eventInitialRepository.getOrganisationUnit(getCurrentOrgUnit(orgInitId))
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    organisationUnit -> view.setOrgUnit(organisationUnit.uid(), organisationUnit.displayName()),
-                                    Timber::d
-                            )
-            );
-        }
     }
 
     @VisibleForTesting
@@ -417,15 +405,7 @@ public class EventInitialPresenter {
     }
 
     public void getEventOrgUnit(String ouUid) {
-        compositeDisposable.add(
-                eventInitialRepository.getOrganisationUnit(ouUid)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                orgUnit -> view.setOrgUnit(orgUnit.uid(), orgUnit.displayName()),
-                                Timber::e
-                        )
-        );
+
     }
 
     public void initOrgunit(Date selectedDate) {

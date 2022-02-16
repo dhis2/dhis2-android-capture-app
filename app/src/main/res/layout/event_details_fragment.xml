@@ -139,6 +139,7 @@
                         android:focusable="false"
                         android:onClick="@{() -> viewModel.onOrgUnitClick()}"
                         android:onTextChanged="@{viewModel::onFieldChanged}"
+                        android:text="@{viewModel.eventOrgUnit.selectedOrgUnit.displayName}"
                         android:textSize="15sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
