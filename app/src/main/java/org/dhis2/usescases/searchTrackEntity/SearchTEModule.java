@@ -277,4 +277,10 @@ public class SearchTEModule {
     NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
         return new SearchPageConfigurator(searchRepository, schedulerProvider);
     }
+
+    @Provides
+    @PerActivity
+    SearchTeiViewModelFactory providesViewModelFactory(SearchRepository searchRepository){
+        return new SearchTeiViewModelFactory(searchRepository, initialProgram);
+    }
 }

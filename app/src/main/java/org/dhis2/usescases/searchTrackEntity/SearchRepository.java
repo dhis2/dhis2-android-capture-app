@@ -55,4 +55,6 @@ public interface SearchRepository {
     void setCurrentProgram(@Nullable String currentProgram);
     boolean programHasAnalytics();
     boolean programHasCoordinates();
+
+    @Nullable Program getProgram(@Nullable String programUid);
 }

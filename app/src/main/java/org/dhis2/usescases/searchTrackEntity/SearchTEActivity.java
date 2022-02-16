@@ -31,6 +31,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -122,6 +123,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     DispatcherProvider dispatchers;
     @Inject
     NavigationPageConfigurator pageConfigurator;
+    @Inject
+    SearchTeiViewModelFactory viewModelFactory;
 
     private String initialProgram;
     private String tEType;
@@ -130,6 +133,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String fromRelationshipTeiUid;
     private boolean backDropActive;
     private boolean fromAnalytics = false;
+
+    private SearchTEIViewModel viewModel;
     /**
      * 0 - it is general filter
      * 1 - it is search filter
@@ -183,27 +188,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         SearchTEExtraKt.queryDataExtra(this)
                 )).inject(this);
 
-        formView = new FormView.Builder()
-                .repository(formRepository)
-                .locationProvider(locationProvider)
-                .dispatcher(dispatchers)
-                .onItemChangeListener(action -> {
-                    presenter.processQuery(action);
-                    return Unit.INSTANCE;
-                })
-                .activityForResultListener(() -> {
-                    initSearchNeeded = false;
-                    return Unit.INSTANCE;
-                })
-                .onFieldItemsRendered(isEmpty -> {
-                    presenter.setAttributesEmpty(isEmpty);
-                    return Unit.INSTANCE;
-                })
-                .needToForceUpdate(true)
-                .factory(getSupportFragmentManager())
-                .build();
+        initSearchForm();
 
         super.onCreate(savedInstanceState);
+
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
@@ -234,7 +223,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 hideKeyboard();
                 v.clearFocus();
-                presenter.onFabClick(needsSearch.get());
+                observeSearchResults();
             }
             return true;
         });
@@ -311,10 +300,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.progressLayout.setVisibility(GONE);
         });
 
-        binding.syncButton.setVisibility(initialProgram != null ? View.VISIBLE : GONE);
-        binding.syncButton.setOnClickListener(v -> {
-            openSyncDialog();
-        });
+        observeSearchResults();
     }
 
     @Override
@@ -427,6 +413,28 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     //-----------------------------------------------------------------------
     //region SearchForm
+
+    private void initSearchForm() {
+        formView = new FormView.Builder()
+                .repository(formRepository)
+                .locationProvider(locationProvider)
+                .dispatcher(dispatchers)
+                .onItemChangeListener(action -> {
+                    viewModel.updateQueryData(action);
+                    return Unit.INSTANCE;
+                })
+                .activityForResultListener(() -> {
+                    initSearchNeeded = false;
+                    return Unit.INSTANCE;
+                })
+                .onFieldItemsRendered(isEmpty -> {
+                    presenter.setAttributesEmpty(isEmpty);
+                    return Unit.INSTANCE;
+                })
+                .needToForceUpdate(true)
+                .factory(getSupportFragmentManager())
+                .build();
+    }
 
     private void showAnalytics() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -602,6 +610,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     //---------------------------------------------------------------------
     //region TEI LIST
+
+    private void observeSearchResults() {
+        viewModel.fetchLocalResults().removeObservers(this);
+        viewModel.fetchLocalResults().observe(this, searchTeiModels -> {
+            binding.messageContainer.setVisibility(GONE);
+            binding.scrollView.setVisibility(View.VISIBLE);
+            binding.progressLayout.setVisibility(GONE);
+            liveAdapter.submitList(searchTeiModels);
+        });
+    }
 
     @Override
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {

@@ -297,6 +297,13 @@
                     app:layout_constraintTop_toBottomOf="@id/progressLayout"
                     tools:listitem="@layout/item_search_tracked_entity" />
 
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/searchResultOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/scrollView" />
+
 
                 <com.mapbox.mapboxsdk.maps.MapView
                     android:id="@+id/mapView"
@@ -361,21 +368,20 @@
                         android:layout_margin="10dp"
                         android:gravity="center_horizontal"
                         android:textSize="18sp"
-                        tools:text="You need to enter at least N attributes to do a search"/>
+                        tools:text="You need to enter at least N attributes to do a search" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/showListBtn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_alignParentEnd="true"
                         android:layout_below="@id/message"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="12dp"
                         android:text="@string/reload_list"
                         android:textAllCaps="false"
                         android:visibility="gone"
                         app:icon="@drawable/ic_refresh"
-                        app:iconGravity="end"
-                        />
+                        app:iconGravity="end" />
 
                 </RelativeLayout>
 

@@ -194,7 +194,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.savedFilters = FilterManager.getInstance().copy();
 
         trackedEntityInstanceQuery = filterPresenter.filteredTrackedEntityInstances(
-                searchParametersModel.getSelectedProgram(), searchParametersModel.getTrackedEntityType()
+                searchParametersModel.getSelectedProgram(), teiType
         );
 
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
@@ -853,5 +853,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                 programAttributeHasCoordinates ||
                 eventHasCoordinates ||
                 eventDataElementHasCoordinates;
+    }
+
+    @Nullable
+    @Override
+    public Program getProgram(@Nullable String programUid) {
+        if (programUid == null)
+            return null;
+        return d2.programModule().programs().uid(programUid).blockingGet();
     }
 }

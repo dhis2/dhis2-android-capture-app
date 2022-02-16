@@ -246,7 +246,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
-        compositeDisposable.add(
+        /*compositeDisposable.add(
                 listDataProcessor
                         .switchMap(map -> {
                             CountingIdlingResourceSingleton.INSTANCE.increment();
@@ -262,7 +262,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(view::setLiveData, Timber::d)
-        );
+        );*/
 
         compositeDisposable.add(
                 mapDataProcessor
