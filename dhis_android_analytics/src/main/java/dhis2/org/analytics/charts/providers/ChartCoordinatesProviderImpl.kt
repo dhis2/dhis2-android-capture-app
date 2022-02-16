@@ -1,19 +1,25 @@
 package dhis2.org.analytics.charts.providers
 
 import dhis2.org.analytics.charts.data.GraphPoint
+import dhis2.org.analytics.charts.data.LegendValue
+import org.dhis2.commons.resources.ResourceManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.analytics.AnalyticsLegendStrategy
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.legendset.Legend
 import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.android.core.visualization.LegendStrategy
 
 class ChartCoordinatesProviderImpl(
     val d2: D2,
-    val periodStepProvider: PeriodStepProvider
+    val periodStepProvider: PeriodStepProvider,
+    val resourceManager: ResourceManager
 ) : ChartCoordinatesProvider {
 
     override fun dataElementCoordinates(
@@ -28,6 +34,7 @@ class ChartCoordinatesProviderImpl(
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withDataElement(dataElementUid)
+            .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
             .run {
                 selectedRelativePeriod?.let { relativePeriods ->
                     this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
@@ -42,14 +49,18 @@ class ChartCoordinatesProviderImpl(
             .sortedBy { it.date }
             .mapNotNull { lineListResponse ->
                 if (initialPeriod == null) initialPeriod = lineListResponse.period
-                lineListResponse.values.first().value?.let { value ->
+
+                val lineListResponseValue = lineListResponse.values.first()
+
+                lineListResponseValue.value?.let { value ->
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position = periodStepProvider.getPeriodDiff(
                             initialPeriod!!,
                             lineListResponse.period
                         ).toFloat(),
-                        fieldValue = value.toFloat()
+                        fieldValue = value.toFloat(),
+                        legendValue = createLegendValue(lineListResponseValue.legend)
                     )
                 }
             }
@@ -68,6 +79,7 @@ class ChartCoordinatesProviderImpl(
             .byProgramStage().eq(stageUid)
             .byTrackedEntityInstance().eq(teiUid)
             .withProgramIndicator(indicatorUid)
+            .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
             .run {
                 selectedRelativePeriod?.let { relativePeriods ->
                     this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
@@ -88,7 +100,9 @@ class ChartCoordinatesProviderImpl(
                 }
             }
             .mapNotNull { lineListResponse ->
-                lineListResponse.values.first().value?.let { value ->
+                val lineListResponseValue = lineListResponse.values.first()
+
+                lineListResponseValue.value?.let { value ->
                     if (initialPeriod == null) initialPeriod = lineListResponse.period
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
@@ -96,7 +110,8 @@ class ChartCoordinatesProviderImpl(
                             initialPeriod!!,
                             lineListResponse.period
                         ).toFloat(),
-                        fieldValue = value.toFloat()
+                        fieldValue = value.toFloat(),
+                        legendValue = createLegendValue(lineListResponseValue.legend)
                     )
                 }
             }
@@ -223,7 +238,8 @@ class ChartCoordinatesProviderImpl(
                     eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
                     fieldValue = gridResponseValue.value!!.toFloat(),
-                    legend = columnLegend
+                    legend = columnLegend,
+                    legendValue = createLegendValue(gridResponseValue.legend)
                 )
             }
     }
@@ -235,6 +251,16 @@ class ChartCoordinatesProviderImpl(
             formattedDate ?: date
         } catch (e: Exception) {
             date
+        }
+    }
+
+    private fun createLegendValue(legend: Legend?): LegendValue? {
+        return legend?.let {
+            LegendValue(
+                resourceManager.getColorFrom(
+                    it.color()
+                ), it.displayName()
+            )
         }
     }
 }
