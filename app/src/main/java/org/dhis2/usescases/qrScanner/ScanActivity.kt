@@ -5,11 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.databinding.DataBindingUtil
-import com.google.zxing.Result
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import javax.inject.Inject
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.ActivityScanBinding
