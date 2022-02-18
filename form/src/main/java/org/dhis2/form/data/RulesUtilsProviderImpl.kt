@@ -276,7 +276,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 if (field.optionSet != null && field.value != null) {
                     val valueOption =
                         d2.optionModule().options().byOptionSetUid().eq(field.optionSet)
-                            .byDisplayName().eq(field.value)
+                            .byDisplayName().eq(field.displayName)
                             .one().blockingGet()
                     if (valueOption == null) {
                         configurationErrors.add(
@@ -323,7 +323,8 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
             fieldViewModels[assign.field()] =
                 fieldViewModels[assign.field()]!!
-                    .setValue(valueToShow)
+                    .setValue(ruleEffect.data())
+                    .setDisplayName(valueToShow)
                     .setEditable(false)
         } else if (!hiddenFields.contains(assign.field())) {
             valuesToChange[assign.field()] = ruleEffect.data()
