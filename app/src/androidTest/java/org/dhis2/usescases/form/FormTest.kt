@@ -50,11 +50,11 @@ class FormTest: BaseTest() {
             checkHiddenSection("Gamma Rules A")
         }
 
-        formRobot {
+        /*formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
             checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
-        }
+        }*/
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
