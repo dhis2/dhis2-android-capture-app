@@ -499,7 +499,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Timber.d("UPDATING VALUE FOR FIELD %s", uid);
         ListIterator<FieldUiModel> iterator = sectionFields.listIterator();
         boolean updated = false;
-        while (iterator.hasNext() || !updated) {
+        while (iterator.hasNext() && !updated) {
             FieldUiModel fieldViewModel = iterator.next();
             if (fieldViewModel.getUid().equals(uid)) {
                 TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);

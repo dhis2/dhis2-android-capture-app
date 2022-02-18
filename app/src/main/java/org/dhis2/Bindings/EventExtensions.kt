@@ -45,7 +45,7 @@ fun EventCollectionRepository.applyFilters(
         eventRepo = eventRepo.byStatus().`in`(eventStatusFilters)
     }
     if (stateFilters.isNotEmpty()) {
-        eventRepo = eventRepo.byState().`in`(stateFilters)
+        eventRepo = eventRepo.byAggregatedSyncState().`in`(stateFilters)
     }
     if (assignedUser != null) {
         eventRepo = eventRepo.byAssignedUser().eq(assignedUser)

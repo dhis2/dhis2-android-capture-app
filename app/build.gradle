@@ -65,6 +65,10 @@ android {
         manifestPlaceholders = [
                 appAuthRedirectScheme: ''
         ]
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
     }
 
     testOptions {
@@ -166,7 +170,7 @@ android {
             applicationId "org.dhis2.psi"
             dimension "default"
             versionCode 9
-            versionName "2.5-psi-fork-1"
+            versionName "2.5.1-psi-fork-1"
         }
     }
 

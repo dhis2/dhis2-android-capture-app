@@ -9,3 +9,5 @@
 /app/dhis_keystore.jks
 /app/src/main/res/raw/testing_credentials.json
 /venv
+/*.secrets.yml
+/gradle.deps

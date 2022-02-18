@@ -54,7 +54,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             int icon = new ResourceManager(itemView.getContext())
                     .getObjectStyleDrawableResource(
                             enrollment.icon(),
-                            R.drawable.ic_program_default
+                            R.drawable.ic_default_outline
                     );
 
             Drawable iconImage = null;
@@ -90,7 +90,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             int icon = new ResourceManager(itemView.getContext())
                     .getObjectStyleDrawableResource(
                             programModel.icon(),
-                            R.drawable.ic_program_default
+                            R.drawable.ic_default_outline
                     );
 
             Drawable iconImage = null;

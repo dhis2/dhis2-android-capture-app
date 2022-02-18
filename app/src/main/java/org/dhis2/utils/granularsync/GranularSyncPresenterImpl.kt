@@ -186,7 +186,7 @@ class GranularSyncPresenterImpl(
                 // TODO: GET ALL ENROLLMENTS FROM TEI
                 val enrollmentUids = UidsHelper.getUidsList(
                     d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
-                        .byState().`in`(
+                        .byAggregatedSyncState().`in`(
                             State.TO_POST,
                             State.TO_UPDATE,
                             State.UPLOADING
@@ -393,12 +393,14 @@ class GranularSyncPresenterImpl(
             )
 
         return when {
-            teiRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() -> State.ERROR
-            teiRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() -> State.WARNING
-            teiRepository.byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            teiRepository.byAggregatedSyncState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
+                State.ERROR
+            teiRepository.byAggregatedSyncState().`in`(State.WARNING).blockingGet().isNotEmpty() ->
+                State.WARNING
+            teiRepository.byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
                 .blockingGet().isNotEmpty() ->
                 State.SENT_VIA_SMS
-            teiRepository.byState().`in`(
+            teiRepository.byAggregatedSyncState().`in`(
                 State.TO_UPDATE,
                 State.TO_POST,
                 State.UPLOADING
@@ -414,14 +416,17 @@ class GranularSyncPresenterImpl(
             d2.eventModule().events().byProgramUid().eq(programUid)
 
         return when {
-            eventRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
+            eventRepository
+                .byAggregatedSyncState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
                 State.ERROR
-            eventRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() ->
+            eventRepository
+                .byAggregatedSyncState().`in`(State.WARNING)
+                .blockingGet().isNotEmpty() ->
                 State.WARNING
-            eventRepository.byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            eventRepository.byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
                 .blockingGet().isNotEmpty() ->
                 State.SENT_VIA_SMS
-            eventRepository.byState().`in`(
+            eventRepository.byAggregatedSyncState().`in`(
                 State.TO_UPDATE,
                 State.TO_POST,
                 State.UPLOADING
