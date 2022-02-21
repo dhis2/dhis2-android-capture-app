@@ -81,8 +81,8 @@ class SearchTeiRobot : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
-    fun clickOnFab() {
-        onView(withId(R.id.enrollmentButton)).perform(click())
+    fun clickOnSearch() {
+        onView(withId(R.id.searchButton)).perform(click())
     }
 
     fun checkListOfSearchTEI(firstSearchWord: String, secondSearchWord: String) {
@@ -95,11 +95,6 @@ class SearchTeiRobot : BaseRobot() {
                     )
                 )
             ))
-    }
-
-    fun checkFilterCount(filterCount: String) {
-        onView(withId(R.id.filterCounterSearch))
-            .check(matches(withChild(withText(filterCount))))
     }
 
     fun checkNoSearchResult(searchWord: String, message: String) {
@@ -148,8 +143,8 @@ class SearchTeiRobot : BaseRobot() {
             .check(matches(hasItem(hasDescendant(withText(firstName)))))
     }
 
-    fun clickOnSearchFilter() {
-        onView(withId(R.id.search_filter)).perform(click())
+    fun clickOnOpenSearch() {
+        onView(withId(R.id.openSearchButton)).perform(click())
     }
 
     fun clickOnShowMoreFilters(){

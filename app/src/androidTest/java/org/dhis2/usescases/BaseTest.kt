@@ -1,7 +1,6 @@
 package org.dhis2.usescases
 
 import android.content.Context
-import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
