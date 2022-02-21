@@ -71,6 +71,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     private boolean backDropActive;
     private String programUid;
+    private boolean recreationActivity = false;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
     private ProgramEventDetailViewModel programEventsViewModel;
@@ -146,8 +147,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         programEventsViewModel.getEventClicked().observe(this, eventData -> {
-            if (eventData != null) {
+            if (eventData != null && !programEventsViewModel.getRecreationActivity()) {
+                programEventsViewModel.onRecreationActivity(false);
                 navigateToEvent(eventData.component1(), eventData.component2());
+            } else if (programEventsViewModel.getRecreationActivity()){
+                programEventsViewModel.onRecreationActivity(false);
             }
         });
 
@@ -187,6 +191,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isChangingConfigurations()) {
+            programEventsViewModel.onRecreationActivity(true);
+        }
     }
 
     @Override
