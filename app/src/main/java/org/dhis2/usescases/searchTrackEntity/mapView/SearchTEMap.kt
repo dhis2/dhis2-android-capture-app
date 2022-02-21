@@ -44,9 +44,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     @Inject
     lateinit var animations: CarouselViewAnimations
 
-    private val viewModel by lazy {
-        activityViewModels<SearchTEIViewModel> { viewModelFactory }
-    }
+    private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private var teiMapManager: TeiMapManager? = null
     private var carouselAdapter: CarouselAdapter? = null
@@ -100,6 +98,10 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             }
         }
 
+        binding.openSearchButton.setOnClickListener {
+            viewModel.setSearchScreen()
+        }
+
         teiMapManager = TeiMapManager(binding.mapView)
         teiMapManager?.let { lifecycle.addObserver(it) }
         teiMapManager?.onCreate(savedInstanceState)
@@ -122,7 +124,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
 
     override fun onResume() {
         super.onResume()
-        viewModel.value.selectedProgram.observe(this) {
+        viewModel.selectedProgram.observe(this) {
             teiMapManager?.mapStyle =
                 MapStyle(
                     presenter.teiColor,
@@ -136,7 +138,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         animations.initMapLoading(binding.mapCarousel)
-        viewModel.value.fetchMapResults()
+        viewModel.fetchMapResults()
     }
 
     override fun onDestroy() {
@@ -168,7 +170,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     }
 
     private fun observeMapResults() {
-        viewModel.value.mapResults.observe(viewLifecycleOwner) { trackerMapData ->
+        viewModel.mapResults.observe(viewLifecycleOwner) { trackerMapData ->
             teiMapManager?.update(
                 trackerMapData.teiFeatures,
                 trackerMapData.eventFeatures,
@@ -206,7 +208,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             .addOnDeleteRelationshipListener { relationshipUid: String? ->
                 if (binding.mapCarousel.carouselEnabled) {
                     presenter.deleteRelationship(relationshipUid)
-                    // TODO: update data
+                    viewModel.refreshData()
                 }
                 true
             }
