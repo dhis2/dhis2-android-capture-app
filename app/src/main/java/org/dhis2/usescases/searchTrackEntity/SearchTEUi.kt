@@ -74,7 +74,7 @@ fun SearchButton(onClick: () -> Unit) {
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
         shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation(),
+        elevation = ButtonDefaults.elevation()
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
             Icon(
@@ -140,7 +140,9 @@ fun SearchOutsideProgram(
         Button(
             onClick = onSearchOutsideClick,
             border = BorderStroke(1.dp, colorResource(id = R.color.colorPrimary)),
-            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.white))
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.white)
+            )
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),

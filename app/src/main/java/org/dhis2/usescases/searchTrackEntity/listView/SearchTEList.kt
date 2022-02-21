@@ -180,7 +180,9 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun displayLoadingData() {
         if (listAdapter.itemCount == 0) {
-            initialLoadingAdapter.submitList(listOf(SearchResult(SearchResult.SearchResultType.LOADING)))
+            initialLoadingAdapter.submitList(
+                listOf(SearchResult(SearchResult.SearchResultType.LOADING))
+            )
         } else {
             resultAdapter.submitList(listOf(SearchResult(SearchResult.SearchResultType.LOADING)))
         }

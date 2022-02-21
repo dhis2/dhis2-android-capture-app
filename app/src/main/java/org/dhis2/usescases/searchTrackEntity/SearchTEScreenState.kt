@@ -10,7 +10,7 @@ data class SearchList(
     val displayFrontPageList: Boolean,
     val canCreateWithoutSearch: Boolean,
     val isSearching: Boolean
-) : SearchTEScreenState(SearchScreenState.LIST, previousSate){
+) : SearchTEScreenState(SearchScreenState.LIST, previousSate) {
     fun canDisplayCreateButton() = canCreateWithoutSearch || isSearching
 }
 
@@ -26,7 +26,7 @@ data class SearchForm(
 ) : SearchTEScreenState(SearchScreenState.SEARCHING, previousSate)
 
 data class SearchAnalytics(
-    override val previousSate: SearchScreenState,
+    override val previousSate: SearchScreenState
 ) : SearchTEScreenState(SearchScreenState.ANALYTICS, previousSate)
 
 enum class SearchScreenState {

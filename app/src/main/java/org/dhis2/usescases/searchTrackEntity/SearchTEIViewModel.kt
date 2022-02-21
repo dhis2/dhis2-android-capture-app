@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.mapbox.geojson.FeatureCollection
+import java.util.HashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -21,7 +22,6 @@ import org.dhis2.maps.mapper.EventToEventUiComponent
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.usescases.searchTrackEntity.adapters.uids
 import org.hisp.dhis.android.core.program.Program
-import java.util.HashMap
 
 class SearchTEIViewModel(
     initialProgramUid: String?,
@@ -50,14 +50,14 @@ class SearchTEIViewModel(
     private val _screenState = MutableLiveData<SearchTEScreenState>()
     val screenState: LiveData<SearchTEScreenState> = _screenState
 
-    private val _allowCreateWithoutSearch = false //init from configuration
-    private var searching:Boolean = false
+    private val _allowCreateWithoutSearch = false // init from configuration
+    private var searching: Boolean = false
 
     fun setListScreen() {
         val displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-                !_allowCreateWithoutSearch &&
-                !searching
+            !_allowCreateWithoutSearch &&
+            !searching
         _screenState.value = when {
             shouldOpenSearch ->
                 SearchForm(
@@ -85,7 +85,7 @@ class SearchTEIViewModel(
 
     fun setAnalyticsScreen() {
         _screenState.value = SearchAnalytics(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE
         )
     }
 
@@ -165,8 +165,8 @@ class SearchTEIViewModel(
         }
     }
 
-    fun fetchGlobalResults(): LiveData<PagedList<SearchTeiModel>>?{
-        return if(searching){
+    fun fetchGlobalResults(): LiveData<PagedList<SearchTeiModel>>? {
+        return if (searching) {
             searchRepository.searchTrackedEntities(
                 SearchParametersModel(
                     selectedProgram = null,
@@ -174,7 +174,7 @@ class SearchTEIViewModel(
                 ),
                 searching && networkUtils.isOnline()
             )
-        }else{
+        } else {
             null
         }
     }
@@ -218,7 +218,6 @@ class SearchTEIViewModel(
             try {
                 _mapResults.value = result.await()
             } catch (e: Exception) {
-
             }
             searching = false
         }
@@ -227,13 +226,14 @@ class SearchTEIViewModel(
     fun onSearchClick() {
         viewModelScope.launch {
             if (canPerformSearch()) {
-                searching = true;
-                val currentScreenState = if(_screenState.value is SearchForm)
+                searching = true
+                val currentScreenState = if (_screenState.value is SearchForm) {
                     _screenState.value?.previousSate
-                else
+                } else {
                     _screenState.value?.screenState
+                }
 
-                when(currentScreenState){
+                when (currentScreenState) {
                     SearchScreenState.LIST -> {
                         setListScreen()
                         _refreshData.value = Unit
@@ -242,10 +242,10 @@ class SearchTEIViewModel(
                         setMapScreen()
                         fetchMapResults()
                     }
-                    else-> searching = false
+                    else -> searching = false
                 }
             } else {
-                //TODO : Display min attribute toast message
+                // TODO : Display min attribute toast message
             }
         }
     }
@@ -258,7 +258,6 @@ class SearchTEIViewModel(
         return _selectedProgram.value?.let { program ->
             program.minAttributesRequiredToSearch() ?: 0 <= queryData.size
         } ?: true
-
     }
 
     private fun displayFrontPageList(): Boolean {
