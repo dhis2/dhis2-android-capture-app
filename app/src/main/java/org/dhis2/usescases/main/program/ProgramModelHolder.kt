@@ -29,7 +29,7 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         binding.programImage.setImageResource(
             ResourceManager(itemView.context).getObjectStyleDrawableResource(
                 programViewModel.icon(),
-                R.drawable.ic_program_default
+                R.drawable.ic_default_outline
             )
         )
 

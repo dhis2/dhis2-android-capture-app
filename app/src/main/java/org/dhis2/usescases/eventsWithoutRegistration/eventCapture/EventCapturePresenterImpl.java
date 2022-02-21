@@ -84,7 +84,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private FlowableProcessor<RowAction> onFieldActionProcessor;
     private List<RulesUtilsProviderConfigurationError> configurationError;
     private boolean showConfigurationError = true;
-
+    private boolean showLoopWarning = true;
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
@@ -224,8 +224,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         calculationLoop++;
                                         nextCalculation(true);
                                     } else {
-                                        if (calculationLoop == 5) {
+                                        if (calculationLoop == 5 && showLoopWarning) {
                                             view.showLoopWarning();
+                                            showLoopWarning = false;
                                         }
                                         calculationLoop = 0;
                                         formFieldsProcessor.onNext(sectionsAndFields.component2());

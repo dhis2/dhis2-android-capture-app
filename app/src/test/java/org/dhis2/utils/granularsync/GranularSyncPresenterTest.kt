@@ -105,17 +105,17 @@ class GranularSyncPresenterTest {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
                 Collections.singletonList("test_uid")
-            ).byState()
+            ).byAggregatedSyncState()
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
                 Collections.singletonList("test_uid")
-            ).byState().`in`(State.ERROR)
+            ).byAggregatedSyncState().`in`(State.ERROR)
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
                 Collections.singletonList("test_uid")
-            ).byState().`in`(State.ERROR).blockingGet()
+            ).byAggregatedSyncState().`in`(State.ERROR).blockingGet()
         ) doReturn getListOfTEIsWithError()
         val testSubscriber = presenter.getState().test()
 

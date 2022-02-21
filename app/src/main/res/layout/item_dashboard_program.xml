@@ -35,7 +35,7 @@
             tools:background="?attr/colorPrimaryLight"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_program_default" />
+            tools:src="@drawable/ic_default_outline" />
 
         <TextView
             android:id="@+id/program_last_date_label"

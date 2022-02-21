@@ -91,6 +91,7 @@
                     android:imeOptions="actionNext"
                     android:longClickable="false"
                     android:textSize="@dimen/form_edit_text_size"
+                    app:setOnTouchListener="@{item}"
                     app:geometry_polygon_value="@{item.currentGeometry()}"
                     app:input_style="@{item}" />
 
@@ -118,6 +119,8 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:onTextChanged="@{item::onLatitudeChanged}"
                     android:textSize="@dimen/form_edit_text_size"
+                    android:cursorVisible="@{item.focused}"
+                    app:setOnTouchListener="@{item}"
                     app:geometry_editor_listener="@{item}"
                     app:geometry_editor_listener_view="@{longitude}"
                     app:geometry_latitude_value="@{item.currentGeometry()}"
@@ -150,6 +153,8 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:onTextChanged="@{item::onLongitudeChanged}"
                     android:textSize="@dimen/form_edit_text_size"
+                    android:cursorVisible="@{item.focused}"
+                    app:setOnTouchListener="@{item}"
                     app:geometry_editor_listener="@{item}"
                     app:geometry_editor_listener_view="@{latitude}"
                     app:geometry_longitude_value="@{item.currentGeometry()}"
