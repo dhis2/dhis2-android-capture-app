@@ -110,114 +110,17 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
                     <FrameLayout
                         android:id="@+id/formViewContainer"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/form_field_background"/>
+                        android:layout_height="match_parent"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal">
-
-                        <androidx.compose.ui.platform.ComposeView
-                            android:id="@+id/compose_stage_icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:padding="5dp">
-
-                            <TextView
-                                android:id="@+id/programStageName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text='@{programStage.displayName()}'
-                                android:textColor="@color/text_black_333"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                tools:text="Program Stage Name" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{programStage.displayDescription()}"
-                                android:textSize="12sp"
-                                android:visibility="@{programStage.displayDescription()!=null?View.VISIBLE:View.GONE}"
-                                tools:text="@tools:sample/lorem" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/editionLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="8dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/editionReason"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:gravity="bottom|start"
-                            android:layout_marginStart="4dp"
-                            android:textColor="@color/textSecondary"
-                            android:textSize="12sp"
-                            android:textStyle="italic"
-                            tools:text="Not available" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/date_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColorHint="@color/text_black_808">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/date"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:focusable="false"
-                                android:onTextChanged="@{presenter::onFieldChanged}"
-                                android:textSize="15sp" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/org_unit_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:hint="@string/org_unit"
-                        android:textColorHint="@color/text_black_808">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/org_unit"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:onTextChanged="@{presenter::onFieldChanged}"
-                            android:textSize="15sp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <!-- Header-->
+                    <!--Edition-->
+                    <!--DATE-->
+                    <!--ORG UNIT-->
 
                     <LinearLayout
                         android:id="@+id/catComboLayout"

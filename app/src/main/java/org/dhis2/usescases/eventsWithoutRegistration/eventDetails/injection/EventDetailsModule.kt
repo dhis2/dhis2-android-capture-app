@@ -34,10 +34,18 @@ class EventDetailsModule(
 
     @Provides
     @PerFragment
+    fun provideEventDetailResourceProvider(
+        resourceManager: ResourceManager
+    ): EventDetailResourcesProvider {
+        return EventDetailResourcesProvider(resourceManager)
+    }
+
+    @Provides
+    @PerFragment
     fun eventDetailsViewModelFactory(
         d2: D2,
         eventInitialRepository: EventInitialRepository,
-        resourceManager: ResourceManager,
+        resourcesProvider: EventDetailResourcesProvider,
         periodUtils: DhisPeriodUtils,
         preferencesProvider: PreferenceProvider
     ): EventDetailsViewModelFactory {
@@ -47,13 +55,14 @@ class EventDetailsModule(
                 eventInitialRepository = eventInitialRepository,
                 programStageId = programStageUid,
                 eventId = eventUid,
-                programId = programId
+                programId = programId,
+                resourcesProvider = resourcesProvider
             ),
             ConfigureEventReportDate(
                 eventId = eventUid,
                 programStageId = programStageUid,
                 creationType = eventCreationType,
-                resourceProvider = EventDetailResourcesProvider(resourceManager),
+                resourceProvider = resourcesProvider,
                 eventInitialRepository = eventInitialRepository,
                 periodType = periodType,
                 periodUtils = periodUtils,

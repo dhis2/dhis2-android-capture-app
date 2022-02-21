@@ -6,5 +6,7 @@ data class EventDetails(
     val name: String?,
     val description: String?,
     val style: ObjectStyle?,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val isEditable: Boolean,
+    val editableReason: String?
 )

@@ -43,10 +43,6 @@ import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.ui.MetadataIconData;
-import org.dhis2.commons.ui.MetadataIconKt;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
@@ -299,10 +295,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.temp.setVisibility(View.GONE);
         }
 
-
         if (eventUid == null) {
             binding.actionButton.setText(R.string.next);
-            binding.editionLayout.setVisibility(View.GONE);
         } else {
             binding.actionButton.setText(R.string.update);
         }
@@ -555,23 +549,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void renderObjectStyle(ObjectStyle data) {
-        int color = ColorUtils.getColorFrom(data.color(),
-                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT));
-
-        int resource = new ResourceManager(this).getObjectStyleDrawableResource(
-                data.icon(),
-                R.drawable.ic_default_outline
-        );
-
-        MetadataIconKt.setUpMetadataIcon(
-                binding.composeStageIcon,
-                new MetadataIconData(
-                        color,
-                        resource,
-                        48
-                ),
-                true
-        );
     }
 
     @Override
@@ -793,11 +770,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEditionStatus(String reason) {
-        binding.editionReason.setText(reason);
     }
 
     @Override
     public void hideEditionStatus() {
-        binding.editionReason.setVisibility(View.GONE);
     }
 }

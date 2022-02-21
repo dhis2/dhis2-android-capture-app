@@ -80,7 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.eventDetails.editable ? View.GONE:View.VISIBLE}">
 
                     <TextView
                         android:id="@+id/editionReason"
@@ -89,6 +90,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="5dp"
                         android:gravity="bottom|start"
+                        android:text="@{viewModel.eventDetails.editableReason}"
                         android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         android:textStyle="italic"
@@ -136,6 +138,7 @@
                         android:id="@+id/org_unit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="@{viewModel.eventDetails.enabled}"
                         android:focusable="false"
                         android:onClick="@{() -> viewModel.onOrgUnitClick()}"
                         android:onTextChanged="@{viewModel::onFieldChanged}"
