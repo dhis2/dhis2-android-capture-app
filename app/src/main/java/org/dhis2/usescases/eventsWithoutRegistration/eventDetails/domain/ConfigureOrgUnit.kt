@@ -74,33 +74,36 @@ class ConfigureOrgUnit(
         selectedDate: Date?,
         selectedOrgUnit: String?
     ): OrganisationUnit? {
-        var orgUnit: OrganisationUnit?
-        orgUnit = selectedDate?.let { date ->
-            val dateDBFormat = DateUtils.databaseDateFormat().format(date)
-            val orgUnits = eventInitialRepository.filteredOrgUnits(
-                dateDBFormat,
-                programUid,
-                null
-            ).blockingFirst()
-
-            getCurrentOrgUnit()?.let { currentOrgUnitUid ->
-                orgUnit = orgUnits.find { it.uid().equals(currentOrgUnitUid) }
-            }
-
-            if (orgUnits.size == 1) {
-                orgUnit = when (creationType) {
-                    ADDNEW,
-                    DEFAULT -> orgUnits.firstOrNull()
-                    else -> null
-                }
-            }
-            return null
+        val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
+            getOrgUnitBySelectedDate(date)
         } ?: getStoredOrgUnit(selectedOrgUnit)
 
         orgUnit?.let {
             setCurrentOrgUnit(it.uid())
         }
         return orgUnit
+    }
+
+    private fun getOrgUnitBySelectedDate(selectedDate: Date): OrganisationUnit? {
+        val dateDBFormat = DateUtils.databaseDateFormat().format(selectedDate)
+        val orgUnits = eventInitialRepository.filteredOrgUnits(
+            dateDBFormat,
+            programUid,
+            null
+        ).blockingFirst()
+
+        getCurrentOrgUnit()?.let { currentOrgUnitUid ->
+            return orgUnits.find { it.uid().equals(currentOrgUnitUid) }
+        }
+
+        if (orgUnits.size == 1) {
+            return when (creationType) {
+                ADDNEW,
+                DEFAULT -> orgUnits.firstOrNull()
+                else -> null
+            }
+        }
+        return null
     }
 
     private fun getStoredOrgUnit(selectedOrgUnit: String?): OrganisationUnit? {
