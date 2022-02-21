@@ -158,7 +158,7 @@ public class HelpManager {
         FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_search_3_v2))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.enrollmentButton))
+                .focusOn(activity.findViewById(R.id.searchButton))
                 .closeOnTouch(true)
                 .build();
         FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)

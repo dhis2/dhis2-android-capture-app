@@ -77,6 +77,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
@@ -198,16 +199,26 @@ public class SearchRepositoryImpl implements SearchRepository {
         );
 
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
+
             String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
             String dataValue = searchParametersModel.getQueryData().get(dataId);
-            boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
-            if (isUnique) {
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
-            } else if (dataValue.contains("_os_")) {
-                dataValue = dataValue.split("_os_")[1];
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
-            } else
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+
+
+            boolean isTETypeAttribute = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(teiType)
+                    .byTrackedEntityAttributeUid().eq(dataId).one().blockingExists();
+
+            if (searchParametersModel.getSelectedProgram() != null || isTETypeAttribute) {
+
+                boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet().unique();
+                if (isUnique) {
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+                } else if (dataValue.contains("_os_")) {
+                    dataValue = dataValue.split("_os_")[1];
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+                } else
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+            }
         }
 
         return trackedEntityInstanceQuery;

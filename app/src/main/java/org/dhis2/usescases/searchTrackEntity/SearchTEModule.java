@@ -8,7 +8,6 @@ import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
@@ -23,12 +22,12 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.form.ui.FieldViewModelFactory;
-import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
@@ -99,23 +98,18 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTEContractsModule.Presenter providePresenter(D2 d2,
-                                                       DhisMapUtils mapUtils,
                                                        SearchRepository searchRepository,
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
-                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection,
-                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SearchMessageMapper searchMessageMapper) {
-        return new SearchTEPresenter(view, d2, mapUtils, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection, mapCoordinateFieldToFeatureCollection,
-                new EventToEventUiComponent(), preferenceProvider,
+        return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
+                analyticsHelper, initialProgram, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, searchMessageMapper, initialQuery);
+                matomoAnalyticsController, searchMessageMapper);
     }
 
     @Provides
@@ -164,7 +158,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEIRepository searchTEIRepository(D2 d2){
+    SearchTEIRepository searchTEIRepository(D2 d2) {
         return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
     }
 
@@ -280,7 +274,22 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTeiViewModelFactory providesViewModelFactory(SearchRepository searchRepository){
-        return new SearchTeiViewModelFactory(searchRepository, initialProgram);
+    SearchTeiViewModelFactory providesViewModelFactory(SearchRepository searchRepository,
+                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
+                                                       DhisMapUtils mapUtils,
+                                                       NetworkUtils networkUtils) {
+        return new SearchTeiViewModelFactory(
+                searchRepository,
+                initialProgram,
+                initialQuery,
+                mapTeisToFeatureCollection,
+                mapTeiEventsToFeatureCollection,
+                mapCoordinateFieldToFeatureCollection,
+                new EventToEventUiComponent(),
+                mapUtils,
+                networkUtils
+        );
     }
 }

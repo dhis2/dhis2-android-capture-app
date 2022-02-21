@@ -43,17 +43,11 @@ public class SearchTEContractsModule {
 
         void clearList(String uid);
 
-        void clearData();
-
-        void showFilterProgress();
-
         void setTutorial();
 
         void setProgramColor(String data, String programUid);
 
         String fromRelationshipTEI();
-
-        void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
         void setFabIcon(boolean needsSearch);
 
@@ -71,13 +65,7 @@ public class SearchTEContractsModule {
 
         void clearFilters();
 
-        void updateFiltersSearch(int totalFilters);
-
-        void setMap(TrackerMapData trackerMapData);
-
         Consumer<D2Progress> downloadProgress();
-
-        boolean isMapVisible();
 
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
 
@@ -98,6 +86,8 @@ public class SearchTEContractsModule {
         void updateNavigationBar();
 
         void displayMinNumberOfAttributesMessage(int minAttributes);
+
+        void showSyncDialog(String teiUid);
     }
 
     public interface Presenter {
@@ -111,8 +101,6 @@ public class SearchTEContractsModule {
         void onBackClick();
 
         void onClearClick();
-
-        void onFabClick(boolean needsSearch);
 
         void onEnrollClick();
 
@@ -138,8 +126,6 @@ public class SearchTEContractsModule {
 
         SearchMessageResult getMessage(List<SearchTeiModel> list);
 
-        HashMap<String, String> getQueryData();
-
         void onSyncIconClick(String teiUid);
 
         void showFilter();
@@ -150,21 +136,13 @@ public class SearchTEContractsModule {
 
         void clearFilterClick();
 
-        void closeFilterClick();
-
         void getMapData();
 
-        void getListData();
-
         Drawable getSymbolIcon();
-
-        void getEnrollmentMapData();
 
         Drawable getEnrollmentSymbolIcon();
 
         HashMap<String, StageStyle> getProgramStageStyle();
-
-        String nameOUByUid(String uid);
 
         int getTEIColor();
 
@@ -172,13 +150,7 @@ public class SearchTEContractsModule {
 
         void checkFilters(boolean listResultIsOk);
 
-        void restoreQueryData(HashMap<String, String> queryData);
-
         void deleteRelationship(String relationshipUid);
-
-        SearchTeiModel getTeiInfo(String teiUid);
-
-        EventUiComponentModel getEventInfo(String eventUid, String teiUid);
 
         void setProgramForTesting(Program program);
 
@@ -190,12 +162,7 @@ public class SearchTEContractsModule {
 
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
 
-        boolean selectedProgramMinNumberOfAttributesCheck();
-
         void setAttributesEmpty(Boolean attributesEmpty);
 
-        void processQuery(RowAction action);
-
-        void refreshData();
     }
 }
