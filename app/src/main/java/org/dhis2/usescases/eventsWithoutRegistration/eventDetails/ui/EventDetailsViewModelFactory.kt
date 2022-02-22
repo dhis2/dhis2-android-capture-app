@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
@@ -15,6 +16,7 @@ class EventDetailsViewModelFactory(
     private val configureEventReportDate: ConfigureEventReportDate,
     private val configureOrgUnit: ConfigureOrgUnit,
     private val configureEventCoordinates: ConfigureEventCoordinates,
+    private val configureEventCatCombo: ConfigureEventCatCombo,
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?
 ) : ViewModelProvider.Factory {
@@ -25,6 +27,7 @@ class EventDetailsViewModelFactory(
             configureEventReportDate,
             configureOrgUnit,
             configureEventCoordinates,
+            configureEventCatCombo,
             configureEventTemp,
             periodType
         ) as T

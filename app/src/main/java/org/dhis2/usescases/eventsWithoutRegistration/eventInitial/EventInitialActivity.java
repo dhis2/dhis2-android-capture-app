@@ -22,7 +22,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
@@ -46,7 +45,6 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
-import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
@@ -61,11 +59,8 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
-import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.customviews.CatOptionPopUp;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -375,8 +370,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         program.completeEventsExpiryDays(),
                         program.expiryPeriodType(),
                         program.expiryDays()) || eventModel.status() == EventStatus.COMPLETED || eventModel.status() == EventStatus.SKIPPED)) {
-            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
-                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.temp.setEnabled(false);
             if (presenter.isEventEditable()) {
                 binding.actionButton.setText(getString(R.string.action_close));
@@ -444,81 +437,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setCatComboOptions(CategoryCombo catCombo, List<CategoryOptionCombo> categoryOptionCombos, Map<String, CategoryOption> stringCategoryOptionMap) {
-
-        runOnUiThread(() -> {
-            this.catCombo = catCombo;
-            if (stringCategoryOptionMap != null)
-                selectedCatOption = stringCategoryOptionMap;
-
-            binding.catComboLayout.removeAllViews();
-
-            if (!catCombo.isDefault() && catCombo.categories() != null)
-                for (Category category : catCombo.categories()) {
-                    CategorySelectorBinding catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this));
-                    catSelectorBinding.catCombLayout.setHint(category.displayName());
-                    catSelectorBinding.catCombo.setOnClickListener(view -> {
-                                if (presenter.catOptionSize(category.uid()) > CategoryDialog.DEFAULT_COUNT_LIMIT) {
-                                    showCategoryDialog(category, categoryOptionCombos, catSelectorBinding);
-                                } else {
-                                    showCategoryPopUp(category, categoryOptionCombos, catSelectorBinding);
-                                }
-                            }
-                    );
-
-                    if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
-                        catSelectorBinding.catCombo.setText(stringCategoryOptionMap.get(category.uid()).displayName());
-                    catSelectorBinding.getRoot().setEnabled(accessData);
-                    binding.catComboLayout.addView(catSelectorBinding.getRoot());
-                }
-            else if (catCombo.isDefault())
-                catOptionComboUid = categoryOptionCombos.get(0).uid();
-
-            checkActionButtonVisibility();
-        });
     }
 
-    private void showCategoryDialog(Category category, List<CategoryOptionCombo> categoryOptionCombos, CategorySelectorBinding catSelectorBinding) {
-        new CategoryDialog(
-                CategoryDialog.Type.CATEGORY_OPTIONS,
-                category.uid(),
-                true,
-                selectedDate,
-                selectedOption -> {
-                    CategoryOption categoryOption = presenter.getCatOption(selectedOption);
-                    selectedCatOption.put(category.uid(), categoryOption);
-                    catSelectorBinding.catCombo.setText(categoryOption.displayName());
-                    if (selectedCatOption.size() == catCombo.categories().size()) {
-                        catOptionComboUid = presenter.getCatOptionCombo(catCombo.uid(), categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
-                        checkActionButtonVisibility();
-                    }
-                    return null;
-                }
-        ).show(getSupportFragmentManager(),
-                CategoryDialog.Companion.getTAG());
-    }
-
-    private void showCategoryPopUp(Category category, List<CategoryOptionCombo> categoryOptionCombos, CategorySelectorBinding catSelectorBinding) {
-        new CatOptionPopUp(
-                this,
-                catSelectorBinding.getRoot(),
-                category.displayName(),
-                presenter.getCatOptions(category.uid()),
-                true,
-                selectedDate,
-                categoryOption -> {
-                    if (categoryOption != null)
-                        selectedCatOption.put(category.uid(), categoryOption);
-                    else
-                        selectedCatOption.remove(category.uid());
-                    catSelectorBinding.catCombo.setText(categoryOption != null ? categoryOption.displayName() : null);
-                    if (selectedCatOption.size() == catCombo.categories().size()) {
-                        catOptionComboUid = presenter.getCatOptionCombo(catCombo.uid(), categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
-                        checkActionButtonVisibility();
-                    }
-                    return Unit.INSTANCE;
-                }
-        ).show();
-    }
 
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
@@ -579,8 +499,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setAccessDataWrite(Boolean canWrite) {
         this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
-            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
-                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.action_close));
             binding.executePendingBindings();
         }

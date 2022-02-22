@@ -8,6 +8,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
@@ -81,6 +82,11 @@ class EventDetailsModule(
             ConfigureEventCoordinates(
                 d2 = d2,
                 programStageId = programStageUid
+            ),
+            ConfigureEventCatCombo(
+                eventInitialRepository = eventInitialRepository,
+                programUid = programId,
+                eventUid = eventUid
             ),
             ConfigureEventTemp(
                 creationType = eventCreationType

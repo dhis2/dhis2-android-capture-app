@@ -113,11 +113,14 @@ class ConfigureOrgUnit(
                     return orgUnit
                 }
         }
-        eventInitialRepository.event(eventUid).blockingFirst()?.let { event ->
-            eventInitialRepository.getOrganisationUnit(event.organisationUnit()).blockingFirst()
-                .let {
-                    return it
-                }
+
+        eventUid?.let { eventId ->
+            eventInitialRepository.event(eventId).blockingFirst()?.let { event ->
+                eventInitialRepository.getOrganisationUnit(event.organisationUnit()).blockingFirst()
+                    .let { orgUnit ->
+                        return orgUnit
+                    }
+            }
         }
 
         val currentOrgUnit = getCurrentOrgUnit() ?: initialOrgUnitUid

@@ -6,16 +6,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
+import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Calendar
 import java.util.Date
@@ -25,6 +29,7 @@ class EventDetailsViewModel(
     private val configureEventReportDate: ConfigureEventReportDate,
     private val configureOrgUnit: ConfigureOrgUnit,
     configureEventCoordinates: ConfigureEventCoordinates,
+    private val configureEventCatCombo: ConfigureEventCatCombo,
     configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?
 ) : ViewModel() {
@@ -32,6 +37,8 @@ class EventDetailsViewModel(
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
+    var showCategoryDialog: ((category: EventCategory) -> Unit)? = null
+    var showCategoryPopUp: ((category: EventCategory) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails?> = MutableStateFlow(null)
     val eventDetails: StateFlow<EventDetails?> get() = _eventDetails
@@ -46,6 +53,9 @@ class EventDetailsViewModel(
         MutableStateFlow(EventCoordinates())
     val eventCoordinates: StateFlow<EventCoordinates> get() = _eventCoordinates
 
+    private val _eventCatCombo: MutableStateFlow<EventCatCombo> = MutableStateFlow(EventCatCombo())
+    val eventCatCombo: StateFlow<EventCatCombo> get() = _eventCatCombo
+
     private val _eventTemp: MutableStateFlow<EventTemp> = MutableStateFlow(EventTemp())
     val eventTemp: StateFlow<EventTemp> get() = _eventTemp
 
@@ -54,13 +64,13 @@ class EventDetailsViewModel(
             _eventDetails.value = configureEventDetails()
 
             _eventDate.value = configureEventReportDate()
+            _eventCoordinates.value = configureEventCoordinates()
+            _eventCatCombo.value = configureEventCatCombo()
+            _eventTemp.value = configureEventTemp()
             eventDate.collect {
                 eventDate
                 _eventOrgUnit.value = configureOrgUnit(eventDate.value.currentDate)
             }
-
-            _eventCoordinates.value = configureEventCoordinates()
-            _eventTemp.value = configureEventTemp()
         }
     }
 
@@ -99,6 +109,20 @@ class EventDetailsViewModel(
     fun onOrgUnitSet(selectedOrgUnit: String, selectedOrgUnitName: String?) {
         viewModelScope.launch {
             _eventOrgUnit.value = configureOrgUnit.invoke(selectedOrgUnit = selectedOrgUnit)
+        }
+    }
+
+    fun onCategoryOptionSelected(categoryOption: Pair<String, String?>) {
+        viewModelScope.launch {
+            _eventCatCombo.value = configureEventCatCombo.invoke(categoryOption)
+        }
+    }
+
+    fun onCatComboClick(category: EventCategory) {
+        if (category.optionsSize > DEFAULT_COUNT_LIMIT) {
+            showCategoryDialog?.invoke(category)
+        } else {
+            showCategoryPopUp?.invoke(category)
         }
     }
 }

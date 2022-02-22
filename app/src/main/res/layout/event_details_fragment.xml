@@ -151,7 +151,10 @@
                     android:id="@+id/catComboLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:enabled="@{viewModel.eventDetails.enabled}"
+                    android:orientation="vertical"
+                    app:setViewModel="@{viewModel}"
+                    app:setCatCombo="@{viewModel.eventCatCombo}" />
 
                 <include
                     android:id="@+id/coordinateField"

@@ -15,6 +15,7 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.EVENT_CREATION_TYPE
@@ -24,6 +25,9 @@ import org.dhis2.utils.Constants.EVENT_UID
 import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PROGRAM_STAGE_UID
 import org.dhis2.utils.Constants.PROGRAM_UID
+import org.dhis2.utils.category.CategoryDialog
+import org.dhis2.utils.category.CategoryDialog.Companion.TAG
+import org.dhis2.utils.customviews.CatOptionPopUp
 import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.period.PeriodType
@@ -76,61 +80,107 @@ class EventDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.showCalendar = {
-            val dialog = CalendarPicker(requireContext())
-            dialog.setInitialDate(viewModel.eventDate.value.currentDate)
-            dialog.setMinDate(viewModel.eventDate.value.minDate)
-            dialog.setMaxDate(viewModel.eventDate.value.maxDate)
-            dialog.setScheduleInterval(viewModel.eventDate.value.scheduleInterval)
-            dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
-            dialog.setListener(
-                object : OnDatePickerListener {
-                    override fun onNegativeClick() {}
-                    override fun onPositiveClick(datePicker: DatePicker) {
-                        viewModel.onDateSet(
-                            datePicker.year,
-                            datePicker.month,
-                            datePicker.dayOfMonth
-                        )
-                    }
-                }
-            )
-            dialog.show()
+            showCalendarDialog()
         }
 
         viewModel.showPeriods = {
-            PeriodDialog()
-                .setPeriod(viewModel.eventDate.value.periodType)
-                .setMinDate(viewModel.eventDate.value.minDate)
-                .setMaxDate(viewModel.eventDate.value.maxDate)
-                .setPossitiveListener { selectedDate: Date ->
-                    viewModel.onDateSet(selectedDate)
-                }
-                .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+            showPeriodDialog()
         }
 
         viewModel.showOrgUnits = {
-            val dialog = OrgUnitDialog.getInstace()
-                .setTitle(
-                    viewModel.eventOrgUnit.value.selectedOrgUnit?.displayName()
-                        ?: getString(R.string.org_unit)
-                )
-                .setMultiSelection(false)
-                .setOrgUnits(viewModel.eventOrgUnit.value.orgUnits)
-                .setProgram(viewModel.eventOrgUnit.value.programUid)
-
-            dialog.setPossitiveListener {
-                viewModel.onOrgUnitSet(
-                    dialog.selectedOrgUnit,
-                    dialog.selectedOrgUnitName
-                )
-                dialog.dismiss()
-            }
-            dialog.setNegativeListener { dialog.dismiss() }
-            dialog.setNodeClickListener { node: TreeNode, _: Any? ->
-                if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
-            }
-            dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
+            showOrgUnitDialog()
         }
+
+        viewModel.showCategoryDialog = { category ->
+            showCategoryDialog(category)
+        }
+
+        viewModel.showCategoryPopUp = { category ->
+            showCategoryPopUp(category)
+        }
+    }
+
+    private fun showCalendarDialog() {
+        val dialog = CalendarPicker(requireContext())
+        dialog.setInitialDate(viewModel.eventDate.value.currentDate)
+        dialog.setMinDate(viewModel.eventDate.value.minDate)
+        dialog.setMaxDate(viewModel.eventDate.value.maxDate)
+        dialog.setScheduleInterval(viewModel.eventDate.value.scheduleInterval)
+        dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
+        dialog.setListener(
+            object : OnDatePickerListener {
+                override fun onNegativeClick() {}
+                override fun onPositiveClick(datePicker: DatePicker) {
+                    viewModel.onDateSet(
+                        datePicker.year,
+                        datePicker.month,
+                        datePicker.dayOfMonth
+                    )
+                }
+            }
+        )
+        dialog.show()
+    }
+
+    private fun showPeriodDialog() {
+        PeriodDialog()
+            .setPeriod(viewModel.eventDate.value.periodType)
+            .setMinDate(viewModel.eventDate.value.minDate)
+            .setMaxDate(viewModel.eventDate.value.maxDate)
+            .setPossitiveListener { selectedDate: Date ->
+                viewModel.onDateSet(selectedDate)
+            }
+            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+    }
+
+    private fun showOrgUnitDialog() {
+        val dialog = OrgUnitDialog.getInstace()
+            .setTitle(
+                viewModel.eventOrgUnit.value.selectedOrgUnit?.displayName()
+                    ?: getString(R.string.org_unit)
+            )
+            .setMultiSelection(false)
+            .setOrgUnits(viewModel.eventOrgUnit.value.orgUnits)
+            .setProgram(viewModel.eventOrgUnit.value.programUid)
+
+        dialog.setPossitiveListener {
+            viewModel.onOrgUnitSet(
+                dialog.selectedOrgUnit,
+                dialog.selectedOrgUnitName
+            )
+            dialog.dismiss()
+        }
+        dialog.setNegativeListener { dialog.dismiss() }
+        dialog.setNodeClickListener { node: TreeNode, _: Any? ->
+            if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
+        }
+        dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
+    }
+
+    private fun showCategoryPopUp(category: EventCategory) {
+        CatOptionPopUp(
+            requireContext(),
+            binding.catComboLayout,
+            category.name,
+            category.options,
+            true,
+            viewModel.eventDate.value.currentDate
+        ) { categoryOption ->
+            val selectedOption = Pair(category.uid, categoryOption?.uid())
+            viewModel.onCategoryOptionSelected(selectedOption)
+        }.show()
+    }
+
+    private fun showCategoryDialog(category: EventCategory) {
+        CategoryDialog(
+            CategoryDialog.Type.CATEGORY_OPTIONS,
+            category.uid,
+            true,
+            viewModel.eventDate.value.currentDate
+        ) { categoryOption ->
+            val selectedOption = Pair(category.uid, categoryOption)
+            viewModel.onCategoryOptionSelected(selectedOption)
+        }.show(requireActivity().supportFragmentManager, TAG)
     }
 
     private fun getEventCreationType(typeString: String?): EventCreationType {

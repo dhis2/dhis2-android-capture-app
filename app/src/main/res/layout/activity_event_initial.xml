@@ -121,12 +121,7 @@
                     <!--Edition-->
                     <!--DATE-->
                     <!--ORG UNIT-->
-
-                    <LinearLayout
-                        android:id="@+id/catComboLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                    <!--Cat Combo -->
 
                     <include
                         android:id="@+id/coordinateField"
