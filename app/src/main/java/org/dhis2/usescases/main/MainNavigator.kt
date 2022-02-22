@@ -133,11 +133,18 @@ class MainNavigator(
 
     fun openTroubleShooting(languageSelectorOpened: Boolean = false) {
         beginTransaction(
-            TroubleshootingFragment.instance(languageSelectorOpened), MainScreen.TROUBLESHOOTING
+            fragment = TroubleshootingFragment.instance(languageSelectorOpened),
+            screen = MainScreen.TROUBLESHOOTING,
+            useFadeInTransition = languageSelectorOpened
         )
     }
 
-    private fun beginTransaction(fragment: Fragment, screen: MainScreen, sharedView: View? = null) {
+    private fun beginTransaction(
+        fragment: Fragment,
+        screen: MainScreen,
+        sharedView: View? = null,
+        useFadeInTransition: Boolean = false
+    ) {
         if (currentScreen != screen) {
             onTransitionStart()
             currentScreen = screen
@@ -145,11 +152,21 @@ class MainNavigator(
             val transaction: FragmentTransaction = fragmentManager.beginTransaction()
             transaction.apply {
                 if (sharedView == null) {
+                    val (enterAnimation, exitAnimation) = if (useFadeInTransition) {
+                        Pair(android.R.anim.fade_in, android.R.anim.fade_out)
+                    } else {
+                        Pair(R.anim.fragment_enter_right, R.anim.fragment_exit_left)
+                    }
+                    val (enterPopAnimation, exitPopAnimation) = if (useFadeInTransition) {
+                        Pair(android.R.anim.fade_in, android.R.anim.fade_out)
+                    } else {
+                        Pair(R.anim.fragment_enter_left, R.anim.fragment_exit_right)
+                    }
                     setCustomAnimations(
-                        R.anim.fragment_enter_right,
-                        R.anim.fragment_exit_left,
-                        R.anim.fragment_enter_left,
-                        R.anim.fragment_exit_right
+                        enterAnimation,
+                        exitAnimation,
+                        enterPopAnimation,
+                        exitPopAnimation
                     )
                 } else {
                     setReorderingAllowed(true)

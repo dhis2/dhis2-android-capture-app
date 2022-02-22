@@ -1,5 +1,6 @@
 package org.dhis2.usescases.troubleshooting
 
+import android.R
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -78,5 +79,6 @@ class TroubleshootingFragment : FragmentGlobalAbstract() {
             )
         )
         requireActivity().finish()
+        requireActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 }

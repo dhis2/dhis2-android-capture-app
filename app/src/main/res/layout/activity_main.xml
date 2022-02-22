@@ -184,6 +184,7 @@
                 android:background="@color/bg_white_fdf"
                 app:headerLayout="@layout/header_menu"
                 app:itemIconTint="@color/icon_color_989"
+                app:itemMaxLines="2"
                 app:itemTextColor="@color/text_black_333"
                 app:menu="@menu/main_menu" />
 
