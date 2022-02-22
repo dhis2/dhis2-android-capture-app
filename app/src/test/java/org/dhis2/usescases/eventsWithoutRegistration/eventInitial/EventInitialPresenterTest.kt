@@ -669,7 +669,7 @@ class EventInitialPresenterTest {
         }
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)
-        whenever(eventInitialRepository.getGeometryModel(uid, null)) doReturn Single.just(
+        whenever(eventInitialRepository.getGeometryModel(uid)) doReturn Single.just(
             FieldUiModelImpl(
                 uid = "id",
                 layoutId = 1,

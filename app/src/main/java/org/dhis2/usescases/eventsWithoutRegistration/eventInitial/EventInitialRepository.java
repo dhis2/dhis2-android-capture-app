@@ -99,7 +99,7 @@ public interface EventInitialRepository {
 
     Flowable<Result<RuleEffect>> calculate();
 
-    Single<FieldUiModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor);
+    Single<FieldUiModel> getGeometryModel(String programUid);
 
     Flowable<EventEditableStatus> getEditableStatus();
 

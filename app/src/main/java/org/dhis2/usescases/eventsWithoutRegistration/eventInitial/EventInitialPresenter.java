@@ -112,7 +112,7 @@ public class EventInitialPresenter {
         );
 
         compositeDisposable.add(
-                eventInitialRepository.getGeometryModel(programId, null)
+                eventInitialRepository.getGeometryModel(programId)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

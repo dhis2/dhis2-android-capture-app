@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -28,10 +29,11 @@ class EventDetailsViewModel(
     configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
     private val configureOrgUnit: ConfigureOrgUnit,
-    configureEventCoordinates: ConfigureEventCoordinates,
+    private val configureEventCoordinates: ConfigureEventCoordinates,
     private val configureEventCatCombo: ConfigureEventCatCombo,
     configureEventTemp: ConfigureEventTemp,
-    private val periodType: PeriodType?
+    private val periodType: PeriodType?,
+    private val geometryController: GeometryController
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -64,7 +66,6 @@ class EventDetailsViewModel(
             _eventDetails.value = configureEventDetails()
 
             _eventDate.value = configureEventReportDate()
-            _eventCoordinates.value = configureEventCoordinates()
             _eventCatCombo.value = configureEventCatCombo()
             _eventTemp.value = configureEventTemp()
             eventDate.collect {
@@ -72,6 +73,7 @@ class EventDetailsViewModel(
                 _eventOrgUnit.value = configureOrgUnit(eventDate.value.currentDate)
             }
         }
+        setupCoordinates()
     }
 
     fun onFieldChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -123,6 +125,25 @@ class EventDetailsViewModel(
             showCategoryDialog?.invoke(category)
         } else {
             showCategoryPopUp?.invoke(category)
+        }
+    }
+
+    private fun setupCoordinates() {
+        viewModelScope.launch {
+            _eventCoordinates.value = configureEventCoordinates()
+            eventCoordinates.collect { eventCoordinates ->
+                eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
+                    updateCoordinates = { value ->
+
+                    },
+                    currentLocation = { fieldUid ->
+
+                    },
+                    mapRequest = { fieldUid, featureType, initCoordinate ->
+
+                    }
+                ))
+            }
         }
     }
 }

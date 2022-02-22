@@ -161,6 +161,7 @@
                     layout="@layout/form_coordinate_custom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:item="@{viewModel.eventCoordinates.model}"
                     android:visibility="@{viewModel.eventCoordinates.active ? View.VISIBLE:View.GONE}" />
 
                 <RadioGroup

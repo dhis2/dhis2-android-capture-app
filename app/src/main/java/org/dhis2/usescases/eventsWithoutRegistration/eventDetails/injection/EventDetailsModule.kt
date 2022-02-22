@@ -8,6 +8,8 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -43,12 +45,19 @@ class EventDetailsModule(
 
     @Provides
     @PerFragment
+    fun provideGeometryController(): GeometryController {
+        return GeometryController(GeometryParserImpl())
+    }
+
+    @Provides
+    @PerFragment
     fun eventDetailsViewModelFactory(
         d2: D2,
         eventInitialRepository: EventInitialRepository,
         resourcesProvider: EventDetailResourcesProvider,
         periodUtils: DhisPeriodUtils,
-        preferencesProvider: PreferenceProvider
+        preferencesProvider: PreferenceProvider,
+        geometryController: GeometryController
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -81,7 +90,9 @@ class EventDetailsModule(
             ),
             ConfigureEventCoordinates(
                 d2 = d2,
-                programStageId = programStageUid
+                programId = programId,
+                programStageId = programStageUid,
+                eventInitialRepository = eventInitialRepository
             ),
             ConfigureEventCatCombo(
                 eventInitialRepository = eventInitialRepository,
@@ -91,7 +102,8 @@ class EventDetailsModule(
             ConfigureEventTemp(
                 creationType = eventCreationType
             ),
-            periodType = periodType
+            periodType = periodType,
+            geometryController = geometryController
         )
     }
 }
