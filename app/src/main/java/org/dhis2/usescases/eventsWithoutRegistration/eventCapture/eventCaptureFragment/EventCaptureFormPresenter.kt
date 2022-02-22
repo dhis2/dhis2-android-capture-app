@@ -6,9 +6,14 @@ import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.event.EventEditableStatus
 
 class EventCaptureFormPresenter(
-    private val activityPresenter: EventCaptureContract.Presenter
+    private val view: EventCaptureFormView,
+    private val activityPresenter: EventCaptureContract.Presenter,
+    private val d2: D2,
+    private val eventUid: String
 ) {
 
     fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
@@ -37,6 +42,16 @@ class EventCaptureFormPresenter(
                 emptyList(),
                 emptyMap()
             )
+        }
+    }
+
+    fun showOrHideSaveButton() {
+        val isEditable =
+            d2.eventModule().eventService().getEditableStatus(eventUid = eventUid).blockingGet()
+        if (isEditable is EventEditableStatus.Editable){
+            view.showSaveButton()
+        } else {
+            view.hideSaveButton()
         }
     }
 }
