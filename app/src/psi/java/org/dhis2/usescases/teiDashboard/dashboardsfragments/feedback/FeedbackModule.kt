@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.data.forms.RulesRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository
@@ -30,7 +31,7 @@ class FeedbackModule(
         feedbackProgramRepository: FeedbackProgramRepository,
         preferenceProvider: PreferenceProvider
     ): FeedbackPresenter {
-        return FeedbackPresenter(feedbackProgramRepository,preferenceProvider)
+        return FeedbackPresenter(feedbackProgramRepository, preferenceProvider)
     }
 
     @Provides
@@ -41,6 +42,12 @@ class FeedbackModule(
         getEnrollmentInfo: GetEnrollmentInfo
     ): FeedbackContentPresenter {
         return FeedbackContentPresenter(getFeedback, getSystemInfo, getEnrollmentInfo)
+    }
+
+    @Provides
+    @PerActivity
+    fun rulesRepository(d2: D2): RulesRepository {
+        return RulesRepository(d2)
     }
 
     @Provides
@@ -79,8 +86,11 @@ class FeedbackModule(
 
     @Provides
     @PerActivity
-    fun provideValuesRepository(d2: D2): ValuesRepository {
-        return ValuesD2Repository(d2, context)
+    fun provideValuesRepository(
+        d2: D2,
+        rulesRepository: RulesRepository
+    ): ValuesRepository {
+        return ValuesD2Repository(d2, context, rulesRepository)
     }
 
     @Provides
