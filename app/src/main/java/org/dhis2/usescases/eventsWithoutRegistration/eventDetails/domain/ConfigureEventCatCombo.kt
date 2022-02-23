@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
@@ -16,17 +18,19 @@ class ConfigureEventCatCombo(
 
     private var selectedCategoryOptions = mapOf<String, CategoryOption?>()
 
-    operator fun invoke(categoryOption: Pair<String, String?>? = null): EventCatCombo {
+    operator fun invoke(categoryOption: Pair<String, String?>? = null): Flow<EventCatCombo> {
         categoryOption?.let {
             updateSelectedOptions(it)
         }
         getCategoryCombo().apply {
-            return EventCatCombo(
-                uid = getCatComboUid(uid(), isDefault ?: false),
-                isDefault = isDefault ?: false,
-                categories = getCategories(categories()),
-                categoryOptions = getCategoryOptions(),
-                selectedCategoryOptions = selectedCategoryOptions
+            return flowOf(
+                EventCatCombo(
+                    uid = getCatComboUid(uid(), isDefault ?: false),
+                    isDefault = isDefault ?: false,
+                    categories = getCategories(categories()),
+                    categoryOptions = getCategoryOptions(),
+                    selectedCategoryOptions = selectedCategoryOptions
+                )
             )
         }
     }

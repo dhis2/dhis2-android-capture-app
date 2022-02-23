@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
@@ -18,14 +20,16 @@ class ConfigureEventDetails(
     private val resourcesProvider: EventDetailResourcesProvider
 ) {
 
-    operator fun invoke(): EventDetails {
-        return EventDetails(
-            name = getProgramStageById().displayName(),
-            description = getProgramStageById().displayDescription(),
-            style = getStyleByProgramId(),
-            enabled = isEnable(),
-            isEditable = isEditable(),
-            editableReason = getEditableReason()
+    operator fun invoke(): Flow<EventDetails> {
+        return flowOf(
+            EventDetails(
+                name = getProgramStageById().displayName(),
+                description = getProgramStageById().displayDescription(),
+                style = getStyleByProgramId(),
+                enabled = isEnable(),
+                isEditable = isEditable(),
+                editableReason = getEditableReason()
+            )
         )
     }
 
@@ -55,7 +59,7 @@ class ConfigureEventDetails(
         d2.programModule().programStages().uid(programStageId).blockingGet()
 
     private fun isEnable(): Boolean {
-        if  (!isEditable()) return false
+        if (!isEditable()) return false
         getStoredEvent()?.let { event ->
             val program = getProgram()!!
             val isExpired = org.dhis2.utils.DateUtils.getInstance().isEventExpired(

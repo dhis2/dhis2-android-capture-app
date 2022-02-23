@@ -2,9 +2,11 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.location.LocationProvider
@@ -76,62 +78,78 @@ class EventDetailsViewModel(
         setUpEventReportDate()
         setUpCategoryCombo()
         setUpCoordinates()
-        setupEventTemp()
+        setUpEventTemp()
     }
 
     private fun setUpEventDetails() {
         viewModelScope.launch {
-            _eventDetails.value = configureEventDetails()
+            configureEventDetails()
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    _eventDetails.value = it
+                }
         }
     }
 
-    private fun setUpEventReportDate() {
+    fun setUpEventReportDate(selectedDate: Date? = null) {
         viewModelScope.launch {
-            _eventDate.value = configureEventReportDate()
-            eventDate.collect {
-                setUpOrgUnit(it.currentDate)
-            }
+            configureEventReportDate(selectedDate)
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    _eventDate.value = it
+                    setUpOrgUnit(selectedDate = it.currentDate)
+                }
         }
     }
 
-    private fun setUpOrgUnit(currentDate: Date?) {
+    fun setUpOrgUnit(
+        selectedDate: Date? = null,
+        selectedOrgUnit: String? = null
+    ) {
         viewModelScope.launch {
-            _eventOrgUnit.value = configureOrgUnit(currentDate)
+            configureOrgUnit(selectedDate, selectedOrgUnit)
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    _eventOrgUnit.value = it
+                }
         }
     }
 
-    private fun setUpCategoryCombo() {
+    fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
         viewModelScope.launch {
-            _eventCatCombo.value = configureEventCatCombo()
+            configureEventCatCombo(categoryOption)
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    _eventCatCombo.value = it
+                }
         }
     }
 
     private fun setUpCoordinates(value: String? = null) {
         viewModelScope.launch {
-            _eventCoordinates.value = configureEventCoordinates(value)
-            eventCoordinates.collect { eventCoordinates ->
-                eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
-                    updateCoordinates = { value ->
-                        setUpCoordinates(value)
-                    },
-                    currentLocation = {
-                        requestCurrentLocation()
-                    },
-                    mapRequest = { _, featureType, initCoordinate ->
-                        requestLocationByMap?.invoke(featureType, initCoordinate)
-                    }
-                ))
-            }
+            configureEventCoordinates(value)
+                .flowOn(Dispatchers.IO)
+                .collect { eventCoordinates ->
+                    eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
+                        updateCoordinates = { value ->
+                            setUpCoordinates(value)
+                        },
+                        currentLocation = {
+                            requestCurrentLocation()
+                        },
+                        mapRequest = { _, featureType, initCoordinate ->
+                            requestLocationByMap?.invoke(featureType, initCoordinate)
+                        }
+                    ))
+                    _eventCoordinates.value = eventCoordinates
+                }
         }
     }
 
-    fun setupEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
+    fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
         if (isChecked) {
             _eventTemp.value = configureEventTemp(status)
         }
-    }
-
-    fun onFieldChanged(s: CharSequence, start: Int, before: Int, count: Int) {
     }
 
     fun onDateClick() {
@@ -145,33 +163,12 @@ class EventDetailsViewModel(
         calendar[year, month, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
         val selectedDate = calendar.time
-        onDateSet(selectedDate)
-    }
-
-    fun onDateSet(selectedDate: Date) {
-        viewModelScope.launch {
-            _eventDate.value = configureEventReportDate(selectedDate)
-            eventDate.collect { eventDate ->
-                _eventOrgUnit.value = configureOrgUnit(eventDate.currentDate)
-            }
-        }
+        setUpEventReportDate(selectedDate)
     }
 
     fun onOrgUnitClick() {
         if (!_eventOrgUnit.value.fixed) {
             showOrgUnits?.invoke()
-        }
-    }
-
-    fun onOrgUnitSet(selectedOrgUnit: String, selectedOrgUnitName: String?) {
-        viewModelScope.launch {
-            _eventOrgUnit.value = configureOrgUnit.invoke(selectedOrgUnit = selectedOrgUnit)
-        }
-    }
-
-    fun onCategoryOptionSelected(categoryOption: Pair<String, String?>) {
-        viewModelScope.launch {
-            _eventCatCombo.value = configureEventCatCombo.invoke(categoryOption)
         }
     }
 

@@ -173,7 +173,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             .setMinDate(viewModel.eventDate.value.minDate)
             .setMaxDate(viewModel.eventDate.value.maxDate)
             .setPossitiveListener { selectedDate: Date ->
-                viewModel.onDateSet(selectedDate)
+                viewModel.setUpEventReportDate(selectedDate)
             }
             .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
     }
@@ -189,10 +189,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             .setProgram(viewModel.eventOrgUnit.value.programUid)
 
         dialog.setPossitiveListener {
-            viewModel.onOrgUnitSet(
-                dialog.selectedOrgUnit,
-                dialog.selectedOrgUnitName
-            )
+            viewModel.setUpOrgUnit(selectedOrgUnit = dialog.selectedOrgUnit)
             dialog.dismiss()
         }
         dialog.setNegativeListener { dialog.dismiss() }
@@ -212,7 +209,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             viewModel.eventDate.value.currentDate
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption?.uid())
-            viewModel.onCategoryOptionSelected(selectedOption)
+            viewModel.setUpCategoryCombo(selectedOption)
         }.show()
     }
 
@@ -224,7 +221,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             viewModel.eventDate.value.currentDate
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption)
-            viewModel.onCategoryOptionSelected(selectedOption)
+            viewModel.setUpCategoryCombo(selectedOption)
         }.show(requireActivity().supportFragmentManager, TAG)
     }
 

@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
@@ -13,10 +15,12 @@ class ConfigureEventCoordinates(
     private val eventInitialRepository: EventInitialRepository
 ) {
 
-    operator fun invoke(value: String? = null): EventCoordinates {
-        return EventCoordinates(
-            active = isActive(),
-            model = getGeometryModel(value)
+    operator fun invoke(value: String? = null): Flow<EventCoordinates> {
+        return flowOf(
+            EventCoordinates(
+                active = isActive(),
+                model = getGeometryModel(value)
+            )
         )
     }
 

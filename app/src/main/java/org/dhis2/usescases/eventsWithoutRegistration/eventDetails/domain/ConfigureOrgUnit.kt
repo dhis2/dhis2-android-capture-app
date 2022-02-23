@@ -1,6 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import android.text.TextUtils.isEmpty
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.ADDNEW
 import org.dhis2.commons.data.EventCreationType.DEFAULT
@@ -26,14 +28,16 @@ class ConfigureOrgUnit(
     operator fun invoke(
         selectedDate: Date? = null,
         selectedOrgUnit: String? = null
-    ): EventOrgUnit {
-        return EventOrgUnit(
-            visible = isVisible(),
-            enable = isEnable(),
-            fixed = isFixed(),
-            selectedOrgUnit = getSelectedOrgUnit(selectedDate, selectedOrgUnit),
-            orgUnits = getOrgUnitsByProgramId(),
-            programUid = programUid
+    ): Flow<EventOrgUnit> {
+        return flowOf(
+            EventOrgUnit(
+                visible = isVisible(),
+                enable = isEnable(),
+                fixed = isFixed(),
+                selectedOrgUnit = getSelectedOrgUnit(selectedDate, selectedOrgUnit),
+                orgUnits = getOrgUnitsByProgramId(),
+                programUid = programUid
+            )
         )
     }
 

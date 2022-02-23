@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.ADDNEW
 import org.dhis2.commons.data.EventCreationType.DEFAULT
@@ -30,17 +32,19 @@ class ConfigureEventReportDate(
     private val scheduleInterval: Int = 0
 ) {
 
-    operator fun invoke(selectedDate: Date? = null): EventDate {
-        return EventDate(
-            active = isActive(),
-            label = getLabel(),
-            dateValue = getDateValue(selectedDate),
-            currentDate = getDate(selectedDate),
-            minDate = getMinDate(),
-            maxDate = getMaxDate(),
-            scheduleInterval = getScheduleInterval(),
-            allowFutureDates = getAllowFutureDates(),
-            periodType = periodType
+    operator fun invoke(selectedDate: Date? = null): Flow<EventDate> {
+        return flowOf(
+            EventDate(
+                active = isActive(),
+                label = getLabel(),
+                dateValue = getDateValue(selectedDate),
+                currentDate = getDate(selectedDate),
+                minDate = getMinDate(),
+                maxDate = getMaxDate(),
+                scheduleInterval = getScheduleInterval(),
+                allowFutureDates = getAllowFutureDates(),
+                periodType = periodType
+            )
         )
     }
 

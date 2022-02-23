@@ -120,7 +120,6 @@
                             android:enabled="@{viewModel.eventDetails.enabled}"
                             android:focusable="false"
                             android:onClick="@{() -> viewModel.onDateClick()}"
-                            android:onTextChanged="@{viewModel::onFieldChanged}"
                             android:text="@{viewModel.eventDate.dateValue}"
                             android:textSize="15sp" />
 
@@ -143,7 +142,6 @@
                         android:enabled="@{viewModel.eventDetails.enabled}"
                         android:focusable="false"
                         android:onClick="@{() -> viewModel.onOrgUnitClick()}"
-                        android:onTextChanged="@{viewModel::onFieldChanged}"
                         android:text="@{viewModel.eventOrgUnit.selectedOrgUnit.displayName}"
                         android:textSize="15sp" />
 
@@ -180,7 +178,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onCheckedChanged="@{(view, checked)->viewModel.setupEventTemp(EventTempStatus.ONE_TIME ,checked)}"
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.ONE_TIME ,checked)}"
                         android:text="@string/one_time"
                         app:buttonTint="@color/text_black_333" />
 
@@ -189,7 +187,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onCheckedChanged="@{(view, checked)->viewModel.setupEventTemp(EventTempStatus.PERMANENT ,checked)}"
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.PERMANENT ,checked)}"
                         android:text="@string/permanent"
                         app:buttonTint="@color/text_black_333" />
 
