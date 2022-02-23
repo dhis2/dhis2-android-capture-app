@@ -24,13 +24,16 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.junit.Before
 import org.junit.Test
@@ -171,6 +174,52 @@ class EnrollmentPresenterImplTest {
         whenever(enrollmentFormRepository.getProfilePicture()) doReturn path
         presenter.onTeiImageHeaderClick()
         verify(enrollmentView, never()).displayTeiPicture(path)
+    }
+
+    @Test
+    fun `Should show save button when the enrollment is editable`() {
+        val geometry = Geometry.builder()
+            .coordinates("[-30.00, 11.00]")
+            .type(FeatureType.POINT)
+            .build()
+        val tei = TrackedEntityInstance.builder().geometry(geometry).uid("random").build()
+        val program = Program.builder().uid("tUID").build()
+
+        whenever(teiRepository.blockingGet()) doReturn tei
+        whenever(programRepository.blockingGet()) doReturn program
+        whenever(d2.enrollmentModule()) doReturn mock()
+        whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollmentService()
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+        ) doReturn EnrollmentAccess.WRITE_ACCESS
+
+        presenter.showOrHideSaveButton()
+
+        verify(enrollmentView).setSaveButtonVisible(true)
+    }
+
+    @Test
+    fun `Should hide save button when the enrollment is not editable`() {
+        val geometry = Geometry.builder()
+            .coordinates("[-30.00, 11.00]")
+            .type(FeatureType.POINT)
+            .build()
+        val tei = TrackedEntityInstance.builder().geometry(geometry).uid("random").build()
+        val program = Program.builder().uid("tUID").build()
+
+        whenever(teiRepository.blockingGet()) doReturn tei
+        whenever(programRepository.blockingGet()) doReturn program
+        whenever(d2.enrollmentModule()) doReturn mock()
+        whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollmentService()
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+        ) doReturn EnrollmentAccess.NO_ACCESS
+
+        presenter.showOrHideSaveButton()
+
+        verify(enrollmentView).setSaveButtonVisible(false)
     }
 
     private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
