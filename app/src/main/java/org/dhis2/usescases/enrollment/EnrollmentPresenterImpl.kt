@@ -189,8 +189,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid)
-                .blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -271,7 +270,7 @@ class EnrollmentPresenterImpl(
         val programUid = getProgram().uid()
         val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
             .blockingGetEnrollmentAccess(teiUid, programUid)
-        if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS){
+        if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS) {
             view.setSaveButtonVisible(visible = true)
         } else {
             view.setSaveButtonVisible(visible = false)

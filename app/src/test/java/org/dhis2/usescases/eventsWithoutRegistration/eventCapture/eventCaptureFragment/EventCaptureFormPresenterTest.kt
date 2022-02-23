@@ -25,7 +25,7 @@ class EventCaptureFormPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = EventCaptureFormPresenter(view, activityPresenter,d2, eventUid)
+        presenter = EventCaptureFormPresenter(view, activityPresenter, d2, eventUid)
     }
 
     @Test
@@ -66,11 +66,13 @@ class EventCaptureFormPresenterTest {
     }
 
     @Test
-    fun `Should show save button when event is editable`(){
+    fun `Should show save button when event is editable`() {
         val editableStatus = EventEditableStatus.Editable()
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
-        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(editableStatus)
+        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
+            editableStatus
+        )
 
         presenter.showOrHideSaveButton()
 
@@ -78,11 +80,14 @@ class EventCaptureFormPresenterTest {
     }
 
     @Test
-    fun `Should hide save button when event is not editable`(){
-        val editableStatus = EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
+    fun `Should hide save button when event is not editable`() {
+        val editableStatus =
+            EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
-        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(editableStatus)
+        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
+            editableStatus
+        )
 
         presenter.showOrHideSaveButton()
 
