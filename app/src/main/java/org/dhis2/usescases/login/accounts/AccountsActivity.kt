@@ -46,7 +46,6 @@ class AccountsActivity : ActivityGlobalAbstract() {
     }
 
     companion object {
-        const val MAX_ACCOUNTS = 3
         const val RESULT_ACCOUNT = 133
     }
 }

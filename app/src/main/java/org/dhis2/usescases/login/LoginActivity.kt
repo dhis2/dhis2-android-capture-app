@@ -444,18 +444,21 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_ACCOUNT) {
-            binding.serverUrlEdit.setText(
-                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol()
+            setAccount(
+                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
+                result.data?.extras?.getString(USER)
             )
-            binding.userNameEdit.setText(result.data?.extras?.getString(USER))
         }
     }
 
-    private fun showManageAccountsButton() {
-        binding.manageAccounts.visibility = View.VISIBLE
-        binding.manageAccounts.setOnClickListener {
-            requestAccount.launch(Intent(this, AccountsActivity::class.java))
-        }
+    private fun setAccount(serverUrl: String, userName: String?) {
+        binding.serverUrlEdit.setText(serverUrl)
+        binding.userNameEdit.setText(userName)
+        binding.serverUrlEdit.isEnabled = false
+        binding.userNameEdit.isEnabled = false
+        binding.clearUrl.visibility = View.GONE
+        binding.clearUserNameButton.visibility = View.GONE
+        binding.userPassEdit.setText("")
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
@@ -522,5 +525,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         activity?.let {
             startActivity(Intent(it, PolicyView::class.java))
         }
+    }
+
+    override fun openAccountsActivity() {
+        requestAccount.launch(Intent(this, AccountsActivity::class.java))
     }
 }

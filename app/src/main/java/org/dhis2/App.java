@@ -43,6 +43,7 @@ import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
@@ -139,6 +140,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         boolean isLogged = false;
         try {
             D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+            d2Configuration.userModule().accountManager().setMaxAccounts(Constants.MAX_ACCOUNTS);
             isLogged = d2Configuration.userModule().isLogged().blockingGet();
         } catch (Exception e) {
             appComponent.injectCrashReportController().trackError(e, e.getMessage());
