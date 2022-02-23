@@ -48,7 +48,7 @@ class EventCaptureFormPresenter(
     fun showOrHideSaveButton() {
         val isEditable =
             d2.eventModule().eventService().getEditableStatus(eventUid = eventUid).blockingGet()
-        if (isEditable is EventEditableStatus.Editable){
+        if (isEditable is EventEditableStatus.Editable) {
             view.showSaveButton()
         } else {
             view.hideSaveButton()

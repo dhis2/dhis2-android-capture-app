@@ -16,8 +16,7 @@ class EventCaptureFormModule(
     @PerFragment
     fun providePresenter(
         activityPresenter: EventCaptureContract.Presenter,
-        d2: D2,
-        eventUid: String
+        d2: D2
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(
             view,
