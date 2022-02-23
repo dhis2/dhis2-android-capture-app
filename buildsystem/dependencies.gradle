@@ -4,7 +4,7 @@ ext {
             tools : "30.0.3",
             minSdk: 19,
             vCode: 104,
-            vName: "2.4.3-eyeseetea-fork-1"
+            vName: "2.4.3-eyeseetea-fork-2"
     ]
     libraries = [
             //DHIS2
