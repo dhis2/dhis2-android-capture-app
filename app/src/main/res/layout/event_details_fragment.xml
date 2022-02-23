@@ -10,6 +10,8 @@
 
         <import type="org.hisp.dhis.android.core.common.FeatureType" />
 
+        <import type="org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus" />
+
         <variable
             name="viewModel"
             type="org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModel" />
@@ -153,29 +155,32 @@
                     android:layout_height="wrap_content"
                     android:enabled="@{viewModel.eventDetails.enabled}"
                     android:orientation="vertical"
-                    app:setViewModel="@{viewModel}"
-                    app:setCatCombo="@{viewModel.eventCatCombo}" />
+                    app:setCatCombo="@{viewModel.eventCatCombo}"
+                    app:setViewModel="@{viewModel}" />
 
                 <include
                     android:id="@+id/coordinateField"
                     layout="@layout/form_coordinate_custom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:item="@{viewModel.eventCoordinates.model}"
-                    android:visibility="@{viewModel.eventCoordinates.active ? View.VISIBLE:View.GONE}" />
+                    android:visibility="@{viewModel.eventCoordinates.active ? View.VISIBLE:View.GONE}"
+                    app:item="@{viewModel.eventCoordinates.model}" />
 
                 <RadioGroup
                     android:id="@+id/temp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:orientation="horizontal">
+                    android:enabled="@{viewModel.eventDetails.enabled}"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.eventTemp.active ? View.VISIBLE:View.GONE}">
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/one_time"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setupEventTemp(EventTempStatus.ONE_TIME ,checked)}"
                         android:text="@string/one_time"
                         app:buttonTint="@color/text_black_333" />
 
@@ -184,6 +189,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setupEventTemp(EventTempStatus.PERMANENT ,checked)}"
                         android:text="@string/permanent"
                         app:buttonTint="@color/text_black_333" />
 

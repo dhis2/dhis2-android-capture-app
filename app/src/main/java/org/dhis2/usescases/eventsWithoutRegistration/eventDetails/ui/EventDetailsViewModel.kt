@@ -22,6 +22,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -31,12 +32,12 @@ import java.util.Calendar
 import java.util.Date
 
 class EventDetailsViewModel(
-    configureEventDetails: ConfigureEventDetails,
+    private val configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
     private val configureOrgUnit: ConfigureOrgUnit,
     private val configureEventCoordinates: ConfigureEventCoordinates,
     private val configureEventCatCombo: ConfigureEventCatCombo,
-    configureEventTemp: ConfigureEventTemp,
+    private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider
@@ -71,18 +72,63 @@ class EventDetailsViewModel(
     val eventTemp: StateFlow<EventTemp> get() = _eventTemp
 
     init {
+        setUpEventDetails()
+        setUpEventReportDate()
+        setUpCategoryCombo()
+        setUpCoordinates()
+        setupEventTemp()
+    }
+
+    private fun setUpEventDetails() {
         viewModelScope.launch {
             _eventDetails.value = configureEventDetails()
+        }
+    }
 
+    private fun setUpEventReportDate() {
+        viewModelScope.launch {
             _eventDate.value = configureEventReportDate()
-            _eventCatCombo.value = configureEventCatCombo()
-            _eventTemp.value = configureEventTemp()
             eventDate.collect {
-                eventDate
-                _eventOrgUnit.value = configureOrgUnit(eventDate.value.currentDate)
+                setUpOrgUnit(it.currentDate)
             }
         }
-        setupCoordinates()
+    }
+
+    private fun setUpOrgUnit(currentDate: Date?) {
+        viewModelScope.launch {
+            _eventOrgUnit.value = configureOrgUnit(currentDate)
+        }
+    }
+
+    private fun setUpCategoryCombo() {
+        viewModelScope.launch {
+            _eventCatCombo.value = configureEventCatCombo()
+        }
+    }
+
+    private fun setUpCoordinates(value: String? = null) {
+        viewModelScope.launch {
+            _eventCoordinates.value = configureEventCoordinates(value)
+            eventCoordinates.collect { eventCoordinates ->
+                eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
+                    updateCoordinates = { value ->
+                        setUpCoordinates(value)
+                    },
+                    currentLocation = {
+                        requestCurrentLocation()
+                    },
+                    mapRequest = { _, featureType, initCoordinate ->
+                        requestLocationByMap?.invoke(featureType, initCoordinate)
+                    }
+                ))
+            }
+        }
+    }
+
+    fun setupEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
+        if (isChecked) {
+            _eventTemp.value = configureEventTemp(status)
+        }
     }
 
     fun onFieldChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -137,25 +183,6 @@ class EventDetailsViewModel(
         }
     }
 
-    private fun setupCoordinates(value: String? = null) {
-        viewModelScope.launch {
-            _eventCoordinates.value = configureEventCoordinates(value)
-            eventCoordinates.collect { eventCoordinates ->
-                eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
-                    updateCoordinates = { value ->
-                        setupCoordinates(value)
-                    },
-                    currentLocation = {
-                        requestCurrentLocation()
-                    },
-                    mapRequest = { _, featureType, initCoordinate ->
-                        requestLocationByMap?.invoke(featureType, initCoordinate)
-                    }
-                ))
-            }
-        }
-    }
-
     fun requestCurrentLocation() {
         locationProvider.getLastKnownLocation(
             onNewLocation = { location ->
@@ -163,7 +190,7 @@ class EventDetailsViewModel(
                 val latitude = location.latitude.truncate()
                 val geometry =
                     GeometryHelper.createPointGeometry(longitude, latitude)
-                setupCoordinates(geometry.coordinates())
+                setUpCoordinates(geometry.coordinates())
             },
             onPermissionNeeded = {
                 requestLocationPermissions?.invoke()
@@ -179,6 +206,6 @@ class EventDetailsViewModel(
             featureType,
             coordinates
         )
-        geometry?.let { setupCoordinates(it.coordinates()) }
+        geometry?.let { setUpCoordinates(it.coordinates()) }
     }
 }

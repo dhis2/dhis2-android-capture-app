@@ -1,24 +1,19 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.ONE_TIME;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
@@ -27,7 +22,6 @@ import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,7 +33,6 @@ import org.dhis2.R;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.commons.extensions.DoubleExtensionsKt;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
@@ -48,8 +41,6 @@ import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.form.ui.intent.FormIntent;
-import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -60,11 +51,9 @@ import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -209,7 +198,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         eventDetailsFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.formViewContainer, eventDetailsFragment).commit();
+        transaction.replace(R.id.fragmentDetailsContainer, eventDetailsFragment).commit();
 
         initActionButton();
         binding.actionButton.setEnabled(true);
@@ -271,24 +260,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void setUpScreenByCreationType() {
-
-        if (eventCreationType == EventCreationType.REFERAL) {
-            binding.temp.setVisibility(View.VISIBLE);
-            binding.oneTime.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    tempCreate = ONE_TIME;
-                }
-                checkActionButtonVisibility();
-            });
-            binding.permanent.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    tempCreate = PERMANENT;
-                }
-                checkActionButtonVisibility();
-            });
-        } else {
-            binding.temp.setVisibility(View.GONE);
-        }
 
         if (eventUid == null) {
             binding.actionButton.setText(R.string.next);
@@ -370,7 +341,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         program.completeEventsExpiryDays(),
                         program.expiryPeriodType(),
                         program.expiryDays()) || eventModel.status() == EventStatus.COMPLETED || eventModel.status() == EventStatus.SKIPPED)) {
-            binding.temp.setEnabled(false);
             if (presenter.isEventEditable()) {
                 binding.actionButton.setText(getString(R.string.action_close));
             } else {
@@ -594,7 +564,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
 
-
     @Override
     public void setNewGeometry(String value) {
 
@@ -608,7 +577,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 
     }
 

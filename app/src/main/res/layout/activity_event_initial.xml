@@ -107,52 +107,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <FrameLayout
+                    android:id="@+id/fragmentDetailsContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent" />
 
-                    <FrameLayout
-                        android:id="@+id/formViewContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-
-                    <!-- Header-->
-                    <!--Edition-->
-                    <!--DATE-->
-                    <!--ORG UNIT-->
-                    <!--Cat Combo -->
-                    <!--Coordinates -->
-
-                    <RadioGroup
-                        android:id="@+id/temp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
-                        android:orientation="horizontal">
-
-                        <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/one_time"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/one_time"
-                            app:buttonTint="@color/text_black_333" />
-
-                        <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/permanent"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/permanent"
-                            app:buttonTint="@color/text_black_333" />
-
-                    </RadioGroup>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp" />
-                </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
             <Button
