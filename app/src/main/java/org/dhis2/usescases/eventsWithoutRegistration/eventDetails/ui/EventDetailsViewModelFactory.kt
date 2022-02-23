@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -20,7 +21,8 @@ class EventDetailsViewModelFactory(
     private val configureEventCatCombo: ConfigureEventCatCombo,
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
-    private val geometryController: GeometryController
+    private val geometryController: GeometryController,
+    private val locationProvider: LocationProvider
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -32,7 +34,8 @@ class EventDetailsViewModelFactory(
             configureEventCatCombo,
             configureEventTemp,
             periodType,
-            geometryController
+            geometryController,
+            locationProvider
         ) as T
     }
 }

@@ -13,15 +13,17 @@ class ConfigureEventCoordinates(
     private val eventInitialRepository: EventInitialRepository
 ) {
 
-    operator fun invoke(): EventCoordinates {
+    operator fun invoke(value: String? = null): EventCoordinates {
         return EventCoordinates(
             active = isActive(),
-            model = getGeometryModel()
+            model = getGeometryModel(value)
         )
     }
 
-    private fun getGeometryModel(): FieldUiModel {
-        return eventInitialRepository.getGeometryModel(programId).blockingGet()
+    private fun getGeometryModel(value: String?): FieldUiModel {
+        var model = eventInitialRepository.getGeometryModel(programId).blockingGet()
+        value?.let { model = model.setValue(it) }
+        return model
     }
 
     private fun isActive(): Boolean {

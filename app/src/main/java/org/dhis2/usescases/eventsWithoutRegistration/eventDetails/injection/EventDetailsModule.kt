@@ -8,6 +8,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
@@ -57,7 +58,8 @@ class EventDetailsModule(
         resourcesProvider: EventDetailResourcesProvider,
         periodUtils: DhisPeriodUtils,
         preferencesProvider: PreferenceProvider,
-        geometryController: GeometryController
+        geometryController: GeometryController,
+        locationProvider: LocationProvider
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -103,7 +105,8 @@ class EventDetailsModule(
                 creationType = eventCreationType
             ),
             periodType = periodType,
-            geometryController = geometryController
+            geometryController = geometryController,
+            locationProvider = locationProvider
         )
     }
 }

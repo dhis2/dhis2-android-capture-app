@@ -590,46 +590,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setGeometryModel(FieldUiModel geometryModel) {
-        setGeometryCallback(geometryModel);
-        if (binding.coordinateField != null) {
-            binding.coordinateField.setItem(geometryModel);
-        }
+
     }
 
-    private void setGeometryCallback(FieldUiModel geometryModel) {
-        currentGeometryModel = geometryModel;
-        geometryModel.setCallback(geometryController.getCoordinatesCallback(
-                value -> {
-                    presenter.setChangingCoordinates(true);
-                    setNewGeometry(value);
-                    setGeometryModel(geometryModel.setValue(value));
-                    return Unit.INSTANCE;
-                },
-                fieldUid -> {
-                    requestLocation();
-                    return Unit.INSTANCE;
-                },
-                (fieldUid, featureType, initialCoordinates) -> {
-                    startActivityForResult(
-                            MapSelectorActivity.Companion.create(EventInitialActivity.this,
-                                    FeatureType.valueOfFeatureType(featureType),
-                                    initialCoordinates),
-                            RQ_MAP_LOCATION_VIEW);
-                    return Unit.INSTANCE;
-                }
-        ));
-    }
+
 
     @Override
     public void setNewGeometry(String value) {
-        if (value != null) {
-            this.newGeometry = Geometry.builder()
-                    .coordinates(value)
-                    .type(programStage.featureType())
-                    .build();
-        } else {
-            this.newGeometry = null;
-        }
+
     }
 
     @Override
@@ -639,51 +607,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == RQ_MAP_LOCATION_VIEW && data != null && data.getExtras() != null) {
-            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
-            String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-            Geometry geometry = geometryController.generateLocationFromCoordinates(locationType, dataExtra);
-            currentGeometryModel.invokeIntent(new FormIntent.SaveCurrentLocation(
-                    currentGeometryModel.getUid(),
-                    geometry == null ? null : geometry.coordinates(),
-                    FeatureType.POINT.name()
-            ));
 
-        } else {
             super.onActivityResult(requestCode, resultCode, data);
-        }
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
-        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            requestLocation();
-        }
-    }
-
-    private void requestLocation() {
-        locationProvider.getLastKnownLocation(
-                location -> {
-                    double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
-                    double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
-                    Geometry geometry = GeometryHelper.createPointGeometry(longitude, latitude);
-                    currentGeometryModel.invokeIntent(new FormIntent.SaveCurrentLocation(
-                            currentGeometryModel.getUid(),
-                            geometry == null ? null : geometry.coordinates(),
-                            FeatureType.POINT.name()
-                    ));
-                    return Unit.INSTANCE;
-                },
-                () -> {
-                    ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            ACCESS_LOCATION_PERMISSION_REQUEST);
-                    return Unit.INSTANCE;
-                },
-                () -> {
-                    displayMessage(getString(R.string.enable_location_message));
-                    return Unit.INSTANCE;
-                });
     }
 
     @Override

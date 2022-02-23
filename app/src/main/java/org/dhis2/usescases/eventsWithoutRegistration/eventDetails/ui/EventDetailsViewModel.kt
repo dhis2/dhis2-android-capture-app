@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.dhis2.commons.extensions.truncate
+import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -21,6 +23,9 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Calendar
 import java.util.Date
@@ -33,7 +38,8 @@ class EventDetailsViewModel(
     private val configureEventCatCombo: ConfigureEventCatCombo,
     configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
-    private val geometryController: GeometryController
+    private val geometryController: GeometryController,
+    private val locationProvider: LocationProvider
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -41,6 +47,9 @@ class EventDetailsViewModel(
     var showOrgUnits: (() -> Unit)? = null
     var showCategoryDialog: ((category: EventCategory) -> Unit)? = null
     var showCategoryPopUp: ((category: EventCategory) -> Unit)? = null
+    var requestLocationPermissions: (() -> Unit)? = null
+    var showEnableLocationMessage: (() -> Unit)? = null
+    var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails?> = MutableStateFlow(null)
     val eventDetails: StateFlow<EventDetails?> get() = _eventDetails
@@ -128,22 +137,48 @@ class EventDetailsViewModel(
         }
     }
 
-    private fun setupCoordinates() {
+    private fun setupCoordinates(value: String? = null) {
         viewModelScope.launch {
-            _eventCoordinates.value = configureEventCoordinates()
+            _eventCoordinates.value = configureEventCoordinates(value)
             eventCoordinates.collect { eventCoordinates ->
                 eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
                     updateCoordinates = { value ->
-
+                        setupCoordinates(value)
                     },
-                    currentLocation = { fieldUid ->
-
+                    currentLocation = {
+                        requestCurrentLocation()
                     },
-                    mapRequest = { fieldUid, featureType, initCoordinate ->
-
+                    mapRequest = { _, featureType, initCoordinate ->
+                        requestLocationByMap?.invoke(featureType, initCoordinate)
                     }
                 ))
             }
         }
+    }
+
+    fun requestCurrentLocation() {
+        locationProvider.getLastKnownLocation(
+            onNewLocation = { location ->
+                val longitude = location.longitude.truncate()
+                val latitude = location.latitude.truncate()
+                val geometry =
+                    GeometryHelper.createPointGeometry(longitude, latitude)
+                setupCoordinates(geometry.coordinates())
+            },
+            onPermissionNeeded = {
+                requestLocationPermissions?.invoke()
+            },
+            onLocationDisabled = {
+                showEnableLocationMessage?.invoke()
+            }
+        )
+    }
+
+    fun onLocationByMapSelected(featureType: FeatureType, coordinates: String?) {
+        val geometry: Geometry? = geometryController.generateLocationFromCoordinates(
+            featureType,
+            coordinates
+        )
+        geometry?.let { setupCoordinates(it.coordinates()) }
     }
 }

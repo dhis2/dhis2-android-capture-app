@@ -1,12 +1,14 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
+import android.Manifest
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.unnamed.b.atv.model.TreeNode
 import org.dhis2.R
@@ -14,9 +16,11 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.EventDetailsFragmentBinding
+import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.EVENT_CREATION_TYPE
 import org.dhis2.utils.Constants.EVENT_PERIOD_TYPE
@@ -30,14 +34,35 @@ import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.CatOptionPopUp
 import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 import javax.inject.Inject
 
-class EventDetailsFragment : Fragment() {
+class EventDetailsFragment : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var factory: EventDetailsViewModelFactory
+
+    private val requestLocationPermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { result ->
+            if (result.values.all { isGranted -> isGranted }) {
+                viewModel.requestCurrentLocation()
+            }
+        }
+
+    private val requestLocationByMap =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data?.extras != null
+            ) {
+                val featureType: String =
+                    result.data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)!!
+                val coordinates = result.data?.getStringExtra(MapSelectorActivity.DATA_EXTRA)
+                viewModel.onLocationByMapSelected(FeatureType.valueOf(featureType), coordinates)
+            }
+        }
 
     private val viewModel: EventDetailsViewModel by viewModels {
         factory
@@ -97,6 +122,26 @@ class EventDetailsFragment : Fragment() {
 
         viewModel.showCategoryPopUp = { category ->
             showCategoryPopUp(category)
+        }
+
+        viewModel.requestLocationPermissions = {
+            requestLocationPermissions.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+            )
+        }
+
+        viewModel.requestLocationByMap = { featureType, initCoordinate ->
+            requestLocationByMap.launch(
+                MapSelectorActivity.create(
+                    requireActivity(),
+                    FeatureType.valueOfFeatureType(featureType),
+                    initCoordinate
+                )
+            )
+        }
+
+        viewModel.showEnableLocationMessage = {
+            displayMessage(getString(R.string.enable_location_message))
         }
     }
 
