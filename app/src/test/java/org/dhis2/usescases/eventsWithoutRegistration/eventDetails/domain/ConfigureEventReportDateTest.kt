@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -17,7 +19,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ConfigureEventReportDateUnitTest {
+class ConfigureEventReportDateTest {
 
     private val resourcesProvider: EventDetailResourcesProvider = mock {
         on { provideDueDate() } doReturn DUE_DATE
@@ -35,8 +37,8 @@ class ConfigureEventReportDateUnitTest {
     private lateinit var configureEventReportDate: ConfigureEventReportDate
 
     @Test
-    fun shouldReturnStoredEventInfoWhenExistingEvent() {
-        //Given Existing event
+    fun `Should return stored event info when existing event`() = runBlocking {
+        // Given Existing event
         configureEventReportDate = ConfigureEventReportDate(
             eventId = EVENT_ID,
             programStageId = PROGRAM_STAGE_ID,
@@ -45,7 +47,7 @@ class ConfigureEventReportDateUnitTest {
             periodUtils = periodUtils
         )
 
-        //And has a concrete date
+        // And has a concrete date
         val expectedDate = "14/2/2022"
 
         val event: Event = mock {
@@ -53,49 +55,49 @@ class ConfigureEventReportDateUnitTest {
         }
         whenever(eventInitialRepository.event(EVENT_ID)) doReturn Observable.just(event)
 
-        //When reportDate is invoked
-        configureEventReportDate.invoke().apply {
-            //Then report date should be active
-            assert(active)
-            //Then stored date should be displayed
-            assert(dateValue == expectedDate)
-            //Then default label should be displayed
-            assert(label == EVENT_DATE)
-        }
+        // When reportDate is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+
+        // Then report date should be active
+        assert(eventDate.active)
+        // Then stored date should be displayed
+        assert(eventDate.dateValue == expectedDate)
+        // Then default label should be displayed
+        assert(eventDate.label == EVENT_DATE)
     }
 
     @Test
-    fun shouldReturnCurrentDayWhenNewEvent() {
-        //Given the creation of new event
+    fun `Should return current day when new event`() = runBlocking {
+        // Given the creation of new event
         configureEventReportDate = ConfigureEventReportDate(
             programStageId = PROGRAM_STAGE_ID,
             resourceProvider = resourcesProvider,
             eventInitialRepository = eventInitialRepository,
             periodUtils = periodUtils
         )
-        //When reportDate is invoked
-        configureEventReportDate.invoke().apply {
 
-            //Then report date should be active
-            assert(active)
-            //Then reportDate should be the current day
-            assert(dateValue == getCurrentDay())
-            //Then default label should be displayed
-            assert(label == EVENT_DATE)
-        }
+        // When reportDate is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+
+        // Then report date should be active
+        assert(eventDate.active)
+        // Then reportDate should be the current day
+        assert(eventDate.dateValue == getCurrentDay())
+        // Then default label should be displayed
+        assert(eventDate.label == EVENT_DATE)
     }
 
     @Test
-    fun shouldReturnTomorrowWhenNewDailyEvent() {
-        //Given the creation of new event
-        //And periodType is daily
+    fun `Should return tomorrow when new daily event`() = runBlocking {
+        // Given the creation of new event
+        // And periodType is daily
         val periodType = PeriodType.Daily
         configureEventReportDate = ConfigureEventReportDate(
             programStageId = PROGRAM_STAGE_ID,
             resourceProvider = resourcesProvider,
             eventInitialRepository = eventInitialRepository,
             periodType = periodType,
-            periodUtils = periodUtils,
+            periodUtils = periodUtils
         )
 
         val tomorrow = "16/2/2022"
@@ -104,16 +106,16 @@ class ConfigureEventReportDateUnitTest {
             periodUtils.getPeriodUIString(any(), any(), any())
         ) doReturn tomorrow
 
-        //When reportDate is invoked
-        configureEventReportDate.invoke().apply {
-            //Then date should be tomorrow
-            assert(dateValue == tomorrow)
-        }
+        // When reportDate is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+
+        // Then date should be tomorrow
+        assert(eventDate.dateValue == tomorrow)
     }
 
     @Test
-    fun getNextPeriodWhenCreatingScheduledEvent() {
-        //Given the creation of new scheduled event
+    fun `Get next period when creating scheduled event`() = runBlocking {
+        // Given the creation of new scheduled event
         configureEventReportDate = ConfigureEventReportDate(
             programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
@@ -132,16 +134,16 @@ class ConfigureEventReportDateUnitTest {
             eventInitialRepository.getMinDaysFromStartByProgramStage(PROGRAM_STAGE_ID)
         ) doReturn 6
 
-        //When reportDate is invoked
-        configureEventReportDate.invoke().apply {
-            //Then date should be next period
-            assert(dateValue == nextEventDate)
-        }
+        // When reportDate is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+
+        // Then date should be next period
+        assert(eventDate.dateValue == nextEventDate)
     }
 
     @Test
-    fun shouldHideFieldWhenScheduled() {
-        //Given an scheduled event
+    fun `Should hide field when scheduled`() = runBlocking {
+        // Given an scheduled event
         configureEventReportDate = ConfigureEventReportDate(
             programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
@@ -151,7 +153,7 @@ class ConfigureEventReportDateUnitTest {
             enrollmentId = ENROLLMENT_ID
         )
 
-        //And with hidden due date
+        // And with hidden due date
         whenever(programStage.hideDueDate()) doReturn true
         whenever(programStage.dueDateLabel()) doReturn DUE_DATE
 
@@ -166,17 +168,17 @@ class ConfigureEventReportDateUnitTest {
             eventInitialRepository.programStageWithId(PROGRAM_STAGE_ID)
         ) doReturn Observable.just(programStage)
 
-        //When report date is invoked
-        configureEventReportDate.invoke().apply {
-            //Then report date should be hidden
-            assertFalse(active)
-            assert(label == DUE_DATE)
-        }
+        // When report date is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+
+        // Then report date should be hidden
+        assertFalse(eventDate.active)
+        assert(eventDate.label == DUE_DATE)
     }
 
     @Test
-    fun `should allow future dates when event type is scheduled`() {
-        //Given an schedule event
+    fun `Should allow future dates when event type is scheduled`() = runBlocking {
+        // Given an schedule event
         configureEventReportDate = ConfigureEventReportDate(
             programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
@@ -193,11 +195,10 @@ class ConfigureEventReportDateUnitTest {
             eventInitialRepository.getMinDaysFromStartByProgramStage(PROGRAM_STAGE_ID)
         ) doReturn 6
 
-        //When report date is invoked
-        configureEventReportDate.invoke().apply {
-            //Then future dates should be allowed
-            assertTrue(allowFutureDates)
-        }
+        // When report date is invoked
+        val eventDate = configureEventReportDate.invoke().first()
+        // Then future dates should be allowed
+        assertTrue(eventDate.allowFutureDates)
     }
 
     private fun getCurrentDay() = DateUtils.getInstance().formatDate(DateUtils.getInstance().today)
