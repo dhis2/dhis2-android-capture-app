@@ -71,7 +71,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     private boolean backDropActive;
     private String programUid;
-    private boolean recreationActivity = false;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
     private ProgramEventDetailViewModel programEventsViewModel;
