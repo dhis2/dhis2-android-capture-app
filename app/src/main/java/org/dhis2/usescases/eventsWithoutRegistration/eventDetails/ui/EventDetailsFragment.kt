@@ -12,6 +12,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.unnamed.b.atv.model.TreeNode
+import java.util.Date
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
@@ -39,8 +41,6 @@ import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.period.PeriodType
-import java.util.Date
-import javax.inject.Inject
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
 

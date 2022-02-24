@@ -73,7 +73,9 @@ class ConfigureEventCatCombo(
         return null
     }
 
-    private fun updateSelectedOptions(categoryOption: Pair<String, String?>?): Map<String, CategoryOption?> {
+    private fun updateSelectedOptions(
+        categoryOption: Pair<String, String?>?
+    ): Map<String, CategoryOption?> {
         categoryOption?.let { pair ->
             val copy = selectedCategoryOptions.toMutableMap()
             copy[pair.first] = pair.second?.let { categoryOptionId ->

@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import android.text.TextUtils.isEmpty
+import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -14,7 +15,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOr
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import java.util.Date
 
 class ConfigureOrgUnit(
     private val creationType: EventCreationType,
@@ -42,7 +42,6 @@ class ConfigureOrgUnit(
     }
 
     private fun isEnable(): Boolean {
-
         if (getStoredEvent() != null) {
             return false
         }

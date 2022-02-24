@@ -2,6 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.util.Calendar
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +32,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
-import java.util.Calendar
-import java.util.Date
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -90,7 +90,7 @@ class EventDetailsViewModel(
                 catOptionComboUid = eventCatCombo.value.uid,
                 isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
-                tempCreate = eventTemp.value.status?.name,
+                tempCreate = eventTemp.value.status?.name
             )
                 .flowOn(Dispatchers.IO)
                 .collect {
@@ -141,17 +141,19 @@ class EventDetailsViewModel(
             configureEventCoordinates(value)
                 .flowOn(Dispatchers.IO)
                 .collect { eventCoordinates ->
-                    eventCoordinates.model?.setCallback(geometryController.getCoordinatesCallback(
-                        updateCoordinates = { value ->
-                            setUpCoordinates(value)
-                        },
-                        currentLocation = {
-                            requestCurrentLocation()
-                        },
-                        mapRequest = { _, featureType, initCoordinate ->
-                            requestLocationByMap?.invoke(featureType, initCoordinate)
-                        }
-                    ))
+                    eventCoordinates.model?.setCallback(
+                        geometryController.getCoordinatesCallback(
+                            updateCoordinates = { value ->
+                                setUpCoordinates(value)
+                            },
+                            currentLocation = {
+                                requestCurrentLocation()
+                            },
+                            mapRequest = { _, featureType, initCoordinate ->
+                                requestLocationByMap?.invoke(featureType, initCoordinate)
+                            }
+                        )
+                    )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
                 }

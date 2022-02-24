@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models
 
-import org.hisp.dhis.android.core.common.ObjectStyle
 import java.util.Date
+import org.hisp.dhis.android.core.common.ObjectStyle
 
 data class EventDetails(
     val name: String? = null,

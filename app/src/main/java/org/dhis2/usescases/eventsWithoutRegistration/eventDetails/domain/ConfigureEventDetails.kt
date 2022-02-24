@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -12,7 +13,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.program.Program
-import java.util.Date
 
 class ConfigureEventDetails(
     private val d2: D2,
@@ -30,7 +30,7 @@ class ConfigureEventDetails(
         catOptionComboUid: String?,
         isCatComboCompleted: Boolean,
         coordinates: String?,
-        tempCreate: String?,
+        tempCreate: String?
     ): Flow<EventDetails> {
         return flowOf(
             EventDetails(
@@ -119,5 +119,4 @@ class ConfigureEventDetails(
 
     private fun getProgram(): Program? =
         programId?.let { eventInitialRepository.getProgramWithId(it).blockingFirst() }
-
 }

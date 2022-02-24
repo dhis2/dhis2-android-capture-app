@@ -1,5 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
+import java.util.Calendar.DAY_OF_YEAR
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -15,9 +18,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Calendar.DAY_OF_YEAR
-import java.util.Date
-import java.util.Locale
 
 class ConfigureEventReportDate(
     private val eventId: String? = null,
@@ -153,12 +153,12 @@ class ConfigureEventReportDate(
                 )
 
                 if (lastPeriodDate.after(
-                        org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
-                            program.expiryPeriodType(),
-                            minDate,
-                            0
-                        )
+                    org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                        program.expiryPeriodType(),
+                        minDate,
+                        0
                     )
+                )
                 ) {
                     minDate = org.dhis2.utils.DateUtils.getInstance()
                         .getNextPeriod(periodType, lastPeriodDate, 0)
