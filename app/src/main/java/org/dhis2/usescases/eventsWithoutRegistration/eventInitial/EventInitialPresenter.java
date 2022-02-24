@@ -253,11 +253,6 @@ public class EventInitialPresenter {
         }
     }
 
-    public void onFieldChanged(CharSequence s, int start, int before, int count) {
-        //TODO Check action button visibility
-        view.checkActionButtonVisibility();
-    }
-
     public void onDettach() {
         compositeDisposable.clear();
     }

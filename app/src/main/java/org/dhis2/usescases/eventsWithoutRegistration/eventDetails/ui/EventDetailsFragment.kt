@@ -12,8 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.unnamed.b.atv.model.TreeNode
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
@@ -73,8 +71,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         factory
     }
 
-    private val _status: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
-    val status: StateFlow<EventDetails?> get() = _status
+    var onEventDetailsChange: ((eventDetails: EventDetails) -> Unit)? = null
 
     private lateinit var binding: EventDetailsFragmentBinding
 
@@ -114,7 +111,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.eventDetails.collect {
-                _status.value = it
+                onEventDetailsChange?.invoke(it)
             }
         }
 

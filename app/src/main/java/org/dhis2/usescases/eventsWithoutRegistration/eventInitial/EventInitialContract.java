@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 public class EventInitialContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void checkActionButtonVisibility();
 
         void setProgram(@NonNull Program program);
 

@@ -84,9 +84,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ProgramStage programStage;
     private Program program;
     private Boolean accessData;
+    private EventDetails eventDetails = new EventDetails();
 
     private final CompositeDisposable disposable = new CompositeDisposable();
-    private EventDetailsFragment eventDetailsFragment;
 
     public EventInitialComponent eventInitialComponent;
 
@@ -152,12 +152,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
 
-        eventDetailsFragment = new EventDetailsFragment();
+        EventDetailsFragment eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentDetailsContainer, eventDetailsFragment).commit();
 
+        eventDetailsFragment.setOnEventDetailsChange(eventDetails -> {
+            this.eventDetails = eventDetails;
+            checkActionButtonVisibility();
+            return Unit.INSTANCE;
+        });
         initActionButton();
         binding.actionButton.setEnabled(true);
         presenter.init(programUid, eventUid, selectedOrgUnit, programStageUid);
@@ -169,7 +174,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 .subscribe(v -> {
                             binding.actionButton.setEnabled(false);
                             String programStageModelUid = programStage == null ? "" : programStage.uid();
-                            EventDetails eventDetails = eventDetailsFragment.getStatus().getValue();
                             Geometry geometry = null;
                             if (eventDetails.getCoordinates() != null) {
                                 geometry = Geometry.builder()
@@ -255,10 +259,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
     }
 
-    @Override
     public void checkActionButtonVisibility() {
         if (eventUid == null) {
-            if (eventDetailsFragment.getStatus().getValue().isCompleted())
+            if (eventDetails.isCompleted())
                 binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
             else
                 binding.actionButton.setVisibility(View.GONE);
