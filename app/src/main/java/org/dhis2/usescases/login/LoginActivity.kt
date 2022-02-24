@@ -47,7 +47,6 @@ import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
-import org.dhis2.usescases.login.accounts.AccountsActivity.Companion.RESULT_ACCOUNT
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
@@ -55,7 +54,8 @@ import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
-import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.Constants.ACCOUNT_USED
+import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
@@ -92,6 +92,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var testingCredentials: List<TestingCredential> = ArrayList()
     var userManager: UserManager? = null
     private var skipSync = false
+    private var openIDRequestCode = -1
 
     companion object {
         fun bundle(skipSync: Boolean = false): Bundle {
@@ -421,10 +422,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
-            qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
-            qrUrl?.let { setUrl(it) }
-        } else if (resultCode == Activity.RESULT_OK) {
+        if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 presenter.handleAuthResponseData(
                     binding.serverUrlEdit.text.toString(),
@@ -440,25 +438,53 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.biometricButton.visibility = View.VISIBLE
     }
 
-    private val requestAccount = registerForActivityResult(
+    private val requestQRScanner = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == RESULT_ACCOUNT) {
-            setAccount(
-                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
-                result.data?.extras?.getString(USER)
-            )
+    ) {
+        if (it.resultCode == RESULT_OK) {
+            qrUrl = it.data?.getStringExtra(EXTRA_DATA)
+            qrUrl?.let { setUrl(it) }
         }
     }
 
-    private fun setAccount(serverUrl: String, userName: String?) {
-        binding.serverUrlEdit.setText(serverUrl)
-        binding.userNameEdit.setText(userName)
-        binding.serverUrlEdit.isEnabled = false
-        binding.userNameEdit.isEnabled = false
-        binding.clearUrl.visibility = View.GONE
-        binding.clearUserNameButton.visibility = View.GONE
-        binding.userPassEdit.setText("")
+    private val requestAccount = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val wasAccountClicked = result.data?.extras?.getBoolean(ACCOUNT_USED) ?: false
+            setAccount(
+                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
+                result.data?.extras?.getString(USER),
+                wasAccountClicked
+            )
+        }
+        if (result.resultCode == RESULT_CANCELED) {
+            resetLoginInfo()
+        }
+    }
+
+    private fun resetLoginInfo() {
+        binding.serverUrlEdit.isEnabled = true
+        binding.userNameEdit.isEnabled = true
+        binding.clearUrl.visibility = View.VISIBLE
+        binding.clearUserNameButton.visibility = View.VISIBLE
+    }
+
+    private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
+        serverUrl?.let { binding.serverUrlEdit.setText(it) }
+        userName?.let { binding.userNameEdit.setText(it) }
+        binding.userPassEdit.text = null
+        if (wasAccountClicked) {
+            binding.serverUrlEdit.isEnabled = false
+            binding.userNameEdit.isEnabled = false
+            binding.clearUrl.visibility = View.GONE
+            binding.clearUserNameButton.visibility = View.GONE
+        } else {
+            binding.serverUrlEdit.isEnabled = true
+            binding.userNameEdit.isEnabled = true
+            binding.clearUrl.visibility = View.VISIBLE
+            binding.clearUserNameButton.visibility = View.VISIBLE
+        }
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
@@ -486,9 +512,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun navigateToQRActivity() {
-        Intent(context, ScanActivity::class.java).apply {
-            startActivityForResult(this, RQ_QR_SCANNER)
-        }
+        requestQRScanner.launch(Intent(context, ScanActivity::class.java))
     }
 
     private fun setUpLoginInfo() {
@@ -517,6 +541,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
         intentData?.let {
+            openIDRequestCode = intentData.requestCode
             startActivityForResult(intentData.intent, intentData.requestCode)
         }
     }

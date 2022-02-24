@@ -34,18 +34,21 @@ class AccountsActivity : ActivityGlobalAbstract() {
     }
 
     private fun navigateToLogin(accountModel: AccountModel? = null) {
-        var intent: Intent? = null
+        val intent = Intent()
+        val wasAccountClicked = accountModel?.let { true } ?: false
         accountModel?.let {
-            intent = Intent().apply {
+            intent.apply {
                 putExtra(Constants.SERVER, it.serverUrl)
                 putExtra(Constants.USER, it.name)
             }
         }
-        setResult(RESULT_ACCOUNT, intent)
+        intent.putExtra(Constants.ACCOUNT_USED, wasAccountClicked)
+        setResult(RESULT_OK, intent)
         finish()
     }
 
-    companion object {
-        const val RESULT_ACCOUNT = 133
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_CANCELED)
     }
 }
