@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.mapbox.geojson.FeatureCollection
-import java.util.HashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -21,12 +20,15 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollecti
 import org.dhis2.maps.mapper.EventToEventUiComponent
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.usescases.searchTrackEntity.adapters.uids
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.program.Program
 
 class SearchTEIViewModel(
     initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
+    private val presenter: SearchTEContractsModule.Presenter,
     private val searchRepository: SearchRepository,
+    private val searchNavPageConfigurator: SearchPageConfigurator,
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection,
     private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection,
     private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
@@ -34,6 +36,22 @@ class SearchTEIViewModel(
     private val mapUtils: DhisMapUtils,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
+
+    private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
+    val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
+
+    init {
+        viewModelScope.launch {
+            val result = async(Dispatchers.IO) {
+                searchNavPageConfigurator.initVariables()
+            }
+            try {
+                _pageConfiguration.postValue(result.await())
+            } catch (e: Exception) {
+                _pageConfiguration.postValue(searchNavPageConfigurator)
+            }
+        }
+    }
 
     val queryData = mutableMapOf<String, String>().apply {
         initialQuery?.let { putAll(it) }
@@ -50,13 +68,19 @@ class SearchTEIViewModel(
     private val _screenState = MutableLiveData<SearchTEScreenState>()
     val screenState: LiveData<SearchTEScreenState> = _screenState
 
-    private val _allowCreateWithoutSearch = false // init from configuration
+    val createButtonScrollVisibility = MutableLiveData(true)
+
+    val allowCreateWithoutSearch = false // init from configuration
     private var searching: Boolean = false
+
+    init {
+        SearchPageConfigurator(searchRepository)
+    }
 
     fun setListScreen() {
         val displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !_allowCreateWithoutSearch &&
+            !allowCreateWithoutSearch &&
             !searching
         _screenState.value = when {
             shouldOpenSearch ->
@@ -69,8 +93,12 @@ class SearchTEIViewModel(
             else ->
                 SearchList(
                     previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+                    listType = SearchScreenState.LIST,
                     displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: false,
-                    canCreateWithoutSearch = _allowCreateWithoutSearch,
+                    canCreateWithoutSearch = allowCreateWithoutSearch,
+                    queryHasData = queryData.isNotEmpty(),
+                    minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
+                        ?: 0,
                     isSearching = searching
                 )
         }
@@ -79,7 +107,8 @@ class SearchTEIViewModel(
     fun setMapScreen() {
         _screenState.value = SearchMap(
             previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            canCreateWithoutSearch = _allowCreateWithoutSearch
+            mapType = SearchScreenState.MAP,
+            canCreateWithoutSearch = allowCreateWithoutSearch
         )
     }
 
@@ -89,19 +118,23 @@ class SearchTEIViewModel(
         )
     }
 
-    fun setSearchScreen() {
-        _screenState.value = SearchForm(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            queryHasData = queryData.isNotEmpty(),
-            minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch() ?: 0
-        )
+    fun setSearchScreen(isLandscapeMode: Boolean) {
+        if (isLandscapeMode) {
+            setListScreen()
+        } else {
+            _screenState.value = SearchForm(
+                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+                queryHasData = queryData.isNotEmpty(),
+                minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch() ?: 0
+            )
+        }
     }
 
-    fun setPreviousScreen() {
+    fun setPreviousScreen(isLandscapeMode: Boolean) {
         when (_screenState.value?.previousSate) {
             SearchScreenState.LIST -> setListScreen()
             SearchScreenState.MAP -> setMapScreen()
-            SearchScreenState.SEARCHING -> setSearchScreen()
+            SearchScreenState.SEARCHING -> setSearchScreen(isLandscapeMode)
             SearchScreenState.ANALYTICS -> setAnalyticsScreen()
             else -> {
             }
@@ -123,12 +156,6 @@ class SearchTEIViewModel(
 
     fun clearQueryData() {
         queryData.clear()
-        updateSearch()
-    }
-
-    fun restoreQueryData(queryDataBackUp: HashMap<String, String>) {
-        queryData.clear()
-        queryData.putAll(queryDataBackUp)
         updateSearch()
     }
 
@@ -223,10 +250,10 @@ class SearchTEIViewModel(
         }
     }
 
-    fun onSearchClick() {
+    fun onSearchClick(onMinAttributes: (Int) -> Unit = {}) {
         viewModelScope.launch {
             if (canPerformSearch()) {
-                searching = true
+                searching = queryData.isNotEmpty()
                 val currentScreenState = if (_screenState.value is SearchForm) {
                     _screenState.value?.previousSate
                 } else {
@@ -245,7 +272,7 @@ class SearchTEIViewModel(
                     else -> searching = false
                 }
             } else {
-                // TODO : Display min attribute toast message
+                onMinAttributes(_selectedProgram.value?.minAttributesRequiredToSearch() ?: 0)
             }
         }
     }
@@ -264,5 +291,35 @@ class SearchTEIViewModel(
         return _selectedProgram.value?.let { program ->
             program.displayFrontPageList() == true && queryData.isEmpty()
         } ?: true
+    }
+
+    fun canDisplayResult(itemCount: Int): Boolean {
+        return _selectedProgram.value?.maxTeiCountToReturn()?.let { maxTeiCount ->
+            itemCount <= maxTeiCount
+        } ?: true
+    }
+
+    fun queryDataByProgram(programUid: String?): MutableMap<String, String> {
+        return searchRepository.filterQueryForProgram(queryData, programUid)
+    }
+
+    fun onEnrollClick() {
+        presenter.onEnrollClick()
+    }
+
+    fun onAddRelationship(teiUid: String, relationshipTypeUid: String?, online: Boolean) {
+        presenter.addRelationship(teiUid, relationshipTypeUid, online)
+    }
+
+    fun onSyncIconClick(teiUid: String) {
+        presenter.onSyncIconClick(teiUid)
+    }
+
+    fun onDownloadTei(teiUid: String, enrollmentUid: String?) {
+        presenter.downloadTei(teiUid, enrollmentUid)
+    }
+
+    fun onTeiClick(teiUid: String, enrollmentUid: String?, online: Boolean) {
+        presenter.onTEIClick(teiUid, enrollmentUid, online)
     }
 }

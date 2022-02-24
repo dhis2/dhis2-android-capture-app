@@ -5,7 +5,6 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
 import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
 import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
@@ -20,7 +19,6 @@ import androidx.annotation.RestrictTo;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
@@ -33,25 +31,13 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.form.model.RowAction;
-import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection;
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
-import org.dhis2.maps.mapper.EventToEventUiComponent;
-import org.dhis2.maps.model.EventUiComponentModel;
 import org.dhis2.maps.model.StageStyle;
-import org.dhis2.maps.utils.DhisMapUtils;
-import org.dhis2.utils.DhisTextUtils;
-import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -65,12 +51,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
@@ -106,6 +89,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              SchedulerProvider schedulerProvider,
                              AnalyticsHelper analyticsHelper,
                              @Nullable String initialProgram,
+                             @NonNull String teTypeUid,
                              PreferenceProvider preferenceProvider,
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
@@ -126,16 +110,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable = new CompositeDisposable();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
+        this.trackedEntityType = teTypeUid;
+        this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
     }
 
     //-----------------------------------
     //region LIFECYCLE
 
     @Override
-    public void init(String trackedEntityType) {
-        this.trackedEntityType = trackedEntityType;
-        this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
-
+    public void init() {
         compositeDisposable.add(currentProgram
                 .switchMap(programUid ->
                         FilterManager.getInstance().asFlowable()
@@ -214,37 +197,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     //------------------------------------------
     //region DATA
-    @Override
-    public SearchMessageResult getMessage(List<SearchTeiModel> list) {
-        return searchMessageMapper.getSearchMessage(
-                list,
-                selectedProgram,
-                new HashMap<>(),
-                teiTypeHasAttributesToDisplay,
-                MAX_NO_SELECTED_PROGRAM_RESULTS,
-                getTrackedEntityName().displayName()
-        );
-    }
-
-    private void handleError(Throwable throwable) {
-        if (throwable instanceof D2Error) {
-            D2Error exception = (D2Error) throwable;
-            switch (exception.errorCode()) {
-                case UNEXPECTED:
-                    view.displayMessage(view.getContext().getString(R.string.online_search_unexpected));
-                    break;
-                case SEARCH_GRID_PARSE:
-                    view.displayMessage(view.getContext().getString(R.string.online_search_parsing_error));
-                    break;
-                case API_RESPONSE_PROCESS_ERROR:
-                    view.displayMessage(view.getContext().getString(R.string.online_search_error));
-                    break;
-                case API_UNSUCCESSFUL_RESPONSE:
-                    view.displayMessage(view.getContext().getString(R.string.online_search_response_error));
-                    break;
-            }
-        }
-    }
 
     @Override
     public TrackedEntityType getTrackedEntityName() {
@@ -287,7 +239,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.setFabIcon(true);
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
-            view.updateNavigationBar();
         }
 
         currentProgram.onNext(newProgramSelected != null ? newProgramSelected.uid() : "");
@@ -296,11 +247,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private boolean isPreviousAndCurrentProgramTheSame(Program programSelected, String previousProgramUid, String currentProgramUid) {
         return previousProgramUid != null && previousProgramUid.equals(currentProgramUid) ||
                 programSelected == selectedProgram;
-    }
-
-    @Override
-    public void resetSearch() {
-
     }
 
     @Override
@@ -468,12 +414,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d,
                         () -> {
                             if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
-                                openDashboard(teiUid, enrollmentUid);
+                                if(teiHasEnrollmentInProgram(teiUid)) {
+                                    openDashboard(teiUid, enrollmentUid);
+                                }else if(canCreateTei()){
+                                    enroll(selectedProgram.uid(), teiUid);
+                                }
                             } else {
                                 view.couldNotDownload(trackedEntity.displayName());
                             }
                         })
         );
+    }
+
+    private boolean teiHasEnrollmentInProgram(String teiUid){
+        return !d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byProgram().eq(selectedProgram.uid())
+                .blockingIsEmpty();
     }
 
     @Override

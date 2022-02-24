@@ -95,7 +95,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/syncButton"
@@ -158,6 +158,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginBottom="120dp"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -165,22 +166,25 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
                 app:layout_constraintVertical_bias="0"
-                tools:listitem="@layout/item_header_filter" />
+                tools:listitem="@layout/item_header_filter"
+                tools:visibility="visible" />
 
             <androidx.compose.ui.platform.ComposeView
-                android:id = "@+id/minAttributeMessage"
+                android:id="@+id/minAttributeMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"/>
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
             <FrameLayout
                 android:id="@+id/formViewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/minAttributeMessage" />
+                app:layout_constraintTop_toBottomOf="@+id/minAttributeMessage"
+                tools:visibility="visible" />
 
             <FrameLayout
                 android:id="@+id/mainComponent"
@@ -195,6 +199,7 @@
                 style="@style/DhisBottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:elevation="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:menu="@menu/navigation_search_menu" />
@@ -208,6 +213,8 @@
                 app:backgroundTint="@color/white"
                 app:elevation="4dp"
                 app:fabSize="mini"
+                android:visibility="gone"
+                tools:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/searchButton"
                 app:layout_constraintEnd_toEndOf="@id/searchButton"
                 app:layout_constraintStart_toStartOf="@id/searchButton"
@@ -220,13 +227,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:focusableInTouchMode="true"
+                android:src="@drawable/ic_search"
                 app:backgroundTint="@color/white"
                 app:elevation="4dp"
                 app:fabSize="normal"
+                android:visibility="gone"
+                tools:visibility="visible"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:src="@drawable/ic_search"
                 app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -101,6 +101,10 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                     sourceId!!
                 )
             }
+
+            if(mapLayers.size == 1){
+                handleLayer(sourceId ?: layerType.toString(), true)
+            }
         }
 
     fun addStartLayer(

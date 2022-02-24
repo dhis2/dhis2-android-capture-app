@@ -7,17 +7,21 @@ sealed class SearchTEScreenState(
 
 data class SearchList(
     override val previousSate: SearchScreenState,
+    private val listType: SearchScreenState,
     val displayFrontPageList: Boolean,
     val canCreateWithoutSearch: Boolean,
+    val queryHasData: Boolean,
+    val minAttributesToSearch: Int,
     val isSearching: Boolean
-) : SearchTEScreenState(SearchScreenState.LIST, previousSate) {
+) : SearchTEScreenState(listType, previousSate) {
     fun canDisplayCreateButton() = canCreateWithoutSearch || isSearching
 }
 
 data class SearchMap(
     override val previousSate: SearchScreenState,
+    private val mapType: SearchScreenState,
     val canCreateWithoutSearch: Boolean
-) : SearchTEScreenState(SearchScreenState.MAP, previousSate)
+) : SearchTEScreenState(mapType, previousSate)
 
 data class SearchForm(
     override val previousSate: SearchScreenState,

@@ -877,4 +877,6 @@
     <string name="search_too_many_results_message">Try changing search terms or searching by more attributes to narrow down the results.</string>
     <string name="search_create_new">Create new</string>
     <string name="search_min_attributes_message">It is necessary to enter at least %s of the attributes to start a search</string>
+    <string name="action_ok">Ok</string>
+    <string name="search_or_create">Search or create</string>
 </resources>

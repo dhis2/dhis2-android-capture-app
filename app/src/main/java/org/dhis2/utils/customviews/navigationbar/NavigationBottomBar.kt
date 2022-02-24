@@ -41,6 +41,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private var forceShowAnalytics = false
 
     init {
+        hidden = visibility == View.GONE
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {

@@ -70,6 +70,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProje
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -872,5 +873,34 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (programUid == null)
             return null;
         return d2.programModule().programs().uid(programUid).blockingGet();
+    }
+
+    @Override
+    public @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @Nullable String programUid) {
+        Map<String,String> filteredQuery = new HashMap<>();
+        for(Map.Entry<String,String> entry : queryData.entrySet()){
+            String attributeUid = entry.getKey();
+            String value = entry.getValue();
+            if(programUid == null && attributeIsForType(attributeUid) ||
+                    programUid != null && attributeBelongsToProgram(attributeUid,programUid)
+            ){
+                filteredQuery.put(attributeUid, value);
+            }
+        }
+        return filteredQuery;
+    }
+
+    private boolean attributeIsForType(String attributeUid){
+        return !d2.trackedEntityModule().trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid().eq(teiType)
+                .byTrackedEntityAttributeUid().eq(attributeUid)
+                .blockingIsEmpty();
+    }
+
+    private boolean attributeBelongsToProgram(String attributeUid, String programUid){
+        return !d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programUid)
+                .byTrackedEntityAttribute().eq(attributeUid)
+                .blockingIsEmpty();
     }
 }

@@ -107,7 +107,7 @@ public class SearchTEModule {
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SearchMessageMapper searchMessageMapper) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, preferenceProvider,
+                analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
                 matomoAnalyticsController, searchMessageMapper);
     }
@@ -268,20 +268,18 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    NavigationPageConfigurator providePageConfigurator(SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
-        return new SearchPageConfigurator(searchRepository, schedulerProvider);
-    }
-
-    @Provides
-    @PerActivity
-    SearchTeiViewModelFactory providesViewModelFactory(SearchRepository searchRepository,
-                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection,
-                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-                                                       MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-                                                       DhisMapUtils mapUtils,
-                                                       NetworkUtils networkUtils) {
+    SearchTeiViewModelFactory providesViewModelFactory(
+            SearchTEContractsModule.Presenter presenter,
+            SearchRepository searchRepository,
+            MapTeisToFeatureCollection mapTeisToFeatureCollection,
+            MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+            MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
+            DhisMapUtils mapUtils,
+            NetworkUtils networkUtils) {
         return new SearchTeiViewModelFactory(
+                presenter,
                 searchRepository,
+                new SearchPageConfigurator(searchRepository),
                 initialProgram,
                 initialQuery,
                 mapTeisToFeatureCollection,

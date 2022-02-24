@@ -26,6 +26,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -99,7 +100,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.openSearchButton.setOnClickListener {
-            viewModel.setSearchScreen()
+            viewModel.setSearchScreen(isLandscape())
         }
 
         teiMapManager = TeiMapManager(binding.mapView)
@@ -109,22 +110,34 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         teiMapManager?.enrollmentFeatureType =
             if (presenter.program != null) presenter.program.featureType() else null
         teiMapManager?.onMapClickListener = this
+        teiMapManager?.mapStyle =
+            MapStyle(
+                presenter.teiColor,
+                presenter.symbolIcon,
+                presenter.enrollmentColor,
+                presenter.enrollmentSymbolIcon,
+                presenter.programStageStyle,
+                ColorUtils.getPrimaryColor(
+                    requireContext(),
+                    ColorUtils.ColorType.PRIMARY_DARK
+                )
+            )
         initializeCarousel()
         teiMapManager?.init(
-            {
+            onInitializationFinished = {
                 presenter.getMapData()
+
+                observeMapResults()
+
+                viewModel.fetchMapResults()
             },
-            { permissionsManager ->
+            onMissingPermission = { permissionsManager ->
                 permissionsManager?.requestLocationPermissions(requireActivity())
             }
         )
         binding.content.clipWithRoundedCorners()
-        return binding.root
-    }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.selectedProgram.observe(this) {
+        /*viewModel.selectedProgram.observe(viewLifecycleOwner) {
             teiMapManager?.mapStyle =
                 MapStyle(
                     presenter.teiColor,
@@ -135,10 +148,9 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                     ColorUtils.getPrimaryColor(requireContext(), ColorUtils.ColorType.PRIMARY_DARK)
                 )
             observeMapResults()
-        }
+        }*/
 
-        animations.initMapLoading(binding.mapCarousel)
-        viewModel.fetchMapResults()
+        return binding.root
     }
 
     override fun onDestroy() {
@@ -170,6 +182,9 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     }
 
     private fun observeMapResults() {
+        animations.initMapLoading(binding.mapCarousel)
+
+        viewModel.mapResults.removeObservers(viewLifecycleOwner)
         viewModel.mapResults.observe(viewLifecycleOwner) { trackerMapData ->
             teiMapManager?.update(
                 trackerMapData.teiFeatures,

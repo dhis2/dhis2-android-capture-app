@@ -40,6 +40,7 @@ class SearchTEPresenterTest {
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val analyticsHelper: AnalyticsHelper = mock()
     private val initialProgram = "programUid"
+    private val teType = "teTypeUid"
     private val preferenceProvider: PreferenceProvider = mock()
     private val workingListMapper: TeiFilterToWorkingListItemMapper = mock()
     private val filterRepository: FilterRepository = mock()
@@ -63,6 +64,7 @@ class SearchTEPresenterTest {
             schedulers,
             analyticsHelper,
             initialProgram,
+            teType,
             preferenceProvider,
             workingListMapper,
             filterRepository,

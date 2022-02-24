@@ -142,7 +142,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkTEIsAreOpen()
         }
     }
@@ -174,7 +174,7 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkEventsAreOverdue()
         }
     }
@@ -194,7 +194,7 @@ class SearchTETest : BaseTest() {
             typeOrgUnitField(orgUnitNgelehun)
             checkFilterCounter(totalCount)
             checkCountAtFilter(orgUnitFilter, filterCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
     }
@@ -221,7 +221,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentDate)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -248,7 +248,8 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(eventDate)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
-            closeSearchForm()
+            
+            // closeSearchForm()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -278,7 +279,7 @@ class SearchTETest : BaseTest() {
             clickOnNotSync()
             checkFilterCounter(totalCount)
             checkCountAtFilter(syncFilter, totalCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkTEINotSync()
         }
     }
@@ -305,7 +306,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatus)
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
-            closeSearchForm()
+            // closeSearchForm()
             checkTEIsAreOpen()
         }
 

@@ -10,7 +10,9 @@ import org.dhis2.maps.mapper.EventToEventUiComponent
 import org.dhis2.maps.utils.DhisMapUtils
 
 class SearchTeiViewModelFactory(
+    val presenter: SearchTEContractsModule.Presenter,
     val searchRepository: SearchRepository,
+    private val searchNavPageConfigurator: SearchPageConfigurator,
     private val initialProgramUid: String?,
     private val initialQuery: MutableMap<String, String>?,
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection,
@@ -24,7 +26,9 @@ class SearchTeiViewModelFactory(
         return SearchTEIViewModel(
             initialProgramUid,
             initialQuery,
+            presenter,
             searchRepository,
+            searchNavPageConfigurator,
             mapTeisToFeatureCollection,
             mapTeiEventsToFeatureCollection,
             mapCoordinateFieldToFeatureCollection,

@@ -83,16 +83,12 @@ public class SearchTEContractsModule {
 
         void hideFilter();
 
-        void updateNavigationBar();
-
-        void displayMinNumberOfAttributesMessage(int minAttributes);
-
         void showSyncDialog(String teiUid);
     }
 
     public interface Presenter {
 
-        void init(String trackedEntityType);
+        void init();
 
         void onDestroy();
 
@@ -124,15 +120,11 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        SearchMessageResult getMessage(List<SearchTeiModel> list);
-
         void onSyncIconClick(String teiUid);
 
         void showFilter();
 
         void showFilterGeneral();
-
-        void resetSearch();
 
         void clearFilterClick();
 

@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -57,4 +58,6 @@ public interface SearchRepository {
     boolean programHasCoordinates();
 
     @Nullable Program getProgram(@Nullable String programUid);
+
+    @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
 }
