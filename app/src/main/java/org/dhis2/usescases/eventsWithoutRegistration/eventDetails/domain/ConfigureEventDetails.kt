@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.program.Program
+import java.util.Date
 
 class ConfigureEventDetails(
     private val d2: D2,
@@ -20,7 +21,13 @@ class ConfigureEventDetails(
     private val resourcesProvider: EventDetailResourcesProvider
 ) {
 
-    operator fun invoke(): Flow<EventDetails> {
+    operator fun invoke(
+        selectedDate: Date?,
+        selectedOrgUnit: String?,
+        catOptionComboUid: String?,
+        coordinates: String?,
+        tempCreate: String?,
+    ): Flow<EventDetails> {
         return flowOf(
             EventDetails(
                 name = getProgramStageById().displayName(),
@@ -28,7 +35,12 @@ class ConfigureEventDetails(
                 style = getStyleByProgramId(),
                 enabled = isEnable(),
                 isEditable = isEditable(),
-                editableReason = getEditableReason()
+                editableReason = getEditableReason(),
+                temCreate = tempCreate,
+                selectedDate = selectedDate,
+                selectedOrgUnit = selectedOrgUnit,
+                catOptionComboUid = catOptionComboUid,
+                coordinates = coordinates
             )
         )
     }

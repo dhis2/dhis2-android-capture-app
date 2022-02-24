@@ -10,7 +10,12 @@ import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.unnamed.b.atv.model.TreeNode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.observeOn
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
@@ -19,6 +24,7 @@ import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.Constants.ENROLLMENT_UID
@@ -68,6 +74,9 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         factory
     }
 
+    private val _status: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
+    val status: StateFlow<EventDetails?> get() = _status
+
     private lateinit var binding: EventDetailsFragmentBinding
 
     override fun onCreateView(
@@ -103,6 +112,12 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.eventDetails.collect {
+                _status.value = it
+            }
+        }
 
         viewModel.showCalendar = {
             showCalendarDialog()

@@ -36,6 +36,10 @@ class ConfigureEventCatCombo(
     }
 
     private fun getCatComboUid(categoryComboUid: String, isDefault: Boolean): String? {
+        eventUid?.let {
+            return eventInitialRepository.event(it).blockingFirst().attributeOptionCombo()
+        }
+
         if (isDefault) {
             return eventInitialRepository.catOptionCombos(
                 categoryComboUid

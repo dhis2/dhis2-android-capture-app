@@ -23,7 +23,6 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.jakewharton.rxbinding2.view.RxView;
@@ -42,6 +41,7 @@ import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -116,9 +116,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Date selectedOrgUnitClosedDate;
     private ProgramStage programStage;
 
-    private String tempCreate;
-    private boolean fixedOrgUnit;
-    private String catOptionComboUid;
     private CategoryCombo catCombo;
     private Map<String, CategoryOption> selectedCatOption = new HashMap<>();
     private OrgUnitDialog orgUnitDialog;
@@ -127,9 +124,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Boolean accessData;
 
     private CompositeDisposable disposable = new CompositeDisposable();
-    private Geometry newGeometry;
     private FieldUiModel currentGeometryModel;
     private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
+    private EventDetailsFragment eventDetailsFragment;
 
     public EventInitialComponent eventInitialComponent;
 
@@ -194,7 +191,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
 
-        Fragment eventDetailsFragment = new EventDetailsFragment();
+        eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -211,48 +208,59 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 .subscribe(v -> {
                             binding.actionButton.setEnabled(false);
                             String programStageModelUid = programStage == null ? "" : programStage.uid();
+                            EventDetails eventDetails = eventDetailsFragment.getStatus().getValue();
+                            Geometry geometry = null;
+                            if (eventDetails.getCoordinates() != null) {
+                                geometry = Geometry.builder()
+                                        .coordinates(eventDetails.getCoordinates())
+                                        .type(programStage.featureType())
+                                        .build();
+                            }
+
                             if (eventUid == null) { // This is a new Event
                                 presenter.onEventCreated();
                                 analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
-                                if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
+                                if (eventCreationType == EventCreationType.REFERAL && eventDetails.getTemCreate() != null && eventDetails.getTemCreate().equals(PERMANENT)) {
                                     presenter.scheduleEventPermanent(
                                             enrollmentUid,
                                             getTrackedEntityInstance,
                                             programStageModelUid,
-                                            selectedDate,
-                                            selectedOrgUnit,
+                                            eventDetails.getSelectedDate(),
+                                            eventDetails.getSelectedOrgUnit(),
                                             null,
-                                            catOptionComboUid,
-                                            newGeometry
+                                            eventDetails.getCatOptionComboUid(),
+                                            geometry
                                     );
                                 } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                                     presenter.scheduleEvent(
                                             enrollmentUid,
                                             programStageModelUid,
-                                            selectedDate,
-                                            selectedOrgUnit,
+                                            eventDetails.getSelectedDate(),
+                                            eventDetails.getSelectedOrgUnit(),
                                             null,
-                                            catOptionComboUid,
-                                            newGeometry
+                                            eventDetails.getCatOptionComboUid(),
+                                            geometry
                                     );
                                 } else {
                                     presenter.createEvent(
                                             enrollmentUid,
                                             programStageModelUid,
-                                            selectedDate,
-                                            selectedOrgUnit,
+                                            eventDetails.getSelectedDate(),
+                                            eventDetails.getSelectedOrgUnit(),
                                             null,
-                                            catOptionComboUid,
-                                            newGeometry,
+                                            eventDetails.getCatOptionComboUid(),
+                                            geometry,
                                             getTrackedEntityInstance);
                                 }
                             } else {
                                 presenter.editEvent(getTrackedEntityInstance,
                                         programStageModelUid,
                                         eventUid,
-                                        DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
-                                        catOptionComboUid,
-                                        newGeometry
+                                        DateUtils.databaseDateFormat().format(eventDetails.getSelectedDate()),
+                                        eventDetails.getSelectedOrgUnit(),
+                                        null,
+                                        eventDetails.getCatOptionComboUid(),
+                                        geometry
                                 );
                             }
                         },
@@ -302,7 +310,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private boolean isFormCompleted() {
-
+        String tempCreate = eventDetailsFragment.getStatus().getValue().getTemCreate();
         if (!catComboIsDefaultOrNull())
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
@@ -365,9 +373,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEvent(Event event) {
-
-        catOptionComboUid = event.attributeOptionCombo();
-
         eventModel = event;
     }
 
@@ -583,6 +588,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

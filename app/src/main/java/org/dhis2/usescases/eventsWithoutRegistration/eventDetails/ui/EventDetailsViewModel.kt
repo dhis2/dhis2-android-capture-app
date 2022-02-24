@@ -54,8 +54,8 @@ class EventDetailsViewModel(
     var showEnableLocationMessage: (() -> Unit)? = null
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
 
-    private val _eventDetails: MutableStateFlow<EventDetails?> = MutableStateFlow(null)
-    val eventDetails: StateFlow<EventDetails?> get() = _eventDetails
+    private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
+    val eventDetails: StateFlow<EventDetails> get() = _eventDetails
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
     val eventDate: StateFlow<EventDate> get() = _eventDate
@@ -83,7 +83,13 @@ class EventDetailsViewModel(
 
     private fun setUpEventDetails() {
         viewModelScope.launch {
-            configureEventDetails()
+            configureEventDetails(
+                selectedDate = eventDate.value.currentDate,
+                selectedOrgUnit = eventOrgUnit.value.selectedOrgUnit?.uid(),
+                catOptionComboUid = eventCatCombo.value.uid,
+                coordinates = eventCoordinates.value.model?.value,
+                tempCreate = eventTemp.value.status?.name,
+            )
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
@@ -97,6 +103,7 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDate.value = it
+                    setUpEventDetails()
                     setUpOrgUnit(selectedDate = it.currentDate)
                 }
         }
@@ -111,6 +118,7 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventOrgUnit.value = it
+                    setUpEventDetails()
                 }
         }
     }
@@ -121,6 +129,7 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventCatCombo.value = it
+                    setUpEventDetails()
                 }
         }
     }
@@ -142,13 +151,17 @@ class EventDetailsViewModel(
                         }
                     ))
                     _eventCoordinates.value = eventCoordinates
+                    setUpEventDetails()
                 }
         }
     }
 
     fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
         if (isChecked) {
-            _eventTemp.value = configureEventTemp(status)
+            configureEventTemp(status).apply {
+                _eventTemp.value = this
+                setUpEventDetails()
+            }
         }
     }
 
