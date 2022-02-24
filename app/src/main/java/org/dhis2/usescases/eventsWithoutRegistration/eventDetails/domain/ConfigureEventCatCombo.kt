@@ -29,9 +29,26 @@ class ConfigureEventCatCombo(
                     isDefault = isDefault ?: false,
                     categories = getCategories(categories()),
                     categoryOptions = getCategoryOptions(),
-                    selectedCategoryOptions = selectedCategoryOptions
+                    selectedCategoryOptions = selectedCategoryOptions,
+                    isCompleted = isCompleted(
+                        isDefault = isDefault ?: true,
+                        categories = categories(),
+                        categoryOptions = getCategoryOptions()
+                    )
                 )
             )
+        }
+    }
+
+    private fun isCompleted(
+        isDefault: Boolean,
+        categories: List<Category>?,
+        categoryOptions: Map<String, CategoryOption>?
+    ): Boolean {
+        return if (isDefault) {
+            true
+        } else {
+            !categories.isNullOrEmpty() && categoryOptions?.size == categories.size
         }
     }
 

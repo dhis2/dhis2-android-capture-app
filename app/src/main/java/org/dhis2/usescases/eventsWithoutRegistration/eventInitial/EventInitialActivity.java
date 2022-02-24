@@ -12,13 +12,11 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,13 +31,7 @@ import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
-import org.dhis2.form.data.GeometryController;
-import org.dhis2.form.data.GeometryParserImpl;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
@@ -50,26 +42,15 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
-import org.dhis2.utils.customviews.OrgUnitDialog;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -79,20 +60,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Unit;
 import timber.log.Timber;
 
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View,
-        DatePickerDialog.OnDateSetListener {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View {
 
     @Inject
     EventInitialPresenter presenter;
-
-    @Inject
-    PreferenceProvider preferences;
-
-    @Inject
-    DhisPeriodUtils periodUtils;
-
-    @Inject
-    LocationProvider locationProvider;
 
     private Event eventModel;
 
@@ -110,22 +81,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private EnrollmentStatus enrollmentStatus;
     private int eventScheduleInterval;
 
-    private String selectedDateString;
-    private Date selectedDate;
-    private Date selectedOrgUnitOpeningDate;
-    private Date selectedOrgUnitClosedDate;
     private ProgramStage programStage;
-
-    private CategoryCombo catCombo;
-    private Map<String, CategoryOption> selectedCatOption = new HashMap<>();
-    private OrgUnitDialog orgUnitDialog;
     private Program program;
-    private ArrayList<String> sectionsToHide;
     private Boolean accessData;
 
-    private CompositeDisposable disposable = new CompositeDisposable();
-    private FieldUiModel currentGeometryModel;
-    private GeometryController geometryController = new GeometryController(new GeometryParserImpl());
+    private final CompositeDisposable disposable = new CompositeDisposable();
     private EventDetailsFragment eventDetailsFragment;
 
     public EventInitialComponent eventInitialComponent;
@@ -165,12 +125,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         initVariables();
-        eventInitialComponent = ((App) getApplicationContext()).userComponent().plus(
-                new EventInitialModule(this,
-                        eventUid,
-                        programStageUid,
-                        getContext())
-        );
+        eventInitialComponent = Objects.requireNonNull(((App) getApplicationContext()).userComponent())
+                .plus(
+                        new EventInitialModule(this,
+                                eventUid,
+                                programStageUid,
+                                getContext())
+                );
         eventInitialComponent.inject(this);
         setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
@@ -253,15 +214,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             getTrackedEntityInstance);
                                 }
                             } else {
-                                presenter.editEvent(getTrackedEntityInstance,
-                                        programStageModelUid,
-                                        eventUid,
-                                        DateUtils.databaseDateFormat().format(eventDetails.getSelectedDate()),
-                                        eventDetails.getSelectedOrgUnit(),
-                                        null,
-                                        eventDetails.getCatOptionComboUid(),
-                                        geometry
-                                );
+                                if (eventDetails.getSelectedDate() != null) {
+                                    presenter.editEvent(getTrackedEntityInstance,
+                                            programStageModelUid,
+                                            eventUid,
+                                            DateUtils.databaseDateFormat().format(eventDetails.getSelectedDate()),
+                                            eventDetails.getSelectedOrgUnit(),
+                                            null,
+                                            eventDetails.getCatOptionComboUid(),
+                                            geometry
+                                    );
+                                }
                             }
                         },
                         Timber::e));
@@ -295,7 +258,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void checkActionButtonVisibility() {
         if (eventUid == null) {
-            if (isFormCompleted())
+            if (eventDetailsFragment.getStatus().getValue().isCompleted())
                 binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
             else
                 binding.actionButton.setVisibility(View.GONE);
@@ -307,34 +270,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             } else
                 binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
         }
-    }
-
-    private boolean isFormCompleted() {
-        String tempCreate = eventDetailsFragment.getStatus().getValue().getTemCreate();
-        if (!catComboIsDefaultOrNull())
-            return isCompleted(selectedDateString) &&
-                    isCompleted(selectedOrgUnit) &&
-                    isSelectedDateBetweenOpeningAndClosedDates() &&
-                    catCombo != null && catCombo.categories() != null && selectedCatOption.size() == catCombo.categories().size() &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
-        else
-            return isCompleted(selectedDateString) &&
-                    isCompleted(selectedOrgUnit) &&
-                    isSelectedDateBetweenOpeningAndClosedDates() &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
-    }
-
-    private boolean isSelectedDateBetweenOpeningAndClosedDates() {
-        if (selectedDate == null)
-            return false;
-        boolean isAfterOpening = selectedOrgUnitOpeningDate == null || selectedDate.after(selectedOrgUnitOpeningDate);
-        boolean isBeforeClosed = selectedOrgUnitClosedDate == null || selectedDate.before(selectedOrgUnitClosedDate);
-        return isAfterOpening && isBeforeClosed;
-
-    }
-
-    private boolean isCompleted(String field) {
-        return field != null && !field.isEmpty();
     }
 
     @Override
@@ -355,9 +290,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setText(getString(R.string.check_event));
             }
             binding.executePendingBindings();
-
         }
-
     }
 
     private void setUpActivityTitle() {
@@ -406,21 +339,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (periodType == null)
             periodType = programStage.periodType();
-
-        presenter.getStageObjectStyle(this.programStage.uid());
-    }
-
-    @Override
-    public void setCatComboOptions(CategoryCombo catCombo, List<CategoryOptionCombo> categoryOptionCombos, Map<String, CategoryOption> stringCategoryOptionMap) {
-    }
-
-
-    @Override
-    public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
-    }
-
-    @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
     }
 
     @Override
@@ -434,43 +352,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setHideSection(String sectionUid) {
-        if (sectionsToHide == null || sectionUid == null)
-            sectionsToHide = new ArrayList<>();
-
-        if (sectionUid != null && !sectionsToHide.contains(sectionUid))
-            sectionsToHide.add(sectionUid);
-    }
-
-    @Override
-    public void renderObjectStyle(ObjectStyle data) {
-    }
-
-    @Override
-    public EventCreationType eventcreateionType() {
-        return eventCreationType;
-    }
-
-    @Override
-    public void setInitialOrgUnit(OrganisationUnit organisationUnit) {
-
-    }
-
-    @Override
-    public void setOrgUnit(String orgUnitId, String orgUnitName) {
-    }
-
-    @Override
-    public void showNoOrgUnits() {
-        renderError(getString(R.string.no_org_units));
-        selectedDateString = null;
-        selectedDate = null;
-        binding.date.setText("");
-        binding.executePendingBindings();
-        checkActionButtonVisibility();
-    }
-
-    @Override
     public void setAccessDataWrite(Boolean canWrite) {
         this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
@@ -480,19 +361,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showOrgUnitSelector(List<OrganisationUnit> orgUnits) {
-
-    }
-
-    @Override
     public void showQR() {
         Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
         intent.putExtra(Constants.EVENT_UID, eventUid);
         startActivity(intent);
-    }
-
-    private boolean catComboIsDefaultOrNull() {
-        return (catCombo == null || catCombo.isDefault());
     }
 
     @Override
@@ -561,41 +433,5 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showEventWasDeleted() {
         showToast(getString(R.string.event_was_deleted));
         finish();
-    }
-
-    @Override
-    public void setGeometryModel(FieldUiModel geometryModel) {
-
-    }
-
-
-    @Override
-    public void setNewGeometry(String value) {
-
-    }
-
-    @Override
-    public void displayFeatureTypeError() {
-        displayMessage(getString(R.string.coordinate_feature_type_error));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public void setEditionStatus(String reason) {
-    }
-
-    @Override
-    public void hideEditionStatus() {
     }
 }

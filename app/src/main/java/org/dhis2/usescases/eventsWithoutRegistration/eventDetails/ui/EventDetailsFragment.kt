@@ -15,7 +15,6 @@ import com.unnamed.b.atv.model.TreeNode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.observeOn
 import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
@@ -131,6 +130,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             showOrgUnitDialog()
         }
 
+        viewModel.showNoOrgUnits = {
+            showNoOrgUnitsDialog()
+        }
+
         viewModel.showCategoryDialog = { category ->
             showCategoryDialog(category)
         }
@@ -212,6 +215,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
         }
         dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
+    }
+
+    private fun showNoOrgUnitsDialog() {
+        showInfoDialog(getString(R.string.error), getString(R.string.no_org_units))
     }
 
     private fun showCategoryPopUp(category: EventCategory) {

@@ -68,7 +68,8 @@ class EventDetailsModule(
                 programStageId = programStageUid,
                 eventId = eventUid,
                 programId = programId,
-                resourcesProvider = resourcesProvider
+                resourcesProvider = resourcesProvider,
+                creationType = eventCreationType
             ),
             ConfigureEventReportDate(
                 eventId = eventUid,

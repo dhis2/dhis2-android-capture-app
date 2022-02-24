@@ -14,5 +14,6 @@ data class EventDetails(
     val selectedDate: Date? = null,
     val selectedOrgUnit: String? = null,
     val catOptionComboUid: String? = null,
-    val coordinates: String? = null
+    val coordinates: String? = null,
+    val isCompleted: Boolean = false
 )

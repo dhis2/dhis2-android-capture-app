@@ -2,6 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.data.EventCreationType.REFERAL
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
@@ -18,13 +20,15 @@ class ConfigureEventDetails(
     private val programStageId: String,
     private val eventId: String? = null,
     private val programId: String? = null,
-    private val resourcesProvider: EventDetailResourcesProvider
+    private val resourcesProvider: EventDetailResourcesProvider,
+    private val creationType: EventCreationType
 ) {
 
     operator fun invoke(
         selectedDate: Date?,
         selectedOrgUnit: String?,
         catOptionComboUid: String?,
+        isCatComboCompleted: Boolean,
         coordinates: String?,
         tempCreate: String?,
     ): Flow<EventDetails> {
@@ -40,10 +44,26 @@ class ConfigureEventDetails(
                 selectedDate = selectedDate,
                 selectedOrgUnit = selectedOrgUnit,
                 catOptionComboUid = catOptionComboUid,
-                coordinates = coordinates
+                coordinates = coordinates,
+                isCompleted = isCompleted(
+                    selectedDate = selectedDate,
+                    selectedOrgUnit = selectedOrgUnit,
+                    isCatComboCompleted = isCatComboCompleted,
+                    tempCreate = tempCreate
+                )
             )
         )
     }
+
+    private fun isCompleted(
+        selectedDate: Date?,
+        selectedOrgUnit: String?,
+        isCatComboCompleted: Boolean,
+        tempCreate: String?
+    ) = selectedDate != null &&
+        !selectedOrgUnit.isNullOrEmpty() &&
+        isCatComboCompleted &&
+        (creationType != REFERAL || tempCreate != null)
 
     private fun isEditable(): Boolean {
         return eventId == null || getEditableReason() == null

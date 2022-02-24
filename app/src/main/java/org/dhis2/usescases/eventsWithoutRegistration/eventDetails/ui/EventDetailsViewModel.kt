@@ -48,6 +48,7 @@ class EventDetailsViewModel(
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
+    var showNoOrgUnits: (() -> Unit)? = null
     var showCategoryDialog: ((category: EventCategory) -> Unit)? = null
     var showCategoryPopUp: ((category: EventCategory) -> Unit)? = null
     var requestLocationPermissions: (() -> Unit)? = null
@@ -87,6 +88,7 @@ class EventDetailsViewModel(
                 selectedDate = eventDate.value.currentDate,
                 selectedOrgUnit = eventOrgUnit.value.selectedOrgUnit?.uid(),
                 catOptionComboUid = eventCatCombo.value.uid,
+                isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
                 tempCreate = eventTemp.value.status?.name,
             )
@@ -180,8 +182,12 @@ class EventDetailsViewModel(
     }
 
     fun onOrgUnitClick() {
-        if (!_eventOrgUnit.value.fixed) {
-            showOrgUnits?.invoke()
+        if (!eventOrgUnit.value.fixed) {
+            if (eventOrgUnit.value.orgUnits.isNullOrEmpty()) {
+                showNoOrgUnits?.invoke()
+            } else {
+                showOrgUnits?.invoke()
+            }
         }
     }
 
