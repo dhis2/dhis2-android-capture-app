@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterItem
@@ -51,11 +52,13 @@ class SearchTEPresenterTest {
                 .minAttributesRequiredToSearch(0).build()
 
         whenever(
-            repository.getTrackedEntityType(teType).blockingFirst()
-        )doReturn TrackedEntityType.builder()
-            .uid(teType)
-            .displayName("teTypeName")
-            .build()
+            repository.getTrackedEntityType(teType)
+        )doReturn Observable.just(
+            TrackedEntityType.builder()
+                .uid(teType)
+                .displayName("teTypeName")
+                .build()
+        )
 
         presenter = SearchTEPresenter(
             view,
