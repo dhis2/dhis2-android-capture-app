@@ -13,9 +13,13 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.data.RelationshipDirection;
 import org.dhis2.commons.data.RelationshipOwnerType;
 import org.dhis2.commons.data.RelationshipViewModel;
+import org.dhis2.commons.data.SearchTeiModel;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
@@ -29,11 +33,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.commons.data.tuples.Pair;
-import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.form.model.StoreResult;
-import org.dhis2.commons.data.SearchTeiModel;
-import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -69,6 +69,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
+import org.hisp.dhis.android.core.trackedentity.internal.TrackedEntityInstanceDownloader;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,6 +82,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import dhis2.org.analytics.charts.Charts;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -101,6 +103,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final CrashReportController crashReportController;
     private final NetworkUtils networkUtils;
     private final SearchTEIRepository searchTEIRepository;
+    private TrackedEntityInstanceDownloader downloadRepository = null;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -623,13 +626,31 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<D2Progress> downloadTei(String teiUid) {
+        downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                .byUid().eq(teiUid)
+                .byProgramUid(currentProgram);
         return Observable.merge(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                        .byUid().in(Collections.singletonList(teiUid))
+                downloadRepository
                         .overwrite(true)
                         .download(),
                 d2.fileResourceModule().download()
         );
+    }
+
+    @Override
+    public Completable breakTheGlass(String teiUid, String reason) {
+        if (downloadRepository != null) {
+            return Completable.fromCallable(() -> {
+                        d2.trackedEntityModule().ownershipManager().blockingBreakGlass(teiUid, currentProgram, reason);
+                        downloadRepository.overwrite(true).blockingDownload();
+                        d2.fileResourceModule().blockingDownload();
+                        downloadRepository = null;
+                        return true;
+                    }
+            );
+        } else {
+            return Completable.complete();
+        }
     }
 
     private SearchTeiModel transformResult(Result<TrackedEntityInstance, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
@@ -877,27 +898,28 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @Nullable String programUid) {
-        Map<String,String> filteredQuery = new HashMap<>();
-        for(Map.Entry<String,String> entry : queryData.entrySet()){
+        Map<String, String> filteredQuery = new HashMap<>();
+        for (Map.Entry<String, String> entry : queryData.entrySet()) {
             String attributeUid = entry.getKey();
             String value = entry.getValue();
-            if(programUid == null && attributeIsForType(attributeUid) ||
-                    programUid != null && attributeBelongsToProgram(attributeUid,programUid)
-            ){
+            if (programUid == null && attributeIsForType(attributeUid) ||
+                    programUid != null && attributeBelongsToProgram(attributeUid, programUid)
+            ) {
                 filteredQuery.put(attributeUid, value);
             }
         }
         return filteredQuery;
     }
 
-    private boolean attributeIsForType(String attributeUid){
+
+    private boolean attributeIsForType(String attributeUid) {
         return !d2.trackedEntityModule().trackedEntityTypeAttributes()
                 .byTrackedEntityTypeUid().eq(teiType)
                 .byTrackedEntityAttributeUid().eq(attributeUid)
                 .blockingIsEmpty();
     }
 
-    private boolean attributeBelongsToProgram(String attributeUid, String programUid){
+    private boolean attributeBelongsToProgram(String attributeUid, String programUid) {
         return !d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(programUid)
                 .byTrackedEntityAttribute().eq(attributeUid)
