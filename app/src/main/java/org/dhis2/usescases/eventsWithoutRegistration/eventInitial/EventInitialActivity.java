@@ -151,6 +151,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, periodType);
         bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
+        bundle.putString(Constants.ORG_UNIT, selectedOrgUnit);
 
         EventDetailsFragment eventDetailsFragment = new EventDetailsFragment();
         eventDetailsFragment.setArguments(bundle);

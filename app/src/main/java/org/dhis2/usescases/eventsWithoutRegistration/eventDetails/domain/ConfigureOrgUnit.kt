@@ -67,7 +67,7 @@ class ConfigureOrgUnit(
         selectedOrgUnit: String?
     ): OrganisationUnit? {
         val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
-            getOrgUnitBySelectedDate(date)
+            getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
         } ?: getStoredOrgUnit(selectedOrgUnit)
 
         orgUnit?.let {
