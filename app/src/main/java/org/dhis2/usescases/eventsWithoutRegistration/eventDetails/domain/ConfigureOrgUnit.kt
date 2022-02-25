@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import android.text.TextUtils.isEmpty
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -56,17 +55,7 @@ class ConfigureOrgUnit(
     }
 
     private fun isVisible(): Boolean {
-        if (creationType == SCHEDULE) {
-            return false
-        }
-
-        getStoredEvent()?.let { event ->
-            if (!isEmpty(event.enrollment()) && creationType != ADDNEW) {
-                return false
-            }
-        }
-
-        return true
+        return creationType != SCHEDULE
     }
 
     private fun isFixed(): Boolean {

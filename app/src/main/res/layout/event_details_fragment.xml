@@ -132,14 +132,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:enabled="@{viewModel.eventDetails.enabled &amp;&amp; viewModel.eventOrgUnit.enable}"
                     android:hint="@string/org_unit"
-                    android:textColorHint="@color/text_black_808">
+                    android:textColorHint="@color/text_black_808"
+                    android:visibility="@{viewModel.eventOrgUnit.visible ? View.VISIBLE:View.GONE}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/org_unit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="@{viewModel.eventDetails.enabled}"
                         android:focusable="false"
                         android:onClick="@{() -> viewModel.onOrgUnitClick()}"
                         android:text="@{viewModel.eventOrgUnit.selectedOrgUnit.displayName}"
