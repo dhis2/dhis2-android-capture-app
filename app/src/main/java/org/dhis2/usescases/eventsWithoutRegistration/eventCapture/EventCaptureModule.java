@@ -18,6 +18,8 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
+import org.dhis2.form.ui.provider.LegendValueProvider;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -84,7 +86,8 @@ public class EventCaptureModule {
     @PerActivity
     FieldViewModelFactory fieldFactory(
             Context context,
-            D2 d2
+            D2 d2,
+            ResourceManager resourceManager
     ) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
@@ -97,7 +100,8 @@ public class EventCaptureModule {
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
                 new UiEventTypesProviderImpl(),
-                new KeyboardActionProviderImpl());
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager));
     }
 
     @Provides
@@ -152,7 +156,8 @@ public class EventCaptureModule {
             org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
             CrashReportController crashReportController,
             NetworkUtils networkUtils,
-            SearchTEIRepository searchTEIRepository
+            SearchTEIRepository searchTEIRepository,
+            ResourceManager resourceManager
     ) {
         return new FormRepositoryImpl(
                 new ValueStoreImpl(
@@ -168,7 +173,8 @@ public class EventCaptureModule {
                 new DisplayNameProviderImpl(d2),
                 eventDataEntryRepository,
                 new org.dhis2.form.data.EventRuleEngineRepository(d2, eventUid),
-                new RulesUtilsProviderImpl(d2)
+                new RulesUtilsProviderImpl(d2),
+                new LegendValueProviderImpl(d2, resourceManager)
         );
     }
 

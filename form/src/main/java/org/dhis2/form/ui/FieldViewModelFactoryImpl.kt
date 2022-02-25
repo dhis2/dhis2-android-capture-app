@@ -1,24 +1,22 @@
 package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
-import java.util.Arrays
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
-import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
@@ -32,15 +30,10 @@ class FieldViewModelFactoryImpl(
     private val hintProvider: HintProvider,
     private val displayNameProvider: DisplayNameProvider,
     private val uiEventTypesProvider: UiEventTypesProvider,
-    private val keyboardActionProvider: KeyboardActionProvider
+    private val keyboardActionProvider: KeyboardActionProvider,
+    private val legendValueProvider: LegendValueProvider
 ) : FieldViewModelFactory {
     private val currentSection = ObservableField("")
-    private val optionSetTextRenderings = Arrays.asList(
-        ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-        ValueTypeRenderingType.VERTICAL_CHECKBOXES,
-        ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-        ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
-    )
 
     override fun create(
         id: String,
@@ -58,7 +51,6 @@ class FieldViewModelFactoryImpl(
         optionCount: Int?,
         objectStyle: ObjectStyle,
         fieldMask: String?,
-        legendValue: LegendValue?,
         options: List<Option>?,
         featureType: FeatureType?
     ): FieldUiModel {
@@ -85,7 +77,7 @@ class FieldViewModelFactoryImpl(
             hintProvider.provideDateHint(valueType),
             description,
             valueType,
-            legendValue,
+            legendValueProvider.provideLegendValue(id, value),
             optionSet,
             allowFutureDates,
             UiEventFactoryImpl(
@@ -134,7 +126,6 @@ class FieldViewModelFactoryImpl(
             optionCount = null,
             objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
             fieldMask = trackedEntityAttribute.fieldMask(),
-            legendValue = null,
             options = options!!,
             featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
                 FeatureType.POINT

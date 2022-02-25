@@ -1,7 +1,6 @@
 package org.dhis2.form.ui
 
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.LegendValue
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -28,7 +27,6 @@ interface FieldViewModelFactory {
         optionCount: Int?,
         objectStyle: ObjectStyle,
         fieldMask: String?,
-        legendValue: LegendValue?,
         options: List<Option>?,
         featureType: FeatureType?
     ): FieldUiModel

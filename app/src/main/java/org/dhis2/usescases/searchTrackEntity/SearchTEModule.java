@@ -33,6 +33,7 @@ import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
@@ -171,7 +172,9 @@ public class SearchTEModule {
     @PerActivity
     FieldViewModelFactory fieldViewModelFactory(
             Context context,
-            D2 d2) {
+            D2 d2,
+            ResourceManager resourceManager
+    ) {
         return new FieldViewModelFactoryImpl(
                 ValueTypeExtensionsKt.valueTypeHintMap(context),
                 true,
@@ -184,7 +187,8 @@ public class SearchTEModule {
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(d2),
                 new UiEventTypesProviderImpl(),
-                new KeyboardActionProviderImpl());
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager));
     }
 
     @Provides
@@ -248,6 +252,7 @@ public class SearchTEModule {
                 new FieldErrorMessageProvider(moduleContext),
                 new DisplayNameProviderImpl(d2),
                 dataEntryRepository,
+                null,
                 null,
                 null
         );

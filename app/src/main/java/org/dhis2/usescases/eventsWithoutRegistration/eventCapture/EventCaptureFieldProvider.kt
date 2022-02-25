@@ -166,7 +166,6 @@ class EventCaptureFieldProvider(
                 options.size,
                 de.style() ?: ObjectStyle.builder().build(),
                 de.fieldMask(),
-                getColorByLegend(rawValue, de),
                 options,
                 FeatureType.POINT
             )

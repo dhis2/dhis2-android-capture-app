@@ -14,6 +14,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
@@ -33,6 +34,7 @@ class FormRepositoryImplTest {
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
+    private val legendValueProvider: LegendValueProvider = mock()
     private lateinit var repository: FormRepositoryImpl
 
     @Before
@@ -45,7 +47,8 @@ class FormRepositoryImplTest {
             displayNameProvider,
             dataEntryRepository,
             ruleEngineRepository,
-            rulesUtilsProvider
+            rulesUtilsProvider,
+            legendValueProvider
         )
         repository.fetchFormItems()
     }

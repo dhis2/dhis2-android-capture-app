@@ -7,6 +7,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
@@ -19,7 +20,8 @@ class FormRepositoryImpl(
     private val displayNameProvider: DisplayNameProvider,
     private val dataEntryRepository: DataEntryRepository?,
     private val ruleEngineRepository: RuleEngineRepository?,
-    private val rulesUtilsProvider: RulesUtilsProvider?
+    private val rulesUtilsProvider: RulesUtilsProvider?,
+    private val legendValueProvider: LegendValueProvider?
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -347,6 +349,12 @@ class FormRepositoryImpl(
                                 valueType,
                                 value,
                                 item.optionSet
+                            )
+                        )
+                        .setLegend(
+                            legendValueProvider?.provideLegendValue(
+                                item.uid,
+                                value
                             )
                         )
                 )

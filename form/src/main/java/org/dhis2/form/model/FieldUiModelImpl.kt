@@ -147,7 +147,7 @@ data class FieldUiModelImpl(
 
     override fun setEditable(editable: Boolean) = this.copy(editable = editable)
 
-    override fun setLegend(legendValue: LegendValue?) = this.copy(legend = legend)
+    override fun setLegend(legendValue: LegendValue?) = this.copy(legend = legendValue)
 
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
