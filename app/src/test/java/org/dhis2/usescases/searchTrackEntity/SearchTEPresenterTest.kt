@@ -1,22 +1,14 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.databinding.ObservableField
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
-import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterItem
-import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.filters.ProgramType
 import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -24,6 +16,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -50,12 +43,19 @@ class SearchTEPresenterTest {
 
     @Before
     fun setUp() {
-        whenever(d2.programModule().programs().uid(initialProgram).blockingGet()) doReturn
-            Program.builder().uid(
-                initialProgram
-            )
+        whenever(
+            d2.programModule().programs().uid(initialProgram).blockingGet()
+        ) doReturn
+            Program.builder().uid(initialProgram)
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
+
+        whenever(
+            repository.getTrackedEntityType(teType).blockingFirst()
+        )doReturn TrackedEntityType.builder()
+            .uid(teType)
+            .displayName("teTypeName")
+            .build()
 
         presenter = SearchTEPresenter(
             view,
@@ -136,49 +136,6 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should show filters if list is ok`() {
-        val observableSortingInject = ObservableField<SortingItem>()
-        val observableOpenFilter = ObservableField<Filters>()
-        whenever(filterRepository.programFilters(any())) doReturn
-            listOf(
-                AssignedFilter(
-                    ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    "asignToMe"
-                )
-            )
-        presenter.checkFilters(true)
-        verify(view, times(1)).setFiltersVisibility(true)
-    }
-
-    @Test
-    fun `Should show filters if list is not ok but filters are active`() {
-        val observableSortingInject = ObservableField<SortingItem>()
-        val observableOpenFilter = ObservableField<Filters>()
-        whenever(filterRepository.programFilters(any())) doReturn
-            listOf(
-                AssignedFilter(
-                    ProgramType.TRACKER,
-                    observableSortingInject,
-                    observableOpenFilter,
-                    "asignToMe"
-                )
-            )
-        FilterManager.clearAll()
-        FilterManager.getInstance().setAssignedToMe(true)
-        presenter.checkFilters(false)
-        verify(view, times(1)).setFiltersVisibility(true)
-    }
-
-    @Test
-    fun `Should not show filters if list is not ok and filters are not active`() {
-        FilterManager.clearAll()
-        presenter.checkFilters(false)
-        verify(view, times(1)).setFiltersVisibility(false)
-    }
-
-    @Test
     fun `Should clear other filters if webapp is config`() {
         val list = listOf<FilterItem>()
         whenever(filterRepository.homeFilters()) doReturn listOf()
@@ -186,18 +143,6 @@ class SearchTEPresenterTest {
         presenter.clearOtherFiltersIfWebAppIsConfig()
 
         verify(disableHomeFiltersFromSettingsApp).execute(list)
-    }
-
-    @Test
-    fun `Should populate same list when onItemAction is triggered in FormView`() {
-        presenter.populateList(null)
-        verify(view, times(0)).setFabIcon(any())
-    }
-
-    @Test
-    fun `Should populate list for enrollment `() {
-        presenter.populateList(listOf())
-        verify(view, times(1)).setFabIcon(any())
     }
 
     @After

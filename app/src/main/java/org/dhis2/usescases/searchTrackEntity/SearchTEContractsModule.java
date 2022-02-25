@@ -135,8 +135,6 @@ public class SearchTEContractsModule {
 
         int getEnrollmentColor();
 
-        void checkFilters(boolean listResultIsOk);
-
         void deleteRelationship(String relationshipUid);
 
         void setProgramForTesting(Program program);
@@ -145,11 +143,6 @@ public class SearchTEContractsModule {
 
         void setOpeningFilterToNone();
 
-        void populateList(List<FieldUiModel> list);
-
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
-
-        void setAttributesEmpty(Boolean attributesEmpty);
-
     }
 }

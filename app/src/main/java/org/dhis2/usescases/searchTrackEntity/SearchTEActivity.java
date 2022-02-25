@@ -368,7 +368,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 })
                 .onFieldItemsRendered(isEmpty -> {
-                    presenter.setAttributesEmpty(isEmpty);
                     return Unit.INSTANCE;
                 })
                 .needToForceUpdate(true)

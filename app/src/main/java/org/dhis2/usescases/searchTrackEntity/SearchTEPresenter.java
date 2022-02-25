@@ -79,7 +79,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private String trackedEntityType;
 
-    private boolean teiTypeHasAttributesToDisplay = true;
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
     private final SearchMessageMapper searchMessageMapper;
@@ -584,44 +583,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void populateList(List<FieldUiModel> list) {
-        if (list != null) {
-            view.setFabIcon(!list.isEmpty());
-        }
-    }
-
-    @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 
     @Override
-    public void checkFilters(boolean listResultIsOk) {
-        boolean hasToShowFilters;
-        if (currentProgram.blockingFirst().isEmpty()) {
-            hasToShowFilters = !filterRepository.globalTrackedEntityFilters().isEmpty();
-        } else {
-            hasToShowFilters = !filterRepository
-                    .programFilters(currentProgram.blockingFirst()).isEmpty();
-        }
-
-        if (listResultIsOk) {
-            view.setFiltersVisibility(hasToShowFilters);
-        } else if (!listResultIsOk && hasToShowFilters) {
-            boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
-            view.setFiltersVisibility(filtersActive);
-        } else if (!listResultIsOk && !hasToShowFilters) {
-            view.setFiltersVisibility(false);
-        }
-    }
-
-    @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
-    }
-
-    @Override
-    public void setAttributesEmpty(Boolean attributesEmpty) {
-        teiTypeHasAttributesToDisplay = !attributesEmpty;
     }
 }
