@@ -20,7 +20,6 @@ import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
-import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -109,14 +108,6 @@ open class BaseTest {
 
     fun setDatePicker() {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
-    }
-
-    fun turnOnConnectivityAfterLogin() {
-        ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
-    }
-
-    fun turnOffConnectivityAfterLogin() {
-        ServerURLWrapper.setServerUrl("none")
     }
 
     private fun disableIntents() {
