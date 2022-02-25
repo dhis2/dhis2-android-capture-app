@@ -8,10 +8,10 @@ import io.reactivex.Observable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -75,6 +75,8 @@ class ConfigureEventReportDateTest {
             eventInitialRepository = eventInitialRepository,
             periodUtils = periodUtils
         )
+        val currentDay =
+            DateUtils.uiDateFormat().format(DateUtils.getInstance().today)
 
         // When reportDate is invoked
         val eventDate = configureEventReportDate.invoke().first()
@@ -82,7 +84,7 @@ class ConfigureEventReportDateTest {
         // Then report date should be active
         assert(eventDate.active)
         // Then reportDate should be the current day
-        assert(eventDate.dateValue == getCurrentDay())
+        assert(eventDate.dateValue == currentDay)
         // Then default label should be displayed
         assert(eventDate.label == EVENT_DATE)
     }
@@ -200,8 +202,6 @@ class ConfigureEventReportDateTest {
         // Then future dates should be allowed
         assertTrue(eventDate.allowFutureDates)
     }
-
-    private fun getCurrentDay() = DateUtils.getInstance().formatDate(DateUtils.getInstance().today)
 
     companion object {
         const val PROGRAM_STAGE_ID = "programStageId"
