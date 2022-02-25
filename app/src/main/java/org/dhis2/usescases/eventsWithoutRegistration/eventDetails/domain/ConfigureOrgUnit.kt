@@ -137,7 +137,7 @@ class ConfigureOrgUnit(
     }
 
     private fun getStoredEvent(): Event? =
-        eventUid?.let { eventInitialRepository.event(eventUid).blockingFirst() }
+        eventUid?.let { eventInitialRepository.event(it).blockingFirst() }
 
     private fun getCurrentOrgUnit() =
         if (preferencesProvider.contains(CURRENT_ORG_UNIT)) preferencesProvider.getString(
