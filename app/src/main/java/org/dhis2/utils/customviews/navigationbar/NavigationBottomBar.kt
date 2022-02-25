@@ -40,6 +40,8 @@ class NavigationBottomBar @JvmOverloads constructor(
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
 
+    var onConfigurationFinishListener: (() -> Unit)? = null
+
     init {
         hidden = visibility == View.GONE
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
@@ -214,7 +216,7 @@ class NavigationBottomBar @JvmOverloads constructor(
             }
             visibleMenuItems.size > 1 && isHidden() -> {
                 initSelection(visibleMenuItems)
-                show()
+                onConfigurationFinishListener?.invoke() ?: show()
             }
             else -> initSelection(visibleMenuItems)
         }

@@ -4,16 +4,10 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 
-import org.dhis2.form.model.RowAction;
-import org.dhis2.maps.model.EventUiComponentModel;
 import org.dhis2.maps.model.StageStyle;
-import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -24,6 +18,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -98,7 +93,7 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onEnrollClick();
+        void onEnrollClick(HashMap<String, String> queryData);
 
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 

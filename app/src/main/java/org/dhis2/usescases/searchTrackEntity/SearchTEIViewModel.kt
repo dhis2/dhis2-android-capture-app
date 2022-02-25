@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.data.uids
+import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.RowAction
@@ -69,6 +70,7 @@ class SearchTEIViewModel(
     val screenState: LiveData<SearchTEScreenState> = _screenState
 
     val createButtonScrollVisibility = MutableLiveData(true)
+    val isScrollingDown = MutableLiveData(false)
 
     val allowCreateWithoutSearch = false // init from configuration
     private var searching: Boolean = false
@@ -88,7 +90,8 @@ class SearchTEIViewModel(
                     previousSate = _screenState.value?.screenState ?: SearchScreenState.LIST,
                     queryHasData = queryData.isNotEmpty(),
                     minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
-                        ?: 1
+                        ?: 1,
+                    isForced = true
                 )
             else ->
                 SearchList(
@@ -262,10 +265,12 @@ class SearchTEIViewModel(
 
                 when (currentScreenState) {
                     SearchScreenState.LIST -> {
+                        onDataRequest()
                         setListScreen()
                         _refreshData.value = Unit
                     }
                     SearchScreenState.MAP -> {
+                        onDataRequest()
                         setMapScreen()
                         fetchMapResults()
                     }
@@ -294,9 +299,11 @@ class SearchTEIViewModel(
     }
 
     fun canDisplayResult(itemCount: Int): Boolean {
-        return _selectedProgram.value?.maxTeiCountToReturn()?.let { maxTeiCount ->
-            itemCount <= maxTeiCount
-        } ?: true
+        return _selectedProgram.value?.maxTeiCountToReturn()
+            ?.takeIf { it != 0 }
+            ?.let { maxTeiCount ->
+                itemCount <= maxTeiCount
+            } ?: true
     }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, String> {
@@ -304,7 +311,7 @@ class SearchTEIViewModel(
     }
 
     fun onEnrollClick() {
-        presenter.onEnrollClick()
+        presenter.onEnrollClick(HashMap(queryData))
     }
 
     fun onAddRelationship(teiUid: String, relationshipTypeUid: String?, online: Boolean) {
@@ -321,5 +328,46 @@ class SearchTEIViewModel(
 
     fun onTeiClick(teiUid: String, enrollmentUid: String?, online: Boolean) {
         presenter.onTEIClick(teiUid, enrollmentUid, online)
+    }
+
+    fun onDataLoaded() {
+        SearchIdlingResourceSingleton.decrement()
+    }
+
+    fun onDataRequest() {
+        SearchIdlingResourceSingleton.increment()
+    }
+
+    fun onBackPressed(
+        isPortrait: Boolean,
+        searchOrFilterIsOpen: Boolean,
+        keyBoardIsOpen: Boolean,
+        goBackCallback: () -> Unit,
+        closeSearchOrFilterCallback: () -> Unit,
+        closeKeyboardCallback: () -> Unit
+    ) {
+        val searchScreenIsForced = _screenState.value?.let {
+            if (it is SearchForm) {
+                it.isForced
+            } else {
+                false
+            }
+        } ?: false
+
+        if (isPortrait && searchOrFilterIsOpen && !searchScreenIsForced) {
+            if (keyBoardIsOpen) closeSearchOrFilterCallback()
+            closeSearchOrFilterCallback()
+        } else if (keyBoardIsOpen) {
+            closeKeyboardCallback()
+            goBackCallback()
+        } else {
+            goBackCallback()
+        }
+    }
+
+    fun canDisplayBottomNavigationBar(): Boolean {
+        return _screenState.value?.let {
+            it is SearchList || it is SearchMap
+        } ?: false
     }
 }

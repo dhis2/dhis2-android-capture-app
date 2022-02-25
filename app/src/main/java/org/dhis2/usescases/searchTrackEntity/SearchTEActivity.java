@@ -74,6 +74,7 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
@@ -143,6 +144,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private Content currentContent = null;
+    private boolean updatingFilters = false;
 
     //---------------------------------------------------------------------------------------------
 
@@ -214,7 +216,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         observeScreenState();
     }
 
-    private void initializeVariables(){
+    private void initializeVariables() {
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         try {
@@ -298,14 +300,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void onBackPressed() {
-        if (OrientationUtilsKt.isPortrait() && switchOpenClose != 2) {
-            closeFilters();
-            viewModel.setPreviousScreen(OrientationUtilsKt.isLandscape());
-        } else if (!ExtensionsKt.isKeyboardOpened(this)) {
-            super.onBackPressed();
-        } else {
-            hideKeyboard();
-        }
+        viewModel.onBackPressed(
+                OrientationUtilsKt.isPortrait(),
+                switchOpenClose != 2,
+                ExtensionsKt.isKeyboardOpened(this),
+                () -> {
+                    super.onBackPressed();
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    viewModel.setPreviousScreen(OrientationUtilsKt.isLandscape());
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    hideKeyboard();
+                    return Unit.INSTANCE;
+                }
+        );
     }
 
     @Override
@@ -332,6 +343,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void updateFilters(int totalFilters) {
+        updatingFilters = true;
         binding.setTotalFilters(totalFilters);
         binding.executePendingBindings();
         viewModel.refreshData();
@@ -393,8 +405,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        viewModel.getPageConfiguration().observe(this, pageConfigurator ->
-                binding.navigationBar.pageConfiguration(pageConfigurator));
+        viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
+            binding.navigationBar.setOnConfigurationFinishListener(()->{
+                if(viewModel.canDisplayBottomNavigationBar()){
+                    binding.navigationBar.show();
+                }
+                return Unit.INSTANCE;
+            });
+            binding.navigationBar.pageConfiguration(pageConfigurator);
+        });
     }
 
     private void showList() {
@@ -482,7 +501,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void configureListScreen(SearchList searchConfiguration) {
         if (switchOpenClose == 1) {
             showHideFilter();
-        } else if (switchOpenClose == 0) {
+        } else if (switchOpenClose == 0 && !updatingFilters) {
             showHideFilterGeneral();
         }
 
@@ -712,6 +731,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (backDropActive) {
             initSet.connect(R.id.mainComponent, ConstraintSet.TOP, general ? R.id.filterRecyclerLayout : R.id.formViewContainer, ConstraintSet.BOTTOM, general ? ExtensionsKt.getDp(16) : 0);
         } else {
+            updatingFilters = false;
             initSet.connect(R.id.mainComponent, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 

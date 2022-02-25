@@ -28,6 +28,7 @@ class TeiFlowRobot : BaseRobot() {
             selectSpecificDate(registrationDate.year, registrationDate.month, registrationDate.day)
             acceptDate()
             clickOnSearch()
+            clickOnEnroll()
             selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
             acceptDate()
         }

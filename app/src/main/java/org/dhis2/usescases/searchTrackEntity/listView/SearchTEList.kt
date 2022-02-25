@@ -1,26 +1,32 @@
 package org.dhis2.usescases.searchTrackEntity.listView
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
-import com.google.android.material.composethemeadapter.MdcTheme
+import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import javax.inject.Inject
+import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.searchTrackEntity.CreateNewButton
+import org.dhis2.usescases.searchTrackEntity.FullSearchButton
 import org.dhis2.usescases.searchTrackEntity.SearchList
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
-import org.dhis2.usescases.searchTrackEntity.ui.SearchTEListScreen
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
@@ -100,19 +106,57 @@ class SearchTEList : FragmentGlobalAbstract() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-            )
-            setContent {
-                MdcTheme {
-                    SearchTEListScreen(
-                        viewModel = viewModel,
-                        listAdapter = listAdapter
+        return FragmentSearchListBinding.inflate(inflater, container, false).apply {
+            scrollView.apply {
+                adapter = listAdapter
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(
+                        recyclerView: RecyclerView,
+                        dx: Int,
+                        dy: Int
+                    ) {
+                        super.onScrolled(recyclerView, dx, dy)
+                        if (dy > 0) {
+                            viewModel.isScrollingDown.value = true
+                        } else if (dy < 0) {
+                            viewModel.isScrollingDown.value = false
+                        }
+                    }
+                })
+            }
+            openSearchButton.apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                )
+                setContent {
+                    if (LocalConfiguration.current.orientation ==
+                        Configuration.ORIENTATION_PORTRAIT
+                    ) {
+                        val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                        FullSearchButton(
+                            modifier = Modifier,
+                            visible = !isScrollingDown,
+                            onClick = { viewModel.setSearchScreen(isLandscape()) }
+                        )
+                    }
+                }
+            }
+            createButton.apply {
+                setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                )
+                setContent {
+                    val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                    val createButtonVisibility by viewModel
+                        .createButtonScrollVisibility.observeAsState(true)
+                    CreateNewButton(
+                        modifier = Modifier,
+                        extended = createButtonVisibility and !isScrollingDown,
+                        onClick = viewModel::onEnrollClick
                     )
                 }
             }
-        }.also {
+        }.root.also {
             observeNewData()
         }
     }
@@ -233,6 +277,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         } else {
             handleDisplayInListResult(hasProgramResults)
         }
+        viewModel.onDataLoaded()
     }
 
     private fun handleDisplayInListResult(hasProgramResults: Boolean) {

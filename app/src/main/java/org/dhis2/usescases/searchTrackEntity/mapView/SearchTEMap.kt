@@ -195,6 +195,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             carouselAdapter?.setAllItems(trackerMapData.allItems())
             carouselAdapter?.updateLayers(teiMapManager?.mapLayerManager?.mapLayers)
             animations.endMapLoading(binding.mapCarousel)
+            viewModel.onDataLoaded()
         }
     }
 

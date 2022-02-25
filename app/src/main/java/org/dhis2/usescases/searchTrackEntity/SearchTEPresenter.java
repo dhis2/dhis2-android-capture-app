@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -263,10 +264,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onEnrollClick() {
+    public void onEnrollClick(HashMap<String, String> queryData) {
         if (selectedProgram != null)
             if (canCreateTei())
-                enroll(selectedProgram.uid(), null);
+                enroll(selectedProgram.uid(), null, queryData);
             else
                 view.displayMessage(view.getContext().getString(R.string.search_access_error));
         else
@@ -281,14 +282,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return programAccess && teTypeAccess;
     }
 
-    private void enroll(String programUid, String uid) {
+    private void enroll(String programUid, String uid, HashMap<String, String> queryData) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
-                        showEnrollmentDatePicker(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid);
+                        showCalendar(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid, queryData);
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
@@ -304,18 +305,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 if (!orgUnitDialog.isAdded())
                                     orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
-                                showEnrollmentDatePicker(allOrgUnits.get(0), programUid, uid);
+                                showCalendar(allOrgUnits.get(0), programUid, uid,queryData);
                         },
                         Timber::d
                 )
         );
     }
 
-    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
-        showCalendar(selectedOrgUnit, programUid, uid);
-    }
-
-    private void showCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+    private void showCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid, HashMap<String, String> queryData) {
         Date minDate = null;
         Date maxDate = null;
 
@@ -356,15 +353,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 selectedCalendar.set(Calendar.MILLISECOND, 0);
                 selectedEnrollmentDate = selectedCalendar.getTime();
 
-                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
+                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate, queryData);
             }
         });
         dialog.show();
     }
 
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate,HashMap<String, String> queryData) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, new HashMap<>(), enrollmentDate, view.fromRelationshipTEI())
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
@@ -417,7 +414,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 if(teiHasEnrollmentInProgram(teiUid)) {
                                     openDashboard(teiUid, enrollmentUid);
                                 }else if(canCreateTei()){
-                                    enroll(selectedProgram.uid(), teiUid);
+                                    enroll(selectedProgram.uid(), teiUid, new HashMap<>());
                                 }
                             } else {
                                 view.couldNotDownload(trackedEntity.displayName());

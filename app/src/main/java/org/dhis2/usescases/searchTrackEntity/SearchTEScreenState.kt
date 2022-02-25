@@ -26,7 +26,8 @@ data class SearchMap(
 data class SearchForm(
     override val previousSate: SearchScreenState,
     val queryHasData: Boolean,
-    val minAttributesToSearch: Int
+    val minAttributesToSearch: Int,
+    val isForced: Boolean = false
 ) : SearchTEScreenState(SearchScreenState.SEARCHING, previousSate)
 
 data class SearchAnalytics(
