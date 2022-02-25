@@ -22,9 +22,6 @@ import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
-import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -122,7 +119,8 @@ public class EventInitialPresenter {
                                         this.program = program;
                                         view.setProgram(program);
                                     },
-                                    throwable -> {}
+                                    throwable -> {
+                                    }
                             )
             );
 
@@ -257,10 +255,6 @@ public class EventInitialPresenter {
         compositeDisposable.clear();
     }
 
-    public void displayMessage(String message) {
-        view.displayMessage(message);
-    }
-
     private void getSectionCompletion() {
         Flowable<List<FieldUiModel>> fieldsFlowable = eventInitialRepository.list();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventInitialRepository.calculate()
@@ -315,32 +309,12 @@ public class EventInitialPresenter {
         return map;
     }
 
-    public String getCatOptionCombo(String catComboUid, List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {
-        return eventInitialRepository.getCategoryOptionCombo(catComboUid, UidsHelper.getUidsList(values));
-    }
-
-    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
-        return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
-    }
-
-    public CategoryOption getCatOption(String selectedOption) {
-        return eventInitialRepository.getCatOption(selectedOption);
-    }
-
-    public int catOptionSize(String uid) {
-        return eventInitialRepository.getCatOptionSize(uid);
-    }
-
     public void setChangingCoordinates(boolean changingCoordinates) {
         if (changingCoordinates) {
             preferences.setValue(Preference.EVENT_COORDINATE_CHANGED, true);
         } else {
             preferences.removeValue(Preference.EVENT_COORDINATE_CHANGED);
         }
-    }
-
-    public List<CategoryOption> getCatOptions(String categoryUid) {
-        return eventInitialRepository.getCategoryOptions(categoryUid);
     }
 
     public boolean getCompletionPercentageVisibility() {

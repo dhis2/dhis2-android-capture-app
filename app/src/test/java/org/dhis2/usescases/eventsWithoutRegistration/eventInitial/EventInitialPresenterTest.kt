@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
-import android.app.DatePickerDialog
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -10,7 +9,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.Date
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -18,7 +16,6 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -27,7 +24,6 @@ import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
@@ -76,9 +72,7 @@ class EventInitialPresenterTest {
         presenter.init("uid", null, "orgUnit", "stageUid")
         verify(view).setAccessDataWrite(true)
         verify(view).setProgram(any())
-        verify(view).setCatComboOptions(catCombo, listOf(), null)
         verify(view).setProgramStage(any())
-        verify(view).setOrgUnit(any(), any())
     }
 
     @Test
@@ -91,10 +85,7 @@ class EventInitialPresenterTest {
         verify(view).setProgram(any())
         verify(view).setProgramStage(any())
         verify(view).setEvent(any())
-        verify(view).setEditionStatus(any())
-        verify(view).setCatComboOptions(catCombo, listOf(), null)
         verify(view).updatePercentage(any())
-        verify(view).setOrgUnit(any(), any())
     }
 
     @Test
@@ -159,15 +150,6 @@ class EventInitialPresenterTest {
     fun `Should return false if enrollment is not open`() {
         whenever(eventInitialRepository.isEnrollmentOpen) doReturn false
         assertFalse(presenter.isEnrollmentOpen)
-    }
-
-    @Test
-    fun `Should get the programStage ObjectStyle`() {
-        val style = ObjectStyle.builder().color("color").icon("icon").build()
-        whenever(eventInitialRepository.getObjectStyle("stage")) doReturn Observable.just(style)
-
-        presenter.getStageObjectStyle("stage")
-        verify(view).renderObjectStyle(style)
     }
 
     @Test
@@ -444,142 +426,10 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should show date dialog`() {
-        val listener: DatePickerDialog.OnDateSetListener = mock()
-        presenter.onDateClick(listener)
-        verify(view).showDateDialog(listener)
-    }
-
-    @Test
-    fun `Should show orgUnit selector`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", null, "stageUid", catCombo, true)
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.onOrgUnitButtonClick()
-        verify(view).showOrgUnitSelector(any())
-    }
-
-    @Test
-    fun `Should check fab button visibility on field changes`() {
-        presenter.onFieldChanged("", 0, 1, 1)
-        verify(view).checkActionButtonVisibility()
-    }
-
-    @Test
     fun `Should clear disposable`() {
         val size = presenter.compositeDisposable.size()
         presenter.onDettach()
         assert(size == 0)
-    }
-
-    @Test
-    fun `Should display message`() {
-        presenter.displayMessage("message")
-        verify(view).displayMessage("message")
-    }
-
-    @Test
-    fun `Should get the CategoryOptionCombo uid`() {
-        val uid = "uid"
-        whenever(eventInitialRepository.getCategoryOptionCombo("catCombo", listOf())) doReturn uid
-
-        val catOptionCombo = presenter.getCatOptionCombo("catCombo", listOf(), listOf())
-        assertTrue(uid == catOptionCombo)
-    }
-
-    @Test
-    fun `Should get the stage last date`() {
-        val date = Date()
-        whenever(eventInitialRepository.getStageLastDate("stageUid", "enrollment")) doReturn date
-
-        val result = presenter.getStageLastDate("stageUid", "enrollment")
-        assertTrue(date == result)
-    }
-
-    @Test
-    fun `Should get event orgUnit`() {
-        val orgUnit = OrganisationUnit.builder().uid("uid").displayName("name").build()
-        whenever(
-            eventInitialRepository.getOrganisationUnit("uid")
-        ) doReturn Observable.just(orgUnit)
-
-        presenter.getEventOrgUnit("uid")
-        verify(view).setOrgUnit(orgUnit.uid(), orgUnit.displayName())
-    }
-
-    @Test
-    fun `Should initialize orgUnit when there is only one orgUnit`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-
-        initMocks("uid", null, "stageUid", catCombo)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf())
-        whenever(view.eventcreateionType()) doReturn EventCreationType.ADDNEW
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(any())
-    }
-
-    @Test
-    fun `Should initialize orgUnit when there are more than one orgUnit`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-        val filteredOrgUnit =
-            OrganisationUnit.builder().uid("orgUnit").displayName("name").build()
-
-        initMocks("uid", null, "stageUid", catCombo, true)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf(filteredOrgUnit))
-        whenever(preferences.contains(Preference.CURRENT_ORG_UNIT)) doReturn true
-        whenever(preferences.getString(Preference.CURRENT_ORG_UNIT)) doReturn "orgUnit"
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(any())
-    }
-
-    @Test
-    fun `Should initialize orgUnits when there are not any orgUnit available`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-
-        initMocks("uid", null, "stageUid", catCombo, true)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.error(Throwable("Error"))
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(null)
-    }
-
-    @Test
-    fun `Should get CategoryOption`() {
-        val categoryOption = CategoryOption.builder().uid("uid").build()
-        whenever(eventInitialRepository.getCatOption("uid")) doReturn categoryOption
-
-        val result = presenter.getCatOption("uid")
-        assert(categoryOption.uid() == result.uid())
-    }
-
-    @Test
-    fun `Should get the CategoryOptions size`() {
-        val size = 2
-        whenever(eventInitialRepository.getCatOptionSize("uid")) doReturn size
-
-        val result = presenter.catOptionSize("uid")
-        assert(result == size)
     }
 
     @Test
@@ -592,19 +442,6 @@ class EventInitialPresenterTest {
     fun `Should clear changing coordinates`() {
         presenter.setChangingCoordinates(false)
         verify(preferences).removeValue(Preference.EVENT_COORDINATE_CHANGED)
-    }
-
-    @Test
-    fun `Should get the list of the categoryOptions`() {
-        val catOptions = listOf<CategoryOption>(
-            CategoryOption.builder().uid("uid1").build(),
-            CategoryOption.builder().uid("uid2").build()
-        )
-        whenever(eventInitialRepository.getCategoryOptions("catUid")) doReturn catOptions
-
-        val result = presenter.getCatOptions("catUid")
-        assert(result.size == 2)
-        assert(result[1].uid() == "uid2")
     }
 
     @Test
