@@ -127,11 +127,12 @@ fun getFeatureType(renderingType: UiRenderType?): FeatureType {
 @BindingAdapter("geometry_polygon_value")
 fun TextInputEditText.setGeometryPolygonValue(item: FieldUiModel?) {
     item?.let {
-        val latitudeValue = when (it.renderingType) {
-            UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON ->
-                context.getString(R.string.polygon_captured)
-            else -> null
+        val latitudeValue = if (it.value != null && it.renderingType?.isPolygon() == true) {
+            context.getString(R.string.polygon_captured)
+        } else {
+            null
         }
+
         setText(latitudeValue)
     }
 }

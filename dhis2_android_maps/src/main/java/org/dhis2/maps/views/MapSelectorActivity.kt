@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -48,6 +47,8 @@ import org.dhis2.maps.location.MapActivityLocationCallback
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 
 class MapSelectorActivity :
     AppCompatActivity(),
@@ -186,9 +187,7 @@ class MapSelectorActivity :
     private fun showSource(source: GeoJsonSource, layer: SymbolLayer, id: String, drawable: Int) {
         style?.addImage(
             id,
-            BitmapFactory.decodeResource(
-                this.resources, drawable
-            )
+            ResourcesCompat.getDrawable(resources, drawable, null)!!.toBitmap()
         )
         style?.addSource(source)
         style?.addLayer(layer)
@@ -359,9 +358,9 @@ class MapSelectorActivity :
 
     private fun centerMapOnCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 this,
