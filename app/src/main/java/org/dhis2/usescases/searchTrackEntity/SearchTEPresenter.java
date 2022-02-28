@@ -280,7 +280,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return programAccess && teTypeAccess;
     }
 
-    private void enroll(String programUid, String uid, HashMap<String, String> queryData) {
+    @Override
+    public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
@@ -432,29 +433,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 view.couldNotDownload(trackedEntity.displayName());
                             }
                         })
-        );
-    }
-
-    @Override
-    public void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason) {
-        compositeDisposable.add(
-                searchRepository.breakTheGlass(teiUid, reason)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                () -> {
-                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
-                                        if (teiHasEnrollmentInProgram(teiUid)) {
-                                            openDashboard(teiUid, enrollmentUid);
-                                        } else if (canCreateTei()) {
-                                            enroll(selectedProgram.uid(), teiUid, new HashMap<>());
-                                        }
-                                    } else {
-                                        view.couldNotDownload(trackedEntity.displayName());
-                                    }
-                                },
-                                t -> view.displayMessage(new D2ErrorUtils(view.getContext()).getErrorMessage(t))
-                        )
         );
     }
 

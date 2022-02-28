@@ -51,6 +51,9 @@ class SearchTEIViewModel(
     val allowCreateWithoutSearch = false // init from configuration
     private var searching: Boolean = false
 
+    private val _downloadResult = MutableLiveData<TeiDownloadResult>()
+    val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
+
     init {
         viewModelScope.launch {
             _pageConfiguration.value = searchNavPageConfigurator.initVariables()
@@ -302,8 +305,26 @@ class SearchTEIViewModel(
         presenter.onSyncIconClick(teiUid)
     }
 
-    fun onDownloadTei(teiUid: String, enrollmentUid: String?) {
-        presenter.downloadTei(teiUid, enrollmentUid)
+    fun onDownloadTei(teiUid: String, enrollmentUid: String?, reason: String? = null) {
+        viewModelScope.launch {
+            val result = async(dispatchers.io()) {
+                searchRepository.download(teiUid, enrollmentUid, reason)
+            }
+            try {
+                val downloadResult = result.await()
+                if (downloadResult is TeiDownloadResult.TeiToEnroll) {
+                    presenter.enroll(
+                        selectedProgram.value?.uid(),
+                        downloadResult.teiUid,
+                        hashMapOf<String, String>().apply { putAll(queryData) }
+                    )
+                } else {
+                    _downloadResult.postValue(downloadResult)
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
 
     fun onTeiClick(teiUid: String, enrollmentUid: String?, online: Boolean) {

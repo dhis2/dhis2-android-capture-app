@@ -53,6 +53,8 @@ public interface SearchRepository {
 
     Observable<D2Progress> downloadTei(String teiUid);
 
+    TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
+
     void setCurrentProgram(@Nullable String currentProgram);
     boolean programHasAnalytics();
     boolean programHasCoordinates();
@@ -60,6 +62,4 @@ public interface SearchRepository {
     @Nullable Program getProgram(@Nullable String programUid);
 
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
-
-    Completable breakTheGlass(String teiUid, String reason);
 }

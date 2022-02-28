@@ -214,6 +214,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         showList();
         observeScreenState();
+        observeDownload();
     }
 
     private void initializeVariables() {
@@ -405,8 +406,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
-            binding.navigationBar.setOnConfigurationFinishListener(()->{
-                if(viewModel.canDisplayBottomNavigationBar()){
+            binding.navigationBar.setOnConfigurationFinishListener(() -> {
+                if (viewModel.canDisplayBottomNavigationBar()) {
                     binding.navigationBar.show();
                 }
                 return Unit.INSTANCE;
@@ -565,6 +566,30 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void syncButtonVisibility(boolean canBeDisplayed) {
         binding.syncButton.setVisibility(canBeDisplayed ? View.VISIBLE : GONE);
+    }
+
+    private void observeDownload() {
+        viewModel.getDownloadResult().observe(this, result ->
+                result.handleResult(
+                        (teiUid, enrollmentUid) -> {
+                            openDashboard(teiUid,
+                                    viewModel.getSelectedProgram().getValue().uid(),
+                                    enrollmentUid);
+                            return Unit.INSTANCE;
+                        },
+                        (teiUid, enrollmentUid) -> {
+                            showBreakTheGlass(teiUid, enrollmentUid);
+                            return Unit.INSTANCE;
+                        },
+                        (teiUid) -> {
+                            couldNotDownload(presenter.getTrackedEntityName().displayName());
+                            return Unit.INSTANCE;
+                        },
+                        (errorMessage) -> {
+                            displayMessage(errorMessage);
+                            return Unit.INSTANCE;
+                        }
+                ));
     }
 
     @Override
@@ -850,7 +875,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void showBreakTheGlass(String teiUid, String enrollmentUid) {
         new BreakTheGlassBottomDialog()
                 .setPositiveButton(reason -> {
-                    presenter.downloadTeiWithReason(teiUid, enrollmentUid, reason);
+                    viewModel.onDownloadTei(teiUid, enrollmentUid, reason);
                     return Unit.INSTANCE;
                 })
                 .show(getSupportFragmentManager(), BreakTheGlassBottomDialog.class.getName());

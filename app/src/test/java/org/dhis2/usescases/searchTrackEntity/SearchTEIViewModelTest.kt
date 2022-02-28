@@ -400,6 +400,44 @@ class SearchTEIViewModelTest {
         assertTrue(!viewModel.canDisplayBottomNavigationBar())
     }
 
+    @Test
+    fun `Should return break the glass result when downloading`() {
+        whenever(
+            repository.download(
+                "teiUid",
+                null,
+                null
+            )
+        ) doReturn TeiDownloadResult.BreakTheGlassResult("teiUid", null)
+
+        viewModel.downloadResult.observeForever(downloadResultObserver)
+
+        viewModel.onDownloadTei("teiUid", null)
+
+        val values = downloadResultCaptor.allValues
+        assertTrue(values.size == 1)
+        assertTrue(values[0] is TeiDownloadResult.BreakTheGlassResult)
+    }
+
+    @Test
+    fun `Should enroll tei in current program`() {
+        whenever(
+            repository.download(
+                "teiUid",
+                null,
+                null
+            )
+        ) doReturn TeiDownloadResult.TeiToEnroll("teiUid")
+
+        viewModel.downloadResult.observeForever(downloadResultObserver)
+
+        viewModel.onDownloadTei("teiUid", null)
+
+        val values = downloadResultCaptor.allValues
+        assertTrue(values.isEmpty())
+        verify(presenter, times(1)).enroll("programUid", "teiUid", hashMapOf())
+    }
+
     private fun testingProgram(
         displayFrontPageList: Boolean = true,
         minAttributesToSearch: Int = 1,

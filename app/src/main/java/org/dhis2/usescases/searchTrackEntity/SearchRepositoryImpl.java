@@ -82,7 +82,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import dhis2.org.analytics.charts.Charts;
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -638,19 +637,81 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Completable breakTheGlass(String teiUid, String reason) {
-        if (downloadRepository != null) {
-            return Completable.fromCallable(() -> {
-                        d2.trackedEntityModule().ownershipManager().blockingBreakGlass(teiUid, currentProgram, reason);
-                        downloadRepository.overwrite(true).blockingDownload();
-                        d2.fileResourceModule().blockingDownload();
-                        downloadRepository = null;
-                        return true;
-                    }
-            );
+    public TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, @Nullable String reason) {
+        if (downloadRepository != null && reason != null) {
+            return breakTheGlass(teiUid, reason);
         } else {
-            return Completable.complete();
+            return defaultDownload(teiUid, enrollmentUid);
         }
+    }
+
+    private TeiDownloadResult defaultDownload(String teiUid, @Nullable  String enrollmentUid){
+        downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                .byUid().eq(teiUid)
+                .byProgramUid(currentProgram);
+
+        try {
+            downloadRepository.overwrite(true).blockingDownload();
+            return checkDownload(teiUid, enrollmentUid);
+        } catch (Exception e) {
+            if (e instanceof D2Error) {
+                D2Error d2Error = (D2Error) e;
+                switch (d2Error.errorCode()) {
+                    case OWNERSHIP_ACCESS_DENIED:
+                        return new TeiDownloadResult.BreakTheGlassResult(teiUid, enrollmentUid);
+                    default:
+                        return new TeiDownloadResult.ErrorResult(resources.parseD2Error(e));
+                }
+            } else {
+                return new TeiDownloadResult.ErrorResult(e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private TeiDownloadResult breakTheGlass(String teiUid, String reason) {
+        if (downloadRepository != null) {
+            d2.trackedEntityModule().ownershipManager().blockingBreakGlass(teiUid, currentProgram, reason);
+            downloadRepository.overwrite(true).blockingDownload();
+            d2.fileResourceModule().blockingDownload();
+            downloadRepository = null;
+            return checkDownload(teiUid, null);
+        } else {
+            return new TeiDownloadResult.TeiNotDownloaded(teiUid);
+        }
+    }
+
+    private TeiDownloadResult checkDownload(String teiUid, @Nullable String enrollmentUid) {
+        if (teiHasBeenDownloaded(teiUid)) {
+            if (hasEnrollmentInCurrentProgram(teiUid)) {
+                return new TeiDownloadResult.DownloadedResult(teiUid, enrollmentUid);
+            } else if (canEnrollInCurrentProgram()) {
+                return new TeiDownloadResult.TeiToEnroll(teiUid);
+            } else {
+                return new TeiDownloadResult.DownloadedResult(teiUid, null);
+            }
+        } else {
+            return new TeiDownloadResult.TeiNotDownloaded(teiUid);
+        }
+    }
+
+    private boolean teiHasBeenDownloaded(String teiUid) {
+        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists();
+    }
+
+    private boolean hasEnrollmentInCurrentProgram(String teiUid) {
+        return !d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byProgram().eq(currentProgram)
+                .blockingIsEmpty();
+    }
+
+    private boolean canEnrollInCurrentProgram() {
+        Program selectedProgram = d2.programModule().programs().uid(currentProgram).blockingGet();
+        boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();
+        boolean teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
+                selectedProgram.trackedEntityType().uid()
+        ).blockingGet().access().data().write();
+        return programAccess && teTypeAccess;
     }
 
     private SearchTeiModel transformResult(Result<TrackedEntityInstance, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
