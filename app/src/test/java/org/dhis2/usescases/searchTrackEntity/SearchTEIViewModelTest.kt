@@ -403,7 +403,6 @@ class SearchTEIViewModelTest {
         assertTrue(!viewModel.canDisplayBottomNavigationBar())
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `Should return break the glass result when downloading`() {
         whenever(
@@ -414,12 +413,15 @@ class SearchTEIViewModelTest {
             )
         ) doReturn TeiDownloadResult.BreakTheGlassResult("teiUid", null)
 
+        viewModel.downloadResult.observeForever(downloadResultObserver)
+
         viewModel.onDownloadTei("teiUid", null)
-        testingDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.downloadResult.value is TeiDownloadResult.BreakTheGlassResult)
+
+        val values = downloadResultCaptor.allValues
+        assertTrue(values.size == 1)
+        assertTrue(values[0] is TeiDownloadResult.BreakTheGlassResult)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `Should enroll tei in current program`() {
         whenever(
@@ -430,14 +432,13 @@ class SearchTEIViewModelTest {
             )
         ) doReturn TeiDownloadResult.TeiToEnroll("teiUid")
 
+        viewModel.downloadResult.observeForever(downloadResultObserver)
+
         viewModel.onDownloadTei("teiUid", null)
-        testingDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.downloadResult.value == null)
-        verify(presenter, times(1)).enroll(
-            "initialProgram",
-            "teiUid",
-            hashMapOf<String, String>().apply { putAll(viewModel.queryData) }
-        )
+
+        val values = downloadResultCaptor.allValues
+        assertTrue(values.isEmpty())
+        verify(presenter, times(1)).enroll("programUid", "teiUid", hashMapOf())
     }
 
     private fun testingProgram(
