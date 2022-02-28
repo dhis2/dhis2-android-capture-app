@@ -5,11 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.databinding.DataBindingUtil
-import com.google.zxing.Result
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import javax.inject.Inject
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.ActivityScanBinding
@@ -17,7 +15,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
-class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
+class ScanActivity : ActivityGlobalAbstract() {
     private lateinit var binding: ActivityScanBinding
     private lateinit var mScannerView: DecoratedBarcodeView
     private lateinit var capture: CaptureManager
@@ -44,6 +42,33 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
         capture = CaptureManager(this, mScannerView)
         capture.initializeFromIntent(intent, savedInstanceState)
         capture.decode()
+        initScannerCallback()
+    }
+
+    private fun initScannerCallback() {
+        mScannerView.decodeSingle { barcodeResult ->
+            var url = barcodeResult.text
+
+            if (optionSetUid != null) {
+                val option = scanRepository.getOptions()
+                    .firstOrNull {
+                        it.displayName() == barcodeResult.text ||
+                            it.name() == barcodeResult.text ||
+                            it.code() == barcodeResult.text
+                    }
+                if (option != null) {
+                    url = option.displayName()
+                } else {
+                    finish()
+                }
+            }
+
+            val data = Intent()
+            data.putExtra(Constants.UID, uid)
+            data.putExtra(Constants.EXTRA_DATA, url)
+            setResult(Activity.RESULT_OK, data)
+            finish()
+        }
     }
 
     override fun onResume() {
@@ -76,29 +101,5 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return mScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-    }
-
-    override fun handleResult(result: Result) {
-        var url = result.text
-
-        if (optionSetUid != null) {
-            val option = scanRepository.getOptions()
-                .firstOrNull {
-                    it.displayName() == result.text ||
-                        it.name() == result.text ||
-                        it.code() == result.text
-                }
-            if (option != null) {
-                url = option.displayName()
-            } else {
-                finish()
-            }
-        }
-
-        val data = Intent()
-        data.putExtra(Constants.UID, uid)
-        data.putExtra(Constants.EXTRA_DATA, url)
-        setResult(Activity.RESULT_OK, data)
-        finish()
     }
 }
