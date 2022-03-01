@@ -72,6 +72,7 @@ class SearchTEIViewModelTest {
                 }
             }
         )
+        testingDispatcher.scheduler.advanceUntilIdle()
     }
 
     @ExperimentalCoroutinesApi
