@@ -32,11 +32,13 @@ class FormRepositoryImpl(
     private var showWarnigns: Boolean = false
     private var showErrors: Boolean = false
     private var calculationLoop: Int = 0
+    private var backupList: List<FieldUiModel> = emptyList()
 
     override fun fetchFormItems(): List<FieldUiModel> {
         openedSectionUid =
             dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
+        backupList = itemList
         return composeList()
     }
 
@@ -163,14 +165,15 @@ class FormRepositoryImpl(
         return ruleEffectsResult?.configurationErrors
     }
 
-    override fun runDataIntegrityCheck(): DataIntegrityCheckResult {
+    override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
         val result = when {
             mandatoryItemsWithoutValue.isNotEmpty() -> {
                 showWarnigns = true
                 MissingMandatoryResult(
                     mandatoryItemsWithoutValue,
                     ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
+                    ruleEffectsResult?.messageOnComplete,
+                    allowDiscard
                 )
             }
             ruleEffectsResult?.fieldsWithErrors?.isNotEmpty() == true -> {
@@ -180,7 +183,8 @@ class FormRepositoryImpl(
                 FieldsWithErrorResult(
                     fieldsWithError(),
                     ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
+                    ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = true
                 )
             }
             ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
@@ -191,6 +195,7 @@ class FormRepositoryImpl(
                     ruleEffectsResult?.messageOnComplete
                 )
             }
+            backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
             else -> {
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
@@ -208,6 +213,8 @@ class FormRepositoryImpl(
     override fun calculationLoopOverLimit(): Boolean {
         return calculationLoop == loopThreshold
     }
+
+    override fun backupOfChangedItems() = backupList.minus(itemList)
 
     private fun fieldsWithError() = itemList.mapNotNull { field ->
         field.error?.let { field.uid }

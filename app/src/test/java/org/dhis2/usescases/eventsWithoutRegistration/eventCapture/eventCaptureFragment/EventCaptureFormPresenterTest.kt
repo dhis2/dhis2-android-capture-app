@@ -22,7 +22,7 @@ class EventCaptureFormPresenterTest {
     @Test
     fun `Should try to finish with fields with errors`() {
         presenter.handleDataIntegrityResult(
-            FieldsWithErrorResult(listOf("field1"), false, null)
+            FieldsWithErrorResult(listOf("field1"), false, null, false)
         )
         verify(activityPresenter).attemptFinish(false, null, listOf("field1"), emptyMap())
     }
@@ -38,7 +38,7 @@ class EventCaptureFormPresenterTest {
     @Test
     fun `Should try to finish with empty mandatory fields`() {
         presenter.handleDataIntegrityResult(
-            MissingMandatoryResult(mapOf(Pair("field1", "section")), false, null)
+            MissingMandatoryResult(mapOf(Pair("field1", "section")), false, null, false)
         )
         verify(activityPresenter).attemptFinish(
             false,

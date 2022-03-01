@@ -283,10 +283,10 @@ class FormViewModel(
         confError.value = repository.getConfigurationErrors() ?: emptyList()
     }
 
-    fun runDataIntegrityCheck() {
+    fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
             val result = async(Dispatchers.IO) {
-                repository.runDataIntegrityCheck()
+                repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
             }
             try {
                 _dataIntegrityResult.postValue(result.await())
@@ -321,6 +321,12 @@ class FormViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             }
+        }
+    }
+
+    fun discardChanges() {
+        repository.backupOfChangedItems().forEach {
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
         }
     }
 
