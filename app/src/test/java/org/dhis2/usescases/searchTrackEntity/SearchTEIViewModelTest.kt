@@ -161,12 +161,13 @@ class SearchTEIViewModelTest {
         assertTrue(queryData.isNotEmpty())
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `Should return local results LiveData if not searching and displayInList is true`() {
         val testingProgram = testingProgram()
         viewModel.setCurrentProgram(testingProgram)
-        viewModel.fetchListResults()
-
+        viewModel.fetchListResults {}
+        testingDispatcher.scheduler.advanceUntilIdle()
         verify(repository).searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = testingProgram,
@@ -180,7 +181,7 @@ class SearchTEIViewModelTest {
     fun `Should return null if not searching and displayInList is false`() {
         val testingProgram = testingProgram(displayFrontPageList = false)
         viewModel.setCurrentProgram(testingProgram)
-        viewModel.fetchListResults()
+        viewModel.fetchListResults {}
 
         verify(repository, times(0)).searchTrackedEntities(
             SearchParametersModel(
@@ -201,7 +202,9 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should return null global results if not searching`() {
-        assertTrue(viewModel.fetchListResults() == null)
+        viewModel.fetchListResults {
+            assertTrue(it == null)
+        }
     }
 
     @ExperimentalCoroutinesApi

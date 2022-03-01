@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
@@ -31,23 +32,10 @@ class SearchTEIViewModel(
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
     val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
 
-    init {
-        viewModelScope.launch {
-            val result = async(dispatchers.io()) {
-                searchNavPageConfigurator.initVariables()
-            }
-            try {
-                _pageConfiguration.postValue(result.await())
-            } catch (e: Exception) {
-                _pageConfiguration.postValue(searchNavPageConfigurator)
-            }
-        }
-    }
-
     val queryData = mutableMapOf<String, String>().apply {
         initialQuery?.let { putAll(it) }
     }
-    private val _selectedProgram = MutableLiveData(searchRepository.getProgram(initialProgramUid))
+    private val _selectedProgram = MutableLiveData<Program?>()
     val selectedProgram: LiveData<Program?> = _selectedProgram
 
     private val _refreshData = MutableLiveData(Unit)
@@ -66,7 +54,18 @@ class SearchTEIViewModel(
     private var searching: Boolean = false
 
     init {
-        SearchPageConfigurator(searchRepository)
+        viewModelScope.launch {
+            _pageConfiguration.postValue(initPageConfiguration())
+            _selectedProgram.postValue(initProgram(initialProgramUid))
+        }
+    }
+
+    private suspend fun initPageConfiguration() = withContext(dispatchers.io()) {
+        return@withContext searchNavPageConfigurator.initVariables()
+    }
+
+    private suspend fun initProgram(initialProgramUid: String?) = withContext(dispatchers.io()) {
+        return@withContext searchRepository.getProgram(initialProgramUid)
     }
 
     fun setListScreen() {
@@ -159,30 +158,35 @@ class SearchTEIViewModel(
         }
     }
 
-    fun fetchListResults(): LiveData<PagedList<SearchTeiModel>>? {
-        return when {
-            searching -> {
-                searchRepository.searchTrackedEntities(
-                    SearchParametersModel(
-                        selectedProgram = _selectedProgram.value,
-                        queryData = queryData
-                    ),
-                    searching && networkUtils.isOnline()
-                )
+    fun fetchListResults(onPagedListReady: (LiveData<PagedList<SearchTeiModel>>?) -> Unit) {
+        viewModelScope.launch {
+            val resultPagedList = when {
+                searching -> loadSearchResults()
+                displayFrontPageList() -> loadDisplayInListResults()
+                else -> null
             }
-            displayFrontPageList() -> {
-                searchRepository.searchTrackedEntities(
-                    SearchParametersModel(
-                        selectedProgram = _selectedProgram.value,
-                        queryData = queryData
-                    ),
-                    false
-                )
-            }
-            else -> {
-                null
-            }
+            onPagedListReady(resultPagedList)
         }
+    }
+
+    private suspend fun loadSearchResults() = withContext(dispatchers.io()) {
+        return@withContext searchRepository.searchTrackedEntities(
+            SearchParametersModel(
+                selectedProgram = _selectedProgram.value,
+                queryData = queryData
+            ),
+            searching && networkUtils.isOnline()
+        )
+    }
+
+    private suspend fun loadDisplayInListResults() = withContext(dispatchers.io()) {
+        return@withContext searchRepository.searchTrackedEntities(
+            SearchParametersModel(
+                selectedProgram = _selectedProgram.value,
+                queryData = queryData
+            ),
+            false
+        )
     }
 
     fun fetchGlobalResults(): LiveData<PagedList<SearchTeiModel>>? {

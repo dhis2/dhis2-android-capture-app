@@ -206,9 +206,9 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun initData() {
         displayLoadingData()
-        viewModel.fetchListResults()?.let {
-            it.removeObservers(viewLifecycleOwner)
-            it.observe(viewLifecycleOwner) { results ->
+        viewModel.fetchListResults {
+            it?.removeObservers(viewLifecycleOwner)
+            it?.observe(viewLifecycleOwner) { results ->
                 liveAdapter.submitList(results) {
                     onInitDataLoaded()
                 }
