@@ -58,7 +58,6 @@ import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 
@@ -271,10 +270,7 @@ public class SearchTEModule {
     SearchTeiViewModelFactory providesViewModelFactory(
             SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
-            MapTeisToFeatureCollection mapTeisToFeatureCollection,
-            MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
-            MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
-            DhisMapUtils mapUtils,
+            MapDataRepository mapDataRepository,
             NetworkUtils networkUtils) {
         return new SearchTeiViewModelFactory(
                 presenter,
@@ -282,12 +278,27 @@ public class SearchTEModule {
                 new SearchPageConfigurator(searchRepository),
                 initialProgram,
                 initialQuery,
+                mapDataRepository,
+                networkUtils,
+                new SearchDispatchers()
+        );
+    }
+
+    @Provides
+    @PerActivity
+    MapDataRepository mapDataRepository(
+            SearchRepository searchRepository,
+            MapTeisToFeatureCollection mapTeisToFeatureCollection,
+            MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+            MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
+            DhisMapUtils mapUtils
+    ) {
+        return new MapDataRepository(
+                searchRepository,
                 mapTeisToFeatureCollection,
                 mapTeiEventsToFeatureCollection,
                 mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(),
-                mapUtils,
-                networkUtils
-        );
+                mapUtils);
     }
 }

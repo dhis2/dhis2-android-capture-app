@@ -1,26 +1,19 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
-import com.mapbox.geojson.FeatureCollection
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.commons.data.SearchTeiModel
-import org.dhis2.commons.data.uids
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.search.SearchParametersModel
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
-import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.maps.mapper.EventToEventUiComponent
-import org.dhis2.maps.utils.DhisMapUtils
-import org.dhis2.usescases.searchTrackEntity.adapters.uids
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.program.Program
 
@@ -30,12 +23,9 @@ class SearchTEIViewModel(
     private val presenter: SearchTEContractsModule.Presenter,
     private val searchRepository: SearchRepository,
     private val searchNavPageConfigurator: SearchPageConfigurator,
-    private val mapTeisToFeatureCollection: MapTeisToFeatureCollection,
-    private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection,
-    private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
-    private val eventToEventUiComponent: EventToEventUiComponent,
-    private val mapUtils: DhisMapUtils,
-    private val networkUtils: NetworkUtils
+    private val mapDataRepository: MapDataRepository,
+    private val networkUtils: NetworkUtils,
+    private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -43,7 +33,7 @@ class SearchTEIViewModel(
 
     init {
         viewModelScope.launch {
-            val result = async(Dispatchers.IO) {
+            val result = async(dispatchers.io()) {
                 searchNavPageConfigurator.initVariables()
             }
             try {
@@ -211,39 +201,8 @@ class SearchTEIViewModel(
 
     fun fetchMapResults() {
         viewModelScope.launch {
-            val result = async(context = Dispatchers.IO) {
-                val teis = searchRepository.searchTeiForMap(
-                    SearchParametersModel(
-                        _selectedProgram.value,
-                        _selectedProgram.value?.trackedEntityType()?.uid(),
-                        queryData
-                    ),
-                    true
-                ).blockingFirst()
-                val events = searchRepository.getEventsForMap(teis)
-                val dataElements = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateDataElementInfo(events.uids())
-                )
-                val attributes = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateAttributeInfo(teis.uids())
-                )
-                val coordinateFields = mutableMapOf<String, FeatureCollection>().apply {
-                    putAll(dataElements)
-                    putAll(attributes)
-                }
-                val eventsUi = eventToEventUiComponent.mapList(events, teis)
-                val teiFeatureCollection =
-                    mapTeisToFeatureCollection.map(teis, _selectedProgram.value != null)
-                val eventsByProgramStage =
-                    mapTeiEventsToFeatureCollection.map(eventsUi).component1()
-                TrackerMapData(
-                    teiModels = teis,
-                    eventFeatures = eventsByProgramStage,
-                    teiFeatures = teiFeatureCollection.first,
-                    teiBoundingBox = teiFeatureCollection.second,
-                    eventModels = eventsUi.toMutableList(),
-                    dataElementFeaturess = coordinateFields
-                )
+            val result = async(context = dispatchers.io()) {
+                mapDataRepository.getTrackerMapData(_selectedProgram.value, queryData)
             }
             try {
                 _mapResults.value = result.await()
@@ -355,7 +314,7 @@ class SearchTEIViewModel(
         } ?: false
 
         if (isPortrait && searchOrFilterIsOpen && !searchScreenIsForced) {
-            if (keyBoardIsOpen) closeSearchOrFilterCallback()
+            if (keyBoardIsOpen) closeKeyboardCallback()
             closeSearchOrFilterCallback()
         } else if (keyBoardIsOpen) {
             closeKeyboardCallback()
@@ -369,5 +328,10 @@ class SearchTEIViewModel(
         return _screenState.value?.let {
             it is SearchList || it is SearchMap
         } ?: false
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun setCurrentProgram(program: Program) {
+        _selectedProgram.value = program
     }
 }
