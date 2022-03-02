@@ -23,8 +23,7 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 class FieldViewModelFactoryImpl(
-    private val valueTypeHintMap: Map<ValueType, String>,
-    private val searchMode: Boolean,
+    private val noMandatoryFields: Boolean,
     private val uiStyleProvider: UiStyleProvider,
     private val layoutProvider: LayoutProvider,
     private val hintProvider: HintProvider,
@@ -56,7 +55,7 @@ class FieldViewModelFactoryImpl(
     ): FieldUiModel {
         var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
-        if (searchMode) isMandatory = false
+        if (noMandatoryFields) isMandatory = false
         return FieldUiModelImpl(
             id,
             layoutProvider.getLayoutByType(
@@ -213,7 +212,7 @@ class FieldViewModelFactoryImpl(
 
     override fun createClosingSection(): FieldUiModel {
         return SectionUiModelImpl(
-            SectionUiModelImpl.Companion.CLOSING_SECTION_UID,
+            SectionUiModelImpl.CLOSING_SECTION_UID,
             layoutProvider.getLayoutForSection(),
             null,
             false,
@@ -221,7 +220,7 @@ class FieldViewModelFactoryImpl(
             false,
             null,
             false,
-            SectionUiModelImpl.Companion.CLOSING_SECTION_UID,
+            SectionUiModelImpl.CLOSING_SECTION_UID,
             null,
             null,
             null,
@@ -244,9 +243,5 @@ class FieldViewModelFactoryImpl(
             SectionRenderingType.LISTING.name,
             currentSection
         )
-    }
-
-    private fun getLayout(type: Class<*>): Int {
-        return layoutProvider.getLayoutByModel(type.kotlin)
     }
 }

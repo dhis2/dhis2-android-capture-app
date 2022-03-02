@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerFragment;
@@ -23,19 +22,20 @@ import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
-import org.dhis2.form.ui.FieldViewModelFactory;
-import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -90,7 +90,6 @@ public class EventCaptureModule {
             ResourceManager resourceManager
     ) {
         return new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
                 new UiStyleProviderImpl(
                         new FormUiModelColorFactoryImpl(activityContext, true),
