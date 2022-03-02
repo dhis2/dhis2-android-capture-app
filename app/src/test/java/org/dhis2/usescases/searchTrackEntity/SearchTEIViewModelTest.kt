@@ -20,6 +20,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
+import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
@@ -50,6 +51,7 @@ class SearchTEIViewModelTest {
         Dispatchers.setMain(testingDispatcher)
         whenever(pageConfigurator.initVariables()) doReturn pageConfigurator
         setCurrentProgram(testingProgram())
+        whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -90,8 +92,19 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `Should set SearchForm if displayFrontPageList is false`() {
+    fun `Should set SearchList if displayFrontPageList is false and can create`() {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setAllowCreateBeforeSearch(true)
+        viewModel.setListScreen()
+
+        val screenState = viewModel.screenState.value
+        assertTrue(screenState is SearchList)
+    }
+
+    @Test
+    fun `Should set SearchForm if displayFrontPageList is false and can not create`() {
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setAllowCreateBeforeSearch(false)
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
@@ -346,6 +359,91 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return no more result for displayInList true`() {
+        viewModel.onDataLoaded(2)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Should return search or create results for displayInList true`() {
+        viewModel.setAllowCreateBeforeSearch(true)
+        viewModel.onDataLoaded(0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH_OR_CREATE)
+        }
+    }
+
+    @Test
+    fun `Should return empty result and set SearchScreen for displayInList true`() {
+        viewModel.setAllowCreateBeforeSearch(false)
+        viewModel.onDataLoaded(0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isEmpty())
+        }
+        assertTrue(viewModel.screenState.value is SearchForm)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should return too many results for search`() {
+        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        viewModel.setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(2)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.TOO_MANY_RESULTS)
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should return search outside result for search`() {
+        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        viewModel.setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH_OUTSIDE)
+        }
+    }
+
+    @Test
+    fun `Should return no more results for global search`() {
+        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        viewModel.setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(1, 1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Should return no results for search`() {
+        viewModel.setCurrentProgram(testingProgram())
+        viewModel.setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(0, 0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_RESULTS)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,
@@ -456,6 +554,21 @@ class SearchTEIViewModelTest {
             }
         }
         .build()
+
+    @ExperimentalCoroutinesApi
+    private fun performSearch() {
+        viewModel.updateQueryData(
+            RowAction(
+                id = "testingUid",
+                value = "testingValue",
+                type = ActionType.ON_SAVE
+            )
+        )
+        viewModel.setListScreen()
+        viewModel.setSearchScreen(false)
+        viewModel.onSearchClick()
+        testingDispatcher.scheduler.advanceUntilIdle()
+    }
 
     private fun setCurrentProgram(programToReturn: Program) {
         whenever(repository.getProgram("programUid")) doReturn programToReturn

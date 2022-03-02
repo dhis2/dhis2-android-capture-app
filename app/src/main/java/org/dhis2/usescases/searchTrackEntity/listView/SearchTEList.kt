@@ -22,7 +22,6 @@ import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.FullSearchButton
-import org.dhis2.usescases.searchTrackEntity.SearchList
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
@@ -177,6 +176,19 @@ class SearchTEList : FragmentGlobalAbstract() {
             restoreAdapters()
             initData()
         }
+
+        viewModel.dataResult.observe(viewLifecycleOwner) {
+            initialLoadingAdapter.submitList(emptyList())
+            it.firstOrNull()?.let { searchResult ->
+                if (searchResult.shouldClearProgramData()) {
+                    liveAdapter.clearList()
+                }
+                if (searchResult.shouldClearGlobalData()) {
+                    globalAdapter.clearList()
+                }
+            }
+            resultAdapter.submitList(it)
+        }
     }
 
     private fun restoreAdapters() {
@@ -213,28 +225,30 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
         viewModel.fetchListResults {
-            it?.removeObservers(viewLifecycleOwner)
-            it?.observe(viewLifecycleOwner) { results ->
-                liveAdapter.submitList(results) {
-                    onInitDataLoaded()
+            it?.apply {
+                removeObservers(viewLifecycleOwner)
+                observe(viewLifecycleOwner) { results ->
+                    liveAdapter.submitList(results) {
+                        onInitDataLoaded()
+                    }
+                    results.addWeakCallback(results.snapshot(), initResultCallback)
                 }
-                results.addWeakCallback(results.snapshot(), initResultCallback)
-            }
+            } ?: onInitDataLoaded()
         }
     }
 
     private fun onInitDataLoaded() {
-        onDataLoaded(
-            canDisplayResults = viewModel.canDisplayResult(liveAdapter.itemCount),
-            hasProgramResults = liveAdapter.itemCount > 0
+        viewModel.onDataLoaded(
+            programResultCount = liveAdapter.itemCount,
+            isLandscape = isLandscape()
         )
     }
 
     private fun onGlobalDataLoaded() {
-        onDataLoaded(
-            canDisplayResults = viewModel.canDisplayResult(liveAdapter.itemCount),
-            hasProgramResults = liveAdapter.itemCount > 0,
-            hasGlobalResults = globalAdapter.itemCount > 0
+        viewModel.onDataLoaded(
+            programResultCount = liveAdapter.itemCount,
+            globalResultCount = liveAdapter.itemCount,
+            isLandscape = isLandscape()
         )
     }
 
@@ -261,67 +275,5 @@ class SearchTEList : FragmentGlobalAbstract() {
                 listOf(SearchResult(SearchResult.SearchResultType.LOADING))
             )
         }
-    }
-
-    private fun onDataLoaded(
-        canDisplayResults: Boolean = true,
-        hasProgramResults: Boolean,
-        hasGlobalResults: Boolean? = null
-    ) {
-        initialLoadingAdapter.submitList(emptyList())
-
-        val isSearching = viewModel.screenState.value.takeIf { it is SearchList }?.let {
-            (it as SearchList).isSearching
-        } ?: false
-
-        if (isSearching) {
-            handleSearchResult(
-                canDisplayResults,
-                hasProgramResults,
-                hasGlobalResults
-            )
-        } else {
-            handleDisplayInListResult(hasProgramResults)
-        }
-        viewModel.onDataLoaded()
-    }
-
-    private fun handleDisplayInListResult(hasProgramResults: Boolean) {
-        val result = when {
-            hasProgramResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
-            !hasProgramResults && viewModel.allowCreateWithoutSearch ->
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OR_CREATE))
-            else -> listOf()
-        }
-
-        if (result.isEmpty()) {
-            viewModel.setSearchScreen(isLandscape())
-        }
-
-        resultAdapter.submitList(result)
-    }
-
-    private fun handleSearchResult(
-        canDisplayResults: Boolean,
-        hasProgramResults: Boolean,
-        hasGlobalResults: Boolean?
-    ) {
-        val result = when {
-            !canDisplayResults -> {
-                liveAdapter.clearList()
-                globalAdapter.clearList()
-                listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
-            }
-            hasGlobalResults == null -> {
-                globalAdapter.clearList()
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE))
-            }
-            hasProgramResults || hasGlobalResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
-            else ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
-        }
-        resultAdapter.submitList(result)
     }
 }

@@ -9,4 +9,9 @@ data class SearchResult(val type: SearchResultType) {
         NO_RESULTS,
         TOO_MANY_RESULTS
     }
+
+    fun shouldClearProgramData() =
+        type == SearchResultType.TOO_MANY_RESULTS || type == SearchResultType.SEARCH_OUTSIDE
+
+    fun shouldClearGlobalData() = type == SearchResultType.SEARCH_OUTSIDE
 }
