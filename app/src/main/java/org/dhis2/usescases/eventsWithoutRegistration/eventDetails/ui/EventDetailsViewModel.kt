@@ -19,6 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
@@ -27,6 +28,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -42,7 +44,9 @@ class EventDetailsViewModel(
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
+    private val resourcesProvider: EventDetailResourcesProvider
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -54,6 +58,8 @@ class EventDetailsViewModel(
     var requestLocationPermissions: (() -> Unit)? = null
     var showEnableLocationMessage: (() -> Unit)? = null
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
+    var onButtonClickCallback: (() -> Unit)? = null
+    var showEventUpdateStatus: ((result: String) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -225,5 +231,30 @@ class EventDetailsViewModel(
             coordinates
         )
         geometry?.let { setUpCoordinates(it.coordinates()) }
+    }
+
+    fun onButtonClick() {
+        onButtonClickCallback?.invoke()
+    }
+
+    fun onActionButtonClick() {
+        viewModelScope.launch {
+            eventDetails.value.apply {
+                selectedDate?.let { date ->
+                    createOrUpdateEventDetails(
+                        selectedDate = date,
+                        selectedOrgUnit = selectedOrgUnit,
+                        catOptionComboUid = catOptionComboUid,
+                        coordinates = coordinates
+                    ).flowOn(Dispatchers.IO)
+                        .collect { result ->
+                            val message =
+                                if (result) resourcesProvider.provideEventCreatedMessage()
+                                else resourcesProvider.provideEventCreationError()
+                            showEventUpdateStatus?.invoke(message)
+                        }
+                }
+            }
+        }
     }
 }

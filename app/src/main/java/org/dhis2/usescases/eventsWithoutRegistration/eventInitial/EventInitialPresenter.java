@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -97,16 +97,14 @@ public class EventInitialPresenter {
             compositeDisposable
                     .add(
                             Flowable.zip(
-                                    eventInitialRepository.event(eventId).toFlowable(BackpressureStrategy.LATEST),
                                     eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
                                     eventInitialRepository.programStageForEvent(eventId),
-                                    Trio::create)
+                                    Pair::create)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(septet -> {
-                                        this.program = septet.val1();
-                                        view.setProgram(septet.val1());
-                                        view.setProgramStage(septet.val2());
-                                        view.setEvent(septet.val0());
+                                        this.program = septet.val0();
+                                        view.setProgram(septet.val0());
+                                        view.setProgramStage(septet.val1());
                                     }, Timber::d));
 
         } else {
@@ -231,23 +229,6 @@ public class EventInitialPresenter {
                                     t -> view.renderError(t.getMessage())
                             )
             );
-        }
-    }
-
-    public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date,
-                          String orgUnitUid, String catComboUid, String catOptionCombo, Geometry geometry) {
-        if (isEventEditable()) {
-            compositeDisposable.add(
-                    eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    eventModel -> view.onEventUpdated(eventModel.uid()),
-                                    error -> view.displayMessage(error.getLocalizedMessage())
-                            )
-            );
-        } else {
-            view.onEventUpdated(eventUid);
         }
     }
 

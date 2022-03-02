@@ -1,13 +1,15 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,15 +28,15 @@ import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.form.data.RuleUtilsProviderResultKt;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
-import org.dhis2.form.data.RulesUtilsProviderConfigurationError;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.jetbrains.annotations.NotNull;
@@ -46,12 +48,7 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
-public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable {
+public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable, EventDetailsComponentProvider {
 
     private static final int RQ_GO_BACK = 1202;
     private static final int NOTES_TAB_POSITION = 1;
@@ -109,17 +106,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 pageConfigurator.displayRelationships()
         );
         binding.eventViewPager.setAdapter(adapter);
+        binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
     }
 
     private void setUpNavigationBar() {
         binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.navigation_details){
-                goToInitialScreen();
-            } else {
-                binding.eventViewPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
-            }
+            binding.eventViewPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
             return true;
         });
     }
@@ -355,7 +349,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
@@ -435,5 +428,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     public void setFormEditionListener(OnEditionListener onEditionListener) {
         this.onEditionListener = onEditionListener;
+    }
+
+    @Nullable
+    @Override
+    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule module) {
+        return eventCaptureComponent.plus(module);
     }
 }

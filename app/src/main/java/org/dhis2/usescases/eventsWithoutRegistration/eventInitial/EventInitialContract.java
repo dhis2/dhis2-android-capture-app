@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
@@ -14,8 +13,6 @@ public class EventInitialContract {
         void setProgram(@NonNull Program program);
 
         void renderError(String message);
-
-        void setEvent(Event event);
 
         void onEventCreated(String eventUid);
 
