@@ -331,33 +331,6 @@ class EventInitialPresenterTest {
         verify(view).renderError("Error")
     }
 
-    /*
-    @Test
-    fun `Should display message when there is a problem editing event`() {
-        val geometry = Geometry.builder().type(FeatureType.POINT).build()
-        whenever(
-            eventInitialRepository.editableStatus
-        ) doReturn Flowable.just(Editable())
-        whenever(
-            eventInitialRepository.editEvent(
-                "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
-            )
-        ) doReturn Observable.error(Throwable("Error"))
-
-        presenter.editEvent(
-            "tei",
-            "stage",
-            "event_uid",
-            "date",
-            "orgUnit",
-            "catCombo",
-            "catOptionCombo",
-            geometry
-        )
-
-        verify(view).displayMessage("Error")
-    }*/
-
     @Test
     fun `Should clear disposable`() {
         val size = presenter.compositeDisposable.size()

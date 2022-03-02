@@ -4,10 +4,12 @@ import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 
 class CreateOrUpdateEventDetails(
-    private val repository: EventDetailsRepository
+    private val repository: EventDetailsRepository,
+    private val resourcesProvider: EventDetailResourcesProvider
 ) {
 
     operator fun invoke(
@@ -15,7 +17,7 @@ class CreateOrUpdateEventDetails(
         selectedOrgUnit: String?,
         catOptionComboUid: String?,
         coordinates: String?
-    ): Flow<Boolean> {
+    ): Flow<Result<String>> {
         repository.getEvent()?.let {
             if (repository.getEditableStatus() is Editable) {
                 repository.updateEvent(
@@ -24,10 +26,10 @@ class CreateOrUpdateEventDetails(
                     catOptionComboUid,
                     coordinates
                 )
-                return flowOf(true)
+                return flowOf(Result.success(resourcesProvider.provideEventCreatedMessage()))
             }
         }
 
-        return flowOf(false)
+        return flowOf(Result.failure(Throwable(resourcesProvider.provideEventCreationError())))
     }
 }

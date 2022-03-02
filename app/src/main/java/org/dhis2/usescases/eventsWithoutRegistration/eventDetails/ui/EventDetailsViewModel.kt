@@ -28,7 +28,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -45,8 +44,7 @@ class EventDetailsViewModel(
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
-    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
-    private val resourcesProvider: EventDetailResourcesProvider
+    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -248,10 +246,12 @@ class EventDetailsViewModel(
                         coordinates = coordinates
                     ).flowOn(Dispatchers.IO)
                         .collect { result ->
-                            val message =
-                                if (result) resourcesProvider.provideEventCreatedMessage()
-                                else resourcesProvider.provideEventCreationError()
-                            showEventUpdateStatus?.invoke(message)
+                            result.onFailure {
+                                showEventUpdateStatus?.invoke(it.message!!)
+                            }
+                            result.onSuccess { message ->
+                                showEventUpdateStatus?.invoke(message)
+                            }
                         }
                 }
             }

@@ -7,11 +7,11 @@ import java.util.Date
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.event.EventNonEditableReason.NO_DATA_WRITE_ACCESS
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -24,12 +24,15 @@ class CreateOrUpdateEventDetailsTest {
         on { getEvent() } doReturn event
         on { updateEvent(selectedDate, ORG_UNIT_UID, null, null) } doReturn event
     }
+    private val resourcesProvider: EventDetailResourcesProvider = mock {
+        on { provideEventCreationError() } doReturn EVENT_UPDATE_ERROR
+    }
 
     private lateinit var createOrUpdateEventDetails: CreateOrUpdateEventDetails
 
     @Before
     fun setUp() {
-        createOrUpdateEventDetails = CreateOrUpdateEventDetails(repository)
+        createOrUpdateEventDetails = CreateOrUpdateEventDetails(repository, resourcesProvider)
     }
 
     @Test
@@ -45,7 +48,7 @@ class CreateOrUpdateEventDetailsTest {
         ).first()
 
         // Then event should have been updated
-        assertTrue(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -61,10 +64,12 @@ class CreateOrUpdateEventDetailsTest {
         ).first()
 
         // Then event should have been updated
-        assertFalse(result)
+        assertTrue(result.isFailure)
+        assert(result.exceptionOrNull()?.message == EVENT_UPDATE_ERROR)
     }
 
     companion object {
         const val ORG_UNIT_UID = "orgUnitUid"
+        const val EVENT_UPDATE_ERROR = "Event update error"
     }
 }

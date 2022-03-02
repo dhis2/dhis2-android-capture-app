@@ -265,12 +265,13 @@ class EventDetailsRepositoryImpl(
                     d2.programModule().programStages()
                         .uid(eventRepository.blockingGet().programStage())
                         .blockingGet().featureType()
-                if (featureType != null) when (featureType) {
-                    FeatureType.NONE -> {}
-                    FeatureType.POINT,
-                    FeatureType.POLYGON,
-                    FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
-                    else -> {}
+                featureType?.let {
+                    when (it) {
+                        FeatureType.POINT,
+                        FeatureType.POLYGON,
+                        FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
+                        else -> {}
+                    }
                 }
                 eventRepository.blockingGet()
             }.blockingFirst()

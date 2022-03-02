@@ -137,9 +137,9 @@ class EventDetailsModule(
             geometryController = geometryController,
             locationProvider = locationProvider,
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(
-                repository = eventDetailsRepository
-            ),
-            resourcesProvider = resourcesProvider
+                repository = eventDetailsRepository,
+                resourcesProvider = resourcesProvider
+            )
         )
     }
 }
