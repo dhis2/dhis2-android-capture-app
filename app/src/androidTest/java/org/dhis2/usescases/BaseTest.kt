@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
-import com.jakewharton.espresso.OkHttp3IdlingResource
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.di.TestingInjector
@@ -17,10 +16,8 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
-import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
+import org.dhis2.commons.prefs.Preference
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -101,14 +98,6 @@ open class BaseTest {
 
     fun setDatePicker() {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
-    }
-
-    fun turnOnConnectivityAfterLogin(){
-        ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
-    }
-
-    fun turnOffConnectivityAfterLogin(){
-        ServerURLWrapper.setServerUrl("none")
     }
 
     private fun disableIntents() {
