@@ -1,8 +1,8 @@
 This is a patch version that fixes:
-- ANDROAPP-4544 Sync re-start if it takes more than 10 minutes
-- ANDROAPP-4260 App is selecting the wrong image for the profile picture
-- ANDROAPP-4383 App does not mark TEI with error when failing to upload image
-- ANDROAPP-4430 Display correct error message for wrong configured server in login
-- Fixed several crashes related to navigation and maps
+- [ANDROAPP-4620] Option set DE is hidden when selecting an option in another option set
+- [ANDROAPP-4570] Dropdown selections in TEI search end up in wrong attributes
+- [ANDROAPP-4568] Crash when opening Event-Program relationship in a map
+- [ANDROAPP-4567] Bidirectional relationships are created in reverse order
+- This patch release updates the Android SDK to version 1.5.3.
 ....
 You can find all the details on Jira and Github.
