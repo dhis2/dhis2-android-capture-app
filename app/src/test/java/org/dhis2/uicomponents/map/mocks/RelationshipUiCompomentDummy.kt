@@ -1,9 +1,9 @@
 package org.dhis2.uicomponents.map.mocks
 
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.model.TeiMap
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 
 object RelationshipUiCompomentDummy {
 
