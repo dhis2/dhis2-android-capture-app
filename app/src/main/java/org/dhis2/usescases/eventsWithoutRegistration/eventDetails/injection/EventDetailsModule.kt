@@ -22,7 +22,6 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepositoryImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -70,7 +69,7 @@ class EventDetailsModule(
         d2: D2,
         resourceManager: ResourceManager
     ): EventDetailsRepository {
-        return EventDetailsRepositoryImpl(
+        return EventDetailsRepository(
             d2 = d2,
             programUid = programUid,
             eventUid = eventUid,
