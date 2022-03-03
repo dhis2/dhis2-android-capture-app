@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.commons.data.CarouselItemModel
 import org.dhis2.commons.data.ProgramEventViewModel
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.databinding.ItemCarouselProgramEventBinding
@@ -29,7 +30,6 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.model.EventUiComponentModel
 import org.dhis2.maps.model.RelationshipUiComponentModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 import org.hisp.dhis.android.core.program.Program
 
 class CarouselAdapter private constructor(

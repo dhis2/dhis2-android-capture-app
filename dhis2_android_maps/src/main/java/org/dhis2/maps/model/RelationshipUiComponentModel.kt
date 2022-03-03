@@ -1,7 +1,7 @@
 package org.dhis2.maps.model
 
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 import org.dhis2.commons.data.CarouselItemModel
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
