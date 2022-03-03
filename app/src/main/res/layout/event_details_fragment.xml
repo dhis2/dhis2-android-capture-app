@@ -195,6 +195,13 @@
 
                 </RadioGroup>
 
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/reopenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:setReopen="@{viewModel}" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="120dp" />

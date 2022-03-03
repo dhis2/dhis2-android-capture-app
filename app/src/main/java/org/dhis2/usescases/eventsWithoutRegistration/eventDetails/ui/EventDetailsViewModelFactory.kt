@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
@@ -25,6 +26,7 @@ class EventDetailsViewModelFactory(
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails
+    private val d2ErrorMapper: D2ErrorUtils
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -39,6 +41,7 @@ class EventDetailsViewModelFactory(
             geometryController,
             locationProvider,
             createOrUpdateEventDetails
+            d2ErrorMapper
         ) as T
     }
 }

@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.location.LocationProvider
@@ -138,7 +139,8 @@ class EventDetailsModule(
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(
                 repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider
-            )
+            ),
+            d2ErrorMapper = D2ErrorUtils(context)
         )
     }
 }
