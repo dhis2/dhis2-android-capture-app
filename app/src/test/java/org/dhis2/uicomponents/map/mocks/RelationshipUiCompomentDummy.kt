@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.mocks
 import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.model.TeiMap
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 
 object RelationshipUiCompomentDummy {
 
@@ -29,7 +30,8 @@ object RelationshipUiCompomentDummy {
                 "",
                 -1,
                 ""
-            )
+            ),
+            RelationshipOwnerType.TEI
         )
     }
 
@@ -56,7 +58,8 @@ object RelationshipUiCompomentDummy {
                 "",
                 -1,
                 ""
-            )
+            ),
+            RelationshipOwnerType.TEI
         )
     }
 
@@ -71,7 +74,8 @@ object RelationshipUiCompomentDummy {
             RelationshipDirection.FROM,
             false,
             TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
-            TeiMap(TEIUID_TO, geometryTo, "", -1, "")
+            TeiMap(TEIUID_TO, geometryTo, "", -1, ""),
+            RelationshipOwnerType.TEI
         )
     }
 

@@ -332,9 +332,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                             }
                             return true;
                         })
-                        .addOnRelationshipClickListener(teiUid -> {
+                        .addOnRelationshipClickListener((teiUid, ownerType) -> {
                             if (binding.mapCarousel.getCarouselEnabled()) {
-                                presenter.openDashboard(teiUid);
+                                presenter.onRelationshipClicked(ownerType, teiUid);
                             }
                             return true;
                         })

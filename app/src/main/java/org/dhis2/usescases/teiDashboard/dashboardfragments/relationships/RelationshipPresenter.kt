@@ -138,25 +138,9 @@ class RelationshipPresenter internal constructor(
         selectedTei: String,
         relationshipTypeUid: String
     ) {
-        val relationshipType =
-            d2.relationshipModule().relationshipTypes().withConstraints().uid(relationshipTypeUid)
-                .blockingGet()
-
-        val fromTei: String
-        val toTei: String
-        if (relationshipType!!.bidirectional()!! &&
-            relationshipType.toConstraint()!!.trackedEntityType()!!.uid() == teiType
-        ) {
-            fromTei = selectedTei
-            toTei = teiUid
-        } else {
-            fromTei = teiUid
-            toTei = selectedTei
-        }
-
         try {
             val relationship =
-                RelationshipHelper.teiToTeiRelationship(fromTei, toTei, relationshipTypeUid)
+                RelationshipHelper.teiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())

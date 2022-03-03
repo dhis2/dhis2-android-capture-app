@@ -28,16 +28,18 @@ public class ValueUtils {
             }
         } else if (optionSetUid != null) {
             String optionCode = attributeValue.value();
-            Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
-            if (option != null) {
-                if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
-                    teAttrValue = TrackedEntityAttributeValue.builder()
-                            .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                            .lastUpdated(teAttrValue.lastUpdated())
-                            .created(teAttrValue.created())
-                            .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                            .value(option.displayName())
-                            .build();
+            if(optionCode != null) {
+                Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
+                if (option != null) {
+                    if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
+                        teAttrValue = TrackedEntityAttributeValue.builder()
+                                .trackedEntityInstance(teAttrValue.trackedEntityInstance())
+                                .lastUpdated(teAttrValue.lastUpdated())
+                                .created(teAttrValue.created())
+                                .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
+                                .value(option.displayName())
+                                .build();
+                    }
                 }
             }
         }

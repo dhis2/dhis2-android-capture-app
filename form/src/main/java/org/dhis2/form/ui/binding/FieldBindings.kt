@@ -143,6 +143,14 @@ fun TextInputLayout.setWarningErrorMessage(warning: String?, error: String?) {
     }
 }
 
+@BindingAdapter("setOnTouchListener")
+fun bindOnTouchListener(editText: EditText, item: FieldUiModel?) {
+    editText.setOnTouchListener { _: View?, event: MotionEvent ->
+        if (MotionEvent.ACTION_UP == event.action) item?.onItemClick()
+        false
+    }
+}
+
 @BindingAdapter("setImeOption")
 fun setImeOption(editText: EditText, type: KeyboardActionType?) {
     if (type != null) {
