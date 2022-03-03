@@ -13,6 +13,7 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.search.SearchParametersModel
+import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -55,17 +56,9 @@ class SearchTEIViewModel(
 
     init {
         viewModelScope.launch {
-            _pageConfiguration.postValue(initPageConfiguration())
-            _selectedProgram.postValue(initProgram(initialProgramUid))
+            _pageConfiguration.value = searchNavPageConfigurator.initVariables()
+            _selectedProgram.value = searchRepository.getProgram(initialProgramUid)
         }
-    }
-
-    private suspend fun initPageConfiguration() = withContext(dispatchers.io()) {
-        return@withContext searchNavPageConfigurator.initVariables()
-    }
-
-    private suspend fun initProgram(initialProgramUid: String?) = withContext(dispatchers.io()) {
-        return@withContext searchRepository.getProgram(initialProgramUid)
     }
 
     fun setListScreen() {
@@ -97,10 +90,15 @@ class SearchTEIViewModel(
     }
 
     fun setMapScreen() {
-        _screenState.value = SearchMap(
+        _screenState.value = SearchList(
             previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-            mapType = SearchScreenState.MAP,
-            canCreateWithoutSearch = allowCreateWithoutSearch
+            listType = SearchScreenState.MAP,
+            displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: false,
+            canCreateWithoutSearch = allowCreateWithoutSearch,
+            queryHasData = queryData.isNotEmpty(),
+            minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
+                ?: 0,
+            isSearching = searching
         )
     }
 
@@ -138,15 +136,19 @@ class SearchTEIViewModel(
     }
 
     fun updateQueryData(rowAction: RowAction) {
-        if (rowAction.value != null) {
-            queryData[rowAction.id] = rowAction.value!!
-        } else {
-            queryData.remove(rowAction.id)
+        if (rowAction.type == ActionType.ON_SAVE) {
+            if (rowAction.value != null) {
+                queryData[rowAction.id] = rowAction.value!!
+            } else {
+                queryData.remove(rowAction.id)
+            }
+            updateSearch()
+        } else if (rowAction.type == ActionType.ON_CLEAR) {
+            clearQueryData()
         }
-        updateSearch()
     }
 
-    fun clearQueryData() {
+    private fun clearQueryData() {
         queryData.clear()
         updateSearch()
     }

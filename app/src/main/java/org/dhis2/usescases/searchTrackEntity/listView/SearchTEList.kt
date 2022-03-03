@@ -31,7 +31,7 @@ import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
-
+private const val DIRECTION_DOWN = 1
 class SearchTEList : FragmentGlobalAbstract() {
 
     @Inject
@@ -110,6 +110,12 @@ class SearchTEList : FragmentGlobalAbstract() {
             scrollView.apply {
                 adapter = listAdapter
                 addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
+                            viewModel.isScrollingDown.value = false
+                        }
+                    }
                     override fun onScrolled(
                         recyclerView: RecyclerView,
                         dx: Int,

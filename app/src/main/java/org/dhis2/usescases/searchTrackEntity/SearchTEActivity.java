@@ -473,16 +473,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 case NONE:
                     break;
                 case LIST:
+                case MAP:
                     if (OrientationUtilsKt.isPortrait()) {
                         configureListScreen((SearchList) screenState);
                     } else {
                         configureLandscapeAnalyticsScreen(false);
                         configureLandscapeListScreen((SearchList) screenState);
-                    }
-                    break;
-                case MAP:
-                    if (OrientationUtilsKt.isLandscape()) {
-                        configureLandscapeAnalyticsScreen(false);
                     }
                     break;
                 case SEARCHING:
@@ -526,6 +522,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
     }
 
+    private void configureMapScreen(){
+        if (switchOpenClose == 1) {
+            showHideFilter();
+        } else if (switchOpenClose == 0 && !updatingFilters) {
+            showHideFilterGeneral();
+        }
+        syncButtonVisibility(true);
+        setFiltersVisibility(true);
+    }
+
+    private void configureLandscapeMapScreen(){
+
+    }
+
     private void configureSearchScreen(SearchForm searchConfiguration) {
         if (switchOpenClose != 1) {
             showHideFilter();
@@ -559,7 +569,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setFiltersVisibility(boolean showFilters) {
-        binding.filterCounter.setVisibility(showFilters ? View.VISIBLE : GONE);
+        binding.filterCounter.setVisibility(showFilters && binding.getTotalFilters() > 0 ? View.VISIBLE : GONE);
         binding.searchFilterGeneral.setVisibility(showFilters ? View.VISIBLE : GONE);
     }
 
@@ -786,7 +796,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             filtersAdapter.notifyDataSetChanged();
             FilterManager.getInstance().clearAllFilters();
         } else {
-            viewModel.clearQueryData();
             formView.clearValues();
             presenter.onClearClick();
         }
