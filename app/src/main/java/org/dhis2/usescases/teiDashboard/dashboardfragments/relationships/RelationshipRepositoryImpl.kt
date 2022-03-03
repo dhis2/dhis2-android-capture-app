@@ -262,7 +262,7 @@ class RelationshipRepositoryImpl(
                                 .uid(relationshipOwnerUid).blockingGet()
                             toGeometry = toEvent.geometry()
                             toValues = getEventValuesForRelationship(toEvent.uid())
-                            toProfilePic = null
+                            toProfilePic = ""
                             toDefaultPicRes = getEventDefaultRes(toEvent)
                             canBoOpened = toEvent.syncState() != State.RELATIONSHIP &&
                                 orgUnitInScope(toEvent.organisationUnit())
@@ -295,7 +295,7 @@ class RelationshipRepositoryImpl(
                                 .uid(relationshipOwnerUid).blockingGet()
                             fromGeometry = fromEvent.geometry()
                             fromValues = getEventValuesForRelationship(fromEvent.uid())
-                            fromProfilePic = null
+                            fromProfilePic = ""
                             fromDefaultPicRes = getEventDefaultRes(fromEvent)
                             canBoOpened = fromEvent.syncState() != State.RELATIONSHIP &&
                                 orgUnitInScope(fromEvent.organisationUnit())
