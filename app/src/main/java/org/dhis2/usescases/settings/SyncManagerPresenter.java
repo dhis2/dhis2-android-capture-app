@@ -310,7 +310,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             workManagerController.cancelAllWork();
             workManagerController.pruneWork();
             // clearing cache data
-            deleteDir(view.getAbstracContext().getCacheDir());
+
+            DeleteCacheKt.deleteCache(view.getAbstracContext().getCacheDir());
 
             preferenceProvider.clear();
 

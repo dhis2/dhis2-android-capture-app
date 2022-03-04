@@ -1,8 +1,11 @@
 package org.dhis2.usescases.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
@@ -10,6 +13,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -25,6 +29,7 @@ import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION
@@ -200,6 +205,10 @@ class MainActivity :
             .build().show(supportFragmentManager, "ALL_SYNC")
     }
 
+    override fun goToAccounts() {
+        startActivity(Intent(this, AccountsActivity::class.java))
+    }
+
     override fun renderUsername(username: String) {
         binding.userName = username
         (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
@@ -373,10 +382,35 @@ class MainActivity :
             R.id.menu_troubleshooting -> {
                 mainNavigator.openTroubleShooting()
             }
+            R.id.delete_account -> {
+                presenter.onDeleteAccount()
+            }
         }
 
         if (backDropActive && mainNavigator.isPrograms()) {
             showHideFilter()
         }
+    }
+
+    override fun showProgressDeleteNotification(){
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mChannel = NotificationChannel(
+                "wipe_notification",
+                "Restart",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(mChannel)
+        }
+        val notificationBuilder = NotificationCompat.Builder(context, "wipe_notification")
+            .setSmallIcon(R.drawable.ic_sync)
+            .setContentTitle(getString(R.string.wipe_data))
+            .setContentText(getString(R.string.please_wait))
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        notificationManager.notify(123456, notificationBuilder.build())
     }
 }

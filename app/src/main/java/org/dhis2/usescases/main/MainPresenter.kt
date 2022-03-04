@@ -10,8 +10,10 @@ import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
@@ -20,6 +22,7 @@ import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
+const val MIN_USERS = 1
 
 class MainPresenter(
     private val view: MainView,
@@ -29,7 +32,9 @@ class MainPresenter(
     private val workManagerController: WorkManagerController,
     private val filterManager: FilterManager,
     private val filterRepository: FilterRepository,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val userManager: UserManager,
+    private val deleteUserData: DeleteUserData
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -127,6 +132,20 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    fun onDeleteAccount() {
+        val users = userManager.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+        if (users > MIN_USERS) {
+            view.goToAccounts()
+        } else {
+            view.showProgressDeleteNotification()
+            deleteUserData.apply {
+                wipeDBAndPreferences()
+                wipeCache(view.abstracContext.cacheDir)
+            }
+            
+        }
     }
 
     fun onSyncAllClick() {

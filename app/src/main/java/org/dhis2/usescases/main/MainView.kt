@@ -54,4 +54,8 @@ interface MainView : AbstractActivityContracts.View {
     fun hideFilters()
 
     fun showGranularSync()
+
+    fun goToAccounts()
+
+    fun showProgressDeleteNotification()
 }
