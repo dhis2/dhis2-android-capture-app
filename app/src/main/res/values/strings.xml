@@ -869,14 +869,14 @@
     <string name="troubleshooting_pass_rule_validation">No warnings found</string>
     <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
     <string name="search_loading_more">Loading more results</string>
-    <string name="search_no_results_in_program">No more results in program</string>
-    <string name="search_outside_action">Search outside program</string>
+    <string name="search_no_results_in_program">No more results for %s</string>
+    <string name="search_outside_action">Search outside this program</string>
     <string name="string_no_more_results">No more results</string>
-    <string name="search_no_results">No results</string>
+    <string name="search_no_results">There are no results for this search</string>
     <string name="search_too_many_results">Too many results</string>
-    <string name="search_too_many_results_message">Try changing search terms or searching by more attributes to narrow down the results.</string>
+    <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>
     <string name="search_create_new">Create new</string>
-    <string name="search_min_attributes_message">It is necessary to enter at least %s of the attributes to start a search</string>
+    <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
     <string name="action_ok">Ok</string>
-    <string name="search_or_create">Search or create</string>
+    <string name="search_or_create">You can search or create a new %s</string>
 </resources>

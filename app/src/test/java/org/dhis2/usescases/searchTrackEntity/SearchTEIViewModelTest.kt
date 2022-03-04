@@ -52,6 +52,7 @@ class SearchTEIViewModelTest {
         whenever(pageConfigurator.initVariables()) doReturn pageConfigurator
         setCurrentProgram(testingProgram())
         whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
+        whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -94,7 +95,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should set SearchList if displayFrontPageList is false and can create`() {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
-        viewModel.setAllowCreateBeforeSearch(true)
+        setAllowCreateBeforeSearch(true)
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
@@ -104,7 +105,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should set SearchForm if displayFrontPageList is false and can not create`() {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
-        viewModel.setAllowCreateBeforeSearch(false)
+        setAllowCreateBeforeSearch(false)
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
@@ -370,7 +371,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should return search or create results for displayInList true`() {
-        viewModel.setAllowCreateBeforeSearch(true)
+        setAllowCreateBeforeSearch(true)
         viewModel.onDataLoaded(0)
         viewModel.dataResult.value?.apply {
             assertTrue(isNotEmpty())
@@ -381,7 +382,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should return empty result and set SearchScreen for displayInList true`() {
-        viewModel.setAllowCreateBeforeSearch(false)
+        setAllowCreateBeforeSearch(false)
         viewModel.onDataLoaded(0)
         viewModel.dataResult.value?.apply {
             assertTrue(isEmpty())
@@ -392,8 +393,8 @@ class SearchTEIViewModelTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `Should return too many results for search`() {
-        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
-        viewModel.setAllowCreateBeforeSearch(false)
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
         performSearch()
         viewModel.onDataLoaded(2)
         viewModel.dataResult.value?.apply {
@@ -406,8 +407,8 @@ class SearchTEIViewModelTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `Should return search outside result for search`() {
-        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
-        viewModel.setAllowCreateBeforeSearch(false)
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
         performSearch()
         viewModel.onDataLoaded(1)
         viewModel.dataResult.value?.apply {
@@ -419,8 +420,8 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should return no more results for global search`() {
-        viewModel.setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
-        viewModel.setAllowCreateBeforeSearch(false)
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
         performSearch()
         viewModel.onDataLoaded(1, 1)
         viewModel.dataResult.value?.apply {
@@ -432,8 +433,8 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should return no results for search`() {
-        viewModel.setCurrentProgram(testingProgram())
-        viewModel.setAllowCreateBeforeSearch(false)
+        setCurrentProgram(testingProgram())
+        setAllowCreateBeforeSearch(false)
         performSearch()
         viewModel.onDataLoaded(0, 0)
         viewModel.dataResult.value?.apply {
@@ -533,10 +534,13 @@ class SearchTEIViewModelTest {
         viewModel.downloadResult.observeForever(downloadResultObserver)
 
         viewModel.onDownloadTei("teiUid", null)
-
-        val values = downloadResultCaptor.allValues
-        assertTrue(values.isEmpty())
-        verify(presenter, times(1)).enroll("programUid", "teiUid", hashMapOf())
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.downloadResult.value == null)
+        verify(presenter, times(1)).enroll(
+            "programUid",
+            "teiUid",
+            hashMapOf<String, String>().apply { putAll(viewModel.queryData) }
+        )
     }
 
     private fun testingProgram(
@@ -545,6 +549,7 @@ class SearchTEIViewModelTest {
         maxTeiCountToReturn: Int? = null
     ) = Program.builder()
         .uid("initialProgram")
+        .displayName("programName")
         .displayFrontPageList(displayFrontPageList)
         .minAttributesRequiredToSearch(minAttributesToSearch)
         .trackedEntityType(TrackedEntityType.builder().uid("teTypeUid").build())
@@ -553,6 +558,11 @@ class SearchTEIViewModelTest {
                 maxTeiCountToReturn(maxTeiCountToReturn)
             }
         }
+        .build()
+
+    private fun testingTrackedEntityType() = TrackedEntityType.builder()
+        .uid("teiTypeUid")
+        .displayName("teTypeName")
         .build()
 
     @ExperimentalCoroutinesApi
@@ -572,5 +582,17 @@ class SearchTEIViewModelTest {
 
     private fun setCurrentProgram(programToReturn: Program) {
         whenever(repository.getProgram("programUid")) doReturn programToReturn
+    }
+
+    private fun setAllowCreateBeforeSearch(allow: Boolean) {
+        whenever(
+            repository.canCreateInProgramWithoutSearch()
+        ) doReturn allow
+    }
+
+    private fun setCurrentProgram(program: Program) {
+        whenever(
+            repository.getProgram(initialProgram)
+        )doReturn program
     }
 }

@@ -44,8 +44,9 @@ public interface SearchRepository {
 
     String getProgramColor(@NonNull String programUid);
 
-
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
+
+    TrackedEntityType getTrackedEntityType();
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 

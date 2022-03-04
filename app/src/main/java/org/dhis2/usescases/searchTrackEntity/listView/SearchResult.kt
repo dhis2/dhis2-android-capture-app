@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.listView
 
-data class SearchResult(val type: SearchResultType) {
+data class SearchResult(val type: SearchResultType, val extraData: String? = null) {
     enum class SearchResultType {
         LOADING,
         SEARCH_OR_CREATE,

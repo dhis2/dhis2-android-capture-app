@@ -538,6 +538,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
+    public TrackedEntityType getTrackedEntityType() {
+        return d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet();
+    }
+
+    @Override
     public List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis) {
         List<EventViewModel> eventViewModels = new ArrayList<>();
         List<String> teiUidList = new ArrayList<>();
@@ -1005,9 +1010,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public boolean canCreateInProgramWithoutSearch() {
-        if(currentProgram==null){
+        if (currentProgram == null) {
             return false;
-        }else{
+        } else {
             ProgramConfigurationSetting programConfiguration = d2.settingModule().appearanceSettings().getProgramConfigurationByUid(currentProgram);
             return programConfiguration != null && Boolean.TRUE.equals(programConfiguration.optionalSearch());
         }

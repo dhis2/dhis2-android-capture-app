@@ -21,7 +21,7 @@ class SearchResultHolder(
         binding.composeView.setContent {
             MdcTheme {
                 SearchResult(
-                    searchResultType = item.type,
+                    searchResult = item,
                     onSearchOutsideClick = onSearchOutsideProgram
                 )
             }

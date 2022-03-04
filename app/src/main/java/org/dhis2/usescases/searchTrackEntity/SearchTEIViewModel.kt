@@ -17,7 +17,6 @@ import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.isLandscape
 import timber.log.Timber
 
 class SearchTEIViewModel(
@@ -50,7 +49,6 @@ class SearchTEIViewModel(
     val createButtonScrollVisibility = MutableLiveData(true)
     val isScrollingDown = MutableLiveData(false)
 
-    var allowCreateWithoutSearch = false
     private var searching: Boolean = false
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
@@ -62,25 +60,14 @@ class SearchTEIViewModel(
     init {
         viewModelScope.launch {
             _pageConfiguration.value = searchNavPageConfigurator.initVariables()
-            allowCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch()
         }
-        /*runBlocking {
-            _pageConfiguration.value = initPageConfiguration()
-            _selectedProgram.value = initProgram(initialProgramUid)
-            allowCreateWithoutSearch = initAllowCreateWithoutSearch()
-        }*/
-    }
-
-    private suspend fun initAllowCreateWithoutSearch() = withContext(dispatchers.io()) {
-        return@withContext searchRepository.canCreateInProgramWithoutSearch()
     }
 
     fun setListScreen() {
-        val displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-            ?.displayFrontPageList()
-            ?: true
+        val displayFrontPageList =
+            searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !allowCreateWithoutSearch &&
+            !searchRepository.canCreateInProgramWithoutSearch() &&
             !searching
         _screenState.value = when {
             shouldOpenSearch ->
@@ -99,7 +86,7 @@ class SearchTEIViewModel(
                     displayFrontPageList = searchRepository.getProgram(initialProgramUid)
                         ?.displayFrontPageList()
                         ?: false,
-                    canCreateWithoutSearch = allowCreateWithoutSearch,
+                    canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                     queryHasData = queryData.isNotEmpty(),
                     minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
                         ?.minAttributesRequiredToSearch()
@@ -116,7 +103,7 @@ class SearchTEIViewModel(
             displayFrontPageList = searchRepository.getProgram(initialProgramUid)
                 ?.displayFrontPageList()
                 ?: false,
-            canCreateWithoutSearch = allowCreateWithoutSearch,
+            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
             queryHasData = queryData.isNotEmpty(),
             minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
                 ?.minAttributesRequiredToSearch()
@@ -272,8 +259,7 @@ class SearchTEIViewModel(
                 }
             } else {
                 onMinAttributes(
-                    searchRepository.getProgram(initialProgramUid)
-                        ?.minAttributesRequiredToSearch()
+                    searchRepository.getProgram(initialProgramUid)?.minAttributesRequiredToSearch()
                         ?: 0
                 )
             }
@@ -329,7 +315,7 @@ class SearchTEIViewModel(
                 val downloadResult = result.await()
                 if (downloadResult is TeiDownloadResult.TeiToEnroll) {
                     presenter.enroll(
-                        searchRepository.getProgram(initialProgramUid)?.uid(),
+                        initialProgramUid,
                         downloadResult.teiUid,
                         hashMapOf<String, String>().apply { putAll(queryData) }
                     )
@@ -376,8 +362,13 @@ class SearchTEIViewModel(
         val result = when {
             hasProgramResults ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
-            !hasProgramResults && allowCreateWithoutSearch ->
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OR_CREATE))
+            !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
+                listOf(
+                    SearchResult(
+                        SearchResult.SearchResultType.SEARCH_OR_CREATE,
+                        searchRepository.getTrackedEntityType().displayName()
+                    )
+                )
             else -> listOf()
         }
 
@@ -398,7 +389,12 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
             hasGlobalResults == null -> {
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE))
+                listOf(
+                    SearchResult(
+                        SearchResult.SearchResultType.SEARCH_OUTSIDE,
+                        searchRepository.getProgram(initialProgramUid)?.displayName()
+                    )
+                )
             }
             hasProgramResults || hasGlobalResults ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
@@ -443,15 +439,5 @@ class SearchTEIViewModel(
 
     fun mapDataFetched() {
         SearchIdlingResourceSingleton.decrement()
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun setCurrentProgram(program: Program) {
-        _selectedProgram.value = program
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun setAllowCreateBeforeSearch(allowCreateWithoutSearch: Boolean) {
-        this.allowCreateWithoutSearch = allowCreateWithoutSearch
     }
 }
