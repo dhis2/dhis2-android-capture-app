@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,10 +16,10 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.hisp.dhis.android.core.program.Program
+import timber.log.Timber
 
 class SearchTEIViewModel(
-    initialProgramUid: String?,
+    private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
     private val presenter: SearchTEContractsModule.Presenter,
     private val searchRepository: SearchRepository,
@@ -36,8 +35,6 @@ class SearchTEIViewModel(
     val queryData = mutableMapOf<String, String>().apply {
         initialQuery?.let { putAll(it) }
     }
-    private val _selectedProgram = MutableLiveData<Program?>()
-    val selectedProgram: LiveData<Program?> = _selectedProgram
 
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
@@ -57,12 +54,13 @@ class SearchTEIViewModel(
     init {
         viewModelScope.launch {
             _pageConfiguration.value = searchNavPageConfigurator.initVariables()
-            _selectedProgram.value = searchRepository.getProgram(initialProgramUid)
         }
     }
 
     fun setListScreen() {
-        val displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: true
+        val displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+            ?.displayFrontPageList()
+            ?: true
         val shouldOpenSearch = !displayFrontPageList &&
             !allowCreateWithoutSearch &&
             !searching
@@ -71,7 +69,8 @@ class SearchTEIViewModel(
                 SearchForm(
                     previousSate = _screenState.value?.screenState ?: SearchScreenState.LIST,
                     queryHasData = queryData.isNotEmpty(),
-                    minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
+                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
                         ?: 1,
                     isForced = true
                 )
@@ -79,10 +78,13 @@ class SearchTEIViewModel(
                 SearchList(
                     previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
                     listType = SearchScreenState.LIST,
-                    displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: false,
+                    displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                        ?.displayFrontPageList()
+                        ?: false,
                     canCreateWithoutSearch = allowCreateWithoutSearch,
                     queryHasData = queryData.isNotEmpty(),
-                    minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
+                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
                         ?: 0,
                     isSearching = searching
                 )
@@ -93,10 +95,13 @@ class SearchTEIViewModel(
         _screenState.value = SearchList(
             previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
             listType = SearchScreenState.MAP,
-            displayFrontPageList = _selectedProgram.value?.displayFrontPageList() ?: false,
+            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                ?.displayFrontPageList()
+                ?: false,
             canCreateWithoutSearch = allowCreateWithoutSearch,
             queryHasData = queryData.isNotEmpty(),
-            minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch()
+            minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                ?.minAttributesRequiredToSearch()
                 ?: 0,
             isSearching = searching
         )
@@ -115,7 +120,9 @@ class SearchTEIViewModel(
             _screenState.value = SearchForm(
                 previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
                 queryHasData = queryData.isNotEmpty(),
-                minAttributesToSearch = _selectedProgram.value?.minAttributesRequiredToSearch() ?: 0
+                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                    ?.minAttributesRequiredToSearch()
+                    ?: 0
             )
         }
     }
@@ -174,7 +181,7 @@ class SearchTEIViewModel(
     private suspend fun loadSearchResults() = withContext(dispatchers.io()) {
         return@withContext searchRepository.searchTrackedEntities(
             SearchParametersModel(
-                selectedProgram = _selectedProgram.value,
+                selectedProgram = searchRepository.getProgram(initialProgramUid),
                 queryData = queryData
             ),
             searching && networkUtils.isOnline()
@@ -184,7 +191,7 @@ class SearchTEIViewModel(
     private suspend fun loadDisplayInListResults() = withContext(dispatchers.io()) {
         return@withContext searchRepository.searchTrackedEntities(
             SearchParametersModel(
-                selectedProgram = _selectedProgram.value,
+                selectedProgram = searchRepository.getProgram(initialProgramUid),
                 queryData = queryData
             ),
             false
@@ -208,11 +215,15 @@ class SearchTEIViewModel(
     fun fetchMapResults() {
         viewModelScope.launch {
             val result = async(context = dispatchers.io()) {
-                mapDataRepository.getTrackerMapData(_selectedProgram.value, queryData)
+                mapDataRepository.getTrackerMapData(
+                    searchRepository.getProgram(initialProgramUid),
+                    queryData
+                )
             }
             try {
                 _mapResults.value = result.await()
             } catch (e: Exception) {
+                Timber.e(e)
             }
             searching = false
         }
@@ -242,7 +253,11 @@ class SearchTEIViewModel(
                     else -> searching = false
                 }
             } else {
-                onMinAttributes(_selectedProgram.value?.minAttributesRequiredToSearch() ?: 0)
+                onMinAttributes(
+                    searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 0
+                )
             }
         }
     }
@@ -252,19 +267,19 @@ class SearchTEIViewModel(
     }
 
     private fun minAttributesToSearchCheck(): Boolean {
-        return _selectedProgram.value?.let { program ->
+        return searchRepository.getProgram(initialProgramUid)?.let { program ->
             program.minAttributesRequiredToSearch() ?: 0 <= queryData.size
         } ?: true
     }
 
     private fun displayFrontPageList(): Boolean {
-        return _selectedProgram.value?.let { program ->
+        return searchRepository.getProgram(initialProgramUid)?.let { program ->
             program.displayFrontPageList() == true && queryData.isEmpty()
         } ?: true
     }
 
     fun canDisplayResult(itemCount: Int): Boolean {
-        return _selectedProgram.value?.maxTeiCountToReturn()
+        return searchRepository.getProgram(initialProgramUid)?.maxTeiCountToReturn()
             ?.takeIf { it != 0 }
             ?.let { maxTeiCount ->
                 itemCount <= maxTeiCount
@@ -334,10 +349,5 @@ class SearchTEIViewModel(
         return _screenState.value?.let {
             it is SearchList || it is SearchMap
         } ?: false
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun setCurrentProgram(program: Program) {
-        _selectedProgram.value = program
     }
 }

@@ -49,7 +49,7 @@ class SearchTEIViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         whenever(pageConfigurator.initVariables()) doReturn pageConfigurator
-        whenever(repository.getProgram("programUid")) doReturn testingProgram()
+        setCurrentProgram(testingProgram())
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -90,7 +90,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should set SearchForm if displayFrontPageList is false`() {
-        viewModel.setCurrentProgram(testingProgram(displayFrontPageList = false))
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
@@ -102,7 +102,7 @@ class SearchTEIViewModelTest {
         viewModel.setMapScreen()
 
         val screenState = viewModel.screenState.value
-        assertTrue(screenState is SearchMap)
+        assertTrue(screenState?.screenState == SearchScreenState.MAP)
     }
 
     @Test
@@ -136,14 +136,14 @@ class SearchTEIViewModelTest {
         viewModel.setPreviousScreen(isLandscapeMode = false)
 
         val screenStateA = viewModel.screenState.value
-        assertTrue(screenStateA is SearchList)
+        assertTrue(screenStateA?.screenState == SearchScreenState.LIST)
 
         viewModel.setMapScreen()
         viewModel.setSearchScreen(isLandscapeMode = false)
         viewModel.setPreviousScreen(isLandscapeMode = false)
 
         val screenStateB = viewModel.screenState.value
-        assertTrue(screenStateB is SearchMap)
+        assertTrue(screenStateB?.screenState == SearchScreenState.MAP)
     }
 
     @Test
@@ -165,7 +165,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should return local results LiveData if not searching and displayInList is true`() {
         val testingProgram = testingProgram()
-        viewModel.setCurrentProgram(testingProgram)
+        setCurrentProgram(testingProgram)
         viewModel.fetchListResults {}
         testingDispatcher.scheduler.advanceUntilIdle()
         verify(repository).searchTrackedEntities(
@@ -180,7 +180,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should return null if not searching and displayInList is false`() {
         val testingProgram = testingProgram(displayFrontPageList = false)
-        viewModel.setCurrentProgram(testingProgram)
+        setCurrentProgram(testingProgram)
         viewModel.fetchListResults {}
 
         verify(repository, times(0)).searchTrackedEntities(
@@ -212,7 +212,7 @@ class SearchTEIViewModelTest {
     fun `Should fetch map results`() {
         whenever(
             mapDataRepository.getTrackerMapData(
-                viewModel.selectedProgram.value,
+                testingProgram(),
                 viewModel.queryData
             )
         ) doReturn TrackerMapData(
@@ -237,7 +237,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should use callback to perform min attributes warning`() {
-        viewModel.setCurrentProgram(testingProgram())
+        setCurrentProgram(testingProgram())
         viewModel.onSearchClick {
             assertTrue(true)
         }
@@ -245,7 +245,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should search for list result`() {
-        viewModel.setCurrentProgram(testingProgram())
+        setCurrentProgram(testingProgram())
         viewModel.setListScreen()
         viewModel.setSearchScreen(isLandscapeMode = false)
         viewModel.updateQueryData(
@@ -267,7 +267,7 @@ class SearchTEIViewModelTest {
     fun `Should search for map result`() {
         whenever(
             mapDataRepository.getTrackerMapData(
-                viewModel.selectedProgram.value,
+                testingProgram(),
                 viewModel.queryData
             )
         ) doReturn TrackerMapData(
@@ -283,7 +283,7 @@ class SearchTEIViewModelTest {
             mutableListOf(),
             mutableMapOf()
         )
-        viewModel.setCurrentProgram(testingProgram())
+        setCurrentProgram(testingProgram())
         viewModel.setMapScreen()
         viewModel.setSearchScreen(isLandscapeMode = false)
         viewModel.updateQueryData(
@@ -301,7 +301,7 @@ class SearchTEIViewModelTest {
 
         assertTrue(viewModel.refreshData.value != null)
         verify(mapDataRepository).getTrackerMapData(
-            viewModel.selectedProgram.value,
+            testingProgram(),
             viewModel.queryData
         )
     }
@@ -415,4 +415,8 @@ class SearchTEIViewModelTest {
             }
         }
         .build()
+
+    private fun setCurrentProgram(programToReturn: Program) {
+        whenever(repository.getProgram("programUid")) doReturn programToReturn
+    }
 }
