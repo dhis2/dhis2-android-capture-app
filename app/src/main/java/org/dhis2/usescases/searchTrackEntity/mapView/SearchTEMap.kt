@@ -8,10 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
@@ -27,6 +26,8 @@ import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
+import java.io.File
+import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -228,7 +229,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 }
                 true
             }
-            .addOnRelationshipClickListener { teiUid: String? ->
+            .addOnRelationshipClickListener { teiUid: String?, ownerType: RelationshipOwnerType ->
                 if (binding.mapCarousel.carouselEnabled) {
                     presenter.onTEIClick(teiUid, null, false)
                 }
