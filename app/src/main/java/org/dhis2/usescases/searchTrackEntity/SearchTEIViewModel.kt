@@ -136,7 +136,7 @@ class SearchTEIViewModel(
     }
 
     fun updateQueryData(rowAction: RowAction) {
-        if (rowAction.type == ActionType.ON_SAVE) {
+        if (rowAction.type == ActionType.ON_SAVE || rowAction.type == ActionType.ON_TEXT_CHANGE) {
             if (rowAction.value != null) {
                 queryData[rowAction.id] = rowAction.value!!
             } else {
