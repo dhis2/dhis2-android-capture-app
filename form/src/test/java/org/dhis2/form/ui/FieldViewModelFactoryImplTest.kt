@@ -40,7 +40,6 @@ class FieldViewModelFactoryImplTest {
     fun setUp() {
         valueTypeHintMap[ValueType.TEXT] = "Enter text"
         fieldViewModelFactoryImpl = FieldViewModelFactoryImpl(
-            valueTypeHintMap,
             searchMode,
             uiStyleProvider,
             layoutProvider,

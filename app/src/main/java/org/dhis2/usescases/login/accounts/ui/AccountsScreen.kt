@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
-import org.dhis2.usescases.login.accounts.AccountsActivity.Companion.MAX_ACCOUNTS
+import org.dhis2.utils.Constants.MAX_ACCOUNTS
 
 @Composable
 fun AccountsScreen(

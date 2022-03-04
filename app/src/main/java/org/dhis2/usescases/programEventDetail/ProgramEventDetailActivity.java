@@ -37,7 +37,7 @@ import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EventCreationType;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -146,8 +146,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         programEventsViewModel.getEventClicked().observe(this, eventData -> {
-            if (eventData != null) {
+            if (eventData != null && !programEventsViewModel.getRecreationActivity()) {
+                programEventsViewModel.onRecreationActivity(false);
                 navigateToEvent(eventData.component1(), eventData.component2());
+            } else if (programEventsViewModel.getRecreationActivity()){
+                programEventsViewModel.onRecreationActivity(false);
             }
         });
 
@@ -187,6 +190,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isChangingConfigurations()) {
+            programEventsViewModel.onRecreationActivity(true);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import org.dhis2.commons.data.RelationshipOwnerType
 import java.io.File
 import org.dhis2.maps.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.maps.model.RelationshipUiComponentModel
@@ -15,7 +16,7 @@ class CarouselRelationshipHolder(
     val binding: ItemCarouselRelationshipBinding,
     private val currentTei: String,
     val delete: (String) -> Boolean,
-    val clickListener: (String) -> Boolean,
+    val clickListener: (String, RelationshipOwnerType) -> Boolean,
     val onNavigate: (teiUid: String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
@@ -36,7 +37,8 @@ class CarouselRelationshipHolder(
                     data.to.teiUid!!
                 } else {
                     data.from.teiUid!!
-                }
+                },
+                data.relationshipOwner
             )
         }
         binding.relationshipTypeName.text = data.displayName

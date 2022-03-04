@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerActivity;
@@ -169,7 +168,6 @@ public class SearchTEModule {
             ResourceManager resourceManager
     ) {
         return new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
                 true,
                 new UiStyleProviderImpl(
                         new FormUiModelColorFactoryImpl(moduleContext, false),

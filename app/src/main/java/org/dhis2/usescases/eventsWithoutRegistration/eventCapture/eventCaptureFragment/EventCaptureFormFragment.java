@@ -126,6 +126,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             animateFabButton(isSectionVisible);
             return Unit.INSTANCE;
         });
+        presenter.showOrHideSaveButton();
     }
 
     @Override
@@ -157,5 +158,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onEditionListener() {
         formView.onEditionFinish();
+    }
+
+    @Override
+    public void hideSaveButton() {
+        binding.actionButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showSaveButton() {
+        binding.actionButton.setVisibility(View.VISIBLE);
     }
 }

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.commons.data.CarouselItemModel
 import org.dhis2.commons.data.ProgramEventViewModel
+import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.databinding.ItemCarouselProgramEventBinding
@@ -37,7 +38,10 @@ class CarouselAdapter private constructor(
     private val onDeleteRelationshipListener: (relationshipUid: String) -> Boolean,
     private val onSyncClickListener: (String) -> Boolean,
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
-    private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
+    private val onRelationshipClickListener: (
+        relationshipTeiUid: String,
+        ownerType: RelationshipOwnerType
+    ) -> Boolean,
     private val onEventClickListener: (
         uid: String?,
         enrollmentUid: String?,
@@ -311,7 +315,10 @@ class CarouselAdapter private constructor(
         var onSyncClickListener: (String) -> Boolean = { true },
         var onTeiClickListener: (String, String?, Boolean) -> Boolean =
             { _: String, _: String?, _: Boolean -> true },
-        var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
+        var onRelationshipClickListener: (
+            relationshipTeiUid: String,
+            ownerType: RelationshipOwnerType
+        ) -> Boolean = { _: String?, _: RelationshipOwnerType -> false },
         var onEventClickListener: (String?, String?, String?) -> Boolean =
             { _: String?, _: String?, _: String? -> false },
         var onProfileImageClick: (String) -> Unit = { },
@@ -343,7 +350,10 @@ class CarouselAdapter private constructor(
         }
 
         fun addOnRelationshipClickListener(
-            onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean
+            onRelationshipClickListener: (
+                relationshipTeiUid: String,
+                ownerType: RelationshipOwnerType
+            ) -> Boolean
         ) = apply {
             this.onRelationshipClickListener = onRelationshipClickListener
         }

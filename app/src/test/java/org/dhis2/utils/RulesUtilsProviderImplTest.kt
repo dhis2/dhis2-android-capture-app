@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import java.util.ArrayList
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
@@ -71,7 +70,6 @@ class RulesUtilsProviderImplTest {
     fun setUp() {
         ruleUtils = RulesUtilsProviderImpl(d2)
         fieldFactory = FieldViewModelFactoryImpl(
-            ValueType.values().map { it to it.name }.toMap(),
             false,
             uiStyleProvider,
             layoutProvider,

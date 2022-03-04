@@ -442,6 +442,15 @@ class LoginPresenter(
         return Pair(urls, users)
     }
 
+    fun displayManageAccount(): Boolean {
+        val users = userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+        return users >= 1
+    }
+
+    fun onManageAccountClicked() {
+        view.openAccountsActivity()
+    }
+
     // TODO Remove this when we remove the userManager from the presenter
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {

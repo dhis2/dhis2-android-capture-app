@@ -518,7 +518,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Single<FieldUiModel> getGeometryModel(String programUid, FlowableProcessor<RowAction> processor) {
+    public Single<FieldUiModel> getGeometryModel(String programUid) {
         return Single.fromCallable(() -> {
             ArrayList<EventStatus> nonEditableStatus = new ArrayList<>();
             nonEditableStatus.add(EventStatus.COMPLETED);

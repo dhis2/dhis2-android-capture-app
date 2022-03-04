@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -188,8 +189,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid)
-            .blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -264,4 +264,16 @@ class EnrollmentPresenterImpl(
 
     fun getEventStage(eventUid: String) =
         enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
+
+    fun showOrHideSaveButton() {
+        val teiUid = teiRepository.blockingGet().uid()
+        val programUid = getProgram().uid()
+        val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
+            .blockingGetEnrollmentAccess(teiUid, programUid)
+        if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS) {
+            view.setSaveButtonVisible(visible = true)
+        } else {
+            view.setSaveButtonVisible(visible = false)
+        }
+    }
 }

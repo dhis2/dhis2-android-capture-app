@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.network.NetworkUtils
@@ -117,7 +116,6 @@ class EnrollmentModule(
         resourceManager: ResourceManager
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
-            context.valueTypeHintMap(),
             false,
             UiStyleProviderImpl(
                 FormUiModelColorFactoryImpl(activityContext, true),

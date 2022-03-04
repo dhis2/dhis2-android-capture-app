@@ -304,7 +304,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:visibility="gone"
+                android:onClick="@{() -> presenter.onManageAccountClicked()}"
+                android:visibility="@{presenter.displayManageAccount() ? View.VISIBLE : View.GONE }"
                 android:text="@string/manage_accounts"
                 app:layout_constraintTop_toBottomOf="@id/login"
                 tools:text="Manage Accounts" />
