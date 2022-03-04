@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchTrackEntity
 sealed class TeiDownloadResult() {
     data class DownloadedResult(
         val teiUid: String,
+        val programUid: String?,
         val enrollmentUid: String?
     ) : TeiDownloadResult()
 
@@ -24,14 +25,14 @@ sealed class TeiDownloadResult() {
     ) : TeiDownloadResult()
 
     fun handleResult(
-        onOpenDashboard: (teiUid: String, enrollmentUid: String?) -> Unit,
+        onOpenDashboard: (teiUid: String, programUid: String?, enrollmentUid: String?) -> Unit,
         onBreakTheGlassResult: (teiUid: String, enrollmentUid: String?) -> Unit,
         onNotDownloaded: (teiUid: String) -> Unit,
         onError: (errorMessage: String) -> Unit
     ) {
         when (this) {
             is BreakTheGlassResult -> onBreakTheGlassResult(teiUid, enrollmentUid)
-            is DownloadedResult -> onOpenDashboard(teiUid, enrollmentUid)
+            is DownloadedResult -> onOpenDashboard(teiUid, programUid, enrollmentUid)
             is ErrorResult -> onError(errorMessage)
             is TeiNotDownloaded -> onNotDownloaded(teiUid)
             is TeiToEnroll -> {}

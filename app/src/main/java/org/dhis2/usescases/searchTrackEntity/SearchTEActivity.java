@@ -571,9 +571,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void observeDownload() {
         viewModel.getDownloadResult().observe(this, result ->
                 result.handleResult(
-                        (teiUid, enrollmentUid) -> {
+                        (teiUid, programUid, enrollmentUid) -> {
                             openDashboard(teiUid,
-                                    viewModel.getSelectedProgram().getValue().uid(),
+                                    programUid,
                                     enrollmentUid);
                             return Unit.INSTANCE;
                         },

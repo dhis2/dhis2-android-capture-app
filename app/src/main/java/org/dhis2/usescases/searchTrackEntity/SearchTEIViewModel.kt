@@ -314,7 +314,7 @@ class SearchTEIViewModel(
                 val downloadResult = result.await()
                 if (downloadResult is TeiDownloadResult.TeiToEnroll) {
                     presenter.enroll(
-                        selectedProgram.value?.uid(),
+                        searchRepository.getProgram(initialProgramUid)?.uid(),
                         downloadResult.teiUid,
                         hashMapOf<String, String>().apply { putAll(queryData) }
                     )

@@ -645,7 +645,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private TeiDownloadResult defaultDownload(String teiUid, @Nullable  String enrollmentUid){
+    private TeiDownloadResult defaultDownload(String teiUid, @Nullable String enrollmentUid) {
         downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
                 .byUid().eq(teiUid)
                 .byProgramUid(currentProgram);
@@ -684,16 +684,16 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (teiHasBeenDownloaded(teiUid)) {
             if (hasEnrollmentInCurrentProgram(teiUid)) {
                 String programEnrollment;
-                if(enrollmentUid != null){
+                if (enrollmentUid != null) {
                     programEnrollment = enrollmentUid;
-                }else{
+                } else {
                     programEnrollment = getEnrollmentInProgram(teiUid);
                 }
-                return new TeiDownloadResult.DownloadedResult(teiUid, programEnrollment);
+                return new TeiDownloadResult.DownloadedResult(teiUid, currentProgram, programEnrollment);
             } else if (canEnrollInCurrentProgram()) {
                 return new TeiDownloadResult.TeiToEnroll(teiUid);
             } else {
-                return new TeiDownloadResult.DownloadedResult(teiUid, null);
+                return new TeiDownloadResult.DownloadedResult(teiUid, currentProgram, null);
             }
         } else {
             return new TeiDownloadResult.TeiNotDownloaded(teiUid);
@@ -711,7 +711,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .blockingIsEmpty();
     }
 
-    private String getEnrollmentInProgram(String teiUid){
+    private String getEnrollmentInProgram(String teiUid) {
         return d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(currentProgram)
