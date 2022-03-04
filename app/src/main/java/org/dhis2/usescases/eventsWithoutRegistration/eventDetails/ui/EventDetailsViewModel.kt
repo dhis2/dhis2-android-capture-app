@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
-import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
@@ -33,7 +32,6 @@ import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.period.PeriodType
 
 class EventDetailsViewModel(
@@ -47,7 +45,6 @@ class EventDetailsViewModel(
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails
-    private val d2ErrorMapper: D2ErrorUtils
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -263,11 +260,9 @@ class EventDetailsViewModel(
     }
 
     fun onReopenClick() {
-        try {
-            configureEventDetails.reopenEvent()
-            setUpEventDetails()
-        } catch (d2Error: D2Error) {
-            d2ErrorMapper.getErrorMessage(d2Error)?.let { onReopenError?.invoke(it) }
-        }
+        configureEventDetails.reopenEvent().fold(
+            onSuccess = { setUpEventDetails() },
+            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
+        )
     }
 }

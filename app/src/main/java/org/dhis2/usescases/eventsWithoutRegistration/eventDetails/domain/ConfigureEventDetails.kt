@@ -1,13 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import java.util.Date
-import kotlin.jvm.Throws
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.REFERAL
-import org.dhis2.data.dhislogic.AUTH_ALL
-import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -16,9 +13,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus.CANCELLED
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
-import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.event.EventStatus.OVERDUE
 
 class ConfigureEventDetails(
@@ -60,7 +54,7 @@ class ConfigureEventDetails(
                 isCompleted = isEventCompleted,
                 isActionButtonVisible = isActionButtonVisible(isEventCompleted, storedEvent),
                 actionButtonText = getActionButtonText(),
-                canReopen = getCanReopen()
+                canReopen = repository.getCanReopen()
             )
         )
     }
@@ -81,12 +75,7 @@ class ConfigureEventDetails(
         } ?: isEventCompleted
     }
 
-    @Throws(D2Error::class)
-    fun reopenEvent() {
-        eventId?.let {
-            d2.eventModule().events().uid(it).setStatus(EventStatus.ACTIVE)
-        }
-    }
+    fun reopenEvent() = repository.reopenEvent()
 
     private fun isCompleted(
         selectedDate: Date?,
@@ -116,15 +105,4 @@ class ConfigureEventDetails(
             repository.getEditableStatus() is Editable
         } ?: true
     }
-
-    private fun hasReopenAuthority(): Boolean =
-        d2.userModule().authorities()
-            .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
-            .one()
-            .blockingExists()
-
-    private fun getCanReopen(): Boolean =
-        eventId?.let {
-            getStoredEvent()?.status() == EventStatus.COMPLETED && hasReopenAuthority()
-        } ?: false
 }

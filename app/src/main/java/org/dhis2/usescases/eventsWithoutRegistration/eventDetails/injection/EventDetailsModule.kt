@@ -87,7 +87,8 @@ class EventDetailsModule(
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
                 LegendValueProviderImpl(d2, resourceManager)
-            )
+            ),
+            d2ErrorMapper = D2ErrorUtils(context)
         )
     }
 
@@ -139,8 +140,7 @@ class EventDetailsModule(
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(
                 repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider
-            ),
-            d2ErrorMapper = D2ErrorUtils(context)
+            )
         )
     }
 }
