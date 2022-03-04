@@ -512,13 +512,9 @@ class SearchTEIViewModelTest {
             )
         ) doReturn TeiDownloadResult.BreakTheGlassResult("teiUid", null)
 
-        viewModel.downloadResult.observeForever(downloadResultObserver)
-
         viewModel.onDownloadTei("teiUid", null)
-
-        val values = downloadResultCaptor.allValues
-        assertTrue(values.size == 1)
-        assertTrue(values[0] is TeiDownloadResult.BreakTheGlassResult)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.downloadResult.value is TeiDownloadResult.BreakTheGlassResult)
     }
 
     @Test
@@ -530,8 +526,6 @@ class SearchTEIViewModelTest {
                 null
             )
         ) doReturn TeiDownloadResult.TeiToEnroll("teiUid")
-
-        viewModel.downloadResult.observeForever(downloadResultObserver)
 
         viewModel.onDownloadTei("teiUid", null)
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -578,10 +572,6 @@ class SearchTEIViewModelTest {
         viewModel.setSearchScreen(false)
         viewModel.onSearchClick()
         testingDispatcher.scheduler.advanceUntilIdle()
-    }
-
-    private fun setCurrentProgram(programToReturn: Program) {
-        whenever(repository.getProgram("programUid")) doReturn programToReturn
     }
 
     private fun setAllowCreateBeforeSearch(allow: Boolean) {
