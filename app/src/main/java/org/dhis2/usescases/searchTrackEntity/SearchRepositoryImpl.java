@@ -683,7 +683,13 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TeiDownloadResult checkDownload(String teiUid, @Nullable String enrollmentUid) {
         if (teiHasBeenDownloaded(teiUid)) {
             if (hasEnrollmentInCurrentProgram(teiUid)) {
-                return new TeiDownloadResult.DownloadedResult(teiUid, enrollmentUid);
+                String programEnrollment;
+                if(enrollmentUid != null){
+                    programEnrollment = enrollmentUid;
+                }else{
+                    programEnrollment = getEnrollmentInProgram(teiUid);
+                }
+                return new TeiDownloadResult.DownloadedResult(teiUid, programEnrollment);
             } else if (canEnrollInCurrentProgram()) {
                 return new TeiDownloadResult.TeiToEnroll(teiUid);
             } else {
@@ -703,6 +709,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(currentProgram)
                 .blockingIsEmpty();
+    }
+
+    private String getEnrollmentInProgram(String teiUid){
+        return d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byProgram().eq(currentProgram)
+                .one()
+                .blockingGet()
+                .uid();
     }
 
     private boolean canEnrollInCurrentProgram() {
