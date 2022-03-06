@@ -376,21 +376,4 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void checkData() {
         checkData.onNext(true);
     }
-
-    private static boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                boolean success = deleteDir(new File(dir, aChildren));
-                if (!success) {
-                    return false;
-                }
-            }
-            return dir.delete();
-        } else if (dir != null && dir.isFile()) {
-            return dir.delete();
-        } else {
-            return false;
-        }
-    }
 }

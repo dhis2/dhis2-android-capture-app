@@ -140,11 +140,13 @@ class MainPresenter(
             view.goToAccounts()
         } else {
             view.showProgressDeleteNotification()
-            deleteUserData.apply {
-                wipeDBAndPreferences()
-                wipeCache(view.abstracContext.cacheDir)
+            try {
+                deleteUserData.wipeDBAndPreferences(view.abstracContext.cacheDir)
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                view.startActivity(LoginActivity::class.java, null, true, true, null)
             }
-            
         }
     }
 

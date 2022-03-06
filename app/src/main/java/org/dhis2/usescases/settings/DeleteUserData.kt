@@ -14,21 +14,15 @@ class DeleteUserData(
     private val d2: D2
 ) {
 
-    fun wipeDBAndPreferences(): Boolean{
-        try {
+    fun wipeDBAndPreferences(file: File?){
+            filterManager.clearAllFilters()
             workManagerController.cancelAllWork()
             workManagerController.pruneWork()
-            filterManager.clearAllFilters()
+            if (file != null){
+                deleteCache(file)
+            }
             preferencesProvider.clear()
             d2.wipeModule().wipeEverything()
             d2.userModule().logOut().blockingAwait()
-        } catch (e: Exception) {
-            return false
-        }
-        return true
-    }
-
-    fun wipeCache(file: File?): Boolean {
-        return deleteCache(file)
     }
 }

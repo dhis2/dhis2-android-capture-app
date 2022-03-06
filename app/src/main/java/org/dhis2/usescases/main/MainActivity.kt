@@ -61,6 +61,8 @@ class MainActivity :
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
 
+    var notification: Boolean = false
+
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             binding.navigationBar.pageConfiguration(pageConfigurator)
@@ -345,7 +347,7 @@ class MainActivity :
 
     override fun onDrawerClosed(drawerView: View) {
         initCurrentScreen()
-        if (mainNavigator.isPrograms()) {
+        if (mainNavigator.isPrograms() && !notification) {
             presenter.initFilters()
         }
     }
@@ -393,6 +395,7 @@ class MainActivity :
     }
 
     override fun showProgressDeleteNotification(){
+        notification = true
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
