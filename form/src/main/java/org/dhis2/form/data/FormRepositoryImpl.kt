@@ -181,7 +181,8 @@ class FormRepositoryImpl(
                     showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
                 showErrors = true
                 FieldsWithErrorResult(
-                    fieldsWithError(),
+                    ruleEffectsResult?.fieldsWithErrors?.map { it.errorMessage }
+                        ?: emptyList(),
                     ruleEffectsResult?.canComplete ?: true,
                     ruleEffectsResult?.messageOnComplete,
                     allowDiscard = true
@@ -190,7 +191,8 @@ class FormRepositoryImpl(
             ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
                 showWarnigns = true
                 FieldsWithWarningResult(
-                    fieldsWithWarning(),
+                    ruleEffectsResult?.fieldsWithWarnings?.map { it.errorMessage }
+                        ?: emptyList(),
                     ruleEffectsResult?.canComplete ?: true,
                     ruleEffectsResult?.messageOnComplete
                 )

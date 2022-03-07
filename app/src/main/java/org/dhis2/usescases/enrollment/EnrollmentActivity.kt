@@ -120,7 +120,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     setSaveButtonVisible(true)
                 }
             }
-            .onDiscard { presenter.finish(mode) }
+            .onFinishDataEntry { presenter.finish(mode) }
             .factory(supportFragmentManager)
             .build()
 

@@ -95,7 +95,7 @@ class FormView(
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
-    private val onDiscard: (() -> Unit)?,
+    private val onFinishDataEntry: (() -> Unit)?,
     private val onActivityForResult: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     private val completionListener: ((percentage: Float) -> Unit)?,
@@ -347,8 +347,7 @@ class FormView(
                             result.allowDiscard
                         )
                     is NotSavedResult -> showDiscardDialog()
-                    is SuccessfulResult -> {
-                    }
+                    is SuccessfulResult -> onFinishDataEntry?.invoke()
                 }
             }
         }
@@ -383,7 +382,7 @@ class FormView(
                 if (allowDiscard) {
                     it.setNegativeButton(getString(R.string.discard_changes)) {
                         viewModel.discardChanges()
-                        onDiscard?.invoke()
+                        onFinishDataEntry?.invoke()
                     }
                 }
             }
@@ -396,7 +395,7 @@ class FormView(
             .setMessage(getString(R.string.review))
             .setFieldsToDisplay(warningFields)
             .setPositiveButton(getString(R.string.review))
-            .setNegativeButton(getString(R.string.not_now)) { onDiscard?.invoke() }
+            .setNegativeButton(getString(R.string.not_now)) { onFinishDataEntry?.invoke() }
             .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
@@ -412,7 +411,7 @@ class FormView(
                 if (allowDiscard) {
                     it.setNegativeButton(getString(R.string.discard_changes)) {
                         viewModel.discardChanges()
-                        onDiscard?.invoke()
+                        onFinishDataEntry?.invoke()
                     }
                     it.setPositiveButton(getString(R.string.keep_editing))
                 }
@@ -436,7 +435,7 @@ class FormView(
             .setPositiveButton(getString(R.string.keep_editing))
             .setNegativeButton(getString(R.string.discard_changes)) {
                 viewModel.discardChanges()
-                onDiscard?.invoke()
+                onFinishDataEntry?.invoke()
             }
             .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
@@ -905,7 +904,7 @@ class FormView(
         private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
-        private var onDiscard: (() -> Unit)? = null
+        private var onFinishDataEntry: (() -> Unit)? = null
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -972,8 +971,8 @@ class FormView(
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
-        fun onDiscard(callback: () -> Unit) =
-            apply { this.onDiscard = callback }
+        fun onFinishDataEntry(callback: () -> Unit) =
+            apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
@@ -999,7 +998,7 @@ class FormView(
                     needToForceUpdate,
                     onLoadingListener,
                     onFocused,
-                    onDiscard,
+                    onFinishDataEntry,
                     onActivityForResult,
                     onPercentageUpdate,
                     onDataIntegrityCheck,
