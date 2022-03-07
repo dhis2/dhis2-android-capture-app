@@ -20,6 +20,7 @@ class GraphTableAdapter(val context: Context) :
         val layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout
         return LayoutInflater.from(context).inflate(layout, null)
     }
+
     override fun getColumnHeaderItemViewType(position: Int): Int = 0
 
     override fun getRowHeaderItemViewType(position: Int): Int = 0
@@ -36,7 +37,6 @@ class GraphTableAdapter(val context: Context) :
         columnHeaderItemModel: Any?,
         columnPosition: Int
     ) {
-
         (holder as GraphTableHolder).bind(columnHeaderItemModel as CellModel)
         holder.setBackground(columnPosition % 2 == 0)
         val i = getHeaderRecyclerPositionFor(columnHeaderItemModel)

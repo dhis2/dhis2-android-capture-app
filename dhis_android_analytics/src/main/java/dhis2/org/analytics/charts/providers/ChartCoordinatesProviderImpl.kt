@@ -2,11 +2,11 @@ package dhis2.org.analytics.charts.providers
 
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.LegendValue
-import org.dhis2.commons.resources.ResourceManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.AnalyticsLegendStrategy
 import org.hisp.dhis.android.core.analytics.aggregated.GridResponseValue
@@ -14,7 +14,6 @@ import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.legendset.Legend
 import org.hisp.dhis.android.core.period.Period
-import org.hisp.dhis.android.core.visualization.LegendStrategy
 
 class ChartCoordinatesProviderImpl(
     val d2: D2,
@@ -259,7 +258,8 @@ class ChartCoordinatesProviderImpl(
             LegendValue(
                 resourceManager.getColorFrom(
                     it.color()
-                ), it.displayName()
+                ),
+                it.displayName()
             )
         }
     }

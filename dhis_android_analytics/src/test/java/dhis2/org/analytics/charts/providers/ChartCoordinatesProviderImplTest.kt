@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.linelist.LineListResponse
 import org.hisp.dhis.android.core.analytics.linelist.LineListResponseValue
@@ -15,7 +16,9 @@ import org.mockito.Mockito
 class ChartCoordinatesProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val periodStepProvider: PeriodStepProvider = mock()
-    private val coordinatesProvider = ChartCoordinatesProviderImpl(d2, periodStepProvider)
+    private val resourceManager: ResourceManager = mock()
+    private val coordinatesProvider =
+        ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
 
     @Test
     fun `Should get coordinates for data elements`() {
@@ -121,7 +124,7 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125")
+                        LineListResponseValue("uid", "field", "125", null)
                     )
                 )
             )
@@ -172,7 +175,7 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125")
+                        LineListResponseValue("uid", "field", "125", null)
                     )
                 )
             )
