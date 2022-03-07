@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -24,7 +25,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.Legend;
-import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -141,7 +141,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                                                                          String value) {
         String color = "";
         if (indicator.legendSets() != null && !indicator.legendSets().isEmpty()) {
-            LegendSet legendSet = indicator.legendSets().get(0);
+            ObjectWithUid legendSet = indicator.legendSets().get(0);
             List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
                     .byLegendSet().eq(legendSet.uid()).blockingGet();
             color = legends.get(0).color();
