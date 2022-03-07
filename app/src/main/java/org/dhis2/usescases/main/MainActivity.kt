@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -41,7 +42,6 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
-import java.io.File
 
 private const val FRAGMENT = "Fragment"
 private const val WIPE_NOTIFICATION = "wipe_notification"
@@ -351,7 +351,7 @@ class MainActivity :
 
     override fun onDrawerClosed(drawerView: View) {
         initCurrentScreen()
-        if (mainNavigator.isPrograms() && !notification) {
+        if (mainNavigator.isPrograms() && !isNotificationRunning()) {
             presenter.initFilters()
         }
     }
@@ -398,7 +398,7 @@ class MainActivity :
         }
     }
 
-    override fun showProgressDeleteNotification(){
+    override fun showProgressDeleteNotification() {
         notification = true
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -426,8 +426,9 @@ class MainActivity :
     }
 
     private fun isNotificationRunning(): Boolean {
-        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.activeNotifications.isNotEmpty()
         } else {
             notification

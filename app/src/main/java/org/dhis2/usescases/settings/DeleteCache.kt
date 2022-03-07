@@ -2,7 +2,7 @@ package org.dhis2.usescases.settings
 
 import java.io.File
 
-fun deleteCache(dir: File?): Boolean{
+fun deleteCache(dir: File?): Boolean {
     return if (dir != null && dir.isDirectory) {
         val children: Array<String> = dir.list()
         for (aChildren in children) {
