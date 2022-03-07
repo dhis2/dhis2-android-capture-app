@@ -21,16 +21,20 @@ import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 
 class MainPresenterTest {
 
@@ -43,6 +47,8 @@ class MainPresenterTest {
     private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val userManager: UserManager = mock()
+    private val deleteUserData: DeleteUserData = mock()
 
     @Rule
     @JvmField
@@ -59,7 +65,9 @@ class MainPresenterTest {
                 workManagerController,
                 filterManager,
                 filterRepository,
-                matomoAnalyticsController
+                matomoAnalyticsController,
+                userManager,
+                deleteUserData
             )
     }
 
@@ -164,6 +172,50 @@ class MainPresenterTest {
         presenter.onClickSyncManager()
 
         verify(matomoAnalyticsController).trackEvent(any(), any(), any())
+    }
+
+    @Test
+    fun `Should delete account`() {
+        val randomFile = File("random")
+        whenever(view.obtainFileView()) doReturn randomFile
+
+        presenter.onDeleteAccount()
+
+        verify(view).showProgressDeleteNotification()
+        verify(deleteUserData).wipeDBAndPreferences(randomFile)
+        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+    }
+
+    @Test
+    fun `Should go to manage account`() {
+        val firstRandomUserAccount =
+            DatabaseAccount.builder()
+                .username("random")
+                .serverUrl("https://www.random.com/")
+                .encrypted(false)
+                .databaseName("none")
+                .databaseCreationDate("16/2/2012")
+                .build()
+        val secondRandomUserAccount =
+            DatabaseAccount.builder()
+                .username("random")
+                .serverUrl("https://www.random.com/")
+                .encrypted(false)
+                .databaseName("none")
+                .databaseCreationDate("16/2/2012")
+                .build()
+
+        whenever(userManager.d2) doReturn mock()
+        whenever(userManager.d2.userModule()) doReturn mock()
+        whenever(userManager.d2.userModule().accountManager()) doReturn mock()
+        whenever(userManager.d2.userModule().accountManager().getAccounts()) doReturn listOf(
+            firstRandomUserAccount,
+            secondRandomUserAccount
+        )
+
+        presenter.onDeleteAccount()
+
+        verify(view).goToAccounts()
     }
 
     private fun presenterMocks() {

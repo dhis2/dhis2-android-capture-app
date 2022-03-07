@@ -41,8 +41,11 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import java.io.File
 
 private const val FRAGMENT = "Fragment"
+private const val WIPE_NOTIFICATION = "wipe_notification"
+private const val RESTART = "Restart"
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -209,6 +212,7 @@ class MainActivity :
 
     override fun goToAccounts() {
         startActivity(Intent(this, AccountsActivity::class.java))
+        finish()
     }
 
     override fun renderUsername(username: String) {
@@ -400,13 +404,13 @@ class MainActivity :
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val mChannel = NotificationChannel(
-                "wipe_notification",
-                "Restart",
+                WIPE_NOTIFICATION,
+                RESTART,
                 NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(mChannel)
         }
-        val notificationBuilder = NotificationCompat.Builder(context, "wipe_notification")
+        val notificationBuilder = NotificationCompat.Builder(context, WIPE_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_sync)
             .setContentTitle(getString(R.string.wipe_data))
             .setContentText(getString(R.string.please_wait))
@@ -415,5 +419,18 @@ class MainActivity :
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         notificationManager.notify(123456, notificationBuilder.build())
+    }
+
+    override fun obtainFileView(): File? {
+        return this.cacheDir
+    }
+
+    private fun isNotificationRunning(): Boolean {
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notificationManager.activeNotifications.isNotEmpty()
+        } else {
+            notification
+        }
     }
 }

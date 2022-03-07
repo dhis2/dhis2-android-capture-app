@@ -141,7 +141,7 @@ class MainPresenter(
         } else {
             view.showProgressDeleteNotification()
             try {
-                deleteUserData.wipeDBAndPreferences(view.abstracContext.cacheDir)
+                deleteUserData.wipeDBAndPreferences(view.obtainFileView())
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
