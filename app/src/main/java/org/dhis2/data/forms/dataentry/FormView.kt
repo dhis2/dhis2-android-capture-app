@@ -706,7 +706,9 @@ class FormView(
                                 requireContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 File(
-                                    FileResourceDirectoryHelper.getFileResourceDirectory(context),
+                                    FileResourceDirectoryHelper.getFileResourceDirectory(
+                                        requireContext()
+                                    ),
                                     "tempFile.png"
                                 )
                             )
