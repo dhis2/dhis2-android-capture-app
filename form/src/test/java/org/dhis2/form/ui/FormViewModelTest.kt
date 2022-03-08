@@ -59,10 +59,13 @@ class FormViewModelTest {
     @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
     fun `Missing and errors fields should show mandatory fields dialog`() {
-        whenever(repository.runDataIntegrityCheck()) doReturn MissingMandatoryResult(
+        whenever(
+            repository.runDataIntegrityCheck(false)
+        ) doReturn MissingMandatoryResult(
             emptyMap(),
             false,
-            null
+            null,
+            false
         )
 
         viewModel.runDataIntegrityCheck()
@@ -73,10 +76,13 @@ class FormViewModelTest {
     @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
     fun `Error fields should show mandatory fields dialog`() {
-        whenever(repository.runDataIntegrityCheck()) doReturn FieldsWithErrorResult(
+        whenever(
+            repository.runDataIntegrityCheck(false)
+        ) doReturn FieldsWithErrorResult(
             emptyList(),
             false,
-            null
+            null,
+            false
         )
 
         viewModel.runDataIntegrityCheck()
@@ -87,7 +93,9 @@ class FormViewModelTest {
     @Test
     @Ignore("We need to update Kotlin version in order to test coroutines")
     fun `Check data integrity is a success`() {
-        whenever(repository.runDataIntegrityCheck()) doReturn SuccessfulResult(
+        whenever(
+            repository.runDataIntegrityCheck(false)
+        ) doReturn SuccessfulResult(
             null,
             true,
             null
