@@ -19,7 +19,7 @@ class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
                         .uid(value)
                         .blockingGet()
                         ?.displayName()
-                        ?:value
+                        ?: value
 
                 ValueType.DATE ->
                     DateUtils.uiDateFormat().format(
