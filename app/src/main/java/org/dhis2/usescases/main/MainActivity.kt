@@ -426,12 +426,12 @@ class MainActivity :
     }
 
     private fun isNotificationRunning(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.activeNotifications.isNotEmpty()
-        } else {
-            notification
-        }
+        return notification
+    }
+
+    override fun cancelNotifications() {
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 }

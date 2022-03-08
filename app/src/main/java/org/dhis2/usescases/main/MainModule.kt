@@ -68,14 +68,12 @@ class MainModule(val view: MainView) {
     @PerActivity
     fun provideDeleteUserData(
         workManagerController: WorkManagerController,
-        preferencesProvider: PreferenceProvider,
-        d2: D2
+        preferencesProvider: PreferenceProvider
     ): DeleteUserData {
         return DeleteUserData(
             workManagerController,
             FilterManager.getInstance(),
-            preferencesProvider,
-            d2
+            preferencesProvider
         )
     }
 }

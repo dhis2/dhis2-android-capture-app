@@ -61,4 +61,6 @@ interface MainView : AbstractActivityContracts.View {
     fun showProgressDeleteNotification()
 
     fun obtainFileView(): File?
+
+    fun cancelNotifications()
 }

@@ -136,17 +136,16 @@ class MainPresenter(
 
     fun onDeleteAccount() {
         val users = userManager.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+        view.showProgressDeleteNotification()
+
+        deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+        userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
+        view.cancelNotifications()
+
         if (users > MIN_USERS) {
             view.goToAccounts()
         } else {
-            view.showProgressDeleteNotification()
-            try {
-                deleteUserData.wipeDBAndPreferences(view.obtainFileView())
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                view.startActivity(LoginActivity::class.java, null, true, true, null)
-            }
+            view.startActivity(LoginActivity::class.java, null, true, true, null)
         }
     }
 

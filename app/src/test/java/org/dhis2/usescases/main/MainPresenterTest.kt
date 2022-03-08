@@ -175,14 +175,20 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should delete account`() {
+    fun `Should go to delete account`() {
         val randomFile = File("random")
+        whenever(view.obtainFileView()) doReturn randomFile
+        whenever(userManager.d2) doReturn mock()
+        whenever(userManager.d2.userModule()) doReturn mock()
+        whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(view.obtainFileView()) doReturn randomFile
 
         presenter.onDeleteAccount()
 
         verify(view).showProgressDeleteNotification()
-        verify(deleteUserData).wipeDBAndPreferences(randomFile)
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
+        verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
+        verify(view).cancelNotifications()
         verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
     }
 
@@ -205,6 +211,9 @@ class MainPresenterTest {
                 .databaseCreationDate("16/2/2012")
                 .build()
 
+        val randomFile = File("random")
+
+        whenever(view.obtainFileView()) doReturn randomFile
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
@@ -215,6 +224,10 @@ class MainPresenterTest {
 
         presenter.onDeleteAccount()
 
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
+        verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
+        verify(view).showProgressDeleteNotification()
+        verify(view).cancelNotifications()
         verify(view).goToAccounts()
     }
 
