@@ -9,7 +9,6 @@ import org.dhis2.common.preferences.PreferenceTestingImpl
 import org.dhis2.common.preferences.PreferencesRobot
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.mockwebserver.Dhis2MockServer
-import org.hisp.dhis.android.core.sms.data.localdbrepository.internal.LocalDbRepositoryImpl
 
 class TestingInjector {
 
