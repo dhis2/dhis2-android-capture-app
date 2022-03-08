@@ -2,7 +2,6 @@ package org.dhis2.ui
 
 import org.dhis2.R
 
-
 sealed class DialogButtonStyle(
     open val textResource: Int,
     val colorResource: Int? = null,
