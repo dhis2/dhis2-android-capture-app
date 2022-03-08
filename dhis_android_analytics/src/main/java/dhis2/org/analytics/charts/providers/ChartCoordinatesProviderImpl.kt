@@ -51,6 +51,8 @@ class ChartCoordinatesProviderImpl(
 
                 val lineListResponseValue = lineListResponse.values.first()
 
+                val legend = getLegend(lineListResponseValue.legend)
+
                 lineListResponseValue.value?.let { value ->
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
@@ -59,7 +61,7 @@ class ChartCoordinatesProviderImpl(
                             lineListResponse.period
                         ).toFloat(),
                         fieldValue = value.toFloat(),
-                        legendValue = createLegendValue(lineListResponseValue.legend)
+                        legendValue = createLegendValue(legend)
                     )
                 }
             }
@@ -103,6 +105,9 @@ class ChartCoordinatesProviderImpl(
 
                 lineListResponseValue.value?.let { value ->
                     if (initialPeriod == null) initialPeriod = lineListResponse.period
+
+                    val legend = getLegend(lineListResponseValue.legend)
+
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position = periodStepProvider.getPeriodDiff(
@@ -110,7 +115,7 @@ class ChartCoordinatesProviderImpl(
                             lineListResponse.period
                         ).toFloat(),
                         fieldValue = value.toFloat(),
-                        legendValue = createLegendValue(lineListResponseValue.legend)
+                        legendValue = createLegendValue(legend)
                     )
                 }
             }
@@ -233,12 +238,15 @@ class ChartCoordinatesProviderImpl(
                     }
                 }
 
+                val legend =
+                    metadata[gridResponseValue.legend]?.let { it as MetadataItem.LegendItem }
+
                 GraphPoint(
                     eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
                     fieldValue = gridResponseValue.value!!.toFloat(),
                     legend = columnLegend,
-                    legendValue = createLegendValue(gridResponseValue.legend)
+                    legendValue = createLegendValue(legend?.item)
                 )
             }
     }
@@ -250,6 +258,12 @@ class ChartCoordinatesProviderImpl(
             formattedDate ?: date
         } catch (e: Exception) {
             date
+        }
+    }
+
+    private fun getLegend(legendUid: String?): Legend? {
+        return legendUid?.let {
+            d2.legendSetModule().legends().uid(legendUid).blockingGet()
         }
     }
 
