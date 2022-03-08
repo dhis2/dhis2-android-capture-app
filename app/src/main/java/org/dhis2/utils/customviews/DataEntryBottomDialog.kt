@@ -4,23 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
-import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.ui.DataEntryBottomDialogContent
+import org.dhis2.ui.DataEntryDialogUiModel
 
 class DataEntryBottomDialog(
-    var isSaved: Boolean,
-    var message: String,
-    var fieldsWithIssues: List<FieldWithIssue>? = emptyList(),
-    var mainButtonContent: @Composable (RowScope.() -> Unit),
+    var dataEntryDialogUiModel: DataEntryDialogUiModel,
     var onMainButtonClicked: () -> Unit,
-    var secondaryButtonContent: @Composable RowScope.() -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {}
 ) : BottomSheetDialogFragment() {
 
@@ -39,12 +33,8 @@ class DataEntryBottomDialog(
             setContent {
                 MdcTheme {
                     DataEntryBottomDialogContent(
-                        isSaved = isSaved,
-                        message = message,
-                        fieldsWithIssues = fieldsWithIssues,
-                        mainButtonContent = mainButtonContent,
+                        dataEntryDialogUiModel = dataEntryDialogUiModel,
                         onMainButtonClicked = onMainButtonClicked,
-                        secondaryButtonContent = secondaryButtonContent,
                         onSecondaryButtonClicked = onSecondaryButtonClicked
                     )
                 }

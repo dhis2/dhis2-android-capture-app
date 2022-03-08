@@ -33,12 +33,8 @@ import org.dhis2.commons.data.IssueType
 
 @Composable
 fun DataEntryBottomDialogContent(
-    isSaved: Boolean,
-    message: String,
-    fieldsWithIssues: List<FieldWithIssue>? = emptyList(),
-    mainButtonContent: @Composable RowScope.() -> Unit,
+    dataEntryDialogUiModel: DataEntryDialogUiModel,
     onMainButtonClicked: () -> Unit,
-    secondaryButtonContent: @Composable RowScope.() -> Unit = {},
     onSecondaryButtonClicked: () -> Unit = {}
 ) {
     val modifier = Modifier
@@ -54,41 +50,29 @@ fun DataEntryBottomDialogContent(
             modifier = modifier
         ) {
             Icon(
-                painter = painterResource(
-                    when {
-                        isSaved ->
-                            R.drawable.ic_saved_check
-                        fieldsWithIssues?.any { it.issueType == IssueType.ERROR } == true ->
-                            R.drawable.ic_error_outline
-                        else ->
-                            R.drawable.ic_alert
-                    }
-                ),
+                painter = painterResource(dataEntryDialogUiModel.iconResource),
                 contentDescription = "",
                 tint = Color.Unspecified
             )
             Text(
-                text = when {
-                    isSaved -> stringResource(R.string.saved)
-                    else -> stringResource(R.string.not_saved)
-                },
+                text = dataEntryDialogUiModel.title,
                 style = MaterialTheme.typography.h5,
                 color = colorResource(id = R.color.textPrimary),
                 modifier = Modifier.padding(16.dp)
             )
             Text(
-                text = message,
+                text = dataEntryDialogUiModel.subtitle,
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.textSecondary)
             )
         }
         Divider(Modifier.padding(horizontal = 24.dp))
-        if (fieldsWithIssues?.isNotEmpty() == true) {
+        if (dataEntryDialogUiModel.fieldsWithIssues?.isNotEmpty() == true) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier
             ) {
-                items(fieldsWithIssues) { IssueItem(it) }
+                items(dataEntryDialogUiModel.fieldsWithIssues!!) { IssueItem(it) }
             }
             Divider(Modifier.padding(horizontal = 24.dp))
         }
@@ -100,7 +84,7 @@ fun DataEntryBottomDialogContent(
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 elevation = ButtonDefaults.elevation(0.dp),
                 onClick = { onSecondaryButtonClicked() },
-                content = secondaryButtonContent
+                content = provideButtonContent(dataEntryDialogUiModel.secondaryButton)
             )
             Button(
                 shape = RoundedCornerShape(24.dp),
@@ -109,11 +93,29 @@ fun DataEntryBottomDialogContent(
                     contentColor = Color.White
                 ),
                 onClick = { onMainButtonClicked() },
-                content = mainButtonContent
+                content = provideButtonContent(dataEntryDialogUiModel.mainButton)
             )
         }
     }
 }
+
+fun provideButtonContent(buttonStyle: DialogButtonStyle?): @Composable (RowScope.() -> Unit) =
+    {
+        buttonStyle?.let { style ->
+            style.iconResource?.let { icon ->
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = "",
+                    tint = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+            Text(
+                text = stringResource(id = style.textResource),
+                color = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified
+            )
+        }
+    }
 
 @Composable
 fun IssueItem(fieldWithIssue: FieldWithIssue) {
@@ -142,13 +144,14 @@ fun IssueItem(fieldWithIssue: FieldWithIssue) {
 @Composable
 fun DialogPreview1() {
     DataEntryBottomDialogContent(
-        isSaved = false,
-        message = "If you exit now all the information in the form will be discarded.",
-        mainButtonContent = { Text(text = "Keep editing") },
+        dataEntryDialogUiModel = DataEntryDialogUiModel(
+            title = "Saved",
+            subtitle = "If you exit now all the information in the form will be discarded.",
+            iconResource = R.drawable.ic_saved_check,
+            mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
+            secondaryButton = DialogButtonStyle.DiscardButton
+        ),
         onMainButtonClicked = {},
-        secondaryButtonContent = {
-            Text(text = "Discard changes", color = colorResource(id = R.color.warning_color))
-        },
         onSecondaryButtonClicked = {}
     )
 }
@@ -157,21 +160,14 @@ fun DialogPreview1() {
 @Composable
 fun DialogPreview2() {
     DataEntryBottomDialogContent(
-        isSaved = true,
-        message = "Do you want to mark this form as complete?",
-        mainButtonContent = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_event_status_complete),
-                contentDescription = "",
-                tint = Color.White,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Text(text = "Complete")
-        },
+        dataEntryDialogUiModel = DataEntryDialogUiModel(
+            title = "Saved",
+            subtitle = "Do you want to mark this form as complete?",
+            iconResource = R.drawable.ic_saved_check,
+            mainButton = DialogButtonStyle.CompleteButton,
+            secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
+        ),
         onMainButtonClicked = {},
-        secondaryButtonContent = {
-            Text(text = "Not now", color = colorResource(id = R.color.colorPrimary))
-        },
         onSecondaryButtonClicked = {}
     )
 }
@@ -180,12 +176,15 @@ fun DialogPreview2() {
 @Composable
 fun DialogPreview3() {
     DataEntryBottomDialogContent(
-        isSaved = false,
-        message = "Some mandatory fields are missing and the form cannot be saved.",
-        fieldsWithIssues = listOf(
-            FieldWithIssue("Age", IssueType.MANDATORY, "Field Mandatory")
+        dataEntryDialogUiModel = DataEntryDialogUiModel(
+            title = "Not saved",
+            subtitle = "Some mandatory fields are missing and the form cannot be saved.",
+            iconResource = R.drawable.ic_alert,
+            fieldsWithIssues = listOf(
+                FieldWithIssue("Age", IssueType.MANDATORY, "Field Mandatory")
+            ),
+            mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
-        mainButtonContent = { Text(text = "Review") },
         onMainButtonClicked = {}
     )
 }
@@ -194,14 +193,18 @@ fun DialogPreview3() {
 @Composable
 fun DialogPreview4() {
     DataEntryBottomDialogContent(
-        isSaved = false,
-        message = "Some fields have errors and they are not saved." +
-            "If you exit now the changes will be discarded.",
-        fieldsWithIssues = listOf(
-            FieldWithIssue("Age", IssueType.ERROR, "Enter text"),
-            FieldWithIssue("Date of birth", IssueType.ERROR, "Enter text")
+        dataEntryDialogUiModel = DataEntryDialogUiModel(
+            title = "Not saved",
+            subtitle = "Some fields have errors and they are not saved." +
+                "If you exit now the changes will be discarded.",
+            iconResource = R.drawable.ic_error_outline,
+            fieldsWithIssues = listOf(
+                FieldWithIssue("Age", IssueType.ERROR, "Enter text"),
+                FieldWithIssue("Date of birth", IssueType.ERROR, "Enter text")
+            ),
+            mainButton = DialogButtonStyle.MainButton(R.string.review),
+            secondaryButton = DialogButtonStyle.DiscardButton
         ),
-        mainButtonContent = { Text(text = "Review") },
         onMainButtonClicked = {}
     )
 }
