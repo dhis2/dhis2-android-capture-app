@@ -796,6 +796,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             filtersAdapter.notifyDataSetChanged();
             FilterManager.getInstance().clearAllFilters();
         } else {
+            formView.onEditionFinish();
             formView.clearValues();
             presenter.onClearClick();
         }
