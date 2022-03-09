@@ -228,7 +228,7 @@ class MainPresenterTest {
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()
-        verify(view).goToAccounts()
+        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
     }
 
     private fun presenterMocks() {

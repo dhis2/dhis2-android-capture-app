@@ -142,8 +142,8 @@ class MainPresenter(
         userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
         view.cancelNotifications()
 
-        if (users > MIN_USERS) {
-            view.goToAccounts()
+        if (users > MIN_USERS) { // to change in the future for goToAccounts
+            view.startActivity(LoginActivity::class.java, null, true, true, null)
         } else {
             view.startActivity(LoginActivity::class.java, null, true, true, null)
         }
