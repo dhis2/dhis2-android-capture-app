@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
@@ -14,7 +17,7 @@ import org.dhis2.ui.DataEntryDialogUiModel
 
 class DataEntryBottomDialog(
     var dataEntryDialogUiModel: DataEntryDialogUiModel,
-    var onMainButtonClicked: () -> Unit,
+    var onMainButtonClicked: () -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {}
 ) : BottomSheetDialogFragment() {
 
@@ -34,11 +37,45 @@ class DataEntryBottomDialog(
                 MdcTheme {
                     DataEntryBottomDialogContent(
                         dataEntryDialogUiModel = dataEntryDialogUiModel,
-                        onMainButtonClicked = onMainButtonClicked,
-                        onSecondaryButtonClicked = onSecondaryButtonClicked
+                        onMainButtonClicked = {
+                            onMainButtonClicked.invoke()
+                            dismiss()
+                        },
+                        onSecondaryButtonClicked = {
+                            onSecondaryButtonClicked.invoke()
+                            dismiss()
+                        }
                     )
                 }
             }
+        }
+    }
+
+    // This is necessary to show the bottomSheet dialog with full height on landscape
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.viewTreeObserver.addOnGlobalLayoutListener {
+            val dialog = dialog as BottomSheetDialog
+
+            val bottomSheet =
+                dialog.findViewById<FrameLayout>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                )
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.peekHeight = 0
+
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    /*NoUse*/
+                }
+            })
         }
     }
 }

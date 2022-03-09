@@ -47,7 +47,7 @@ fun DataEntryBottomDialogContent(
     ) {
         Column(
             horizontalAlignment = CenterHorizontally,
-            modifier = modifier
+            modifier = modifier.weight(1f, false)
         ) {
             Icon(
                 painter = painterResource(dataEntryDialogUiModel.iconResource),
@@ -70,7 +70,7 @@ fun DataEntryBottomDialogContent(
         if (dataEntryDialogUiModel.fieldsWithIssues?.isNotEmpty() == true) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = modifier
+                modifier = modifier.weight(1f, false)
             ) {
                 items(dataEntryDialogUiModel.fieldsWithIssues!!) { IssueItem(it) }
             }
@@ -78,7 +78,7 @@ fun DataEntryBottomDialogContent(
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier
+            modifier = modifier.weight(1f, false)
         ) {
             Button(
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
