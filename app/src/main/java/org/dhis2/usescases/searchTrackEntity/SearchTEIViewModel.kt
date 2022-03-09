@@ -259,7 +259,8 @@ class SearchTEIViewModel(
                 }
             } else {
                 onMinAttributes(
-                    searchRepository.getProgram(initialProgramUid)?.minAttributesRequiredToSearch()
+                    searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
                         ?: 0
                 )
             }
