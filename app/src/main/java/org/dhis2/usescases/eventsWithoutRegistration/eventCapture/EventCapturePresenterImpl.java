@@ -1,26 +1,20 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import static org.dhis2.utils.customviews.FormBottomDialog.ActionType.CHECK_FIELDS;
-import static org.dhis2.utils.customviews.FormBottomDialog.ActionType.FINISH;
-
 import android.annotation.SuppressLint;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.FieldWithIssue;
-import org.dhis2.commons.data.IssueType;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormValueStore;
-import org.dhis2.ui.DataEntryDialogUiModel;
-import org.dhis2.ui.DialogButtonStyle;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +40,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean hasExpired;
     private final PublishProcessor<Unit> notesCounterProcessor;
     private final PreferenceProvider preferences;
+    private final ConfigureEventCompletionDialog configureEventCompletionDialog;
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      FormValueStore valueStore, SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences
+                                     PreferenceProvider preferences,
+                                     ConfigureEventCompletionDialog configureEventCompletionDialog
     ) {
         this.view = view;
         this.eventUid = eventUid;
@@ -59,6 +55,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
+        this.configureEventCompletionDialog = configureEventCompletionDialog;
 
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -153,35 +150,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             setUpActionByStatus(eventStatus);
         } else {
 
-            int icon = R.drawable.ic_saved_check;
-            String title = "Title";
-            String subtitle = "Subtitle";
-            int mainButtonText = R.string.review;
-            int secondaryButtonText = R.string.not_now;
-
-            List<FieldWithIssue> fieldsWithIssues = new ArrayList<>();
-            for (String field : fieldUidErrorList) {
-                title = view.getContext().getString(R.string.not_saved);
-                subtitle = view.getContext().getString(R.string.error_fields_events);
-                FieldWithIssue fieldWithIssue = new FieldWithIssue(field, IssueType.ERROR, "jarl Error");
-                fieldsWithIssues.add(fieldWithIssue);
-            }
-
-            String mandatoryMessage = view.getContext().getString(R.string.field_is_mandatory);
-            for (String field : emptyMandatoryFields.keySet()) {
-                title = view.getContext().getString(R.string.saved);
-                subtitle = view.getContext().getString(R.string.missing_mandatory_fields_finish);
-                FieldWithIssue fieldWithIssue = new FieldWithIssue(field, IssueType.MANDATORY, mandatoryMessage);
-                fieldsWithIssues.add(fieldWithIssue);
-            }
-
-            DataEntryDialogUiModel dataEntryDialogUiModel = new DataEntryDialogUiModel(
-                    title,
-                    subtitle,
-                    icon,
-                    fieldsWithIssues,
-                    new DialogButtonStyle.MainButton(mainButtonText),
-                    new DialogButtonStyle.SecondaryButton(secondaryButtonText)
+            EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
+                    fieldUidErrorList,
+                    emptyMandatoryFields
             );
 
             view.showCompleteActions(
@@ -189,10 +160,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     onCompleteMessage,
                     fieldUidErrorList,
                     emptyMandatoryFields,
-                    dataEntryDialogUiModel,
-                    CHECK_FIELDS,
-                    FINISH
-                    );
+                    eventCompletionDialog
+            );
         }
 
         view.showNavigationBar();

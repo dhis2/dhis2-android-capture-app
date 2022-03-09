@@ -265,7 +265,7 @@
     <string name="missing_mandatory_fields_title">Mandatory fields are missing</string>
     <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
     <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>
-    <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
+    <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="title_delete_go_back">Your data is not saved</string>
     <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
@@ -885,4 +885,6 @@
     <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
     <string name="action_ok">Ok</string>
     <string name="search_or_create">You can search or create a new %s</string>
+    <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
+    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
 </resources>

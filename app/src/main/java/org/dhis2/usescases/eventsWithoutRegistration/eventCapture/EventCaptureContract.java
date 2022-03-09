@@ -1,8 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import org.dhis2.ui.DataEntryDialogUiModel;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +29,7 @@ public class EventCaptureContract {
                 String completeMessage,
                 List<String> errors,
                 Map<String, String> emptyMandatoryFields,
-                DataEntryDialogUiModel dataEntryDialogUiModel,
-                FormBottomDialog.ActionType mainButtonAction, FormBottomDialog.ActionType secondaryButtonAction);
+                EventCompletionDialog eventCompletionDialog);
 
         void restartDataEntry();
 

@@ -28,11 +28,11 @@ import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.ui.DataEntryDialogUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
@@ -185,9 +185,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             String completeMessage,
             List<String> errors,
             Map<String, String> emptyMandatoryFields,
-            DataEntryDialogUiModel dataEntryDialogUiModel,
-            ActionType mainButtonAction,
-            ActionType secondaryButtonAction) {
+            EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
@@ -202,13 +200,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     .show(getSupportFragmentManager(), "SHOW_OPTIONS");
 
             DataEntryBottomDialog dialog = new DataEntryBottomDialog(
-                    dataEntryDialogUiModel,
+                    eventCompletionDialog.getDataEntryDialogUiModel(),
                     () -> {
-                        setAction(mainButtonAction);
+                        setAction(eventCompletionDialog.getMainButton().getAction());
                         return Unit.INSTANCE;
                     },
                     () -> {
-                        setAction(secondaryButtonAction);
+                        setAction(eventCompletionDialog.getSecondaryButton().getAction());
                         return Unit.INSTANCE;
                     }
             );
