@@ -29,7 +29,6 @@ import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.ui.DataEntryDialogUiModel;
-import org.dhis2.ui.DialogButtonStyle;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
@@ -41,10 +40,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
+import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -181,9 +180,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields) {
+    public void showCompleteActions(
+            boolean canComplete,
+            String completeMessage,
+            List<String> errors,
+            Map<String, String> emptyMandatoryFields,
+            DataEntryDialogUiModel dataEntryDialogUiModel,
+            ActionType mainButtonAction,
+            ActionType secondaryButtonAction) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            /*FormBottomDialog.getInstance()
+            FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
                     .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
                     .setIsExpired(presenter.hasExpired())
@@ -193,24 +199,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     .setEmptyMandatoryFields(emptyMandatoryFields)
                     .setFieldsWithErrors(!errors.isEmpty())
                     .setMandatoryFields(!emptyMandatoryFields.isEmpty())
-                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");*/
-
-
-            DataEntryDialogUiModel dataEntryDialogUiModel = new DataEntryDialogUiModel(
-                    "Title",
-                    "Subtitle",
-                    R.drawable.ic_saved_check,
-                    Collections.emptyList(),
-                    new DialogButtonStyle.MainButton(R.string.keep_editing),
-                    null
-            );
+                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");
 
             DataEntryBottomDialog dialog = new DataEntryBottomDialog(
                     dataEntryDialogUiModel,
                     () -> {
+                        setAction(mainButtonAction);
                         return Unit.INSTANCE;
                     },
                     () -> {
+                        setAction(secondaryButtonAction);
                         return Unit.INSTANCE;
                     }
             );
@@ -254,7 +252,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         this.programStageUid = programStageUid;
     }
 
-    private void setAction(FormBottomDialog.ActionType actionType) {
+    private void setAction(ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
                 isEventCompleted = true;

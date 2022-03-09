@@ -1,6 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import org.dhis2.ui.DataEntryDialogUiModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +25,13 @@ public class EventCaptureContract {
 
         void updatePercentage(float primaryValue);
 
-        void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields);
+        void showCompleteActions(
+                boolean canComplete,
+                String completeMessage,
+                List<String> errors,
+                Map<String, String> emptyMandatoryFields,
+                DataEntryDialogUiModel dataEntryDialogUiModel,
+                FormBottomDialog.ActionType mainButtonAction, FormBottomDialog.ActionType secondaryButtonAction);
 
         void restartDataEntry();
 
