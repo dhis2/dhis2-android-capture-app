@@ -120,7 +120,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     presenter.showOrHideSaveButton()
                 }
             }
-            .onDiscardWarningMessage { presenter.finish(mode) }
+            .onFinishDataEntry { presenter.finish(mode) }
             .factory(supportFragmentManager)
             .build()
 
@@ -238,7 +238,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
-            presenter.backIsClicked()
+            formView.onBackPressed()
         } else {
             showDeleteDialog()
         }
@@ -247,12 +247,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     private fun showDeleteDialog() {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.title_delete_go_back))
-            .setMessage(getString(R.string.delete_go_back))
-            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+            .setMessage(getString(R.string.discard_go_back))
+            .setPositiveButton(getString(R.string.keep_editing))
+            .setNegativeButton(getString(R.string.discard_changes)) {
                 presenter.deleteAllSavedData()
                 finish()
             }
-            .setNegativeButton()
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 

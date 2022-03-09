@@ -502,6 +502,7 @@ class SearchTEIViewModelTest {
         assertTrue(!viewModel.canDisplayBottomNavigationBar())
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `Should return break the glass result when downloading`() {
         whenever(
@@ -517,6 +518,7 @@ class SearchTEIViewModelTest {
         assertTrue(viewModel.downloadResult.value is TeiDownloadResult.BreakTheGlassResult)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `Should enroll tei in current program`() {
         whenever(
@@ -531,7 +533,7 @@ class SearchTEIViewModelTest {
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.downloadResult.value == null)
         verify(presenter, times(1)).enroll(
-            "programUid",
+            "initialProgram",
             "teiUid",
             hashMapOf<String, String>().apply { putAll(viewModel.queryData) }
         )

@@ -10,7 +10,8 @@ interface FormRepository {
     fun processUserAction(action: RowAction): StoreResult
     fun composeList(): List<FieldUiModel>
     fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>?
-    fun runDataIntegrityCheck(): DataIntegrityCheckResult
+    fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult
     fun completedFieldsPercentage(value: List<FieldUiModel>): Float
     fun calculationLoopOverLimit(): Boolean
+    fun backupOfChangedItems(): List<FieldUiModel>
 }

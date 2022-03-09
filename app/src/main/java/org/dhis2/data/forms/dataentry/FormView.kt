@@ -52,6 +52,7 @@ import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.toMessage
@@ -94,7 +95,7 @@ class FormView(
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
-    private val onDiscardWarningMessage: (() -> Unit)?,
+    private val onFinishDataEntry: (() -> Unit)?,
     private val onActivityForResult: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     private val completionListener: ((percentage: Float) -> Unit)?,
@@ -330,23 +331,26 @@ class FormView(
         )
 
         viewModel.dataIntegrityResult.observe(
-            viewLifecycleOwner,
-            { result ->
-                if (onDataIntegrityCheck != null) {
-                    onDataIntegrityCheck.invoke(result)
-                } else {
-                    when (result) {
-                        is FieldsWithErrorResult ->
-                            showErrorFieldsMessage(result.fieldUidErrorList)
-                        is FieldsWithWarningResult ->
-                            showWarningFieldsMessage(result.fieldUidWarningList)
-                        is MissingMandatoryResult ->
-                            showMissingMandatoryFieldsMessage(result.mandatoryFields)
-                        is SuccessfulResult -> {}
-                    }
+            viewLifecycleOwner
+        ) { result ->
+            if (onDataIntegrityCheck != null) {
+                onDataIntegrityCheck.invoke(result)
+            } else {
+                when (result) {
+                    is FieldsWithErrorResult ->
+                        showErrorFieldsMessage(result.fieldUidErrorList, result.allowDiscard)
+                    is FieldsWithWarningResult ->
+                        showWarningFieldsMessage(result.fieldUidWarningList)
+                    is MissingMandatoryResult ->
+                        showMissingMandatoryFieldsMessage(
+                            result.mandatoryFields,
+                            result.allowDiscard
+                        )
+                    is NotSavedResult -> showDiscardDialog()
+                    is SuccessfulResult -> onFinishDataEntry?.invoke()
                 }
             }
-        )
+        }
 
         viewModel.completionPercentage.observe(
             viewLifecycleOwner,
@@ -365,31 +369,53 @@ class FormView(
         )
     }
 
-    private fun showErrorFieldsMessage(errorFields: List<String>) {
+    private fun showErrorFieldsMessage(
+        errorFields: List<String>,
+        allowDiscard: Boolean
+    ) {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.unable_to_save))
             .setMessage(getString(R.string.field_errors))
             .setFieldsToDisplay(errorFields)
+            .setPositiveButton(getString(R.string.review))
+            .also {
+                if (allowDiscard) {
+                    it.setNegativeButton(getString(R.string.discard_changes)) {
+                        viewModel.discardChanges()
+                        onFinishDataEntry?.invoke()
+                    }
+                }
+            }
             .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun showWarningFieldsMessage(warningFields: List<String>) {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.warnings_in_form))
-            .setMessage(getString(R.string.what_to_do))
+            .setMessage(getString(R.string.review))
             .setFieldsToDisplay(warningFields)
-            .setNegativeButton(getString(R.string.review))
-            .setPositiveButton(getString(R.string.save)) { onDiscardWarningMessage?.invoke() }
+            .setPositiveButton(getString(R.string.review))
+            .setNegativeButton(getString(R.string.not_now)) { onFinishDataEntry?.invoke() }
             .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun showMissingMandatoryFieldsMessage(
-        emptyMandatoryFields: Map<String, String>
+        emptyMandatoryFields: Map<String, String>,
+        allowDiscard: Boolean
     ) {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.unable_to_save))
             .setMessage(getString(R.string.missing_mandatory_fields))
             .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
+            .also {
+                if (allowDiscard) {
+                    it.setNegativeButton(getString(R.string.discard_changes)) {
+                        viewModel.discardChanges()
+                        onFinishDataEntry?.invoke()
+                    }
+                    it.setPositiveButton(getString(R.string.keep_editing))
+                }
+            }
             .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
@@ -400,6 +426,18 @@ class FormView(
             .setPositiveButton(R.string.action_accept) { _, _ -> }
             .setCancelable(false)
             .show()
+    }
+
+    private fun showDiscardDialog() {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.title_delete_go_back))
+            .setMessage(getString(R.string.discard_go_back))
+            .setPositiveButton(getString(R.string.keep_editing))
+            .setNegativeButton(getString(R.string.discard_changes)) {
+                viewModel.discardChanges()
+                onFinishDataEntry?.invoke()
+            }
+            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun scrollToPosition(position: Int) {
@@ -706,7 +744,9 @@ class FormView(
                                 requireContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 File(
-                                    FileResourceDirectoryHelper.getFileResourceDirectory(context),
+                                    FileResourceDirectoryHelper.getFileResourceDirectory(
+                                        requireContext()
+                                    ),
                                     "tempFile.png"
                                 )
                             )
@@ -848,6 +888,14 @@ class FormView(
         intentHandler(FormIntent.OnClear())
     }
 
+    fun onBackPressed() {
+        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    }
+
+    fun discardChanges() {
+        viewModel.discardChanges()
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
         private var repository: FormRepository? = null
@@ -858,7 +906,7 @@ class FormView(
         private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
-        private var onDiscardWarningMessage: (() -> Unit)? = null
+        private var onFinishDataEntry: (() -> Unit)? = null
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -925,8 +973,8 @@ class FormView(
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
-        fun onDiscardWarningMessage(callback: () -> Unit) =
-            apply { this.onDiscardWarningMessage = callback }
+        fun onFinishDataEntry(callback: () -> Unit) =
+            apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
@@ -952,7 +1000,7 @@ class FormView(
                     needToForceUpdate,
                     onLoadingListener,
                     onFocused,
-                    onDiscardWarningMessage,
+                    onFinishDataEntry,
                     onActivityForResult,
                     onPercentageUpdate,
                     onDataIntegrityCheck,

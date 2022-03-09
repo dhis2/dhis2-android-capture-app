@@ -21,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
@@ -159,24 +160,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
-            new CustomDialog(
-                    this,
-                    getString(R.string.title_delete_go_back),
-                    getString(R.string.delete_go_back),
-                    getString(R.string.cancel),
-                    getString(R.string.missing_mandatory_fields_go_back),
-                    RQ_GO_BACK,
-                    new DialogClickListener() {
-                        @Override
-                        public void onPositive() {
-                        }
-
-                        @Override
-                        public void onNegative() {
-                            presenter.deleteEvent();
-                        }
-                    }
-            ).show();
+            AlertBottomDialog.Companion.getInstance()
+                    .setTitle(getString(R.string.title_delete_go_back))
+                    .setMessage(getString(R.string.discard_go_back))
+                    .setPositiveButton(getString(R.string.keep_editing), null)
+                    .setNegativeButton(getString(R.string.discard_changes), () -> {
+                        presenter.deleteEvent();
+                        return Unit.INSTANCE;
+                    })
+                    .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
         } else {
             finishDataEntry();
         }

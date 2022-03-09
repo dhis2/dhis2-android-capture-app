@@ -268,6 +268,7 @@
     <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
     <string name="title_delete_go_back">Your data is not saved</string>
     <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
+    <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
@@ -868,6 +869,10 @@
     <string name="troubleshooting_ongoing_rule_validation">Validating program rules…</string>
     <string name="troubleshooting_pass_rule_validation">No warnings found</string>
     <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="review_message">Some fields need your attention. Do you want to review the form?</string>
+    <string name="not_now">Not now</string>
     <string name="search_loading_more">Loading more results</string>
     <string name="search_no_results_in_program">No more results for %s</string>
     <string name="search_outside_action">Search outside this program</string>
