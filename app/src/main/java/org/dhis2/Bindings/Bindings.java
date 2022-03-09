@@ -468,21 +468,6 @@ public class Bindings {
 
     }
 
-    @BindingAdapter("searchOrAdd")
-    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
-        Drawable drawable;
-        if (needSearch) {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search_add);
-        } else {
-            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
-        }
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = fab.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int colorPrimary = a.getColor(0, 0);
-        fab.setColorFilter(colorPrimary);
-        fab.setImageDrawable(drawable);
-    }
-
     @BindingAdapter("versionVisibility")
     public static void setVisibility(LinearLayout linearLayout, boolean check) {
         if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

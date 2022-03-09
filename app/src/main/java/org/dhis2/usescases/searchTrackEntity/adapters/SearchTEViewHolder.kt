@@ -5,7 +5,10 @@ import org.dhis2.R
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 class SearchTEViewHolder(
-    private val binding: ItemSearchTrackedEntityBinding
+    private val binding: ItemSearchTrackedEntityBinding,
+    private val onSyncIconClick: (teiUid: String) -> Unit,
+    private val onDownloadTei: (teiUid: String, enrollmentUid: String?) -> Unit,
+    private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit
 ) : BaseTeiViewHolder(binding) {
 
     override fun itemConfiguration() {
@@ -22,18 +25,18 @@ class SearchTEViewHolder(
                 itemView.context,
                 itemView.context.getString(R.string.record_marked_for_deletion),
                 Toast.LENGTH_SHORT
-            ).show() else presenter.onSyncIconClick(teiModel.tei.uid())
+            ).show() else onSyncIconClick(teiModel.tei.uid())
         }
 
         binding.download.setOnClickListener {
-            presenter.downloadTei(
+            onDownloadTei(
                 teiModel.tei.uid(),
                 teiModel.selectedEnrollment?.uid()
             )
         }
 
         binding.cardView.setOnClickListener {
-            presenter.onTEIClick(
+            onTeiClick(
                 teiModel.tei.uid(),
                 teiModel.selectedEnrollment?.uid(),
                 teiModel.isOnline

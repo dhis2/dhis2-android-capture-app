@@ -1,7 +1,6 @@
 package org.dhis2.usescases
 
 import android.content.Context
-import android.os.Build
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
@@ -18,6 +17,7 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
+import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.junit.After
@@ -65,7 +65,8 @@ open class BaseTest {
     private fun registerCountingIdlingResource() {
         IdlingRegistry.getInstance().register(
             CountingIdlingResourceSingleton.countingIdlingResource,
-            FormCountingIdlingResource.countingIdlingResource
+            FormCountingIdlingResource.countingIdlingResource,
+            SearchIdlingResourceSingleton.countingIdlingResource
         )
     }
 
@@ -73,7 +74,8 @@ open class BaseTest {
         IdlingRegistry.getInstance()
             .unregister(
                 CountingIdlingResourceSingleton.countingIdlingResource,
-                FormCountingIdlingResource.countingIdlingResource
+                FormCountingIdlingResource.countingIdlingResource,
+                SearchIdlingResourceSingleton.countingIdlingResource
             )
     }
 

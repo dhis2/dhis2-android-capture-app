@@ -873,4 +873,15 @@
     <string name="keep_editing">Keep editing</string>
     <string name="review_message">Some fields need your attention. Do you want to review the form?</string>
     <string name="not_now">Not now</string>
+    <string name="search_loading_more">Loading more results</string>
+    <string name="search_no_results_in_program">No more results in program</string>
+    <string name="search_outside_action">Search outside program</string>
+    <string name="string_no_more_results">No more results</string>
+    <string name="search_no_results">No results</string>
+    <string name="search_too_many_results">Too many results</string>
+    <string name="search_too_many_results_message">Try changing search terms or searching by more attributes to narrow down the results.</string>
+    <string name="search_create_new">Create new</string>
+    <string name="search_min_attributes_message">It is necessary to enter at least %s of the attributes to start a search</string>
+    <string name="action_ok">Ok</string>
+    <string name="search_or_create">Search or create</string>
 </resources>

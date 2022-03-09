@@ -71,7 +71,7 @@ fun List<Program>.addEnrollmentIcons(context: Context, parent: ComposeView, curr
                                 ResourceManager(context)
                                     .getObjectStyleDrawableResource(
                                         program.style().icon(),
-                                        -1
+                                        R.drawable.ic_default_icon
                                     )
                             MetadataIcon(
                                 metadataIconData = MetadataIconData(

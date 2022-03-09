@@ -182,10 +182,9 @@ class FormTest: BaseTest() {
         startSearchActivity(ruleSearch)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
-            clickOnFab()
-            clickOnFab()
+            clickOnSearch()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
@@ -219,10 +218,9 @@ class FormTest: BaseTest() {
         startSearchActivity(ruleSearch)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition("abc", 1)
-            clickOnFab()
-            clickOnFab()
+            clickOnSearch()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()

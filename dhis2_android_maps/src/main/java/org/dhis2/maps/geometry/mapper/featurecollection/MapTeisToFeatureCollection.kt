@@ -25,9 +25,9 @@ class MapTeisToFeatureCollection(
     fun map(
         teiList: List<SearchTeiModel>,
         shouldAddRelationships: Boolean
-    ): Pair<HashMap<String?, FeatureCollection>, BoundingBox>? {
+    ): Pair<HashMap<String, FeatureCollection>, BoundingBox> {
         val featureMap: HashMap<String?, ArrayList<Feature>> = HashMap()
-        val featureCollectionMap = HashMap<String?, FeatureCollection>()
+        val featureCollectionMap = HashMap<String, FeatureCollection>()
         featureMap[TEI] = ArrayList()
         featureMap[ENROLLMENT] = ArrayList()
         bounds.initOrReset()
@@ -59,10 +59,12 @@ class MapTeisToFeatureCollection(
                 val relationshipsFeatureCollections =
                     mapRelationshipsToFeatureCollection.map(relationshipModels)
                 relationshipsFeatureCollections.first.forEach { (key, featureCollection) ->
-                    featureCollectionMap[key]?.features()?.addAll(
-                        featureCollection.features() ?: listOf()
-                    ) ?: run {
-                        featureCollectionMap[key] = featureCollection
+                    if(key != null) {
+                        featureCollectionMap[key]?.features()?.addAll(
+                            featureCollection.features() ?: listOf()
+                        ) ?: run {
+                            featureCollectionMap[key] = featureCollection
+                        }
                     }
                 }
             }
@@ -72,7 +74,7 @@ class MapTeisToFeatureCollection(
         featureCollectionMap[ENROLLMENT] =
             FeatureCollection.fromFeatures(featureMap[ENROLLMENT] as ArrayList)
 
-        return Pair<HashMap<String?, FeatureCollection>, BoundingBox>(
+        return Pair<HashMap<String, FeatureCollection>, BoundingBox>(
             featureCollectionMap,
             BoundingBox.fromLngLats(
                 bounds.westBound, bounds.southBound,

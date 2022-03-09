@@ -107,7 +107,7 @@ class FilterRobot : BaseRobot() {
 
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
-            .check(matches(allElementsHave(hasDescendant(withText(orgUnit)))))
+            .check(matches(allElementsWithHolderTypeHave(SearchTEViewHolder::class.java,hasDescendant(withText(orgUnit)))))
     }
 
     fun checkTEINotSync() {

@@ -97,6 +97,7 @@ dependencies {
 
     //Compose
     api 'androidx.compose.material:material:1.0.4'
+    api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
     api "com.google.android.material:compose-theme-adapter:1.0.4"
     api 'androidx.compose.ui:ui-tooling-preview:1.0.4'
     api("androidx.compose.ui:ui:1.0.4")

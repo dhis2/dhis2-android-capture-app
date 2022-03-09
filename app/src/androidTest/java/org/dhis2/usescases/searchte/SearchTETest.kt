@@ -48,10 +48,9 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, orgUnit)
         }
     }
@@ -60,17 +59,14 @@ class SearchTETest : BaseTest() {
     fun shouldShowErrorWhenCanNotFindSearchResult() {
         val firstName = "asdssds"
         val firstNamePosition = 1
-        val filterCount = "1"
-        val noResultMessage = context.getString(R.string.search_criteria_not_met).replace("%s","Person")
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
-            checkNoSearchResult(firstName, noResultMessage)
+            clickOnSearch()
+            checkNoSearchResult()
         }
     }
 
@@ -85,11 +81,10 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
             typeAttributeAtPosition(lastName, lastNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, lastName)
         }
     }
@@ -125,8 +120,7 @@ class SearchTETest : BaseTest() {
             clickOnDateField()
             selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
             acceptDate()
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkFieldsFromDisplayList(displayInListData)
         }
     }
@@ -146,7 +140,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIsAreOpen()
         }
     }
@@ -178,7 +172,7 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-            closeSearchForm()
+            clickOnFilter()
             checkEventsAreOverdue()
         }
     }
@@ -198,7 +192,7 @@ class SearchTETest : BaseTest() {
             typeOrgUnitField(orgUnitNgelehun)
             checkFilterCounter(totalCount)
             checkCountAtFilter(orgUnitFilter, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
     }
@@ -225,7 +219,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentDate)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -252,7 +246,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(eventDate)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -282,7 +276,7 @@ class SearchTETest : BaseTest() {
             clickOnNotSync()
             checkFilterCounter(totalCount)
             checkCountAtFilter(syncFilter, totalCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEINotSync()
         }
     }
@@ -299,7 +293,9 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnOpenSearch()
             typeAttributeAtPosition(name, namePosition)
+            clickOnSearch()
         }
 
         filterRobot {
@@ -309,7 +305,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatus)
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIsAreOpen()
         }
 
