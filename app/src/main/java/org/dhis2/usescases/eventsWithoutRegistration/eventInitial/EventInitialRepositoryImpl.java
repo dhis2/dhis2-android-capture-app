@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.SectionRenderingType;
+import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -212,9 +213,15 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public boolean showCompletionPercentage() {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
-            return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
-                    d2.eventModule().events().uid(eventUid).blockingGet().program()
-            ).visible();
+            String programUid = d2.eventModule().events().uid(eventUid).blockingGet().program();
+            ProgramConfigurationSetting programConfigurationSetting = d2.settingModule()
+                    .appearanceSettings()
+                    .getProgramConfigurationByUid(programUid);
+
+            if (programConfigurationSetting != null &&
+                    programConfigurationSetting.completionSpinner() != null) {
+                return programConfigurationSetting.completionSpinner();
+            }
         }
         return true;
     }
