@@ -8,7 +8,6 @@ import androidx.paging.PagedList;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.commons.data.tuples.Pair;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -52,6 +52,8 @@ public interface SearchRepository {
     EventViewModel getEventInfo(String enrollmentUid);
 
     Observable<D2Progress> downloadTei(String teiUid);
+
+    TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
 
     void setCurrentProgram(@Nullable String currentProgram);
     boolean programHasAnalytics();

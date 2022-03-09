@@ -72,6 +72,7 @@ class SearchTEIViewModelTest {
                 }
             }
         )
+        testingDispatcher.scheduler.advanceUntilIdle()
     }
 
     @ExperimentalCoroutinesApi
@@ -330,10 +331,12 @@ class SearchTEIViewModelTest {
         verify(presenter).onSyncIconClick("teiUid")
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `Should downloadTei`() {
         viewModel.onDownloadTei("teiUid", null)
-        verify(presenter).downloadTei("teiUid", null)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        verify(repository).download("teiUid", null, null)
     }
 
     @Test
@@ -398,6 +401,43 @@ class SearchTEIViewModelTest {
         assertTrue(viewModel.canDisplayBottomNavigationBar())
         viewModel.setSearchScreen(isLandscapeMode = false)
         assertTrue(!viewModel.canDisplayBottomNavigationBar())
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should return break the glass result when downloading`() {
+        whenever(
+            repository.download(
+                "teiUid",
+                null,
+                null
+            )
+        ) doReturn TeiDownloadResult.BreakTheGlassResult("teiUid", null)
+
+        viewModel.onDownloadTei("teiUid", null)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.downloadResult.value is TeiDownloadResult.BreakTheGlassResult)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should enroll tei in current program`() {
+        whenever(
+            repository.download(
+                "teiUid",
+                null,
+                null
+            )
+        ) doReturn TeiDownloadResult.TeiToEnroll("teiUid")
+
+        viewModel.onDownloadTei("teiUid", null)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.downloadResult.value == null)
+        verify(presenter, times(1)).enroll(
+            "initialProgram",
+            "teiUid",
+            hashMapOf<String, String>().apply { putAll(viewModel.queryData) }
+        )
     }
 
     private fun testingProgram(

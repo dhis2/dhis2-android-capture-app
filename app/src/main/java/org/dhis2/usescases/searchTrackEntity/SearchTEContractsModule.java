@@ -95,6 +95,8 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(HashMap<String, String> queryData);
 
+        void enroll(String programUid, String teiUid, HashMap<String, String> queryData);
+
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 
         TrackedEntityType getTrackedEntityName();
@@ -106,8 +108,6 @@ public class SearchTEContractsModule {
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
         void downloadTei(String teiUid, String enrollmentUid);
-
-        void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
