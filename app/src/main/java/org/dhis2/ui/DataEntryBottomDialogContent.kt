@@ -1,6 +1,7 @@
 package org.dhis2.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,8 @@ import org.dhis2.commons.data.IssueType
 fun DataEntryBottomDialogContent(
     dataEntryDialogUiModel: DataEntryDialogUiModel,
     onMainButtonClicked: () -> Unit,
-    onSecondaryButtonClicked: () -> Unit = {}
+    onSecondaryButtonClicked: () -> Unit = {},
+    onIssueItemClicked: () -> Unit = {}
 ) {
     val modifier = Modifier
         .padding(24.dp)
@@ -72,7 +74,9 @@ fun DataEntryBottomDialogContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.weight(1f, false)
             ) {
-                items(dataEntryDialogUiModel.fieldsWithIssues!!) { IssueItem(it) }
+                items(dataEntryDialogUiModel.fieldsWithIssues!!) {
+                    IssueItem(it, onClick = onIssueItemClicked)
+                }
             }
             Divider(Modifier.padding(horizontal = 24.dp))
         }
@@ -118,8 +122,8 @@ fun provideButtonContent(buttonStyle: DialogButtonStyle?): @Composable (RowScope
     }
 
 @Composable
-fun IssueItem(fieldWithIssue: FieldWithIssue) {
-    Row {
+fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
+    Row(Modifier.clickable { onClick.invoke() }) {
         Icon(
             painter = painterResource(
                 when (fieldWithIssue.issueType) {

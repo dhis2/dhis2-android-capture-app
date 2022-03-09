@@ -44,7 +44,8 @@ class DataEntryBottomDialog(
                         onSecondaryButtonClicked = {
                             onSecondaryButtonClicked.invoke()
                             dismiss()
-                        }
+                        },
+                        onIssueItemClicked = { dismiss() }
                     )
                 }
             }
