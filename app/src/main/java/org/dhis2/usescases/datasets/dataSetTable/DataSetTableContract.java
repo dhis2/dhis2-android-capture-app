@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
@@ -13,7 +14,7 @@ public class DataSetTableContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setSections(List<String> sections);
+        void setSections(List<DataSetSection> sections);
 
         Boolean accessDataWrite();
 

@@ -13,7 +13,6 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 
@@ -35,8 +34,6 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        analyticsHelper: AnalyticsHelper,
-        preferenceProvider: PreferenceProvider,
         updateProcessor: FlowableProcessor<Unit>
     ): DataValuePresenter {
         return DataValuePresenter(
@@ -44,9 +41,6 @@ class DataValueModule(
             repository,
             valueStore,
             schedulerProvider,
-            analyticsHelper,
-            preferenceProvider,
-            dataSetUid,
             updateProcessor
         )
     }
