@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
+import org.dhis2.form.data.ItemWithWarning
 import org.dhis2.ui.DataEntryDialogUiModel
 import org.dhis2.ui.DialogButtonStyle.MainButton
 import org.dhis2.ui.DialogButtonStyle.SecondaryButton
@@ -16,7 +17,8 @@ class ConfigureEventCompletionDialog(
 
     operator fun invoke(
         fieldUidErrorList: MutableList<String>,
-        emptyMandatoryFields: MutableMap<String, String>
+        emptyMandatoryFields: MutableMap<String, String>,
+        fieldsWithWarning: MutableList<ItemWithWarning>
     ): EventCompletionDialog {
         val icon: Int
         val title: String
@@ -74,6 +76,15 @@ class ConfigureEventCompletionDialog(
                 field,
                 IssueType.MANDATORY,
                 provider.provideMandatoryField()
+            )
+            fieldsWithIssues.add(fieldWithIssue)
+        }
+
+        fieldsWithWarning.forEach {
+            val fieldWithIssue = FieldWithIssue(
+                it.label ?: "",
+                IssueType.WARNING,
+                it.message
             )
             fieldsWithIssues.add(fieldWithIssue)
         }

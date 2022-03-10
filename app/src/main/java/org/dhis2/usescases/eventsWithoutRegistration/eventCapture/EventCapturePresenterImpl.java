@@ -8,6 +8,7 @@ import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormValueStore;
+import org.dhis2.form.data.ItemWithWarning;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.utils.AuthorityException;
@@ -140,7 +141,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void attemptFinish(boolean canComplete, String onCompleteMessage, List<String> fieldUidErrorList, Map<String, String> emptyMandatoryFields) {
+    public void attemptFinish(boolean canComplete, String onCompleteMessage,
+                              List<String> fieldUidErrorList,
+                              Map<String, String> emptyMandatoryFields,
+                              List<ItemWithWarning> fieldsWithWarning) {
 
         if (!fieldUidErrorList.isEmpty()) {
             view.showErrorSnackBar();
@@ -152,7 +156,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
             EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
                     fieldUidErrorList,
-                    emptyMandatoryFields
+                    emptyMandatoryFields,
+                    fieldsWithWarning
             );
 
             view.showCompleteActions(

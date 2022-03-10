@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import org.dhis2.form.data.ItemWithWarning;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -73,7 +74,8 @@ public class EventCaptureContract {
         void attemptFinish(boolean canComplete,
                            String onCompleteMessage,
                            List<String> fieldsWithError,
-                           Map<String, String> emptyMandatoryFields);
+                           Map<String, String> emptyMandatoryFields,
+                           List<ItemWithWarning> fieldsWithWarning);
 
         boolean isEnrollmentOpen();
 
