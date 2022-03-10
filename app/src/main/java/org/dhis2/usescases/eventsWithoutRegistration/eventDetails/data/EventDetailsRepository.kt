@@ -3,6 +3,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 import io.reactivex.Observable
 import java.util.Calendar
 import java.util.Date
+import org.dhis2.commons.resources.D2ErrorUtils
+import org.dhis2.data.dhislogic.AUTH_ALL
+import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.utils.DateUtils
@@ -20,6 +23,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -29,7 +33,8 @@ class EventDetailsRepository(
     private val programUid: String,
     private val eventUid: String?,
     private val programStageUid: String?,
-    private val fieldFactory: FieldViewModelFactory
+    private val fieldFactory: FieldViewModelFactory,
+    private val d2ErrorMapper: D2ErrorUtils
 ) {
 
     fun getProgramStage(): ProgramStage {
@@ -274,10 +279,35 @@ class EventDetailsRepository(
                         FeatureType.MULTI_POLYGON -> geometry?.let {
                             eventRepository.setGeometry(it)
                         }
-                        else -> {}
+                        else -> {
+                        }
                     }
                 }
                 eventRepository.blockingGet()
             }.blockingFirst()
+    }
+
+    fun getCanReopen(): Boolean = getEvent()?.let {
+        it.status() == EventStatus.COMPLETED && hasReopenAuthority()
+    } ?: false
+
+    private fun hasReopenAuthority(): Boolean =
+        d2.userModule().authorities()
+            .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
+            .one()
+            .blockingExists()
+
+    fun reopenEvent() = try {
+        eventUid?.let {
+            d2.eventModule().events().uid(it).setStatus(EventStatus.ACTIVE)
+            Result.success(Unit)
+        } ?: Result.success(Unit)
+    } catch (d2Error: D2Error) {
+        Result.failure(
+            java.lang.Exception(
+                d2ErrorMapper.getErrorMessage(d2Error),
+                d2Error
+            )
+        )
     }
 }

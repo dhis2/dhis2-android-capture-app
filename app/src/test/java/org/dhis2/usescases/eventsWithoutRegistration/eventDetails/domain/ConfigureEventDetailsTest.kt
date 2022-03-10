@@ -154,6 +154,66 @@ class ConfigureEventDetailsTest {
         assertFalse(eventDetails.isActionButtonVisible)
     }
 
+    @Test
+    fun `reopen button should be visible if event status is complete and user has authorities`() =
+        runBlocking {
+            // Given user is in an existing event
+            whenever(repository.getEvent()) doReturn event
+
+            configureEventDetails = ConfigureEventDetails(
+                repository = repository,
+                resourcesProvider = resourcesProvider,
+                creationType = EventCreationType.DEFAULT,
+                enrollmentStatus = EnrollmentStatus.COMPLETED
+            )
+
+            // And user has authorities to reopen
+            whenever(repository.getCanReopen()) doReturn true
+
+            // When button is checked
+            val eventDetails = configureEventDetails.invoke(
+                selectedDate = null,
+                selectedOrgUnit = null,
+                catOptionComboUid = null,
+                isCatComboCompleted = false,
+                coordinates = null,
+                tempCreate = null
+            ).first()
+
+            // Then reopen button should be visible
+            assertTrue(eventDetails.canReopen)
+        }
+
+    @Test
+    fun `reopen button not be visible if status is not complete or does not have authorities`() =
+        runBlocking {
+            // Given user is in an existing event
+            whenever(repository.getEvent()) doReturn event
+
+            configureEventDetails = ConfigureEventDetails(
+                repository = repository,
+                resourcesProvider = resourcesProvider,
+                creationType = EventCreationType.DEFAULT,
+                enrollmentStatus = EnrollmentStatus.ACTIVE
+            )
+
+            // And user has authorities to reopen
+            whenever(repository.getCanReopen()) doReturn false
+
+            // When button is checked
+            val eventDetails = configureEventDetails.invoke(
+                selectedDate = null,
+                selectedOrgUnit = null,
+                catOptionComboUid = null,
+                isCatComboCompleted = false,
+                coordinates = null,
+                tempCreate = null
+            ).first()
+
+            // Then reopen button should be visible
+            assertTrue(!eventDetails.canReopen)
+        }
+
     companion object {
         const val ORG_UNIT_UID = "orgUnitUid"
         const val NEXT = "Next"

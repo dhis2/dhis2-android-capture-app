@@ -17,5 +17,6 @@ data class EventDetails(
     val coordinates: String? = null,
     val isCompleted: Boolean = false,
     val isActionButtonVisible: Boolean = false,
-    val actionButtonText: String? = null
+    val actionButtonText: String? = null,
+    val canReopen: Boolean = false
 )

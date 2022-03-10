@@ -46,7 +46,7 @@ class EventRobot : BaseRobot() {
     }
 
     fun clickOnReopen() {
-        onView(withId(R.id.reopen)).perform(click())
+        onView(withId(R.id.reopenButton)).perform(click())
     }
 
     fun fillRadioButtonForm(numberFields: Int) {

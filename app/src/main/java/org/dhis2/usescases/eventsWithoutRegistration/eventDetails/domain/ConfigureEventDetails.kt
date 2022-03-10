@@ -53,7 +53,8 @@ class ConfigureEventDetails(
                 coordinates = coordinates,
                 isCompleted = isEventCompleted,
                 isActionButtonVisible = isActionButtonVisible(isEventCompleted, storedEvent),
-                actionButtonText = getActionButtonText()
+                actionButtonText = getActionButtonText(),
+                canReopen = repository.getCanReopen()
             )
         )
     }
@@ -73,6 +74,8 @@ class ConfigureEventDetails(
                 repository.getEditableStatus() !is NonEditable
         } ?: isEventCompleted
     }
+
+    fun reopenEvent() = repository.reopenEvent()
 
     private fun isCompleted(
         selectedDate: Date?,

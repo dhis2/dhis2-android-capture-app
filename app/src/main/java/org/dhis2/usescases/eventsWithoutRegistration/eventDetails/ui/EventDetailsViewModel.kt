@@ -58,6 +58,7 @@ class EventDetailsViewModel(
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
     var onButtonClickCallback: (() -> Unit)? = null
     var showEventUpdateStatus: ((result: String) -> Unit)? = null
+    var onReopenError: ((message: String) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -256,5 +257,12 @@ class EventDetailsViewModel(
                 }
             }
         }
+    }
+
+    fun onReopenClick() {
+        configureEventDetails.reopenEvent().fold(
+            onSuccess = { setUpEventDetails() },
+            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
+        )
     }
 }

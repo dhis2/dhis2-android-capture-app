@@ -171,6 +171,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         viewModel.showEventUpdateStatus = { message ->
             displayMessage(message)
         }
+
+        viewModel.onReopenError = { message ->
+            displayMessage(message)
+        }
     }
 
     private fun showCalendarDialog() {
