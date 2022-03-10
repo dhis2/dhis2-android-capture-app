@@ -26,8 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
@@ -65,7 +67,9 @@ fun DataEntryBottomDialogContent(
             Text(
                 text = dataEntryDialogUiModel.subtitle,
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.textSecondary)
+                color = colorResource(id = R.color.textSecondary),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Divider(Modifier.padding(horizontal = 24.dp))
@@ -85,10 +89,14 @@ fun DataEntryBottomDialogContent(
             modifier = modifier.weight(1f, false)
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.White,
+                    disabledBackgroundColor = Color.White
+                ),
                 elevation = ButtonDefaults.elevation(0.dp),
                 onClick = { onSecondaryButtonClicked() },
-                content = provideButtonContent(dataEntryDialogUiModel.secondaryButton)
+                content = provideButtonContent(dataEntryDialogUiModel.secondaryButton),
+                enabled = dataEntryDialogUiModel.secondaryButton != null
             )
             Button(
                 shape = RoundedCornerShape(24.dp),
@@ -127,7 +135,8 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
         Icon(
             painter = painterResource(
                 when (fieldWithIssue.issueType) {
-                    IssueType.ERROR -> R.drawable.ic_error_outline
+                    IssueType.ERROR,
+                    IssueType.MANDATORY -> R.drawable.ic_error_outline
                     else -> R.drawable.ic_alert
                 }
             ),
@@ -138,8 +147,16 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
                 .height(20.dp)
         )
         Column(Modifier.padding(start = 11.dp)) {
-            Text(text = fieldWithIssue.fieldName, color = colorResource(id = R.color.textPrimary))
-            Text(text = fieldWithIssue.message, color = colorResource(id = R.color.textSecondary))
+            Text(
+                text = fieldWithIssue.fieldName,
+                color = colorResource(id = R.color.textPrimary),
+                fontSize = 14.sp
+            )
+            Text(
+                text = fieldWithIssue.message,
+                color = colorResource(id = R.color.textSecondary),
+                fontSize = 14.sp
+            )
         }
     }
 }
