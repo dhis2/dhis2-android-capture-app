@@ -18,11 +18,14 @@ class D2FeedbackProgramRepository(private val d2: D2) : FeedbackProgramRepositor
         return try {
             val programTypeText = getProgramTypeAttValue(uid)
 
-            if (programTypeText.isNotBlank()) {
+            val programType =
+                ProgramType.values().find { programTypeText.toUpperCase() == it.name }
+
+            if (programType != null) {
                 Either.Right(
                     FeedbackProgram(
                         uid,
-                        ProgramType.valueOf(programTypeText.toUpperCase())
+                        programType
                     )
                 )
             } else {

@@ -311,7 +311,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             val fragment = FeedbackContentFragment()
 
             val args = Bundle()
-            args.putSerializable(PROGRAM_TYPE, ProgramType.HNQIS)
+            args.putSerializable(PROGRAM_TYPE, ProgramType.HNQIS2)
             args.putSerializable(HNQIS_FILTER, HnqisFeedbackFilter)
             fragment.arguments = args
 
