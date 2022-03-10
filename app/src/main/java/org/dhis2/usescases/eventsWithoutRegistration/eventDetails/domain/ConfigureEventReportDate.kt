@@ -11,24 +11,19 @@ import org.dhis2.commons.data.EventCreationType.DEFAULT
 import org.dhis2.commons.data.EventCreationType.SCHEDULE
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
 class ConfigureEventReportDate(
-    private val eventId: String? = null,
-    private val programStageId: String,
     private val creationType: EventCreationType = DEFAULT,
     private val resourceProvider: EventDetailResourcesProvider,
-    private val eventInitialRepository: EventInitialRepository,
+    private val repository: EventDetailsRepository,
     private val periodType: PeriodType? = null,
     private val periodUtils: DhisPeriodUtils,
     private val enrollmentId: String? = null,
-    private val programId: String? = null,
     private val scheduleInterval: Int = 0
 ) {
 
@@ -68,7 +63,7 @@ class ConfigureEventReportDate(
 
     private fun getDate(selectedDate: Date?) = when {
         selectedDate != null -> selectedDate
-        eventId != null -> getStoredEvent()?.eventDate()
+        repository.getEvent() != null -> repository.getEvent()?.eventDate()
         periodType != null -> getDateBasedOnPeriodType()
         creationType == SCHEDULE -> getNextScheduleDate()
         else -> getCurrentDay()
@@ -82,14 +77,8 @@ class ConfigureEventReportDate(
         }
     }
 
-    private fun getStoredEvent(): Event? =
-        eventInitialRepository.event(eventId).blockingFirst()
-
-    private fun getProgram(): Program? =
-        programId?.let { eventInitialRepository.getProgramWithId(programId).blockingFirst() }
-
     private fun getProgramStage(): ProgramStage =
-        eventInitialRepository.programStageWithId(programStageId).blockingFirst()
+        repository.getProgramStage()
 
     private fun getDateBasedOnPeriodType(): Date {
         getProgramStage().hideDueDate()?.let { hideDueDate ->
@@ -117,9 +106,9 @@ class ConfigureEventReportDate(
 
     private fun getNextScheduleDate(): Date {
         val now = DateUtils.getInstance().calendar
-        now.time = eventInitialRepository.getStageLastDate(programStageId, enrollmentId)
+        now.time = repository.getStageLastDate(enrollmentId)
         val minDateFromStart =
-            eventInitialRepository.getMinDaysFromStartByProgramStage(programStageId)
+            repository.getMinDaysFromStartByProgramStage()
         if (minDateFromStart > 0) {
             now.add(DAY_OF_YEAR, minDateFromStart)
         }
@@ -129,7 +118,7 @@ class ConfigureEventReportDate(
     private fun getCurrentDay() = DateUtils.getInstance().today
 
     private fun getMinDate(): Date? {
-        getProgram()?.let { program ->
+        repository.getProgram()?.let { program ->
             if (periodType == null) {
                 if (program.expiryPeriodType() != null) {
                     val expiryDays = program.expiryDays() ?: 0

@@ -5,23 +5,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.REFERAL
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus.CANCELLED
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
-import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.event.EventStatus.OVERDUE
 
 class ConfigureEventDetails(
-    private val d2: D2,
-    private val eventInitialRepository: EventInitialRepository,
-    private val programStageId: String,
-    private val eventId: String? = null,
-    private val programId: String? = null,
+    private val repository: EventDetailsRepository,
     private val resourcesProvider: EventDetailResourcesProvider,
-    private val creationType: EventCreationType
+    private val creationType: EventCreationType,
+    private val enrollmentStatus: EnrollmentStatus?
 ) {
 
     operator fun invoke(
@@ -32,12 +30,20 @@ class ConfigureEventDetails(
         coordinates: String?,
         tempCreate: String?
     ): Flow<EventDetails> {
+        val isEventCompleted = isCompleted(
+            selectedDate = selectedDate,
+            selectedOrgUnit = selectedOrgUnit,
+            isCatComboCompleted = isCatComboCompleted,
+            tempCreate = tempCreate
+        )
+        val storedEvent = repository.getEvent()
+        val programStage = repository.getProgramStage()
         return flowOf(
             EventDetails(
-                name = getProgramStageById().displayName(),
-                description = getProgramStageById().displayDescription(),
-                style = getStyleByProgramId(),
-                enabled = isEnable(),
+                name = programStage.displayName(),
+                description = programStage.displayDescription(),
+                style = repository.getObjectStyle(),
+                enabled = isEnable(storedEvent),
                 isEditable = isEditable(),
                 editableReason = getEditableReason(),
                 temCreate = tempCreate,
@@ -45,14 +51,27 @@ class ConfigureEventDetails(
                 selectedOrgUnit = selectedOrgUnit,
                 catOptionComboUid = catOptionComboUid,
                 coordinates = coordinates,
-                isCompleted = isCompleted(
-                    selectedDate = selectedDate,
-                    selectedOrgUnit = selectedOrgUnit,
-                    isCatComboCompleted = isCatComboCompleted,
-                    tempCreate = tempCreate
-                )
+                isCompleted = isEventCompleted,
+                isActionButtonVisible = isActionButtonVisible(isEventCompleted, storedEvent),
+                actionButtonText = getActionButtonText()
             )
         )
+    }
+
+    private fun getActionButtonText(): String {
+        return repository.getEditableStatus()?.let {
+            when (it) {
+                is Editable -> resourcesProvider.provideButtonUpdate()
+                is NonEditable -> resourcesProvider.provideButtonCheck()
+            }
+        } ?: resourcesProvider.provideButtonNext()
+    }
+
+    private fun isActionButtonVisible(isEventCompleted: Boolean, storedEvent: Event?): Boolean {
+        return storedEvent?.let {
+            !(it.status() == OVERDUE && enrollmentStatus == CANCELLED) &&
+                repository.getEditableStatus() !is NonEditable
+        } ?: isEventCompleted
     }
 
     private fun isCompleted(
@@ -66,12 +85,11 @@ class ConfigureEventDetails(
         (creationType != REFERAL || tempCreate != null)
 
     private fun isEditable(): Boolean {
-        return eventId == null || getEditableReason() == null
+        return getEditableReason() == null
     }
 
     private fun getEditableReason(): String? {
-        if (eventId == null) return null
-        eventInitialRepository.editableStatus.blockingFirst()?.let {
+        repository.getEditableStatus().let {
             if (it is NonEditable) {
                 return resourcesProvider.provideEditionStatus(it.reason)
             }
@@ -79,44 +97,9 @@ class ConfigureEventDetails(
         return null
     }
 
-    private fun getStyleByProgramId(): ObjectStyle? {
-        return d2.programModule()
-            .programs()
-            .uid(getProgramStageById()?.program()?.uid())
-            .blockingGet()
-            .style()
+    private fun isEnable(storedEvent: Event?): Boolean {
+        return storedEvent?.let {
+            repository.getEditableStatus() is Editable
+        } ?: true
     }
-
-    private fun getProgramStageById() =
-        d2.programModule().programStages().uid(programStageId).blockingGet()
-
-    private fun isEnable(): Boolean {
-        if (!isEditable()) return false
-        getStoredEvent()?.let { event ->
-            val program = getProgram()!!
-            val isExpired = org.dhis2.utils.DateUtils.getInstance().isEventExpired(
-                event.eventDate(),
-                event.completedDate(),
-                event.status(),
-                program.completeEventsExpiryDays() ?: 0,
-                program.expiryPeriodType(),
-                program.expiryDays() ?: 0
-            )
-            return !isExpired
-        }
-
-        val canWrite = eventInitialRepository.accessDataWrite(programId).blockingFirst()
-        val isEnrollmentOpen = eventInitialRepository.isEnrollmentOpen
-        if (!canWrite || !isEnrollmentOpen) {
-            return false
-        }
-
-        return true
-    }
-
-    private fun getStoredEvent(): Event? =
-        eventId?.let { eventInitialRepository.event(it).blockingFirst() }
-
-    private fun getProgram(): Program? =
-        programId?.let { eventInitialRepository.getProgramWithId(it).blockingFirst() }
 }

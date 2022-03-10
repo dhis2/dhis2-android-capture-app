@@ -36,7 +36,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
-    private var initialPage: Int
+    var initialPage: Int
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
 
