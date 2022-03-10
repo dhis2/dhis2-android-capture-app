@@ -379,4 +379,10 @@ class DataSetTableRepositoryImpl(
             .isEmpty
             .map { isEmpty -> !isEmpty }
     }
+
+    fun hasDataElementDecoration(): Boolean {
+        return d2.dataSetModule().dataSets().uid(dataSetUid)
+            .blockingGet()
+            .dataElementDecoration() == true
+    }
 }

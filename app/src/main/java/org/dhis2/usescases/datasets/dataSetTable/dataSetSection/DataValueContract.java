@@ -16,10 +16,6 @@ public class DataValueContract {
 
         void setTableData(TableData tableData);
 
-        void setDataSet(DataSet dataSet);
-
-        void setSection(Section section);
-
         void updateTabLayout(int count);
 
         void renderIndicators(@NotNull SortedMap<String, String> indicators);
