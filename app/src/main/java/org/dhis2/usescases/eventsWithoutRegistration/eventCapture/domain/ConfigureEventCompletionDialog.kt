@@ -25,7 +25,7 @@ class ConfigureEventCompletionDialog(
         val secondaryButtonAction: EventCompletionButtons
 
         if (fieldUidErrorList.isNotEmpty()) { //Error
-            icon = provider.provideAlertIcon() //TODO color to red
+            icon = provider.provideRedAlertIcon()
             title = provider.provideNotSavedText()
             subtitle = provider.provideErrorInfo()
             mainButtonAction =
@@ -47,7 +47,7 @@ class ConfigureEventCompletionDialog(
             secondaryButtonAction =
                 EventCompletionButtons(provider.provideNotNow(), FormBottomDialog.ActionType.FINISH)
         } else { //warning
-            icon = provider.provideAlertIcon()
+            icon = provider.provideYellowAlertIcon()
             title = provider.provideSavedText()
             subtitle = provider.provideWarningInfo()
             mainButtonAction =

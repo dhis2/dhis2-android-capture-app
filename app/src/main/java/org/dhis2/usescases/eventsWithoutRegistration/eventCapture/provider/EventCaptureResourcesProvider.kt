@@ -7,7 +7,9 @@ class EventCaptureResourcesProvider(
     private val resourceManager: ResourceManager
 
 ) {
-    fun provideAlertIcon() = R.drawable.ic_alert
+    fun provideRedAlertIcon() = R.drawable.ic_alert_red
+
+    fun provideYellowAlertIcon() = R.drawable.ic_alert
 
     fun provideSavedIcon() = R.drawable.ic_saved_check
 
