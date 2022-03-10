@@ -249,10 +249,12 @@ class EventDetailsRepository(
         catOptionComboUid: String?,
         coordinates: String?
     ): Event {
-        val geometry = Geometry.builder()
-            .coordinates(coordinates)
-            .type(getProgramStage().featureType())
-            .build()
+        val geometry = coordinates?.let {
+            Geometry.builder()
+                .coordinates(it)
+                .type(getProgramStage().featureType())
+                .build()
+        }
 
         return Observable.fromCallable {
             d2.eventModule().events().uid(eventUid)
@@ -265,11 +267,13 @@ class EventDetailsRepository(
                     d2.programModule().programStages()
                         .uid(eventRepository.blockingGet().programStage())
                         .blockingGet().featureType()
-                featureType?.let {
-                    when (it) {
+                featureType?.let { type ->
+                    when (type) {
                         FeatureType.POINT,
                         FeatureType.POLYGON,
-                        FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
+                        FeatureType.MULTI_POLYGON -> geometry?.let {
+                            eventRepository.setGeometry(it)
+                        }
                         else -> {}
                     }
                 }

@@ -345,14 +345,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showToast(getString(R.string.no_intructions));
     }
 
-    private void goToInitialScreen() {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
-        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
-        startActivity(EventInitialActivity.class, bundle, true, false, null);
-    }
-
     private void confirmDeleteEvent() {
         new CustomDialog(
                 this,
@@ -381,7 +373,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                 .setTitle(R.string.conflict)
                 .setMessage(R.string.event_date_in_future_message)
-                .setPositiveButton(R.string.change_event_date, (dialogInterface, i) -> goToInitialScreen())
+                .setPositiveButton(
+                        R.string.change_event_date,
+                        (dialogInterface, i) -> binding.navigationBar.selectItemAt(0)
+                )
                 .setNegativeButton(R.string.go_back, (dialogInterface, i) -> back())
                 .setCancelable(false)
                 .show();

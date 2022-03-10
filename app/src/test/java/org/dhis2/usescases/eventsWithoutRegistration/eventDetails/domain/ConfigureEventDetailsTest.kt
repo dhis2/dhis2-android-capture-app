@@ -127,7 +127,7 @@ class ConfigureEventDetailsTest {
     }
 
     @Test
-    fun `action button should show check on a non editable existing event`() = runBlocking {
+    fun `action button should hide button on a non editable existing event`() = runBlocking {
         // Given user is in an existing event
         whenever(repository.getEvent()) doReturn event
 
@@ -151,8 +151,7 @@ class ConfigureEventDetailsTest {
         ).first()
 
         // Then action button should be invisible
-        assertTrue(eventDetails.isActionButtonVisible)
-        assert(eventDetails.actionButtonText.equals(CHECK))
+        assertFalse(eventDetails.isActionButtonVisible)
     }
 
     companion object {
