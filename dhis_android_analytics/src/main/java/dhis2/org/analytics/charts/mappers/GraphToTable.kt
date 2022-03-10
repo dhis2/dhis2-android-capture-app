@@ -8,6 +8,7 @@ import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
+import dhis2.org.analytics.charts.table.CellModel
 import dhis2.org.analytics.charts.table.GraphTableAdapter
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
@@ -45,7 +46,7 @@ class GraphToTable {
         return tableView
     }
 
-    private fun headers(graph: Graph, series: List<SerieData>): List<String?> {
+    private fun headers(graph: Graph, series: List<SerieData>): List<CellModel?> {
         return if (graph.categories.isEmpty()) {
             series.map { it.coordinates }
                 .flatten()
@@ -53,65 +54,74 @@ class GraphToTable {
                 .sortedBy { it.eventDate }
                 .map {
                     when (graph.chartType) {
-                        ChartType.PIE_CHART -> it.legend
-                        else -> DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate)
+                        ChartType.PIE_CHART -> CellModel(it.legend ?: "")
+                        else -> CellModel(DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate))
                     }
                 }
         } else {
-            graph.categories
+            graph.categories.map { CellModel(it) }
         }
     }
 
-    private fun rows(series: List<SerieData>): List<List<String>> {
+    private fun rows(series: List<SerieData>): List<List<CellModel>> {
         return if (series.first().fieldName.contains("_")) {
             val splitted = series.map { it.fieldName.split("_") }
             val combination = splitted.first().size
-            val headerList = mutableListOf<List<String>>()
+            val headerList = mutableListOf<List<CellModel>>()
             for (i in 0 until combination) {
                 val values = splitted.map { it[i] }
                 headerList.add(
                     values.filterIndexed { index, value ->
                         index == 0 || values[index - 1] != value
-                    }
+                    }.map { CellModel(it) }
                 )
             }
             headerList
         } else {
-            listOf(series.map { it.fieldName })
+            listOf(series.map { CellModel(it.fieldName) })
         }
     }
 
     private fun cells(
         graph: Graph,
         series: List<SerieData>,
-        headers: List<String?>
-    ): List<List<String>> {
+        headers: List<CellModel?>
+    ): List<List<CellModel>> {
         return if (graph.categories.isEmpty()) {
             series.map { serie ->
-                mutableListOf<String>().apply {
-                    headers.forEach { headerLabel ->
+                mutableListOf<CellModel>().apply {
+                    headers.forEach { header ->
+                        val point = serie.coordinates.firstOrNull {
+                            when (graph.chartType) {
+                                ChartType.PIE_CHART -> it.legend == header?.text
+                                else ->
+                                    DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) ==
+                                        header?.text
+                            }
+                        }
+
                         add(
-                            serie.coordinates.firstOrNull {
-                                when (graph.chartType) {
-                                    ChartType.PIE_CHART -> it.legend == headerLabel
-                                    else ->
-                                        DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) ==
-                                            headerLabel
-                                }
-                            }?.fieldValue?.toString()
-                                ?: ""
+                            CellModel(
+                                point?.fieldValue?.toString() ?: "",
+                                point?.legendValue?.color
+                            )
                         )
                     }
                 }
             }
         } else {
-            return mutableListOf<List<String>>().apply {
+            return mutableListOf<List<CellModel>>().apply {
                 headers.forEachIndexed { index, s ->
                     add(
                         series.map {
-                            it.coordinates.firstOrNull { point ->
+                            val point = it.coordinates.firstOrNull { point ->
                                 point.position?.toInt() == index
-                            }?.fieldValue?.toString() ?: ""
+                            }
+
+                            CellModel(
+                                point?.fieldValue?.toString() ?: "",
+                                point?.legendValue?.color
+                            )
                         }
                     )
                 }
