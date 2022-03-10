@@ -60,11 +60,10 @@
             android:title="@string/about" />
 
     </group>
-    <!--TODO: make icon visible and functional-->
+
     <group
         android:id="@+id/account_section"
-        android:checkableBehavior="single"
-        android:visible="false">
+        android:checkableBehavior="single">
         <item
             android:id="@+id/delete_account"
             android:icon="@drawable/ic_delete"

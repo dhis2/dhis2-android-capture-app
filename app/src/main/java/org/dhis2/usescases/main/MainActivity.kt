@@ -1,8 +1,11 @@
 package org.dhis2.usescases.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
@@ -10,9 +13,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -25,6 +30,7 @@ import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION
@@ -38,6 +44,8 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
+private const val WIPE_NOTIFICATION = "wipe_notification"
+private const val RESTART = "Restart"
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -55,6 +63,8 @@ class MainActivity :
 
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
+
+    var notification: Boolean = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -200,6 +210,11 @@ class MainActivity :
             .build().show(supportFragmentManager, "ALL_SYNC")
     }
 
+    override fun goToAccounts() {
+        startActivity(Intent(this, AccountsActivity::class.java))
+        finish()
+    }
+
     override fun renderUsername(username: String) {
         binding.userName = username
         (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
@@ -336,7 +351,7 @@ class MainActivity :
 
     override fun onDrawerClosed(drawerView: View) {
         initCurrentScreen()
-        if (mainNavigator.isPrograms()) {
+        if (mainNavigator.isPrograms() && !isNotificationRunning()) {
             presenter.initFilters()
         }
     }
@@ -373,10 +388,50 @@ class MainActivity :
             R.id.menu_troubleshooting -> {
                 mainNavigator.openTroubleShooting()
             }
+            R.id.delete_account -> {
+                presenter.onDeleteAccount()
+            }
         }
 
         if (backDropActive && mainNavigator.isPrograms()) {
             showHideFilter()
         }
+    }
+
+    override fun showProgressDeleteNotification() {
+        notification = true
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mChannel = NotificationChannel(
+                WIPE_NOTIFICATION,
+                RESTART,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(mChannel)
+        }
+        val notificationBuilder = NotificationCompat.Builder(context, WIPE_NOTIFICATION)
+            .setSmallIcon(R.drawable.ic_sync)
+            .setContentTitle(getString(R.string.wipe_data))
+            .setContentText(getString(R.string.please_wait))
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        notificationManager.notify(123456, notificationBuilder.build())
+    }
+
+    override fun obtainFileView(): File? {
+        return this.cacheDir
+    }
+
+    private fun isNotificationRunning(): Boolean {
+        return notification
+    }
+
+    override fun cancelNotifications() {
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 }
