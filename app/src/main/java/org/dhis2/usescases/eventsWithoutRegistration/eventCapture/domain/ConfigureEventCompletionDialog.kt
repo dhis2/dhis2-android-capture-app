@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
-import org.dhis2.form.data.ItemWithWarning
 import org.dhis2.ui.DataEntryDialogUiModel
 import org.dhis2.ui.DialogButtonStyle.CompleteButton
 import org.dhis2.ui.DialogButtonStyle.MainButton
@@ -17,19 +16,17 @@ class ConfigureEventCompletionDialog(
 ) {
 
     operator fun invoke(
-        fieldUidErrorList: MutableList<String>,
-        emptyMandatoryFields: MutableMap<String, String>,
-        fieldsWithWarning: MutableList<ItemWithWarning>
+        errorFields: List<FieldWithIssue>,
+        mandatoryFields: Map<String, String>,
+        warningFields: MutableList<FieldWithIssue>
     ): EventCompletionDialog {
         val icon: Int
-        val title: String
         val subtitle: String
         val mainButtonAction: EventCompletionButtons
         val secondaryButtonAction: EventCompletionButtons
 
-        if (fieldUidErrorList.isNotEmpty()) { //Error
+        if (errorFields.isNotEmpty()) { // Error
             icon = provider.provideRedAlertIcon()
-            title = provider.provideNotSavedText()
             subtitle = provider.provideErrorInfo()
             mainButtonAction = EventCompletionButtons(
                 MainButton(provider.provideReview()),
@@ -39,9 +36,8 @@ class ConfigureEventCompletionDialog(
                 SecondaryButton(provider.provideNotNow()),
                 FormBottomDialog.ActionType.FINISH
             )
-        } else if (emptyMandatoryFields.isNotEmpty()) { //mandatory
+        } else if (mandatoryFields.isNotEmpty()) { // mandatory
             icon = provider.provideSavedIcon()
-            title = provider.provideSavedText()
             subtitle = provider.provideMandatoryInfo()
             mainButtonAction = EventCompletionButtons(
                 MainButton(provider.provideReview()),
@@ -51,9 +47,8 @@ class ConfigureEventCompletionDialog(
                 SecondaryButton(provider.provideNotNow()),
                 FormBottomDialog.ActionType.FINISH
             )
-        } else if (fieldsWithWarning.isNotEmpty()) { //warning
+        } else if (warningFields.isNotEmpty()) { // warning
             icon = provider.provideYellowAlertIcon()
-            title = provider.provideSavedText()
             subtitle = provider.provideWarningInfo()
             mainButtonAction = EventCompletionButtons(
                 CompleteButton,
@@ -63,9 +58,8 @@ class ConfigureEventCompletionDialog(
                 SecondaryButton(provider.provideNotNow()),
                 FormBottomDialog.ActionType.FINISH
             )
-        } else { //Successful
+        } else { // Successful
             icon = provider.provideSavedIcon()
-            title = provider.provideSavedText()
             subtitle = provider.provideCompleteInfo()
             mainButtonAction = EventCompletionButtons(
                 CompleteButton,
@@ -77,41 +71,17 @@ class ConfigureEventCompletionDialog(
             )
         }
 
-        val fieldsWithIssues: MutableList<FieldWithIssue> = ArrayList()
-        for (field in fieldUidErrorList) {
-            val fieldWithIssue = FieldWithIssue(
-                field,
-                IssueType.ERROR,
-                provider.provideErrorField()
-            )
-            fieldsWithIssues.add(fieldWithIssue)
-        }
-
-        for (field in emptyMandatoryFields.keys) {
-            val fieldWithIssue = FieldWithIssue(
-                field,
-                IssueType.MANDATORY,
-                provider.provideMandatoryField()
-            )
-            fieldsWithIssues.add(fieldWithIssue)
-        }
-
-        fieldsWithWarning.forEach {
-            val fieldWithIssue = FieldWithIssue(
-                it.label ?: "",
-                IssueType.WARNING,
-                it.message
-            )
-            fieldsWithIssues.add(fieldWithIssue)
-        }
-
         val dataEntryDialogUiModel = DataEntryDialogUiModel(
-            title,
-            subtitle,
-            icon,
-            fieldsWithIssues,
-            mainButtonAction.buttonStyle,
-            secondaryButtonAction.buttonStyle
+            title = getTitle(errorFields.isNotEmpty()),
+            subtitle = subtitle,
+            iconResource = icon,
+            fieldsWithIssues = getFieldsWithIssues(
+                errorFields = errorFields,
+                mandatoryFields = mandatoryFields.keys.toList(),
+                warningFields = warningFields
+            ),
+            mainButton = mainButtonAction.buttonStyle,
+            secondaryButton = secondaryButtonAction.buttonStyle
         )
 
         return EventCompletionDialog(
@@ -119,5 +89,26 @@ class ConfigureEventCompletionDialog(
             mainButtonAction = mainButtonAction.action,
             secondaryButtonAction = secondaryButtonAction.action
         )
+    }
+
+    private fun getTitle(areErrors: Boolean): String {
+        return if (areErrors) provider.provideNotSavedText() else provider.provideSavedText()
+    }
+
+    private fun getFieldsWithIssues(
+        errorFields: List<FieldWithIssue>,
+        mandatoryFields: List<String>,
+        warningFields: List<FieldWithIssue>
+    ): List<FieldWithIssue> {
+        return errorFields.plus(
+            mandatoryFields.map {
+                FieldWithIssue(
+                    "uid",
+                    it,
+                    IssueType.MANDATORY,
+                    provider.provideMandatoryField()
+                )
+            }
+        ).plus(warningFields)
     }
 }

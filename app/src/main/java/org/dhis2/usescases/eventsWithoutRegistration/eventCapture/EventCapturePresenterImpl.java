@@ -3,12 +3,12 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.annotation.SuppressLint;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.FieldWithIssue;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormValueStore;
-import org.dhis2.form.data.ItemWithWarning;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.utils.AuthorityException;
@@ -142,11 +142,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void attemptFinish(boolean canComplete, String onCompleteMessage,
-                              List<String> fieldUidErrorList,
+                              List<FieldWithIssue> errorFields,
                               Map<String, String> emptyMandatoryFields,
-                              List<ItemWithWarning> fieldsWithWarning) {
+                              List<FieldWithIssue> warningFields) {
 
-        if (!fieldUidErrorList.isEmpty()) {
+        if (!errorFields.isEmpty()) {
             view.showErrorSnackBar();
         }
 
@@ -155,15 +155,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         } else {
 
             EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
-                    fieldUidErrorList,
+                    errorFields,
                     emptyMandatoryFields,
-                    fieldsWithWarning
+                    warningFields
             );
 
             view.showCompleteActions(
                     canComplete && eventCaptureRepository.isEnrollmentOpen(),
                     onCompleteMessage,
-                    fieldUidErrorList,
                     emptyMandatoryFields,
                     eventCompletionDialog
             );

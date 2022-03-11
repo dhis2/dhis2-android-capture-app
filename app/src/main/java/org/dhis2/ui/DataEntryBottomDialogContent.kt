@@ -202,7 +202,7 @@ fun DialogPreview3() {
             subtitle = "Some mandatory fields are missing and the form cannot be saved.",
             iconResource = R.drawable.ic_alert,
             fieldsWithIssues = listOf(
-                FieldWithIssue("Age", IssueType.MANDATORY, "Field Mandatory")
+                FieldWithIssue("uid", "Age", IssueType.MANDATORY, "Field Mandatory")
             ),
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
@@ -220,8 +220,8 @@ fun DialogPreview4() {
                 "If you exit now the changes will be discarded.",
             iconResource = R.drawable.ic_error_outline,
             fieldsWithIssues = listOf(
-                FieldWithIssue("Age", IssueType.ERROR, "Enter text"),
-                FieldWithIssue("Date of birth", IssueType.ERROR, "Enter text")
+                FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),
+                FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text")
             ),
             mainButton = DialogButtonStyle.MainButton(R.string.review),
             secondaryButton = DialogButtonStyle.DiscardButton

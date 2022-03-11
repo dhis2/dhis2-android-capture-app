@@ -19,8 +19,6 @@ class EventCaptureResourcesProvider(
 
     fun provideErrorInfo() = resourceManager.getString(R.string.missing_error_fields_events)
 
-    fun provideErrorField() = resourceManager.getString(R.string.error)
-
     fun provideMandatoryInfo() = resourceManager.getString(R.string.missing_mandatory_fields_events)
 
     fun provideMandatoryField() = resourceManager.getString(R.string.field_is_mandatory)

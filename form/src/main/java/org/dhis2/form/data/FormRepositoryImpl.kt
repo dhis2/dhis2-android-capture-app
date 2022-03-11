@@ -1,5 +1,7 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.commons.data.IssueType
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -168,17 +170,23 @@ class FormRepositoryImpl(
     }
 
     override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
-        val itemsWithErrors: List<String> =
+        val itemsWithErrors: List<FieldWithIssue> =
             getFieldsWithError().plus(
-                ruleEffectsResult?.fieldsWithErrors?.map {
-                    it.errorMessage
+                ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
+                    FieldWithIssue(
+                        fieldUid = errorField.fieldUid,
+                        fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
+                        issueType = IssueType.ERROR,
+                        message = errorField.errorMessage
+                    )
                 } ?: emptyList()
             )
         val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
-            ItemWithWarning(
-                uid = warningField.fieldUid,
-                label = itemList.find { it.uid == warningField.fieldUid }?.label,
-                message = warningField.errorMessage
+            FieldWithIssue(
+                fieldUid = warningField.fieldUid,
+                fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
+                IssueType.WARNING,
+                warningField.errorMessage
             )
         } ?: emptyList()
         val result = when {
@@ -238,7 +246,14 @@ class FormRepositoryImpl(
     private fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
         itemList.find { item ->
             item.uid == errorItem.id
-        }?.label
+        }?.let { item ->
+            FieldWithIssue(
+                fieldUid = item.uid,
+                fieldName = item.label,
+                issueType = IssueType.ERROR,
+                message = item.error ?: ""
+            )
+        }
     }
 
     private fun List<FieldUiModel>.applyRuleEffects(): List<FieldUiModel> {

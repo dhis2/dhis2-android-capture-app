@@ -31,6 +31,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
+import java.io.File
+import java.util.Calendar
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.getFileFromGallery
@@ -86,8 +88,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
-import java.io.File
-import java.util.Calendar
 
 class FormView(
     formRepository: FormRepository,
@@ -338,7 +338,10 @@ class FormView(
             } else {
                 when (result) {
                     is FieldsWithErrorResult ->
-                        showErrorFieldsMessage(result.fieldUidErrorList, result.allowDiscard)
+                        showErrorFieldsMessage(
+                            result.fieldUidErrorList.map { it.message },
+                            result.allowDiscard
+                        )
                     is FieldsWithWarningResult ->
                         showWarningFieldsMessage(result.fieldUidWarningList.map { it.message })
                     is MissingMandatoryResult ->

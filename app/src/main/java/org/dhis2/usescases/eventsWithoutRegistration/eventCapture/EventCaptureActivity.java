@@ -183,7 +183,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showCompleteActions(
             boolean canComplete,
             String completeMessage,
-            List<String> errors,
             Map<String, String> emptyMandatoryFields,
             EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {

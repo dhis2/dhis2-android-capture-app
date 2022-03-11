@@ -28,7 +28,7 @@ class EventCaptureFormPresenter(
             is FieldsWithWarningResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
-                emptyList<String>(),
+                emptyList(),
                 emptyMap(),
                 result.fieldUidWarningList
             )
