@@ -265,14 +265,14 @@ class FormRepositoryImpl(
 
     private fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> {
         return map { field ->
-            if (field.valueType == null) {
+            if (field.isSection()) {
                 updateSection(field, this)
             } else {
                 updateField(field)
             }
         }
             .filter { field ->
-                field.valueType == null ||
+                field.isSectionWithFields() ||
                     field.programStageSection == openedSectionUid
             }
     }

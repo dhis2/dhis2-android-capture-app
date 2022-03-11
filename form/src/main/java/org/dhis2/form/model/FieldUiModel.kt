@@ -119,4 +119,8 @@ interface FieldUiModel {
         fun intent(intent: FormIntent)
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
     }
+
+    fun isSection() = valueType == null
+
+    fun isSectionWithFields(): Boolean
 }
