@@ -869,6 +869,7 @@
     <string name="troubleshooting_ongoing_rule_validation">Validating program rules…</string>
     <string name="troubleshooting_pass_rule_validation">No warnings found</string>
     <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
+    <string name="not_saved">Not saved</string>
     <string name="discard_changes">Discard changes</string>
     <string name="keep_editing">Keep editing</string>
     <string name="review_message">Some fields need your attention. Do you want to review the form?</string>
