@@ -52,6 +52,7 @@
                         app:srcCompat="@drawable/ic_clinical_f_outline" />
 
                     <LinearLayout
+                        android:id="@+id/eventStageDetails"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -59,7 +60,7 @@
                         android:padding="5dp">
 
                         <TextView
-                            android:id="@+id/programStageName"
+                            android:id="@+id/detailsStageName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text='@{viewModel.eventDetails.name}'

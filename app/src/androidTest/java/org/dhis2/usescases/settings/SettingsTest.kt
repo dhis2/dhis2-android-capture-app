@@ -146,6 +146,7 @@ class SettingsTest : BaseTest() {
     }
 
    @Test
+   @Ignore("SDK related")
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         preferencesRobot.saveValueToSDKPreferences(KEY_GATEWAY, GATEWAY_NUMER)
         startActivity()

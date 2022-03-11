@@ -39,6 +39,7 @@ class ProgramEventTest : BaseTest() {
             clickOnAddEvent()
         }
         eventRegistrationRobot {
+            waitToDebounce(600)
             clickNextButton()
             waitToDebounce(600)
         }
