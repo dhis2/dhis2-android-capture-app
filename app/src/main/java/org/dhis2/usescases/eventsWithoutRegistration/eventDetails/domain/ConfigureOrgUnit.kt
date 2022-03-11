@@ -66,7 +66,7 @@ class ConfigureOrgUnit(
     ): OrganisationUnit? {
         val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
             getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
-        } ?: getStoredOrgUnit(selectedOrgUnit)
+        } ?: getStoredOrgUnit(selectedOrgUnit) ?: getOrgUnitIfOnlyOne()
 
         orgUnit?.let {
             setCurrentOrgUnit(it.uid())
@@ -115,6 +115,9 @@ class ConfigureOrgUnit(
     private fun getOrgUnitsByProgramId(): List<OrganisationUnit> {
         return repository.getOrganisationUnits()
     }
+
+    private fun getOrgUnitIfOnlyOne() =
+        getOrgUnitsByProgramId().takeIf { it.size == 1 }?.firstOrNull()
 
     private fun getCurrentOrgUnit() =
         if (preferencesProvider.contains(CURRENT_ORG_UNIT)) preferencesProvider.getString(

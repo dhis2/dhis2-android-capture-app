@@ -32,6 +32,7 @@ class TeiDashboardTest : BaseTest() {
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @Test
+    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
