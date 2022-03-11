@@ -202,11 +202,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             DataEntryBottomDialog dialog = new DataEntryBottomDialog(
                     eventCompletionDialog.getDataEntryDialogUiModel(),
                     () -> {
-                        setAction(eventCompletionDialog.getMainButton().getAction());
+                        setAction(eventCompletionDialog.getMainButtonAction());
                         return Unit.INSTANCE;
                     },
                     () -> {
-                        setAction(eventCompletionDialog.getSecondaryButton().getAction());
+                        setAction(eventCompletionDialog.getSecondaryButtonAction());
                         return Unit.INSTANCE;
                     }
             );

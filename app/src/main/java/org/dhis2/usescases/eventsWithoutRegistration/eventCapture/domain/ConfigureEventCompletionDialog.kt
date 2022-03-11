@@ -4,6 +4,7 @@ import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
 import org.dhis2.form.data.ItemWithWarning
 import org.dhis2.ui.DataEntryDialogUiModel
+import org.dhis2.ui.DialogButtonStyle.CompleteButton
 import org.dhis2.ui.DialogButtonStyle.MainButton
 import org.dhis2.ui.DialogButtonStyle.SecondaryButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionButtons
@@ -30,35 +31,50 @@ class ConfigureEventCompletionDialog(
             icon = provider.provideRedAlertIcon()
             title = provider.provideNotSavedText()
             subtitle = provider.provideErrorInfo()
-            mainButtonAction =
-                EventCompletionButtons(
-                    provider.provideReview(),
-                    FormBottomDialog.ActionType.CHECK_FIELDS
-                )
-            secondaryButtonAction =
-                EventCompletionButtons(provider.provideNotNow(), FormBottomDialog.ActionType.FINISH)
+            mainButtonAction = EventCompletionButtons(
+                MainButton(provider.provideReview()),
+                FormBottomDialog.ActionType.CHECK_FIELDS
+            )
+            secondaryButtonAction = EventCompletionButtons(
+                SecondaryButton(provider.provideNotNow()),
+                FormBottomDialog.ActionType.FINISH
+            )
         } else if (emptyMandatoryFields.isNotEmpty()) { //mandatory
             icon = provider.provideSavedIcon()
             title = provider.provideSavedText()
             subtitle = provider.provideMandatoryInfo()
-            mainButtonAction =
-                EventCompletionButtons(
-                    provider.provideReview(),
-                    FormBottomDialog.ActionType.CHECK_FIELDS
-                )
-            secondaryButtonAction =
-                EventCompletionButtons(provider.provideNotNow(), FormBottomDialog.ActionType.FINISH)
-        } else { //warning
+            mainButtonAction = EventCompletionButtons(
+                MainButton(provider.provideReview()),
+                FormBottomDialog.ActionType.CHECK_FIELDS
+            )
+            secondaryButtonAction = EventCompletionButtons(
+                SecondaryButton(provider.provideNotNow()),
+                FormBottomDialog.ActionType.FINISH
+            )
+        } else if (fieldsWithWarning.isNotEmpty()) { //warning
             icon = provider.provideYellowAlertIcon()
             title = provider.provideSavedText()
             subtitle = provider.provideWarningInfo()
-            mainButtonAction =
-                EventCompletionButtons(
-                    provider.provideComplete(),
-                    FormBottomDialog.ActionType.COMPLETE
-                )
-            secondaryButtonAction =
-                EventCompletionButtons(provider.provideNotNow(), FormBottomDialog.ActionType.FINISH)
+            mainButtonAction = EventCompletionButtons(
+                CompleteButton,
+                FormBottomDialog.ActionType.COMPLETE
+            )
+            secondaryButtonAction = EventCompletionButtons(
+                SecondaryButton(provider.provideNotNow()),
+                FormBottomDialog.ActionType.FINISH
+            )
+        } else { //Successful
+            icon = provider.provideSavedIcon()
+            title = provider.provideSavedText()
+            subtitle = provider.provideCompleteInfo()
+            mainButtonAction = EventCompletionButtons(
+                CompleteButton,
+                FormBottomDialog.ActionType.COMPLETE
+            )
+            secondaryButtonAction = EventCompletionButtons(
+                SecondaryButton(provider.provideNotNow()),
+                FormBottomDialog.ActionType.FINISH
+            )
         }
 
         val fieldsWithIssues: MutableList<FieldWithIssue> = ArrayList()
@@ -94,14 +110,14 @@ class ConfigureEventCompletionDialog(
             subtitle,
             icon,
             fieldsWithIssues,
-            MainButton(mainButtonAction.text),
-            SecondaryButton(secondaryButtonAction.text)
+            mainButtonAction.buttonStyle,
+            secondaryButtonAction.buttonStyle
         )
 
         return EventCompletionDialog(
             dataEntryDialogUiModel = dataEntryDialogUiModel,
-            mainButton = mainButtonAction,
-            secondaryButton = secondaryButtonAction
+            mainButtonAction = mainButtonAction.action,
+            secondaryButtonAction = secondaryButtonAction.action
         )
     }
 }

@@ -31,5 +31,5 @@ class EventCaptureResourcesProvider(
 
     fun provideNotNow() = R.string.not_now
 
-    fun provideComplete() = R.string.complete
+    fun provideCompleteInfo() = resourceManager.getString(R.string.event_can_be_completed)
 }
