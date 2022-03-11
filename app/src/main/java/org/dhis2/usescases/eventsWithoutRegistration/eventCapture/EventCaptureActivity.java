@@ -187,18 +187,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             Map<String, String> emptyMandatoryFields,
             EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            FormBottomDialog.getInstance()
-                    .setAccessDataWrite(presenter.canWrite())
-                    .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
-                    .setIsExpired(presenter.hasExpired())
-                    .setCanComplete(canComplete)
-                    .setListener(this::setAction)
-                    .setMessageOnComplete(completeMessage)
-                    .setEmptyMandatoryFields(emptyMandatoryFields)
-                    .setFieldsWithErrors(!errors.isEmpty())
-                    .setMandatoryFields(!emptyMandatoryFields.isEmpty())
-                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");
-
             DataEntryBottomDialog dialog = new DataEntryBottomDialog(
                     eventCompletionDialog.getDataEntryDialogUiModel(),
                     () -> {
