@@ -48,11 +48,7 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.form.data.FieldsWithErrorResult
-import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.MissingMandatoryResult
-import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.toMessage
@@ -72,10 +68,12 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.QRDetailBottomDialog
@@ -101,6 +99,7 @@ class FormView(
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
+    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
@@ -337,20 +336,8 @@ class FormView(
                 onDataIntegrityCheck.invoke(result)
             } else {
                 when (result) {
-                    is FieldsWithErrorResult ->
-                        showErrorFieldsMessage(
-                            result.fieldUidErrorList.map { it.message },
-                            result.allowDiscard
-                        )
-                    is FieldsWithWarningResult ->
-                        showWarningFieldsMessage(result.fieldUidWarningList.map { it.message })
-                    is MissingMandatoryResult ->
-                        showMissingMandatoryFieldsMessage(
-                            result.mandatoryFields,
-                            result.allowDiscard
-                        )
-                    is NotSavedResult -> showDiscardDialog()
                     is SuccessfulResult -> onFinishDataEntry?.invoke()
+                    else -> showDataEntryResultDialog(result)
                 }
             }
         }
@@ -372,54 +359,18 @@ class FormView(
         )
     }
 
-    private fun showErrorFieldsMessage(
-        errorFields: List<String>,
-        allowDiscard: Boolean
-    ) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.field_errors))
-            .setFieldsToDisplay(errorFields)
-            .setPositiveButton(getString(R.string.review))
-            .also {
-                if (allowDiscard) {
-                    it.setNegativeButton(getString(R.string.discard_changes)) {
+    private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
+        resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
+            DataEntryBottomDialog(
+                dataEntryDialogUiModel = it,
+                onSecondaryButtonClicked = {
+                    if (result.allowDiscard) {
                         viewModel.discardChanges()
-                        onFinishDataEntry?.invoke()
                     }
+                    onFinishDataEntry?.invoke()
                 }
-            }
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    private fun showWarningFieldsMessage(warningFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.warnings_in_form))
-            .setMessage(getString(R.string.review))
-            .setFieldsToDisplay(warningFields)
-            .setPositiveButton(getString(R.string.review))
-            .setNegativeButton(getString(R.string.not_now)) { onFinishDataEntry?.invoke() }
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    private fun showMissingMandatoryFieldsMessage(
-        emptyMandatoryFields: Map<String, String>,
-        allowDiscard: Boolean
-    ) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.missing_mandatory_fields))
-            .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
-            .also {
-                if (allowDiscard) {
-                    it.setNegativeButton(getString(R.string.discard_changes)) {
-                        viewModel.discardChanges()
-                        onFinishDataEntry?.invoke()
-                    }
-                    it.setPositiveButton(getString(R.string.keep_editing))
-                }
-            }
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+        }
     }
 
     private fun showLoopWarning() {
@@ -429,18 +380,6 @@ class FormView(
             .setPositiveButton(R.string.action_accept) { _, _ -> }
             .setCancelable(false)
             .show()
-    }
-
-    private fun showDiscardDialog() {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.title_delete_go_back))
-            .setMessage(getString(R.string.discard_go_back))
-            .setPositiveButton(getString(R.string.keep_editing))
-            .setNegativeButton(getString(R.string.discard_changes)) {
-                viewModel.discardChanges()
-                onFinishDataEntry?.invoke()
-            }
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun scrollToPosition(position: Int) {
@@ -913,6 +852,7 @@ class FormView(
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+        private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -971,6 +911,13 @@ class FormView(
             apply { fragmentManager = manager }
 
         /**
+         *
+         */
+        fun resultDialogUiProvider(
+            resultDialogUiProvider: EnrollmentResultDialogUiProvider
+        ) = apply { this.resultDialogUiProvider = resultDialogUiProvider }
+
+        /**
          * Listener for the current activity to know if a activityForResult is called
          * */
         fun activityForResultListener(callback: () -> Unit) =
@@ -1008,6 +955,7 @@ class FormView(
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
+                    resultDialogUiProvider,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 
