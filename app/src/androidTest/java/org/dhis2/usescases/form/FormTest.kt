@@ -185,6 +185,7 @@ class FormTest: BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
             clickOnSearch()
+            clickOnEnroll()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
@@ -221,12 +222,14 @@ class FormTest: BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition("abc", 1)
             clickOnSearch()
+            clickOnEnroll()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
         }
 
         enrollmentRobot {
+            waitToDebounce(500)
             clickOnPersonAttributes("Attributes - Person")
             scrollToBottomProgramForm()
             clickOnDatePicker()
