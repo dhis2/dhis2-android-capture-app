@@ -207,6 +207,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         geometry,
                         getTrackedEntityInstance);
             }
+        }else{
+            startFormActivity(eventUid,false);
         }
     }
 
