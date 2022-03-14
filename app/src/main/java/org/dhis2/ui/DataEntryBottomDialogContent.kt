@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -89,6 +90,7 @@ fun DataEntryBottomDialogContent(
             modifier = modifier.weight(1f, false)
         ) {
             Button(
+                modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
                     disabledBackgroundColor = Color.White
@@ -99,6 +101,7 @@ fun DataEntryBottomDialogContent(
                 enabled = dataEntryDialogUiModel.secondaryButton != null
             )
             Button(
+                modifier = Modifier.testTag(MAIN_BUTTON_TAG),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(id = R.color.colorPrimary),
@@ -229,3 +232,6 @@ fun DialogPreview4() {
         onMainButtonClicked = {}
     )
 }
+
+const val SECONDARY_BUTTON_TAG = "SECONDARY_BUTTON_TAG"
+const val MAIN_BUTTON_TAG = "MAIN_BUTTON_TAG"

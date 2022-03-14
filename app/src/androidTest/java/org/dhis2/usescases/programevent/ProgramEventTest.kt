@@ -2,6 +2,7 @@ package org.dhis2.usescases.programevent
 
 import android.Manifest
 import android.content.Intent
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.fragment.app.Fragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.rule.ActivityTestRule
@@ -25,6 +26,9 @@ class ProgramEventTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
@@ -45,7 +49,7 @@ class ProgramEventTest : BaseTest() {
         }
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
         programEventsRobot {
             checkEventWasCreatedAndClosed(eventOrgUnit, 0)
@@ -91,7 +95,7 @@ class ProgramEventTest : BaseTest() {
 
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             waitToDebounce(400)
         }
 

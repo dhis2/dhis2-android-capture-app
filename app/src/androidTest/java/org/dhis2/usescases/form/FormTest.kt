@@ -1,5 +1,6 @@
 package org.dhis2.usescases.form
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -26,6 +27,9 @@ class FormTest: BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @After
     override fun teardown() {
@@ -166,7 +170,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
         teiDashboardRobot {
             checkProgramStageIsHidden("Delta")

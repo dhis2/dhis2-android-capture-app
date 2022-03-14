@@ -174,6 +174,10 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/rxjava.properties'
+        exclude "**/attach_hotspot_windows.dll"
+        exclude "META-INF/licenses/**"
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
     }
 
     dexOptions {
@@ -364,6 +368,7 @@ dependencies {
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
     androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
-
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.0.4")
     //endregion
 }

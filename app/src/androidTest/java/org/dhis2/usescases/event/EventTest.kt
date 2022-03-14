@@ -1,5 +1,6 @@
 package org.dhis2.usescases.event
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -27,6 +28,9 @@ class EventTest: BaseTest() {
 
     @get:Rule
     val ruleEventDetail = ActivityTestRule(EventInitialActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
@@ -94,7 +98,7 @@ class EventTest: BaseTest() {
         eventRobot {
             fillRadioButtonForm(radioFormLength)
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
 
         teiDashboardRobot {
