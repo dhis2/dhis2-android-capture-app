@@ -352,7 +352,7 @@ class SearchTEIViewModel(
                 hasProgramResults,
                 hasGlobalResults
             )
-        } else {
+        } else if (displayFrontPageList()) {
             handleDisplayInListResult(hasProgramResults, isLandscape)
         }
 

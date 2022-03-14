@@ -247,7 +247,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun onGlobalDataLoaded() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
-            globalResultCount = liveAdapter.itemCount,
+            globalResultCount = globalAdapter.itemCount,
             isLandscape = isLandscape()
         )
     }
