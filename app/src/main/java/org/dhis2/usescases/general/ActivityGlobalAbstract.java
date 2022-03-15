@@ -1,5 +1,11 @@
 package org.dhis2.usescases.general;
 
+import static org.dhis2.utils.Constants.CAMERA_REQUEST;
+import static org.dhis2.utils.Constants.GALLERY_REQUEST;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -23,10 +29,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.resources.LocaleSelector;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -40,7 +47,6 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,12 +60,6 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.CAMERA_REQUEST;
-import static org.dhis2.utils.Constants.GALLERY_REQUEST;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
-
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, ActivityResultObservable {
@@ -72,6 +72,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     @Inject
     public CrashReportController crashReportController;
+    @Inject
+    public LocationProvider locationProvider;
+
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
@@ -172,6 +175,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
+        if (locationProvider != null) {
+            locationProvider.stopLocationUpdates();
+        }
     }
 
     @Override
