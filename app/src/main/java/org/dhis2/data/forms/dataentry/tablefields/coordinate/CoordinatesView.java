@@ -1,5 +1,12 @@
 package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,10 +28,11 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.App;
 import org.dhis2.Bindings.DoubleExtensionsKt;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.databinding.DatasetFormCoordinatesBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
@@ -35,9 +43,7 @@ import org.dhis2.uicomponents.map.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -49,13 +55,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import kotlin.Unit;
-
-import static android.app.Activity.RESULT_OK;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.Bindings.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener, ActivityResultObserver {
 
@@ -432,6 +431,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         void onCurrentLocationClick(Geometry geometry);
     }
 
+    @SuppressLint("MissingPermission")
     public void updateLocation(Geometry geometry) {
 
         setCoordinatesValue(geometry);

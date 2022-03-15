@@ -10,7 +10,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
-import timber.log.Timber
 
 class LocationProviderImpl(val context: Context) : LocationProvider {
 
@@ -66,7 +65,6 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                     stopLocationUpdates()
                 }
             }
-            Timber.d("Location Updates: Start")
             locationManager.requestLocationUpdates(
                 1000,
                 5f,
@@ -91,7 +89,6 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     override fun stopLocationUpdates() {
         locationListener?.let {
             locationManager.removeUpdates(it)
-            Timber.d("Location Updates: Finish")
         }
     }
 }
