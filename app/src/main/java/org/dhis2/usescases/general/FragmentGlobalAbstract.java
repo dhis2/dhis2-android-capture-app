@@ -120,6 +120,8 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     @Override
     public void onPause() {
         super.onPause();
-        locationProvider.stopLocationUpdates();
+        if (locationProvider != null) {
+            locationProvider.stopLocationUpdates();
+        }
     }
 }
