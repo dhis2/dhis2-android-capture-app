@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -389,13 +390,27 @@ class MainActivity :
                 mainNavigator.openTroubleShooting()
             }
             R.id.delete_account -> {
-                presenter.onDeleteAccount()
+                confirmAccountDelete()
             }
         }
 
         if (backDropActive && mainNavigator.isPrograms()) {
             showHideFilter()
         }
+    }
+
+    private fun confirmAccountDelete() {
+        AlertDialog.Builder(context, R.style.CustomDialog)
+            .setTitle(getString(R.string.delete_account))
+            .setMessage(getString(R.string.wipe_data_meesage))
+            .setView(R.layout.warning_layout)
+            .setPositiveButton(getString(R.string.wipe_data_ok)) { _, _ ->
+                presenter.onDeleteAccount()
+            }
+            .setNegativeButton(getString(R.string.wipe_data_no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun showProgressDeleteNotification() {

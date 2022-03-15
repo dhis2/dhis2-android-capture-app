@@ -1,11 +1,12 @@
 package org.dhis2.usescases.main
 
-import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.common.filters.filterRobotCommon
+import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
+import org.dhis2.usescases.settings.settingsRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,6 +85,25 @@ class MainTest : BaseTest() {
 
         homeRobot {
             pressBack()
+        }
+    }
+
+    @Test
+    fun shouldShowDialogToDeleteAccount() {
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickDeleteAccount()
+        }
+
+        settingsRobot {
+            clickOnAcceptDialog()
+        }
+
+        loginRobot {
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
         }
     }
 
