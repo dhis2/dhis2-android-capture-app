@@ -102,6 +102,19 @@ class FormRepositoryImplTest {
     }
 
     @Test
+    fun `Should process user action ON_CLEAR`() {
+        val action = RowAction(
+            id = "",
+            value = "",
+            type = ActionType.ON_CLEAR
+        )
+        val result = repository.processUserAction(action)
+        assertThat(result.valueStoreResult, `is`(ValueStoreResult.VALUE_CHANGED))
+        val list = repository.composeList()
+        assertTrue(list.all { it.value == null && it.displayName == null })
+    }
+
+    @Test
     fun `Should update not save an item with error when ON_SAVE`() {
         // When user updates a field with error
         val result = repository.processUserAction(
@@ -308,6 +321,7 @@ class FormRepositoryImplTest {
             uid = "uid001",
             layoutId = 1,
             value = "value",
+            displayName = "displayValue",
             label = "field1",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
@@ -317,6 +331,7 @@ class FormRepositoryImplTest {
             uid = "uid002",
             layoutId = 2,
             value = "value",
+            displayName = "displayValue",
             label = "field2",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
@@ -326,6 +341,7 @@ class FormRepositoryImplTest {
             uid = "uid003",
             layoutId = 3,
             value = "value",
+            displayName = "displayValue",
             label = "field3",
             valueType = ValueType.TEXT,
             programStageSection = "section1",
