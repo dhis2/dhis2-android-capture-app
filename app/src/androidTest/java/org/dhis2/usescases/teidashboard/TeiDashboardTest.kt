@@ -17,6 +17,7 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -450,6 +451,12 @@ class TeiDashboardTest : BaseTest() {
             "Ryder",
             "Female"
         )
+
+    @After
+    override fun teardown() {
+        cleanLocalDatabase()
+        super.teardown()
+    }
 
     companion object {
         const val NOTE_VALID = "ThisIsJustATest"
