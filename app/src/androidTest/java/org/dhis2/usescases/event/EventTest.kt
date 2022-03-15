@@ -13,6 +13,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,6 +84,7 @@ class EventTest: BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyUpdateAndSaveEvent() {
         val labMonitoring = "Lab monitoring"
         val eventDate = "1/6/2020"
