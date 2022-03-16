@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -59,9 +60,9 @@
                 android:text="@{item.formattedLabel}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/renderImage"
                 tools:text="WHOMCH Smocking cessation counselling provided" />
@@ -86,10 +87,10 @@
             <ImageView
                 android:id="@+id/delete"
                 style="@style/ActionIcon"
-                android:padding="8dp"
                 android:alpha="@{item.editable? 1f : 0.5f}"
                 android:enabled="@{item.editable}"
                 android:onClick="@{() -> item.onClear()}"
+                android:padding="8dp"
                 app:delete_visibility="@{item}"
                 app:icon_color="@{item.style}"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -102,17 +103,18 @@
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toStartOf="@id/delete"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/warningError">
+                app:layout_constraintTop_toBottomOf="@id/label"
+                app:layout_constraintBottom_toTopOf="@id/warningError">
+
                 <LinearLayout
                     android:id="@+id/checkLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:weightSum="6"
-                    android:orientation="horizontal"
                     android:alpha="@{item.editable? 1f : 0.5f}"
-                    app:renderingType="@{item.renderingType}"
+                    android:orientation="horizontal"
+                    android:weightSum="6"
                     app:options="@{item}"
-                    />
+                    app:renderingType="@{item.renderingType}" />
             </HorizontalScrollView>
 
             <HorizontalScrollView
@@ -121,18 +123,18 @@
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toStartOf="@+id/delete"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/label">
+                app:layout_constraintTop_toBottomOf="@id/label"
+                app:layout_constraintBottom_toTopOf="@id/warningError">
 
                 <RadioGroup
                     android:id="@+id/radioLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
                     android:textSize="@dimen/form_edit_text_size"
                     android:weightSum="6"
-                    android:alpha="@{item.editable? 1f : 0.5f}"
-                    app:renderingType="@{item.renderingType}"
                     app:options="@{item}"
-                    />
+                    app:renderingType="@{item.renderingType}" />
             </HorizontalScrollView>
 
             <TextView
@@ -140,17 +142,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
+                android:textSize="@dimen/textSize_12"
                 android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
-                app:warning="@{item.warning}"
                 app:input_style="@{item}"
-                android:textSize="@dimen/textSize_12"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/label"
-                app:layout_constraintTop_toBottomOf="@id/label"
+                app:warning="@{item.warning}"
                 tools:text="This is a warning"
-                tools:visibility="visible"
-                tools:textAppearance="@style/error_appearance"/>
+                tools:textAppearance="@style/error_appearance"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
