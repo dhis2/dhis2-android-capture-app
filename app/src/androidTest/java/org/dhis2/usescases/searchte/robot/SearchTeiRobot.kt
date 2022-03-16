@@ -112,6 +112,7 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnSearch() {
+        closeKeyboard()
         onView(withId(R.id.searchButton)).perform(click())
     }
 

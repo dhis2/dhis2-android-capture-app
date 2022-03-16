@@ -1,12 +1,16 @@
 package org.dhis2.usescases
 
 import android.content.Context
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
+import org.dhis2.common.BaseRobot
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -89,6 +93,7 @@ open class BaseTest {
     @After
     @Throws(Exception::class)
     open fun teardown() {
+        closeKeyboard()
         disableIntents()
         cleanPreferences()
         cleanKeystore()
@@ -113,6 +118,10 @@ open class BaseTest {
 
     fun setDatePicker() {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
+    }
+
+    private fun closeKeyboard(){
+        BaseRobot().closeKeyboard()
     }
 
     private fun disableIntents() {
