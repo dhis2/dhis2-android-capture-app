@@ -19,6 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
@@ -42,7 +43,8 @@ class EventDetailsViewModel(
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -54,6 +56,9 @@ class EventDetailsViewModel(
     var requestLocationPermissions: (() -> Unit)? = null
     var showEnableLocationMessage: (() -> Unit)? = null
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
+    var onButtonClickCallback: (() -> Unit)? = null
+    var showEventUpdateStatus: ((result: String) -> Unit)? = null
+    var onReopenError: ((message: String) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -225,5 +230,39 @@ class EventDetailsViewModel(
             coordinates
         )
         geometry?.let { setUpCoordinates(it.coordinates()) }
+    }
+
+    fun onButtonClick() {
+        onButtonClickCallback?.invoke()
+    }
+
+    fun onActionButtonClick() {
+        viewModelScope.launch {
+            eventDetails.value.apply {
+                selectedDate?.let { date ->
+                    createOrUpdateEventDetails(
+                        selectedDate = date,
+                        selectedOrgUnit = selectedOrgUnit,
+                        catOptionComboUid = catOptionComboUid,
+                        coordinates = coordinates
+                    ).flowOn(Dispatchers.IO)
+                        .collect { result ->
+                            result.onFailure {
+                                showEventUpdateStatus?.invoke(it.message!!)
+                            }
+                            result.onSuccess { message ->
+                                showEventUpdateStatus?.invoke(message)
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    fun onReopenClick() {
+        configureEventDetails.reopenEvent().fold(
+            onSuccess = { setUpEventDetails() },
+            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
+        )
     }
 }

@@ -10,17 +10,15 @@ import org.dhis2.commons.data.EventCreationType.SCHEDULE
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class ConfigureOrgUnit(
     private val creationType: EventCreationType,
-    private val eventInitialRepository: EventInitialRepository,
+    private val repository: EventDetailsRepository,
     private val preferencesProvider: PreferenceProvider,
     private val programUid: String,
-    private val eventUid: String?,
     private val initialOrgUnitUid: String?
 ) {
 
@@ -41,12 +39,12 @@ class ConfigureOrgUnit(
     }
 
     private fun isEnable(): Boolean {
-        if (getStoredEvent() != null) {
+        if (repository.getEvent() != null) {
             return false
         }
 
-        val canWrite = eventInitialRepository.accessDataWrite(programUid).blockingFirst()
-        val isEnrollmentOpen = eventInitialRepository.isEnrollmentOpen
+        val canWrite = repository.hasAccessDataWrite()
+        val isEnrollmentOpen = repository.isEnrollmentOpen()
         if (!canWrite || !isEnrollmentOpen) {
             return false
         }
@@ -59,7 +57,7 @@ class ConfigureOrgUnit(
     }
 
     private fun isFixed(): Boolean {
-        return creationType == SCHEDULE || getStoredEvent() != null
+        return creationType == SCHEDULE || repository.getEvent() != null
     }
 
     private fun getSelectedOrgUnit(
@@ -68,7 +66,7 @@ class ConfigureOrgUnit(
     ): OrganisationUnit? {
         val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
             getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
-        } ?: getStoredOrgUnit(selectedOrgUnit)
+        } ?: getStoredOrgUnit(selectedOrgUnit) ?: getOrgUnitIfOnlyOne()
 
         orgUnit?.let {
             setCurrentOrgUnit(it.uid())
@@ -78,11 +76,7 @@ class ConfigureOrgUnit(
 
     private fun getOrgUnitBySelectedDate(selectedDate: Date): OrganisationUnit? {
         val dateDBFormat = DateUtils.databaseDateFormat().format(selectedDate)
-        val orgUnits = eventInitialRepository.filteredOrgUnits(
-            dateDBFormat,
-            programUid,
-            null
-        ).blockingFirst()
+        val orgUnits = repository.getFilteredOrgUnits(dateDBFormat, null)
 
         getCurrentOrgUnit()?.let { currentOrgUnitUid ->
             return orgUnits.find { it.uid().equals(currentOrgUnitUid) }
@@ -99,16 +93,13 @@ class ConfigureOrgUnit(
     }
 
     private fun getStoredOrgUnit(selectedOrgUnit: String?): OrganisationUnit? {
-        selectedOrgUnit?.let {
-            eventInitialRepository.getOrganisationUnit(it).blockingFirst()
-                .let { orgUnit ->
-                    return orgUnit
-                }
+        if (!selectedOrgUnit.isNullOrEmpty()) {
+            return repository.getOrganisationUnit(selectedOrgUnit)
         }
 
-        eventUid?.let { eventId ->
-            eventInitialRepository.event(eventId).blockingFirst()?.let { event ->
-                eventInitialRepository.getOrganisationUnit(event.organisationUnit()).blockingFirst()
+        repository.getEvent()?.let { event ->
+            if (event.organisationUnit() != null) {
+                repository.getOrganisationUnit(event.organisationUnit()!!)
                     .let { orgUnit ->
                         return orgUnit
                     }
@@ -117,16 +108,16 @@ class ConfigureOrgUnit(
 
         val currentOrgUnit = getCurrentOrgUnit() ?: initialOrgUnitUid
         return currentOrgUnit?.let {
-            eventInitialRepository.getOrganisationUnit(it).blockingFirst()
+            repository.getOrganisationUnit(it)
         }
     }
 
     private fun getOrgUnitsByProgramId(): List<OrganisationUnit> {
-        return eventInitialRepository.orgUnits(programUid).blockingFirst()
+        return repository.getOrganisationUnits()
     }
 
-    private fun getStoredEvent(): Event? =
-        eventUid?.let { eventInitialRepository.event(it).blockingFirst() }
+    private fun getOrgUnitIfOnlyOne() =
+        getOrgUnitsByProgramId().takeIf { it.size == 1 }?.firstOrNull()
 
     private fun getCurrentOrgUnit() =
         if (preferencesProvider.contains(CURRENT_ORG_UNIT)) preferencesProvider.getString(

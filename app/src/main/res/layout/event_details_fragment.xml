@@ -21,6 +21,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/form_field_background"
         android:orientation="vertical">
 
         <androidx.core.widget.NestedScrollView
@@ -51,6 +52,7 @@
                         app:srcCompat="@drawable/ic_clinical_f_outline" />
 
                     <LinearLayout
+                        android:id="@+id/eventStageDetails"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -58,7 +60,7 @@
                         android:padding="5dp">
 
                         <TextView
-                            android:id="@+id/programStageName"
+                            android:id="@+id/detailsStageName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text='@{viewModel.eventDetails.name}'
@@ -194,11 +196,32 @@
 
                 </RadioGroup>
 
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/reopenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:setReopen="@{viewModel}" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="120dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <Button
+            android:id="@+id/action_button"
+            style="@style/ButtonRoundedGrey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{() -> viewModel.onButtonClick()}"
+            android:text="@{viewModel.eventDetails.actionButtonText}"
+            android:visibility="@{viewModel.eventDetails.isActionButtonVisible ? View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/next" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

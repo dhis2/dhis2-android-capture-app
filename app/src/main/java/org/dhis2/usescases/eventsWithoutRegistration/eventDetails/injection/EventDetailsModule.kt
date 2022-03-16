@@ -6,21 +6,34 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.ui.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.LayoutProviderImpl
+import org.dhis2.form.ui.provider.DisplayNameProviderImpl
+import org.dhis2.form.ui.provider.HintProviderImpl
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
+import org.dhis2.form.ui.provider.LegendValueProviderImpl
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.form.ui.provider.UiStyleProviderImpl
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModelFactory
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
 
 @Module
@@ -28,12 +41,13 @@ class EventDetailsModule(
     val eventUid: String?,
     val context: Context,
     val eventCreationType: EventCreationType,
-    val programStageUid: String,
-    val programId: String,
+    val programStageUid: String?,
+    val programUid: String,
     val periodType: PeriodType?,
     val enrollmentId: String?,
     val scheduleInterval: Int,
-    val initialOrgUnitUid: String?
+    val initialOrgUnitUid: String?,
+    val enrollmentStatus: EnrollmentStatus?
 ) {
 
     @Provides
@@ -52,9 +66,36 @@ class EventDetailsModule(
 
     @Provides
     @PerFragment
-    fun eventDetailsViewModelFactory(
+    fun provideEventDetailsRepository(
         d2: D2,
-        eventInitialRepository: EventInitialRepository,
+        resourceManager: ResourceManager
+    ): EventDetailsRepository {
+        return EventDetailsRepository(
+            d2 = d2,
+            programUid = programUid,
+            eventUid = eventUid,
+            programStageUid = programStageUid,
+            fieldFactory = FieldViewModelFactoryImpl(
+                false,
+                UiStyleProviderImpl(
+                    FormUiModelColorFactoryImpl(context, true),
+                    LongTextUiColorFactoryImpl(context, true)
+                ),
+                LayoutProviderImpl(),
+                HintProviderImpl(context),
+                DisplayNameProviderImpl(d2),
+                UiEventTypesProviderImpl(),
+                KeyboardActionProviderImpl(),
+                LegendValueProviderImpl(d2, resourceManager)
+            ),
+            d2ErrorMapper = D2ErrorUtils(context)
+        )
+    }
+
+    @Provides
+    @PerFragment
+    fun eventDetailsViewModelFactory(
+        eventDetailsRepository: EventDetailsRepository,
         resourcesProvider: EventDetailResourcesProvider,
         periodUtils: DhisPeriodUtils,
         preferencesProvider: PreferenceProvider,
@@ -63,51 +104,43 @@ class EventDetailsModule(
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
-                d2 = d2,
-                eventInitialRepository = eventInitialRepository,
-                programStageId = programStageUid,
-                eventId = eventUid,
-                programId = programId,
+                repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider,
-                creationType = eventCreationType
+                creationType = eventCreationType,
+                enrollmentStatus = enrollmentStatus
             ),
             ConfigureEventReportDate(
-                eventId = eventUid,
-                programStageId = programStageUid,
                 creationType = eventCreationType,
                 resourceProvider = resourcesProvider,
-                eventInitialRepository = eventInitialRepository,
+                repository = eventDetailsRepository,
                 periodType = periodType,
                 periodUtils = periodUtils,
                 enrollmentId = enrollmentId,
-                programId = programId,
                 scheduleInterval = scheduleInterval
             ),
             ConfigureOrgUnit(
                 creationType = eventCreationType,
-                eventInitialRepository = eventInitialRepository,
+                repository = eventDetailsRepository,
                 preferencesProvider = preferencesProvider,
-                programUid = programId,
-                eventUid = eventUid,
+                programUid = programUid,
                 initialOrgUnitUid = initialOrgUnitUid
             ),
             ConfigureEventCoordinates(
-                d2 = d2,
-                programId = programId,
-                programStageId = programStageUid,
-                eventInitialRepository = eventInitialRepository
+                repository = eventDetailsRepository
             ),
             ConfigureEventCatCombo(
-                eventInitialRepository = eventInitialRepository,
-                programUid = programId,
-                eventUid = eventUid
+                repository = eventDetailsRepository
             ),
             ConfigureEventTemp(
                 creationType = eventCreationType
             ),
             periodType = periodType,
             geometryController = geometryController,
-            locationProvider = locationProvider
+            locationProvider = locationProvider,
+            createOrUpdateEventDetails = CreateOrUpdateEventDetails(
+                repository = eventDetailsRepository,
+                resourcesProvider = resourcesProvider
+            )
         )
     }
 }

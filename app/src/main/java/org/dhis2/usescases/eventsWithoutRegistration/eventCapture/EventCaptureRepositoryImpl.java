@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
+import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 
 import java.util.Date;
 import java.util.List;
@@ -191,9 +192,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean showCompletionPercentage() {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
-            return d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(
-                    currentEvent.program()
-            ).visible();
+            ProgramConfigurationSetting programConfigurationSetting = d2.settingModule()
+                    .appearanceSettings()
+                    .getProgramConfigurationByUid(currentEvent.program());
+
+            if (programConfigurationSetting != null &&
+                    programConfigurationSetting.completionSpinner() != null) {
+                return programConfigurationSetting.completionSpinner();
+            }
         }
         return true;
     }

@@ -39,6 +39,7 @@ class ProgramEventTest : BaseTest() {
             clickOnAddEvent()
         }
         eventRegistrationRobot {
+            waitToDebounce(600)
             clickNextButton()
             waitToDebounce(600)
         }
@@ -77,7 +78,6 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Re-do for ANDROAPP-4610")
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
@@ -101,7 +101,7 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot {
-            clickOnFormFabButton()
+            clickOnDetails()
             clickOnReopen()
             pressBack()
         }

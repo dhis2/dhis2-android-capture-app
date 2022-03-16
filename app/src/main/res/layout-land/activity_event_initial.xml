@@ -41,11 +41,11 @@
             <ImageView
                 android:id="@+id/menu"
                 style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginStart="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -107,37 +107,11 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="false">
 
-            <RelativeLayout
+            <FrameLayout
+                android:id="@+id/fragmentDetailsContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-                <androidx.core.widget.NestedScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <FrameLayout
-                        android:id="@+id/fragmentDetailsContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </androidx.core.widget.NestedScrollView>
-
-            </RelativeLayout>
-
-
-            <Button
-                android:id="@+id/action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="?attr/selector_button_round_7"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/next"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

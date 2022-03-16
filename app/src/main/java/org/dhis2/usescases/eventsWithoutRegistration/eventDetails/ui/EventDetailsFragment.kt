@@ -21,11 +21,12 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.utils.Constants.ENROLLMENT_STATUS
 import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.EVENT_CREATION_TYPE
 import org.dhis2.utils.Constants.EVENT_PERIOD_TYPE
@@ -40,6 +41,7 @@ import org.dhis2.utils.customviews.CatOptionPopUp
 import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
@@ -72,6 +74,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
     }
 
     var onEventDetailsChange: ((eventDetails: EventDetails) -> Unit)? = null
+    var onButtonCallback: (() -> Unit)? = null
 
     private lateinit var binding: EventDetailsFragmentBinding
 
@@ -80,22 +83,24 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity as EventInitialActivity).eventInitialComponent.plus(
+        (requireActivity() as EventDetailsComponentProvider).provideEventDetailsComponent(
             EventDetailsModule(
                 eventUid = requireArguments().getString(EVENT_UID),
                 context = requireContext(),
                 eventCreationType = getEventCreationType(
                     requireArguments().getString(EVENT_CREATION_TYPE)
                 ),
-                programStageUid = requireArguments().getString(PROGRAM_STAGE_UID)!!,
-                programId = requireArguments().getString(PROGRAM_UID)!!,
+                programStageUid = requireArguments().getString(PROGRAM_STAGE_UID),
+                programUid = requireArguments().getString(PROGRAM_UID)!!,
                 periodType = requireArguments()
                     .getSerializable(EVENT_PERIOD_TYPE) as PeriodType?,
                 enrollmentId = requireArguments().getString(ENROLLMENT_UID),
                 scheduleInterval = requireArguments().getInt(EVENT_SCHEDULE_INTERVAL),
-                initialOrgUnitUid = requireArguments().getString(ORG_UNIT)
+                initialOrgUnitUid = requireArguments().getString(ORG_UNIT),
+                enrollmentStatus = requireArguments()
+                    .getSerializable(ENROLLMENT_STATUS) as EnrollmentStatus?
             )
-        ).inject(this)
+        )?.inject(this)
         binding = DataBindingUtil.inflate(
             inflater, R.layout.event_details_fragment,
             container,
@@ -157,6 +162,18 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         viewModel.showEnableLocationMessage = {
             displayMessage(getString(R.string.enable_location_message))
+        }
+
+        viewModel.onButtonClickCallback = {
+            onButtonCallback?.invoke() ?: viewModel.onActionButtonClick()
+        }
+
+        viewModel.showEventUpdateStatus = { message ->
+            displayMessage(message)
+        }
+
+        viewModel.onReopenError = { message ->
+            displayMessage(message)
         }
     }
 

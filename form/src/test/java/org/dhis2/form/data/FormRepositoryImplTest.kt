@@ -1,7 +1,9 @@
 package org.dhis2.form.data
 
+import androidx.databinding.ObservableField
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -11,6 +13,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
@@ -203,7 +206,52 @@ class FormRepositoryImplTest {
             optionGroupsToShow = emptyMap()
         )
 
-        verify(rulesUtilsProvider, times(1)).applyRuleEffects(any(), any(), any(), any())
+        verify(rulesUtilsProvider, times(1)).applyRuleEffects(
+            any(),
+            any(),
+            any(),
+            any()
+        )
+    }
+
+    @Test
+    fun `Should remove sections with no fields`() {
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideEmptySectionItemList())
+        whenever(
+            dataEntryRepository.updateSection(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        )doReturnConsecutively listOf(
+            section1().apply { totalFields = 3 },
+            section2().apply { totalFields = 0 }
+        )
+        val result = repository.fetchFormItems()
+        assertTrue(
+            result.find { it.isSection() && it.uid == "section1" } != null
+        )
+        assertTrue(
+            result.find { it.isSection() && it.uid == "section2" } == null
+        )
+    }
+
+    private fun mockList(listToReturn: List<FieldUiModel>) {
+        whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(listToReturn)
+        repository = FormRepositoryImpl(
+            formValueStore,
+            fieldErrorMessageProvider,
+            displayNameProvider,
+            dataEntryRepository,
+            ruleEngineRepository,
+            rulesUtilsProvider,
+            legendValueProvider
+        )
+        repository.fetchFormItems()
     }
 
     private fun mockedSections() = listOf(
@@ -238,5 +286,51 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null
         )
+    )
+
+    private fun section1() = SectionUiModelImpl(
+        uid = "section1",
+        layoutId = 1,
+        label = "section1",
+        selectedField = ObservableField("")
+    )
+
+    private fun section2() = SectionUiModelImpl(
+        uid = "section2",
+        layoutId = 1,
+        label = "section2",
+        selectedField = ObservableField("")
+    )
+
+    private fun provideEmptySectionItemList() = listOf<FieldUiModel>(
+        section1(),
+        FieldUiModelImpl(
+            uid = "uid001",
+            layoutId = 1,
+            value = "value",
+            label = "field1",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
+        ),
+        FieldUiModelImpl(
+            uid = "uid002",
+            layoutId = 2,
+            value = "value",
+            label = "field2",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
+        ),
+        FieldUiModelImpl(
+            uid = "uid003",
+            layoutId = 3,
+            value = "value",
+            label = "field3",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
+        ),
+        section2()
     )
 }

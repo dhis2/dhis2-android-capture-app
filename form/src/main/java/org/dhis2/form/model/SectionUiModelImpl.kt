@@ -187,6 +187,8 @@ data class SectionUiModelImpl(
 
     override val optionsToDisplay: List<Option>? = null
 
+    override fun isSectionWithFields() = totalFields > 0
+
     override fun equals(item: FieldUiModel): Boolean {
         item as SectionUiModelImpl
         return super.equals(item) &&

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.login.accounts.ui
 
-import androidx.compose.foundation.Image
+import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
@@ -96,16 +96,13 @@ fun LoginHeader() {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp, 8.dp, 16.dp, 12.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_dhis_white),
-                contentDescription = null
-            )
+            AndroidView(factory = { View.inflate(it, R.layout.dhis_logo, null) })
         }
         Row(
             horizontalArrangement = Arrangement.End,

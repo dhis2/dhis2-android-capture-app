@@ -9,6 +9,7 @@ import org.dhis2.commons.schedulers.SchedulerModule
 import org.dhis2.commons.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.user.UserModule
+import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.usescases.sync.MockedWorkManagerController
 import org.dhis2.utils.analytics.AnalyticsModule
@@ -32,7 +33,7 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setTestingDatabase(DB_TO_IMPORT, USERNAME)
+        D2Manager.setTestingDatabase(MOCK_SERVER_URL, DB_TO_IMPORT, USERNAME)
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
