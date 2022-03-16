@@ -40,8 +40,6 @@ public class SearchTEContractsModule {
 
         void setTutorial();
 
-        void setProgramColor(String data, String programUid);
-
         String fromRelationshipTEI();
 
         void setFabIcon(boolean needsSearch);
