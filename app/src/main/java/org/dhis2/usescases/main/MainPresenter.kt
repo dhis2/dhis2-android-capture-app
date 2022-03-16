@@ -139,6 +139,7 @@ class MainPresenter(
         view.showProgressDeleteNotification()
 
         deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+        userManager.d2?.wipeModule()?.wipeEverything()
         userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
         view.cancelNotifications()
 

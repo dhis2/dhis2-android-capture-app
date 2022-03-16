@@ -7,6 +7,7 @@ import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.settings.settingsRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -89,7 +90,9 @@ class MainTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldShowDialogToDeleteAccount() {
+        setupCredentials()
         startActivity()
 
         homeRobot {
@@ -98,6 +101,7 @@ class MainTest : BaseTest() {
         }
 
         settingsRobot {
+            Thread.sleep(1000)
             clickOnAcceptDialog()
         }
 
