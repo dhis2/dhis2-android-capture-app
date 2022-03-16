@@ -51,7 +51,8 @@ class ConfigureEventCompletionDialogTest {
         val resultDialog = configureEventCompletionDialog.invoke(
             errorFields = errorFields,
             mandatoryFields = mandatoryFields,
-            warningFields = warningFields
+            warningFields = warningFields,
+            onCompleteMessage = null
         )
 
         // Then Dialog should has Error info
@@ -71,7 +72,8 @@ class ConfigureEventCompletionDialogTest {
         val resultDialog = configureEventCompletionDialog.invoke(
             errorFields = emptyList(),
             mandatoryFields = mandatoryFields,
-            warningFields = warningFields
+            warningFields = warningFields,
+            onCompleteMessage = null
         )
 
         // Then Dialog should has Error info
@@ -90,7 +92,8 @@ class ConfigureEventCompletionDialogTest {
         val resultDialog = configureEventCompletionDialog.invoke(
             errorFields = emptyList(),
             mandatoryFields = emptyMap(),
-            warningFields = warningFields
+            warningFields = warningFields,
+            onCompleteMessage = null
         )
 
         // Then Dialog should has Error info
@@ -98,6 +101,7 @@ class ConfigureEventCompletionDialogTest {
         assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, WARNING_INFO)
         assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 1)
         assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.dataEntryDialogUiModel.messageOnComplete, null)
     }
 
     @Test
@@ -107,7 +111,8 @@ class ConfigureEventCompletionDialogTest {
         val resultDialog = configureEventCompletionDialog.invoke(
             errorFields = emptyList(),
             mandatoryFields = emptyMap(),
-            warningFields = emptyList()
+            warningFields = emptyList(),
+            onCompleteMessage = WARNING_MESSAGE
         )
 
         // Then Dialog should has Error info
@@ -115,6 +120,7 @@ class ConfigureEventCompletionDialogTest {
         assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, COMPLETE_INFO)
         assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 2)
         assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 0)
+        assertEquals(resultDialog.dataEntryDialogUiModel.messageOnComplete, WARNING_MESSAGE)
     }
 
     companion object {
@@ -124,5 +130,6 @@ class ConfigureEventCompletionDialogTest {
         const val MANDATORY_INFO = "Mandatory Info"
         const val WARNING_INFO = "Warning Info"
         const val COMPLETE_INFO = "Complete Info"
+        const val WARNING_MESSAGE = "Warning message"
     }
 }

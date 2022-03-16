@@ -27,7 +27,6 @@ public class EventCaptureContract {
 
         void showCompleteActions(
                 boolean canComplete,
-                String completeMessage,
                 Map<String, String> emptyMandatoryFields,
                 EventCompletionDialog eventCompletionDialog);
 

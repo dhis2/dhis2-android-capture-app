@@ -157,12 +157,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
                     errorFields,
                     emptyMandatoryFields,
-                    warningFields
+                    warningFields,
+                    canComplete,
+                    onCompleteMessage
             );
 
             view.showCompleteActions(
                     canComplete && eventCaptureRepository.isEnrollmentOpen(),
-                    onCompleteMessage,
                     emptyMandatoryFields,
                     eventCompletionDialog
             );

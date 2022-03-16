@@ -10,5 +10,7 @@ data class FieldWithIssue(
 enum class IssueType {
     ERROR,
     MANDATORY,
-    WARNING
+    WARNING,
+    ERROR_ON_COMPLETE,
+    WARNING_ON_COMPLETE
 }

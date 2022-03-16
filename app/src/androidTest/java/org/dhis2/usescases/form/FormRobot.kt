@@ -4,6 +4,7 @@ import android.app.Activity
 import android.view.MenuItem
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
@@ -96,9 +97,8 @@ class FormRobot : BaseRobot() {
             .check(matches(hasItem(hasDescendant(withText("Error with current event ")))))
     }
 
-    fun checkPopUpWithMessageOnCompleteIsShown(message: String) {
-        onView(withId(R.id.txtMessageOnComplete))
-            .check(matches(allOf(isDisplayed(), withText(containsString(message)))))
+    fun checkPopUpWithMessageOnCompleteIsShown(message: String, composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithText(message).assertExists()
     }
 
     fun checkIndicatorIsDisplayed(name: String, value: String) {

@@ -74,12 +74,12 @@ fun DataEntryBottomDialogContent(
             )
         }
         Divider(Modifier.padding(horizontal = 24.dp))
-        if (dataEntryDialogUiModel.fieldsWithIssues?.isNotEmpty() == true) {
+        if (dataEntryDialogUiModel.fieldsWithIssues.isNotEmpty()) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.weight(1f, false)
             ) {
-                items(dataEntryDialogUiModel.fieldsWithIssues!!) {
+                items(dataEntryDialogUiModel.fieldsWithIssues) {
                     IssueItem(it, onClick = onIssueItemClicked)
                 }
             }
@@ -139,6 +139,7 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
             painter = painterResource(
                 when (fieldWithIssue.issueType) {
                     IssueType.ERROR,
+                    IssueType.ERROR_ON_COMPLETE,
                     IssueType.MANDATORY -> R.drawable.ic_error_outline
                     else -> R.drawable.ic_alert
                 }

@@ -22,7 +22,9 @@ class ConfigureEventCompletionDialog(
     operator fun invoke(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: Map<String, String>,
-        warningFields: List<FieldWithIssue>
+        warningFields: List<FieldWithIssue>,
+        canComplete: Boolean,
+        onCompleteMessage: String?
     ): EventCompletionDialog {
         val dialogType = getDialogType(errorFields, mandatoryFields, warningFields)
         val mainButton = getMainButton(dialogType)
@@ -37,7 +39,8 @@ class ConfigureEventCompletionDialog(
             fieldsWithIssues = getFieldsWithIssues(
                 errorFields = errorFields,
                 mandatoryFields = mandatoryFields.keys.toList(),
-                warningFields = warningFields
+                warningFields = warningFields,
+                onCompleteField = getOnCompleteMessage(canComplete, onCompleteMessage)
             ),
             mainButton = mainButton.buttonStyle,
             secondaryButton = secondaryButton.buttonStyle
@@ -85,18 +88,38 @@ class ConfigureEventCompletionDialog(
     private fun getFieldsWithIssues(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: List<String>,
-        warningFields: List<FieldWithIssue>
+        warningFields: List<FieldWithIssue>,
+        onCompleteField: List<FieldWithIssue>
     ): List<FieldWithIssue> {
-        return errorFields.plus(
-            mandatoryFields.map {
+        return onCompleteField
+            .plus(errorFields)
+            .plus(mandatoryFields.map {
                 FieldWithIssue(
                     "uid",
                     it,
                     IssueType.MANDATORY,
                     provider.provideMandatoryField()
                 )
-            }
-        ).plus(warningFields)
+            })
+            .plus(warningFields)
+    }
+
+    private fun getOnCompleteMessage(
+        canComplete: Boolean,
+        onCompleteMessage: String?
+    ): List<FieldWithIssue> {
+        val issueOnComplete = onCompleteMessage?.let {
+            FieldWithIssue(
+                fieldUid = "",
+                fieldName = it,
+                issueType = when(canComplete) {
+                    false -> IssueType.ERROR_ON_COMPLETE
+                    else -> IssueType.WARNING_ON_COMPLETE
+                },
+                message = ""
+            )
+        }
+        return issueOnComplete?.let { listOf(it) } ?: emptyList()
     }
 
     private fun getDialogType(
