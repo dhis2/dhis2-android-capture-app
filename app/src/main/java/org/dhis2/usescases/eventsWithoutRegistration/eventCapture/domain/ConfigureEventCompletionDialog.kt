@@ -93,15 +93,16 @@ class ConfigureEventCompletionDialog(
     ): List<FieldWithIssue> {
         return onCompleteField
             .plus(errorFields)
-            .plus(mandatoryFields.map {
-                FieldWithIssue(
-                    "uid",
-                    it,
-                    IssueType.MANDATORY,
-                    provider.provideMandatoryField()
-                )
-            })
-            .plus(warningFields)
+            .plus(
+                mandatoryFields.map {
+                    FieldWithIssue(
+                        "uid",
+                        it,
+                        IssueType.MANDATORY,
+                        provider.provideMandatoryField()
+                    )
+                }
+            ).plus(warningFields)
     }
 
     private fun getOnCompleteMessage(
@@ -112,7 +113,7 @@ class ConfigureEventCompletionDialog(
             FieldWithIssue(
                 fieldUid = "",
                 fieldName = it,
-                issueType = when(canComplete) {
+                issueType = when (canComplete) {
                     false -> IssueType.ERROR_ON_COMPLETE
                     else -> IssueType.WARNING_ON_COMPLETE
                 },

@@ -143,7 +143,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Warning", composeTestRule)
+            checkPopUpWithMessageOnCompleteIsShown("Warning ending with current event", composeTestRule)
             pressBack()
         }
 
@@ -153,7 +153,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Error", composeTestRule)
+            checkPopUpWithMessageOnCompleteIsShown("Error ending with current event", composeTestRule)
             pressBack()
         }
     }
