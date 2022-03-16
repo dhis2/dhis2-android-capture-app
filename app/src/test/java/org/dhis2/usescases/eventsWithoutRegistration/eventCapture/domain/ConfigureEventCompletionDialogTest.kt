@@ -52,6 +52,7 @@ class ConfigureEventCompletionDialogTest {
             errorFields = errorFields,
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
+            canComplete = true,
             onCompleteMessage = null
         )
 
@@ -73,6 +74,7 @@ class ConfigureEventCompletionDialogTest {
             errorFields = emptyList(),
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
+            canComplete = true,
             onCompleteMessage = null
         )
 
@@ -93,6 +95,7 @@ class ConfigureEventCompletionDialogTest {
             errorFields = emptyList(),
             mandatoryFields = emptyMap(),
             warningFields = warningFields,
+            canComplete = true,
             onCompleteMessage = null
         )
 
@@ -101,7 +104,6 @@ class ConfigureEventCompletionDialogTest {
         assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, WARNING_INFO)
         assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 1)
         assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 1)
-        assertEquals(resultDialog.dataEntryDialogUiModel.messageOnComplete, null)
     }
 
     @Test
@@ -112,7 +114,8 @@ class ConfigureEventCompletionDialogTest {
             errorFields = emptyList(),
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
-            onCompleteMessage = WARNING_MESSAGE
+            canComplete = true,
+            onCompleteMessage = null
         )
 
         // Then Dialog should has Error info
@@ -120,7 +123,25 @@ class ConfigureEventCompletionDialogTest {
         assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, COMPLETE_INFO)
         assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 2)
         assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 0)
-        assertEquals(resultDialog.dataEntryDialogUiModel.messageOnComplete, WARNING_MESSAGE)
+    }
+
+    @Test
+    fun `should show complete dialog with warning`() {
+        // Given an event form without field with issues
+        // When user tries to complete the event
+        val resultDialog = configureEventCompletionDialog.invoke(
+            errorFields = emptyList(),
+            mandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            canComplete = true,
+            onCompleteMessage = WARNING_MESSAGE
+        )
+
+        // Then Dialog should has Error info
+        assertEquals(resultDialog.dataEntryDialogUiModel.title, SAVED)
+        assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, COMPLETE_INFO)
+        assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 2)
+        assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 1)
     }
 
     companion object {
