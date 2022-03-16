@@ -20,6 +20,7 @@ import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -66,7 +67,8 @@ open class BaseTest {
         IdlingRegistry.getInstance().register(
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
-            SearchIdlingResourceSingleton.countingIdlingResource
+            SearchIdlingResourceSingleton.countingIdlingResource,
+            TeiDataIdlingResourceSingleton.countingIdlingResource
         )
     }
 
@@ -75,7 +77,8 @@ open class BaseTest {
             .unregister(
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
-                SearchIdlingResourceSingleton.countingIdlingResource
+                SearchIdlingResourceSingleton.countingIdlingResource,
+                TeiDataIdlingResourceSingleton.countingIdlingResource
             )
     }
 
