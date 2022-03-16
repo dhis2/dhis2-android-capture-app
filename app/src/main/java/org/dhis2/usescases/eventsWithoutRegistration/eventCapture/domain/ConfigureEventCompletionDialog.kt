@@ -6,6 +6,7 @@ import org.dhis2.ui.DataEntryDialogUiModel
 import org.dhis2.ui.DialogButtonStyle.CompleteButton
 import org.dhis2.ui.DialogButtonStyle.MainButton
 import org.dhis2.ui.DialogButtonStyle.SecondaryButton
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.COMPLETE_ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.MANDATORY
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.SUCCESSFUL
@@ -26,7 +27,7 @@ class ConfigureEventCompletionDialog(
         canComplete: Boolean,
         onCompleteMessage: String?
     ): EventCompletionDialog {
-        val dialogType = getDialogType(errorFields, mandatoryFields, warningFields)
+        val dialogType = getDialogType(errorFields, mandatoryFields, warningFields, canComplete)
         val mainButton = getMainButton(dialogType)
         val secondaryButton = EventCompletionButtons(
             SecondaryButton(provider.provideNotNow()),
@@ -63,10 +64,11 @@ class ConfigureEventCompletionDialog(
         MANDATORY -> provider.provideMandatoryInfo()
         WARNING -> provider.provideWarningInfo()
         SUCCESSFUL -> provider.provideCompleteInfo()
+        COMPLETE_ERROR -> provider.provideOnCompleteErrorInfo()
     }
 
     private fun getIcon(type: DialogType) = when (type) {
-        ERROR -> provider.provideRedAlertIcon()
+        ERROR, COMPLETE_ERROR -> provider.provideRedAlertIcon()
         MANDATORY -> provider.provideSavedIcon()
         WARNING -> provider.provideYellowAlertIcon()
         SUCCESSFUL -> provider.provideSavedIcon()
@@ -74,7 +76,8 @@ class ConfigureEventCompletionDialog(
 
     private fun getMainButton(type: DialogType) = when (type) {
         ERROR,
-        MANDATORY -> EventCompletionButtons(
+        MANDATORY,
+        COMPLETE_ERROR -> EventCompletionButtons(
             MainButton(provider.provideReview()),
             FormBottomDialog.ActionType.CHECK_FIELDS
         )
@@ -126,7 +129,8 @@ class ConfigureEventCompletionDialog(
     private fun getDialogType(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: Map<String, String>,
-        warningFields: List<FieldWithIssue>
+        warningFields: List<FieldWithIssue>,
+        canComplete: Boolean
     ) = when {
         errorFields.isNotEmpty() -> {
             ERROR
@@ -137,10 +141,13 @@ class ConfigureEventCompletionDialog(
         warningFields.isNotEmpty() -> {
             WARNING
         }
+        !canComplete -> {
+            COMPLETE_ERROR
+        }
         else -> {
             SUCCESSFUL
         }
     }
 
-    private enum class DialogType { ERROR, MANDATORY, WARNING, SUCCESSFUL }
+    private enum class DialogType { ERROR, MANDATORY, WARNING, SUCCESSFUL, COMPLETE_ERROR }
 }

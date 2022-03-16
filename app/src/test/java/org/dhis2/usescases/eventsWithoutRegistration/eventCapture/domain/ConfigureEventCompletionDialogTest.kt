@@ -24,6 +24,7 @@ class ConfigureEventCompletionDialogTest {
         on { provideReview() } doReturn 3
         on { provideNotNow() } doReturn 4
         on { provideCompleteInfo() } doReturn COMPLETE_INFO
+        on { provideOnCompleteErrorInfo() } doReturn ON_COMPLETE_INFO
     }
 
     private val fieldWithIssue: FieldWithIssue = mock {
@@ -144,6 +145,25 @@ class ConfigureEventCompletionDialogTest {
         assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 1)
     }
 
+    @Test
+    fun `should show error on complete`() {
+        // Given an event form without field with issues
+        // When user tries to complete the event
+        val resultDialog = configureEventCompletionDialog.invoke(
+            errorFields = emptyList(),
+            mandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            canComplete = false,
+            onCompleteMessage = ERROR_INFO
+        )
+
+        // Then Dialog should has Error info
+        assertEquals(resultDialog.dataEntryDialogUiModel.title, SAVED)
+        assertEquals(resultDialog.dataEntryDialogUiModel.subtitle, ON_COMPLETE_INFO)
+        assertEquals(resultDialog.dataEntryDialogUiModel.iconResource, 0)
+        assertEquals(resultDialog.dataEntryDialogUiModel.fieldsWithIssues.size, 1)
+    }
+
     companion object {
         const val NOT_SAVED = "Not Saved"
         const val SAVED = "Saved"
@@ -152,5 +172,6 @@ class ConfigureEventCompletionDialogTest {
         const val WARNING_INFO = "Warning Info"
         const val COMPLETE_INFO = "Complete Info"
         const val WARNING_MESSAGE = "Warning message"
+        const val ON_COMPLETE_INFO = "Warning message"
     }
 }
