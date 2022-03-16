@@ -178,6 +178,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             sectionFlowable,
                             groupingFlowable,
                             Trio::create)
+                            .doOnNext(data-> TeiDataIdlingResourceSingleton.INSTANCE.increment())
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
@@ -198,11 +199,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    events ->
-                                            view.setEvents(
-                                                    events,
-                                                    canAddNewEvents()
-                                            ),
+                                    events -> {
+                                        view.setEvents(
+                                                events,
+                                                canAddNewEvents()
+                                        );
+                                        TeiDataIdlingResourceSingleton.INSTANCE.decrement();
+                                    },
                                     Timber::d
                             )
             );

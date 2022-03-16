@@ -23,7 +23,6 @@ import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -374,9 +373,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             if (!presenter.hasAccess()) {
                 presenter.finish(mode)
             } else {
-                formView.requestDataIntegrityCheck().observe(this) { result ->
-                    if (result is SuccessfulResult) presenter.finish(mode)
-                }
+                formView.requestDataIntegrityCheck()
             }
         }
     }
