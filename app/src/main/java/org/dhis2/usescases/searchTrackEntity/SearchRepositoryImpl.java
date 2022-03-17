@@ -67,6 +67,7 @@ import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
+import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -566,6 +567,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
+    public TrackedEntityType getTrackedEntityType() {
+        return d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet();
+    }
+
+    @Override
     public List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis) {
         List<EventViewModel> eventViewModels = new ArrayList<>();
         List<String> teiUidList = new ArrayList<>();
@@ -1029,5 +1035,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byProgram().eq(programUid)
                 .byTrackedEntityAttribute().eq(attributeUid)
                 .blockingIsEmpty();
+    }
+
+    @Override
+    public boolean canCreateInProgramWithoutSearch() {
+        if (currentProgram == null) {
+            return false;
+        } else {
+            ProgramConfigurationSetting programConfiguration = d2.settingModule().appearanceSettings().getProgramConfigurationByUid(currentProgram);
+            return programConfiguration != null && Boolean.TRUE.equals(programConfiguration.optionalSearch());
+        }
     }
 }

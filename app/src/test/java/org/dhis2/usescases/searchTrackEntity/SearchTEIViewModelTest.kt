@@ -20,6 +20,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
+import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
@@ -50,6 +51,8 @@ class SearchTEIViewModelTest {
         Dispatchers.setMain(testingDispatcher)
         whenever(pageConfigurator.initVariables()) doReturn pageConfigurator
         setCurrentProgram(testingProgram())
+        whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
+        whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -90,8 +93,19 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `Should set SearchForm if displayFrontPageList is false`() {
+    fun `Should set SearchList if displayFrontPageList is false and can create`() {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
+        setAllowCreateBeforeSearch(true)
+        viewModel.setListScreen()
+
+        val screenState = viewModel.screenState.value
+        assertTrue(screenState is SearchList)
+    }
+
+    @Test
+    fun `Should set SearchForm if displayFrontPageList is false and can not create`() {
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        setAllowCreateBeforeSearch(false)
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
@@ -346,6 +360,91 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return no more result for displayInList true`() {
+        viewModel.onDataLoaded(2)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Should return search or create results for displayInList true`() {
+        setAllowCreateBeforeSearch(true)
+        viewModel.onDataLoaded(0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH_OR_CREATE)
+        }
+    }
+
+    @Test
+    fun `Should return empty result and set SearchScreen for displayInList true`() {
+        setAllowCreateBeforeSearch(false)
+        viewModel.onDataLoaded(0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isEmpty())
+        }
+        assertTrue(viewModel.screenState.value is SearchForm)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should return too many results for search`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(2)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.TOO_MANY_RESULTS)
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Should return search outside result for search`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH_OUTSIDE)
+        }
+    }
+
+    @Test
+    fun `Should return no more results for global search`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(1, 1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Should return no results for search`() {
+        setCurrentProgram(testingProgram())
+        setAllowCreateBeforeSearch(false)
+        performSearch()
+        viewModel.onDataLoaded(0, 0)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_RESULTS)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,
@@ -479,6 +578,7 @@ class SearchTEIViewModelTest {
         maxTeiCountToReturn: Int? = null
     ) = Program.builder()
         .uid("initialProgram")
+        .displayName("programName")
         .displayFrontPageList(displayFrontPageList)
         .minAttributesRequiredToSearch(minAttributesToSearch)
         .trackedEntityType(TrackedEntityType.builder().uid("teTypeUid").build())
@@ -489,7 +589,35 @@ class SearchTEIViewModelTest {
         }
         .build()
 
-    private fun setCurrentProgram(programToReturn: Program) {
-        whenever(repository.getProgram("programUid")) doReturn programToReturn
+    private fun testingTrackedEntityType() = TrackedEntityType.builder()
+        .uid("teiTypeUid")
+        .displayName("teTypeName")
+        .build()
+
+    @ExperimentalCoroutinesApi
+    private fun performSearch() {
+        viewModel.updateQueryData(
+            RowAction(
+                id = "testingUid",
+                value = "testingValue",
+                type = ActionType.ON_SAVE
+            )
+        )
+        viewModel.setListScreen()
+        viewModel.setSearchScreen(false)
+        viewModel.onSearchClick()
+        testingDispatcher.scheduler.advanceUntilIdle()
+    }
+
+    private fun setAllowCreateBeforeSearch(allow: Boolean) {
+        whenever(
+            repository.canCreateInProgramWithoutSearch()
+        ) doReturn allow
+    }
+
+    private fun setCurrentProgram(program: Program) {
+        whenever(
+            repository.getProgram(initialProgram)
+        )doReturn program
     }
 }

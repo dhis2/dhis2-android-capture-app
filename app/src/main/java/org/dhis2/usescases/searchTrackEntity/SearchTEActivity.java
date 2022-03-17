@@ -114,6 +114,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public boolean initSearchNeeded = true;
     private FormView formView;
     public SearchTEComponent searchComponent;
+    private boolean clearFilters = true;
 
     private enum Extra {
         TEI_UID("TRACKED_ENTITY_UID"),
@@ -280,15 +281,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onDestroy() {
         presenter.onDestroy();
 
-        FilterManager.getInstance().clearEnrollmentStatus();
-        FilterManager.getInstance().clearEventStatus();
-        FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList(false);
-        FilterManager.getInstance().clearSorting();
-        FilterManager.getInstance().clearAssignToMe();
-        FilterManager.getInstance().clearFollowUp();
+        if(clearFilters) {
+            FilterManager.getInstance().clearEnrollmentStatus();
+            FilterManager.getInstance().clearEventStatus();
+            FilterManager.getInstance().clearEnrollmentDate();
+            FilterManager.getInstance().clearWorkingList(false);
+            FilterManager.getInstance().clearSorting();
+            FilterManager.getInstance().clearAssignToMe();
+            FilterManager.getInstance().clearFollowUp();
 
-        presenter.clearOtherFiltersIfWebAppIsConfig();
+            presenter.clearOtherFiltersIfWebAppIsConfig();
+        }
 
         super.onDestroy();
     }

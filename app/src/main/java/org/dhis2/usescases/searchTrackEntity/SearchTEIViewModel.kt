@@ -15,6 +15,7 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
+import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
@@ -49,11 +50,13 @@ class SearchTEIViewModel(
     val createButtonScrollVisibility = MutableLiveData(true)
     val isScrollingDown = MutableLiveData(false)
 
-    val allowCreateWithoutSearch = false // init from configuration
     private var searching: Boolean = false
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
+
+    private val _dataResult = MutableLiveData<List<SearchResult>>()
+    val dataResult: LiveData<List<SearchResult>> = _dataResult
 
     init {
         viewModelScope.launch {
@@ -62,11 +65,10 @@ class SearchTEIViewModel(
     }
 
     fun setListScreen() {
-        val displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-            ?.displayFrontPageList()
-            ?: true
+        val displayFrontPageList =
+            searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !allowCreateWithoutSearch &&
+            !searchRepository.canCreateInProgramWithoutSearch() &&
             !searching
         _screenState.value = when {
             shouldOpenSearch ->
@@ -85,7 +87,7 @@ class SearchTEIViewModel(
                     displayFrontPageList = searchRepository.getProgram(initialProgramUid)
                         ?.displayFrontPageList()
                         ?: false,
-                    canCreateWithoutSearch = allowCreateWithoutSearch,
+                    canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                     queryHasData = queryData.isNotEmpty(),
                     minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
                         ?.minAttributesRequiredToSearch()
@@ -102,7 +104,7 @@ class SearchTEIViewModel(
             displayFrontPageList = searchRepository.getProgram(initialProgramUid)
                 ?.displayFrontPageList()
                 ?: false,
-            canCreateWithoutSearch = allowCreateWithoutSearch,
+            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
             queryHasData = queryData.isNotEmpty(),
             minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
                 ?.minAttributesRequiredToSearch()
@@ -245,12 +247,12 @@ class SearchTEIViewModel(
 
                 when (currentScreenState) {
                     SearchScreenState.LIST -> {
-                        onDataRequest()
+                        SearchIdlingResourceSingleton.increment()
                         setListScreen()
                         _refreshData.value = Unit
                     }
                     SearchScreenState.MAP -> {
-                        onDataRequest()
+                        SearchIdlingResourceSingleton.increment()
                         setMapScreen()
                         fetchMapResults()
                     }
@@ -332,12 +334,76 @@ class SearchTEIViewModel(
         presenter.onTEIClick(teiUid, enrollmentUid, online)
     }
 
-    fun onDataLoaded() {
+    fun onDataLoaded(
+        programResultCount: Int,
+        globalResultCount: Int? = null,
+        isLandscape: Boolean = false
+    ) {
+        val canDisplayResults = canDisplayResult(programResultCount)
+        val hasProgramResults = programResultCount > 0
+        val hasGlobalResults = globalResultCount?.let { it > 0 }
+
+        val isSearching = _screenState.value.takeIf { it is SearchList }?.let {
+            (it as SearchList).isSearching
+        } ?: false
+
+        if (isSearching) {
+            handleSearchResult(
+                canDisplayResults,
+                hasProgramResults,
+                hasGlobalResults
+            )
+        } else if (displayFrontPageList()) {
+            handleDisplayInListResult(hasProgramResults, isLandscape)
+        }
+
         SearchIdlingResourceSingleton.decrement()
     }
 
-    fun onDataRequest() {
-        SearchIdlingResourceSingleton.increment()
+    private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
+        val result = when {
+            hasProgramResults ->
+                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
+            !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
+                listOf(
+                    SearchResult(
+                        SearchResult.SearchResultType.SEARCH_OR_CREATE,
+                        searchRepository.getTrackedEntityType().displayName()
+                    )
+                )
+            else -> listOf()
+        }
+
+        if (result.isEmpty()) {
+            setSearchScreen(isLandscape)
+        }
+
+        _dataResult.value = result
+    }
+
+    private fun handleSearchResult(
+        canDisplayResults: Boolean,
+        hasProgramResults: Boolean,
+        hasGlobalResults: Boolean?
+    ) {
+        val result = when {
+            !canDisplayResults -> {
+                listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
+            }
+            hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null -> {
+                listOf(
+                    SearchResult(
+                        SearchResult.SearchResultType.SEARCH_OUTSIDE,
+                        searchRepository.getProgram(initialProgramUid)?.displayName()
+                    )
+                )
+            }
+            hasProgramResults || hasGlobalResults == true ->
+                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
+            else ->
+                listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
+        }
+        _dataResult.value = result
     }
 
     fun onBackPressed(
@@ -371,6 +437,10 @@ class SearchTEIViewModel(
         return _screenState.value?.let {
             it is SearchList || it is SearchMap
         } ?: false
+    }
+
+    fun mapDataFetched() {
+        SearchIdlingResourceSingleton.decrement()
     }
 
     fun onProgramSelected(

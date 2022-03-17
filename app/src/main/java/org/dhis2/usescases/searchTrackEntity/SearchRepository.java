@@ -46,6 +46,8 @@ public interface SearchRepository {
 
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
+    TrackedEntityType getTrackedEntityType();
+
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 
     EventViewModel getEventInfo(String enrollmentUid);
@@ -61,6 +63,8 @@ public interface SearchRepository {
     @Nullable Program getProgram(@Nullable String programUid);
 
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
+
+    boolean canCreateInProgramWithoutSearch();
 
     void setCurrentTheme(@org.jetbrains.annotations.Nullable Program selectedProgram);
 }

@@ -148,7 +148,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnReferralNextButton() {
-        onView(withId(R.id.action_button)).perform(click())
+        waitForView(withId(R.id.action_button)).perform(click())
     }
 
     fun checkEventCreatedToastIsShown() {
