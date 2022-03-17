@@ -17,6 +17,7 @@ import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 class SearchTEIViewModel(
@@ -440,5 +441,23 @@ class SearchTEIViewModel(
 
     fun mapDataFetched() {
         SearchIdlingResourceSingleton.decrement()
+    }
+
+    fun onProgramSelected(
+        programIndex: Int,
+        programs: List<Program>,
+        onProgramChanged: (selectedProgramUid: String?) -> Unit
+    ) {
+        val selectedProgram = when {
+            programIndex > 0 ->
+                programs.takeIf { it.size > 1 }?.let { it[programIndex - 1] }
+                    ?: programs.first()
+            else -> null
+        }
+        searchRepository.setCurrentTheme(selectedProgram)
+
+        if (selectedProgram?.uid() != initialProgramUid) {
+            onProgramChanged(selectedProgram?.uid())
+        }
     }
 }

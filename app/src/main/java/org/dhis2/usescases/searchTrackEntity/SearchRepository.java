@@ -65,4 +65,6 @@ public interface SearchRepository {
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
 
     boolean canCreateInProgramWithoutSearch();
+
+    void setCurrentTheme(@org.jetbrains.annotations.Nullable Program selectedProgram);
 }

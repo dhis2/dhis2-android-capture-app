@@ -1,13 +1,9 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.view.View.GONE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -39,7 +35,6 @@ import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.location.LocationProvider;
@@ -74,7 +69,6 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
@@ -526,7 +520,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
     }
 
-    private void configureMapScreen(){
+    private void configureMapScreen() {
         if (switchOpenClose == 1) {
             showHideFilter();
         } else if (switchOpenClose == 0 && !updatingFilters) {
@@ -536,7 +530,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         setFiltersVisibility(true);
     }
 
-    private void configureLandscapeMapScreen(){
+    private void configureLandscapeMapScreen() {
 
     }
 
@@ -632,17 +626,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                if (pos > 0) {
-                    analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
-                    Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
-                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()), selectedProgram.uid());
-                } else if (programs.size() == 1 && pos != 0) {
-                    Program selectedProgram = programs.get(0);
-                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()), selectedProgram.uid());
-                } else {
-                    setProgramColor(presenter.getTrackedEntityType(tEType).style().color(), null);
-                    binding.navigationBar.hide();
-                }
+                viewModel.onProgramSelected(pos, programs, selectedProgram -> {
+                    changeProgram(selectedProgram);
+                    return Unit.INSTANCE;
+                });
+
             }
 
             @Override
@@ -672,22 +660,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
     }
 
-    @Override
-    public void setProgramColor(String color, String programUid) {
-        clearFilters = false;
-        int programTheme = ColorUtils.getThemeFromColor(color);
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
-        if (prefs.getInt(Constants.PROGRAM_THEME, -1) == programTheme) return;
-
-        if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
-        } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
-        }
-
+    public void changeProgram(@Nullable String programUid) {
         Intent intent = new Intent(this, SearchTEActivity.class);
         if (fromRelationshipTeiUid != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);

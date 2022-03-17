@@ -1,5 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,8 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
@@ -104,6 +108,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final NetworkUtils networkUtils;
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
+    private PreferenceProvider prefs;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -115,7 +120,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                          Charts charts,
                          CrashReportController crashReportController,
                          NetworkUtils networkUtils,
-                         SearchTEIRepository searchTEIRepository) {
+                         SearchTEIRepository searchTEIRepository,
+                         PreferenceProvider prefs
+    ) {
         this.teiType = teiType;
         this.d2 = d2;
         this.resources = resources;
@@ -127,6 +134,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.currentProgram = initialProgram;
         this.networkUtils = networkUtils;
         this.searchTEIRepository = searchTEIRepository;
+        this.prefs = prefs;
     }
 
     @Override
@@ -530,6 +538,27 @@ public class SearchRepositoryImpl implements SearchRepository {
                         program.style().color() :
                         "" :
                 "";
+    }
+
+    @Override
+    public void setCurrentTheme(@Nullable Program selectedProgram) {
+        String metadataColor;
+        if(selectedProgram != null){
+            metadataColor = getProgramColor(selectedProgram.uid());
+        }else{
+            metadataColor = d2.trackedEntityModule().trackedEntityTypes().uid(teiType)
+                    .blockingGet()
+                    .style()
+                    .color();
+        }
+
+        int programTheme = ColorUtils.getThemeFromColor(metadataColor);
+
+        if (programTheme != -1) {
+            prefs.setValue(Constants.PROGRAM_THEME, programTheme);
+        } else {
+            prefs.removeValue(Constants.PROGRAM_THEME);
+        }
     }
 
     @Override

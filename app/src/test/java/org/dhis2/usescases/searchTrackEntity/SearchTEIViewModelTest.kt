@@ -539,6 +539,39 @@ class SearchTEIViewModelTest {
         )
     }
 
+    @Test
+    fun `should return selected program uid and set theme`() {
+        val programs = listOf(
+            Program.builder().uid("program1").build(),
+            Program.builder().uid("program2").build()
+        )
+
+        viewModel.onProgramSelected(2, programs) {
+            assertTrue(it == "program2")
+        }
+        verify(repository).setCurrentTheme(programs[1])
+    }
+
+    @Test
+    fun `should return first program uid and set theme`() {
+        val programs = listOf(
+            Program.builder().uid("program1").build()
+        )
+
+        viewModel.onProgramSelected(2, programs) {
+            assertTrue(it == "program1")
+        }
+        verify(repository).setCurrentTheme(programs[0])
+    }
+
+    @Test
+    fun `should return null uid and set theme`() {
+        viewModel.onProgramSelected(0, listOf()) {
+            assertTrue(it == null)
+        }
+        verify(repository).setCurrentTheme(null)
+    }
+
     private fun testingProgram(
         displayFrontPageList: Boolean = true,
         minAttributesToSearch: Int = 1,
