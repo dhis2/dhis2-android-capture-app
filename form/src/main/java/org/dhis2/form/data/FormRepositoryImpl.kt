@@ -373,7 +373,7 @@ class FormRepositoryImpl(
 
     private fun removeAllValues() {
         itemList = itemList.map { fieldUiModel ->
-            fieldUiModel.setValue(null)
+            fieldUiModel.setValue(null).setDisplayName(null)
         }
     }
 
