@@ -138,19 +138,6 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         )
         binding.content.clipWithRoundedCorners()
 
-        /*viewModel.selectedProgram.observe(viewLifecycleOwner) {
-            teiMapManager?.mapStyle =
-                MapStyle(
-                    presenter.teiColor,
-                    presenter.symbolIcon,
-                    presenter.enrollmentColor,
-                    presenter.enrollmentSymbolIcon,
-                    presenter.programStageStyle,
-                    ColorUtils.getPrimaryColor(requireContext(), ColorUtils.ColorType.PRIMARY_DARK)
-                )
-            observeMapResults()
-        }*/
-
         return binding.root
     }
 
@@ -196,7 +183,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             carouselAdapter?.setAllItems(trackerMapData.allItems())
             carouselAdapter?.updateLayers(teiMapManager?.mapLayerManager?.mapLayers)
             animations.endMapLoading(binding.mapCarousel)
-            viewModel.onDataLoaded()
+            viewModel.mapDataFetched()
         }
     }
 

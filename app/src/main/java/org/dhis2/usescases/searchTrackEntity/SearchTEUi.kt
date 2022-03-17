@@ -47,6 +47,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,23 +57,24 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
 @Composable
 fun SearchResult(
-    searchResultType: SearchResult.SearchResultType,
+    searchResult: SearchResult,
     onSearchOutsideClick: () -> Unit
 ) {
-    when (searchResultType) {
+    when (searchResult.type) {
         SearchResult.SearchResultType.LOADING ->
             LoadingContent(
                 loadingDescription = stringResource(R.string.search_loading_more)
             )
         SearchResult.SearchResultType.SEARCH_OUTSIDE -> SearchOutsideProgram(
-            resultText = stringResource(R.string.search_no_results_in_program),
+            resultText = stringResource(R.string.search_no_results_in_program)
+                .format(searchResult.extraData!!),
             buttonText = stringResource(R.string.search_outside_action),
             onSearchOutsideClick = onSearchOutsideClick
         )
         SearchResult.SearchResultType.NO_MORE_RESULTS -> NoMoreResults()
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
-        SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate()
+        SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate(searchResult.extraData!!)
     }
 }
 
@@ -133,7 +135,8 @@ fun FullSearchButton(
         exit = slideOutVertically()
     ) {
         SearchButton(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(48.dp),
             onClick = onClick
         )
@@ -270,6 +273,7 @@ fun TooManyResults() {
             text = stringResource(R.string.search_too_many_results),
             fontSize = 17.sp,
             color = colorResource(id = R.color.pink_500),
+            textAlign = TextAlign.Center,
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
                 fontFamily = FontFamily(Font(R.font.rubik_regular))
@@ -288,7 +292,7 @@ fun TooManyResults() {
 }
 
 @Composable
-fun SearchOrCreate() {
+fun SearchOrCreate(teTypeName: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -303,7 +307,7 @@ fun SearchOrCreate() {
         )
         Spacer(modifier = Modifier.size(16.dp))
         Text(
-            text = stringResource(R.string.search_or_create),
+            text = stringResource(R.string.search_or_create).format(teTypeName),
             fontSize = 17.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
@@ -478,29 +482,34 @@ fun LoadingMoreResultsPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SearchOutsidePreview() {
-    SearchResult(searchResultType = SearchResult.SearchResultType.SEARCH_OUTSIDE) {}
+    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun NoMoreResultsPreview() {
-    SearchResult(searchResultType = SearchResult.SearchResultType.NO_MORE_RESULTS) {}
+    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TooManyResultsPreview() {
-    SearchResult(searchResultType = SearchResult.SearchResultType.TOO_MANY_RESULTS) {}
+    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun NoResultsPreview() {
-    SearchResult(searchResultType = SearchResult.SearchResultType.NO_RESULTS) {}
+    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.NO_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchOrCreatePreview() {
-    SearchResult(searchResultType = SearchResult.SearchResultType.SEARCH_OR_CREATE) {}
+    SearchResult(
+        searchResult = SearchResult(
+            SearchResult.SearchResultType.SEARCH_OR_CREATE,
+            "Person"
+        )
+    ) {}
 }

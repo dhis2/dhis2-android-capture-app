@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
+import org.dhis2.common.viewactions.waitForTransitionUntil
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -358,6 +359,7 @@ class TeiDashboardTest : BaseTest() {
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
             clickOnSearch()
+            waitToDebounce(5000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 

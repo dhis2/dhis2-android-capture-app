@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity
 
-sealed class TeiDownloadResult() {
+sealed class TeiDownloadResult {
     data class DownloadedResult(
         val teiUid: String,
         val programUid: String?,
