@@ -389,7 +389,7 @@ class SearchTEIViewModel(
             !canDisplayResults -> {
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
-            hasGlobalResults == null -> {
+            hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -397,7 +397,7 @@ class SearchTEIViewModel(
                     )
                 )
             }
-            hasProgramResults || hasGlobalResults ->
+            hasProgramResults || hasGlobalResults == true ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
             else ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
