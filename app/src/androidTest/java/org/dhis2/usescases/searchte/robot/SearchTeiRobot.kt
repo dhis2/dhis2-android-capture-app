@@ -43,7 +43,13 @@ class SearchTeiRobot : BaseRobot() {
     }
 
     fun clickOnTEI(teiName: String, teiLastName: String) {
-        onView(withId(R.id.scrollView)).perform(
+        waitForView(
+            allOf(
+                withId(R.id.scrollView),
+                hasDescendant(withText(teiName)),
+                hasDescendant(withText(teiLastName))
+            )
+        ).perform(
             scrollTo<SearchTEViewHolder>(
                 allOf(
                     hasDescendant(withText(teiName)),
