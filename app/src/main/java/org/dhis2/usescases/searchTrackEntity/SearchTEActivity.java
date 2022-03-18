@@ -74,7 +74,6 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
@@ -287,7 +286,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onDestroy() {
         presenter.onDestroy();
 
-        if(clearFilters) {
+        if (clearFilters) {
             FilterManager.getInstance().clearEnrollmentStatus();
             FilterManager.getInstance().clearEventStatus();
             FilterManager.getInstance().clearEnrollmentDate();
@@ -460,9 +459,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             fromAnalytics = false;
             binding.searchFilterGeneral.setVisibility(View.VISIBLE);
             binding.filterCounter.setVisibility(binding.getTotalFilters() > 0 ? View.VISIBLE : View.GONE);
-            if (OrientationUtilsKt.isLandscape()) {
-                binding.searchButton.setVisibility(View.VISIBLE);
-            }
+            binding.searchButton.setVisibility(OrientationUtilsKt.isLandscape() ? View.VISIBLE : GONE);
         }
     }
 
@@ -517,7 +514,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.clearFilterSearchButton.hide();
         }
-        binding.searchButton.setVisibility(View.VISIBLE);
+        binding.searchButton.setVisibility(View.GONE);
         syncButtonVisibility(true);
         setFiltersVisibility(true);
         SearchJavaToComposeKt.setMinAttributesMessage(
@@ -526,7 +523,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
     }
 
-    private void configureMapScreen(){
+    private void configureMapScreen() {
         if (switchOpenClose == 1) {
             showHideFilter();
         } else if (switchOpenClose == 0 && !updatingFilters) {
@@ -536,7 +533,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         setFiltersVisibility(true);
     }
 
-    private void configureLandscapeMapScreen(){
+    private void configureLandscapeMapScreen() {
 
     }
 
