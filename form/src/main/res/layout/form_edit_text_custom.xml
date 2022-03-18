@@ -132,7 +132,6 @@
                         app:setImeOption="@{item.keyboardActionType}"
                         app:setInputType="@{item.valueType}"
                         app:setOnEditorActionListener="@{item}"
-                        app:setOnFocusChangeListener="@{item}"
                         app:setOnTouchListener="@{item}"
                         app:setRenderingType="@{item}"
                         tools:text="hello" />

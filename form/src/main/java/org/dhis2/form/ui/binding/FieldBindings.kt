@@ -32,8 +32,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.commons.customviews.TextInputAutoCompleteTextView
 import org.dhis2.commons.extensions.Preconditions.Companion.equals
-import org.dhis2.commons.extensions.closeKeyboard
-import org.dhis2.commons.extensions.openKeyboard
 import org.dhis2.commons.prefs.SHARE_PREFS
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
@@ -279,10 +277,9 @@ fun TextInputEditText.setDrawableColor(color: Int) {
 @BindingAdapter("requestFocus")
 fun bindRequestFocus(editText: EditText, focused: Boolean) {
     if (focused) {
-        editText.requestFocus()
         editText.setSelection(editText.length())
         editText.isCursorVisible = true
-        editText.openKeyboard()
+        editText.requestFocus()
     } else {
         editText.clearFocus()
         editText.isCursorVisible = false
@@ -294,38 +291,30 @@ fun EditText.bindOnEditorActionListener(item: FieldUiModel) {
     setOnEditorActionListener { _, actionId, _ ->
         when (actionId) {
             IME_ACTION_NEXT -> {
+                val value = if (text.isEmpty()) {
+                    null
+                } else {
+                    text.toString()
+                }
+                clearFocus()
+                if (valueHasChanged(text, item.value)) {
+                    checkAutocompleteRendering(context, item, value)
+                    item.invokeIntent(
+                        FormIntent.OnSave(
+                            uid = item.uid,
+                            value = value,
+                            valueType = item.valueType,
+                            fieldMask = item.fieldMask
+                        )
+                    )
+                }
                 item.onNext()
                 true
             }
             IME_ACTION_DONE -> {
-                closeKeyboard()
                 true
             }
             else -> false
-        }
-    }
-}
-
-@BindingAdapter("setOnFocusChangeListener")
-fun EditText.bindOnFocusChangeListener(item: FieldUiModel) {
-    setOnFocusChangeListener { _, hasFocus ->
-        val value = if (text.isEmpty()) {
-            null
-        } else {
-            text.toString()
-        }
-        if (hasFocus) {
-            openKeyboard()
-        } else if (valueHasChanged(text, item.value)) {
-            checkAutocompleteRendering(context, item, value)
-            item.invokeIntent(
-                FormIntent.OnSave(
-                    uid = item.uid,
-                    value = value,
-                    valueType = item.valueType,
-                    fieldMask = item.fieldMask
-                )
-            )
         }
     }
 }

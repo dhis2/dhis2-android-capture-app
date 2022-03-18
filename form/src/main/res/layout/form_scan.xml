@@ -116,7 +116,6 @@
                     app:action_handler="@{item}"
                     app:input_style="@{item}"
                     app:requestFocus="@{item.focused}"
-                    app:setOnFocusChangeListener="@{item}"
                     app:view_edition="@{item.editable}"
                     tools:text="111-111-111" />
 
