@@ -472,7 +472,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
-        userName?.let { binding.userNameEdit.setText(it) }
+        binding.userNameEdit.setText(userName ?: "")
         binding.userPassEdit.text = null
         if (wasAccountClicked) {
             binding.serverUrlEdit.isEnabled = false
