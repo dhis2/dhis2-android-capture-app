@@ -18,11 +18,14 @@ import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
 const val MIN_USERS = 1
+const val SERVER_ACTION = "Server"
+const val DHIS2 = "dhis2_server"
 
 class MainPresenter(
     private val view: MainView,
@@ -76,6 +79,7 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+        trackDhis2Server()
     }
 
     fun initFilters() {
@@ -114,6 +118,34 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    fun trackDhis2Server() {
+        disposable.add(
+            repository.getServerVersion()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { systemInfo -> compareAndTrack(systemInfo) },
+                    { Timber.e(it) }
+                )
+        )
+    }
+
+    private fun compareAndTrack(systemInfo: SystemInfo) {
+        val dhis2ServerTracked = preferences.getString(DHIS2, "")
+        val currentDhis2Server = systemInfo.version() ?: ""
+
+        if ((dhis2ServerTracked.isNullOrEmpty() || dhis2ServerTracked != currentDhis2Server) &&
+            currentDhis2Server.isNotEmpty()
+        ) {
+            matomoAnalyticsController.trackEvent(
+                HOME,
+                SERVER_ACTION,
+                currentDhis2Server
+            )
+            preferences.setValue(DHIS2, currentDhis2Server)
+        }
     }
 
     fun logOut() {

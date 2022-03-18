@@ -4,8 +4,10 @@ import dhis2.org.analytics.charts.Charts
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 
 class HomeRepositoryImpl(
@@ -41,5 +43,9 @@ class HomeRepositoryImpl(
 
     override fun hasHomeAnalytics(): Boolean {
         return charts?.getHomeVisualizations(null)?.isNotEmpty() == true
+    }
+
+    override fun getServerVersion(): Single<SystemInfo> {
+        return D2Manager.getD2().systemInfoModule().systemInfo().get()
     }
 }
