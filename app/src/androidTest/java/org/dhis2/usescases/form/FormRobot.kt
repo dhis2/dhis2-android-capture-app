@@ -2,6 +2,10 @@ package org.dhis2.usescases.form
 
 import android.app.Activity
 import android.view.MenuItem
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -23,6 +27,7 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.scrollToPositionRecyclerview
 import org.dhis2.form.ui.FormViewHolder
+import org.dhis2.ui.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.`is`
@@ -92,9 +97,8 @@ class FormRobot : BaseRobot() {
             .check(matches(hasItem(hasDescendant(withText("Error with current event ")))))
     }
 
-    fun checkPopUpWithMessageOnCompleteIsShown(message: String) {
-        onView(withId(R.id.txtMessageOnComplete))
-            .check(matches(allOf(isDisplayed(), withText(containsString(message)))))
+    fun checkPopUpWithMessageOnCompleteIsShown(message: String, composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithText(message).assertExists()
     }
 
     fun checkIndicatorIsDisplayed(name: String, value: String) {
@@ -128,8 +132,8 @@ class FormRobot : BaseRobot() {
         selectAction("", 0)
     }
 
-    fun clickOnFinish() {
-        onView(withId(R.id.finish)).perform(click())
+    fun clickOnNotNow(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
     }
 
     fun clickOnSelectOption(label: String, position: Int, option: String, optionPosition: Int) {

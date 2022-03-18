@@ -32,12 +32,15 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFr
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventMode;
+import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
+import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.jetbrains.annotations.NotNull;
 
@@ -177,19 +180,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields) {
+    public void showCompleteActions(
+            boolean canComplete,
+            Map<String, String> emptyMandatoryFields,
+            EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            FormBottomDialog.getInstance()
-                    .setAccessDataWrite(presenter.canWrite())
-                    .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
-                    .setIsExpired(presenter.hasExpired())
-                    .setCanComplete(canComplete)
-                    .setListener(this::setAction)
-                    .setMessageOnComplete(completeMessage)
-                    .setEmptyMandatoryFields(emptyMandatoryFields)
-                    .setFieldsWithErrors(!errors.isEmpty())
-                    .setMandatoryFields(!emptyMandatoryFields.isEmpty())
-                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
+                    eventCompletionDialog.getDataEntryDialogUiModel(),
+                    () -> {
+                        setAction(eventCompletionDialog.getMainButtonAction());
+                        return Unit.INSTANCE;
+                    },
+                    () -> {
+                        setAction(eventCompletionDialog.getSecondaryButtonAction());
+                        return Unit.INSTANCE;
+                    }
+            );
+            dialog.show(getSupportFragmentManager(), "SHOW_OPTIONS");
         }
     }
 
@@ -229,7 +236,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         this.programStageUid = programStageUid;
     }
 
-    private void setAction(FormBottomDialog.ActionType actionType) {
+    private void setAction(ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
                 isEventCompleted = true;

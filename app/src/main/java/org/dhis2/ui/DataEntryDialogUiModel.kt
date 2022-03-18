@@ -6,7 +6,7 @@ data class DataEntryDialogUiModel(
     var title: String,
     var subtitle: String,
     var iconResource: Int,
-    var fieldsWithIssues: List<FieldWithIssue>? = emptyList(),
+    var fieldsWithIssues: List<FieldWithIssue> = emptyList(),
     var mainButton: DialogButtonStyle,
     var secondaryButton: DialogButtonStyle? = null
 )

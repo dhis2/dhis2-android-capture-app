@@ -1,5 +1,7 @@
 package org.dhis2.usescases.form
 
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -26,6 +28,9 @@ class FormTest: BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
 
     @After
     override fun teardown() {
@@ -138,7 +143,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Warning")
+            checkPopUpWithMessageOnCompleteIsShown("Warning ending with current event", composeTestRule)
             pressBack()
         }
 
@@ -148,7 +153,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Error")
+            checkPopUpWithMessageOnCompleteIsShown("Error ending with current event", composeTestRule)
             pressBack()
         }
     }
@@ -166,7 +171,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
         teiDashboardRobot {
             checkProgramStageIsHidden("Delta")

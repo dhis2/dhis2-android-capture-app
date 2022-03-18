@@ -63,6 +63,8 @@ class FormViewModelTest {
             repository.runDataIntegrityCheck(false)
         ) doReturn MissingMandatoryResult(
             emptyMap(),
+            emptyList(),
+            emptyList(),
             false,
             null,
             false
@@ -79,6 +81,8 @@ class FormViewModelTest {
         whenever(
             repository.runDataIntegrityCheck(false)
         ) doReturn FieldsWithErrorResult(
+            emptyMap(),
+            emptyList(),
             emptyList(),
             false,
             null,

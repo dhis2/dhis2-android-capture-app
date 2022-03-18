@@ -142,7 +142,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                                                                          String value) {
         String color = "";
         if (indicator.legendSets() != null && !indicator.legendSets().isEmpty()) {
-            ObjectWithUid legendSet = indicator.legendSets().get(0);
+            ObjectWithUid legendSet = null;
             List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
                     .byLegendSet().eq(legendSet.uid()).blockingGet();
             color = legends.get(0).color();

@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
@@ -15,12 +14,9 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.form.ui.provider.LegendValueProvider;
-import org.dhis2.form.ui.provider.LegendValueProviderImpl;
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.FormValueStore;
@@ -33,11 +29,14 @@ import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
@@ -65,9 +64,16 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull FormValueStore valueStore,
                                                     SchedulerProvider schedulerProvider,
-                                                    PreferenceProvider preferences) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, valueStore, schedulerProvider,
-                preferences);
+                                                    PreferenceProvider preferences,
+                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+        return new EventCapturePresenterImpl(
+                view,
+                eventUid,
+                eventCaptureRepository,
+                valueStore,
+                schedulerProvider,
+                preferences,
+                configureEventCompletionDialog);
     }
 
     @Provides
@@ -138,7 +144,7 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    SearchTEIRepository searchTEIRepository(D2 d2){
+    SearchTEIRepository searchTEIRepository(D2 d2) {
         return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
     }
 
@@ -198,5 +204,21 @@ public class EventCaptureModule {
             EventCaptureContract.EventCaptureRepository repository
     ) {
         return new EventPageConfigurator(repository);
+    }
+
+    @Provides
+    @PerActivity
+    ConfigureEventCompletionDialog provideConfigureEventCompletionDialog(
+            EventCaptureResourcesProvider eventCaptureResourcesProvider
+    ) {
+        return new ConfigureEventCompletionDialog(eventCaptureResourcesProvider);
+    }
+
+    @Provides
+    @PerActivity
+    EventCaptureResourcesProvider provideEventCaptureResourcesProvider(
+            ResourceManager resourceManager
+    ) {
+        return new EventCaptureResourcesProvider(resourceManager);
     }
 }

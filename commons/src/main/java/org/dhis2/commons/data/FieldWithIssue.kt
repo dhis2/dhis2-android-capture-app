@@ -1,6 +1,7 @@
 package org.dhis2.commons.data
 
 data class FieldWithIssue(
+    val fieldUid: String,
     val fieldName: String,
     val issueType: IssueType,
     val message: String
@@ -9,5 +10,7 @@ data class FieldWithIssue(
 enum class IssueType {
     ERROR,
     MANDATORY,
-    WARNING
+    WARNING,
+    ERROR_ON_COMPLETE,
+    WARNING_ON_COMPLETE
 }

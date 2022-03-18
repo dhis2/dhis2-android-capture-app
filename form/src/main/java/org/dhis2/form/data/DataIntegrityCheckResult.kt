@@ -1,5 +1,7 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.data.FieldWithIssue
+
 sealed class DataIntegrityCheckResult(
     open val canComplete: Boolean = false,
     open val onCompleteMessage: String? = null,
@@ -8,20 +10,24 @@ sealed class DataIntegrityCheckResult(
 
 data class MissingMandatoryResult(
     val mandatoryFields: Map<String, String>,
+    val errorFields: List<FieldWithIssue>,
+    val warningFields: List<FieldWithIssue>,
     override val canComplete: Boolean,
     override val onCompleteMessage: String?,
     override val allowDiscard: Boolean
 ) : DataIntegrityCheckResult(canComplete, onCompleteMessage, allowDiscard)
 
 data class FieldsWithErrorResult(
-    val fieldUidErrorList: List<String>,
+    val mandatoryFields: Map<String, String>,
+    val fieldUidErrorList: List<FieldWithIssue>,
+    val warningFields: List<FieldWithIssue>,
     override val canComplete: Boolean,
     override val onCompleteMessage: String?,
     override val allowDiscard: Boolean
 ) : DataIntegrityCheckResult(canComplete, onCompleteMessage, allowDiscard)
 
 data class FieldsWithWarningResult(
-    val fieldUidWarningList: List<String>,
+    val fieldUidWarningList: List<FieldWithIssue>,
     override val canComplete: Boolean,
     override val onCompleteMessage: String?
 ) : DataIntegrityCheckResult(canComplete, onCompleteMessage)

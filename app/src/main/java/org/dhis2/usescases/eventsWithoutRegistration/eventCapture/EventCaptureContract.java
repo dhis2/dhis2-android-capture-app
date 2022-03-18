@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import org.dhis2.commons.data.FieldWithIssue;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -23,7 +25,10 @@ public class EventCaptureContract {
 
         void updatePercentage(float primaryValue);
 
-        void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields);
+        void showCompleteActions(
+                boolean canComplete,
+                Map<String, String> emptyMandatoryFields,
+                EventCompletionDialog eventCompletionDialog);
 
         void restartDataEntry();
 
@@ -66,8 +71,9 @@ public class EventCaptureContract {
 
         void attemptFinish(boolean canComplete,
                            String onCompleteMessage,
-                           List<String> fieldsWithError,
-                           Map<String, String> emptyMandatoryFields);
+                           List<FieldWithIssue> errorFields,
+                           Map<String, String> emptyMandatoryFields,
+                           List<FieldWithIssue> warningFields);
 
         boolean isEnrollmentOpen();
 

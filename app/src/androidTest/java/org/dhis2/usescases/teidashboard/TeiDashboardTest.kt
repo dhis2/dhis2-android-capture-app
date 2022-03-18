@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dhis2.org.analytics.charts.data.ChartType
@@ -31,6 +32,9 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     @Ignore("SDK related")
@@ -196,7 +200,7 @@ class TeiDashboardTest : BaseTest() {
         eventRobot {
             scrollToBottomForm()
             clickOnFormFabButton()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
     }
 
@@ -254,7 +258,7 @@ class TeiDashboardTest : BaseTest() {
         eventRobot {
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
 
         teiDashboardRobot {
@@ -279,7 +283,7 @@ class TeiDashboardTest : BaseTest() {
             waitToDebounce(600)
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             waitToDebounce(600)
         }
 

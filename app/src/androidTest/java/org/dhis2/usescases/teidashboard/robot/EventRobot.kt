@@ -1,5 +1,10 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -18,6 +23,8 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.form.ui.FormViewHolder
+import org.dhis2.ui.MAIN_BUTTON_TAG
+import org.dhis2.ui.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
@@ -37,12 +44,12 @@ class EventRobot : BaseRobot() {
     fun clickOnFormFabButton() {
         onView(withId(R.id.actionButton)).perform(click())
     }
-    fun clickOnFinish() {
-        onView(withId(R.id.finish)).perform(click())
+    fun clickOnNotNow(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
     }
 
-    fun clickOnFinishAndComplete() {
-        onView(withId(R.id.complete)).perform(click())
+    fun clickOnCompleteButton(composeTestRule: ComposeTestRule) {
+        composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
     fun clickOnReopen() {

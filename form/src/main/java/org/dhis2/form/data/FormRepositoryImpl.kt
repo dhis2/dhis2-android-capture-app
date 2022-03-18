@@ -1,5 +1,7 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.commons.data.IssueType
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
@@ -168,14 +170,35 @@ class FormRepositoryImpl(
     }
 
     override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
+        val itemsWithErrors: List<FieldWithIssue> =
+            getFieldsWithError().plus(
+                ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
+                    FieldWithIssue(
+                        fieldUid = errorField.fieldUid,
+                        fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
+                        issueType = IssueType.ERROR,
+                        message = errorField.errorMessage
+                    )
+                } ?: emptyList()
+            )
+        val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
+            FieldWithIssue(
+                fieldUid = warningField.fieldUid,
+                fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
+                IssueType.WARNING,
+                warningField.errorMessage
+            )
+        } ?: emptyList()
         val result = when {
             mandatoryItemsWithoutValue.isNotEmpty() -> {
                 showWarnigns = true
                 MissingMandatoryResult(
-                    mandatoryItemsWithoutValue,
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete,
-                    allowDiscard
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard
                 )
             }
             ruleEffectsResult?.fieldsWithErrors?.isNotEmpty() == true -> {
@@ -183,20 +206,20 @@ class FormRepositoryImpl(
                     showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
                 showErrors = true
                 FieldsWithErrorResult(
-                    ruleEffectsResult?.fieldsWithErrors?.map { it.errorMessage }
-                        ?: emptyList(),
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete,
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = true
                 )
             }
             ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
                 showWarnigns = true
                 FieldsWithWarningResult(
-                    ruleEffectsResult?.fieldsWithWarnings?.map { it.errorMessage }
-                        ?: emptyList(),
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
+                    fieldUidWarningList = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete
                 )
             }
             backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
@@ -220,12 +243,17 @@ class FormRepositoryImpl(
 
     override fun backupOfChangedItems() = backupList.minus(itemList)
 
-    private fun fieldsWithError() = itemList.mapNotNull { field ->
-        field.error?.let { field.uid }
-    }
-
-    private fun fieldsWithWarning() = itemList.mapNotNull { field ->
-        field.warning?.let { field.uid }
+    private fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
+        itemList.find { item ->
+            item.uid == errorItem.id
+        }?.let { item ->
+            FieldWithIssue(
+                fieldUid = item.uid,
+                fieldName = item.label,
+                issueType = IssueType.ERROR,
+                message = item.error ?: ""
+            )
+        }
     }
 
     private fun List<FieldUiModel>.applyRuleEffects(): List<FieldUiModel> {

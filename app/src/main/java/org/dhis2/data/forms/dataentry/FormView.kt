@@ -338,9 +338,12 @@ class FormView(
             } else {
                 when (result) {
                     is FieldsWithErrorResult ->
-                        showErrorFieldsMessage(result.fieldUidErrorList, result.allowDiscard)
+                        showErrorFieldsMessage(
+                            result.fieldUidErrorList.map { it.message },
+                            result.allowDiscard
+                        )
                     is FieldsWithWarningResult ->
-                        showWarningFieldsMessage(result.fieldUidWarningList)
+                        showWarningFieldsMessage(result.fieldUidWarningList.map { it.message })
                     is MissingMandatoryResult ->
                         showMissingMandatoryFieldsMessage(
                             result.mandatoryFields,

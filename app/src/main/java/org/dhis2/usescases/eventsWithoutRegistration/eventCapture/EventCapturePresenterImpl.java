@@ -3,11 +3,14 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.annotation.SuppressLint;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.FieldWithIssue;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.FormValueStore;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -38,11 +41,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean hasExpired;
     private final PublishProcessor<Unit> notesCounterProcessor;
     private final PreferenceProvider preferences;
+    private final ConfigureEventCompletionDialog configureEventCompletionDialog;
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                      FormValueStore valueStore, SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences
+                                     PreferenceProvider preferences,
+                                     ConfigureEventCompletionDialog configureEventCompletionDialog
     ) {
         this.view = view;
         this.eventUid = eventUid;
@@ -51,6 +56,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
+        this.configureEventCompletionDialog = configureEventCompletionDialog;
 
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -135,19 +141,32 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void attemptFinish(boolean canComplete, String onCompleteMessage, List<String> fieldUidErrorList, Map<String, String> emptyMandatoryFields) {
+    public void attemptFinish(boolean canComplete, String onCompleteMessage,
+                              List<FieldWithIssue> errorFields,
+                              Map<String, String> emptyMandatoryFields,
+                              List<FieldWithIssue> warningFields) {
 
-        if (!fieldUidErrorList.isEmpty()) {
+        if (!errorFields.isEmpty()) {
             view.showErrorSnackBar();
         }
 
         if (eventStatus != EventStatus.ACTIVE) {
             setUpActionByStatus(eventStatus);
         } else {
-            view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(),
-                    onCompleteMessage,
-                    fieldUidErrorList,
-                    emptyMandatoryFields);
+
+            EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
+                    errorFields,
+                    emptyMandatoryFields,
+                    warningFields,
+                    canComplete,
+                    onCompleteMessage
+            );
+
+            view.showCompleteActions(
+                    canComplete && eventCaptureRepository.isEnrollmentOpen(),
+                    emptyMandatoryFields,
+                    eventCompletionDialog
+            );
         }
 
         view.showNavigationBar();

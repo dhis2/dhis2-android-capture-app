@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,12 +74,12 @@ fun DataEntryBottomDialogContent(
             )
         }
         Divider(Modifier.padding(horizontal = 24.dp))
-        if (dataEntryDialogUiModel.fieldsWithIssues?.isNotEmpty() == true) {
+        if (dataEntryDialogUiModel.fieldsWithIssues.isNotEmpty()) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.weight(1f, false)
             ) {
-                items(dataEntryDialogUiModel.fieldsWithIssues!!) {
+                items(dataEntryDialogUiModel.fieldsWithIssues) {
                     IssueItem(it, onClick = onIssueItemClicked)
                 }
             }
@@ -89,6 +90,7 @@ fun DataEntryBottomDialogContent(
             modifier = modifier.weight(1f, false)
         ) {
             Button(
+                modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
                     disabledBackgroundColor = Color.White
@@ -99,6 +101,7 @@ fun DataEntryBottomDialogContent(
                 enabled = dataEntryDialogUiModel.secondaryButton != null
             )
             Button(
+                modifier = Modifier.testTag(MAIN_BUTTON_TAG),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(id = R.color.colorPrimary),
@@ -136,6 +139,7 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
             painter = painterResource(
                 when (fieldWithIssue.issueType) {
                     IssueType.ERROR,
+                    IssueType.ERROR_ON_COMPLETE,
                     IssueType.MANDATORY -> R.drawable.ic_error_outline
                     else -> R.drawable.ic_alert
                 }
@@ -202,7 +206,7 @@ fun DialogPreview3() {
             subtitle = "Some mandatory fields are missing and the form cannot be saved.",
             iconResource = R.drawable.ic_alert,
             fieldsWithIssues = listOf(
-                FieldWithIssue("Age", IssueType.MANDATORY, "Field Mandatory")
+                FieldWithIssue("uid", "Age", IssueType.MANDATORY, "Field Mandatory")
             ),
             mainButton = DialogButtonStyle.MainButton(R.string.review)
         ),
@@ -220,8 +224,8 @@ fun DialogPreview4() {
                 "If you exit now the changes will be discarded.",
             iconResource = R.drawable.ic_error_outline,
             fieldsWithIssues = listOf(
-                FieldWithIssue("Age", IssueType.ERROR, "Enter text"),
-                FieldWithIssue("Date of birth", IssueType.ERROR, "Enter text")
+                FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),
+                FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text")
             ),
             mainButton = DialogButtonStyle.MainButton(R.string.review),
             secondaryButton = DialogButtonStyle.DiscardButton
@@ -229,3 +233,6 @@ fun DialogPreview4() {
         onMainButtonClicked = {}
     )
 }
+
+const val SECONDARY_BUTTON_TAG = "SECONDARY_BUTTON_TAG"
+const val MAIN_BUTTON_TAG = "MAIN_BUTTON_TAG"
