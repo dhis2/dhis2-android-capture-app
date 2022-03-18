@@ -15,7 +15,6 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.forms.FormSectionViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.data.FormValueStore
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -28,7 +27,6 @@ class EventCapturePresenterTest {
     private val view: EventCaptureContract.View = mock()
     private val eventUid = "eventUid"
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
-    private val valueStore: FormValueStore = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog = mock()
@@ -40,7 +38,6 @@ class EventCapturePresenterTest {
             view,
             eventUid,
             eventRepository,
-            valueStore,
             schedulers,
             preferences,
             configureEventCompletionDialog
@@ -56,7 +53,6 @@ class EventCapturePresenterTest {
 
         presenter.init()
         verify(view).renderInitialInfo(any(), any(), any(), any())
-        verify(view).setProgramStage(any())
 
         verifyNoMoreInteractions(view)
     }
@@ -71,7 +67,6 @@ class EventCapturePresenterTest {
         presenter.init()
         verify(view).showEventIntegrityAlert()
         verify(view).renderInitialInfo(any(), any(), any(), any())
-        verify(view).setProgramStage(any())
         verifyNoMoreInteractions(view)
     }
 

@@ -62,7 +62,6 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    @NonNull FormValueStore valueStore,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
                                                     ConfigureEventCompletionDialog configureEventCompletionDialog) {
@@ -70,7 +69,6 @@ public class EventCaptureModule {
                 view,
                 eventUid,
                 eventCaptureRepository,
-                valueStore,
                 schedulerProvider,
                 preferences,
                 configureEventCompletionDialog);

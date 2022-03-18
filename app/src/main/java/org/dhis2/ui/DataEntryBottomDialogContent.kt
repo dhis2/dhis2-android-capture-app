@@ -174,7 +174,7 @@ fun DialogPreview1() {
             subtitle = "If you exit now all the information in the form will be discarded.",
             iconResource = R.drawable.ic_saved_check,
             mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-            secondaryButton = DialogButtonStyle.DiscardButton
+            secondaryButton = DialogButtonStyle.DiscardButton()
         ),
         onMainButtonClicked = {},
         onSecondaryButtonClicked = {}
@@ -189,7 +189,7 @@ fun DialogPreview2() {
             title = "Saved",
             subtitle = "Do you want to mark this form as complete?",
             iconResource = R.drawable.ic_saved_check,
-            mainButton = DialogButtonStyle.CompleteButton,
+            mainButton = DialogButtonStyle.CompleteButton(),
             secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
         ),
         onMainButtonClicked = {},
@@ -228,7 +228,7 @@ fun DialogPreview4() {
                 FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text")
             ),
             mainButton = DialogButtonStyle.MainButton(R.string.review),
-            secondaryButton = DialogButtonStyle.DiscardButton
+            secondaryButton = DialogButtonStyle.DiscardButton()
         ),
         onMainButtonClicked = {}
     )
