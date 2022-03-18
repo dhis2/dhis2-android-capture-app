@@ -68,7 +68,7 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toTopOf="@+id/eventSecundaryInfo"
-                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Program Stage Name" />
@@ -83,10 +83,21 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toBottomOf="@+id/programStageName"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
+
+            <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                android:onClick="showMoreOptions"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,6 +27,7 @@ import org.dhis2.R;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
@@ -42,6 +44,7 @@ import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -82,10 +85,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
                         this,
-                        getIntent().getStringExtra(Constants.EVENT_UID),
+                        eventUid,
                         getContext()));
         eventCaptureComponent.inject(this);
         super.onCreate(savedInstanceState);
@@ -97,6 +101,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showProgress();
         presenter.initNoteCounter();
         presenter.init();
+        binding.syncButton.setOnClickListener(view -> showSyncDialog());
     }
 
     private void setUpViewPagerAdapter() {
@@ -111,6 +116,27 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.eventViewPager.setAdapter(adapter);
         binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
+        binding.eventViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 0) {
+                    binding.syncButton.setVisibility(View.VISIBLE);
+                } else {
+                    binding.syncButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     private void setUpNavigationBar() {
@@ -436,5 +462,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule module) {
         return eventCaptureComponent.plus(module);
+    }
+
+    private void showSyncDialog() {
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setUid(eventUid)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged)
+                        FilterManager.getInstance().publishData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
 }
