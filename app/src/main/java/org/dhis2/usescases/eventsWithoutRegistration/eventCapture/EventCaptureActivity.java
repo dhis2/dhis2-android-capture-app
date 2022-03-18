@@ -468,10 +468,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(eventUid)
-                .onDismissListener(hasChanged -> {
-                    if (hasChanged)
-                        FilterManager.getInstance().publishData();
-                })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
