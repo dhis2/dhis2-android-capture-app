@@ -261,7 +261,6 @@
     <string name="missing_mandatory_fields_title">Campos requeridos no pueden estar vacios</string>
     <string name="missing_mandatory_fields_text">Algunos campos requeridos están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
     <string name="missing_mandatory_fields_text_not_delete">Faltan campos obligatorios. Rellénelos para ir atrás. </string>
-    <string name="missing_mandatory_fields_events">Faltan algunos campos obligatorios. Puedes cerrar la edición, pero este evento no podrá ser completado.</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
     <string name="delete_go_back">Si vuelves ahora la información registrada se perderá </string>
     <string name="missing_mandatory_fields_events_2.0">Faltan campos obligatorios:+n%s\nPuedes ir atrás, pero el evento no se puede completar.</string>

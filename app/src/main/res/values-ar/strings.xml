@@ -266,7 +266,6 @@
     <string name="missing_mandatory_fields_title">بعض الحقول الإلزامية مفقودة</string>
     <string name="missing_mandatory_fields_text">بعض الحقول الإلزامية مفقودة. إذا كنت تريد الرجوع الآن ، فسيتم حذف جميع المعلومات المحفوظة.</string>
     <string name="missing_mandatory_fields_text_not_delete">بعض الحقول الإلزامية مفقودة. إذا كنت تريد العودة ، يرجى ملؤها.</string>
-    <string name="missing_mandatory_fields_events">بعض الحقول الإلزامية مفقودة. يمكنك الرجوع الآن ، ولكن لن تتمكن من إكمال هذا الحدث.</string>
     <string name="title_delete_go_back">لم يتم حفظ بياناتك</string>
     <string name="delete_go_back">إذا رجعت الآن سيتم حذف جميع المعلومات التي تم إدخالها.</string>
     <string name="missing_mandatory_fields_events_2.0">بعض الحقول الإلزامية مفقودة:\n%s\n يمكنك الرجوع الآن ، ولكن لن تتمكن من إكمال هذا الحدث.</string>
