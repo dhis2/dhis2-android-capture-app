@@ -3,6 +3,7 @@ package org.dhis2.usescases.main
 import android.view.Gravity
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import java.lang.Exception
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
@@ -133,7 +134,7 @@ class MainPresenter(
     }
 
     private fun compareAndTrack(systemInfo: SystemInfo) {
-        val dhis2ServerTracked = preferences.getString(DHIS2, "")
+        val dhis2ServerTracked = preferences.getString("$DHIS2${getUserUid()}", "")
         val currentDhis2Server = systemInfo.version() ?: ""
 
         if ((dhis2ServerTracked.isNullOrEmpty() || dhis2ServerTracked != currentDhis2Server) &&
@@ -144,7 +145,15 @@ class MainPresenter(
                 SERVER_ACTION,
                 currentDhis2Server
             )
-            preferences.setValue(DHIS2, currentDhis2Server)
+            preferences.setValue("$DHIS2${getUserUid()}", currentDhis2Server)
+        }
+    }
+
+    private fun getUserUid(): String {
+        return try {
+            userManager.d2.userModule().user().blockingGet().uid()
+        } catch (e: Exception) {
+            ""
         }
     }
 

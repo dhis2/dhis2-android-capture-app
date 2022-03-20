@@ -13,6 +13,7 @@ import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import java.io.File
+import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterRepository
@@ -38,7 +39,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.Date
 
 class MainPresenterTest {
 
@@ -245,7 +245,6 @@ class MainPresenterTest {
 
         verify(matomoAnalyticsController).trackEvent(HOME, SERVER_ACTION, serverVersion)
         verify(preferences).setValue(DHIS2, serverVersion)
-
     }
 
     @Test
@@ -278,9 +277,13 @@ class MainPresenterTest {
         // categoryModule
         whenever(repository.defaultCatCombo()) doReturn Single.just(createCategoryCombo())
         whenever(repository.defaultCatOptCombo()) doReturn Single.just(createCategoryOptionCombo())
+
+        val oldVersion = "2.37"
+        whenever(repository.getServerVersion()) doReturn Single.just(systemInfo())
+        whenever(preferences.getString(DHIS2, "")) doReturn oldVersion
     }
 
-    private fun systemInfo(server:String = "2.38") = SystemInfo.builder()
+    private fun systemInfo(server: String = "2.38") = SystemInfo.builder()
         .systemName("random")
         .contextPath("random too")
         .dateFormat("dd/mm/yyyy")
