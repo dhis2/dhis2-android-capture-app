@@ -246,7 +246,6 @@
     <string name="missing_mandatory_fields_title">强制字段缺失</string>
     <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
     <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
-    <string name="missing_mandatory_fields_events">有些强制字段缺失，如果你后退，事件将不能被完成</string>
     <string name="title_delete_go_back">你的数据已经被保存</string>
     <string name="delete_go_back">如果退回，所有输入信息将被删除</string>
     <string name="missing_mandatory_fields_events_2.0">有些强制字段缺少值：%s。 你现在可以退回，但该事件不能被完成。</string>

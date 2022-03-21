@@ -258,7 +258,6 @@
     <string name="missing_mandatory_fields_title">Мажбурий майдонлар қолдириб кетилган</string>
     <string name="missing_mandatory_fields_text">Баъзи мажбурий майдонлар қолдириб кетилган. Агар ҳозир орқага қайтсангиз, барча сақланган маълумотлар ўчиб кетади.</string>
     <string name="missing_mandatory_fields_text_not_delete">Баъзи мажбурий майдонлар қолдириб кетилган. Агар орқага қайтмоқчи бўлсангиз, Илтимос, уларни тўлдиринг.</string>
-    <string name="missing_mandatory_fields_events">Баъзи мажбурий майдонлар қолдириб кетилган. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
     <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
     <string name="missing_mandatory_fields_events_2.0">Баъзи мажбурий майдонлар қолдириб кетилган: \n   %sда\n. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>

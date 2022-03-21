@@ -202,7 +202,6 @@
     <string name="enroll_in">ຂື້ນທະບຽນມີ %s</string>
     <string name="missing_mandatory_fields_title">ຫ້ອງປ້ອນຂໍ້ມູນທີ່ຈໍາເປັນ ບໍ່ເຫັນ</string>
     <string name="missing_mandatory_fields_text">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນດຽວນີ້, ຂໍ້ມູນທັງໝົດທີ່ໄດ້ບັນທຶກແລ້ວຈະຖືກລືບ</string>
-    <string name="missing_mandatory_fields_events">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ດຽວນີ້ ທ່ານສາມາດກັບຄືນ, ແຕ່ຂໍ່ມູນຂອງກໍລະນີນີ້ຈະບໍ່ສາມາດບັນທຶກໄດ້ເທື່ອ</string>
     <string name="missing_mandatory_fields_go_back">ລືບຂໍ້ມູນ ແລະ ກັບຄືນ</string>
     <!--EVENT SUMMARY-->
     <string name="section_list">ລາຍຊື່ຂອງແຕ່ລະພາກ</string>
