@@ -201,7 +201,7 @@ class FormRepositoryImpl(
                     allowDiscard = allowDiscard
                 )
             }
-            ruleEffectsResult?.fieldsWithErrors?.isNotEmpty() == true -> {
+            itemsWithErrors.isNotEmpty() -> {
                 showWarnigns =
                     showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
                 showErrors = true
@@ -214,7 +214,7 @@ class FormRepositoryImpl(
                     allowDiscard = allowDiscard
                 )
             }
-            ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
+            itemsWithWarning.isNotEmpty() -> {
                 showWarnigns = true
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
