@@ -3,6 +3,7 @@ package org.dhis2.usescases.main
 import android.view.Gravity
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import java.lang.Exception
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
@@ -18,11 +19,14 @@ import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
 const val MIN_USERS = 1
+const val SERVER_ACTION = "Server"
+const val DHIS2 = "dhis2_server"
 
 class MainPresenter(
     private val view: MainView,
@@ -76,6 +80,7 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+        trackDhis2Server()
     }
 
     fun initFilters() {
@@ -114,6 +119,42 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    fun trackDhis2Server() {
+        disposable.add(
+            repository.getServerVersion()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { systemInfo -> compareAndTrack(systemInfo) },
+                    { Timber.e(it) }
+                )
+        )
+    }
+
+    private fun compareAndTrack(systemInfo: SystemInfo) {
+        val dhis2ServerTracked = preferences.getString("$DHIS2${getUserUid()}", "")
+        val currentDhis2Server = systemInfo.version() ?: ""
+
+        if ((dhis2ServerTracked.isNullOrEmpty() || dhis2ServerTracked != currentDhis2Server) &&
+            currentDhis2Server.isNotEmpty()
+        ) {
+            matomoAnalyticsController.trackEvent(
+                HOME,
+                SERVER_ACTION,
+                currentDhis2Server
+            )
+            preferences.setValue("$DHIS2${getUserUid()}", currentDhis2Server)
+        }
+    }
+
+    private fun getUserUid(): String {
+        return try {
+            userManager.d2.userModule().user().blockingGet().uid()
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun logOut() {
