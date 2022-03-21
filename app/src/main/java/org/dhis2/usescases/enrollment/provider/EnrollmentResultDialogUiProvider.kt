@@ -28,7 +28,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     ),
                     mainButton = DialogButtonStyle.MainButton(R.string.review),
                     secondaryButton = when {
-                        result.allowDiscard -> DialogButtonStyle.DiscardButton
+                        result.allowDiscard -> DialogButtonStyle.DiscardButton()
                         else -> null
                     }
                 )
@@ -61,7 +61,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         }
                     ),
                     secondaryButton = when {
-                        result.allowDiscard -> DialogButtonStyle.DiscardButton
+                        result.allowDiscard -> DialogButtonStyle.DiscardButton()
                         else -> null
                     }
                 )
@@ -70,7 +70,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     subtitle = getString(R.string.discard_go_back),
                     iconResource = R.drawable.ic_alert,
                     mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                    secondaryButton = DialogButtonStyle.DiscardButton
+                    secondaryButton = DialogButtonStyle.DiscardButton()
                 )
                 else -> null
             }
