@@ -83,7 +83,7 @@ class ConfigureEventCompletionDialog(
         )
         WARNING,
         SUCCESSFUL -> EventCompletionButtons(
-            CompleteButton,
+            CompleteButton(),
             FormBottomDialog.ActionType.COMPLETE
         )
     }

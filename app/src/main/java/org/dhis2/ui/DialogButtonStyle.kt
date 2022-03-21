@@ -18,13 +18,13 @@ sealed class DialogButtonStyle(
         colorResource = R.color.colorPrimary
     )
 
-    object CompleteButton : DialogButtonStyle(
+    class CompleteButton : DialogButtonStyle(
         textResource = R.string.complete,
         colorResource = R.color.white,
         iconResource = R.drawable.ic_event_status_complete
     )
 
-    object DiscardButton : DialogButtonStyle(
+    class DiscardButton : DialogButtonStyle(
         textResource = R.string.discard_changes,
         colorResource = R.color.section_warning_color
     )

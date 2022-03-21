@@ -30,11 +30,13 @@ import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
+import org.dhis2.ui.DataEntryDialogUiModel;
+import org.dhis2.ui.DialogButtonStyle;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
@@ -47,7 +49,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -56,16 +58,12 @@ import kotlin.Unit;
 
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable, EventDetailsComponentProvider {
 
-    private static final int RQ_GO_BACK = 1202;
-    private static final int NOTES_TAB_POSITION = 1;
-
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
     @Inject
     NavigationPageConfigurator pageConfigurator;
 
-    private String programStageUid;
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
     public EventCaptureComponent eventCaptureComponent;
@@ -183,15 +181,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
-            AlertBottomDialog.Companion.getInstance()
-                    .setTitle(getString(R.string.title_delete_go_back))
-                    .setMessage(getString(R.string.discard_go_back))
-                    .setPositiveButton(getString(R.string.keep_editing), null)
-                    .setNegativeButton(getString(R.string.discard_changes), () -> {
+            DataEntryDialogUiModel dataEntryDialogUiModel = new DataEntryDialogUiModel(
+                    getString(R.string.title_delete_go_back),
+                    getString(R.string.discard_go_back),
+                    R.drawable.ic_alert,
+                    Collections.emptyList(),
+                    new DialogButtonStyle.MainButton(R.string.keep_editing),
+                    new DialogButtonStyle.DiscardButton()
+            );
+            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
+                    dataEntryDialogUiModel,
+                    () -> Unit.INSTANCE,
+                    () -> {
                         presenter.deleteEvent();
                         return Unit.INSTANCE;
-                    })
-                    .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+                    }
+            );
+            dialog.show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
         } else {
             finishDataEntry();
         }
@@ -255,11 +261,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setReschedule(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
-    }
-
-    @Override
-    public void setProgramStage(String programStageUid) {
-        this.programStageUid = programStageUid;
     }
 
     private void setAction(ActionType actionType) {

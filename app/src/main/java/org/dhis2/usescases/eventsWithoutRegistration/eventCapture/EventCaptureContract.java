@@ -5,7 +5,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCom
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -43,8 +42,6 @@ public class EventCaptureContract {
         void attemptToSkip();
 
         void attemptToReschedule();
-
-        void setProgramStage(String programStageUid);
 
         void showErrorSnackBar();
 
@@ -91,8 +88,6 @@ public class EventCaptureContract {
 
         boolean hasExpired();
 
-        void saveImage(String uuid, String filePath);
-
         void initNoteCounter();
 
         void refreshTabCounters();
@@ -102,8 +97,6 @@ public class EventCaptureContract {
         void showProgress();
 
         boolean getCompletionPercentageVisibility();
-
-        void setValueChanged(@NotNull String uid);
     }
 
     public interface EventCaptureRepository {
