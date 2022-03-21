@@ -257,7 +257,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 subtitle = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_alert,
                 mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                secondaryButton = DialogButtonStyle.DiscardButton
+                secondaryButton = DialogButtonStyle.DiscardButton()
             ),
             onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
