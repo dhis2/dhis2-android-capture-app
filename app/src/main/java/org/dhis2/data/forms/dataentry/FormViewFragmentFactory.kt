@@ -7,6 +7,7 @@ import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 
 class FormViewFragmentFactory(
     val formRepository: FormRepository,
@@ -20,6 +21,7 @@ class FormViewFragmentFactory(
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
+    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
     val dispatchers: DispatcherProvider
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
@@ -36,6 +38,7 @@ class FormViewFragmentFactory(
                 completionListener = completionListener,
                 onDataIntegrityCheck = onDataIntegrityCheck,
                 onFieldItemsRendered = onFieldItemsRendered,
+                resultDialogUiProvider = resultDialogUiProvider,
                 dispatchers = dispatchers
             )
             else -> super.instantiate(classLoader, className)

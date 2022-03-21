@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -108,29 +109,31 @@ fun DataEntryBottomDialogContent(
                     contentColor = Color.White
                 ),
                 onClick = { onMainButtonClicked() },
-                content = provideButtonContent(dataEntryDialogUiModel.mainButton)
+                content = provideButtonContent(dataEntryDialogUiModel.mainButton),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
             )
         }
     }
 }
 
-fun provideButtonContent(buttonStyle: DialogButtonStyle?): @Composable (RowScope.() -> Unit) =
-    {
-        buttonStyle?.let { style ->
-            style.iconResource?.let { icon ->
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = "",
-                    tint = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-            }
-            Text(
-                text = stringResource(id = style.textResource),
-                color = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified
+private fun provideButtonContent(
+    buttonStyle: DialogButtonStyle?
+): @Composable (RowScope.() -> Unit) = {
+    buttonStyle?.let { style ->
+        style.iconResource?.let { icon ->
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = "",
+                tint = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified,
+                modifier = Modifier.padding(end = 8.dp)
             )
         }
+        Text(
+            text = stringResource(id = style.textResource),
+            color = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified
+        )
     }
+}
 
 @Composable
 fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {

@@ -26,6 +26,7 @@ import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.ui.DataEntryDialogUiModel
 import org.dhis2.ui.DialogButtonStyle
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -55,6 +56,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var locationProvider: LocationProvider
+
+    @Inject
+    lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
 
     @Inject
     lateinit var dispatchers: DispatcherProvider
@@ -122,6 +126,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 }
             }
             .onFinishDataEntry { presenter.finish(mode) }
+            .resultDialogUiProvider(enrollmentResultDialogUiProvider)
             .factory(supportFragmentManager)
             .build()
 
