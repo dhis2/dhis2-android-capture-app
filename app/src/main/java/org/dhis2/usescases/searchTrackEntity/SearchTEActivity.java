@@ -32,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -167,7 +168,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setNeedsSearch(needsSearch);
         binding.setShowClear(showClear);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-
+        ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
         binding.searchButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -363,7 +364,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .locationProvider(locationProvider)
                 .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
-                    viewModel.updateQueryData(action);
+                    viewModel.updateQueryData(action, OrientationUtilsKt.isLandscape());
                     return Unit.INSTANCE;
                 })
                 .activityForResultListener(() -> {
@@ -514,7 +515,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.clearFilterSearchButton.hide();
         }
-        binding.searchButton.setVisibility(View.GONE);
         syncButtonVisibility(true);
         setFiltersVisibility(true);
         SearchJavaToComposeKt.setMinAttributesMessage(

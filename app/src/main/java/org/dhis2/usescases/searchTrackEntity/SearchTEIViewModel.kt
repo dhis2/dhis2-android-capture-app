@@ -147,28 +147,34 @@ class SearchTEIViewModel(
         onSearchClick()
     }
 
-    fun updateQueryData(rowAction: RowAction) {
+    fun updateQueryData(rowAction: RowAction, isLandscape: Boolean = false) {
         if (rowAction.type == ActionType.ON_SAVE || rowAction.type == ActionType.ON_TEXT_CHANGE) {
             if (rowAction.value != null) {
                 queryData[rowAction.id] = rowAction.value!!
             } else {
                 queryData.remove(rowAction.id)
             }
-            updateSearch()
+            updateSearch(isLandscape)
         } else if (rowAction.type == ActionType.ON_CLEAR) {
-            clearQueryData()
+            clearQueryData(isLandscape)
         }
     }
 
-    private fun clearQueryData() {
+    private fun clearQueryData(isLandscape: Boolean = false) {
         queryData.clear()
-        updateSearch()
+        updateSearch(isLandscape)
     }
 
-    private fun updateSearch() {
-        if (_screenState.value is SearchForm) {
-            _screenState.value =
-                (_screenState.value as SearchForm).copy(queryHasData = queryData.isNotEmpty())
+    private fun updateSearch(isLandscape: Boolean) {
+        when (isLandscape) {
+            true -> if (_screenState.value is SearchList) {
+                _screenState.value =
+                    (_screenState.value as SearchList).copy(queryHasData = queryData.isNotEmpty())
+            }
+            false -> if (_screenState.value is SearchForm) {
+                _screenState.value =
+                    (_screenState.value as SearchForm).copy(queryHasData = queryData.isNotEmpty())
+            }
         }
     }
 
