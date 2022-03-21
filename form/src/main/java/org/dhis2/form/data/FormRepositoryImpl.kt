@@ -211,7 +211,7 @@ class FormRepositoryImpl(
                     warningFields = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = true
+                    allowDiscard = allowDiscard
                 )
             }
             ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
@@ -241,7 +241,7 @@ class FormRepositoryImpl(
         return calculationLoop == loopThreshold
     }
 
-    override fun backupOfChangedItems() = backupList.minus(itemList)
+    override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
     private fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
         itemList.find { item ->
