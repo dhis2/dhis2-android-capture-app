@@ -137,7 +137,11 @@ private fun provideButtonContent(
 
 @Composable
 fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
-    Row(Modifier.clickable { onClick.invoke() }) {
+    Row(
+        Modifier
+            .testTag(fieldWithIssue.issueType.name)
+            .clickable { onClick.invoke() }
+    ) {
         Icon(
             painter = painterResource(
                 when (fieldWithIssue.issueType) {
