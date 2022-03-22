@@ -501,6 +501,8 @@ class FormView(
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
         val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
 
+        handleKeyBoardOnFocusChange(items)
+
         var offset = 0
         myFirstPositionView?.let {
             offset = it.top
@@ -525,6 +527,24 @@ class FormView(
             lastVisiblePosition == adapter.itemCount - 1 ||
                 adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
             )
+    }
+
+    private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
+        items.firstOrNull { it.focused }?.let { fieldUiModel ->
+            fieldUiModel.valueType?.let { valueType ->
+                if (!needsKeyboard(valueType) || fieldUiModel.optionSet != null) {
+                    view?.closeKeyboard()
+                }
+            }
+        }
+    }
+
+    private fun needsKeyboard(valueType: ValueType): Boolean {
+        return valueType.isText ||
+            valueType.isNumeric ||
+            valueType == ValueType.PHONE_NUMBER ||
+            valueType == ValueType.EMAIL ||
+            valueType == ValueType.URL
     }
 
     private fun intentHandler(intent: FormIntent) {

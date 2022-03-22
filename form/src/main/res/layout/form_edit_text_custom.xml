@@ -124,7 +124,6 @@
                         android:onTextChanged="@{(txt, start, before, count )->item.onTextChange(txt)}"
                         android:text="@{item.value}"
                         android:textAlignment="textStart"
-                        android:textIsSelectable="true"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
                         app:requestFocus="@{item.focused}"
