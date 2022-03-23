@@ -46,6 +46,7 @@ import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -469,6 +470,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(eventUid)
+                .onDismissListener(hasChanged -> { })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
