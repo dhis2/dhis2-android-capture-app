@@ -18,26 +18,34 @@ class OpenIdSession(
     val schedulerProvider: SchedulerProvider
 ) : LifecycleObserver {
     private val disposable = CompositeDisposable()
-    private var sessionCallback: () -> Unit = { Timber.log(1, EMPTY_CALLBACK) }
+    private var sessionCallback: (LogOutReason) -> Unit = { Timber.log(1, EMPTY_CALLBACK) }
+    enum class LogOutReason {
+        OPEN_ID,
+        DISABLED_ACCOUNT
+    }
 
-    fun setSessionCallback(lifecycleOwner: LifecycleOwner, sessionCallback: () -> Unit = {}) {
+    fun setSessionCallback(
+        lifecycleOwner: LifecycleOwner,
+        sessionCallback: (LogOutReason) -> Unit = {}
+    ) {
         lifecycleOwner.lifecycle.addObserver(this)
         this.sessionCallback = sessionCallback
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onCreate() {
         disposable.add(
-            d2.userModule().openIdHandler().logOutObservable()
+            d2.userModule().accountManager().accountDeletionObservable()
+                .map { LogOutReason.DISABLED_ACCOUNT }
                 .defaultSubscribe(
                     schedulerProvider,
-                    { sessionCallback() },
+                    { sessionCallback(it) },
                     { Timber.e(it) }
                 )
         )
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onDestroy() {
         disposable.clear()
     }

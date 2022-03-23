@@ -8,7 +8,7 @@ import timber.log.Timber
 class PinPresenter(
     val view: PinView,
     val preferenceProvider: PreferenceProvider,
-    val d2: D2
+    val d2: D2?
 ) {
 
     fun unlockSession(pin: String): Boolean {
@@ -27,7 +27,7 @@ class PinPresenter(
 
     fun logOut() {
         try {
-            d2.userModule().blockingLogOut()
+            d2?.userModule()?.blockingLogOut()
             preferenceProvider.setValue(Preference.PIN, null)
             preferenceProvider.setValue(Preference.SESSION_LOCKED, false)
         } catch (e: Exception) {

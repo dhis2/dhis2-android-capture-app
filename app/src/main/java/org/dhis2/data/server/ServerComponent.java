@@ -30,6 +30,8 @@ public interface ServerComponent extends Charts.Dependencies {
     @NonNull
     OpenIdSession openIdSession();
 
+    ServerStatus serverStatus();
+
     @NonNull
     UserComponent plus(@NonNull UserModule userModule);
 
