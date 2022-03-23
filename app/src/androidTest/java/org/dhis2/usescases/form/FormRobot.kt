@@ -3,8 +3,9 @@ package org.dhis2.usescases.form
 import android.app.Activity
 import android.view.MenuItem
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
@@ -32,7 +33,6 @@ import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
 
@@ -47,14 +47,23 @@ class FormRobot : BaseRobot() {
 
     private fun clickOnASpecificSection(sectionLabel: String) {
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItem<FormViewHolder>(allOf(hasDescendant(withText(sectionLabel)), hasDescendant(
-                withId(R.id.openIndicator))), click()))
+            .perform(
+                actionOnItem<FormViewHolder>(
+                    allOf(
+                        hasDescendant(withText(sectionLabel)), hasDescendant(
+                            withId(R.id.openIndicator)
+                        )
+                    ), click()
+                )
+            )
     }
 
     private fun clickOnSpinner(position: Int) {
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<FormViewHolder>(
-                position, clickChildViewWithId(R.id.inputEditText))
+            .perform(
+                actionOnItemAtPosition<FormViewHolder>(
+                    position, clickChildViewWithId(R.id.inputEditText)
+                )
             )
     }
 
@@ -84,7 +93,16 @@ class FormRobot : BaseRobot() {
 
     fun checkValueWasAssigned(value: String) {
         onView(withId(R.id.recyclerView))
-            .check(matches(hasItem(allOf(hasDescendant(withId(R.id.input_editText)), hasDescendant(withText(value))))))
+            .check(
+                matches(
+                    hasItem(
+                        allOf(
+                            hasDescendant(withId(R.id.input_editText)),
+                            hasDescendant(withText(value))
+                        )
+                    )
+                )
+            )
     }
 
     fun checkWarningIsShown() {
@@ -98,7 +116,7 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkPopUpWithMessageOnCompleteIsShown(message: String, composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithText(message).assertExists()
+        composeTestRule.onAllNodesWithTag(message).onFirst().assertExists()
     }
 
     fun checkIndicatorIsDisplayed(name: String, value: String) {
@@ -145,7 +163,7 @@ class FormRobot : BaseRobot() {
         onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
-    fun scrollToPositionForm(position: Int){
+    fun scrollToPositionForm(position: Int) {
         onView(withId(R.id.recyclerView)).perform(scrollToPositionRecyclerview(position))
     }
 
