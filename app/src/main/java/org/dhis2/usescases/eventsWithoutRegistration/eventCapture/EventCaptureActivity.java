@@ -27,7 +27,6 @@ import org.dhis2.R;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.ui.DataEntryDialogUiModel;
@@ -46,7 +45,6 @@ import org.dhis2.utils.customviews.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.granularsync.GranularSyncContracts;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
