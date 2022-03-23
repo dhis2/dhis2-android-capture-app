@@ -159,7 +159,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         switch (eventStatus) {
             case COMPLETED:
                 if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled())
-                    view.attemptToReopen();
+                    view.SaveAndFinish();
                 else
                     view.finishDataEntry();
                 break;
