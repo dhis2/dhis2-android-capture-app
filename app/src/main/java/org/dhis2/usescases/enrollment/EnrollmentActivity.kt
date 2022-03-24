@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -244,7 +243,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
-            formView.onBackPressed()
+            formView.onSaveClick()
         } else {
             showDeleteDialog()
         }
@@ -377,7 +376,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun performSaveClick() {
-        if (currentFocus is EditText) {
+        formView.onSaveClick()
+        /*if (currentFocus is EditText) {
             presenter.setFinishing()
             currentFocus?.apply { clearFocus() }
         } else {
@@ -386,7 +386,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             } else {
                 formView.requestDataIntegrityCheck()
             }
-        }
+        }*/
     }
 
     override fun showProgress() {

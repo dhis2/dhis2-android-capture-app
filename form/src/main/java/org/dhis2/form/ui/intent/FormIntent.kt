@@ -5,6 +5,10 @@ import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent : MviIntent {
 
+    data class OnFinish(
+        val extraData: String? = null
+    ) : FormIntent()
+
     data class OnClear(
         val extraData: String? = null
     ) : FormIntent()

@@ -70,10 +70,7 @@ class FormViewModel(
                 .distinctUntilChanged()
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
-                .collect { result ->
-                    Timber.d("FLOW: new result %s", result.second.valueStoreResult)
-                    displayResult(result)
-                }
+                .collect { result -> displayResult(result) }
         }
         loadData()
     }
@@ -82,7 +79,7 @@ class FormViewModel(
         when (result.second.valueStoreResult) {
             ValueStoreResult.VALUE_CHANGED -> {
                 _savedValue.value = result.first
-                _items.value = repository.composeList()
+                processCalculatedItems()
             }
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
                 showToast.value = R.string.update_field_error
@@ -106,6 +103,10 @@ class FormViewModel(
                 Timber.d("${result.first.id} is changing its value")
                 _queryData.value = result.first
             }
+            ValueStoreResult.FINISH -> {
+                processCalculatedItems()
+                runDataIntegrityCheck()
+            }
         }
     }
 
@@ -124,8 +125,98 @@ class FormViewModel(
             loading.postValue(true)
         }
 
-        val result = repository.processUserAction(rowAction)
+        val result = processUserAction(rowAction)
         return Pair(rowAction, result)
+    }
+
+    private fun processUserAction(action: RowAction): StoreResult {
+        return when (action.type) {
+            ActionType.ON_SAVE -> {
+                repository.updateErrorList(action)
+                if (action.error != null) {
+                    StoreResult(
+                        action.id,
+                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                    )
+                } else {
+                    val saveResult = repository.save(action.id, action.value, action.extraData)
+                    repository.updateValueOnList(action.id, action.value, action.valueType)
+                    saveResult ?: StoreResult(
+                        action.id,
+                        ValueStoreResult.VALUE_CHANGED
+                    )
+                }
+            }
+            ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
+                val storeResult = saveLastFocusedItem(action)
+                repository.setFocusedItem(action)
+                storeResult
+            }
+
+            ActionType.ON_TEXT_CHANGE -> {
+                repository.updateValueOnList(action.id, action.value, action.valueType)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.TEXT_CHANGING
+                )
+            }
+            ActionType.ON_SECTION_CHANGE -> {
+                repository.updateSectionOpened(action)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                )
+            }
+            ActionType.ON_CLEAR -> {
+                repository.removeAllValues()
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_CHANGED
+                )
+            }
+            ActionType.ON_FINISH -> {
+                StoreResult(
+                    "",
+                    ValueStoreResult.FINISH
+                )
+            }
+        }
+    }
+
+    private fun saveLastFocusedItem(rowAction: RowAction) =
+        repository.currentFocusedItem()?.takeIf {
+            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
+        }?.let {
+            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
+            if (error != null) {
+                val action = rowActionFromIntent(
+                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+                )
+                repository.updateErrorList(action)
+                StoreResult(
+                    rowAction.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                )
+            } else {
+                val action = rowActionFromIntent(
+                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+                )
+                val result = repository.save(it.uid, it.value, null)
+                repository.updateValueOnList(it.uid, it.value, it.valueType)
+                repository.updateErrorList(action)
+                result
+            }
+        } ?: StoreResult(
+            rowAction.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED
+        )
+
+    fun valueTypeIsTextField(valueType: ValueType): Boolean {
+        return valueType.isNumeric ||
+            valueType.isText ||
+            valueType == ValueType.URL ||
+            valueType == ValueType.EMAIL ||
+            valueType == ValueType.PHONE_NUMBER
     }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
@@ -188,6 +279,11 @@ class FormViewModel(
                 uid = intent.sectionUid,
                 value = null,
                 actionType = ActionType.ON_SECTION_CHANGE
+            )
+            is FormIntent.OnFinish -> createRowAction(
+                uid = "",
+                value = null,
+                actionType = ActionType.ON_FINISH
             )
         }
     }
@@ -332,6 +428,17 @@ class FormViewModel(
                 _items.value = emptyList()
             }
         }
+    }
+
+    fun saveDataEntry() {
+        repository.currentFocusedItem()?.takeIf {
+            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
+        }?.let {
+            submitIntent(
+                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+            )
+        }
+        submitIntent(FormIntent.OnFinish())
     }
 
     companion object {
