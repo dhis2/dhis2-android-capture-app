@@ -4,6 +4,7 @@ data class SearchResult(val type: SearchResultType, val extraData: String? = nul
     enum class SearchResultType {
         LOADING,
         SEARCH_OR_CREATE,
+        SEARCH,
         SEARCH_OUTSIDE,
         NO_MORE_RESULTS,
         NO_RESULTS,
@@ -14,4 +15,12 @@ data class SearchResult(val type: SearchResultType, val extraData: String? = nul
         type == SearchResultType.TOO_MANY_RESULTS || type == SearchResultType.SEARCH_OR_CREATE
 
     fun shouldClearGlobalData() = type == SearchResultType.SEARCH_OUTSIDE
+
+    fun shouldDisplayInFullSize() = when (type) {
+        SearchResultType.SEARCH_OR_CREATE,
+        SearchResultType.SEARCH,
+        SearchResultType.NO_RESULTS,
+        SearchResultType.TOO_MANY_RESULTS -> true
+        else -> false
+    }
 }

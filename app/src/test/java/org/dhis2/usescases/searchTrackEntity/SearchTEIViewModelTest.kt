@@ -445,6 +445,18 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return init search`() {
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        setAllowCreateBeforeSearch(false)
+        viewModel.onDataLoaded(0, null)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,

@@ -75,6 +75,7 @@ fun SearchResult(
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
         SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate(searchResult.extraData!!)
+        SearchResult.SearchResultType.SEARCH -> InitSearch(searchResult.extraData!!)
     }
 }
 
@@ -308,6 +309,28 @@ fun SearchOrCreate(teTypeName: String) {
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = stringResource(R.string.search_or_create).format(teTypeName),
+            fontSize = 17.sp,
+            color = Color.Black.copy(alpha = 0.38f),
+            style = LocalTextStyle.current.copy(
+                lineHeight = 24.sp,
+                fontFamily = FontFamily(Font(R.font.rubik_regular))
+            )
+        )
+    }
+}
+
+@Composable
+fun InitSearch(teTypeName: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.init_search).format(teTypeName),
             fontSize = 17.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(

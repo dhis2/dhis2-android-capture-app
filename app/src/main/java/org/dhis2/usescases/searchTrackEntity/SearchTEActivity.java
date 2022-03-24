@@ -554,7 +554,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void configureLandscapeAnalyticsScreen(boolean expanded) {
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(binding.backdropLayout);
-        constraintSet.setGuidelinePercent(R.id.backdropGuideDiv, expanded ? 0.0f : 0.4f);
+        constraintSet.setGuidelinePercent(R.id.backdropGuideDiv, expanded ? 0.0f : 0.26f);
         TransitionManager.beginDelayedTransition(binding.backdropLayout);
         constraintSet.applyTo(binding.backdropLayout);
     }
