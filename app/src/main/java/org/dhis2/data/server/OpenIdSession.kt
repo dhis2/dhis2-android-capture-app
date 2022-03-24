@@ -4,6 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
@@ -19,6 +20,7 @@ class OpenIdSession(
 ) : LifecycleObserver {
     private val disposable = CompositeDisposable()
     private var sessionCallback: (LogOutReason) -> Unit = { Timber.log(1, EMPTY_CALLBACK) }
+
     enum class LogOutReason {
         OPEN_ID,
         DISABLED_ACCOUNT
@@ -35,13 +37,16 @@ class OpenIdSession(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onCreate() {
         disposable.add(
-            d2.userModule().accountManager().accountDeletionObservable()
-                .map { LogOutReason.DISABLED_ACCOUNT }
-                .defaultSubscribe(
-                    schedulerProvider,
-                    { sessionCallback(it) },
-                    { Timber.e(it) }
-                )
+            Observable.merge(
+                d2.userModule().openIdHandler().logOutObservable()
+                    .map { LogOutReason.OPEN_ID },
+                d2.userModule().accountManager().accountDeletionObservable()
+                    .map { LogOutReason.DISABLED_ACCOUNT }
+            ).defaultSubscribe(
+                schedulerProvider,
+                { sessionCallback(it) },
+                { Timber.e(it) }
+            )
         )
     }
 
