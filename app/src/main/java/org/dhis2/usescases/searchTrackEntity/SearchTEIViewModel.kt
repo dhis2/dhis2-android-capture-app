@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
-
 class SearchTEIViewModel(
     private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
@@ -425,6 +424,24 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
             else ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
+        }
+        _dataResult.value = result
+    }
+
+    private fun handleInitWithoutData() {
+        val result = when (searchRepository.canCreateInProgramWithoutSearch()) {
+            true -> listOf(
+                SearchResult(
+                    SearchResult.SearchResultType.SEARCH_OR_CREATE,
+                    searchRepository.trackedEntityType.displayName()
+                )
+            )
+            false -> listOf(
+                SearchResult(
+                    SearchResult.SearchResultType.SEARCH,
+                    searchRepository.trackedEntityType.displayName()
+                )
+            )
         }
         _dataResult.value = result
     }
