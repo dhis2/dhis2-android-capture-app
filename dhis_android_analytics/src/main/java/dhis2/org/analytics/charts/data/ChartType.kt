@@ -43,6 +43,7 @@ fun VisualizationType?.toAnalyticsChartType(): ChartType {
         VisualizationType.STACKED_BAR -> ChartType.BAR_CHART
         VisualizationType.PIE -> ChartType.PIE_CHART
         VisualizationType.RADAR -> ChartType.RADAR
+        VisualizationType.SINGLE_VALUE -> ChartType.SINGLE_VALUE
         else -> ChartType.TABLE
     }
 }
