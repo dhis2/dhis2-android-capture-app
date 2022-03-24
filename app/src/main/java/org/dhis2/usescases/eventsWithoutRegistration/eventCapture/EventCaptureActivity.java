@@ -27,7 +27,6 @@ import org.dhis2.R;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.ui.DataEntryDialogUiModel;
@@ -469,6 +468,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(eventUid)
+                .onDismissListener(hasChanged -> { })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
