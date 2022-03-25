@@ -81,6 +81,10 @@ class EventDetailsViewModel(
     val eventTemp: StateFlow<EventTemp> get() = _eventTemp
 
     init {
+        loadEventDetails()
+    }
+
+    private fun loadEventDetails() {
         setUpEventDetails()
         setUpEventReportDate()
         setUpCategoryCombo()
@@ -263,7 +267,7 @@ class EventDetailsViewModel(
     fun onReopenClick() {
         configureEventDetails.reopenEvent().fold(
             onSuccess = {
-                setUpEventDetails()
+                loadEventDetails()
                 onReopenSuccess?.invoke()
             },
             onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
