@@ -31,7 +31,7 @@
             android:minHeight="72dp"
             android:layout_marginStart="4.3dp"
             app:rippleColor="@color/rippleColor"
-            android:elevation="7dp"
+            android:elevation="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="6dp">
