@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
+
 class SearchTEIViewModel(
     private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
@@ -72,6 +73,11 @@ class SearchTEIViewModel(
         val shouldOpenSearch = !displayFrontPageList &&
             !searchRepository.canCreateInProgramWithoutSearch() &&
             !searching
+        createButtonScrollVisibility.value = if (searching) {
+            true
+        } else {
+            searchRepository.canCreateInProgramWithoutSearch()
+        }
         _screenState.value = when {
             shouldOpenSearch ->
                 SearchForm(

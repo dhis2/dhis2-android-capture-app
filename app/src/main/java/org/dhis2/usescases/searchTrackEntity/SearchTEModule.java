@@ -301,4 +301,10 @@ public class SearchTEModule {
                 new EventToEventUiComponent(),
                 mapUtils);
     }
+
+    @Provides
+    @PerActivity
+    SearchNavigator searchNavigator(D2 d2) {
+        return new SearchNavigator((SearchTEActivity) moduleContext, new SearchNavigationConfiguration(d2));
+    }
 }
