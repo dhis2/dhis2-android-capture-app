@@ -23,11 +23,14 @@ import org.dhis2.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlin.Unit;
+
 public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final String programUid;
     private final String eventUid;
     private final List<EventPageType> pages;
+    private EventCaptureFormFragment formFragment;
 
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
@@ -83,9 +86,16 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 bundle.putString(PROGRAM_UID, programUid);
                 EventDetailsFragment eventDetailsFragment = new EventDetailsFragment();
                 eventDetailsFragment.setArguments(bundle);
+                eventDetailsFragment.setOnEventReopened(() -> {
+                    if (formFragment != null) {
+                        formFragment.onReopen();
+                    }
+                    return Unit.INSTANCE;
+                });
                 return eventDetailsFragment;
             case DATA_ENTRY:
-                return EventCaptureFormFragment.newInstance(eventUid);
+                formFragment = EventCaptureFormFragment.newInstance(eventUid);
+                return formFragment;
             case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();
                 Bundle arguments = new Bundle();

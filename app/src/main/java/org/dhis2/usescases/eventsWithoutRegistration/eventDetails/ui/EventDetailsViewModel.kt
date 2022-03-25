@@ -59,6 +59,7 @@ class EventDetailsViewModel(
     var onButtonClickCallback: (() -> Unit)? = null
     var showEventUpdateStatus: ((result: String) -> Unit)? = null
     var onReopenError: ((message: String) -> Unit)? = null
+    var onReopenSuccess: (() -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -261,7 +262,10 @@ class EventDetailsViewModel(
 
     fun onReopenClick() {
         configureEventDetails.reopenEvent().fold(
-            onSuccess = { setUpEventDetails() },
+            onSuccess = {
+                setUpEventDetails()
+                onReopenSuccess?.invoke()
+            },
             onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
         )
     }

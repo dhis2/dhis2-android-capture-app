@@ -75,6 +75,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     var onEventDetailsChange: ((eventDetails: EventDetails) -> Unit)? = null
     var onButtonCallback: (() -> Unit)? = null
+    var onEventReopened: (() -> Unit)? = null
 
     private lateinit var binding: EventDetailsFragmentBinding
 
@@ -174,6 +175,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
         viewModel.onReopenError = { message ->
             displayMessage(message)
+        }
+
+        viewModel.onReopenSuccess = {
+            onEventReopened?.invoke()
         }
     }
 
