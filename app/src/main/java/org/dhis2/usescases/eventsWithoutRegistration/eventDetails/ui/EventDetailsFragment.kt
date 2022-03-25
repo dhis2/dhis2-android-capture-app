@@ -177,7 +177,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             displayMessage(message)
         }
 
-        viewModel.onReopenSuccess = {
+        viewModel.onReopenSuccess = { message ->
+            displayMessage(message)
             onEventReopened?.invoke()
         }
     }

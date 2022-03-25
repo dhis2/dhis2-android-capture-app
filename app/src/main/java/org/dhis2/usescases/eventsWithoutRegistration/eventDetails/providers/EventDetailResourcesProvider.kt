@@ -39,4 +39,6 @@ class EventDetailResourcesProvider(
     fun provideEventCreatedMessage() = resourceManager.getString(R.string.event_updated)
 
     fun provideEventCreationError() = resourceManager.getString(R.string.failed_insert_event)
+
+    fun provideReOpened() = resourceManager.getString(R.string.re_opened)
 }

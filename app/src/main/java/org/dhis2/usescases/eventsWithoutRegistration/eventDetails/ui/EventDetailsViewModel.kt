@@ -28,6 +28,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -44,7 +45,8 @@ class EventDetailsViewModel(
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
-    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails
+    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
+    private val resourcesProvider: EventDetailResourcesProvider
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -59,7 +61,7 @@ class EventDetailsViewModel(
     var onButtonClickCallback: (() -> Unit)? = null
     var showEventUpdateStatus: ((result: String) -> Unit)? = null
     var onReopenError: ((message: String) -> Unit)? = null
-    var onReopenSuccess: (() -> Unit)? = null
+    var onReopenSuccess: ((message: String) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -268,7 +270,7 @@ class EventDetailsViewModel(
         configureEventDetails.reopenEvent().fold(
             onSuccess = {
                 loadEventDetails()
-                onReopenSuccess?.invoke()
+                onReopenSuccess?.invoke(resourcesProvider.provideReOpened())
             },
             onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
         )
