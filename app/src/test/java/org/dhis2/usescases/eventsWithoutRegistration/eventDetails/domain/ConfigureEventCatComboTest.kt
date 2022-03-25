@@ -9,6 +9,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDeta
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -22,8 +23,11 @@ class ConfigureEventCatComboTest {
         on { uid() } doReturn CATEGORY_UID
     }
     private val categoryCombo: CategoryCombo = mock {
-        on { uid() } doReturn CATEGORY_OPTION_COMBO_UID
+        on { uid() } doReturn CATEGORY_COMBO_UID
         on { categories() } doReturn listOf(category)
+    }
+    private val categoryOptionCombo: CategoryOptionCombo = mock {
+        on { uid() } doReturn CATEGORY_OPTION_COMBO_UID
     }
     private val event: Event = mock {
         on { attributeOptionCombo() } doReturn CATEGORY_OPTION_COMBO_UID
@@ -43,6 +47,9 @@ class ConfigureEventCatComboTest {
     fun `Should be completed when Category combo is default`() = runBlocking {
         // Given a default category combo
         whenever(categoryCombo.isDefault) doReturn true
+        whenever(
+            repository.getCatOptionCombos(CATEGORY_COMBO_UID)
+        ) doReturn listOf(categoryOptionCombo)
 
         // When catCombo is invoked
         val eventCatCombo = configureEventCatCombo.invoke().first()
@@ -92,6 +99,7 @@ class ConfigureEventCatComboTest {
 
     companion object {
         const val CATEGORY_OPTION_COMBO_UID = "categoryOptionComboUid"
+        const val CATEGORY_COMBO_UID = "categoryComboUid"
         const val CATEGORY_UID = "categoryUid"
         const val CATEGORY_OPTION_UID = "categoryOptionUid"
     }
