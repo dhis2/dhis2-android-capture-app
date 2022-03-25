@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import android.view.LayoutInflater
-import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
@@ -13,31 +12,27 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.databinding.CategorySelectorBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.hisp.dhis.android.core.common.ObjectStyle
 
-@BindingAdapter("set_icon_style")
-fun ImageView.setIconStyle(style: ObjectStyle?) {
+@BindingAdapter("set_metadata_icon")
+fun ComposeView.setIconStyle(style: ObjectStyle?) {
     style?.let {
         val color = ColorUtils.getColorFrom(
             style.color(),
             ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
         )
-
-        background = ColorUtils.tintDrawableWithColor(
-            background,
-            color
+        val resource = ResourceManager(context).getObjectStyleDrawableResource(
+            style.icon(),
+            R.drawable.ic_default_outline
         )
-
-        setImageResource(
-            ResourceManager(context).getObjectStyleDrawableResource(
-                style.icon(),
-                R.drawable.ic_default_outline
-            )
+        setUpMetadataIcon(
+            MetadataIconData(color, resource, 48),
+            true
         )
-
-        setColorFilter(ColorUtils.getContrastColor(color))
     }
 }
 
