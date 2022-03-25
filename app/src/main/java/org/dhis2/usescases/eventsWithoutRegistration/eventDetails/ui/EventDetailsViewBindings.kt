@@ -36,15 +36,19 @@ fun ComposeView.setIconStyle(style: ObjectStyle?) {
     }
 }
 
-@BindingAdapter(value = ["setViewModel", "setCatCombo"])
-fun LinearLayout.setCatCombo(viewModel: EventDetailsViewModel, eventCatCombo: EventCatCombo) {
+@BindingAdapter(value = ["setViewModel", "setCatCombo", "enabled"])
+fun LinearLayout.setCatCombo(
+    viewModel: EventDetailsViewModel,
+    eventCatCombo: EventCatCombo,
+    enabled: Boolean?
+) {
     if (!eventCatCombo.isDefault) {
         this@setCatCombo.removeAllViews()
         eventCatCombo.categories.forEach { category ->
             val catSelectorBinding: CategorySelectorBinding =
                 CategorySelectorBinding.inflate(LayoutInflater.from(context))
             catSelectorBinding.catCombLayout.hint = category.name
-            catSelectorBinding.catCombo.isEnabled = viewModel.eventDetails.value?.enabled ?: true
+            catSelectorBinding.catCombo.isEnabled = enabled ?: true
             catSelectorBinding.catCombo.setOnClickListener {
                 viewModel.onCatComboClick(category)
             }
