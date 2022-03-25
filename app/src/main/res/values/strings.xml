@@ -872,7 +872,7 @@
     <string name="not_saved">Not saved</string>
     <string name="discard_changes">Discard changes</string>
     <string name="keep_editing">Keep editing</string>
-    <string name="review_message">Some fields need your attention. Do you want to review the form?</string>
+    <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="not_now">Not now</string>
     <string name="search_loading_more">Loading more results</string>
     <string name="search_no_results_in_program">No more results for %s</string>
@@ -889,7 +889,8 @@
     <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
-    <string name="field_errors_not_saved">Some fields have errors and they are not saved. If you exit now the changes will be discarded.</string>
+    <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
+    <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
     <string name="fields_mandatory_missing">Some mandatory fields are missing and the form cannot be saved.</string>
     <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
     <string name="re_opened">Re-opened</string>

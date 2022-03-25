@@ -27,7 +27,12 @@ class ConfigureEventCompletionDialog(
         canComplete: Boolean,
         onCompleteMessage: String?
     ): EventCompletionDialog {
-        val dialogType = getDialogType(errorFields, mandatoryFields, warningFields, canComplete)
+        val dialogType = getDialogType(
+            errorFields,
+            mandatoryFields,
+            warningFields,
+            !canComplete && onCompleteMessage != null
+        )
         val mainButton = getMainButton(dialogType)
         val secondaryButton = EventCompletionButtons(
             SecondaryButton(provider.provideNotNow()),
@@ -130,8 +135,11 @@ class ConfigureEventCompletionDialog(
         errorFields: List<FieldWithIssue>,
         mandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
-        canComplete: Boolean
+        errorOnComplete: Boolean
     ) = when {
+        errorOnComplete -> {
+            COMPLETE_ERROR
+        }
         errorFields.isNotEmpty() -> {
             ERROR
         }
@@ -140,9 +148,6 @@ class ConfigureEventCompletionDialog(
         }
         warningFields.isNotEmpty() -> {
             WARNING
-        }
-        !canComplete -> {
-            COMPLETE_ERROR
         }
         else -> {
             SUCCESSFUL

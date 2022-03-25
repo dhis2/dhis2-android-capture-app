@@ -19,7 +19,10 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
             return when (result) {
                 is FieldsWithErrorResult -> DataEntryDialogUiModel(
                     title = getString(R.string.not_saved),
-                    subtitle = getString(R.string.field_errors_not_saved),
+                    subtitle = when {
+                        result.allowDiscard -> getString(R.string.field_errors_not_saved_discard)
+                        else -> getString(R.string.field_errors_not_saved)
+                    },
                     iconResource = R.drawable.ic_error_outline,
                     fieldsWithIssues = getFieldsWithIssues(
                         result.fieldUidErrorList,
@@ -49,7 +52,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                             it
                         }
                     },
-                    iconResource = R.drawable.ic_alert,
+                    iconResource = R.drawable.ic_error_outline,
                     fieldsWithIssues = getFieldsWithIssues(
                         mandatoryFields = result.mandatoryFields.keys.toList(),
                         warningFields = result.warningFields
