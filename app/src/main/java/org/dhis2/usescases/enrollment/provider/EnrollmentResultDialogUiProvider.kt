@@ -19,10 +19,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
             return when (result) {
                 is FieldsWithErrorResult -> DataEntryDialogUiModel(
                     title = getString(R.string.not_saved),
-                    subtitle = when {
-                        result.allowDiscard -> getString(R.string.field_errors_not_saved_discard)
-                        else -> getString(R.string.field_errors_not_saved)
-                    },
+                    subtitle = getErrorSubtitle(result.allowDiscard),
                     iconResource = R.drawable.ic_error_outline,
                     fieldsWithIssues = getFieldsWithIssues(
                         result.fieldUidErrorList,
@@ -45,13 +42,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                 )
                 is MissingMandatoryResult -> DataEntryDialogUiModel(
                     title = getString(R.string.not_saved),
-                    subtitle = getString(R.string.fields_mandatory_missing).let {
-                        if (result.allowDiscard) {
-                            it.plus("\n").plus(getString(R.string.changes_will_be_discarted))
-                        } else {
-                            it
-                        }
-                    },
+                    subtitle = getMandatorySubtitle(result.allowDiscard),
                     iconResource = R.drawable.ic_error_outline,
                     fieldsWithIssues = getFieldsWithIssues(
                         mandatoryFields = result.mandatoryFields.keys.toList(),
@@ -95,5 +86,15 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                 )
             }
         ).plus(warningFields)
+    }
+
+    private fun ResourceManager.getErrorSubtitle(allowDiscard: Boolean) = when {
+        allowDiscard -> getString(R.string.field_errors_not_saved_discard)
+        else -> getString(R.string.field_errors_not_saved)
+    }
+
+    private fun ResourceManager.getMandatorySubtitle(allowDiscard: Boolean) = when {
+        allowDiscard -> getString(R.string.fields_mandatory_missing_discard)
+        else -> getString(R.string.fields_mandatory_missing)
     }
 }

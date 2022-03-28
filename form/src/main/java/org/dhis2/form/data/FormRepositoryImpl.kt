@@ -251,7 +251,9 @@ class FormRepositoryImpl(
                 fieldUid = item.uid,
                 fieldName = item.label,
                 issueType = IssueType.ERROR,
-                message = item.error ?: ""
+                message = errorItem.error?.let {
+                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                } ?: ""
             )
         }
     }

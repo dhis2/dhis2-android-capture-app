@@ -892,6 +892,7 @@
     <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
     <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
     <string name="fields_mandatory_missing">Some mandatory fields are missing and the form cannot be saved.</string>
+    <string name="fields_mandatory_missing_discard">Some mandatory fields are missing and the form cannot be saved. \nIf you exit now the changes will be discarded.</string>
     <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
     <string name="re_opened">Re-opened</string>
 </resources>
