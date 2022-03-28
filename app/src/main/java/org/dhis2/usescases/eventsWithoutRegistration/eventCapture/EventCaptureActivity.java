@@ -232,13 +232,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void attemptToReopen() {
-        FormBottomDialog.getInstance()
-                .setAccessDataWrite(presenter.canWrite())
-                .setIsExpired(presenter.hasExpired())
-                .setReopen(true)
-                .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+    public void SaveAndFinish() {
+        displayMessage(getString(R.string.saved));
+        setAction(ActionType.FINISH);
     }
 
     @Override

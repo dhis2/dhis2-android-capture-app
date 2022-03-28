@@ -33,7 +33,7 @@ public class EventCaptureContract {
 
         void finishDataEntry();
 
-        void attemptToReopen();
+        void SaveAndFinish();
 
         void showSnackBar(int messageId);
 
