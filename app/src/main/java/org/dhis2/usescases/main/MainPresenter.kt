@@ -12,7 +12,6 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
@@ -167,15 +166,8 @@ class MainPresenter(
                         FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
-                        view.startActivity(
-                            LoginActivity::class.java,
-                            LoginActivity.bundle(
-                                goToManageAccounts = repository.canManageAccounts()
-                            ),
-                            true,
-                            true,
-                            null
-                        )
+                        val canManageAccounts = repository.canManageAccounts()
+                        view.goToLogin(canManageAccounts = canManageAccounts)
                     },
                     { Timber.e(it) }
                 )
@@ -183,7 +175,6 @@ class MainPresenter(
     }
 
     fun onDeleteAccount() {
-        val users = userManager.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
         view.showProgressDeleteNotification()
 
         deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
@@ -191,17 +182,7 @@ class MainPresenter(
         userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
         view.cancelNotifications()
 
-        if (users > MIN_USERS) {
-            view.startActivity(
-                LoginActivity::class.java,
-                LoginActivity.bundle(goToManageAccounts = repository.canManageAccounts()),
-                true,
-                true,
-                null
-            )
-        } else {
-            view.startActivity(LoginActivity::class.java, null, true, true, null)
-        }
+        view.goToLogin(repository.canManageAccounts())
     }
 
     fun onSyncAllClick() {

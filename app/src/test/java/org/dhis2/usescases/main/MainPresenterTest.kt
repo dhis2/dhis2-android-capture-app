@@ -118,12 +118,16 @@ class MainPresenterTest {
     fun `Should log out`() {
         whenever(repository.logOut()) doReturn Completable.complete()
 
+        whenever(
+            repository.canManageAccounts()
+        )doReturn true
+
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
         verify(preferences).setValue(PIN, null)
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test
@@ -226,13 +230,17 @@ class MainPresenterTest {
             secondRandomUserAccount
         )
 
+        whenever(
+            repository.canManageAccounts()
+        )doReturn true
+
         presenter.onDeleteAccount()
 
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test
