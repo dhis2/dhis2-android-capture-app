@@ -123,12 +123,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             animateFabButton(isSectionVisible);
             return Unit.INSTANCE;
         });
-        presenter.showOrHideSaveButton();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        presenter.showOrHideSaveButton();
     }
 
     @Override
