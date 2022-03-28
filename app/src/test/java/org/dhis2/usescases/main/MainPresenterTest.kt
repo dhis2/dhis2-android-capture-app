@@ -190,6 +190,7 @@ class MainPresenterTest {
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(view.obtainFileView()) doReturn randomFile
+        whenever(repository.canManageAccounts()) doReturn true
 
         presenter.onDeleteAccount()
 
@@ -197,7 +198,7 @@ class MainPresenterTest {
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).cancelNotifications()
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test
