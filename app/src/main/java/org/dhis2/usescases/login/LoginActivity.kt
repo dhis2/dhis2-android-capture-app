@@ -71,6 +71,7 @@ import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
+const val TO_MANAGE_ACCOUNT = "TO_MANAGE_ACCOUNT"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -95,9 +96,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var openIDRequestCode = -1
 
     companion object {
-        fun bundle(skipSync: Boolean = false): Bundle {
+        fun bundle(skipSync: Boolean = false, goToManageAccounts: Boolean = false): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
+                putBoolean(TO_MANAGE_ACCOUNT, goToManageAccounts)
             }
         }
     }
@@ -118,6 +120,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+
+        if (intent.getBooleanExtra(TO_MANAGE_ACCOUNT, false)) {
+            openAccountsActivity()
+        }
+
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -470,10 +477,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearUserNameButton.visibility = View.VISIBLE
     }
 
+    /*
+    * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
+    * */
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
         binding.userNameEdit.setText(userName ?: "")
         binding.userPassEdit.text = null
+//        skipSync = wasAccountClicked
         if (wasAccountClicked) {
             binding.serverUrlEdit.isEnabled = false
             binding.userNameEdit.isEnabled = false

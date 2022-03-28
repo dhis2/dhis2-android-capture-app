@@ -52,13 +52,19 @@ class SplashPresenter internal constructor(
                             view.goToNextScreen(
                                 userLogged,
                                 preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
-                                preferenceProvider.getBoolean(Preference.INITIAL_SYNC_DONE, false)
+                                preferenceProvider.getBoolean(Preference.INITIAL_SYNC_DONE, false),
+                                userManager.hasMultipleAccounts()
                             )
                         },
                         { Timber.d(it) }
                     )
             )
-        } ?: view.goToNextScreen(false, sessionLocked = false, initialSyncDone = false)
+        } ?: view.goToNextScreen(
+            false,
+            sessionLocked = false,
+            initialSyncDone = false,
+            hasMultipleAccounts = false
+        )
     }
 
     private fun trackUserInfo() {

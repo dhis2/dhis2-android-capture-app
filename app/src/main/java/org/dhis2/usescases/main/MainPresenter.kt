@@ -3,7 +3,6 @@ package org.dhis2.usescases.main
 import android.view.Gravity
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import java.lang.Exception
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
@@ -168,7 +167,15 @@ class MainPresenter(
                         FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
-                        view.startActivity(LoginActivity::class.java, null, true, true, null)
+                        view.startActivity(
+                            LoginActivity::class.java,
+                            LoginActivity.bundle(
+                                goToManageAccounts = repository.canManageAccounts()
+                            ),
+                            true,
+                            true,
+                            null
+                        )
                     },
                     { Timber.e(it) }
                 )
@@ -184,8 +191,14 @@ class MainPresenter(
         userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
         view.cancelNotifications()
 
-        if (users > MIN_USERS) { // to change in the future for goToAccounts
-            view.startActivity(LoginActivity::class.java, null, true, true, null)
+        if (users > MIN_USERS) {
+            view.startActivity(
+                LoginActivity::class.java,
+                LoginActivity.bundle(goToManageAccounts = repository.canManageAccounts()),
+                true,
+                true,
+                null
+            )
         } else {
             view.startActivity(LoginActivity::class.java, null, true, true, null)
         }
