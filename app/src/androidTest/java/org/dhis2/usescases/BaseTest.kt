@@ -57,6 +57,7 @@ open class BaseTest {
     open fun setUp() {
         injectDependencies()
         registerCountingIdlingResource()
+        setupCredentials()
     }
 
     private fun injectDependencies() {
