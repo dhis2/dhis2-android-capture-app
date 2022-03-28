@@ -233,7 +233,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void SaveAndFinish() {
-        showSnackBar(R.string.saved);
+        displayMessage(getString(R.string.saved));
         setAction(ActionType.FINISH);
     }
 
