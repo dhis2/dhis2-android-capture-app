@@ -60,7 +60,7 @@
                     <ImageView
                         android:id="@+id/syncButton"
                         style="@style/ActionIcon"
-                        android:onClick="showMoreOptions"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/moreOptions"
                         app:layout_constraintTop_toTopOf="parent"
