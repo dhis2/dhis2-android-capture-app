@@ -190,24 +190,24 @@ class FormRepositoryImpl(
             )
         } ?: emptyList()
         val result = when {
-            mandatoryItemsWithoutValue.isNotEmpty() -> {
-                showWarnigns = true
-                MissingMandatoryResult(
-                    mandatoryFields = mandatoryItemsWithoutValue,
-                    errorFields = itemsWithErrors,
-                    warningFields = itemsWithWarning,
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard
-                )
-            }
-            itemsWithErrors.isNotEmpty() -> {
+            itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
                 showWarnigns =
                     showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
                 showErrors = true
                 FieldsWithErrorResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
                     fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard
+                )
+            }
+            mandatoryItemsWithoutValue.isNotEmpty() -> {
+                showWarnigns = true
+                MissingMandatoryResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
                     warningFields = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
@@ -251,7 +251,9 @@ class FormRepositoryImpl(
                 fieldUid = item.uid,
                 fieldName = item.label,
                 issueType = IssueType.ERROR,
-                message = item.error ?: ""
+                message = errorItem.error?.let {
+                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                } ?: ""
             )
         }
     }

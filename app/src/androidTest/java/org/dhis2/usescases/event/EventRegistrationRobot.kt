@@ -100,6 +100,6 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
     fun clickNextButton() {
-        onView(withId(R.id.action_button)).perform(click())
+        waitForView(withId(R.id.action_button)).perform(click())
     }
 }
