@@ -39,6 +39,8 @@ import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.granularsync.GranularSyncContracts;
@@ -69,7 +71,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodId;
 
     boolean accessDataWrite;
-    private List<String> sections;
 
     @Inject
     DataSetTableContract.Presenter presenter;
@@ -210,7 +211,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        viewPagerAdapter = new DataSetSectionAdapter(this,
+                accessDataWrite,
+                getIntent().getStringExtra(Constants.DATA_SET_UID),
+                orgUnitUid,
+                periodId,
+                catOptCombo);
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.viewPager.setOffscreenPageLimit(MAX_ITEM_CACHED_VIEWPAGER2);
@@ -236,24 +242,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setSections(List<String> sections) {
-        this.sections = sections;
-        if (sections.contains(NO_SECTION) && sections.size() > 1) {
-            sections.remove(NO_SECTION);
-            sections.add(getString(R.string.dataset_data));
-        }
-        viewPagerAdapter.swapData(sections);
+    public void setSections(List<DataSetSection> sections) {
+        viewPagerAdapter.swapData(
+                DataSetSectionKt.replaceNoSection(sections,getString(R.string.dataset_data))
+        );
         binding.navigationView.selectItemAt(1);
         binding.viewPager.setCurrentItem(1);
     }
 
-    public void updateTabLayout(String section, int numTables) {
-        if (sections.get(0).equals(NO_SECTION)) {
-            sections.remove(NO_SECTION);
-            sections.add(getString(R.string.dataset_data));
-            viewPagerAdapter.swapData(sections);
-            binding.viewPager.setCurrentItem(1);
-        }
+    public void updateTabLayout() {
+
     }
 
     public DataSetTableContract.Presenter getPresenter() {

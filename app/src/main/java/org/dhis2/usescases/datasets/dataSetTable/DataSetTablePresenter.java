@@ -281,4 +281,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 Actions.SYNC_DATASET,
                 Labels.CLICK);
     }
+
+    @Override
+    public boolean dataSetHasDataElementDecoration() {
+        return tableRepository.hasDataElementDecoration();
+    }
 }

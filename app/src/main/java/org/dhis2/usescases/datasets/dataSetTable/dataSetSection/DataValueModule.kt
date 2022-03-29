@@ -13,13 +13,16 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 
 @Module
 class DataValueModule(
     private val dataSetUid: String,
+    private val sectionUid: String,
+    private val orgUnitUid: String,
+    private val periodId: String,
+    private val attributeOptionComboUid: String,
     private val view: DataValueContract.View
 ) {
 
@@ -35,8 +38,6 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        analyticsHelper: AnalyticsHelper,
-        preferenceProvider: PreferenceProvider,
         updateProcessor: FlowableProcessor<Unit>
     ): DataValuePresenter {
         return DataValuePresenter(
@@ -44,17 +45,25 @@ class DataValueModule(
             repository,
             valueStore,
             schedulerProvider,
-            analyticsHelper,
-            preferenceProvider,
-            dataSetUid,
             updateProcessor
         )
     }
 
     @Provides
     @PerFragment
-    internal fun DataValueRepository(d2: D2): DataValueRepository {
-        return DataValueRepositoryImpl(d2, dataSetUid)
+    internal fun DataValueRepository(
+        d2: D2,
+        preferenceProvider: PreferenceProvider
+    ): DataValueRepository {
+        return DataValueRepository(
+            d2,
+            dataSetUid,
+            sectionUid,
+            orgUnitUid,
+            periodId,
+            attributeOptionComboUid,
+            preferenceProvider
+        )
     }
 
     @Provides

@@ -73,20 +73,20 @@ class ValueStoreImpl(
 
     override fun save(dataValue: DataSetTableModel): Flowable<StoreResult> {
         val dataValueObject = d2.dataValueModule().dataValues().value(
-            dataValue.period(),
-            dataValue.organisationUnit(),
-            dataValue.dataElement(),
-            dataValue.categoryOptionCombo(),
-            dataValue.attributeOptionCombo()
+            dataValue.period,
+            dataValue.organisationUnit,
+            dataValue.dataElement,
+            dataValue.categoryOptionCombo,
+            dataValue.attributeOptionCombo
         )
 
-        return if (!dataValue.value().isNullOrEmpty()) {
+        return if (!dataValue.value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
-                dataValueObject.blockingGet().value() == dataValue.value()
+                dataValueObject.blockingGet().value() == dataValue.value
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                dataValueObject.set(dataValue.value())
+                dataValueObject.set(dataValue.value)
                     .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
             }
         } else {

@@ -8,6 +8,7 @@ import io.reactivex.processors.PublishProcessor
 import java.util.Date
 import javax.inject.Singleton
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.validationrules.DataToReview
 import org.dhis2.utils.validationrules.ValidationRuleResult
 import org.dhis2.utils.validationrules.Violation
@@ -97,13 +98,13 @@ class DataSetTableRepositoryImpl(
         ).toFlowable()
     }
 
-    fun getSections(): Flowable<List<String>> {
+    fun getSections(): Flowable<List<DataSetSection>> {
         return d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
             .map { sections ->
                 if (sections.isEmpty()) {
-                    arrayListOf("NO_SECTION")
+                    arrayListOf(DataSetSection("NO_SECTION", "NO_SECTION"))
                 } else {
-                    sections.map { it.displayName()!! }
+                    sections.map { DataSetSection(it.uid(), it.displayName()) }
                 }
             }.toFlowable()
     }
@@ -377,5 +378,11 @@ class DataSetTableRepositoryImpl(
             .byDeleted().isFalse
             .isEmpty
             .map { isEmpty -> !isEmpty }
+    }
+
+    fun hasDataElementDecoration(): Boolean {
+        return d2.dataSetModule().dataSets().uid(dataSetUid)
+            .blockingGet()
+            .dataElementDecoration() == true
     }
 }
