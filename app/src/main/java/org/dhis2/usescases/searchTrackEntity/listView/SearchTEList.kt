@@ -146,7 +146,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                     if (LocalConfiguration.current.orientation ==
                         Configuration.ORIENTATION_PORTRAIT
                     ) {
-                        val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                        val isScrollingDown/* by viewModel.isScrollingDown.observeAsState(false)*/ =
+                            false
                         FullSearchButton(
                             modifier = Modifier,
                             visible = !isScrollingDown,
