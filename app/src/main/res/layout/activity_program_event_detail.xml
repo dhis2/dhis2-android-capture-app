@@ -63,8 +63,8 @@
             <ImageView
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"
-                android:onClick="showMoreOptions"
                 app:layout_constraintEnd_toStartOf="@id/filter"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
                 app:tint="?colorOnPrimary"

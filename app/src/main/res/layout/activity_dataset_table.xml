@@ -66,7 +66,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_sync"
                         app:tint="?colorOnPrimary"
-                        tools:ignore="ContentDescription" />
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible"/>
 
                     <ImageView
                         android:id="@+id/moreOptions"
