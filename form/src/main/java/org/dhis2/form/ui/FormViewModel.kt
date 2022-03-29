@@ -415,6 +415,17 @@ class FormViewModel(
         }
     }
 
+    fun saveDataEntry() {
+        repository.currentFocusedItem()?.takeIf {
+            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
+        }?.let {
+            submitIntent(
+                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+            )
+        }
+        submitIntent(FormIntent.OnFinish())
+    }
+
     fun loadData() {
         loading.postValue(true)
         viewModelScope.launch(Dispatchers.IO) {
@@ -428,17 +439,6 @@ class FormViewModel(
                 _items.value = emptyList()
             }
         }
-    }
-
-    fun saveDataEntry() {
-        repository.currentFocusedItem()?.takeIf {
-            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
-        }?.let {
-            submitIntent(
-                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-            )
-        }
-        submitIntent(FormIntent.OnFinish())
     }
 
     companion object {
