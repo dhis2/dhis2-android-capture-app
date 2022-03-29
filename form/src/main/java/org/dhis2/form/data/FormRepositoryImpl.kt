@@ -170,17 +170,7 @@ class FormRepositoryImpl(
 
     override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
         runDataIntegrity = true
-        val itemsWithErrors: List<FieldWithIssue> =
-            getFieldsWithError().plus(
-                ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
-                    FieldWithIssue(
-                        fieldUid = errorField.fieldUid,
-                        fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
-                        issueType = IssueType.ERROR,
-                        message = errorField.errorMessage
-                    )
-                } ?: emptyList()
-            )
+        val itemsWithErrors = getFieldsWithError()
         val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
             FieldWithIssue(
                 fieldUid = warningField.fieldUid,
@@ -251,7 +241,16 @@ class FormRepositoryImpl(
                 } ?: ""
             )
         }
-    }
+    }.plus(
+        ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
+            FieldWithIssue(
+                fieldUid = errorField.fieldUid,
+                fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
+                issueType = IssueType.ERROR,
+                message = errorField.errorMessage
+            )
+        } ?: emptyList()
+    )
 
     private fun List<FieldUiModel>.applyRuleEffects(): List<FieldUiModel> {
         val ruleEffects = ruleEffects()
@@ -323,18 +322,20 @@ class FormRepositoryImpl(
                 field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
         }?.size ?: 0
+
         val mandatoryCount = mandatoryItemsWithoutValue.takeIf {
             runDataIntegrity
         }?.filter { mandatory ->
             mandatory.value == sectionFieldUiModel.uid
         }?.size ?: 0
-        val errorCount = ruleEffectsResult?.errorMap()?.plus(getFieldsWithError().associate {
+
+        val errorCount = getFieldsWithError().associate {
             it.fieldUid to it.message
-        })?.filter { error ->
+        }.filter { error ->
             fields.firstOrNull { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
-        }?.size ?: 0
+        }.size
 
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
