@@ -45,7 +45,9 @@ QRDetailBottomDialog(
     private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
     private var primaryColor: Int? = -1
-    private val viewModel by viewModels<QRImageViewModel>()
+    private val viewModel by viewModels<QRImageViewModel> {
+        QRImageViewModelFactory()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
