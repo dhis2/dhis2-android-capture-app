@@ -357,7 +357,9 @@ class FormRepositoryImpl(
 
         return dataEntryRepository?.updateField(
             fieldUiModel,
-            fieldErrorMessageProvider.mandatoryWarning().takeIf { needsMandatoryWarning },
+            fieldErrorMessageProvider.mandatoryWarning().takeIf {
+                needsMandatoryWarning && runDataIntegrity
+            },
             ruleEffectsResult?.optionsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToShow(fieldUiModel.uid) ?: emptyList()
