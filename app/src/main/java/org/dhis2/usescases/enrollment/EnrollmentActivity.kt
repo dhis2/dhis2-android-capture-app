@@ -377,16 +377,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun performSaveClick() {
         formView.onSaveClick()
-        /*if (currentFocus is EditText) {
-            presenter.setFinishing()
-            currentFocus?.apply { clearFocus() }
-        } else {
-            if (!presenter.hasAccess()) {
-                presenter.finish(mode)
-            } else {
-                formView.requestDataIntegrityCheck()
-            }
-        }*/
     }
 
     override fun showProgress() {
