@@ -3,18 +3,14 @@ package org.dhis2.usescases.programevent
 import android.Manifest
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.fragment.app.Fragment
-import androidx.test.core.app.ActivityScenario
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -43,9 +39,7 @@ class ProgramEventTest : BaseTest() {
             clickOnAddEvent()
         }
         eventRegistrationRobot {
-            waitToDebounce(600)
             clickNextButton()
-            waitToDebounce(600)
         }
         eventRobot {
             clickOnFormFabButton()
@@ -114,7 +108,6 @@ class ProgramEventTest : BaseTest() {
             waitToDebounce(800)
             checkEventIsOpen(eventDate, eventOrgUnit)
         }
-
     }
 
     @Test
