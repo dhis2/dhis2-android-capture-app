@@ -33,8 +33,7 @@ class FormRepositoryImpl(
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItem: RowAction? = null
     private var ruleEffectsResult: RuleUtilsProviderResult? = null
-    private var showWarnigns: Boolean = false
-    private var showErrors: Boolean = false
+    private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
 
@@ -170,6 +169,7 @@ class FormRepositoryImpl(
     }
 
     override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
+        runDataIntegrity = true
         val itemsWithErrors: List<FieldWithIssue> =
             getFieldsWithError().plus(
                 ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
@@ -191,9 +191,6 @@ class FormRepositoryImpl(
         } ?: emptyList()
         val result = when {
             itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
-                showWarnigns =
-                    showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
-                showErrors = true
                 FieldsWithErrorResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
                     fieldUidErrorList = itemsWithErrors,
@@ -204,7 +201,6 @@ class FormRepositoryImpl(
                 )
             }
             mandatoryItemsWithoutValue.isNotEmpty() -> {
-                showWarnigns = true
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
                     errorFields = itemsWithErrors,
@@ -215,7 +211,6 @@ class FormRepositoryImpl(
                 )
             }
             itemsWithWarning.isNotEmpty() -> {
-                showWarnigns = true
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
@@ -323,15 +318,19 @@ class FormRepositoryImpl(
             }
         }
 
-        val warningCount =
-            ruleEffectsResult?.takeIf { showWarnigns }?.warningMap()?.filter { warning ->
-                fields.firstOrNull { field ->
-                    field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
-                } != null
-            }?.size ?: 0
-        val mandatoryCount = mandatoryItemsWithoutValue.takeIf { showWarnigns }
-            ?.filter { it.value == sectionFieldUiModel.uid }?.size ?: 0
-        val errorCount = ruleEffectsResult?.takeIf { showErrors }?.errorMap()?.filter { error ->
+        val warningCount = ruleEffectsResult?.warningMap()?.filter { warning ->
+            fields.firstOrNull { field ->
+                field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
+            } != null
+        }?.size ?: 0
+        val mandatoryCount = mandatoryItemsWithoutValue.takeIf {
+            runDataIntegrity
+        }?.filter { mandatory ->
+            mandatory.value == sectionFieldUiModel.uid
+        }?.size ?: 0
+        val errorCount = ruleEffectsResult?.errorMap()?.plus(getFieldsWithError().associate {
+            it.fieldUid to it.message
+        })?.filter { error ->
             fields.firstOrNull { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
@@ -342,14 +341,14 @@ class FormRepositoryImpl(
             isOpen,
             total,
             values,
-            errorCount,
-            warningCount + mandatoryCount
+            errorCount + mandatoryCount,
+            warningCount
         ) ?: sectionFieldUiModel
     }
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = fieldUiModel.mandatory &&
-            fieldUiModel.value == null && showWarnigns
+            fieldUiModel.value == null
 
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
