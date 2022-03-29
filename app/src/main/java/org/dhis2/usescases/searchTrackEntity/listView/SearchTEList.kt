@@ -171,7 +171,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
-                    if (createButtonVisibility) {
+                    val filtersOpened by viewModel.filtersOpened.observeAsState(false)
+                    if (createButtonVisibility && !filtersOpened) {
                         CreateNewButton(
                             modifier = Modifier,
                             extended = !isScrollingDown,

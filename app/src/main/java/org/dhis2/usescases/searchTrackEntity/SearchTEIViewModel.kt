@@ -60,6 +60,9 @@ class SearchTEIViewModel(
     private val _dataResult = MutableLiveData<List<SearchResult>>()
     val dataResult: LiveData<List<SearchResult>> = _dataResult
 
+    private val _filtersOpened = MutableLiveData(false)
+    val filtersOpened: LiveData<Boolean> = _filtersOpened
+
     init {
         viewModelScope.launch {
             createButtonScrollVisibility.value = searchRepository.canCreateInProgramWithoutSearch()
@@ -503,5 +506,9 @@ class SearchTEIViewModel(
         return _pageConfiguration.value?.let {
             it.displayMapView() || it.displayAnalytics()
         } ?: false
+    }
+
+    fun setFiltersOpened(filtersOpened: Boolean) {
+        _filtersOpened.value = filtersOpened
     }
 }

@@ -736,7 +736,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.navigationBar.show();
         }
-
+        viewModel.setFiltersOpened(backDropActive);
         initSet.applyTo(binding.backdropLayout);
     }
 
