@@ -7,6 +7,7 @@ data class SearchResult(val type: SearchResultType, val extraData: String? = nul
         SEARCH,
         SEARCH_OUTSIDE,
         NO_MORE_RESULTS,
+        NO_MORE_RESULTS_OFFLINE,
         NO_RESULTS,
         TOO_MANY_RESULTS
     }

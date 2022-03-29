@@ -365,7 +365,7 @@ class SearchTEIViewModelTest {
         viewModel.dataResult.value?.apply {
             assertTrue(isNotEmpty())
             assertTrue(size == 1)
-            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS_OFFLINE)
         }
     }
 

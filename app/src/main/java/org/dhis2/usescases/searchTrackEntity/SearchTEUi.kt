@@ -80,6 +80,9 @@ fun SearchResult(
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
         SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate(searchResult.extraData!!)
         SearchResult.SearchResultType.SEARCH -> InitSearch(searchResult.extraData!!)
+        SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE -> NoMoreResults(
+            message = stringResource(id = R.string.search_no_more_results_offline)
+        )
     }
 }
 
@@ -140,8 +143,8 @@ fun FullSearchButton(
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = slideInVertically(),
-        exit = slideOutVertically()
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { -it })
     ) {
         SearchButton(
             modifier = Modifier
@@ -235,7 +238,7 @@ fun SearchOutsideProgram(
 }
 
 @Composable
-fun NoMoreResults() {
+fun NoMoreResults(message: String = stringResource(R.string.string_no_more_results)) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -243,7 +246,7 @@ fun NoMoreResults() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(R.string.string_no_more_results),
+            text = message,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(

@@ -878,6 +878,7 @@
     <string name="search_no_results_in_program">No more results for %s</string>
     <string name="search_outside_action">Search outside this program</string>
     <string name="string_no_more_results">No more results</string>
+    <string name="search_no_more_results_offline">Search for more results</string>
     <string name="search_no_results">There are no results for this search</string>
     <string name="search_too_many_results">Too many results</string>
     <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>

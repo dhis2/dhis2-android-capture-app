@@ -383,7 +383,7 @@ class SearchTEIViewModel(
     private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
         val result = when {
             hasProgramResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
+                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
             !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
                 listOf(
                     SearchResult(
