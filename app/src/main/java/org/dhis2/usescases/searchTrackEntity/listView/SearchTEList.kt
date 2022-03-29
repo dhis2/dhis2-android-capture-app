@@ -12,12 +12,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import javax.inject.Inject
+import org.dhis2.Bindings.dp
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.CreateNewButton
@@ -31,6 +34,7 @@ import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 private const val DIRECTION_DOWN = 1
+
 class SearchTEList : FragmentGlobalAbstract() {
 
     @Inject
@@ -41,6 +45,8 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
     }
+
+    private lateinit var recycler: RecyclerView
 
     private val liveAdapter by lazy {
         SearchTeiLiveAdapter(
@@ -115,6 +121,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                             viewModel.isScrollingDown.value = false
                         }
                     }
+
                     override fun onScrolled(
                         recyclerView: RecyclerView,
                         dx: Int,
@@ -128,6 +135,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                         }
                     }
                 })
+            }.also {
+                recycler = it
             }
             openSearchButton.apply {
                 setViewCompositionStrategy(
@@ -137,7 +146,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                     if (LocalConfiguration.current.orientation ==
                         Configuration.ORIENTATION_PORTRAIT
                     ) {
-                        val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                        val isScrollingDown/* by viewModel.isScrollingDown.observeAsState(false)*/ =
+                            false
                         FullSearchButton(
                             modifier = Modifier,
                             visible = !isScrollingDown,
@@ -147,6 +157,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                 }
             }
             createButton.apply {
+                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
+                        56.dp
+                    } else {
+                        16.dp
+                    }
+                    setMargins(0, 0, 0, bottomMargin)
+                }
                 setViewCompositionStrategy(
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
                 )
@@ -190,7 +208,23 @@ class SearchTEList : FragmentGlobalAbstract() {
                 }
             }
             resultAdapter.submitList(it)
+            updateRecycler()
         }
+    }
+
+    private fun updateRecycler() {
+        recycler.setPaddingRelative(
+            0,
+            when {
+                listAdapter.itemCount > 1 -> 80.dp
+                else -> 0.dp
+            },
+            0,
+            when {
+                listAdapter.itemCount > 1 -> 160.dp
+                else -> 0.dp
+            }
+        )
     }
 
     private fun restoreAdapters() {

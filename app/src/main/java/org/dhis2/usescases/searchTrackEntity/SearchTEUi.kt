@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
 @Composable
@@ -99,7 +101,11 @@ fun SearchButton(
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
-                tint = colorResource(id = R.color.colorPrimary)
+                tint = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
@@ -182,17 +188,24 @@ fun SearchOutsideProgram(
     ) {
         Text(
             text = resultText,
+            textAlign = TextAlign.Center,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
-                lineHeight = 10.sp,
                 fontFamily = FontFamily(Font(R.font.rubik_regular))
             )
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
             onClick = onSearchOutsideClick,
-            border = BorderStroke(1.dp, colorResource(id = R.color.colorPrimary)),
+            border = BorderStroke(
+                1.dp,
+                Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            ),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.white)
             )
@@ -200,10 +213,21 @@ fun SearchOutsideProgram(
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
-                tint = colorResource(id = R.color.colorPrimary)
+                tint = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
             )
             Spacer(modifier = Modifier.size(16.dp))
-            Text(text = buttonText, color = colorResource(id = R.color.colorPrimary))
+            Text(
+                text = buttonText,
+                color = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            )
         }
     }
 }
@@ -350,7 +374,14 @@ fun CreateNewButton(
 ) {
     Button(
         modifier = modifier
-            .wrapContentWidth()
+            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+            .apply {
+                if (extended) {
+                    wrapContentWidth()
+                } else {
+                    widthIn(56.dp)
+                }
+            }
             .height(56.dp),
         contentPadding = PaddingValues(16.dp),
         onClick = onClick,
@@ -362,14 +393,22 @@ fun CreateNewButton(
             modifier = Modifier.size(24.dp),
             painter = painterResource(id = R.drawable.ic_add_accent),
             contentDescription = "",
-            tint = colorResource(id = R.color.colorPrimary)
+            tint = Color(
+                ColorUtils.getPrimaryColor(
+                    LocalContext.current, ColorUtils.ColorType.PRIMARY
+                )
+            )
         )
         AnimatedVisibility(visible = extended) {
             Row {
                 Spacer(modifier = Modifier.size(12.dp))
                 Text(
                     text = stringResource(R.string.search_create_new),
-                    color = colorResource(id = R.color.colorPrimary)
+                    color = Color(
+                        ColorUtils.getPrimaryColor(
+                            LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        )
+                    )
                 )
             }
         }

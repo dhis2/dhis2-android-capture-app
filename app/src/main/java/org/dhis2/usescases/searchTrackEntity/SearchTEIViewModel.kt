@@ -498,4 +498,10 @@ class SearchTEIViewModel(
             onProgramChanged(selectedProgram?.uid())
         }
     }
+
+    fun isBottomNavigationBarVisible(): Boolean {
+        return _pageConfiguration.value?.let {
+            it.displayMapView() || it.displayAnalytics()
+        } ?: false
+    }
 }
