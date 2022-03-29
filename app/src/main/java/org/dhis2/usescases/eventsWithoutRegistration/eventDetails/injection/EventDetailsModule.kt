@@ -100,7 +100,8 @@ class EventDetailsModule(
         periodUtils: DhisPeriodUtils,
         preferencesProvider: PreferenceProvider,
         geometryController: GeometryController,
-        locationProvider: LocationProvider
+        locationProvider: LocationProvider,
+        eventDetailResourcesProvider: EventDetailResourcesProvider
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -140,7 +141,8 @@ class EventDetailsModule(
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(
                 repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider
-            )
+            ),
+            eventDetailResourcesProvider = eventDetailResourcesProvider
         )
     }
 }

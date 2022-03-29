@@ -258,76 +258,68 @@ class FormView(
         }
 
         viewModel.savedValue.observe(
-            viewLifecycleOwner,
-            { rowAction ->
-                onItemChangeListener?.let { it(rowAction) }
-            }
-        )
+            viewLifecycleOwner
+        ) { rowAction ->
+            onItemChangeListener?.let { it(rowAction) }
+        }
 
         viewModel.queryData.observe(
-            viewLifecycleOwner,
-            { rowAction ->
-                if (needToForceUpdate) {
-                    onItemChangeListener?.let { it(rowAction) }
-                }
+            viewLifecycleOwner
+        ) { rowAction ->
+            if (needToForceUpdate) {
+                onItemChangeListener?.let { it(rowAction) }
             }
-        )
+        }
 
         viewModel.items.observe(
-            viewLifecycleOwner,
-            { items ->
-                render(items)
-            }
-        )
+            viewLifecycleOwner
+        ) { items ->
+            render(items)
+        }
 
         viewModel.loading.observe(
-            viewLifecycleOwner,
-            { loading ->
-                if (onLoadingListener != null) {
-                    onLoadingListener.invoke(loading)
+            viewLifecycleOwner
+        ) { loading ->
+            if (onLoadingListener != null) {
+                onLoadingListener.invoke(loading)
+            } else {
+                if (loading) {
+                    binding.progress.show()
                 } else {
-                    if (loading) {
-                        binding.progress.show()
-                    } else {
-                        binding.progress.hide()
-                    }
+                    binding.progress.hide()
                 }
             }
-        )
+        }
 
         viewModel.confError.observe(
-            viewLifecycleOwner,
-            { confErrors ->
-                displayConfigurationErrors(confErrors)
-            }
-        )
+            viewLifecycleOwner
+        ) { confErrors ->
+            displayConfigurationErrors(confErrors)
+        }
 
         viewModel.showToast.observe(
-            viewLifecycleOwner,
-            { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        )
+            viewLifecycleOwner
+        ) { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
 
         viewModel.focused.observe(
-            viewLifecycleOwner,
-            { onFocused?.invoke() }
-        )
+            viewLifecycleOwner
+        ) { onFocused?.invoke() }
 
         viewModel.showInfo.observe(
-            viewLifecycleOwner,
-            { infoUiModel ->
-                CustomDialog(
-                    requireContext(),
-                    requireContext().getString(infoUiModel.title),
-                    requireContext().getString(infoUiModel.description),
-                    requireContext().getString(R.string.action_close),
-                    null,
-                    Constants.DESCRIPTION_DIALOG,
-                    null
-                ).show()
-            }
-        )
+            viewLifecycleOwner
+        ) { infoUiModel ->
+            CustomDialog(
+                requireContext(),
+                requireContext().getString(infoUiModel.title),
+                requireContext().getString(infoUiModel.description),
+                requireContext().getString(R.string.action_close),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+            ).show()
+        }
 
         viewModel.dataIntegrityResult.observe(
             viewLifecycleOwner
@@ -343,20 +335,18 @@ class FormView(
         }
 
         viewModel.completionPercentage.observe(
-            viewLifecycleOwner,
-            { percentage ->
-                completionListener?.invoke(percentage)
-            }
-        )
+            viewLifecycleOwner
+        ) { percentage ->
+            completionListener?.invoke(percentage)
+        }
 
         viewModel.calculationLoop.observe(
-            viewLifecycleOwner,
-            { displayLoopWarning ->
-                if (displayLoopWarning) {
-                    showLoopWarning()
-                }
+            viewLifecycleOwner
+        ) { displayLoopWarning ->
+            if (displayLoopWarning) {
+                showLoopWarning()
             }
-        )
+        }
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
@@ -836,8 +826,8 @@ class FormView(
         viewModel.runDataIntegrityCheck(backButtonPressed = true)
     }
 
-    fun discardChanges() {
-        viewModel.discardChanges()
+    fun reload() {
+        viewModel.loadData()
     }
 
     class Builder {

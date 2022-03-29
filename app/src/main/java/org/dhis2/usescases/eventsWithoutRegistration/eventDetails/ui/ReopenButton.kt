@@ -2,6 +2,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -27,13 +30,18 @@ import org.dhis2.R
 @ExperimentalAnimationApi
 @Composable
 fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
-    AnimatedVisibility(visible = visible) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Button(
             onClick = onReopenClickListener,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.section_warning_color)
             ),
+            contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .height(40.dp)
                 .wrapContentWidth()

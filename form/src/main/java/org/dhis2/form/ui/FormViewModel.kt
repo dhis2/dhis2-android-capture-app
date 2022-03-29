@@ -75,18 +75,7 @@ class FormViewModel(
                     displayResult(result)
                 }
         }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = async {
-                repository.fetchFormItems()
-            }
-            try {
-                _items.postValue(result.await())
-            } catch (e: Exception) {
-                Timber.e(e)
-                _items.value = emptyList()
-            }
-        }
+        loadData()
     }
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
@@ -275,7 +264,7 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    fun processCalculatedItems() {
+    private fun processCalculatedItems() {
         _items.value = repository.composeList()
     }
 
@@ -327,6 +316,21 @@ class FormViewModel(
     fun discardChanges() {
         repository.backupOfChangedItems().forEach {
             submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
+        }
+    }
+
+    fun loadData() {
+        loading.postValue(true)
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = async {
+                repository.fetchFormItems()
+            }
+            try {
+                _items.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+                _items.value = emptyList()
+            }
         }
     }
 

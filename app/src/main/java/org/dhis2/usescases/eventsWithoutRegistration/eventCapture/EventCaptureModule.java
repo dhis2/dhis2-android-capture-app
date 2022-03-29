@@ -185,14 +185,12 @@ public class EventCaptureModule {
     @PerActivity
     org.dhis2.data.forms.dataentry.EventRepository provideEventDataEntryRepository(
             D2 d2,
-            FieldViewModelFactory modelFactory,
-            ResourceManager resourceManager
+            FieldViewModelFactory modelFactory
     ) {
         return new org.dhis2.data.forms.dataentry.EventRepository(
                 modelFactory,
                 eventUid,
-                d2,
-                resourceManager
+                d2
         );
     }
 

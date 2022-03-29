@@ -21,13 +21,10 @@ import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -126,12 +123,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             animateFabButton(isSectionVisible);
             return Unit.INSTANCE;
         });
-        presenter.showOrHideSaveButton();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        presenter.showOrHideSaveButton();
     }
 
     @Override
@@ -168,5 +165,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void showSaveButton() {
         binding.actionButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onReopen() {
+        formView.reload();
     }
 }
