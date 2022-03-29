@@ -293,6 +293,7 @@
                 style="@style/NoBackgroundButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/rubik_regular"
                 android:layout_marginTop="6dp"
                 android:text="@string/manage_accounts"
                 android:onClick="@{() -> presenter.onManageAccountClicked()}"

@@ -475,12 +475,16 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userNameEdit.setText(userName ?: "")
         binding.userPassEdit.text = null
         if (wasAccountClicked) {
+            binding.serverUrlEdit.alpha = 0.5f
             binding.serverUrlEdit.isEnabled = false
+            binding.userNameEdit.alpha = 0.5f
             binding.userNameEdit.isEnabled = false
             binding.clearUrl.visibility = View.GONE
             binding.clearUserNameButton.visibility = View.GONE
         } else {
+            binding.serverUrlEdit.alpha = 1f
             binding.serverUrlEdit.isEnabled = true
+            binding.userNameEdit.alpha = 1f
             binding.userNameEdit.isEnabled = true
             binding.clearUrl.visibility = View.VISIBLE
             binding.clearUserNameButton.visibility = View.VISIBLE
