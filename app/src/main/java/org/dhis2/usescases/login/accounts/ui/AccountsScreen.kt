@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -132,8 +131,8 @@ fun AccountsPreview() {
     AccountsScreen(
         listOf(
             AccountModel("android", "https://play.dhis2.com/android-dev"),
-            AccountModel("android", "https://play.dhis2.com/android-current")
-            //AccountModel("admin", "https://play.dhis2.com/android-dev")
+            AccountModel("android", "https://play.dhis2.com/android-current"),
+            AccountModel("admin", "https://play.dhis2.com/android-dev")
         ),
         {},
         {}
