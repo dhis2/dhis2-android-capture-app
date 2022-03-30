@@ -31,7 +31,6 @@ import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION
@@ -211,9 +210,14 @@ class MainActivity :
             .build().show(supportFragmentManager, "ALL_SYNC")
     }
 
-    override fun goToAccounts() {
-        startActivity(Intent(this, AccountsActivity::class.java))
-        finish()
+    override fun goToLogin(canManageAccounts: Boolean) {
+        startActivity(
+            LoginActivity::class.java,
+            LoginActivity.bundle(goToManageAccounts = canManageAccounts),
+            true,
+            true,
+            null
+        )
     }
 
     override fun renderUsername(username: String) {

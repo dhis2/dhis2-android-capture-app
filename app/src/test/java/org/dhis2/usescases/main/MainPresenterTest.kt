@@ -26,7 +26,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -118,12 +117,16 @@ class MainPresenterTest {
     fun `Should log out`() {
         whenever(repository.logOut()) doReturn Completable.complete()
 
+        whenever(
+            repository.canManageAccounts()
+        )doReturn true
+
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
         verify(preferences).setValue(PIN, null)
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test
@@ -186,6 +189,7 @@ class MainPresenterTest {
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(view.obtainFileView()) doReturn randomFile
+        whenever(repository.canManageAccounts()) doReturn true
 
         presenter.onDeleteAccount()
 
@@ -193,7 +197,7 @@ class MainPresenterTest {
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).cancelNotifications()
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test
@@ -226,13 +230,17 @@ class MainPresenterTest {
             secondRandomUserAccount
         )
 
+        whenever(
+            repository.canManageAccounts()
+        )doReturn true
+
         presenter.onDeleteAccount()
 
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()
-        verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
+        verify(view).goToLogin(true)
     }
 
     @Test

@@ -406,7 +406,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true), true, true, null);
+                        startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true,false), true, true, null);
                     }
 
                     @Override

@@ -48,4 +48,8 @@ class HomeRepositoryImpl(
     override fun getServerVersion(): Single<SystemInfo> {
         return D2Manager.getD2().systemInfoModule().systemInfo().get()
     }
+
+    override fun canManageAccounts(): Boolean {
+        return d2.userModule().accountManager().getAccounts().size > 1
+    }
 }
