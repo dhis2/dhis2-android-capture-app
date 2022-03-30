@@ -53,6 +53,7 @@ class SearchTEIViewModel(
     val isScrollingDown = MutableLiveData(false)
 
     private var searching: Boolean = false
+    private var _filtersActive = MutableLiveData(false)
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
@@ -74,8 +75,9 @@ class SearchTEIViewModel(
         val displayFrontPageList =
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !searchRepository.canCreateInProgramWithoutSearch() &&
-            !searching
+                !searchRepository.canCreateInProgramWithoutSearch() &&
+                !searching &&
+                _filtersActive.value == false
         createButtonScrollVisibility.value = if (searching) {
             true
         } else {
@@ -153,6 +155,10 @@ class SearchTEIViewModel(
             else -> {
             }
         }
+    }
+
+    fun updateActiveFilters(filtersActive: Boolean) {
+        _filtersActive.value = filtersActive
     }
 
     fun refreshData() {
@@ -397,7 +403,7 @@ class SearchTEIViewModel(
             else -> listOf()
         }
 
-        if (result.isEmpty()) {
+        if (result.isEmpty() && _filtersActive.value == false) {
             setSearchScreen(isLandscape)
         }
 
