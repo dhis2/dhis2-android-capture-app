@@ -48,7 +48,6 @@ class DataSetDetailPresenterTest {
         whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
         whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
-        whenever(view.observeReopenChanges()) doReturn Flowable.empty()
 
         presenter.init()
 
@@ -64,7 +63,6 @@ class DataSetDetailPresenterTest {
         whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
         whenever(repository.isComplete()) doReturn Single.just(false)
         whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
-        whenever(view.observeReopenChanges()) doReturn Flowable.empty()
 
         presenter.init()
 

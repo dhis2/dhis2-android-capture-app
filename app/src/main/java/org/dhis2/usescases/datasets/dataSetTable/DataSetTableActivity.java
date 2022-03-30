@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
@@ -43,7 +42,6 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.granularsync.GranularSyncContracts;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
@@ -56,8 +54,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
@@ -83,7 +79,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private DataSetTableComponent dataSetTableComponent;
 
     private BottomSheetBehavior<View> behavior;
-    private FlowableProcessor<Boolean> reopenProcessor;
     private boolean isKeyboardOpened = false;
 
     private static final int MAX_ITEM_CACHED_VIEWPAGER2 = 2;
@@ -118,7 +113,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
-        reopenProcessor = PublishProcessor.create();
 
         dataSetTableComponent = ((App) getApplicationContext()).userComponent()
                 .plus(new DataSetTableModule(this,
@@ -553,7 +547,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void displayReopenedMessage(boolean done) {
         if (done) {
             Toast.makeText(this, R.string.action_done, Toast.LENGTH_SHORT).show();
-            reopenProcessor.onNext(true);
         }
 
     }
@@ -578,9 +571,5 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 Toast.LENGTH_SHORT
         ).show();
         finish();
-    }
-
-    public FlowableProcessor<Boolean> observeReopenChanges() {
-        return reopenProcessor;
     }
 }

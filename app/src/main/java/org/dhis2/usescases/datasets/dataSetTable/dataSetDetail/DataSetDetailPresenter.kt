@@ -75,16 +75,6 @@ class DataSetDetailPresenter(
                     { error -> Timber.d(error) }
                 )
         )
-
-        disposable.add(
-            view.observeReopenChanges()
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.io())
-                .subscribe(
-                    { updateProcessor.onNext(Unit) },
-                    { Timber.e(it) }
-                )
-        )
     }
 
     fun detach() {
