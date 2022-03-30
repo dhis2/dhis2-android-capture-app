@@ -15,8 +15,11 @@ class TestingInjector {
     companion object {
         private const val CONFIG_FILE = "smsconfig"
 
+        private var keystore: AndroidSecureStore? = null
+
         fun providesKeyStoreRobot(context: Context): KeyStoreRobot {
-            return KeyStoreRobot(AndroidSecureStore(context))
+             keystore = AndroidSecureStore(context)
+             return KeyStoreRobot(AndroidSecureStore(context))
         }
         fun providesPreferencesRobot(context: Context): PreferencesRobot {
             return PreferencesRobot(PreferenceTestingImpl(context),
@@ -30,6 +33,9 @@ class TestingInjector {
         }
         fun provideDBImporter(context: Context): DBTestLoader {
             return DBTestLoader(context)
+        }
+        fun getStorage(): AndroidSecureStore {
+            return keystore!!
         }
     }
 }
