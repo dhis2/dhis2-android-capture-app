@@ -15,7 +15,6 @@ import org.dhis2.form.model.UiRenderType
 
 @BindingAdapter("action_icon")
 fun ImageView.setActionIcon(model: FieldUiModel) {
-    isClickable = model.editable
     val iconRes = when (model.renderingType) {
         UiRenderType.QR_CODE -> R.drawable.ic_form_qr
         UiRenderType.BAR_CODE -> R.drawable.ic_form_barcode
