@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
@@ -20,9 +23,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
 
 const val DATASET_UID = "DATASET_UID"
 const val DATASET_ACCESS = "DATASET_ACCESS"
