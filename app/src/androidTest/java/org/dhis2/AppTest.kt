@@ -45,8 +45,8 @@ class AppTest : App() {
         }
         D2Manager.also {
             setTestingSecureStore(TestingInjector.getStorage())
-            setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
             blockingInstantiateD2(ServerModule.getD2Configuration(this))
+            setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
         }
 
         serverComponent = appComponent.plus(ServerModule())
