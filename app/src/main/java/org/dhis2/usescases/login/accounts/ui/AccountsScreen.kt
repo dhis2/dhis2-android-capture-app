@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
@@ -52,7 +55,7 @@ fun AccountsScreen(
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(Color.White)
         ) {
-            LazyColumn(Modifier.padding(top = 16.dp)) {
+            LazyColumn(Modifier.padding(top = 16.dp, bottom = 48.dp)) {
                 items(accounts) {
                     AccountItem(
                         Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -79,12 +82,17 @@ fun AccountsScreen(
                     elevation = ButtonDefaults.elevation(
                         defaultElevation = 5.dp,
                         pressedElevation = 15.dp,
-                        disabledElevation = 5.dp
+                        disabledElevation = 0.dp
                     ),
                     enabled = accounts.size < MAX_ACCOUNTS,
                     onClick = { onAddAccountClicked() }
                 ) {
-                    Text(stringResource(R.string.add_accout).toUpperCase(Locale.current))
+                    Text(
+                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
+                        fontFamily = FontFamily(
+                            Font(R.font.rubik_regular, FontWeight.Medium)
+                        )
+                    )
                 }
             }
         }

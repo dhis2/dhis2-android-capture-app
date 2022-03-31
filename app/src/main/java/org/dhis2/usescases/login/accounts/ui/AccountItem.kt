@@ -31,7 +31,7 @@ fun AccountItem(
     onItemClicked: (AccountModel) -> Unit
 ) {
     Card(
-        elevation = 8.dp,
+        elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .fillMaxWidth()
