@@ -145,11 +145,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void performSaveClick() {
-        if (activity.getCurrentFocus() instanceof EditText) {
-            activity.getCurrentFocus().clearFocus();
-        } else {
-            formView.requestDataIntegrityCheck();
-        }
+        formView.onSaveClick();
     }
 
     @Override

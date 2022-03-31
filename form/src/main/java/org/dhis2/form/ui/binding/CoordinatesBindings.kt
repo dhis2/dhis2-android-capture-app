@@ -4,10 +4,10 @@ import android.content.Context
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.commons.extensions.closeKeyboard
-import org.dhis2.commons.extensions.truncate
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
@@ -16,59 +16,48 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
-@BindingAdapter(value = ["latitude_validator", "error_input"])
-fun EditText.setLatitudeValidator(viewModel: FieldUiModel?, errorTextView: TextView?) {
-    setOnFocusChangeListener { _, hasFocus ->
-        onLatOrLonChangeFocus(
-            viewModel,
-            errorTextView,
-            hasFocus,
-            text.toString(),
-            context.getString(R.string.coordinates_error),
-            { coordinate -> isLatitudeValid(coordinate) },
-            { coordinateValue -> setText(coordinateValue) }
-        )
-    }
-}
-
-@BindingAdapter(value = ["longitude_validator", "error_input"])
-fun EditText.setLongitudeValidator(viewModel: FieldUiModel?, errorTextView: TextView?) {
-    setOnFocusChangeListener { _, hasFocus ->
-        onLatOrLonChangeFocus(
-            viewModel,
-            errorTextView,
-            hasFocus,
-            text.toString(),
-            context.getString(R.string.coordinates_error),
-            { coordinate -> isLongitudeValid(coordinate) },
-            { coordinateValue -> setText(coordinateValue) }
-        )
-    }
-}
-
-private fun onLatOrLonChangeFocus(
+@BindingAdapter(value = ["latitude_validator", "longitude"])
+fun EditText.setLatitudeValidator(
     viewModel: FieldUiModel?,
-    errorTextView: TextView?,
-    hasFocus: Boolean,
-    coordinateValue: String,
-    errorMessage: String,
-    coordinateValidator: (Double) -> Boolean,
-    valueCallback: (String) -> Unit
+    longitudeEditText: TextInputEditText?
 ) {
-    if (!hasFocus) {
-        if (coordinateValue.isNotEmpty()) {
-            val coordinateString: Double? = coordinateValue.toDoubleOrNull()
-            val coordinate = coordinateString?.truncate()
-            val error = coordinate?.let {
-                if (!coordinateValidator(it)) {
-                    errorMessage
-                } else {
-                    null
-                }
+    doOnTextChanged { text, start, before, count ->
+        if (validateFilledCoordinates(
+            this.text.toString(),
+            longitudeEditText?.text?.toString() ?: ""
+        )
+        ) {
+            val lon = longitudeEditText?.text?.toString()?.toDoubleOrNull()
+            val latitude = this.text.toString().toDoubleOrNull()
+            val value = if (lon != null && latitude != null) {
+                GeometryHelper.createPointGeometry(lon, latitude)?.coordinates()
+            } else {
+                null
             }
+            viewModel?.onTextChange(value)
+        }
+    }
+}
 
-            errorTextView?.setWarningOrError(null, error)
-            valueCallback(coordinate.toString())
+@BindingAdapter(value = ["longitude_validator", "latitude"])
+fun EditText.setLongitudeValidator(
+    viewModel: FieldUiModel?,
+    latitudeEditText: TextInputEditText?
+) {
+    doOnTextChanged { text, start, before, count ->
+        if (validateFilledCoordinates(
+            latitudeEditText?.text?.toString() ?: "",
+            this.text.toString()
+        )
+        ) {
+            val lon = this.text.toString().toDoubleOrNull()
+            val latitude = latitudeEditText?.text?.toString()?.toDoubleOrNull()
+            val value = if (lon != null && latitude != null) {
+                GeometryHelper.createPointGeometry(lon, latitude)?.coordinates()
+            } else {
+                null
+            }
+            viewModel?.onTextChange(value)
         }
     }
 }
@@ -88,6 +77,7 @@ fun TextInputEditText.setGeometryLatitudeValue(item: FieldUiModel?) {
             else -> null
         }
         setText(latitudeValue)
+        setSelection(latitudeValue?.length ?: 0)
     }
 }
 
@@ -101,6 +91,8 @@ fun TextInputEditText.setGeometryLongitudeValue(item: FieldUiModel?) {
             else -> null
         }
         setText(latitudeValue)
+        if (hasFocus()) setSelection(latitudeValue?.length ?: 0)
+        setSelection(latitudeValue?.length ?: 0)
     }
 }
 
@@ -205,7 +197,6 @@ private fun onFilledCoordinate(
     errorTextView: TextView
 ): Boolean {
     return if (validateFilledCoordinates(lat, long)) {
-        lat.toDoubleOrNull()
         val doubleLat = lat.toDoubleOrNull()
         val doubleLong = long.toDoubleOrNull()
         if (doubleLat != null && doubleLong != null) {

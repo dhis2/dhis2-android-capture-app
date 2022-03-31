@@ -10,7 +10,7 @@ fun View.closeKeyboard() {
 }
 
 fun View.openKeyboard() {
-    if (requestFocus()) {
+    post {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
     }

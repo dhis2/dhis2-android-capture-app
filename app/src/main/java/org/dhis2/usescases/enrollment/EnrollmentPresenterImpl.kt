@@ -114,13 +114,6 @@ class EnrollmentPresenterImpl(
         )
     }
 
-    private fun checkFinishing() {
-        if (finishing) {
-            view.performSaveClick()
-        }
-        finishing = false
-    }
-
     private fun shouldShowDateEditionWarning(uid: String): Boolean {
         return if (uid == EnrollmentRepository.ENROLLMENT_DATE_UID &&
             dataEntryRepository.hasEventsGeneratedByEnrollmentDate() &&
@@ -177,7 +170,10 @@ class EnrollmentPresenterImpl(
                 view.showDateEditionWarning()
             }
         }
-        checkFinishing()
+        if (finishing) {
+            view.performSaveClick()
+        }
+        finishing = false
     }
 
     fun backIsClicked() {

@@ -7,7 +7,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -43,57 +42,6 @@ class FormRepositoryImpl(
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
         backupList = itemList
         return composeList()
-    }
-
-    override fun processUserAction(action: RowAction): StoreResult {
-        return when (action.type) {
-            ActionType.ON_SAVE -> {
-                updateErrorList(action)
-                if (action.error != null) {
-                    StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                    )
-                } else {
-                    val saveResult = formValueStore?.save(action.id, action.value, action.extraData)
-                    updateValueOnList(action.id, action.value, action.valueType)
-                    saveResult ?: StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_CHANGED
-                    )
-                }
-            }
-            ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                this.focusedItem = action
-
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                )
-            }
-
-            ActionType.ON_TEXT_CHANGE -> {
-                updateValueOnList(action.id, action.value, action.valueType)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.TEXT_CHANGING
-                )
-            }
-            ActionType.ON_SECTION_CHANGE -> {
-                updateSectionOpened(action)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                )
-            }
-            ActionType.ON_CLEAR -> {
-                removeAllValues()
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_CHANGED
-                )
-            }
-        }
     }
 
     override fun composeList(): List<FieldUiModel> {
@@ -377,7 +325,7 @@ class FormRepositoryImpl(
         return null
     }
 
-    private fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
+    override fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
         itemList.let { list ->
             list.find { item ->
                 item.uid == uid
@@ -403,7 +351,7 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun removeAllValues() {
+    override fun removeAllValues() {
         itemList = itemList.map { fieldUiModel ->
             fieldUiModel.setValue(null).setDisplayName(null)
         }
@@ -433,7 +381,7 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun updateErrorList(action: RowAction) {
+    override fun updateErrorList(action: RowAction) {
         if (action.error != null) {
             if (itemsWithError.find { it.id == action.id } == null) {
                 itemsWithError.add(action)
@@ -445,7 +393,19 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun updateSectionOpened(action: RowAction) {
+    override fun save(id: String, value: String?, extraData: String?): StoreResult? {
+        return formValueStore?.save(id, value, extraData)
+    }
+
+    override fun setFocusedItem(action: RowAction) {
+        focusedItem = action
+    }
+
+    override fun currentFocusedItem(): FieldUiModel? {
+        return itemList.find { focusedItem?.id == it.uid }
+    }
+
+    override fun updateSectionOpened(action: RowAction) {
         openedSectionUid = action.id
     }
 

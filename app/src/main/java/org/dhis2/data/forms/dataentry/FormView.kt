@@ -461,19 +461,11 @@ class FormView(
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
         items.firstOrNull { it.focused }?.let { fieldUiModel ->
             fieldUiModel.valueType?.let { valueType ->
-                if (!needsKeyboard(valueType) || fieldUiModel.optionSet != null) {
+                if (!viewModel.valueTypeIsTextField(valueType)) {
                     view?.closeKeyboard()
                 }
             }
         }
-    }
-
-    private fun needsKeyboard(valueType: ValueType): Boolean {
-        return valueType.isText ||
-            valueType.isNumeric ||
-            valueType == ValueType.PHONE_NUMBER ||
-            valueType == ValueType.EMAIL ||
-            valueType == ValueType.URL
     }
 
     private fun intentHandler(intent: FormIntent) {
@@ -824,6 +816,11 @@ class FormView(
 
     fun onBackPressed() {
         viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    }
+
+    fun onSaveClick() {
+        onEditionFinish()
+        viewModel.saveDataEntry()
     }
 
     fun reload() {

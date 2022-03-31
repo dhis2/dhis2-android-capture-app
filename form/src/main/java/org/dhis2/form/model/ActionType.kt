@@ -6,5 +6,6 @@ enum class ActionType {
     ON_SAVE,
     ON_TEXT_CHANGE,
     ON_SECTION_CHANGE,
-    ON_CLEAR
+    ON_CLEAR,
+    ON_FINISH
 }
