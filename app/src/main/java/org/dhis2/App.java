@@ -210,9 +210,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @Override
     public ServerComponent createServerComponent() {
-        setUpServerComponent();
+        if (!D2Manager.INSTANCE.isD2Instantiated())
+            setUpServerComponent();
         return serverComponent;
-
     }
 
     @Nullable
