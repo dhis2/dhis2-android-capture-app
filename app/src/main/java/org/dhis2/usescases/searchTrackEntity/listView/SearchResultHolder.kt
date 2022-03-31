@@ -1,6 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity.listView
 
+import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.databinding.ResultSearchListBinding
@@ -18,7 +20,15 @@ class SearchResultHolder(
     }
 
     fun bind(item: SearchResult) {
-        binding.composeView.setContent {
+        binding.composeView.apply {
+            updateLayoutParams {
+                height = if (item.shouldDisplayInFullSize()) {
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                } else {
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            }
+        }.setContent {
             MdcTheme {
                 SearchResult(
                     searchResult = item,

@@ -3,7 +3,6 @@ package org.dhis2.usescases.searchTrackEntity;
 import static android.view.View.GONE;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -44,11 +43,9 @@ import org.dhis2.databinding.SnackbarMinAttrBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.form.ui.FieldViewModelFactory;
-import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -60,9 +57,8 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -93,6 +89,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Inject
     SearchTeiViewModelFactory viewModelFactory;
 
+    @Inject
+    SearchNavigator searchNavigator;
+
     private String initialProgram;
     private String tEType;
 
@@ -117,7 +116,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public SearchTEComponent searchComponent;
     private boolean clearFilters = true;
 
-    private enum Extra {
+    public enum Extra {
         TEI_UID("TRACKED_ENTITY_UID"),
         PROGRAM_UID("PROGRAM_UID"),
         QUERY_ATTR("QUERY_DATA_ATTR"),
@@ -554,7 +553,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void configureLandscapeAnalyticsScreen(boolean expanded) {
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(binding.backdropLayout);
-        constraintSet.setGuidelinePercent(R.id.backdropGuideDiv, expanded ? 0.0f : 0.4f);
+        constraintSet.setGuidelinePercent(R.id.backdropGuideDiv, expanded ? 0.0f : 0.26f);
         TransitionManager.beginDelayedTransition(binding.backdropLayout);
         constraintSet.applyTo(binding.backdropLayout);
     }
@@ -659,24 +658,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     public void changeProgram(@Nullable String programUid) {
-        Intent intent = new Intent(this, SearchTEActivity.class);
-        if (fromRelationshipTeiUid != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        }
-        intent.putExtras(updateBundle(programUid));
-        startActivity(intent);
-        finish();
-
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-    }
-
-    private Bundle updateBundle(String programUid) {
-        Bundle bundle = getIntent().getExtras();
-        bundle.putString(Extra.PROGRAM_UID.key(), programUid);
-        Map<String, String> currentQueryData = viewModel.queryDataByProgram(programUid);
-        bundle.putStringArrayList(Extra.QUERY_ATTR.key(), new ArrayList<>(currentQueryData.keySet()));
-        bundle.putStringArrayList(Extra.QUERY_VALUES.key(), new ArrayList<>(currentQueryData.values()));
-        return bundle;
+        searchNavigator.changeProgram(
+                programUid,
+                viewModel.queryDataByProgram(programUid),
+                fromRelationshipTeiUid
+        );
     }
 
     @Override
@@ -750,7 +736,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             binding.navigationBar.show();
         }
-
+        viewModel.setFiltersOpened(backDropActive);
         initSet.applyTo(binding.backdropLayout);
     }
 
@@ -838,8 +824,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
-        FilterManager.getInstance().clearWorkingList(true);
-        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
+        searchNavigator.openDashboard(teiUid, programUid, enrollmentUid);
+    }
+
+    public void refreshData(){
+        viewModel.refreshData();
     }
 
     @Override
@@ -859,12 +848,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void goToEnrollment(String enrollmentUid, String programUid) {
-        Intent intent = EnrollmentActivity.Companion.getIntent(this,
-                enrollmentUid,
-                programUid,
-                EnrollmentActivity.EnrollmentMode.NEW,
-                fromRelationshipTEI() != null);
-        startActivity(intent);
+        searchNavigator.goToEnrollment(enrollmentUid, programUid, fromRelationshipTEI());
     }
 
     @Override

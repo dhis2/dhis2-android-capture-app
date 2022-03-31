@@ -20,6 +20,8 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
+const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
+
 class SearchTEIViewModel(
     private val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
@@ -47,7 +49,7 @@ class SearchTEIViewModel(
     private val _screenState = MutableLiveData<SearchTEScreenState>()
     val screenState: LiveData<SearchTEScreenState> = _screenState
 
-    val createButtonScrollVisibility = MutableLiveData(true)
+    val createButtonScrollVisibility = MutableLiveData(false)
     val isScrollingDown = MutableLiveData(false)
 
     private var searching: Boolean = false
@@ -58,8 +60,12 @@ class SearchTEIViewModel(
     private val _dataResult = MutableLiveData<List<SearchResult>>()
     val dataResult: LiveData<List<SearchResult>> = _dataResult
 
+    private val _filtersOpened = MutableLiveData(false)
+    val filtersOpened: LiveData<Boolean> = _filtersOpened
+
     init {
         viewModelScope.launch {
+            createButtonScrollVisibility.value = searchRepository.canCreateInProgramWithoutSearch()
             _pageConfiguration.value = searchNavPageConfigurator.initVariables()
         }
     }
@@ -70,6 +76,11 @@ class SearchTEIViewModel(
         val shouldOpenSearch = !displayFrontPageList &&
             !searchRepository.canCreateInProgramWithoutSearch() &&
             !searching
+        createButtonScrollVisibility.value = if (searching) {
+            true
+        } else {
+            searchRepository.canCreateInProgramWithoutSearch()
+        }
         _screenState.value = when {
             shouldOpenSearch ->
                 SearchForm(
@@ -287,15 +298,19 @@ class SearchTEIViewModel(
     private fun displayFrontPageList(): Boolean {
         return searchRepository.getProgram(initialProgramUid)?.let { program ->
             program.displayFrontPageList() == true && queryData.isEmpty()
-        } ?: true
+        } ?: false
     }
 
     fun canDisplayResult(itemCount: Int): Boolean {
-        return searchRepository.getProgram(initialProgramUid)?.maxTeiCountToReturn()
-            ?.takeIf { it != 0 }
-            ?.let { maxTeiCount ->
-                itemCount <= maxTeiCount
-            } ?: true
+        return when (initialProgramUid) {
+            null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
+            else ->
+                searchRepository.getProgram(initialProgramUid)?.maxTeiCountToReturn()
+                    ?.takeIf { it != 0 }
+                    ?.let { maxTeiCount ->
+                        itemCount <= maxTeiCount
+                    } ?: true
+        }
     }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, String> {
@@ -349,7 +364,7 @@ class SearchTEIViewModel(
         val hasProgramResults = programResultCount > 0
         val hasGlobalResults = globalResultCount?.let { it > 0 }
 
-        val isSearching = _screenState.value.takeIf { it is SearchList }?.let {
+        val isSearching = _screenState.value?.takeIf { it is SearchList }?.let {
             (it as SearchList).isSearching
         } ?: false
 
@@ -361,6 +376,8 @@ class SearchTEIViewModel(
             )
         } else if (displayFrontPageList()) {
             handleDisplayInListResult(hasProgramResults, isLandscape)
+        } else {
+            handleInitWithoutData()
         }
 
         SearchIdlingResourceSingleton.decrement()
@@ -369,7 +386,7 @@ class SearchTEIViewModel(
     private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
         val result = when {
             hasProgramResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
+                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
             !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
                 listOf(
                     SearchResult(
@@ -408,6 +425,24 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
             else ->
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
+        }
+        _dataResult.value = result
+    }
+
+    private fun handleInitWithoutData() {
+        val result = when (searchRepository.canCreateInProgramWithoutSearch()) {
+            true -> listOf(
+                SearchResult(
+                    SearchResult.SearchResultType.SEARCH_OR_CREATE,
+                    searchRepository.trackedEntityType.displayName()
+                )
+            )
+            false -> listOf(
+                SearchResult(
+                    SearchResult.SearchResultType.SEARCH,
+                    searchRepository.trackedEntityType.displayName()
+                )
+            )
         }
         _dataResult.value = result
     }
@@ -465,5 +500,15 @@ class SearchTEIViewModel(
         if (selectedProgram?.uid() != initialProgramUid) {
             onProgramChanged(selectedProgram?.uid())
         }
+    }
+
+    fun isBottomNavigationBarVisible(): Boolean {
+        return _pageConfiguration.value?.let {
+            it.displayMapView() || it.displayAnalytics()
+        } ?: false
+    }
+
+    fun setFiltersOpened(filtersOpened: Boolean) {
+        _filtersOpened.value = filtersOpened
     }
 }

@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 
 @Composable
@@ -75,6 +79,10 @@ fun SearchResult(
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
         SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate(searchResult.extraData!!)
+        SearchResult.SearchResultType.SEARCH -> InitSearch(searchResult.extraData!!)
+        SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE -> NoMoreResults(
+            message = stringResource(id = R.string.search_no_more_results_offline)
+        )
     }
 }
 
@@ -98,7 +106,11 @@ fun SearchButton(
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
-                tint = colorResource(id = R.color.colorPrimary)
+                tint = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
@@ -131,8 +143,8 @@ fun FullSearchButton(
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = slideInVertically(),
-        exit = slideOutVertically()
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { -it })
     ) {
         SearchButton(
             modifier = Modifier
@@ -181,17 +193,24 @@ fun SearchOutsideProgram(
     ) {
         Text(
             text = resultText,
+            textAlign = TextAlign.Center,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
-                lineHeight = 10.sp,
                 fontFamily = FontFamily(Font(R.font.rubik_regular))
             )
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
             onClick = onSearchOutsideClick,
-            border = BorderStroke(1.dp, colorResource(id = R.color.colorPrimary)),
+            border = BorderStroke(
+                1.dp,
+                Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            ),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.white)
             )
@@ -199,16 +218,27 @@ fun SearchOutsideProgram(
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
-                tint = colorResource(id = R.color.colorPrimary)
+                tint = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
             )
             Spacer(modifier = Modifier.size(16.dp))
-            Text(text = buttonText, color = colorResource(id = R.color.colorPrimary))
+            Text(
+                text = buttonText,
+                color = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            )
         }
     }
 }
 
 @Composable
-fun NoMoreResults() {
+fun NoMoreResults(message: String = stringResource(R.string.string_no_more_results)) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -216,7 +246,7 @@ fun NoMoreResults() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(R.string.string_no_more_results),
+            text = message,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
@@ -318,6 +348,28 @@ fun SearchOrCreate(teTypeName: String) {
     }
 }
 
+@Composable
+fun InitSearch(teTypeName: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.init_search).format(teTypeName),
+            fontSize = 17.sp,
+            color = Color.Black.copy(alpha = 0.38f),
+            style = LocalTextStyle.current.copy(
+                lineHeight = 24.sp,
+                fontFamily = FontFamily(Font(R.font.rubik_regular))
+            )
+        )
+    }
+}
+
 @ExperimentalAnimationApi
 @Composable
 fun CreateNewButton(
@@ -327,7 +379,14 @@ fun CreateNewButton(
 ) {
     Button(
         modifier = modifier
-            .wrapContentWidth()
+            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+            .apply {
+                if (extended) {
+                    wrapContentWidth()
+                } else {
+                    widthIn(56.dp)
+                }
+            }
             .height(56.dp),
         contentPadding = PaddingValues(16.dp),
         onClick = onClick,
@@ -339,14 +398,22 @@ fun CreateNewButton(
             modifier = Modifier.size(24.dp),
             painter = painterResource(id = R.drawable.ic_add_accent),
             contentDescription = "",
-            tint = colorResource(id = R.color.colorPrimary)
+            tint = Color(
+                ColorUtils.getPrimaryColor(
+                    LocalContext.current, ColorUtils.ColorType.PRIMARY
+                )
+            )
         )
         AnimatedVisibility(visible = extended) {
             Row {
                 Spacer(modifier = Modifier.size(12.dp))
                 Text(
                     text = stringResource(R.string.search_create_new),
-                    color = colorResource(id = R.color.colorPrimary)
+                    color = Color(
+                        ColorUtils.getPrimaryColor(
+                            LocalContext.current, ColorUtils.ColorType.PRIMARY
+                        )
+                    )
                 )
             }
         }

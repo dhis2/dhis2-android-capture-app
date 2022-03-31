@@ -878,12 +878,14 @@
     <string name="search_no_results_in_program">No more results for %s</string>
     <string name="search_outside_action">Search outside this program</string>
     <string name="string_no_more_results">No more results</string>
+    <string name="search_no_more_results_offline">Search for more results</string>
     <string name="search_no_results">There are no results for this search</string>
     <string name="search_too_many_results">Too many results</string>
     <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>
     <string name="search_create_new">Create new</string>
     <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
     <string name="action_ok">Ok</string>
+    <string name="init_search">Start a search to find any %s</string>
     <string name="search_or_create">You can search or create a new %s</string>
     <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
     <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>

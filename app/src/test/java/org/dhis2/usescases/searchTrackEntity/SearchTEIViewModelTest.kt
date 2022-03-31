@@ -365,7 +365,7 @@ class SearchTEIViewModelTest {
         viewModel.dataResult.value?.apply {
             assertTrue(isNotEmpty())
             assertTrue(size == 1)
-            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS_OFFLINE)
         }
     }
 
@@ -441,6 +441,18 @@ class SearchTEIViewModelTest {
             assertTrue(isNotEmpty())
             assertTrue(size == 1)
             assertTrue(first().type == SearchResultType.NO_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Should return init search`() {
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        setAllowCreateBeforeSearch(false)
+        viewModel.onDataLoaded(0, null)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.SEARCH)
         }
     }
 
