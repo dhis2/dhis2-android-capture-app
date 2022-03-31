@@ -95,6 +95,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpEventDetails() {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventDetails(
                 selectedDate = eventDate.value.currentDate,
@@ -107,11 +108,13 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
                 .flowOn(Dispatchers.IO)
@@ -119,6 +122,7 @@ class EventDetailsViewModel(
                     _eventDate.value = it
                     setUpEventDetails()
                     setUpOrgUnit(selectedDate = it.currentDate)
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
@@ -138,17 +142,20 @@ class EventDetailsViewModel(
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventCatCombo.value = it
                     setUpEventDetails()
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     private fun setUpCoordinates(value: String? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCoordinates(value)
                 .flowOn(Dispatchers.IO)
@@ -168,17 +175,20 @@ class EventDetailsViewModel(
                     )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
+        EventDetailIdlingResourceSingleton.increment()
         if (isChecked) {
             configureEventTemp(status).apply {
                 _eventTemp.value = this
                 setUpEventDetails()
             }
         }
+        EventDetailIdlingResourceSingleton.decrement()
     }
 
     fun onDateClick() {
