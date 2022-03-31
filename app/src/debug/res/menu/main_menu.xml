@@ -46,6 +46,9 @@
     <group
         android:id="@+id/extra_section"
         android:checkableBehavior="single">
+        <item android:id="@+id/menu_troubleshooting"
+            android:icon="@drawable/ic_troubleshooting"
+            android:title="@string/main_menu_troubleshooting"/>
         <item
             android:id="@+id/menu_jira"
             android:icon="@drawable/ic_jira"
