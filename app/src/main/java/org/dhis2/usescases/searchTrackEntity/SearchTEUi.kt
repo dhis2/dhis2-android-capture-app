@@ -50,7 +50,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +60,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 
 @Composable
 fun SearchResult(
@@ -82,6 +85,9 @@ fun SearchResult(
         SearchResult.SearchResultType.SEARCH -> InitSearch(searchResult.extraData!!)
         SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE -> NoMoreResults(
             message = stringResource(id = R.string.search_no_more_results_offline)
+        )
+        SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE -> UnableToSearchOutside(
+            uiData = searchResult.uiData as UnableToSearchOutsideData
         )
     }
 }
@@ -251,6 +257,61 @@ fun NoMoreResults(message: String = stringResource(R.string.string_no_more_resul
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 10.sp,
+                fontFamily = FontFamily(Font(R.font.rubik_regular))
+            )
+        )
+    }
+}
+
+@Composable
+fun UnableToSearchOutside(uiData: UnableToSearchOutsideData) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.search_unable_search_outside)
+                .format(uiData.trackedEntityTypeName.toLowerCase(Locale.current)),
+            fontSize = 14.sp,
+            color = Color.Black.copy(alpha = 0.38f),
+            style = LocalTextStyle.current.copy(
+                fontFamily = FontFamily(Font(R.font.rubik_regular))
+            )
+        )
+        Spacer(modifier = Modifier.size(16.dp))
+        uiData.trackedEntityTypeAttributes.forEach {
+            AttributeField(it)
+            Spacer(modifier = Modifier.size(4.dp))
+        }
+    }
+}
+
+@Composable
+fun AttributeField(fieldName: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column {
+            Spacer(modifier = Modifier.size(6.dp))
+            Icon(
+                modifier = Modifier.size(5.dp),
+                painter = painterResource(id = R.drawable.ic_circle),
+                contentDescription = "",
+                tint = Color(
+                    ColorUtils.getPrimaryColor(
+                        LocalContext.current, ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            )
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+        Text(
+            text = fieldName,
+            color = colorResource(id = R.color.textSecondary),
+            fontSize = 14.sp,
+            style = LocalTextStyle.current.copy(
                 fontFamily = FontFamily(Font(R.font.rubik_regular))
             )
         )
@@ -601,4 +662,19 @@ fun SearchOrCreatePreview() {
             "Person"
         )
     ) {}
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FieldItemPreview() {
+    UnableToSearchOutside(
+        UnableToSearchOutsideData(
+            listOf(
+                "Last Name",
+                "First Name",
+                "Unique Id"
+            ),
+            "Person"
+        )
+    )
 }

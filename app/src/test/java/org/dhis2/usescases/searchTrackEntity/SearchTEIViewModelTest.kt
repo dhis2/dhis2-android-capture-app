@@ -381,13 +381,15 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `Should return empty result and set SearchScreen for displayInList true`() {
+    fun `Should return no more results offline and not set SearchScreen for displayInList true`() {
         setAllowCreateBeforeSearch(false)
         viewModel.onDataLoaded(0)
         viewModel.dataResult.value?.apply {
-            assertTrue(isEmpty())
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS_OFFLINE)
         }
-        assertTrue(viewModel.screenState.value is SearchForm)
+        assertTrue(viewModel.screenState.value !is SearchList)
     }
 
     @ExperimentalCoroutinesApi
@@ -409,12 +411,32 @@ class SearchTEIViewModelTest {
     fun `Should return search outside result for search`() {
         setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
         setAllowCreateBeforeSearch(false)
+        whenever(
+            repository.filterQueryForProgram(viewModel.queryData, null)
+        ) doReturn mapOf("field" to "value")
+
         performSearch()
         viewModel.onDataLoaded(1)
         viewModel.dataResult.value?.apply {
             assertTrue(isNotEmpty())
             assertTrue(size == 1)
             assertTrue(first().type == SearchResultType.SEARCH_OUTSIDE)
+        }
+    }
+
+    @Test
+    fun `Should return unable to search outside result for search`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        whenever(repository.filterQueryForProgram(viewModel.queryData, null)) doReturn mapOf()
+        whenever(repository.trackedEntityTypeFields()) doReturn listOf("Field_1", "Field_2")
+
+        performSearch()
+        viewModel.onDataLoaded(1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.UNABLE_SEARCH_OUTSIDE)
         }
     }
 
@@ -630,6 +652,6 @@ class SearchTEIViewModelTest {
     private fun setCurrentProgram(program: Program) {
         whenever(
             repository.getProgram(initialProgram)
-        )doReturn program
+        ) doReturn program
     }
 }

@@ -16,6 +16,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
@@ -75,9 +76,9 @@ class SearchTEIViewModel(
         val displayFrontPageList =
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-                !searchRepository.canCreateInProgramWithoutSearch() &&
-                !searching &&
-                _filtersActive.value == false
+            !searchRepository.canCreateInProgramWithoutSearch() &&
+            !searching &&
+            _filtersActive.value == false
         createButtonScrollVisibility.value = if (searching) {
             true
         } else {
@@ -391,8 +392,6 @@ class SearchTEIViewModel(
 
     private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
         val result = when {
-            hasProgramResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
             !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
                 listOf(
                     SearchResult(
@@ -400,7 +399,7 @@ class SearchTEIViewModel(
                         searchRepository.getTrackedEntityType().displayName()
                     )
                 )
-            else -> listOf()
+            else -> listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
         }
 
         if (result.isEmpty() && _filtersActive.value == false) {
@@ -419,11 +418,27 @@ class SearchTEIViewModel(
             !canDisplayResults -> {
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
-            hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null -> {
+            hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
+                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
                         searchRepository.getProgram(initialProgramUid)?.displayName()
+
+                    )
+                )
+            }
+            hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
+                searchRepository.trackedEntityTypeFields().isNotEmpty() -> {
+                listOf(
+                    SearchResult(
+                        type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
+                        uiData = UnableToSearchOutsideData(
+                            trackedEntityTypeAttributes =
+                                searchRepository.trackedEntityTypeFields(),
+                            trackedEntityTypeName =
+                                searchRepository.trackedEntityType.displayName()!!
+                        )
                     )
                 )
             }

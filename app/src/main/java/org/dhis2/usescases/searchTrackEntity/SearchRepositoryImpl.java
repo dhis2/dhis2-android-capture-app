@@ -1,7 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.annotation.NonNull;
@@ -543,9 +541,9 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public void setCurrentTheme(@Nullable Program selectedProgram) {
         String metadataColor;
-        if(selectedProgram != null){
+        if (selectedProgram != null) {
             metadataColor = getProgramColor(selectedProgram.uid());
-        }else{
+        } else {
             metadataColor = d2.trackedEntityModule().trackedEntityTypes().uid(teiType)
                     .blockingGet()
                     .style()
@@ -559,6 +557,32 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             prefs.removeValue(Constants.PROGRAM_THEME);
         }
+    }
+
+    @Nullable
+    @Override
+    public List<String> trackedEntityTypeFields() {
+        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes =
+                d2.programModule().programTrackedEntityAttributes()
+                        .byProgram().eq(currentProgram)
+                        .bySearchable().isTrue()
+                        .blockingGet();
+
+        List<String> attrNames = new ArrayList<>();
+        for (ProgramTrackedEntityAttribute searchAttribute : programTrackedEntityAttributes) {
+            String attrUid = searchAttribute.trackedEntityAttribute().uid();
+            boolean isTrackedEntityTypeAttribute = !d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(teiType)
+                    .byTrackedEntityAttributeUid().eq(attrUid)
+                    .blockingIsEmpty();
+            if(isTrackedEntityTypeAttribute) {
+                TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes()
+                        .uid(attrUid)
+                        .blockingGet();
+                attrNames.add(attr.displayFormName());
+            }
+        }
+        return attrNames;
     }
 
     @Override
@@ -1034,6 +1058,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return !d2.programModule().programTrackedEntityAttributes()
                 .byProgram().eq(programUid)
                 .byTrackedEntityAttribute().eq(attributeUid)
+                .bySearchable().isTrue()
                 .blockingIsEmpty();
     }
 
