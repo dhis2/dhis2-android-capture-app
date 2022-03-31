@@ -431,28 +431,6 @@ fun InitSearch(teTypeName: String) {
     }
 }
 
-@Composable
-fun InitSearch(teTypeName: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.init_search).format(teTypeName),
-            fontSize = 17.sp,
-            color = Color.Black.copy(alpha = 0.38f),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
-        )
-    }
-}
-
 @ExperimentalAnimationApi
 @Composable
 fun CreateNewButton(

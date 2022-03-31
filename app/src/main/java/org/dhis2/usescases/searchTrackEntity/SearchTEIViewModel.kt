@@ -468,24 +468,6 @@ class SearchTEIViewModel(
         _dataResult.value = result
     }
 
-    private fun handleInitWithoutData() {
-        val result = when (searchRepository.canCreateInProgramWithoutSearch()) {
-            true -> listOf(
-                SearchResult(
-                    SearchResult.SearchResultType.SEARCH_OR_CREATE,
-                    searchRepository.trackedEntityType.displayName()
-                )
-            )
-            false -> listOf(
-                SearchResult(
-                    SearchResult.SearchResultType.SEARCH,
-                    searchRepository.trackedEntityType.displayName()
-                )
-            )
-        }
-        _dataResult.value = result
-    }
-
     fun onBackPressed(
         isPortrait: Boolean,
         searchOrFilterIsOpen: Boolean,
