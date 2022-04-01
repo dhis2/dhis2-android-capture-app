@@ -34,5 +34,7 @@ class HintProviderImpl(val context: Context) : HintProvider {
             ValueType.ORGANISATION_UNIT -> context.getString(R.string.choose_ou)
             ValueType.DATETIME,
             ValueType.DATE -> context.getString(R.string.choose_date)
+            ValueType.REFERENCE -> ""
+            ValueType.GEOJSON -> ""
         }
 }
