@@ -1,10 +1,17 @@
 package org.dhis2.usescases.searchTrackEntity.listView
 
-data class SearchResult(val type: SearchResultType, val extraData: String? = null) {
+import org.dhis2.usescases.searchTrackEntity.ui.SearchUIData
+
+data class SearchResult(
+    val type: SearchResultType,
+    val extraData: String? = null,
+    val uiData: SearchUIData? = null
+) {
     enum class SearchResultType {
         LOADING,
         SEARCH_OR_CREATE,
         SEARCH,
+        UNABLE_SEARCH_OUTSIDE,
         SEARCH_OUTSIDE,
         NO_MORE_RESULTS,
         NO_MORE_RESULTS_OFFLINE,

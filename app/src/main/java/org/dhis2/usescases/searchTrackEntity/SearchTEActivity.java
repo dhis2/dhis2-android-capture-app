@@ -341,6 +341,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         updatingFilters = true;
         binding.setTotalFilters(totalFilters);
         binding.executePendingBindings();
+        viewModel.updateActiveFilters(totalFilters>0);
         viewModel.refreshData();
     }
 
