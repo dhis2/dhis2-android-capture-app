@@ -32,6 +32,7 @@ import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.data.server.OpenIdSession;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -70,6 +71,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     @Inject
     public CrashReportController crashReportController;
+    @Inject
+    public LocationProvider locationProvider;
+
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
@@ -183,6 +187,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
+        if (locationProvider != null) {
+            locationProvider.stopLocationUpdates();
+        }
     }
 
     @Override
