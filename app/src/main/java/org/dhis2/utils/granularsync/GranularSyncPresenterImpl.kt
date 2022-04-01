@@ -110,11 +110,10 @@ class GranularSyncPresenterImpl(
         disposable.add(
             Single.zip(
                 getState(),
-                getConflicts(conflictType),
-                { state: State, conflicts: MutableList<TrackerImportConflict> ->
-                    Pair(state, conflicts)
-                }
-            ).subscribeOn(schedulerProvider.io())
+                getConflicts(conflictType)
+            ) { state: State, conflicts: MutableList<TrackerImportConflict> ->
+                Pair(state, conflicts)
+            }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { stateAndConflicts ->
@@ -171,22 +170,21 @@ class GranularSyncPresenterImpl(
             ALL -> {
             }
         }
-        val workName: String
+        var workName: String
         if (conflictType != ALL) {
             workName = recordUid
-            var uid = recordUid
             if (dataToDataValues == null) {
                 dataToDataValues = Data.Builder()
                     .putString(UID, recordUid)
                     .putString(CONFLICT_TYPE, conflictTypeData!!.name)
                     .build()
             } else {
-                uid = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
+                workName = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
             }
 
             val workerItem =
                 WorkerItem(
-                    uid,
+                    workName,
                     WorkerType.GRANULAR,
                     data = dataToDataValues,
                     policy = ExistingWorkPolicy.KEEP
