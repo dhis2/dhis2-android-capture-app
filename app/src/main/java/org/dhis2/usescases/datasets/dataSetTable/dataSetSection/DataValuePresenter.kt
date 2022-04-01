@@ -35,7 +35,10 @@ class DataValuePresenter(
                 .map { categoryCombo ->
                     repository.getDataTableModel(categoryCombo).blockingFirst()
                 }
-        }.publish()
+        }.observeOn(schedulerProvider.ui())
+            .doOnNext {
+                view.clearTables()
+            }.publish()
 
         disposable.add(
             dataTableModelConnectable.map(repository::setTableData)

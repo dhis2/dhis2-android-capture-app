@@ -348,6 +348,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
     }
 
+    override fun clearTables() {
+        binding.tableLayout.removeAllViews()
+        adapters.clear()
+    }
+
     override fun showSnackBar() {
         saveToast.show()
     }

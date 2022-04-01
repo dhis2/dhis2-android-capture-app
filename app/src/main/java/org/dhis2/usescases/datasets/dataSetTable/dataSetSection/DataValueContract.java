@@ -23,5 +23,7 @@ public class DataValueContract {
         void updateData(RowAction rowAction, @Nullable String catCombo);
 
         void onValueProcessed();
+
+        void clearTables();
     }
 }
