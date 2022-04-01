@@ -899,4 +899,5 @@
     <string name="re_opened">Re-opened</string>
     <string name="account_disable_title">Account disabled</string>
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
+    <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
 </resources>
