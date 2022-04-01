@@ -1,5 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.utils.Constants.ONE_TIME;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PERMANENT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
+import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -33,7 +49,6 @@ import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.form.data.GeometryController;
@@ -87,22 +102,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import kotlin.Unit;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.ONE_TIME;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PERMANENT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.RQ_MAP_LOCATION_VIEW;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View,
         DatePickerDialog.OnDateSetListener {
 
@@ -114,9 +113,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Inject
     DhisPeriodUtils periodUtils;
-
-    @Inject
-    LocationProvider locationProvider;
 
     private Event eventModel;
 

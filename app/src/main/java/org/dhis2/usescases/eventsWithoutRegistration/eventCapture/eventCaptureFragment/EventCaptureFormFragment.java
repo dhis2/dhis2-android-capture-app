@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentTransaction;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
@@ -40,9 +39,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Inject
     FormRepository formRepository;
-
-    @Inject
-    LocationProvider locationProvider;
 
     @Inject
     DispatcherProvider coroutineDispatcher;
@@ -83,9 +79,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     return Unit.INSTANCE;
                 })
                 .onLoadingListener(loading -> {
-                    if(loading){
+                    if (loading) {
                         activity.showProgress();
-                    } else{
+                    } else {
                         activity.hideProgress();
                     }
                     return Unit.INSTANCE;

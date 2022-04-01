@@ -20,7 +20,6 @@ import org.dhis2.R
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
@@ -60,9 +59,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var formRepository: FormRepository
-
-    @Inject
-    lateinit var locationProvider: LocationProvider
 
     @Inject
     lateinit var dispatchers: DispatcherProvider
