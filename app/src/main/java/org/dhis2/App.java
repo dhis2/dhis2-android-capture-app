@@ -210,10 +210,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @Override
     public ServerComponent createServerComponent() {
-        if (serverComponent == null)
-            serverComponent = appComponent.plus(new ServerModule());
+        if (!D2Manager.INSTANCE.isD2Instantiated())
+            setUpServerComponent();
         return serverComponent;
-
     }
 
     @Nullable
@@ -227,6 +226,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         serverComponent = null;
     }
 
+    @Nullable
     public ServerComponent getServerComponent() {
         return serverComponent;
     }
@@ -277,7 +277,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @NotNull
     public SessionComponent createSessionComponent(PinModule pinModule) {
-        return (sessionComponent = appComponent.plus(pinModule));
+        return (sessionComponent = userComponent.plus(pinModule));
     }
 
     public void releaseSessionComponent() {

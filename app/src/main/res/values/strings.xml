@@ -897,4 +897,6 @@
     <string name="fields_mandatory_missing_discard">Some mandatory fields are missing and the form cannot be saved. \nIf you exit now the changes will be discarded.</string>
     <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
     <string name="re_opened">Re-opened</string>
+    <string name="account_disable_title">Account disabled</string>
+    <string name="account_disable_message">Your account has been disabled by an administrator.</string>
 </resources>

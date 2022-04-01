@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
-import java.util.ArrayList
 import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -29,6 +28,12 @@ class ServerModule {
     @PerServer
     fun sdk(): D2 {
         return D2Manager.getD2()
+    }
+
+    @Provides
+    @PerServer
+    fun sdkInstantiated(): ServerStatus {
+        return ServerStatus(D2Manager.isD2Instantiated())
     }
 
     @Provides
