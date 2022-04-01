@@ -17,7 +17,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.FormView;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
@@ -38,9 +37,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Inject
     FormRepository formRepository;
-
-    @Inject
-    LocationProvider locationProvider;
 
     @Inject
     DispatcherProvider coroutineDispatcher;

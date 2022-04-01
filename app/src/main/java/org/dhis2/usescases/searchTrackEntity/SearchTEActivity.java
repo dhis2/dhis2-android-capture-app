@@ -37,7 +37,6 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.data.forms.dataentry.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
-import org.dhis2.data.location.LocationProvider;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
 import org.dhis2.form.data.FormRepository;
@@ -81,8 +80,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     FieldViewModelFactory fieldViewModelFactory;
     @Inject
     FormRepository formRepository;
-    @Inject
-    LocationProvider locationProvider;
     @Inject
     DispatcherProvider dispatchers;
 

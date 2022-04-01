@@ -293,8 +293,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void getLocation() {
-        ((App) getContext().getApplicationContext()).appComponent()
-                .locationProvider().getLastKnownLocation(
+        ((ActivityGlobalAbstract) this.getContext()).locationProvider.getLastKnownLocation(
                 location -> {
                     double longitude = DoubleExtensionsKt.truncate(location.getLongitude());
                     double latitude = DoubleExtensionsKt.truncate(location.getLatitude());
