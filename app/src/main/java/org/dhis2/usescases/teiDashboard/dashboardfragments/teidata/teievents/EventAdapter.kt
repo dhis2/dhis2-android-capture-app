@@ -76,7 +76,7 @@ class EventAdapter(
                 EventViewHolder(
                     binding,
                     program,
-                    { eventUid -> presenter.onSyncDialogClick(eventUid) },
+                    { presenter.onSyncDialogClick() },
                     { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
                     { eventUid, _, eventStatus, sharedView ->
                         presenter.onEventSelected(
