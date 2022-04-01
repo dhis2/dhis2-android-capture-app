@@ -105,7 +105,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         ServerComponent serverComponent = ((App) getApplicationContext()).getServerComponent();
         if (serverComponent != null) {
             serverComponent.openIdSession().setSessionCallback(this, logOutReason -> {
-                startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true, logOutReason), true, true, null);
+                startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true, false, logOutReason), true, true, null);
                 return Unit.INSTANCE;
             });
             boolean userIsLogged = serverComponent.userManager().isUserLoggedIn().blockingFirst();
