@@ -60,6 +60,8 @@
                 android:text='@{title}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />

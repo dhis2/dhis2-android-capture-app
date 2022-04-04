@@ -399,6 +399,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
 
         setViewpagerAdapter();
+        binding.searchFilterGeneral.setVisibility(View.GONE);
+        binding.relationshipMapIcon.setVisibility(View.GONE);
 
         if (OrientationUtilsKt.isLandscape()) {
             getSupportFragmentManager().beginTransaction()
