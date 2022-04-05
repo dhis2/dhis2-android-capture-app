@@ -728,7 +728,6 @@
     <string name="open_privacy_policy">Pulsa aquí para comprobar nuestra <a href="">política de privacidad</a></string>
     <string name="coordinates_error">El valor de las coordenadas no es válido</string>
     <string name="break_glass_error">No puedes registrar TEIs de otras unidades organizativas en este programa porque está protegido.\nContacte con su administrador.</string>
-    <string name="add_image">Añadir imagen</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 

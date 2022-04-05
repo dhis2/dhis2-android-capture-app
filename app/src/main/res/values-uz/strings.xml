@@ -723,7 +723,6 @@
     <string name="open_privacy_policy">Махфийлик сиёсатини текшириш учун шу ерни босинг</string>
     <string name="coordinates_error">Координата қийматлари яроқсиз</string>
     <string name="break_glass_error">Сиз ушбу дастурда бошқа ташкилий бўлимлар номидан TEI қайд эта олмайсиз, чунки у ҳимояланган. \N тизим маъмури билан боғланинг.</string>
-    <string name="add_image">Расм қўшиш</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 

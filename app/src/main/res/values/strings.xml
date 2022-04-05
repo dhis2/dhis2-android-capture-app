@@ -745,7 +745,6 @@
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
     <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
-    <string name="add_image">Add Image</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
 

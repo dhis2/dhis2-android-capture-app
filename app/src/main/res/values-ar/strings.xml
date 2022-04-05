@@ -730,7 +730,6 @@
     <string name="open_privacy_policy">إنقر هنا للإطلاع على <a href=""> سياسة الخصوصية الخاصة بنا</a></string>
     <string name="coordinates_error">قيم الإحداثيات غير صالحة</string>
     <string name="break_glass_error">لا يمكنك تسجيل TEIs من وحدات تنظيمية أخرى في هذا البرنامج لأنه محمي. \n اتصل بالمسؤول.</string>
-    <string name="add_image">إضافة صورة</string>
     <string name="field_is_mandatory">هذا الحقل إلزامي</string>
     <string name="security_debugger_message">لأسباب أمنية ، لا يُسمح باستخدام هذه النسخة من التطبيق مع adb. الرجاء استخدام نسخة هذا التطبيق المخصصة للتدريب.</string>
 
