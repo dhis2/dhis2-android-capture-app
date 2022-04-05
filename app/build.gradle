@@ -310,8 +310,9 @@ dependencies {
     //endregion
 
     //region QR/Barcode scanner
-    releaseImplementation "com.google.zxing:core:${libraries.zxing}"
-    debugImplementation project(':zxing-android')
+   // releaseImplementation "com.google.zxing:core:${libraries.zxing}"
+   // debugImplementation project(':zxing-android')
+    implementation project(':zxing-android')
     implementation ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
         exclude group: "com.google.zxing", module: "core"
     }
