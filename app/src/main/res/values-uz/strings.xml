@@ -772,5 +772,4 @@
     <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>
     <string name="openid_session_expired">Сессия муддати тугаган</string>
     <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
-    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     </resources>

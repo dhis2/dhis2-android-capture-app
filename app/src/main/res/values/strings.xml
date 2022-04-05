@@ -833,7 +833,6 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
-    <string name="unsupported_field_description">This field is not available for mobile capture</string>
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="show_radar_graph">Show as Radar</string>

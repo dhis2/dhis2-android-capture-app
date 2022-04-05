@@ -813,7 +813,6 @@
     <string name="openid_session_expired_message">Su sesión actual ha terminado. Por razones de seguridad, tendrá que volver a proporcionar sus credenciales</string>
     <string name="dataset_column_default">Valores</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
-    <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="show_radar_graph">Ver como gráfico de radar</string>
