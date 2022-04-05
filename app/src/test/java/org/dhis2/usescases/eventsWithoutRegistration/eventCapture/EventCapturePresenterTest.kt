@@ -9,7 +9,6 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -115,25 +114,6 @@ class EventCapturePresenterTest {
 
         presenter.completeEvent(true)
         verify(view).restartDataEntry()
-    }
-
-    @Test
-    fun `Should reopen an event`() {
-        whenever(eventRepository.canReOpenEvent()) doReturn Single.just(true)
-        whenever(eventRepository.reopenEvent()) doReturn true
-
-        presenter.reopenEvent()
-        verify(view).showSnackBar(any())
-    }
-
-    @Test
-    fun `Should display error when trying reopen an event`() {
-        whenever(view.context) doReturn mock()
-        whenever(view.context.getString(any())) doReturn "message"
-        whenever(eventRepository.canReOpenEvent()) doReturn Single.just(false)
-
-        presenter.reopenEvent()
-        verify(view).displayMessage(any())
     }
 
     @Test

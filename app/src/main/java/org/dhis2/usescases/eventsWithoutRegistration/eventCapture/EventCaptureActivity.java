@@ -270,9 +270,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case FINISH_ADD_NEW:
                 restartDataEntry();
                 break;
-            case REOPEN:
-                presenter.reopenEvent();
-                break;
             case SKIP:
                 presenter.skipEvent();
                 break;
@@ -301,12 +298,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Snackbar mySnackbar = Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT);
         mySnackbar.show();
     }
-
-    @Override
-    public void clearFocus() {
-        binding.root.requestFocus();
-    }
-
 
     @Override
     public void restartDataEntry() {
@@ -464,7 +455,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(eventUid)
-                .onDismissListener(hasChanged -> { })
+                .onDismissListener(hasChanged -> {
+                })
                 .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
