@@ -122,7 +122,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position == 0) {
+                if (position == 0 && eventMode != EventMode.NEW) {
                     binding.syncButton.setVisibility(View.VISIBLE);
                 } else {
                     binding.syncButton.setVisibility(View.GONE);
