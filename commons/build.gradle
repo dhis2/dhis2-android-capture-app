@@ -60,11 +60,10 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    api project(':core')
-   /* debugApi project(':core')
+    debugApi project(':core')
     releaseApi("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
-    } */
+    }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
