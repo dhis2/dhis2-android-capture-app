@@ -5,9 +5,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
 import junit.framework.Assert.assertTrue
-import org.dhis2.Bindings.toRuleAttributeValue
-import org.dhis2.Bindings.toRuleDataValue
-import org.dhis2.Bindings.toRuleEngineObject
+import org.dhis2.form.bindings.toRuleAttributeValue
+import org.dhis2.form.bindings.toRuleDataValue
+import org.dhis2.form.bindings.toRuleEngineObject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
