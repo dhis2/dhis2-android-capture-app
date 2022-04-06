@@ -25,6 +25,7 @@
 
 package org.dhis2.form.bindings
 
+import org.dhis2.form.model.RuleActionError
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
@@ -77,7 +78,14 @@ fun List<ProgramRule>.toRuleList(): List<Rule> {
 
 fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
     return map {
-        it.toRuleEngineObject()
+        try {
+            it.toRuleEngineObject()
+        } catch (e: Exception) {
+            RuleActionError(
+                action = it.programRuleActionType().toString(),
+                message = e.message ?: "UNKNOWN"
+            )
+        }
     }
 }
 
@@ -321,16 +329,16 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
         if (!de.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
-                    .byProgramUid().eq(event.program())
-                    .byDataElementUid().eq(it.dataElement())
-                    .byUseCodeForOptionSet().isTrue
-                    .blockingIsEmpty()
+                .byProgramUid().eq(event.program())
+                .byDataElementUid().eq(it.dataElement())
+                .byUseCodeForOptionSet().isTrue
+                .blockingIsEmpty()
             ) {
                 value =
                     if (optionRepository
-                            .byOptionSetUid().eq(de.optionSetUid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
+                        .byOptionSetUid().eq(de.optionSetUid())
+                        .byCode().eq(value)
+                        .one().blockingExists()
                     ) {
                         optionRepository
                             .byOptionSetUid().eq(de.optionSetUid())
@@ -368,15 +376,15 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
                 .blockingGet()
         if (!attr.optionSet()?.uid().isNullOrEmpty()) {
             if (d2.programModule().programRuleVariables()
-                    .byProgramUid().eq(program)
-                    .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
-                    .byUseCodeForOptionSet().isTrue
-                    .blockingIsEmpty()
+                .byProgramUid().eq(program)
+                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
+                .byUseCodeForOptionSet().isTrue
+                .blockingIsEmpty()
             ) {
                 value =
                     if (d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
+                        .byCode().eq(value)
+                        .one().blockingExists()
                     ) {
                         d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
                             .byCode().eq(value)

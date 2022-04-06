@@ -4,8 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
 import java.util.ArrayList
-import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2

@@ -4,8 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.Bindings.blockingGetCheck
 import org.dhis2.Bindings.profilePicturePath
-import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.data.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
