@@ -24,6 +24,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
@@ -144,20 +145,41 @@ fun WrappedSearchButton(
 fun FullSearchButton(
     modifier: Modifier,
     visible: Boolean = true,
-    onClick: () -> Unit
+    closeFilterVisibility: Boolean = false,
+    isLandscape: Boolean = false,
+    onClick: () -> Unit = {},
+    onCloseFilters: () -> Unit = {}
 ) {
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = slideInVertically(initialOffsetY = { it }),
+        enter = slideInVertically(initialOffsetY = { -it }),
         exit = slideOutVertically(targetOffsetY = { -it })
     ) {
-        SearchButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            onClick = onClick
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SearchButton(
+                modifier = Modifier
+                    .weight(weight = 1f)
+                    .height(48.dp),
+                onClick = onClick
+            )
+            if (!isLandscape && closeFilterVisibility) {
+                Spacer(modifier = Modifier.size(16.dp))
+                IconButton(onClick = onCloseFilters) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_up),
+                        contentDescription = "",
+                        tint = Color(
+                            ColorUtils.getPrimaryColor(
+                                LocalContext.current, ColorUtils.ColorType.PRIMARY
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 

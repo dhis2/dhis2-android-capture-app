@@ -90,7 +90,6 @@ class SearchTEPresenterTest {
         presenter.program = program
 
         verify(view, never()).clearList(program.uid())
-        verify(view, never()).setFabIcon(true)
     }
 
     @Test
@@ -135,7 +134,6 @@ class SearchTEPresenterTest {
         presenter.program = newSelectedProgram
 
         verify(view).clearList(newSelectedProgram.uid())
-        verify(view).setFabIcon(true)
     }
 
     @Test

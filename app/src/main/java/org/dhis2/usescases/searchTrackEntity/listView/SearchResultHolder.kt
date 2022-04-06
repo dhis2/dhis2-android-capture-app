@@ -15,7 +15,7 @@ class SearchResultHolder(
 
     init {
         binding.composeView.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnDetachedFromWindow
         )
     }
 

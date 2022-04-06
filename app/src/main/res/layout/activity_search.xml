@@ -12,14 +12,6 @@
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
         <variable
-            name="needsSearch"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
-            name="showClear"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
             name="totalFilters"
             type="Integer" />
     </data>
@@ -157,7 +149,8 @@
                 android:id="@+id/filterRecyclerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginBottom="120dp"
+                android:paddingBottom="120dp"
+                android:clipToPadding="false"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -168,6 +161,21 @@
                 app:layout_constraintVertical_bias="0"
                 tools:listitem="@layout/item_header_filter"
                 tools:visibility="visible" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/clearFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{()->presenter.clearFilterClick()}"
+                app:backgroundTint="@color/white"
+                app:elevation="4dp"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="@id/filterRecyclerLayout"
+                app:layout_constraintEnd_toEndOf="@id/filterRecyclerLayout"
+                app:srcCompat="@drawable/ic_refresh"
+                app:tint="?colorPrimary" />
 
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/minAttributeMessage"

@@ -36,14 +36,6 @@
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
         <variable
-            name="needsSearch"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
-            name="showClear"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
             name="totalFilters"
             type="Integer" />
 
@@ -243,7 +235,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/filterActions"
+                app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent"
                 android:padding="16dp"
                 android:clipToPadding="false"

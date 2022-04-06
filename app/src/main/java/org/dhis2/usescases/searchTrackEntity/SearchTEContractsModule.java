@@ -43,15 +43,9 @@ public class SearchTEContractsModule {
 
         String fromRelationshipTEI();
 
-        void setFabIcon(boolean needsSearch);
-
-        void showHideFilter();
-
         void showHideFilterGeneral();
 
         void updateFilters(int totalFilters);
-
-        void closeFilters();
 
         void openOrgUnitTreeSelector();
 
@@ -72,8 +66,6 @@ public class SearchTEContractsModule {
         void couldNotDownload(String typeName);
 
         void setInitialFilters(List<FilterItem> filtersToDisplay);
-
-        void showClearSearch(boolean empty);
 
         void hideFilter();
 
@@ -115,8 +107,6 @@ public class SearchTEContractsModule {
         String getProgramColor(String uid);
 
         void onSyncIconClick(String teiUid);
-
-        void showFilter();
 
         void showFilterGeneral();
 

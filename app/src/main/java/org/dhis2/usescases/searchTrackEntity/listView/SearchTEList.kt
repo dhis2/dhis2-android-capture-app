@@ -113,6 +113,14 @@ class SearchTEList : FragmentGlobalAbstract() {
     ): View {
         return FragmentSearchListBinding.inflate(inflater, container, false).apply {
             scrollView.apply {
+                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    val paddingTop = if (isLandscape()) {
+                        0.dp
+                    } else {
+                        80.dp
+                    }
+                    setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
+                }
                 adapter = listAdapter
                 addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -147,10 +155,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                         Configuration.ORIENTATION_PORTRAIT
                     ) {
                         val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                        val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                         FullSearchButton(
                             modifier = Modifier,
                             visible = !isScrollingDown,
-                            onClick = { viewModel.setSearchScreen(isLandscape()) }
+                            closeFilterVisibility = isFilterOpened,
+                            isLandscape = isLandscape(),
+                            onClick = { viewModel.setSearchScreen() },
+                            onCloseFilters = { viewModel.onFiltersClick(isLandscape()) }
                         )
                     }
                 }
@@ -216,7 +228,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         recycler.setPaddingRelative(
             0,
             when {
-                listAdapter.itemCount > 1 -> 80.dp
+                !isLandscape() && listAdapter.itemCount > 1 -> 80.dp
                 else -> 0.dp
             },
             0,

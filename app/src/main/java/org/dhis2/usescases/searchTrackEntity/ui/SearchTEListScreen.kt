@@ -28,7 +28,6 @@ import org.dhis2.commons.bindings.dp as inDp
 import org.dhis2.usescases.searchTrackEntity.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.FullSearchButton
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
-import org.dhis2.utils.isLandscape
 
 @ExperimentalAnimationApi
 @Composable
@@ -94,7 +93,7 @@ fun SearchTEListScreen(
                     width = Dimension.fillToConstraints
                 },
                 visible = !isScrollingDown,
-                onClick = { viewModel.setSearchScreen(isLandscape()) }
+                onClick = { viewModel.setSearchScreen() }
             )
         }
         CreateNewButton(
