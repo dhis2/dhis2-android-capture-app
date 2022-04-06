@@ -615,7 +615,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.minAttributeMessage.setVisibility(View.VISIBLE);
 
         if (OrientationUtilsKt.isPortrait()) binding.navigationBar.hide();
-        viewModel.setFiltersOpened(true);
+        viewModel.setFiltersOpened(false);
         changeBounds(R.id.formViewContainer, 0);
     }
 

@@ -101,7 +101,9 @@ fun Spinner.doOnItemSelected(onItemSelected: (selectedIndex: Int) -> Unit) {
             onItemSelected(selectedIndex)
         }
 
-        override fun onNothingSelected(p0: AdapterView<*>?) {}
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            // Don't do anything
+        }
     }
 }
 

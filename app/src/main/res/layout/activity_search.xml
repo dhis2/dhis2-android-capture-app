@@ -173,7 +173,7 @@
                 app:elevation="4dp"
                 app:fabSize="mini"
                 app:layout_constraintBottom_toBottomOf="@id/filterRecyclerLayout"
-                app:layout_constraintEnd_toEndOf="@id/filterRecyclerLayout"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_refresh"
                 app:tint="?colorPrimary" />
 
