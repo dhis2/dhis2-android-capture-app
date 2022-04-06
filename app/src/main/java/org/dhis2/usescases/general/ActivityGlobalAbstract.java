@@ -112,14 +112,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true, false, logOutReason), true, true, null);
                 return Unit.INSTANCE;
             });
-            boolean userIsLogged = serverComponent.userManager().isUserLoggedIn().blockingFirst();
-            if (userIsLogged && !serverComponent.userManager().allowScreenShare()) {
+            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+                    !serverComponent.userManager().allowScreenShare()) {
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-            } else if (!userIsLogged) {
-                returnToLogin(false);
             }
-        } else if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity)) {
-            returnToLogin(true);
         }
 
         if (!getResources().getBoolean(R.bool.is_tablet))
@@ -134,15 +130,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
         super.onCreate(savedInstanceState);
-    }
-
-    private void returnToLogin(boolean shouldRecreateServerComponent) {
-        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity)) {
-            if (shouldRecreateServerComponent) {
-                ExtensionsKt.app(this).createServerComponent();
-            }
-            startActivity(LoginActivity.class, null, true, true, null);
-        }
     }
 
     private void initPinDialog() {
