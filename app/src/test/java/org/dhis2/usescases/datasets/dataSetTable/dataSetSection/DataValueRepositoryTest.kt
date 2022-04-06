@@ -143,16 +143,16 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
-            .byDataSetUid().eq(dataSetUid)
-            .uid(sectionUid)
-            .blockingGet()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
-            .byDataSetUid().eq(dataSetUid)
-            .uid(sectionUid)
-            .blockingGet()
-            .dataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+                .dataElements()
         ) doReturn dataElements
 
         val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
