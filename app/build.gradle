@@ -202,12 +202,6 @@ android {
     }
 }
 
-sonarqube {
-    properties {
-        property "sonar.language", "java"
-    }
-}
-
 dependencies {
     implementation 'androidx.compose.material:material:1.0.4'
     implementation "com.google.android.material:compose-theme-adapter:1.0.4"
