@@ -728,7 +728,6 @@
     <string name="open_privacy_policy">Pulsa aquí para comprobar nuestra <a href="">política de privacidad</a></string>
     <string name="coordinates_error">El valor de las coordenadas no es válido</string>
     <string name="break_glass_error">No puedes registrar TEIs de otras unidades organizativas en este programa porque está protegido.\nContacte con su administrador.</string>
-    <string name="add_image">Añadir imagen</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -813,7 +812,6 @@
     <string name="openid_session_expired_message">Su sesión actual ha terminado. Por razones de seguridad, tendrá que volver a proporcionar sus credenciales</string>
     <string name="dataset_column_default">Valores</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
-    <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="show_radar_graph">Ver como gráfico de radar</string>
