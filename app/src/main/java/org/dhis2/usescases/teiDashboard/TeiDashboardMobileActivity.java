@@ -228,7 +228,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.TEI)
-                .setUid(teiUid)
+                .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
                     if(hasChanged && !restartingActivity) {
                         restartingActivity = true;
