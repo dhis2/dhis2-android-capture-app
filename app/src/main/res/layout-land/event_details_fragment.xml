@@ -43,7 +43,7 @@
                         android:id="@+id/compose_stage_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:set_metadata_icon='@{viewModel.eventDetails.style}'/>
+                        app:set_metadata_icon='@{viewModel.eventDetails.style}' />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -148,9 +148,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    app:enabled="@{viewModel.eventDetails.enabled}"
                     app:setCatCombo="@{viewModel.eventCatCombo}"
-                    app:setViewModel="@{viewModel}"
-                    app:enabled="@{viewModel.eventDetails.enabled}"/>
+                    app:setViewModel="@{viewModel}" />
 
                 <include
                     android:id="@+id/coordinateField"
@@ -160,49 +160,41 @@
                     android:visibility="@{viewModel.eventCoordinates.active ? View.VISIBLE:View.GONE}"
                     app:item="@{viewModel.eventCoordinates.model}" />
 
-                <LinearLayout
+                <RadioGroup
+                    android:id="@+id/temp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="40dp"
+                    android:enabled="@{viewModel.eventDetails.enabled}"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.eventTemp.active ? View.VISIBLE:View.GONE}">
 
-                    <RadioGroup
-                        android:id="@+id/temp"
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/one_time"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
                         android:layout_weight="1"
-                        android:enabled="@{viewModel.eventDetails.enabled}"
-                        android:orientation="horizontal"
-                        android:visibility="@{viewModel.eventTemp.active ? View.VISIBLE:View.GONE}">
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.ONE_TIME ,checked)}"
+                        android:text="@string/one_time"
+                        app:buttonTint="?colorPrimary" />
 
-                        <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/one_time"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.ONE_TIME ,checked)}"
-                            android:text="@string/one_time"
-                            app:buttonTint="?colorPrimary" />
-
-                        <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/permanent"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.PERMANENT ,checked)}"
-                            android:text="@string/permanent"
-                            app:buttonTint="?colorPrimary" />
-                    </RadioGroup>
-
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/reopenButton"
-                        android:layout_width="match_parent"
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/permanent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:setReopen="@{viewModel}" />
+                        android:layout_weight="1"
+                        android:onCheckedChanged="@{(view, checked)->viewModel.setUpEventTemp(EventTempStatus.PERMANENT ,checked)}"
+                        android:text="@string/permanent"
+                        app:buttonTint="?colorPrimary" />
+                </RadioGroup>
 
-                </LinearLayout>
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/reopenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:padding="10dp"
+                    app:setReopen="@{viewModel}" />
 
                 <View
                     android:layout_width="match_parent"
