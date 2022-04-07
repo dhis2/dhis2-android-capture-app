@@ -35,10 +35,7 @@ class SearchScreenConfigurator(
         when {
             searchConfiguration.searchFilters.isOpened -> openFilters()
             searchConfiguration.searchForm.isOpened -> openSearch()
-            else -> {
-                closeFilters()
-                closeSearch()
-            }
+            else -> closeBackdrop()
         }
         binding.searchButton.display(searchConfiguration.displaySearchButton())
         binding.clearFilterSearchButton.display(searchConfiguration.displayResetSearchButton())
@@ -59,10 +56,8 @@ class SearchScreenConfigurator(
     private fun configureLandscapeListScreen(searchConfiguration: SearchList) {
         if (searchConfiguration.searchFilters.isOpened) {
             openFilters()
-            binding.landOpenSearchButton!!.visibility = View.VISIBLE
         } else {
             openSearch()
-            binding.landOpenSearchButton!!.visibility = View.GONE
         }
         binding.searchButton.display(
             searchConfiguration.displaySearchButton() ||
@@ -105,17 +100,15 @@ class SearchScreenConfigurator(
 
     private fun openFilters() {
         binding.filterRecyclerLayout.visibility = View.VISIBLE
-        binding.minAttributeMessage.visibility = View.GONE
         binding.formViewContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(true)
         changeBounds(R.id.filterRecyclerLayout, 16.dp)
     }
 
-    fun closeFilters() {
+    fun closeBackdrop() {
         binding.filterRecyclerLayout.visibility = View.GONE
         binding.formViewContainer.visibility = View.GONE
-        binding.minAttributeMessage.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.show()
         filterIsOpenCallback(false)
         changeBounds(R.id.backdropGuideTop, 0)
@@ -124,19 +117,9 @@ class SearchScreenConfigurator(
     private fun openSearch() {
         binding.filterRecyclerLayout.visibility = View.GONE
         binding.formViewContainer.visibility = View.VISIBLE
-        binding.minAttributeMessage.visibility = View.VISIBLE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(false)
         changeBounds(R.id.formViewContainer, 0)
-    }
-
-    fun closeSearch() {
-        binding.filterRecyclerLayout.visibility = View.GONE
-        binding.formViewContainer.visibility = View.GONE
-        binding.minAttributeMessage.visibility = View.GONE
-        if (isPortrait()) binding.navigationBar.show()
-        filterIsOpenCallback(false)
-        changeBounds(R.id.backdropGuideTop, 0)
     }
 
     private fun changeBounds(endID: Int, margin: Int) {

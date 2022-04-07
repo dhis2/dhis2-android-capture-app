@@ -339,16 +339,10 @@ class TeiDashboardTest : BaseTest() {
         val relationshipName = "Filona"
         val relationshipLastName = "Ryder"
         val completeName = "Ryder Filona"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
-            clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch()
             clickOnTEI(teiName, teiLastName)
         }
 

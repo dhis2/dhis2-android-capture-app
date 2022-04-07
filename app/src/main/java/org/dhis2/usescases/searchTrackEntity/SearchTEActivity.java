@@ -143,7 +143,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
         binding.searchButton.setOnClickListener(v -> {
             hideKeyboard();
-            if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeSearch();
+            if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
             formView.onEditionFinish();
             binding.backdropLayout.post(() ->
                     viewModel.onSearchClick(minNumberOfAttributes -> {
@@ -165,13 +165,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.syncButton.setVisibility(initialProgram != null ? View.VISIBLE : GONE);
         binding.syncButton.setOnClickListener(v -> openSyncDialog());
 
-        SearchJavaToComposeKt.setLandscapeOpenSearchButton(binding.landOpenSearchButton, () -> {
-            viewModel.setSearchScreen();
-            return Unit.INSTANCE;
-        });
+        SearchJavaToComposeKt.setLandscapeOpenSearchButton(
+                binding.landOpenSearchButton,
+                viewModel,
+                () -> {
+                    viewModel.setSearchScreen();
+                    return Unit.INSTANCE;
+                }
+        );
 
         configureBottomNavigation();
-
         showList();
         observeScreenState();
         observeDownload();
@@ -334,7 +337,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void configureBottomNavigation() {
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             if (viewModel.searchOrFilterIsOpen()) {
-                searchScreenConfigurator.closeFilters();
+                searchScreenConfigurator.closeBackdrop();
             }
             binding.mainComponent.setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
