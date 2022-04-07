@@ -35,11 +35,7 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<Program> programModels);
 
-        void setFiltersVisibility(boolean showFilters);
-
         void clearList(String uid);
-
-        void setTutorial();
 
         String fromRelationshipTEI();
 

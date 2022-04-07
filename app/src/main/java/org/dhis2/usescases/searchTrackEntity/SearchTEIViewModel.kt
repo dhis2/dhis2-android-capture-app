@@ -18,6 +18,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
@@ -180,11 +181,12 @@ class SearchTEIViewModel(
     }
 
     fun updateActiveFilters(filtersActive: Boolean) {
+        if (_filtersActive.value != filtersActive) searchRepository.clearFetchedList()
         _filtersActive.value = filtersActive
     }
 
     fun refreshData() {
-        onSearchClick()
+        performSearch()
     }
 
     fun updateQueryData(rowAction: RowAction) {
@@ -280,6 +282,11 @@ class SearchTEIViewModel(
     }
 
     fun onSearchClick(onMinAttributes: (Int) -> Unit = {}) {
+        searchRepository.clearFetchedList()
+        performSearch(onMinAttributes)
+    }
+
+    private fun performSearch(onMinAttributes: (Int) -> Unit = {}) {
         viewModelScope.launch {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
@@ -322,8 +329,8 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun canDisplayResult(itemCount: Int): Boolean {
-        return when (initialProgramUid) {
+    fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
+        return !onlineTooManyResults && when (initialProgramUid) {
             null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
             else ->
                 searchRepository.getProgram(initialProgramUid)?.maxTeiCountToReturn()
@@ -379,9 +386,13 @@ class SearchTEIViewModel(
     fun onDataLoaded(
         programResultCount: Int,
         globalResultCount: Int? = null,
-        isLandscape: Boolean = false
+        isLandscape: Boolean = false,
+        onlineErrorCode: D2ErrorCode? = null
     ) {
-        val canDisplayResults = canDisplayResult(programResultCount)
+        val canDisplayResults = canDisplayResult(
+            programResultCount,
+            onlineErrorCode == D2ErrorCode.MAX_TEI_COUNT_REACHED
+        )
         val hasProgramResults = programResultCount > 0
         val hasGlobalResults = globalResultCount?.let { it > 0 }
 

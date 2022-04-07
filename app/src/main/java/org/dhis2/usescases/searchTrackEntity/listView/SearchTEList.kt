@@ -24,12 +24,12 @@ import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.searchTrackEntity.CreateNewButton
-import org.dhis2.usescases.searchTrackEntity.FullSearchButton
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
+import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
+import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
@@ -225,7 +225,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         }
 
         viewModel.dataResult.observe(viewLifecycleOwner) {
-            initialLoadingAdapter.submitList(emptyList())
+            initLoading(emptyList())
             it.firstOrNull()?.let { searchResult ->
                 if (searchResult.shouldClearProgramData()) {
                     liveAdapter.clearList()
@@ -234,7 +234,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     globalAdapter.clearList()
                 }
             }
-            resultAdapter.submitList(it)
+            displayResult(it)
             updateRecycler()
         }
     }
@@ -244,6 +244,8 @@ class SearchTEList : FragmentGlobalAbstract() {
             0,
             when {
                 !isLandscape() && listAdapter.itemCount > 1 -> 80.dp
+                !isLandscape() && liveAdapter.itemCount == 0 &&
+                    resultAdapter.itemCount == 1 -> 80.dp
                 else -> 0.dp
             },
             0,
@@ -255,10 +257,14 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun restoreAdapters() {
-        initialLoadingAdapter.submitList(null)
+        initLoading(null)
         liveAdapter.clearList()
-        globalAdapter.clearList()
-        resultAdapter.submitList(null)
+        if (viewModel.filtersActive.value != true) {
+            globalAdapter.clearList()
+        } else if (globalAdapter.itemCount > 0) {
+            initGlobalData()
+        }
+        displayResult(null)
     }
 
     private val initResultCallback = object : PagedList.Callback() {
@@ -303,7 +309,13 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun onInitDataLoaded() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
-            isLandscape = isLandscape()
+            globalResultCount = if (globalAdapter.itemCount > 0) {
+                globalAdapter.itemCount
+            } else {
+                null
+            },
+            isLandscape = isLandscape(),
+            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode
         )
     }
 
@@ -330,13 +342,25 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun displayLoadingData() {
         if (listAdapter.itemCount == 0) {
-            initialLoadingAdapter.submitList(
+            initLoading(
                 listOf(SearchResult(SearchResult.SearchResultType.LOADING))
             )
         } else {
-            resultAdapter.submitList(
+            displayResult(
                 listOf(SearchResult(SearchResult.SearchResultType.LOADING))
             )
+        }
+    }
+
+    private fun initLoading(result: List<SearchResult>?) {
+        recycler.post {
+            initialLoadingAdapter.submitList(result)
+        }
+    }
+
+    private fun displayResult(result: List<SearchResult>?) {
+        recycler.post {
+            resultAdapter.submitList(result)
         }
     }
 }

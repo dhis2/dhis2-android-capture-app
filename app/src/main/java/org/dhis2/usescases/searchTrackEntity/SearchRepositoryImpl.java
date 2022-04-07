@@ -80,6 +80,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -107,6 +108,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
     private PreferenceProvider prefs;
+    private HashSet<String> fetchedTeiUids = new HashSet<>();
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -146,16 +148,24 @@ public class SearchRepositoryImpl implements SearchRepository {
                         .get()).toObservable();
     }
 
+    @Override
+    public void clearFetchedList() {
+        fetchedTeiUids.clear();
+    }
+
     @NonNull
     @Override
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline) {
-
         boolean allowCache = false;
         if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().sameFilters(savedFilters)) {
             trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
         } else {
             getFilteredRepository(searchParametersModel);
             allowCache = true;
+        }
+
+        if(!fetchedTeiUids.isEmpty()){
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids().in(new ArrayList<>(fetchedTeiUids));
         }
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
@@ -794,12 +804,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         } catch (Throwable e) {
             SearchTeiModel errorModel = new SearchTeiModel();
             errorModel.onlineErrorMessage = resources.parseD2Error(e);
+            errorModel.onlineErrorCode = ((D2Error)e).errorCode();
             return errorModel;
         }
     }
 
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
-
+        if(!fetchedTeiUids.contains(tei.uid())) {
+            fetchedTeiUids.add(tei.uid());
+        }
         SearchTeiModel searchTei = new SearchTeiModel();
         if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists() &&
                 d2.trackedEntityModule().trackedEntityInstances().uid(tei.uid()).blockingGet().state() != State.RELATIONSHIP) {

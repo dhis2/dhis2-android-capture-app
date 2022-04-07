@@ -5,13 +5,10 @@ import static android.view.View.GONE;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.transition.TransitionManager;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -39,7 +36,7 @@ import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
-import org.dhis2.usescases.searchTrackEntity.ui.BackdropManager;
+import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -63,6 +60,8 @@ import timber.log.Timber;
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
 
     ActivitySearchBinding binding;
+    SearchScreenConfigurator searchScreenConfigurator;
+
     @Inject
     SearchTEContractsModule.Presenter presenter;
 
@@ -133,28 +132,30 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSearchForm();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+        searchScreenConfigurator = new SearchScreenConfigurator(
+                binding,
+                isOpen -> {
+                    viewModel.setFiltersOpened(isOpen);
+                    return Unit.INSTANCE;
+                });
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
-        binding.searchButton.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                v.requestFocus();
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideKeyboard();
-                v.clearFocus();
-                viewModel.onSearchClick(minNumberOfAttributes -> {
-                    showSnackbar(
-                            v,
-                            String.format(getString(R.string.search_min_num_attr),
-                                    minNumberOfAttributes),
-                            getString(R.string.button_ok)
+        binding.searchButton.setOnClickListener(v -> {
+            hideKeyboard();
+            if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeSearch();
+            formView.onEditionFinish();
+            binding.backdropLayout.post(() ->
+                    viewModel.onSearchClick(minNumberOfAttributes -> {
+                        showSnackbar(
+                                v,
+                                String.format(getString(R.string.search_min_num_attr),
+                                        minNumberOfAttributes),
+                                getString(R.string.button_ok)
 
-                    );
-                    return Unit.INSTANCE;
-                });
-            }
-            return true;
+                        );
+                        return Unit.INSTANCE;
+                    }));
         });
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
@@ -333,7 +334,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void configureBottomNavigation() {
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             if (viewModel.searchOrFilterIsOpen()) {
-                closeFilters();
+                searchScreenConfigurator.closeFilters();
             }
             binding.mainComponent.setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
@@ -411,89 +412,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void observeScreenState() {
         viewModel.getScreenState().observe(this, screenState -> {
-            switch (screenState.getScreenState()) {
-                case NONE:
-                    break;
-                case LIST:
-                case MAP:
-                    if (OrientationUtilsKt.isPortrait()) {
-                        configureListScreen((SearchList) screenState);
-                    } else {
-                        configureLandscapeAnalyticsScreen(false);
-                        configureLandscapeListScreen((SearchList) screenState);
-                    }
-                    break;
-                case ANALYTICS:
-                    if (OrientationUtilsKt.isLandscape()) {
-                        configureLandscapeAnalyticsScreen(true);
-                    }
-                    break;
-            }
+            searchScreenConfigurator.configure(screenState);
         });
-    }
-
-    private void configureListScreen(SearchList searchConfiguration) {
-        if (searchConfiguration.getSearchFilters().isOpened()) {
-            openFilters();
-        } else if (searchConfiguration.getSearchForm().isOpened()) {
-            openSearch();
-        } else {
-            closeFilters();
-            closeSearch();
-        }
-        ViewExtensionsKt.display(binding.searchButton, searchConfiguration.displaySearchButton());
-        ViewExtensionsKt.display(binding.clearFilterSearchButton, searchConfiguration.displayResetSearchButton());
-        ViewExtensionsKt.display(binding.clearFilters, searchConfiguration.displayResetFiltersButton());
-
-
-        syncButtonVisibility(!searchConfiguration.getSearchForm().isOpened());
-        setFiltersVisibility(!searchConfiguration.getSearchForm().isOpened());
-
-        SearchJavaToComposeKt.setMinAttributesMessage(
-                binding.minAttributeMessage,
-                searchConfiguration.getSearchForm().getMinAttributesToSearch()
-        );
-    }
-
-    private void configureLandscapeListScreen(SearchList searchConfiguration) {
-        if (searchConfiguration.getSearchFilters().isOpened()) {
-            openFilters();
-            binding.landOpenSearchButton.setVisibility(View.VISIBLE);
-        } else {
-            openSearch();
-            binding.landOpenSearchButton.setVisibility(GONE);
-        }
-
-        ViewExtensionsKt.display(
-                binding.searchButton,
-                searchConfiguration.displaySearchButton() ||
-                        !searchConfiguration.getSearchFilters().isOpened()
-        );
-        ViewExtensionsKt.display(
-                binding.clearFilterSearchButton,
-                searchConfiguration.displayResetSearchButton() ||
-                        searchConfiguration.displayResetFiltersButton()
-        );
-
-        syncButtonVisibility(true);
-        setFiltersVisibility(true);
-
-        SearchJavaToComposeKt.setMinAttributesMessage(
-                binding.minAttributeMessage,
-                searchConfiguration.getSearchForm().getMinAttributesToSearch()
-        );
-    }
-
-    private void configureLandscapeAnalyticsScreen(boolean expanded) {
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(binding.backdropLayout);
-        constraintSet.setGuidelinePercent(R.id.backdropGuideDiv, expanded ? 0.0f : 0.26f);
-        TransitionManager.beginDelayedTransition(binding.backdropLayout);
-        constraintSet.applyTo(binding.backdropLayout);
-    }
-
-    private void syncButtonVisibility(boolean canBeDisplayed) {
-        binding.syncButton.setVisibility(canBeDisplayed ? View.VISIBLE : GONE);
     }
 
     private void observeDownload() {
@@ -518,12 +438,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             return Unit.INSTANCE;
                         }
                 ));
-    }
-
-    @Override
-    public void setFiltersVisibility(boolean showFilters) {
-        binding.filterCounter.setVisibility(showFilters && binding.getTotalFilters() > 0 ? View.VISIBLE : GONE);
-        binding.searchFilterGeneral.setVisibility(showFilters ? View.VISIBLE : GONE);
     }
 
     @Override
@@ -587,52 +501,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showHideFilterGeneral() {
         viewModel.onFiltersClick(OrientationUtilsKt.isLandscape());
-    }
-
-    private void openFilters() {
-        binding.filterRecyclerLayout.setVisibility(View.VISIBLE);
-        binding.minAttributeMessage.setVisibility(GONE);
-        binding.formViewContainer.setVisibility(GONE);
-
-        if (OrientationUtilsKt.isPortrait()) binding.navigationBar.hide();
-        viewModel.setFiltersOpened(true);
-        changeBounds(R.id.filterRecyclerLayout, ExtensionsKt.getDp(16));
-    }
-
-    private void closeFilters() {
-        binding.filterRecyclerLayout.setVisibility(View.GONE);
-        binding.formViewContainer.setVisibility(GONE);
-        binding.minAttributeMessage.setVisibility(GONE);
-
-        if (OrientationUtilsKt.isPortrait()) binding.navigationBar.show();
-        viewModel.setFiltersOpened(false);
-        changeBounds(R.id.backdropGuideTop, 0);
-    }
-
-    private void openSearch() {
-        binding.filterRecyclerLayout.setVisibility(GONE);
-        binding.formViewContainer.setVisibility(View.VISIBLE);
-        binding.minAttributeMessage.setVisibility(View.VISIBLE);
-
-        if (OrientationUtilsKt.isPortrait()) binding.navigationBar.hide();
-        viewModel.setFiltersOpened(false);
-        changeBounds(R.id.formViewContainer, 0);
-    }
-
-    private void closeSearch() {
-        binding.filterRecyclerLayout.setVisibility(View.GONE);
-        binding.formViewContainer.setVisibility(GONE);
-        binding.minAttributeMessage.setVisibility(GONE);
-
-        if (OrientationUtilsKt.isPortrait()) binding.navigationBar.show();
-        viewModel.setFiltersOpened(false);
-        changeBounds(R.id.backdropGuideTop, 0);
-    }
-
-    private void changeBounds(int endID, int margin) {
-        BackdropManager.INSTANCE.changeBoundsIf(
-                OrientationUtilsKt.isPortrait(), binding.backdropLayout, endID, margin
-        );
     }
 
     @Override

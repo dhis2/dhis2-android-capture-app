@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchTrackEntity.ui
 import android.transition.TransitionManager
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
+import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.Bindings.display
 import org.dhis2.Bindings.dp
 import org.dhis2.R
@@ -10,7 +11,6 @@ import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
 import org.dhis2.usescases.searchTrackEntity.SearchTEScreenState
-import org.dhis2.usescases.searchTrackEntity.setMinAttributesMessage
 import org.dhis2.usescases.searchTrackEntity.ui.BackdropManager.changeBoundsIf
 import org.dhis2.utils.isPortrait
 
@@ -45,9 +45,15 @@ class SearchScreenConfigurator(
         binding.clearFilters?.display(searchConfiguration.displayResetFiltersButton())
         syncButtonVisibility(!searchConfiguration.searchForm.isOpened)
         setFiltersVisibility(!searchConfiguration.searchForm.isOpened)
-        binding.minAttributeMessage.setMinAttributesMessage(
-            searchConfiguration.searchForm.minAttributesToSearch
-        )
+        binding.minAttributeMessage.setContent {
+            MdcTheme {
+                if (searchConfiguration.searchForm.minAttributesToSearch > 0) {
+                    MinAttributesMessage(
+                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch
+                    )
+                }
+            }
+        }
     }
 
     private fun configureLandscapeListScreen(searchConfiguration: SearchList) {
@@ -68,9 +74,15 @@ class SearchScreenConfigurator(
         )
         syncButtonVisibility(true)
         setFiltersVisibility(true)
-        binding.minAttributeMessage.setMinAttributesMessage(
-            searchConfiguration.searchForm.minAttributesToSearch
-        )
+        binding.minAttributeMessage.setContent {
+            MdcTheme {
+                if (searchConfiguration.searchForm.minAttributesToSearch > 0) {
+                    MinAttributesMessage(
+                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch
+                    )
+                }
+            }
+        }
     }
 
     private fun configureLandscapeAnalyticsScreen(expanded: Boolean) {
