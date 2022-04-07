@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,57 +43,61 @@ fun AccountsScreen(
     onAccountClicked: (AccountModel) -> Unit,
     onAddAccountClicked: () -> Unit
 ) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(colorResource(id = R.color.colorPrimary))
-    ) {
-        LoginHeader()
+    MaterialTheme {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(Color.White)
+            Modifier
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.colorPrimary))
         ) {
-            LazyColumn(Modifier.padding(top = 16.dp, bottom = 48.dp)) {
-                items(accounts) {
-                    AccountItem(
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        it,
-                        onAccountClicked
-                    )
-                }
-            }
-            Column(Modifier.padding(16.dp)) {
-                if (accounts.size == MAX_ACCOUNTS) {
-                    Text(
-                        text = stringResource(R.string.max_accounts_text).format(MAX_ACCOUNTS),
-                        textAlign = TextAlign.Center,
-                        color = colorResource(id = R.color.secondaryColor)
-                    )
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth().padding(top = 22.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = colorResource(id = R.color.colorPrimary),
-                        contentColor = Color.White
-                    ),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 5.dp,
-                        pressedElevation = 15.dp,
-                        disabledElevation = 0.dp
-                    ),
-                    enabled = accounts.size < MAX_ACCOUNTS,
-                    onClick = { onAddAccountClicked() }
-                ) {
-                    Text(
-                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
-                        fontFamily = FontFamily(
-                            Font(R.font.rubik_regular, FontWeight.Medium)
+            LoginHeader()
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .background(Color.White)
+            ) {
+                LazyColumn(Modifier.padding(top = 16.dp, bottom = 48.dp)) {
+                    items(accounts) {
+                        AccountItem(
+                            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            it,
+                            onAccountClicked
                         )
-                    )
+                    }
+                }
+                Column(Modifier.padding(16.dp)) {
+                    if (accounts.size == MAX_ACCOUNTS) {
+                        Text(
+                            text = stringResource(R.string.max_accounts_text).format(MAX_ACCOUNTS),
+                            textAlign = TextAlign.Center,
+                            color = colorResource(id = R.color.secondaryColor)
+                        )
+                    }
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 22.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(id = R.color.colorPrimary),
+                            contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.elevation(
+                            defaultElevation = 5.dp,
+                            pressedElevation = 15.dp,
+                            disabledElevation = 0.dp
+                        ),
+                        enabled = accounts.size < MAX_ACCOUNTS,
+                        onClick = { onAddAccountClicked() }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
+                            fontFamily = FontFamily(
+                                Font(R.font.rubik_regular, FontWeight.Medium)
+                            )
+                        )
+                    }
                 }
             }
         }
