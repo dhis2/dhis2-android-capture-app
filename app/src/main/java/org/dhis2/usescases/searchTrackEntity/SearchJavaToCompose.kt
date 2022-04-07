@@ -4,16 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import com.google.android.material.composethemeadapter.MdcTheme
-
-fun ComposeView.setMinAttributesMessage(minAttributesToSearch: Int) {
-    setContent {
-        MdcTheme {
-            if (minAttributesToSearch > 0) {
-                MinAttributesMessage(minAttributes = minAttributesToSearch)
-            }
-        }
-    }
-}
+import org.dhis2.usescases.searchTrackEntity.ui.WrappedSearchButton
 
 fun ComposeView?.setLandscapeOpenSearchButton(onClick: () -> Unit) {
     this?.setContent {

@@ -80,7 +80,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
-    private final SearchMessageMapper searchMessageMapper;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -93,15 +92,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper) {
+                             MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
-        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;

@@ -25,8 +25,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.bindings.dp as inDp
-import org.dhis2.usescases.searchTrackEntity.CreateNewButton
-import org.dhis2.usescases.searchTrackEntity.FullSearchButton
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 
 @ExperimentalAnimationApi

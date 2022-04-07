@@ -23,7 +23,7 @@ data class SearchList(
     }
 
     fun displayResetFiltersButton(): Boolean {
-        return searchFilters.isOpened && searchFilters.hasActiveFilters
+        return searchFilters.isOpened and searchFilters.hasActiveFilters
     }
 }
 
