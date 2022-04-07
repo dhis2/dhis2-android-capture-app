@@ -175,6 +175,7 @@ class FormViewModel(
                 )
             }
             ActionType.ON_FINISH -> {
+                repository.setFocusedItem(action)
                 StoreResult(
                     "",
                     ValueStoreResult.FINISH
