@@ -231,9 +231,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             dialog.dismiss()
         }
         dialog.setNegativeListener { dialog.dismiss() }
-        dialog.setNodeClickListener { node: TreeNode, _: Any? ->
-            if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
-        }
         dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
