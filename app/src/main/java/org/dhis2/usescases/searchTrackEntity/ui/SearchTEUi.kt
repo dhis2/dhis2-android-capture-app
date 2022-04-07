@@ -1,4 +1,4 @@
-package org.dhis2.usescases.searchTrackEntity
+package org.dhis2.usescases.searchTrackEntity.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -61,10 +61,9 @@ import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 
 @Composable
-fun SearchResult(
+fun SearchResultUi(
     searchResult: SearchResult,
     onSearchOutsideClick: () -> Unit
 ) {
@@ -632,31 +631,31 @@ fun LoadingMoreResultsPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SearchOutsidePreview() {
-    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE)) {}
+    SearchResultUi(searchResult = SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun NoMoreResultsPreview() {
-    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS)) {}
+    SearchResultUi(searchResult = SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TooManyResultsPreview() {
-    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS)) {}
+    SearchResultUi(searchResult = SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun NoResultsPreview() {
-    SearchResult(searchResult = SearchResult(SearchResult.SearchResultType.NO_RESULTS)) {}
+    SearchResultUi(searchResult = SearchResult(SearchResult.SearchResultType.NO_RESULTS)) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchOrCreatePreview() {
-    SearchResult(
+    SearchResultUi(
         searchResult = SearchResult(
             SearchResult.SearchResultType.SEARCH_OR_CREATE,
             "Person"

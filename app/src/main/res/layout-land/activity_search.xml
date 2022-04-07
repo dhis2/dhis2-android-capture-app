@@ -268,7 +268,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:focusableInTouchMode="true"
                     android:src="@drawable/ic_search"
                     app:backgroundTint="@color/white"
                     app:fabSize="normal"
