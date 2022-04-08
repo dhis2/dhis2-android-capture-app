@@ -22,25 +22,29 @@ class EventCaptureFormPresenter(
                 result.canComplete,
                 result.onCompleteMessage,
                 result.fieldUidErrorList,
-                emptyMap()
+                result.mandatoryFields,
+                result.warningFields
             )
             is FieldsWithWarningResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
-                emptyList<String>(),
-                emptyMap()
+                emptyList(),
+                emptyMap(),
+                result.fieldUidWarningList
             )
             is MissingMandatoryResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
-                emptyList<String>(),
-                result.mandatoryFields
+                result.errorFields,
+                result.mandatoryFields,
+                result.warningFields
             )
             is SuccessfulResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
                 emptyList(),
-                emptyMap()
+                emptyMap(),
+                emptyList()
             )
         }
     }

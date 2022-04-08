@@ -247,7 +247,6 @@
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
-    <string name="missing_mandatory_fields_events">Alguns campos obrigatórios estão ausentes. Você pode voltar agora, mas este evento não poderá ser concluído.</string>
     <string name="title_delete_go_back">Seus dados não são salvos</string>
     <string name="delete_go_back">Se você voltar agora, todas as informações inseridas serão excluídas.</string>
     <string name="missing_mandatory_fields_events_2.0">Alguns campos obrigatórios estão ausentes:/n%s/nVocê pode voltar agora, mas este evento não poderá ser concluído.</string>

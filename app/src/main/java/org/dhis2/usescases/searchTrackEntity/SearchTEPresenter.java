@@ -29,9 +29,9 @@ import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -81,7 +80,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
-    private final SearchMessageMapper searchMessageMapper;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -94,15 +92,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper) {
+                             MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
-        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;
@@ -136,7 +132,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         filters -> {
                             if (!filters.isEmpty()) {
                                 view.setInitialFilters(filters);
-                            }else{
+                            } else {
                                 view.hideFilter();
                             }
                         }
@@ -236,7 +232,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (otherProgramSelected) {
             selectedProgram = newProgramSelected;
             view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
-            view.setFabIcon(true);
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
         }
@@ -251,8 +246,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onClearClick() {
-        view.setFabIcon(true);
-        view.showClearSearch(false);
         searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
     }
@@ -281,7 +274,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return programAccess && teTypeAccess;
     }
 
-    private void enroll(String programUid, String uid, HashMap<String, String> queryData) {
+    @Override
+    public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
@@ -304,7 +298,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 if (!orgUnitDialog.isAdded())
                                     orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
-                                showCalendar(allOrgUnits.get(0), programUid, uid,queryData);
+                                showCalendar(allOrgUnits.get(0), programUid, uid, queryData);
                         },
                         Timber::d
                 )
@@ -358,7 +352,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         dialog.show();
     }
 
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate,HashMap<String, String> queryData) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate, HashMap<String, String> queryData) {
         compositeDisposable.add(
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
@@ -407,12 +401,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view.downloadProgress(),
-                        Timber::d,
+                        t -> {
+                            if (t instanceof D2Error) {
+                                D2Error d2Error = (D2Error) t;
+                                switch (d2Error.errorCode()) {
+                                    case OWNERSHIP_ACCESS_DENIED:
+                                        view.showBreakTheGlass(teiUid, enrollmentUid);
+                                        break;
+                                    default:
+                                        view.displayMessage(new D2ErrorUtils(view.getContext()).getErrorMessage(t));
+                                        break;
+                                }
+                            } else {
+                                Timber.e(t);
+                            }
+                        },
                         () -> {
                             if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
-                                if(teiHasEnrollmentInProgram(teiUid)) {
+                                if (teiHasEnrollmentInProgram(teiUid)) {
                                     openDashboard(teiUid, enrollmentUid);
-                                }else if(canCreateTei()){
+                                } else if (canCreateTei()) {
                                     enroll(selectedProgram.uid(), teiUid, new HashMap<>());
                                 }
                             } else {
@@ -422,16 +430,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private boolean teiHasEnrollmentInProgram(String teiUid){
+    private boolean teiHasEnrollmentInProgram(String teiUid) {
         return !d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(selectedProgram.uid())
                 .blockingIsEmpty();
-    }
-
-    @Override
-    public void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason) {
-
     }
 
     @Override
@@ -471,11 +474,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onSyncIconClick(String teiUid) {
         matomoAnalyticsController.trackEvent(TRACKER_LIST, SYNC_TEI, CLICK);
         view.showSyncDialog(teiUid);
-    }
-
-    @Override
-    public void showFilter() {
-        view.showHideFilter();
     }
 
     @Override

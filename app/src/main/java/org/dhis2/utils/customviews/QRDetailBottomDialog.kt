@@ -3,7 +3,6 @@ package org.dhis2.utils.customviews
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,15 +11,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.oned.Code128Writer
-import com.google.zxing.qrcode.QRCodeWriter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -48,6 +45,9 @@ QRDetailBottomDialog(
     private lateinit var binding: QrDetailDialogBinding
     private var qrContentUri: Uri? = null
     private var primaryColor: Int? = -1
+    private val viewModel by viewModels<QRImageViewModel> {
+        QRImageViewModelFactory()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +102,7 @@ QRDetailBottomDialog(
         }
 
         binding.scanButton.apply {
+            isEnabled = editable == true
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,
@@ -115,6 +116,13 @@ QRDetailBottomDialog(
         }
 
         binding.root.clipWithRoundedCorners()
+
+        viewModel.qrBitmap.observe(this) { result ->
+            result.fold(
+                onSuccess = { renderBitmap(it) },
+                onFailure = { dismiss() }
+            )
+        }
 
         return binding.root
     }
@@ -137,44 +145,17 @@ QRDetailBottomDialog(
 
     override fun onResume() {
         super.onResume()
-        renderQrBitmap { qrBitmap ->
-            saveQrImage(qrBitmap)
-            Glide.with(this)
-                .load(qrBitmap)
-                .apply(RequestOptions.skipMemoryCacheOf(true))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                .skipMemoryCache(true)
-                .into(binding.fullImage)
-        }
+        viewModel.renderQrBitmap(value, renderingType ?: UiRenderType.QR_CODE)
     }
 
-    private fun renderQrBitmap(callback: (Bitmap) -> Unit) {
-        val (writer, format) = when (renderingType) {
-            UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
-            UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
-            else -> Pair(null, null)
-        }
-        if (writer != null && format != null) {
-            val bitMatrix = writer.encode(value, format, 500, 500)
-
-            val width: Int = bitMatrix.width
-            val height: Int = bitMatrix.height
-
-            val bitMap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-            for (i in 0 until width) {
-                for (j in 0 until height) {
-                    bitMap.setPixel(
-                        i,
-                        j,
-                        if (bitMatrix.get(i, j)) Color.BLACK else Color.WHITE
-                    )
-                }
-            }
-            callback.invoke(bitMap)
-        } else {
-            dismiss()
-        }
+    private fun renderBitmap(qrBitmap: Bitmap) {
+        saveQrImage(qrBitmap)
+        Glide.with(this)
+            .load(qrBitmap)
+            .apply(RequestOptions.skipMemoryCacheOf(true))
+            .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+            .skipMemoryCache(true)
+            .into(binding.fullImage)
     }
 
     private fun saveQrImage(qrBitmap: Bitmap) {

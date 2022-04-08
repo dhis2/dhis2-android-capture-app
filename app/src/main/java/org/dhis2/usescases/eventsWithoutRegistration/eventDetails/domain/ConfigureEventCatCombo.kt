@@ -2,18 +2,15 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.Category
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 
 class ConfigureEventCatCombo(
-    val eventInitialRepository: EventInitialRepository,
-    val programUid: String,
-    val eventUid: String?
+    val repository: EventDetailsRepository
 ) {
 
     private var selectedCategoryOptions = mapOf<String, CategoryOption?>()
@@ -22,7 +19,7 @@ class ConfigureEventCatCombo(
         categoryOption?.let {
             updateSelectedOptions(it)
         }
-        getCategoryCombo().apply {
+        repository.catCombo().apply {
             return flowOf(
                 EventCatCombo(
                     uid = getCatComboUid(uid(), isDefault ?: false),
@@ -53,23 +50,24 @@ class ConfigureEventCatCombo(
     }
 
     private fun getCatComboUid(categoryComboUid: String, isDefault: Boolean): String? {
-        eventUid?.let {
-            return eventInitialRepository.event(it).blockingFirst().attributeOptionCombo()
-        }
-
         if (isDefault) {
-            return eventInitialRepository.catOptionCombos(
+            return repository.getCatOptionCombos(
                 categoryComboUid
-            ).blockingFirst().first().uid()
+            ).first().uid()
         }
 
         val valuesList = getUidsList(selectedCategoryOptions.values.filterNotNull())
         if (valuesList.isNotEmpty()) {
-            return eventInitialRepository.getCategoryOptionCombo(
+            return repository.getCategoryOptionCombo(
                 categoryComboUid,
                 valuesList
             )
         }
+
+        repository.getEvent()?.let {
+            return it.attributeOptionCombo()
+        }
+
         return null
     }
 
@@ -79,7 +77,7 @@ class ConfigureEventCatCombo(
         categoryOption?.let { pair ->
             val copy = selectedCategoryOptions.toMutableMap()
             copy[pair.first] = pair.second?.let { categoryOptionId ->
-                eventInitialRepository.getCatOption(categoryOptionId)
+                repository.getCatOption(categoryOptionId)
             }
             selectedCategoryOptions = copy
         }
@@ -91,19 +89,13 @@ class ConfigureEventCatCombo(
             EventCategory(
                 uid = category.uid(),
                 name = category.displayName() ?: category.uid(),
-                optionsSize = eventInitialRepository.getCatOptionSize(category.uid()),
-                options = eventInitialRepository.getCategoryOptions(category.uid())
+                optionsSize = repository.getCatOptionSize(category.uid()),
+                options = repository.getCategoryOptions(category.uid())
             )
         } ?: emptyList()
     }
 
     private fun getCategoryOptions(): Map<String, CategoryOption>? {
-        return eventUid?.let {
-            eventInitialRepository.getOptionsFromCatOptionCombo(it).blockingFirst()
-        }
-    }
-
-    private fun getCategoryCombo(): CategoryCombo {
-        return eventInitialRepository.catCombo(programUid).blockingFirst()
+        return repository.getOptionsFromCatOptionCombo()
     }
 }

@@ -19,6 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
@@ -27,6 +28,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -42,7 +44,9 @@ class EventDetailsViewModel(
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
     private val geometryController: GeometryController,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
+    private val resourcesProvider: EventDetailResourcesProvider
 ) : ViewModel() {
 
     var showCalendar: (() -> Unit)? = null
@@ -54,6 +58,10 @@ class EventDetailsViewModel(
     var requestLocationPermissions: (() -> Unit)? = null
     var showEnableLocationMessage: (() -> Unit)? = null
     var requestLocationByMap: ((featureType: String, initCoordinate: String?) -> Unit)? = null
+    var onButtonClickCallback: (() -> Unit)? = null
+    var showEventUpdateStatus: ((result: String) -> Unit)? = null
+    var onReopenError: ((message: String) -> Unit)? = null
+    var onReopenSuccess: ((message: String) -> Unit)? = null
 
     private val _eventDetails: MutableStateFlow<EventDetails> = MutableStateFlow(EventDetails())
     val eventDetails: StateFlow<EventDetails> get() = _eventDetails
@@ -75,6 +83,10 @@ class EventDetailsViewModel(
     val eventTemp: StateFlow<EventTemp> get() = _eventTemp
 
     init {
+        loadEventDetails()
+    }
+
+    private fun loadEventDetails() {
         setUpEventDetails()
         setUpEventReportDate()
         setUpCategoryCombo()
@@ -83,6 +95,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpEventDetails() {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventDetails(
                 selectedDate = eventDate.value.currentDate,
@@ -95,11 +108,13 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
                 .flowOn(Dispatchers.IO)
@@ -107,6 +122,7 @@ class EventDetailsViewModel(
                     _eventDate.value = it
                     setUpEventDetails()
                     setUpOrgUnit(selectedDate = it.currentDate)
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
@@ -126,17 +142,20 @@ class EventDetailsViewModel(
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventCatCombo.value = it
                     setUpEventDetails()
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     private fun setUpCoordinates(value: String? = null) {
+        EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCoordinates(value)
                 .flowOn(Dispatchers.IO)
@@ -156,17 +175,20 @@ class EventDetailsViewModel(
                     )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
+                    EventDetailIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
+        EventDetailIdlingResourceSingleton.increment()
         if (isChecked) {
             configureEventTemp(status).apply {
                 _eventTemp.value = this
                 setUpEventDetails()
             }
         }
+        EventDetailIdlingResourceSingleton.decrement()
     }
 
     fun onDateClick() {
@@ -225,5 +247,42 @@ class EventDetailsViewModel(
             coordinates
         )
         geometry?.let { setUpCoordinates(it.coordinates()) }
+    }
+
+    fun onButtonClick() {
+        onButtonClickCallback?.invoke()
+    }
+
+    fun onActionButtonClick() {
+        viewModelScope.launch {
+            eventDetails.value.apply {
+                selectedDate?.let { date ->
+                    createOrUpdateEventDetails(
+                        selectedDate = date,
+                        selectedOrgUnit = selectedOrgUnit,
+                        catOptionComboUid = catOptionComboUid,
+                        coordinates = coordinates
+                    ).flowOn(Dispatchers.IO)
+                        .collect { result ->
+                            result.onFailure {
+                                showEventUpdateStatus?.invoke(it.message!!)
+                            }
+                            result.onSuccess { message ->
+                                showEventUpdateStatus?.invoke(message)
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    fun onReopenClick() {
+        configureEventDetails.reopenEvent().fold(
+            onSuccess = {
+                loadEventDetails()
+                onReopenSuccess?.invoke(resourcesProvider.provideReOpened())
+            },
+            onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
+        )
     }
 }

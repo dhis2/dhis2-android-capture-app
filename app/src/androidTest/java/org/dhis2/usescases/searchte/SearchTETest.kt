@@ -255,11 +255,17 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
+        val firstNamePosition = 0
+        val lastNamePosition = 1
         val syncFilter = context.getString(R.string.action_sync)
         val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnOpenSearch()
+            typeAttributeAtPosition(teiName, firstNamePosition)
+            typeAttributeAtPosition(teiLastName, lastNamePosition)
+            clickOnSearch()
             clickOnTEI(teiName, teiLastName)
         }
 

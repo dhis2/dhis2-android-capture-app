@@ -40,8 +40,10 @@ import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.about.PolicyView
@@ -57,6 +59,7 @@ import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.ACCOUNT_USED
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.dhis2.utils.Constants.SERVER
+import org.dhis2.utils.Constants.SESSION_DIALOG_RQ
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.OnDialogClickListener
@@ -71,6 +74,9 @@ import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
+const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
+const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
+const val TO_MANAGE_ACCOUNT = "TO_MANAGE_ACCOUNT"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -95,9 +101,21 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var openIDRequestCode = -1
 
     companion object {
-        fun bundle(skipSync: Boolean = false): Bundle {
+        fun bundle(
+            skipSync: Boolean = false,
+            goToManageAccounts: Boolean = false,
+            logOutReason: OpenIdSession.LogOutReason? = null
+        ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
+                putBoolean(TO_MANAGE_ACCOUNT, goToManageAccounts)
+                when (logOutReason) {
+                    OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
+                    OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
+                        EXTRA_ACCOUNT_DISABLED,
+                        true
+                    )
+                }
             }
         }
     }
@@ -118,6 +136,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+
+        if (intent.getBooleanExtra(TO_MANAGE_ACCOUNT, false)) {
+            openAccountsActivity()
+        }
+
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -174,7 +197,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpLoginInfo()
-
+        checkMessage()
         presenter.apply {
             init(userManager)
             checkServerInfoAndShowBiometricButton()
@@ -470,17 +493,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearUserNameButton.visibility = View.VISIBLE
     }
 
+    /*
+    * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
+    * */
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
-        userName?.let { binding.userNameEdit.setText(it) }
+        binding.userNameEdit.setText(userName ?: "")
         binding.userPassEdit.text = null
+//        skipSync = wasAccountClicked
         if (wasAccountClicked) {
+            binding.serverUrlEdit.alpha = 0.5f
             binding.serverUrlEdit.isEnabled = false
+            binding.userNameEdit.alpha = 0.5f
             binding.userNameEdit.isEnabled = false
             binding.clearUrl.visibility = View.GONE
             binding.clearUserNameButton.visibility = View.GONE
         } else {
+            binding.serverUrlEdit.alpha = 1f
             binding.serverUrlEdit.isEnabled = true
+            binding.userNameEdit.alpha = 1f
             binding.userNameEdit.isEnabled = true
             binding.clearUrl.visibility = View.VISIBLE
             binding.clearUserNameButton.visibility = View.VISIBLE
@@ -554,5 +585,41 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun openAccountsActivity() {
         requestAccount.launch(Intent(this, AccountsActivity::class.java))
+    }
+
+    private fun checkMessage() {
+        if (intent.getBooleanExtra(EXTRA_SESSION_EXPIRED, false)) {
+            showSessionExpired()
+        } else if (intent.getBooleanExtra(EXTRA_ACCOUNT_DISABLED, false)) {
+            showAccountDisabled()
+        }
+    }
+
+    private fun showSessionExpired() {
+        val sessionDialog = CustomDialog(
+            this,
+            getString(R.string.openid_session_expired),
+            getString(R.string.openid_session_expired_message),
+            getString(R.string.action_accept),
+            null,
+            SESSION_DIALOG_RQ,
+            null
+        )
+        sessionDialog.setCancelable(false)
+        sessionDialog.show()
+    }
+
+    private fun showAccountDisabled() {
+        val sessionDialog = CustomDialog(
+            this,
+            getString(R.string.account_disable_title),
+            getString(R.string.account_disable_message),
+            getString(R.string.action_accept),
+            null,
+            SESSION_DIALOG_RQ,
+            null
+        )
+        sessionDialog.setCancelable(false)
+        sessionDialog.show()
     }
 }

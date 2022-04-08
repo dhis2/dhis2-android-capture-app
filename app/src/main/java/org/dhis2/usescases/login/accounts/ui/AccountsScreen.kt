@@ -1,6 +1,6 @@
 package org.dhis2.usescases.login.accounts.ui
 
-import androidx.compose.foundation.Image
+import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,14 +20,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
@@ -52,7 +55,7 @@ fun AccountsScreen(
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(Color.White)
         ) {
-            LazyColumn(Modifier.padding(top = 16.dp)) {
+            LazyColumn(Modifier.padding(top = 16.dp, bottom = 48.dp)) {
                 items(accounts) {
                     AccountItem(
                         Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -79,12 +82,17 @@ fun AccountsScreen(
                     elevation = ButtonDefaults.elevation(
                         defaultElevation = 5.dp,
                         pressedElevation = 15.dp,
-                        disabledElevation = 5.dp
+                        disabledElevation = 0.dp
                     ),
                     enabled = accounts.size < MAX_ACCOUNTS,
                     onClick = { onAddAccountClicked() }
                 ) {
-                    Text(stringResource(R.string.add_accout).toUpperCase(Locale.current))
+                    Text(
+                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
+                        fontFamily = FontFamily(
+                            Font(R.font.rubik_regular, FontWeight.Medium)
+                        )
+                    )
                 }
             }
         }
@@ -96,16 +104,13 @@ fun LoginHeader() {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp, 8.dp, 16.dp, 12.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_dhis_white),
-                contentDescription = null
-            )
+            AndroidView(factory = { View.inflate(it, R.layout.dhis_logo, null) })
         }
         Row(
             horizontalArrangement = Arrangement.End,

@@ -136,7 +136,6 @@
                     app:setInputType="@{item.valueType}"
                     app:setLongCLickToClipboard="@{item}"
                     app:setOnEditorActionListener="@{item}"
-                    app:setOnFocusChangeListener="@{item}"
                     app:setOnTouchListener="@{item}"
                     tools:text="hello" />
 

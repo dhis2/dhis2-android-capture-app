@@ -4,14 +4,13 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Observable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -28,8 +27,8 @@ class ConfigureEventReportDateTest {
 
     private val programStage: ProgramStage = mock()
 
-    private val eventInitialRepository: EventInitialRepository = mock {
-        on { programStageWithId(PROGRAM_STAGE_ID) } doReturn Observable.just(programStage)
+    private val repository: EventDetailsRepository = mock {
+        on { getProgramStage() } doReturn programStage
     }
 
     private val periodUtils: DhisPeriodUtils = mock()
@@ -40,10 +39,8 @@ class ConfigureEventReportDateTest {
     fun `Should return stored event info when existing event`() = runBlocking {
         // Given Existing event
         configureEventReportDate = ConfigureEventReportDate(
-            eventId = EVENT_ID,
-            programStageId = PROGRAM_STAGE_ID,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodUtils = periodUtils
         )
 
@@ -53,7 +50,7 @@ class ConfigureEventReportDateTest {
         val event: Event = mock {
             on { eventDate() } doReturn DateUtils.uiDateFormat().parse(expectedDate)
         }
-        whenever(eventInitialRepository.event(EVENT_ID)) doReturn Observable.just(event)
+        whenever(repository.getEvent()) doReturn event
 
         // When reportDate is invoked
         val eventDate = configureEventReportDate.invoke().first()
@@ -70,9 +67,8 @@ class ConfigureEventReportDateTest {
     fun `Should return current day when new event`() = runBlocking {
         // Given the creation of new event
         configureEventReportDate = ConfigureEventReportDate(
-            programStageId = PROGRAM_STAGE_ID,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodUtils = periodUtils
         )
         val currentDay =
@@ -95,9 +91,8 @@ class ConfigureEventReportDateTest {
         // And periodType is daily
         val periodType = PeriodType.Daily
         configureEventReportDate = ConfigureEventReportDate(
-            programStageId = PROGRAM_STAGE_ID,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodType = periodType,
             periodUtils = periodUtils
         )
@@ -119,10 +114,9 @@ class ConfigureEventReportDateTest {
     fun `Get next period when creating scheduled event`() = runBlocking {
         // Given the creation of new scheduled event
         configureEventReportDate = ConfigureEventReportDate(
-            programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodUtils = periodUtils,
             enrollmentId = ENROLLMENT_ID
         )
@@ -130,10 +124,10 @@ class ConfigureEventReportDateTest {
         val lastEventDate = "13/2/2022"
         val nextEventDate = "19/2/2022"
         whenever(
-            eventInitialRepository.getStageLastDate(PROGRAM_STAGE_ID, ENROLLMENT_ID)
+            repository.getStageLastDate(ENROLLMENT_ID)
         ) doReturn DateUtils.uiDateFormat().parse(lastEventDate)
         whenever(
-            eventInitialRepository.getMinDaysFromStartByProgramStage(PROGRAM_STAGE_ID)
+            repository.getMinDaysFromStartByProgramStage()
         ) doReturn 6
 
         // When reportDate is invoked
@@ -147,10 +141,9 @@ class ConfigureEventReportDateTest {
     fun `Should hide field when scheduled`() = runBlocking {
         // Given an scheduled event
         configureEventReportDate = ConfigureEventReportDate(
-            programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodUtils = periodUtils,
             enrollmentId = ENROLLMENT_ID
         )
@@ -158,17 +151,9 @@ class ConfigureEventReportDateTest {
         // And with hidden due date
         whenever(programStage.hideDueDate()) doReturn true
         whenever(programStage.dueDateLabel()) doReturn DUE_DATE
-
-        whenever(
-            eventInitialRepository.getStageLastDate(PROGRAM_STAGE_ID, ENROLLMENT_ID)
-        ) doReturn DateUtils.getInstance().today
-        whenever(
-            eventInitialRepository.getMinDaysFromStartByProgramStage(PROGRAM_STAGE_ID)
-        ) doReturn 6
-
-        whenever(
-            eventInitialRepository.programStageWithId(PROGRAM_STAGE_ID)
-        ) doReturn Observable.just(programStage)
+        whenever(repository.getStageLastDate(ENROLLMENT_ID)) doReturn DateUtils.getInstance().today
+        whenever(repository.getMinDaysFromStartByProgramStage()) doReturn 6
+        whenever(repository.getProgramStage()) doReturn programStage
 
         // When report date is invoked
         val eventDate = configureEventReportDate.invoke().first()
@@ -182,20 +167,15 @@ class ConfigureEventReportDateTest {
     fun `Should allow future dates when event type is scheduled`() = runBlocking {
         // Given an schedule event
         configureEventReportDate = ConfigureEventReportDate(
-            programStageId = PROGRAM_STAGE_ID,
             creationType = EventCreationType.SCHEDULE,
             resourceProvider = resourcesProvider,
-            eventInitialRepository = eventInitialRepository,
+            repository = repository,
             periodUtils = periodUtils,
             enrollmentId = ENROLLMENT_ID
         )
 
-        whenever(
-            eventInitialRepository.getStageLastDate(PROGRAM_STAGE_ID, ENROLLMENT_ID)
-        ) doReturn DateUtils.getInstance().today
-        whenever(
-            eventInitialRepository.getMinDaysFromStartByProgramStage(PROGRAM_STAGE_ID)
-        ) doReturn 6
+        whenever(repository.getStageLastDate(ENROLLMENT_ID)) doReturn DateUtils.getInstance().today
+        whenever(repository.getMinDaysFromStartByProgramStage()) doReturn 6
 
         // When report date is invoked
         val eventDate = configureEventReportDate.invoke().first()

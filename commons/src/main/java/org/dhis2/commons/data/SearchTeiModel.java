@@ -2,6 +2,7 @@ package org.dhis2.commons.data;
 
 import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -39,6 +40,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private String enrolledOrgUnit;
     private boolean showNavigationButton = false;
     @Nullable public String onlineErrorMessage;
+    @Nullable public D2ErrorCode onlineErrorCode;
 
     public SearchTeiModel() {
         this.tei = null;

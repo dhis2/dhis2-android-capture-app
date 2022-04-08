@@ -3,16 +3,12 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType.NONE
 
 class ConfigureEventCoordinates(
-    private val d2: D2,
-    private val programId: String,
-    private val programStageId: String,
-    private val eventInitialRepository: EventInitialRepository
+    private val repository: EventDetailsRepository
 ) {
 
     operator fun invoke(value: String? = null): Flow<EventCoordinates> {
@@ -25,20 +21,17 @@ class ConfigureEventCoordinates(
     }
 
     private fun getGeometryModel(value: String?): FieldUiModel {
-        var model = eventInitialRepository.getGeometryModel(programId).blockingGet()
+        var model = repository.getGeometryModel()
         value?.let { model = model.setValue(it) }
         return model
     }
 
     private fun isActive(): Boolean {
-        getProgramStageById()?.let { programStage ->
+        repository.getProgramStage().let { programStage ->
             programStage.featureType()?.let {
                 return it != NONE
             }
         }
         return false
     }
-
-    private fun getProgramStageById() =
-        d2.programModule().programStages().uid(programStageId).blockingGet()
 }

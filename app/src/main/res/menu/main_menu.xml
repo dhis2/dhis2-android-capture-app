@@ -46,9 +46,6 @@
     <group
         android:id="@+id/extra_section"
         android:checkableBehavior="single">
-        <item android:id="@+id/menu_troubleshooting"
-            android:icon="@drawable/ic_troubleshooting"
-            android:title="@string/main_menu_troubleshooting"/>
         <item
             android:id="@+id/menu_jira"
             android:icon="@drawable/ic_jira"
@@ -60,11 +57,10 @@
             android:title="@string/about" />
 
     </group>
-    <!--TODO: make icon visible and functional-->
+
     <group
         android:id="@+id/account_section"
-        android:checkableBehavior="single"
-        android:visible="false">
+        android:checkableBehavior="single">
         <item
             android:id="@+id/delete_account"
             android:icon="@drawable/ic_delete"

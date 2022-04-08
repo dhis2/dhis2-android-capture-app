@@ -105,6 +105,4 @@ public interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
-
-    SessionComponent plus(PinModule pinModule);
 }

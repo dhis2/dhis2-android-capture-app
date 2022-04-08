@@ -10,28 +10,32 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import javax.inject.Inject
+import org.dhis2.Bindings.dp
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.searchTrackEntity.CreateNewButton
-import org.dhis2.usescases.searchTrackEntity.FullSearchButton
-import org.dhis2.usescases.searchTrackEntity.SearchList
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
+import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
+import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 private const val DIRECTION_DOWN = 1
+
 class SearchTEList : FragmentGlobalAbstract() {
 
     @Inject
@@ -42,6 +46,8 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
     }
+
+    private lateinit var recycler: RecyclerView
 
     private val liveAdapter by lazy {
         SearchTeiLiveAdapter(
@@ -107,63 +113,103 @@ class SearchTEList : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?
     ): View {
         return FragmentSearchListBinding.inflate(inflater, container, false).apply {
-            scrollView.apply {
-                adapter = listAdapter
-                addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                        super.onScrollStateChanged(recyclerView, newState)
-                        if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
-                            viewModel.isScrollingDown.value = false
-                        }
-                    }
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        if (dy > 0) {
-                            viewModel.isScrollingDown.value = true
-                        } else if (dy < 0) {
-                            viewModel.isScrollingDown.value = false
-                        }
-                    }
-                })
+            configureList(scrollView)
+            configureOpenSearchButton(openSearchButton)
+            configureCreateButton(createButton)
+        }.root.also {
+            observeNewData()
+        }
+    }
+
+    private fun configureList(scrollView: RecyclerView) {
+        scrollView.apply {
+            updateLayoutParams<ConstraintLayout.LayoutParams> {
+                val paddingTop = if (isLandscape()) {
+                    0.dp
+                } else {
+                    80.dp
+                }
+                setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
             }
-            openSearchButton.apply {
-                setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-                )
-                setContent {
-                    if (LocalConfiguration.current.orientation ==
-                        Configuration.ORIENTATION_PORTRAIT
-                    ) {
-                        val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
-                        FullSearchButton(
-                            modifier = Modifier,
-                            visible = !isScrollingDown,
-                            onClick = { viewModel.setSearchScreen(isLandscape()) }
-                        )
+            adapter = listAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
+                        viewModel.isScrollingDown.value = false
                     }
                 }
-            }
-            createButton.apply {
-                setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-                )
-                setContent {
+
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        viewModel.isScrollingDown.value = true
+                    } else if (dy < 0) {
+                        viewModel.isScrollingDown.value = false
+                    }
+                }
+            })
+        }.also {
+            recycler = it
+        }
+    }
+
+    @ExperimentalAnimationApi
+    private fun configureOpenSearchButton(openSearchButton: ComposeView) {
+        openSearchButton.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                if (LocalConfiguration.current.orientation ==
+                    Configuration.ORIENTATION_PORTRAIT
+                ) {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
-                    val createButtonVisibility by viewModel
-                        .createButtonScrollVisibility.observeAsState(true)
+                    val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
+                    FullSearchButton(
+                        modifier = Modifier,
+                        visible = !isScrollingDown,
+                        closeFilterVisibility = isFilterOpened,
+                        isLandscape = isLandscape(),
+                        onClick = { viewModel.setSearchScreen() },
+                        onCloseFilters = { viewModel.onFiltersClick(isLandscape()) }
+                    )
+                }
+            }
+        }
+    }
+
+    @ExperimentalAnimationApi
+    private fun configureCreateButton(createButton: ComposeView) {
+        createButton.apply {
+            updateLayoutParams<ConstraintLayout.LayoutParams> {
+                val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
+                    56.dp
+                } else {
+                    16.dp
+                }
+                setMargins(0, 0, 0, bottomMargin)
+            }
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                val createButtonVisibility by viewModel
+                    .createButtonScrollVisibility.observeAsState(true)
+                val filtersOpened by viewModel.filtersOpened.observeAsState(false)
+                if (createButtonVisibility && !filtersOpened) {
                     CreateNewButton(
                         modifier = Modifier,
-                        extended = createButtonVisibility and !isScrollingDown,
+                        extended = !isScrollingDown,
                         onClick = viewModel::onEnrollClick
                     )
                 }
             }
-        }.root.also {
-            observeNewData()
         }
     }
 
@@ -177,13 +223,48 @@ class SearchTEList : FragmentGlobalAbstract() {
             restoreAdapters()
             initData()
         }
+
+        viewModel.dataResult.observe(viewLifecycleOwner) {
+            initLoading(emptyList())
+            it.firstOrNull()?.let { searchResult ->
+                if (searchResult.shouldClearProgramData()) {
+                    liveAdapter.clearList()
+                }
+                if (searchResult.shouldClearGlobalData()) {
+                    globalAdapter.clearList()
+                }
+            }
+            displayResult(it)
+            updateRecycler()
+        }
+    }
+
+    private fun updateRecycler() {
+        recycler.setPaddingRelative(
+            0,
+            when {
+                !isLandscape() && listAdapter.itemCount > 1 -> 80.dp
+                !isLandscape() && liveAdapter.itemCount == 0 &&
+                    resultAdapter.itemCount == 1 -> 80.dp
+                else -> 0.dp
+            },
+            0,
+            when {
+                listAdapter.itemCount > 1 -> 160.dp
+                else -> 0.dp
+            }
+        )
     }
 
     private fun restoreAdapters() {
-        initialLoadingAdapter.submitList(null)
+        initLoading(null)
         liveAdapter.clearList()
-        globalAdapter.clearList()
-        resultAdapter.submitList(null)
+        if (viewModel.filtersActive.value != true) {
+            globalAdapter.clearList()
+        } else if (globalAdapter.itemCount > 0) {
+            initGlobalData()
+        }
+        displayResult(null)
     }
 
     private val initResultCallback = object : PagedList.Callback() {
@@ -213,28 +294,36 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
         viewModel.fetchListResults {
-            it?.removeObservers(viewLifecycleOwner)
-            it?.observe(viewLifecycleOwner) { results ->
-                liveAdapter.submitList(results) {
-                    onInitDataLoaded()
+            it?.apply {
+                removeObservers(viewLifecycleOwner)
+                observe(viewLifecycleOwner) { results ->
+                    liveAdapter.submitList(results) {
+                        onInitDataLoaded()
+                    }
+                    results.addWeakCallback(results.snapshot(), initResultCallback)
                 }
-                results.addWeakCallback(results.snapshot(), initResultCallback)
-            }
+            } ?: onInitDataLoaded()
         }
     }
 
     private fun onInitDataLoaded() {
-        onDataLoaded(
-            canDisplayResults = viewModel.canDisplayResult(liveAdapter.itemCount),
-            hasProgramResults = liveAdapter.itemCount > 0
+        viewModel.onDataLoaded(
+            programResultCount = liveAdapter.itemCount,
+            globalResultCount = if (globalAdapter.itemCount > 0) {
+                globalAdapter.itemCount
+            } else {
+                null
+            },
+            isLandscape = isLandscape(),
+            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode
         )
     }
 
     private fun onGlobalDataLoaded() {
-        onDataLoaded(
-            canDisplayResults = viewModel.canDisplayResult(liveAdapter.itemCount),
-            hasProgramResults = liveAdapter.itemCount > 0,
-            hasGlobalResults = globalAdapter.itemCount > 0
+        viewModel.onDataLoaded(
+            programResultCount = liveAdapter.itemCount,
+            globalResultCount = globalAdapter.itemCount,
+            isLandscape = isLandscape()
         )
     }
 
@@ -253,75 +342,25 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun displayLoadingData() {
         if (listAdapter.itemCount == 0) {
-            initialLoadingAdapter.submitList(
+            initLoading(
                 listOf(SearchResult(SearchResult.SearchResultType.LOADING))
             )
         } else {
-            resultAdapter.submitList(
+            displayResult(
                 listOf(SearchResult(SearchResult.SearchResultType.LOADING))
             )
         }
     }
 
-    private fun onDataLoaded(
-        canDisplayResults: Boolean = true,
-        hasProgramResults: Boolean,
-        hasGlobalResults: Boolean? = null
-    ) {
-        initialLoadingAdapter.submitList(emptyList())
-
-        val isSearching = viewModel.screenState.value.takeIf { it is SearchList }?.let {
-            (it as SearchList).isSearching
-        } ?: false
-
-        if (isSearching) {
-            handleSearchResult(
-                canDisplayResults,
-                hasProgramResults,
-                hasGlobalResults
-            )
-        } else {
-            handleDisplayInListResult(hasProgramResults)
+    private fun initLoading(result: List<SearchResult>?) {
+        recycler.post {
+            initialLoadingAdapter.submitList(result)
         }
-        viewModel.onDataLoaded()
     }
 
-    private fun handleDisplayInListResult(hasProgramResults: Boolean) {
-        val result = when {
-            hasProgramResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
-            !hasProgramResults && viewModel.allowCreateWithoutSearch ->
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OR_CREATE))
-            else -> listOf()
+    private fun displayResult(result: List<SearchResult>?) {
+        recycler.post {
+            resultAdapter.submitList(result)
         }
-
-        if (result.isEmpty()) {
-            viewModel.setSearchScreen(isLandscape())
-        }
-
-        resultAdapter.submitList(result)
-    }
-
-    private fun handleSearchResult(
-        canDisplayResults: Boolean,
-        hasProgramResults: Boolean,
-        hasGlobalResults: Boolean?
-    ) {
-        val result = when {
-            !canDisplayResults -> {
-                liveAdapter.clearList()
-                globalAdapter.clearList()
-                listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
-            }
-            hasGlobalResults == null -> {
-                globalAdapter.clearList()
-                listOf(SearchResult(SearchResult.SearchResultType.SEARCH_OUTSIDE))
-            }
-            hasProgramResults || hasGlobalResults ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS))
-            else ->
-                listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
-        }
-        resultAdapter.submitList(result)
     }
 }

@@ -60,13 +60,14 @@
                     <ImageView
                         android:id="@+id/syncButton"
                         style="@style/ActionIcon"
-                        android:onClick="showMoreOptions"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/moreOptions"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_sync"
                         app:tint="?colorOnPrimary"
-                        tools:ignore="ContentDescription" />
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible"/>
 
                     <ImageView
                         android:id="@+id/moreOptions"
@@ -117,6 +118,7 @@
                     android:elevation="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:background="@color/white_faf"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/toolbar">
 

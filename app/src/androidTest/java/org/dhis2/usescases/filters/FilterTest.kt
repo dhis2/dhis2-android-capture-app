@@ -1,5 +1,6 @@
 package org.dhis2.usescases.filters
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
@@ -17,6 +18,8 @@ class FilterTest: BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     fun checkFromToDateFilter() {
@@ -106,7 +109,7 @@ class FilterTest: BaseTest() {
         }
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             pressBack()
         }
         homeRobot {

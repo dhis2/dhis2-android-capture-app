@@ -135,7 +135,9 @@ class ChartsRepositoryImpl(
         graphList: MutableList<Graph>
     ) {
         visualizationGroup.visualizations().forEach { analyticVisualization ->
-            val customTitle = analyticVisualization.name()
+            val customTitle = analyticVisualization.takeIf {
+                it.name()?.isNotEmpty() == true
+            }?.name()
             val visualizationUid = analyticVisualization.uid()
             val visualization = d2.visualizationModule()
                 .visualizations()
@@ -181,7 +183,7 @@ class ChartsRepositoryImpl(
                     { gridAnalyticsResponse ->
                         graphList.add(
                             visualizationToGraph.mapToGraph(
-                                customTitle,
+                                customTitle ?: visualization.displayFormName(),
                                 visualization,
                                 gridAnalyticsResponse,
                                 selectedRelativePeriod?.firstOrNull(),
@@ -193,7 +195,7 @@ class ChartsRepositoryImpl(
                         analyticException.printStackTrace()
                         graphList.add(
                             visualizationToGraph.addErrorGraph(
-                                customTitle,
+                                customTitle ?: visualization.displayFormName(),
                                 visualization,
                                 selectedRelativePeriod?.firstOrNull(),
                                 selectedOrgUnits,

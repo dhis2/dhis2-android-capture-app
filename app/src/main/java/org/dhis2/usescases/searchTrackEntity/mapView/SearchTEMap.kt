@@ -27,7 +27,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
-import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -101,7 +100,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.openSearchButton.setOnClickListener {
-            viewModel.setSearchScreen(isLandscape())
+            viewModel.setSearchScreen()
         }
 
         teiMapManager = TeiMapManager(binding.mapView)
@@ -137,19 +136,6 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             }
         )
         binding.content.clipWithRoundedCorners()
-
-        /*viewModel.selectedProgram.observe(viewLifecycleOwner) {
-            teiMapManager?.mapStyle =
-                MapStyle(
-                    presenter.teiColor,
-                    presenter.symbolIcon,
-                    presenter.enrollmentColor,
-                    presenter.enrollmentSymbolIcon,
-                    presenter.programStageStyle,
-                    ColorUtils.getPrimaryColor(requireContext(), ColorUtils.ColorType.PRIMARY_DARK)
-                )
-            observeMapResults()
-        }*/
 
         return binding.root
     }
@@ -196,7 +182,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             carouselAdapter?.setAllItems(trackerMapData.allItems())
             carouselAdapter?.updateLayers(teiMapManager?.mapLayerManager?.mapLayers)
             animations.endMapLoading(binding.mapCarousel)
-            viewModel.onDataLoaded()
+            viewModel.mapDataFetched()
         }
     }
 

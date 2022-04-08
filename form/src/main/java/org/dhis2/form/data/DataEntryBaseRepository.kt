@@ -37,7 +37,7 @@ abstract class DataEntryBaseRepository(
         val optionsInGroupsToHide = optionsFromGroups(optionGroupsToHide)
         val optionsInGroupsToShow = optionsFromGroups(optionGroupsToShow)
 
-        return when {
+        val item = when {
             fieldUiModel.optionSet != null -> {
                 fieldUiModel.apply {
                     this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
@@ -47,9 +47,9 @@ abstract class DataEntryBaseRepository(
             else -> {
                 fieldUiModel
             }
-        }.apply {
-            warningMessage?.let { setWarning(warningMessage) }
         }
+
+        return warningMessage?.let { item.setError(it) } ?: item
     }
 
     private fun optionsFromGroups(optionGroupUids: List<String>): List<String> {

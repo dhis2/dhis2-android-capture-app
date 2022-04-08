@@ -59,6 +59,10 @@ class MainRobot : BaseRobot() {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_jira))
     }
 
+    fun clickDeleteAccount() = apply {
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
+    }
+
     fun checkViewIsNotEmpty() {
         onView(withId(R.id.program_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty())))

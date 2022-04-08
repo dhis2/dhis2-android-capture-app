@@ -4,4 +4,5 @@ interface EventCaptureFormView {
     fun performSaveClick()
     fun hideSaveButton()
     fun showSaveButton()
+    fun onReopen()
 }

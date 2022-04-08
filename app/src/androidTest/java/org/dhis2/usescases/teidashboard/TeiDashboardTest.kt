@@ -1,9 +1,11 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
+import org.dhis2.common.viewactions.waitForTransitionUntil
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -31,7 +33,11 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
+    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -194,7 +200,7 @@ class TeiDashboardTest : BaseTest() {
         eventRobot {
             scrollToBottomForm()
             clickOnFormFabButton()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
     }
 
@@ -252,7 +258,7 @@ class TeiDashboardTest : BaseTest() {
         eventRobot {
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
 
         teiDashboardRobot {
@@ -277,7 +283,7 @@ class TeiDashboardTest : BaseTest() {
             waitToDebounce(600)
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             waitToDebounce(600)
         }
 
@@ -333,7 +339,6 @@ class TeiDashboardTest : BaseTest() {
         val relationshipName = "Filona"
         val relationshipLastName = "Ryder"
         val completeName = "Ryder Filona"
-
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
@@ -357,6 +362,7 @@ class TeiDashboardTest : BaseTest() {
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
             clickOnSearch()
+            waitToDebounce(5000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 

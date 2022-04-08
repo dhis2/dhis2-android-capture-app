@@ -1,24 +1,26 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import android.content.res.Configuration
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import com.google.android.material.composethemeadapter.MdcTheme
+import org.dhis2.usescases.searchTrackEntity.ui.WrappedSearchButton
 
-fun ComposeView.setMinAttributesMessage(minAttributesToSearch: Int) {
-    setContent {
-        MdcTheme {
-            if (minAttributesToSearch > 0) {
-                MinAttributesMessage(minAttributes = minAttributesToSearch)
-            }
-        }
-    }
-}
-
-fun ComposeView?.setLandscapeOpenSearchButton(onClick: () -> Unit) {
+fun ComposeView?.setLandscapeOpenSearchButton(
+    searchTEIViewModel: SearchTEIViewModel,
+    onClick: () -> Unit
+) {
     this?.setContent {
         MdcTheme {
-            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val screenState by searchTEIViewModel.screenState.observeAsState()
+            val visible = screenState?.let {
+                (it is SearchList) && it.searchFilters.isOpened
+            } ?: false
+            val isLandscape =
+                LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+            if (isLandscape && visible) {
                 WrappedSearchButton(onClick = onClick)
             }
         }

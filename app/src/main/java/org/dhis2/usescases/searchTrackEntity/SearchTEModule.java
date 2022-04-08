@@ -102,20 +102,11 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       MatomoAnalyticsController matomoAnalyticsController,
-                                                       SearchMessageMapper searchMessageMapper) {
+                                                       MatomoAnalyticsController matomoAnalyticsController) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, searchMessageMapper);
-    }
-
-    @Provides
-    @PerActivity
-    SearchMessageMapper searchMessageMapper(Context context) {
-        return new SearchMessageMapper(
-                new SearchResources(context)
-        );
+                matomoAnalyticsController);
     }
 
     @Provides
@@ -149,9 +140,11 @@ public class SearchTEModule {
                                       DhisPeriodUtils periodUtils, Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
-                                      SearchTEIRepository searchTEIRepository) {
+                                      SearchTEIRepository searchTEIRepository,
+                                      PreferenceProvider preferenceProvider) {
         return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository);
+                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
+                preferenceProvider);
     }
 
     @Provides
@@ -298,5 +291,11 @@ public class SearchTEModule {
                 mapCoordinateFieldToFeatureCollection,
                 new EventToEventUiComponent(),
                 mapUtils);
+    }
+
+    @Provides
+    @PerActivity
+    SearchNavigator searchNavigator(D2 d2) {
+        return new SearchNavigator((SearchTEActivity) moduleContext, new SearchNavigationConfiguration(d2));
     }
 }

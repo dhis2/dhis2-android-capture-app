@@ -1,11 +1,12 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.commons.data.IssueType
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -31,66 +32,16 @@ class FormRepositoryImpl(
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItem: RowAction? = null
     private var ruleEffectsResult: RuleUtilsProviderResult? = null
-    private var showWarnigns: Boolean = false
-    private var showErrors: Boolean = false
+    private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
+    private var backupList: List<FieldUiModel> = emptyList()
 
     override fun fetchFormItems(): List<FieldUiModel> {
         openedSectionUid =
             dataEntryRepository?.sectionUids()?.blockingFirst()?.firstOrNull()
         itemList = dataEntryRepository?.list()?.blockingFirst() ?: emptyList()
+        backupList = itemList
         return composeList()
-    }
-
-    override fun processUserAction(action: RowAction): StoreResult {
-        return when (action.type) {
-            ActionType.ON_SAVE -> {
-                updateErrorList(action)
-                if (action.error != null) {
-                    StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                    )
-                } else {
-                    val saveResult = formValueStore?.save(action.id, action.value, action.extraData)
-                    updateValueOnList(action.id, action.value, action.valueType)
-                    saveResult ?: StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_CHANGED
-                    )
-                }
-            }
-            ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                this.focusedItem = action
-
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                )
-            }
-
-            ActionType.ON_TEXT_CHANGE -> {
-                updateValueOnList(action.id, action.value, action.valueType)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.TEXT_CHANGING
-                )
-            }
-            ActionType.ON_SECTION_CHANGE -> {
-                updateSectionOpened(action)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                )
-            }
-            ActionType.ON_CLEAR -> {
-                removeAllValues()
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_CHANGED
-                )
-            }
-        }
     }
 
     override fun composeList(): List<FieldUiModel> {
@@ -165,34 +116,46 @@ class FormRepositoryImpl(
         return ruleEffectsResult?.configurationErrors
     }
 
-    override fun runDataIntegrityCheck(): DataIntegrityCheckResult {
+    override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
+        runDataIntegrity = true
+        val itemsWithErrors = getFieldsWithError()
+        val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
+            FieldWithIssue(
+                fieldUid = warningField.fieldUid,
+                fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
+                IssueType.WARNING,
+                warningField.errorMessage
+            )
+        } ?: emptyList()
         val result = when {
-            mandatoryItemsWithoutValue.isNotEmpty() -> {
-                showWarnigns = true
-                MissingMandatoryResult(
-                    mandatoryItemsWithoutValue,
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
-                )
-            }
-            ruleEffectsResult?.fieldsWithErrors?.isNotEmpty() == true -> {
-                showWarnigns =
-                    showWarnigns || ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true
-                showErrors = true
+            itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
                 FieldsWithErrorResult(
-                    fieldsWithError(),
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard
                 )
             }
-            ruleEffectsResult?.fieldsWithWarnings?.isNotEmpty() == true -> {
-                showWarnigns = true
+            mandatoryItemsWithoutValue.isNotEmpty() -> {
+                MissingMandatoryResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard
+                )
+            }
+            itemsWithWarning.isNotEmpty() -> {
                 FieldsWithWarningResult(
-                    fieldsWithWarning(),
-                    ruleEffectsResult?.canComplete ?: true,
-                    ruleEffectsResult?.messageOnComplete
+                    fieldUidWarningList = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete
                 )
             }
+            backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
             else -> {
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
@@ -211,13 +174,31 @@ class FormRepositoryImpl(
         return calculationLoop == loopThreshold
     }
 
-    private fun fieldsWithError() = itemList.mapNotNull { field ->
-        field.error?.let { field.uid }
-    }
+    override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
-    private fun fieldsWithWarning() = itemList.mapNotNull { field ->
-        field.warning?.let { field.uid }
-    }
+    private fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
+        itemList.find { item ->
+            item.uid == errorItem.id
+        }?.let { item ->
+            FieldWithIssue(
+                fieldUid = item.uid,
+                fieldName = item.label,
+                issueType = IssueType.ERROR,
+                message = errorItem.error?.let {
+                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                } ?: ""
+            )
+        }
+    }.plus(
+        ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
+            FieldWithIssue(
+                fieldUid = errorField.fieldUid,
+                fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
+                issueType = IssueType.ERROR,
+                message = errorField.errorMessage
+            )
+        } ?: emptyList()
+    )
 
     private fun List<FieldUiModel>.applyRuleEffects(): List<FieldUiModel> {
         val ruleEffects = ruleEffects()
@@ -256,14 +237,14 @@ class FormRepositoryImpl(
 
     private fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> {
         return map { field ->
-            if (field.valueType == null) {
+            if (field.isSection()) {
                 updateSection(field, this)
             } else {
                 updateField(field)
             }
         }
             .filter { field ->
-                field.valueType == null ||
+                field.isSectionWithFields() ||
                     field.programStageSection == openedSectionUid
             }
     }
@@ -284,33 +265,39 @@ class FormRepositoryImpl(
             }
         }
 
-        val warningCount =
-            ruleEffectsResult?.takeIf { showWarnigns }?.warningMap()?.filter { warning ->
-                fields.firstOrNull { field ->
-                    field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
-                } != null
-            }?.size ?: 0
-        val mandatoryCount = mandatoryItemsWithoutValue.takeIf { showWarnigns }
-            ?.filter { it.value == sectionFieldUiModel.uid }?.size ?: 0
-        val errorCount = ruleEffectsResult?.takeIf { showErrors }?.errorMap()?.filter { error ->
+        val warningCount = ruleEffectsResult?.warningMap()?.filter { warning ->
+            fields.firstOrNull { field ->
+                field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
+            } != null
+        }?.size ?: 0
+
+        val mandatoryCount = mandatoryItemsWithoutValue.takeIf {
+            runDataIntegrity
+        }?.filter { mandatory ->
+            mandatory.value == sectionFieldUiModel.uid
+        }?.size ?: 0
+
+        val errorCount = getFieldsWithError().associate {
+            it.fieldUid to it.message
+        }.filter { error ->
             fields.firstOrNull { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
-        }?.size ?: 0
+        }.size
 
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
             isOpen,
             total,
             values,
-            errorCount,
-            warningCount + mandatoryCount
+            errorCount + mandatoryCount,
+            warningCount
         ) ?: sectionFieldUiModel
     }
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = fieldUiModel.mandatory &&
-            fieldUiModel.value == null && showWarnigns
+            fieldUiModel.value == null
 
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
@@ -318,7 +305,9 @@ class FormRepositoryImpl(
 
         return dataEntryRepository?.updateField(
             fieldUiModel,
-            fieldErrorMessageProvider.mandatoryWarning().takeIf { needsMandatoryWarning },
+            fieldErrorMessageProvider.mandatoryWarning().takeIf {
+                needsMandatoryWarning && runDataIntegrity
+            },
             ruleEffectsResult?.optionsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToShow(fieldUiModel.uid) ?: emptyList()
@@ -336,7 +325,7 @@ class FormRepositoryImpl(
         return null
     }
 
-    private fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
+    override fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
         itemList.let { list ->
             list.find { item ->
                 item.uid == uid
@@ -362,9 +351,9 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun removeAllValues() {
+    override fun removeAllValues() {
         itemList = itemList.map { fieldUiModel ->
-            fieldUiModel.setValue(null)
+            fieldUiModel.setValue(null).setDisplayName(null)
         }
     }
 
@@ -392,7 +381,7 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun updateErrorList(action: RowAction) {
+    override fun updateErrorList(action: RowAction) {
         if (action.error != null) {
             if (itemsWithError.find { it.id == action.id } == null) {
                 itemsWithError.add(action)
@@ -404,7 +393,19 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun updateSectionOpened(action: RowAction) {
+    override fun save(id: String, value: String?, extraData: String?): StoreResult? {
+        return formValueStore?.save(id, value, extraData)
+    }
+
+    override fun setFocusedItem(action: RowAction) {
+        focusedItem = action
+    }
+
+    override fun currentFocusedItem(): FieldUiModel? {
+        return itemList.find { focusedItem?.id == it.uid }
+    }
+
+    override fun updateSectionOpened(action: RowAction) {
         openedSectionUid = action.id
     }
 

@@ -27,5 +27,10 @@ package org.dhis2.usescases.splash
 
 interface SplashView {
     fun renderFlag(flagName: String)
-    fun goToNextScreen(isUserLogged: Boolean, sessionLocked: Boolean, initialSyncDone: Boolean)
+    fun goToNextScreen(
+        isUserLogged: Boolean,
+        sessionLocked: Boolean,
+        initialSyncDone: Boolean,
+        hasMultipleAccounts: Boolean
+    )
 }

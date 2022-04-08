@@ -96,6 +96,7 @@
                 app:optionTint="@{item.style}"
                 app:layout_constraintStart_toStartOf="@+id/label"
                 app:layout_constraintTop_toBottomOf="@id/label"
+                android:layout_marginTop="12dp"
                 app:switchPadding="10dp"
                 app:thumbTint="@drawable/selector_material_thumb_field"
                 app:trackTint="@drawable/selector_material_track_field"
@@ -103,15 +104,17 @@
 
             <TextView
                 android:id="@+id/warningError"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
                 app:warning="@{item.warning}"
                 app:input_style="@{item}"
                 android:textSize="@dimen/textSize_12"
+                android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginHorizontal="16dp"
                 app:layout_constraintTop_toBottomOf="@id/yesOnlyToggle"
                 tools:text="This is a error message" />
         </androidx.constraintlayout.widget.ConstraintLayout>

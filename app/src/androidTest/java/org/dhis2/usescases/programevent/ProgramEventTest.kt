@@ -2,18 +2,15 @@ package org.dhis2.usescases.programevent
 
 import android.Manifest
 import android.content.Intent
-import androidx.fragment.app.Fragment
-import androidx.test.core.app.ActivityScenario
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,6 +21,9 @@ class ProgramEventTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -40,11 +40,10 @@ class ProgramEventTest : BaseTest() {
         }
         eventRegistrationRobot {
             clickNextButton()
-            waitToDebounce(600)
         }
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
         programEventsRobot {
             checkEventWasCreatedAndClosed(eventOrgUnit, 0)
@@ -77,7 +76,6 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Re-do for ANDROAPP-4610")
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"
@@ -91,7 +89,7 @@ class ProgramEventTest : BaseTest() {
 
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             waitToDebounce(400)
         }
 
@@ -101,7 +99,7 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot {
-            clickOnFormFabButton()
+            clickOnDetails()
             clickOnReopen()
             pressBack()
         }
@@ -110,7 +108,6 @@ class ProgramEventTest : BaseTest() {
             waitToDebounce(800)
             checkEventIsOpen(eventDate, eventOrgUnit)
         }
-
     }
 
     @Test

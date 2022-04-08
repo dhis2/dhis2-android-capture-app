@@ -15,5 +15,8 @@ data class EventDetails(
     val selectedOrgUnit: String? = null,
     val catOptionComboUid: String? = null,
     val coordinates: String? = null,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val isActionButtonVisible: Boolean = false,
+    val actionButtonText: String? = null,
+    val canReopen: Boolean = false
 )

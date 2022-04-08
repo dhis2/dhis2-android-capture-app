@@ -21,6 +21,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/form_field_background"
         android:orientation="vertical">
 
         <androidx.core.widget.NestedScrollView
@@ -40,17 +41,14 @@
                     android:baselineAligned="false"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/programStageIcon"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="@drawable/rounded_square"
-                        android:contentDescription='@{viewModel.eventDetails.name}'
-                        android:padding="4dp"
-                        app:set_icon_style='@{viewModel.eventDetails.style}'
-                        app:srcCompat="@drawable/ic_clinical_f_outline" />
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/compose_stage_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:set_metadata_icon='@{viewModel.eventDetails.style}'/>
 
                     <LinearLayout
+                        android:id="@+id/eventStageDetails"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -58,7 +56,7 @@
                         android:padding="5dp">
 
                         <TextView
-                            android:id="@+id/programStageName"
+                            android:id="@+id/detailsStageName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text='@{viewModel.eventDetails.name}'
@@ -152,10 +150,10 @@
                     android:id="@+id/catComboLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="@{viewModel.eventDetails.enabled}"
                     android:orientation="vertical"
                     app:setCatCombo="@{viewModel.eventCatCombo}"
-                    app:setViewModel="@{viewModel}" />
+                    app:setViewModel="@{viewModel}"
+                    app:enabled="@{viewModel.eventDetails.enabled}"/>
 
                 <include
                     android:id="@+id/coordinateField"
@@ -194,11 +192,33 @@
 
                 </RadioGroup>
 
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/reopenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:padding="10dp"
+                    app:setReopen="@{viewModel}" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="120dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <Button
+            android:id="@+id/action_button"
+            style="@style/ButtonRoundedGrey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{() -> viewModel.onButtonClick()}"
+            android:text="@{viewModel.eventDetails.actionButtonText}"
+            android:visibility="@{viewModel.eventDetails.isActionButtonVisible ? View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/next" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

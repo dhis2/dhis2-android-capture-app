@@ -36,14 +36,6 @@
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
         <variable
-            name="needsSearch"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
-            name="showClear"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
             name="totalFilters"
             type="Integer" />
 
@@ -186,7 +178,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.4" />
+                app:layout_constraintGuide_percent="0.26" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterRecyclerLayout"
@@ -231,6 +223,7 @@
                 style="@style/DhisBottomNavigationView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:elevation="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -242,7 +235,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/filterActions"
+                app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent"
                 android:padding="16dp"
                 android:clipToPadding="false"
@@ -263,7 +256,6 @@
                     android:layout_height="wrap_content"
                     android:onClick="@{()->presenter.clearFilterClick()}"
                     app:backgroundTint="@color/white"
-                    app:elevation="12dp"
                     app:fabSize="mini"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -276,10 +268,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:focusableInTouchMode="true"
                     android:src="@drawable/ic_search"
                     app:backgroundTint="@color/white"
-                    app:elevation="12dp"
                     app:fabSize="normal"
                     android:clipToPadding="false"
                     app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"

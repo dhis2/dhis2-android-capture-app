@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.commons.data.IssueType
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
@@ -30,30 +32,77 @@ class EventCaptureFormPresenterTest {
 
     @Test
     fun `Should try to finish with fields with errors`() {
-        presenter.handleDataIntegrityResult(
-            FieldsWithErrorResult(listOf("field1"), false, null)
+        val errorFields = listOf(
+            FieldWithIssue(
+                "Uid",
+                "field1",
+                IssueType.ERROR,
+                "message"
+            )
         )
-        verify(activityPresenter).attemptFinish(false, null, listOf("field1"), emptyMap())
+        presenter.handleDataIntegrityResult(
+            FieldsWithErrorResult(
+                emptyMap(),
+                errorFields,
+                emptyList(),
+                false,
+                null,
+                false
+            )
+        )
+        verify(activityPresenter).attemptFinish(
+            false,
+            null,
+            errorFields,
+            emptyMap(),
+            emptyList()
+        )
     }
 
     @Test
     fun `Should try to finish with fields with warning`() {
-        presenter.handleDataIntegrityResult(
-            FieldsWithWarningResult(listOf("field1"), true, null)
+        val warningFields = listOf(
+            FieldWithIssue(
+                "Uid",
+                "field1",
+                IssueType.WARNING,
+                "message"
+            )
         )
-        verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap())
+        presenter.handleDataIntegrityResult(
+            FieldsWithWarningResult(
+                warningFields,
+                true,
+                null
+            )
+        )
+        verify(activityPresenter).attemptFinish(
+            true,
+            null,
+            emptyList(),
+            emptyMap(),
+            warningFields
+        )
     }
 
     @Test
     fun `Should try to finish with empty mandatory fields`() {
         presenter.handleDataIntegrityResult(
-            MissingMandatoryResult(mapOf(Pair("field1", "section")), false, null)
+            MissingMandatoryResult(
+                mapOf(Pair("field1", "section")),
+                emptyList(),
+                emptyList(),
+                false,
+                null,
+                false
+            )
         )
         verify(activityPresenter).attemptFinish(
             false,
             null,
             emptyList(),
-            mapOf(Pair("field1", "section"))
+            mapOf(Pair("field1", "section")),
+            emptyList()
         )
     }
 
@@ -62,7 +111,7 @@ class EventCaptureFormPresenterTest {
         presenter.handleDataIntegrityResult(
             SuccessfulResult(null, true, null)
         )
-        verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap())
+        verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
     }
 
     @Test

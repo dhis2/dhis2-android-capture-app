@@ -246,7 +246,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         notificationManager.notify(123456, notificationBuilder.build());
         presenter.wipeDb();
-
     }
 
     @Override

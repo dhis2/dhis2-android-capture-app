@@ -1,17 +1,16 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.annotation.SuppressLint;
-
 import org.dhis2.R;
+import org.dhis2.commons.data.FieldWithIssue;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.data.FormValueStore;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -31,26 +30,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final String eventUid;
     private final SchedulerProvider schedulerProvider;
-    private final FormValueStore valueStore;
     public CompositeDisposable compositeDisposable;
     private final EventCaptureContract.View view;
     private EventStatus eventStatus;
     private boolean hasExpired;
     private final PublishProcessor<Unit> notesCounterProcessor;
     private final PreferenceProvider preferences;
+    private final ConfigureEventCompletionDialog configureEventCompletionDialog;
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                     FormValueStore valueStore, SchedulerProvider schedulerProvider,
-                                     PreferenceProvider preferences
+                                     SchedulerProvider schedulerProvider,
+                                     PreferenceProvider preferences,
+                                     ConfigureEventCompletionDialog configureEventCompletionDialog
     ) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
-        this.valueStore = valueStore;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
         this.preferences = preferences;
+        this.configureEventCompletionDialog = configureEventCompletionDialog;
 
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -90,17 +90,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
-                eventCaptureRepository.programStage()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::setProgramStage,
-                                Timber::e
-                        )
-        );
-
-
-        compositeDisposable.add(
                 eventCaptureRepository.eventStatus()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -135,19 +124,32 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void attemptFinish(boolean canComplete, String onCompleteMessage, List<String> fieldUidErrorList, Map<String, String> emptyMandatoryFields) {
+    public void attemptFinish(boolean canComplete, String onCompleteMessage,
+                              List<FieldWithIssue> errorFields,
+                              Map<String, String> emptyMandatoryFields,
+                              List<FieldWithIssue> warningFields) {
 
-        if (!fieldUidErrorList.isEmpty()) {
+        if (!errorFields.isEmpty()) {
             view.showErrorSnackBar();
         }
 
         if (eventStatus != EventStatus.ACTIVE) {
             setUpActionByStatus(eventStatus);
         } else {
-            view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(),
-                    onCompleteMessage,
-                    fieldUidErrorList,
-                    emptyMandatoryFields);
+
+            EventCompletionDialog eventCompletionDialog = configureEventCompletionDialog.invoke(
+                    errorFields,
+                    emptyMandatoryFields,
+                    warningFields,
+                    canComplete,
+                    onCompleteMessage
+            );
+
+            view.showCompleteActions(
+                    canComplete && eventCaptureRepository.isEnrollmentOpen(),
+                    emptyMandatoryFields,
+                    eventCompletionDialog
+            );
         }
 
         view.showNavigationBar();
@@ -157,7 +159,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         switch (eventStatus) {
             case COMPLETED:
                 if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled())
-                    view.attemptToReopen();
+                    view.SaveAndFinish();
                 else
                     view.finishDataEntry();
                 break;
@@ -287,13 +289,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         view.displayMessage(message);
     }
 
-    @SuppressLint("CheckResult")
-    @Override
-    public void saveImage(String uuid, String filePath) {
-        valueStore.save(uuid, filePath, null);
-        setValueChanged(uuid);
-    }
-
     @Override
     public void initNoteCounter() {
         if (!notesCounterProcessor.hasSubscribers()) {
@@ -331,10 +326,5 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
-    }
-
-    @Override
-    public void setValueChanged(@NotNull String uid) {
-
     }
 }

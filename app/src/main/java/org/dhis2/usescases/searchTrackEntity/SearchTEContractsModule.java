@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,25 +35,13 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<Program> programModels);
 
-        void setFiltersVisibility(boolean showFilters);
-
         void clearList(String uid);
 
-        void setTutorial();
-
-        void setProgramColor(String data, String programUid);
-
         String fromRelationshipTEI();
-
-        void setFabIcon(boolean needsSearch);
-
-        void showHideFilter();
 
         void showHideFilterGeneral();
 
         void updateFilters(int totalFilters);
-
-        void closeFilters();
 
         void openOrgUnitTreeSelector();
 
@@ -74,8 +63,6 @@ public class SearchTEContractsModule {
 
         void setInitialFilters(List<FilterItem> filtersToDisplay);
 
-        void showClearSearch(boolean empty);
-
         void hideFilter();
 
         void showSyncDialog(String teiUid);
@@ -95,6 +82,8 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(HashMap<String, String> queryData);
 
+        void enroll(String programUid, String teiUid, HashMap<String, String> queryData);
+
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 
         TrackedEntityType getTrackedEntityName();
@@ -107,8 +96,6 @@ public class SearchTEContractsModule {
 
         void downloadTei(String teiUid, String enrollmentUid);
 
-        void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason);
-
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
         Observable<List<OrganisationUnit>> getOrgUnits();
@@ -116,8 +103,6 @@ public class SearchTEContractsModule {
         String getProgramColor(String uid);
 
         void onSyncIconClick(String teiUid);
-
-        void showFilter();
 
         void showFilterGeneral();
 

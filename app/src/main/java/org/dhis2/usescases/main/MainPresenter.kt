@@ -10,16 +10,21 @@ import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
 const val DEFAULT = "default"
+const val MIN_USERS = 1
+const val SERVER_ACTION = "Server"
+const val DHIS2 = "dhis2_server"
 
 class MainPresenter(
     private val view: MainView,
@@ -29,7 +34,9 @@ class MainPresenter(
     private val workManagerController: WorkManagerController,
     private val filterManager: FilterManager,
     private val filterRepository: FilterRepository,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val userManager: UserManager,
+    private val deleteUserData: DeleteUserData
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -71,6 +78,7 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+        trackDhis2Server()
     }
 
     fun initFilters() {
@@ -111,6 +119,42 @@ class MainPresenter(
         )
     }
 
+    fun trackDhis2Server() {
+        disposable.add(
+            repository.getServerVersion()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { systemInfo -> compareAndTrack(systemInfo) },
+                    { Timber.e(it) }
+                )
+        )
+    }
+
+    private fun compareAndTrack(systemInfo: SystemInfo) {
+        val dhis2ServerTracked = preferences.getString("$DHIS2${getUserUid()}", "")
+        val currentDhis2Server = systemInfo.version() ?: ""
+
+        if ((dhis2ServerTracked.isNullOrEmpty() || dhis2ServerTracked != currentDhis2Server) &&
+            currentDhis2Server.isNotEmpty()
+        ) {
+            matomoAnalyticsController.trackEvent(
+                HOME,
+                SERVER_ACTION,
+                currentDhis2Server
+            )
+            preferences.setValue("$DHIS2${getUserUid()}", currentDhis2Server)
+        }
+    }
+
+    private fun getUserUid(): String {
+        return try {
+            userManager.d2.userModule().user().blockingGet().uid()
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
     fun logOut() {
         disposable.add(
             repository.logOut()
@@ -122,11 +166,23 @@ class MainPresenter(
                         FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
-                        view.startActivity(LoginActivity::class.java, null, true, true, null)
+                        val canManageAccounts = repository.canManageAccounts()
+                        view.goToLogin(canManageAccounts = canManageAccounts)
                     },
                     { Timber.e(it) }
                 )
         )
+    }
+
+    fun onDeleteAccount() {
+        view.showProgressDeleteNotification()
+
+        deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+        userManager.d2?.wipeModule()?.wipeEverything()
+        userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
+        view.cancelNotifications()
+
+        view.goToLogin(repository.canManageAccounts())
     }
 
     fun onSyncAllClick() {

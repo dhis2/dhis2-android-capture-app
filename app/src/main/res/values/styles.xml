@@ -42,6 +42,8 @@
     </style>
 
     <style name="LoginButton" parent="Widget.MaterialComponents.Button">
+        <item name="fontFamily">@font/rubik_regular</item>
+        <item name="fontWeight">500</item>
         <item name="android:textSize">12sp</item>
         <item name="backgroundTint">@color/login_bg_selector</item>
         <item name="android:textColor">@color/login_text_color_selector</item>

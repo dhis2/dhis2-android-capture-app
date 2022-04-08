@@ -6,7 +6,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,13 +25,12 @@ class DataEntryHeaderHelper(
 
     fun observeHeaderChanges(owner: LifecycleOwner) {
         currentSection.observe(
-            owner,
-            Observer { section: SectionUiModelImpl? ->
-                this.loadHeader(
-                    section
-                )
-            }
-        )
+            owner
+        ) { section: SectionUiModelImpl? ->
+            this.loadHeader(
+                section
+            )
+        }
     }
 
     fun checkSectionHeader(recyclerView: RecyclerView) {

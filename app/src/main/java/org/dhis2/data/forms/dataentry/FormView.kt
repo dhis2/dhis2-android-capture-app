@@ -48,10 +48,7 @@ import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.form.data.FieldsWithErrorResult
-import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.toMessage
@@ -71,10 +68,12 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.QRDetailBottomDialog
@@ -94,12 +93,13 @@ class FormView(
     private val locationProvider: LocationProvider?,
     private val onLoadingListener: ((loading: Boolean) -> Unit)?,
     private val onFocused: (() -> Unit)?,
-    private val onDiscardWarningMessage: (() -> Unit)?,
+    private val onFinishDataEntry: (() -> Unit)?,
     private val onActivityForResult: (() -> Unit)?,
     private val needToForceUpdate: Boolean = false,
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
+    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
     dispatchers: DispatcherProvider
 ) : Fragment() {
 
@@ -258,139 +258,109 @@ class FormView(
         }
 
         viewModel.savedValue.observe(
-            viewLifecycleOwner,
-            { rowAction ->
-                onItemChangeListener?.let { it(rowAction) }
-            }
-        )
+            viewLifecycleOwner
+        ) { rowAction ->
+            onItemChangeListener?.let { it(rowAction) }
+        }
 
         viewModel.queryData.observe(
-            viewLifecycleOwner,
-            { rowAction ->
-                if (needToForceUpdate) {
-                    onItemChangeListener?.let { it(rowAction) }
-                }
+            viewLifecycleOwner
+        ) { rowAction ->
+            if (needToForceUpdate) {
+                onItemChangeListener?.let { it(rowAction) }
             }
-        )
+        }
 
         viewModel.items.observe(
-            viewLifecycleOwner,
-            { items ->
-                render(items)
-            }
-        )
+            viewLifecycleOwner
+        ) { items ->
+            render(items)
+        }
 
         viewModel.loading.observe(
-            viewLifecycleOwner,
-            { loading ->
-                if (onLoadingListener != null) {
-                    onLoadingListener.invoke(loading)
+            viewLifecycleOwner
+        ) { loading ->
+            if (onLoadingListener != null) {
+                onLoadingListener.invoke(loading)
+            } else {
+                if (loading) {
+                    binding.progress.show()
                 } else {
-                    if (loading) {
-                        binding.progress.show()
-                    } else {
-                        binding.progress.hide()
-                    }
+                    binding.progress.hide()
                 }
             }
-        )
+        }
 
         viewModel.confError.observe(
-            viewLifecycleOwner,
-            { confErrors ->
-                displayConfigurationErrors(confErrors)
-            }
-        )
+            viewLifecycleOwner
+        ) { confErrors ->
+            displayConfigurationErrors(confErrors)
+        }
 
         viewModel.showToast.observe(
-            viewLifecycleOwner,
-            { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        )
+            viewLifecycleOwner
+        ) { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
 
         viewModel.focused.observe(
-            viewLifecycleOwner,
-            { onFocused?.invoke() }
-        )
+            viewLifecycleOwner
+        ) { onFocused?.invoke() }
 
         viewModel.showInfo.observe(
-            viewLifecycleOwner,
-            { infoUiModel ->
-                CustomDialog(
-                    requireContext(),
-                    requireContext().getString(infoUiModel.title),
-                    requireContext().getString(infoUiModel.description),
-                    requireContext().getString(R.string.action_close),
-                    null,
-                    Constants.DESCRIPTION_DIALOG,
-                    null
-                ).show()
-            }
-        )
+            viewLifecycleOwner
+        ) { infoUiModel ->
+            CustomDialog(
+                requireContext(),
+                requireContext().getString(infoUiModel.title),
+                requireContext().getString(infoUiModel.description),
+                requireContext().getString(R.string.action_close),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+            ).show()
+        }
 
         viewModel.dataIntegrityResult.observe(
-            viewLifecycleOwner,
-            { result ->
-                if (onDataIntegrityCheck != null) {
-                    onDataIntegrityCheck.invoke(result)
-                } else {
-                    when (result) {
-                        is FieldsWithErrorResult ->
-                            showErrorFieldsMessage(result.fieldUidErrorList)
-                        is FieldsWithWarningResult ->
-                            showWarningFieldsMessage(result.fieldUidWarningList)
-                        is MissingMandatoryResult ->
-                            showMissingMandatoryFieldsMessage(result.mandatoryFields)
-                        is SuccessfulResult -> {}
-                    }
+            viewLifecycleOwner
+        ) { result ->
+            if (onDataIntegrityCheck != null) {
+                onDataIntegrityCheck.invoke(result)
+            } else {
+                when (result) {
+                    is SuccessfulResult -> onFinishDataEntry?.invoke()
+                    else -> showDataEntryResultDialog(result)
                 }
             }
-        )
+        }
 
         viewModel.completionPercentage.observe(
-            viewLifecycleOwner,
-            { percentage ->
-                completionListener?.invoke(percentage)
-            }
-        )
+            viewLifecycleOwner
+        ) { percentage ->
+            completionListener?.invoke(percentage)
+        }
 
         viewModel.calculationLoop.observe(
-            viewLifecycleOwner,
-            { displayLoopWarning ->
-                if (displayLoopWarning) {
-                    showLoopWarning()
-                }
+            viewLifecycleOwner
+        ) { displayLoopWarning ->
+            if (displayLoopWarning) {
+                showLoopWarning()
             }
-        )
+        }
     }
 
-    private fun showErrorFieldsMessage(errorFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.field_errors))
-            .setFieldsToDisplay(errorFields)
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    private fun showWarningFieldsMessage(warningFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.warnings_in_form))
-            .setMessage(getString(R.string.what_to_do))
-            .setFieldsToDisplay(warningFields)
-            .setNegativeButton(getString(R.string.review))
-            .setPositiveButton(getString(R.string.save)) { onDiscardWarningMessage?.invoke() }
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    private fun showMissingMandatoryFieldsMessage(
-        emptyMandatoryFields: Map<String, String>
-    ) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_save))
-            .setMessage(getString(R.string.missing_mandatory_fields))
-            .setFieldsToDisplay(emptyMandatoryFields.keys.toList())
-            .show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+    private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
+        resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
+            DataEntryBottomDialog(
+                dataEntryDialogUiModel = it,
+                onSecondaryButtonClicked = {
+                    if (result.allowDiscard) {
+                        viewModel.discardChanges()
+                    }
+                    onFinishDataEntry?.invoke()
+                }
+            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+        }
     }
 
     private fun showLoopWarning() {
@@ -491,17 +461,11 @@ class FormView(
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
         items.firstOrNull { it.focused }?.let { fieldUiModel ->
             fieldUiModel.valueType?.let { valueType ->
-                if (!needsKeyboard(valueType)) {
+                if (!viewModel.valueTypeIsTextField(valueType)) {
                     view?.closeKeyboard()
                 }
             }
         }
-    }
-
-    private fun needsKeyboard(valueType: ValueType): Boolean {
-        return valueType.isText ||
-            valueType.isNumeric ||
-            valueType.isInteger
     }
 
     private fun intentHandler(intent: FormIntent) {
@@ -706,7 +670,9 @@ class FormView(
                                 requireContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 File(
-                                    FileResourceDirectoryHelper.getFileResourceDirectory(context),
+                                    FileResourceDirectoryHelper.getFileResourceDirectory(
+                                        requireContext()
+                                    ),
                                     "tempFile.png"
                                 )
                             )
@@ -848,6 +814,19 @@ class FormView(
         intentHandler(FormIntent.OnClear())
     }
 
+    fun onBackPressed() {
+        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    }
+
+    fun onSaveClick() {
+        onEditionFinish()
+        viewModel.saveDataEntry()
+    }
+
+    fun reload() {
+        viewModel.loadData()
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
         private var repository: FormRepository? = null
@@ -858,10 +837,11 @@ class FormView(
         private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
-        private var onDiscardWarningMessage: (() -> Unit)? = null
+        private var onFinishDataEntry: (() -> Unit)? = null
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+        private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
@@ -920,13 +900,20 @@ class FormView(
             apply { fragmentManager = manager }
 
         /**
+         *
+         */
+        fun resultDialogUiProvider(
+            resultDialogUiProvider: EnrollmentResultDialogUiProvider
+        ) = apply { this.resultDialogUiProvider = resultDialogUiProvider }
+
+        /**
          * Listener for the current activity to know if a activityForResult is called
          * */
         fun activityForResultListener(callback: () -> Unit) =
             apply { this.onActivityForResult = callback }
 
-        fun onDiscardWarningMessage(callback: () -> Unit) =
-            apply { this.onDiscardWarningMessage = callback }
+        fun onFinishDataEntry(callback: () -> Unit) =
+            apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
@@ -952,11 +939,12 @@ class FormView(
                     needToForceUpdate,
                     onLoadingListener,
                     onFocused,
-                    onDiscardWarningMessage,
+                    onFinishDataEntry,
                     onActivityForResult,
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
+                    resultDialogUiProvider,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 

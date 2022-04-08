@@ -15,6 +15,7 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.Constants.EXTRA_DATA
 import org.hamcrest.CoreMatchers.allOf
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
@@ -34,6 +35,7 @@ class LoginTest : BaseTest() {
     override fun setUp() {
         super.setUp()
         setupMockServer()
+        D2Manager.removeCredentials()
     }
 
     @Test

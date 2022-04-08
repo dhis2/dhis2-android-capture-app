@@ -1,9 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import org.dhis2.commons.data.FieldWithIssue;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -23,13 +24,16 @@ public class EventCaptureContract {
 
         void updatePercentage(float primaryValue);
 
-        void showCompleteActions(boolean canComplete, String completeMessage, List<String> errors, Map<String, String> emptyMandatoryFields);
+        void showCompleteActions(
+                boolean canComplete,
+                Map<String, String> emptyMandatoryFields,
+                EventCompletionDialog eventCompletionDialog);
 
         void restartDataEntry();
 
         void finishDataEntry();
 
-        void attemptToReopen();
+        void SaveAndFinish();
 
         void showSnackBar(int messageId);
 
@@ -38,8 +42,6 @@ public class EventCaptureContract {
         void attemptToSkip();
 
         void attemptToReschedule();
-
-        void setProgramStage(String programStageUid);
 
         void showErrorSnackBar();
 
@@ -66,8 +68,9 @@ public class EventCaptureContract {
 
         void attemptFinish(boolean canComplete,
                            String onCompleteMessage,
-                           List<String> fieldsWithError,
-                           Map<String, String> emptyMandatoryFields);
+                           List<FieldWithIssue> errorFields,
+                           Map<String, String> emptyMandatoryFields,
+                           List<FieldWithIssue> warningFields);
 
         boolean isEnrollmentOpen();
 
@@ -85,8 +88,6 @@ public class EventCaptureContract {
 
         boolean hasExpired();
 
-        void saveImage(String uuid, String filePath);
-
         void initNoteCounter();
 
         void refreshTabCounters();
@@ -96,8 +97,6 @@ public class EventCaptureContract {
         void showProgress();
 
         boolean getCompletionPercentageVisibility();
-
-        void setValueChanged(@NotNull String uid);
     }
 
     public interface EventCaptureRepository {

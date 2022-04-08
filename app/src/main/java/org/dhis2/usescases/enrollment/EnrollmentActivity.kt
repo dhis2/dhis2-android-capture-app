@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -16,16 +15,16 @@ import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
-import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.ui.DataEntryDialogUiModel
+import org.dhis2.ui.DialogButtonStyle
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -35,6 +34,7 @@ import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
+import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -53,7 +53,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var formRepository: FormRepository
 
     @Inject
-    lateinit var locationProvider: LocationProvider
+    lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
 
     @Inject
     lateinit var dispatchers: DispatcherProvider
@@ -120,7 +120,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     presenter.showOrHideSaveButton()
                 }
             }
-            .onDiscardWarningMessage { presenter.finish(mode) }
+            .onFinishDataEntry { presenter.finish(mode) }
+            .resultDialogUiProvider(enrollmentResultDialogUiProvider)
             .factory(supportFragmentManager)
             .build()
 
@@ -238,22 +239,26 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
-            presenter.backIsClicked()
+            formView.onSaveClick()
         } else {
             showDeleteDialog()
         }
     }
 
     private fun showDeleteDialog() {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.title_delete_go_back))
-            .setMessage(getString(R.string.delete_go_back))
-            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+        DataEntryBottomDialog(
+            dataEntryDialogUiModel = DataEntryDialogUiModel(
+                title = getString(R.string.not_saved),
+                subtitle = getString(R.string.discard_go_back),
+                iconResource = R.drawable.ic_alert,
+                mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
+                secondaryButton = DialogButtonStyle.DiscardButton()
+            ),
+            onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
                 finish()
             }
-            .setNegativeButton()
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+        ).show(supportFragmentManager, DataEntryDialogUiModel::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
@@ -367,18 +372,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun performSaveClick() {
-        if (currentFocus is EditText) {
-            presenter.setFinishing()
-            currentFocus?.apply { clearFocus() }
-        } else {
-            if (!presenter.hasAccess()) {
-                presenter.finish(mode)
-            } else {
-                formView.requestDataIntegrityCheck().observe(this) { result ->
-                    if (result is SuccessfulResult) presenter.finish(mode)
-                }
-            }
-        }
+        formView.onSaveClick()
     }
 
     override fun showProgress() {

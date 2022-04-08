@@ -29,4 +29,16 @@ class EventDetailResourcesProvider(
                 resourceManager.getString(R.string.edition_orgunit_capture_scope)
         }
     }
+
+    fun provideButtonUpdate() = resourceManager.getString(R.string.update)
+
+    fun provideButtonNext() = resourceManager.getString(R.string.next)
+
+    fun provideButtonCheck() = resourceManager.getString(R.string.check_event)
+
+    fun provideEventCreatedMessage() = resourceManager.getString(R.string.event_updated)
+
+    fun provideEventCreationError() = resourceManager.getString(R.string.failed_insert_event)
+
+    fun provideReOpened() = resourceManager.getString(R.string.re_opened)
 }

@@ -27,7 +27,7 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
-import org.hisp.dhis.android.core.settings.CompletionSpinner
+import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Test
@@ -664,9 +664,11 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         whenever(
-            d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(testEventProgramUid)
-        ) doReturn CompletionSpinner.builder()
-            .visible(true)
+            d2.settingModule()
+                .appearanceSettings()
+                .getProgramConfigurationByUid(testEventProgramUid)
+        ) doReturn ProgramConfigurationSetting.builder()
+            .completionSpinner(true)
             .build()
 
         assertTrue(repository.showCompletionPercentage())
@@ -688,9 +690,11 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         whenever(
-            d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(testEventProgramUid)
-        ) doReturn CompletionSpinner.builder()
-            .visible(false)
+            d2.settingModule()
+                .appearanceSettings()
+                .getProgramConfigurationByUid(testEventProgramUid)
+        ) doReturn ProgramConfigurationSetting.builder()
+            .completionSpinner(false)
             .build()
 
         assertTrue(!repository.showCompletionPercentage())

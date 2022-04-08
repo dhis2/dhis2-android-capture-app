@@ -3,10 +3,8 @@ package org.dhis2.data.forms.dataentry
 import android.text.TextUtils
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.ArrayList
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.DataEntryBaseRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
@@ -24,8 +22,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSection
 class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
-    private val d2: D2,
-    private val resourceManager: ResourceManager
+    private val d2: D2
 ) : DataEntryBaseRepository(d2, fieldFactory) {
 
     private val event by lazy {
@@ -40,10 +37,6 @@ class EventRepository(
             .blockingGet()
             .map { section -> section.uid() to section }
             .toMap()
-    }
-
-    private val isEventEditable by lazy {
-        d2.eventModule().eventService().blockingIsEditable(eventUid)
     }
 
     override fun sectionUids(): Flowable<MutableList<String>> {
@@ -193,7 +186,7 @@ class EventRepository(
             dataValue,
             programStageSection?.uid(),
             allowFutureDates,
-            isEventEditable,
+            isEventEditable(),
             renderingType,
             description,
             fieldRendering,
@@ -209,6 +202,8 @@ class EventRepository(
             fieldViewModel
         }
     }
+
+    private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
     private fun checkConflicts(dataElementUid: String, value: String?): String {
         return d2.importModule().trackerImportConflicts()

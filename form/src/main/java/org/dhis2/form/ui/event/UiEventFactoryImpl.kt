@@ -104,13 +104,13 @@ class UiEventFactoryImpl(
                     value = value
                 )
                 QR_CODE -> {
-                    if (value.isNullOrEmpty()) {
+                    if (value.isNullOrEmpty() && fieldUiModel.editable) {
                         RecyclerViewUiEvents.ScanQRCode(
                             uid = uid,
                             optionSet = optionSet,
                             renderingType = renderingType
                         )
-                    } else {
+                    } else if (value != null) {
                         RecyclerViewUiEvents.DisplayQRCode(
                             uid = uid,
                             optionSet = optionSet,
@@ -118,6 +118,8 @@ class UiEventFactoryImpl(
                             renderingType = renderingType,
                             editable = editable
                         )
+                    } else {
+                        null
                     }
                 }
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)

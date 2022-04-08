@@ -1,5 +1,6 @@
 package org.dhis2.usescases.form
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -26,6 +27,9 @@ class FormTest: BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @After
     override fun teardown() {
@@ -138,7 +142,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Warning")
+            checkPopUpWithMessageOnCompleteIsShown("WARNING_ON_COMPLETE", composeTestRule)
             pressBack()
         }
 
@@ -148,7 +152,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Error")
+            checkPopUpWithMessageOnCompleteIsShown("ERROR_ON_COMPLETE", composeTestRule)
             pressBack()
         }
     }
@@ -166,7 +170,7 @@ class FormTest: BaseTest() {
             scrollToBottomForm()
             waitToDebounce(1000)
             clickOnSaveForm()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
         teiDashboardRobot {
             checkProgramStageIsHidden("Delta")
@@ -185,6 +189,7 @@ class FormTest: BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
             clickOnSearch()
+            clickOnEnroll()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
@@ -221,12 +226,14 @@ class FormTest: BaseTest() {
             clickOnOpenSearch()
             typeAttributeAtPosition("abc", 1)
             clickOnSearch()
+            clickOnEnroll()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
         }
 
         enrollmentRobot {
+            waitToDebounce(500)
             clickOnPersonAttributes("Attributes - Person")
             scrollToBottomProgramForm()
             clickOnDatePicker()
