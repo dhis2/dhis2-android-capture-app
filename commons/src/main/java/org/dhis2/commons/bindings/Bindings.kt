@@ -4,10 +4,18 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.platform.ComposeView
 import androidx.databinding.BindingAdapter
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.dhis2.commons.R
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -16,8 +24,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.text.SimpleDateFormat
-import java.util.Date
 
 @BindingAdapter(value = ["stateIcon", "showSynced"], requireAll = false)
 fun ImageView.setStateIcon(state: State?, showSynced: Boolean?) {
@@ -76,9 +82,8 @@ fun ImageView.setEventIcon(
         when (status) {
             EventStatus.ACTIVE -> {
                 var eventDate = event.eventDate()
-                if (eventProgramStage?.periodType() != null && eventProgramStage.periodType()!!.name.contains(
-                        PeriodType.Weekly.name
-                    )
+                if (eventProgramStage?.periodType() != null &&
+                    eventProgramStage.periodType()!!.name.contains(PeriodType.Weekly.name)
                 ) {
                     eventDate = DateUtils.getInstance()
                         .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
@@ -92,16 +97,34 @@ fun ImageView.setEventIcon(
                     program.expiryDays() ?: 0
                 )
                 drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) R.drawable.ic_event_status_open else R.drawable.ic_event_status_open_read
+                    if (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) {
+                        R.drawable.ic_event_status_open
+                    } else {
+                        R.drawable.ic_event_status_open_read
+                    }
             }
-            EventStatus.OVERDUE -> drawableResource =
-                if (enrollmentStatus == EnrollmentStatus.ACTIVE) R.drawable.ic_event_status_overdue else R.drawable.ic_event_status_overdue_read
-            EventStatus.COMPLETED -> drawableResource =
-                if (enrollmentStatus == EnrollmentStatus.ACTIVE) R.drawable.ic_event_status_complete else R.drawable.ic_event_status_complete_read
-            EventStatus.SKIPPED -> drawableResource =
-                if (enrollmentStatus == EnrollmentStatus.ACTIVE) R.drawable.ic_event_status_skipped else R.drawable.ic_event_status_skipped_read
-            EventStatus.SCHEDULE -> drawableResource =
-                if (enrollmentStatus == EnrollmentStatus.ACTIVE) R.drawable.ic_event_status_schedule else R.drawable.ic_event_status_schedule_read
+            EventStatus.OVERDUE ->
+                drawableResource =
+                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                        R.drawable.ic_event_status_overdue
+                    } else R.drawable.ic_event_status_overdue_read
+            EventStatus.COMPLETED ->
+                drawableResource =
+                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                        R.drawable.ic_event_status_complete
+                    } else {
+                        R.drawable.ic_event_status_complete_read
+                    }
+            EventStatus.SKIPPED ->
+                drawableResource =
+                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                        R.drawable.ic_event_status_skipped
+                    } else R.drawable.ic_event_status_skipped_read
+            EventStatus.SCHEDULE ->
+                drawableResource =
+                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                        R.drawable.ic_event_status_schedule
+                    } else R.drawable.ic_event_status_schedule_read
             else -> drawableResource = R.drawable.ic_event_status_open_read
         }
         setImageDrawable(AppCompatResources.getDrawable(context, drawableResource))
@@ -124,5 +147,23 @@ fun TextView.parseDate(date: Date?) {
         val formatOut: SimpleDateFormat = DateUtils.uiDateFormat()
         val dateOut = formatOut.format(date)
         text = dateOut
+    }
+}
+
+@BindingAdapter("set_metadata_icon")
+fun ComposeView.setIconStyle(style: ObjectStyle?) {
+    style?.let {
+        val color = ColorUtils.getColorFrom(
+            style.color(),
+            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
+        )
+        val resource = ResourceManager(context).getObjectStyleDrawableResource(
+            style.icon(),
+            R.drawable.ic_default_outline
+        )
+        setUpMetadataIcon(
+            MetadataIconData(color, resource, 48),
+            true
+        )
     }
 }
