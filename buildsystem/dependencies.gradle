@@ -60,7 +60,7 @@ ext {
 
             //Analytics
             matomo                    : "4.1.2",
-            sentry                    : "5.7.1",
+            sentry                    : "5.7.2",
 
             //Debug
             timber                    : "4.7.1",
