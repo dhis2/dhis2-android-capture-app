@@ -15,5 +15,5 @@ interface HomeRepository {
     fun hasProgramWithAssignment(): Boolean
     fun hasHomeAnalytics(): Boolean
     fun getServerVersion(): Single<SystemInfo>
-    fun canManageAccounts(): Boolean
+    fun accountsCount(): Int
 }

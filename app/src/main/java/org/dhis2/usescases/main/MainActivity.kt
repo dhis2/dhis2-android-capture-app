@@ -210,10 +210,13 @@ class MainActivity :
             .build().show(supportFragmentManager, "ALL_SYNC")
     }
 
-    override fun goToLogin(canManageAccounts: Boolean) {
+    override fun goToLogin(accountsCount: Int, isDeletion: Boolean) {
         startActivity(
             LoginActivity::class.java,
-            LoginActivity.bundle(goToManageAccounts = canManageAccounts),
+            LoginActivity.bundle(
+                accountsCount = accountsCount,
+                isDeletion = isDeletion
+            ),
             true,
             true,
             null

@@ -117,16 +117,14 @@ class MainPresenterTest {
     fun `Should log out`() {
         whenever(repository.logOut()) doReturn Completable.complete()
 
-        whenever(
-            repository.canManageAccounts()
-        )doReturn true
+        whenever(repository.accountsCount()) doReturn 1
 
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
         verify(preferences).setValue(PIN, null)
-        verify(view).goToLogin(true)
+        verify(view).goToLogin(1, false)
     }
 
     @Test
@@ -189,7 +187,7 @@ class MainPresenterTest {
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(view.obtainFileView()) doReturn randomFile
-        whenever(repository.canManageAccounts()) doReturn true
+        whenever(repository.accountsCount()) doReturn 1
 
         presenter.onDeleteAccount()
 
@@ -197,7 +195,7 @@ class MainPresenterTest {
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).cancelNotifications()
-        verify(view).goToLogin(true)
+        verify(view).goToLogin(1,true)
     }
 
     @Test
@@ -229,10 +227,7 @@ class MainPresenterTest {
             firstRandomUserAccount,
             secondRandomUserAccount
         )
-
-        whenever(
-            repository.canManageAccounts()
-        )doReturn true
+        whenever(repository.accountsCount()) doReturn 2
 
         presenter.onDeleteAccount()
 
@@ -240,7 +235,7 @@ class MainPresenterTest {
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()
-        verify(view).goToLogin(true)
+        verify(view).goToLogin(2, true)
     }
 
     @Test

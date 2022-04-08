@@ -56,7 +56,7 @@ interface MainView : AbstractActivityContracts.View {
 
     fun showGranularSync()
 
-    fun goToLogin(canManageAccounts: Boolean)
+    fun goToLogin(accountsCount: Int, isDeletion: Boolean)
 
     fun showProgressDeleteNotification()
 
