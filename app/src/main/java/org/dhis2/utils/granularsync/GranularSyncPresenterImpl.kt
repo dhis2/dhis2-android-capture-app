@@ -103,7 +103,10 @@ class GranularSyncPresenterImpl(
                             view.showRefreshTitle()
                         }
                     },
-                    { view.closeDialog() }
+                    { error ->
+                        Timber.e(error)
+                        view.closeDialog()
+                    }
                 )
         )
 
@@ -122,7 +125,10 @@ class GranularSyncPresenterImpl(
                             stateAndConflicts.second
                         )
                     },
-                    { view.closeDialog() }
+                    { error ->
+                        Timber.e(error)
+                        view.closeDialog()
+                    }
                 )
         )
 
@@ -348,12 +354,16 @@ class GranularSyncPresenterImpl(
         return when (conflictType) {
             ALL -> Single.just("")
             PROGRAM -> d2.programModule().programs().uid(recordUid).get().map { it.displayName() }
-            TEI ->
+            TEI -> {
+                val enrollment =
+                    d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
                 d2.trackedEntityModule().trackedEntityTypes().uid(
-                    d2.trackedEntityModule().trackedEntityInstances().uid(recordUid)
+                    d2.trackedEntityModule().trackedEntityInstances()
+                        .uid(enrollment.trackedEntityInstance()!!)
                         .blockingGet().trackedEntityType()
                 )
                     .get().map { it.displayName() }
+            }
             EVENT ->
                 d2.programModule().programStages().uid(
                     d2.eventModule().events().uid(recordUid).blockingGet().programStage()
@@ -372,9 +382,12 @@ class GranularSyncPresenterImpl(
                     .map {
                         dhisProgramUtils.getProgramState(it)
                     }
-            TEI ->
-                d2.trackedEntityModule().trackedEntityInstances().uid(recordUid).get()
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance()).get()
                     .map { it.aggregatedSyncState() }
+            }
             EVENT ->
                 d2.eventModule().events().uid(recordUid).get()
                     .map { it.aggregatedSyncState() }
@@ -404,9 +417,12 @@ class GranularSyncPresenterImpl(
                     .map {
                         SyncDate(it.lastUpdated())
                     }
-            TEI ->
-                d2.trackedEntityModule().trackedEntityInstances().uid(recordUid).get()
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance()).get()
                     .map { SyncDate(it.lastUpdated()) }
+            }
             EVENT ->
                 d2.eventModule().events().uid(recordUid).get()
                     .map { SyncDate(it.lastUpdated()) }
@@ -439,9 +455,11 @@ class GranularSyncPresenterImpl(
         conflictType: SyncStatusDialog.ConflictType
     ): Single<MutableList<TrackerImportConflict>> {
         return when (conflictType) {
-            TEI ->
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
                 d2.importModule().trackerImportConflicts()
-                    .byTrackedEntityInstanceUid().eq(recordUid).get()
+                    .byTrackedEntityInstanceUid().eq(enrollment.trackedEntityInstance()).get()
+            }
             EVENT ->
                 d2.importModule().trackerImportConflicts()
                     .byEventUid().eq(recordUid).get()

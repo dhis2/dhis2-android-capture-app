@@ -211,6 +211,9 @@ class FormView(
                 dataEntryHeaderHelper.checkSectionHeader(recyclerView)
             }
         })
+        if (needToForceUpdate) {
+            retainInstance = true
+        }
         return binding.root
     }
 

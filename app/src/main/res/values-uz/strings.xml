@@ -723,7 +723,6 @@
     <string name="open_privacy_policy">Махфийлик сиёсатини текшириш учун шу ерни босинг</string>
     <string name="coordinates_error">Координата қийматлари яроқсиз</string>
     <string name="break_glass_error">Сиз ушбу дастурда бошқа ташкилий бўлимлар номидан TEI қайд эта олмайсиз, чунки у ҳимояланган. \N тизим маъмури билан боғланинг.</string>
-    <string name="add_image">Расм қўшиш</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 
@@ -772,5 +771,4 @@
     <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>
     <string name="openid_session_expired">Сессия муддати тугаган</string>
     <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
-    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     </resources>

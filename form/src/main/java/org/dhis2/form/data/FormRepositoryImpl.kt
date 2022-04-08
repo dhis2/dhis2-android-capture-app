@@ -221,10 +221,10 @@ class FormRepositoryImpl(
 
     private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> {
         return focusedItem?.let {
-            val uid = if (it.type == ActionType.ON_NEXT) {
-                getNextItem(it.id)
-            } else {
-                it.id
+            val uid = when (it.type) {
+                ActionType.ON_NEXT -> getNextItem(it.id)
+                ActionType.ON_FINISH -> null
+                else -> it.id
             }
 
             find { item ->

@@ -500,8 +500,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void onSyncDialogClick(String eventUid) {
-        view.showSyncDialog(teiUid);
+    public void onSyncDialogClick() {
+        view.showSyncDialog(enrollmentUid);
     }
 
     @Override

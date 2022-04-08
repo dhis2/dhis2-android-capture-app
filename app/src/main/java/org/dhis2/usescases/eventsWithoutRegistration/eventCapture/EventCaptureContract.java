@@ -37,8 +37,6 @@ public class EventCaptureContract {
 
         void showSnackBar(int messageId);
 
-        void clearFocus();
-
         void attemptToSkip();
 
         void attemptToReschedule();
@@ -76,8 +74,6 @@ public class EventCaptureContract {
 
         void completeEvent(boolean addNew);
 
-        void reopenEvent();
-
         void deleteEvent();
 
         void skipEvent();
@@ -114,8 +110,6 @@ public class EventCaptureContract {
         Observable<Boolean> completeEvent();
 
         Flowable<EventStatus> eventStatus();
-
-        boolean reopenEvent();
 
         boolean isEnrollmentOpen();
 
