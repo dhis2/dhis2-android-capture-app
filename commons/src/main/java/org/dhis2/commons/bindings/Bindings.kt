@@ -70,20 +70,14 @@ fun ImageView.setEventIcon(
     eventProgramStage: ProgramStage?,
     program: Program
 ) {
-    if (event != null) {
-        var status = event.status()
-        var enrollmentStatus: EnrollmentStatus? = EnrollmentStatus.ACTIVE
-        if (enrollment != null) {
-            enrollmentStatus = enrollment.status()
-        }
-        if (status == null) status = EventStatus.ACTIVE
-        if (enrollmentStatus == null) enrollmentStatus = EnrollmentStatus.ACTIVE
-        val drawableResource: Int
-        when (status) {
+    event?.let {
+        val status = event.status() ?: EventStatus.ACTIVE
+        val enrollmentStatus = enrollment?.status() ?: EnrollmentStatus.ACTIVE
+        val drawableResource = when (status) {
             EventStatus.ACTIVE -> {
                 var eventDate = event.eventDate()
-                if (eventProgramStage?.periodType() != null &&
-                    eventProgramStage.periodType()!!.name.contains(PeriodType.Weekly.name)
+                if (
+                    eventProgramStage?.periodType()?.name?.contains(PeriodType.Weekly.name) == true
                 ) {
                     eventDate = DateUtils.getInstance()
                         .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
@@ -96,36 +90,28 @@ fun ImageView.setEventIcon(
                     eventProgramStage?.periodType() ?: program.expiryPeriodType(),
                     program.expiryDays() ?: 0
                 )
-                drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) {
-                        R.drawable.ic_event_status_open
-                    } else {
-                        R.drawable.ic_event_status_open_read
-                    }
+                when (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) {
+                    true -> R.drawable.ic_event_status_open
+                    else -> R.drawable.ic_event_status_open_read
+                }
             }
-            EventStatus.OVERDUE ->
-                drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                        R.drawable.ic_event_status_overdue
-                    } else R.drawable.ic_event_status_overdue_read
-            EventStatus.COMPLETED ->
-                drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                        R.drawable.ic_event_status_complete
-                    } else {
-                        R.drawable.ic_event_status_complete_read
-                    }
-            EventStatus.SKIPPED ->
-                drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                        R.drawable.ic_event_status_skipped
-                    } else R.drawable.ic_event_status_skipped_read
-            EventStatus.SCHEDULE ->
-                drawableResource =
-                    if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-                        R.drawable.ic_event_status_schedule
-                    } else R.drawable.ic_event_status_schedule_read
-            else -> drawableResource = R.drawable.ic_event_status_open_read
+            EventStatus.OVERDUE -> when (enrollmentStatus) {
+                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_overdue
+                else -> R.drawable.ic_event_status_overdue_read
+            }
+            EventStatus.COMPLETED -> when (enrollmentStatus) {
+                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_complete
+                else -> R.drawable.ic_event_status_complete_read
+            }
+            EventStatus.SKIPPED -> when (enrollmentStatus) {
+                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_skipped
+                else -> R.drawable.ic_event_status_skipped_read
+            }
+            EventStatus.SCHEDULE -> when (enrollmentStatus) {
+                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_schedule
+                else -> R.drawable.ic_event_status_schedule_read
+            }
+            else -> R.drawable.ic_event_status_open_read
         }
         setImageDrawable(AppCompatResources.getDrawable(context, drawableResource))
         tag = drawableResource
