@@ -195,7 +195,7 @@ class MainPresenterTest {
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).cancelNotifications()
-        verify(view).goToLogin(1,true)
+        verify(view).goToLogin(1, true)
     }
 
     @Test
