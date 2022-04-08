@@ -158,6 +158,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Nondeterministic")
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
@@ -410,7 +411,7 @@ class TeiDashboardTest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
-       //     waitToDebounce(400)
+            //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }
 
