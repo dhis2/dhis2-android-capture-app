@@ -74,27 +74,14 @@ fun ImageView.setEventIcon(
         val status = event.status() ?: EventStatus.ACTIVE
         val enrollmentStatus = enrollment?.status() ?: EnrollmentStatus.ACTIVE
         val drawableResource = when (status) {
-            EventStatus.ACTIVE -> {
-                var eventDate = event.eventDate()
-                if (
-                    eventProgramStage?.periodType()?.name?.contains(PeriodType.Weekly.name) == true
+            EventStatus.ACTIVE ->
+                when (
+                    enrollmentStatus == EnrollmentStatus.ACTIVE &&
+                        !event.isExpired(eventProgramStage, program)
                 ) {
-                    eventDate = DateUtils.getInstance()
-                        .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
-                }
-                val isExpired: Boolean = DateUtils.getInstance().isEventExpired(
-                    eventDate,
-                    null,
-                    event.status(),
-                    program.completeEventsExpiryDays() ?: 0,
-                    eventProgramStage?.periodType() ?: program.expiryPeriodType(),
-                    program.expiryDays() ?: 0
-                )
-                when (enrollmentStatus == EnrollmentStatus.ACTIVE && !isExpired) {
                     true -> R.drawable.ic_event_status_open
                     else -> R.drawable.ic_event_status_open_read
                 }
-            }
             EventStatus.OVERDUE -> when (enrollmentStatus) {
                 EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_overdue
                 else -> R.drawable.ic_event_status_overdue_read
@@ -116,6 +103,22 @@ fun ImageView.setEventIcon(
         setImageDrawable(AppCompatResources.getDrawable(context, drawableResource))
         tag = drawableResource
     }
+}
+
+private fun Event.isExpired(eventProgramStage: ProgramStage?, program: Program): Boolean {
+    var eventDate = eventDate()
+    if (eventProgramStage?.periodType()?.name?.contains(PeriodType.Weekly.name) == true) {
+        eventDate = DateUtils.getInstance()
+            .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
+    }
+    return DateUtils.getInstance().isEventExpired(
+        eventDate,
+        null,
+        status(),
+        program.completeEventsExpiryDays() ?: 0,
+        eventProgramStage?.periodType() ?: program.expiryPeriodType(),
+        program.expiryDays() ?: 0
+    )
 }
 
 @BindingAdapter("eventWithoutRegistrationStatusIcon")
