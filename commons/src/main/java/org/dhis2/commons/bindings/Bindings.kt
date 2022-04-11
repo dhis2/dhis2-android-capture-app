@@ -72,33 +72,18 @@ fun ImageView.setEventIcon(
 ) {
     event?.let {
         val status = event.status() ?: EventStatus.ACTIVE
-        val enrollmentStatus = enrollment?.status() ?: EnrollmentStatus.ACTIVE
+        val isEnrollmentActive = enrollment?.let {
+            it.status() == EnrollmentStatus.ACTIVE
+        } ?: true
         val drawableResource = when (status) {
-            EventStatus.ACTIVE ->
-                when (
-                    enrollmentStatus == EnrollmentStatus.ACTIVE &&
-                        !event.isExpired(eventProgramStage, program)
-                ) {
-                    true -> R.drawable.ic_event_status_open
-                    else -> R.drawable.ic_event_status_open_read
-                }
-            EventStatus.OVERDUE -> when (enrollmentStatus) {
-                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_overdue
-                else -> R.drawable.ic_event_status_overdue_read
-            }
-            EventStatus.COMPLETED -> when (enrollmentStatus) {
-                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_complete
-                else -> R.drawable.ic_event_status_complete_read
-            }
-            EventStatus.SKIPPED -> when (enrollmentStatus) {
-                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_skipped
-                else -> R.drawable.ic_event_status_skipped_read
-            }
-            EventStatus.SCHEDULE -> when (enrollmentStatus) {
-                EnrollmentStatus.ACTIVE -> R.drawable.ic_event_status_schedule
-                else -> R.drawable.ic_event_status_schedule_read
-            }
-            else -> R.drawable.ic_event_status_open_read
+            EventStatus.ACTIVE -> getOpenIcon(
+                isEnrollmentActive && !event.isExpired(eventProgramStage, program)
+            )
+            EventStatus.OVERDUE -> getOverdueIcon(isEnrollmentActive)
+            EventStatus.COMPLETED -> getCompletedIcon(isEnrollmentActive)
+            EventStatus.SKIPPED -> getSkippedIcon(isEnrollmentActive)
+            EventStatus.SCHEDULE -> getScheduleIcon(isEnrollmentActive)
+            else -> getOpenIcon(false)
         }
         setImageDrawable(AppCompatResources.getDrawable(context, drawableResource))
         tag = drawableResource
@@ -119,6 +104,31 @@ private fun Event.isExpired(eventProgramStage: ProgramStage?, program: Program):
         eventProgramStage?.periodType() ?: program.expiryPeriodType(),
         program.expiryDays() ?: 0
     )
+}
+
+private fun getOpenIcon(isActive: Boolean) = when (isActive) {
+    true -> R.drawable.ic_event_status_open
+    false -> R.drawable.ic_event_status_open_read
+}
+
+private fun getOverdueIcon(isActive: Boolean) = when (isActive) {
+    true -> R.drawable.ic_event_status_overdue
+    false -> R.drawable.ic_event_status_overdue_read
+}
+
+private fun getCompletedIcon(isActive: Boolean) = when (isActive) {
+    true -> R.drawable.ic_event_status_complete
+    false -> R.drawable.ic_event_status_complete_read
+}
+
+private fun getSkippedIcon(isActive: Boolean) = when (isActive) {
+    true -> R.drawable.ic_event_status_skipped
+    false -> R.drawable.ic_event_status_skipped_read
+}
+
+private fun getScheduleIcon(isActive: Boolean) = when (isActive) {
+    true -> R.drawable.ic_event_status_schedule
+    false -> R.drawable.ic_event_status_schedule_read
 }
 
 @BindingAdapter("eventWithoutRegistrationStatusIcon")
