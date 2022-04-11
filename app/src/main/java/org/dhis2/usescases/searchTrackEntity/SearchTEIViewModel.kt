@@ -55,8 +55,8 @@ class SearchTEIViewModel(
     val isScrollingDown = MutableLiveData(false)
 
     private var searching: Boolean = false
-    private var _filtersActive = MutableLiveData(false)
-    var filtersActive: LiveData<Boolean> = _filtersActive
+    private val _filtersActive = MutableLiveData(false)
+    val filtersActive: LiveData<Boolean> = _filtersActive
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
@@ -107,11 +107,13 @@ class SearchTEIViewModel(
                 isOpened = shouldOpenSearch
             ),
             searchFilters = SearchFilters(
-                hasActiveFilters = _filtersActive.value == true,
+                hasActiveFilters = hasActiveFilters(),
                 isOpened = filterIsOpen()
             )
         )
     }
+
+    private fun hasActiveFilters() = _filtersActive.value == true
 
     fun setMapScreen() {
         _screenState.value.takeIf { it?.screenState == SearchScreenState.LIST }?.let {
@@ -134,7 +136,7 @@ class SearchTEIViewModel(
                 isOpened = false
             ),
             searchFilters = SearchFilters(
-                hasActiveFilters = _filtersActive.value == true,
+                hasActiveFilters = hasActiveFilters(),
                 isOpened = filterIsOpen()
             )
         )
@@ -164,7 +166,7 @@ class SearchTEIViewModel(
                 isOpened = true
             ),
             searchFilters = SearchFilters(
-                hasActiveFilters = _filtersActive.value == true,
+                hasActiveFilters = hasActiveFilters(),
                 isOpened = false
             )
         )
@@ -571,7 +573,7 @@ class SearchTEIViewModel(
                     }
                 ),
                 searchFilters = SearchFilters(
-                    hasActiveFilters = _filtersActive.value == true,
+                    hasActiveFilters = hasActiveFilters(),
                     isOpened = filterFieldsVisible
                 )
             )
