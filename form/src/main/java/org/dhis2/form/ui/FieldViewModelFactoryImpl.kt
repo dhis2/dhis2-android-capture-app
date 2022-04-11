@@ -85,8 +85,7 @@ class FieldViewModelFactoryImpl(
                 description,
                 valueType,
                 allowFutureDates,
-                optionSet,
-                editable
+                optionSet
             ),
             displayNameProvider.provideDisplayName(valueType, value, optionSet),
             uiEventTypesProvider.provideUiRenderType(
