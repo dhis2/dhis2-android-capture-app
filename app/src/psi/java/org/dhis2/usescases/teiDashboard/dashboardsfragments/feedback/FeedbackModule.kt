@@ -46,12 +46,6 @@ class FeedbackModule(
 
     @Provides
     @PerActivity
-    fun rulesRepository(d2: D2): RulesRepository {
-        return RulesRepository(d2)
-    }
-
-    @Provides
-    @PerActivity
     fun provideGetFeedback(
         teiDataRepository: TeiDataRepository,
         valuesRepository: ValuesRepository,
@@ -86,11 +80,8 @@ class FeedbackModule(
 
     @Provides
     @PerActivity
-    fun provideValuesRepository(
-        d2: D2,
-        rulesRepository: RulesRepository
-    ): ValuesRepository {
-        return ValuesD2Repository(d2, context, rulesRepository)
+    fun provideValuesRepository(d2: D2): ValuesRepository {
+        return ValuesD2Repository(d2, context)
     }
 
     @Provides
