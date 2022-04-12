@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="feature_configuration">Feature Configuration</string>
-    <string name="app_name">Commons</string>
+    <string name="app_name" translatable="false">Commons</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="clear">clear</string>
     <string name="action_accept">Accept</string>
@@ -9,6 +9,7 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="clear_all">clear selection</string>
     <string name="navigation_list_view">List view</string>
     <string name="navigation_table_view">Table view</string>
     <string name="navigation_map_view">Map view</string>
@@ -21,4 +22,182 @@
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
     <string name="event_overview">Details</string>
+    <string name="select_option">Select option</string>
+    <string name="search">Search</string>
+    <string name="jira_issue_sent">Issue Sent</string>
+    <string name="jira_issue_sent_error">Error sending issue</string>
+    <string name="events">events</string>
+    <string name="data_sets">Data sets</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+    <string name="done">Done</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filters applying</string>
+    <string name="filters_disabled">No filters applied</string>
+    <string name="filters_title_period">Period</string>
+    <string name="filters_title_org_unit">Org. Unit</string>
+    <string name="filters_title_sorting">Sorting</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sync</string>
+    <string name="filters_title_assigned">Assigned to me</string>
+    <string name="filters_title_date">Date</string>
+    <string name="filters_title_event_date">Event date</string>
+    <string name="enrollment_date">Enrollment date</string>
+    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="filter_follow_up_label">Followed up %s</string>
+
+    <!-- State -->
+    <string name="state_synced">Sync</string>
+    <string name="state_to_post">To send</string>
+    <string name="state_to_update">To update</string>
+    <string name="state_to_delete">To delete</string>
+    <string name="state_error">Error</string>
+    <string name="state_warning">Warning</string>
+    <string name="state_uploading">Uploading</string>
+    <string name="state_relationship">Relationship</string>
+    <string name="sent_by_sms">Sent by sms</string>
+    <string name="sync_by_sms">Synced by SMS</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Open</string>
+    <string name="filter_event_status_schedule">Schedule</string>
+    <string name="filter_event_status_overdue">Overdue</string>
+    <string name="filter_event_status_visited">Visited</string>
+    <string name="filter_event_status_completed">Completed</string>
+    <string name="filter_event_status_skipped">Skipped</string>
+    <string name="active">Active</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Complete</string>
+    <string name="enrollment_status_cancelled">Cancelled</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Today</string>
+    <string name="filter_period_yesterday">Yesterday</string>
+    <string name="filter_period_tomorrow">Tomorrow</string>
+    <string name="filter_period_this_week">This week</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_perdior_next_week">Next week</string>
+    <string name="filter_period_this_month">This month</string>
+    <string name="filter_period_last_month">Last month</string>
+    <string name="filter_period_next_month">Next month</string>
+    <string name="filter_period_form_to">From - To</string>
+    <string name="filter_period_other">Other</string>
+    <string name="filter_period_any">Anytime</string>
+    <string name="working_list_default_label">Working list %s</string>
+    <string name="filter_period_last_n_days">Last %d days</string>
+    <string name="filter_period_this_year">This year</string>
+    <string name="filter_period_this_bimonth">This bimonth</string>
+    <string name="filter_period_last_bimonth">Last bimonth</string>
+    <string name="filter_period_this_quarter">This quarter</string>
+    <string name="filter_period_last_quarter">Last quarter</string>
+    <string name="filter_period_six_months">This six months</string>
+    <string name="filter_period_last_six_months">Last six months</string>
+    <string name="filter_period_last_n_years">Last %d years</string>
+    <string name="filter_period_last_n_months">Last %d months</string>
+    <string name="filter_period__last_n_weeks">Last %d weeks</string>
+    <string name="filter_period_weeks_this_year">Weeks this year</string>
+    <string name="filter_period_months_this_year">Months this year</string>
+    <string name="filter_period_bimonths_this_year">Bimonths this year</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_months_last_year">Months last year</string>
+    <string name="filter_period_quarters_last_year">Quarters las years</string>
+    <string name="filter_period_last_year">Last year</string>
+    <string name="filter_period_this_biweek">This biweek</string>
+    <string name="filter_period_last_biweek">Last biweek</string>
+    <string name="filter_period_last_n_bimonths">Last %d bimonths</string>
+    <string name="filter_period_last_n_quarters">Last %d quarters</string>
+    <string name="last_n_months">Last %d months</string>
+    <string name="filter_period_this_financial_year">This financial year</string>
+    <string name="filter_period_last_financial_year">Last financial year</string>
+    <string name="filter_period_last_n_financial_years">Last %d financial years</string>
+    <string name="filter_period_last_n_biweeks">Last %d biweeks</string>
+    <string name="filter_period_from_to" translatable="false">%s - %s</string>
+    <string name="period">Period</string>
+    <string name="DAILY">Daily</string>
+    <string name="WEEKLY">Weekly</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Synced</string>
+    <string name="filter_sync_not_synced">Not Synced</string>
+    <string name="filter_sync_error">Sync Error</string>
+    <string name="filter_sync_sms">SMS Synced</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">now</string>
+    <string name="interval_minute_ago">%d min. ago</string>
+    <string name="interval_hour_ago">%d hours ago</string>
+    <string name="interval_yesterday">Yesterday</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicators</string>
+    <string name="section_charts">Charts</string>
+    <string name="section_charts_indicators">Charts and indicators</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Password is missing. Please enter password.</string>
+    <string name="login_error_null_username">Username is missing. Please enter username.</string>
+    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_dhis_version_v2">This server is running a DHIS2 version different than %s. Update your server version or contact your admin.</string>
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
+    <string name="login_error_error_response">Sorry! Something failed on the server side.</string>
+    <string name="login_error_no_dhis_instance">The URL provided is not a DHIS2 server.</string>
+    <string name="login_error_bad_credentials">The username or password are incorrect</string>
+    <string name="login_error_unknown_host">Unknown server</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="error_unexpected">Something unexpected went worng.</string>
+    <string name="error_too_manu_org_units">Your user has more than one root organisation units. Review your configuration or contact your admin.</string>
+    <string name="error_max_tei_count_reached">Online results exceed the maximum number of tracker instances that can be shown. Please refine your search.</string>
+    <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
+    <string name="error_already_authenticated">The user is already logged in.</string>
+    <string name="error_already_executed">The request has already been executed.</string>
+    <string name="error_api_invalid_query">Server request is invalid.</string>
+    <string name="error_app_name_not_set">The application name has not been set.</string>
+    <string name="error_app_version_not_set">The application version has not been set.</string>
+    <string name="error_access_keystore">Unable to access device keystore.</string>
+    <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
+    <string name="error_delete_non_existing_object">Deletion aborted. The object does not exist.</string>
+    <string name="error_instance_keystore">Unable to instantiate keystore.</string>
+    <string name="error_reserve_value_on_server">We couldn´t reserve values for these record. Please contact your admin.</string>
+    <string name="error_export_login">Please login to export the database.</string>
+    <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
+    <string name="error_import_exist">You are importing an already existing database.</string>
+    <string name="error_import_logout">Please logout to import a new database.</string>
+    <string name="error_import_version">The version of the imported database is higher than supported.</string>
+    <string name="error_file_not_found">The file has not been found.</string>
+    <string name="error_file_resize">There was an error resizing the image.</string>
+    <string name="error_generate_coordinate">It is not possible to generate coordinates.</string>
+    <string name="error_job">Job report not available.</string>
+    <string name="error_low_on_available_values">You might be running low on available values.</string>
+    <string name="error_user_no_authenticated">There is no user authenticated.</string>
+    <string name="error_user_no_authenticated_offline">There is no user authenticated offline.</string>
+    <string name="error_no_values_left_on_server">There are not enough values to reserve on the server. Please conctact your admin.</string>
+    <string name="error_different_offline_user">You are trying to login offline with a different user.</string>
+    <string name="error_invalid_geometry">The geometry value is invalid.</string>
+    <string name="error_no_reserved_values">There are no reserved values available. Go to settings and refill values when you have internet connection.</string>
+    <string name="error_object_update">The object could not be updated.</string>
+    <string name="error_object_insert">The object could not be inserted.</string>
+    <string name="error_ownership_access">You don\'t have access.</string>
+    <string name="error_null_url">The server URL is missing. Please enter URL.</string>
+    <string name="error_server_malformed">The server URL is not well formed. Please check it.</string>
+    <string name="error_settings_app_not_supported">This version of the Settings Web App is not supported.</string>
+    <string name="error_settings_app_not_intalled">The Settings Web App is not installed in the server.</string>
+    <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
+    <string name="error_relationship_updated">The relationship can\'t be updated.</string>
+    <string name="error_too_many_periods">There are too many periods.</string>
+    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
+    <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
+    <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
+    <string name="error_set_value">The value could not be set.</string>
+    <string name="error_value_reservation_time">The request to reserve values has taken too much time. Please retry.</string>
+    <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+    <string name="error_sms_not_supported">SMS is not supported.</string>
+    <string name="error_min_attributes">There are not enough attributes to perform the search. Please refine your search with more attributes.</string>
+    <string name="error_org_unit_scope">Online search is only available for your user search organisation units.</string>
+    <string name="error_invalid_characters">There are invalid characters in the query. Please ask the administrator to verify the server configuration (relaxedQueryChars,...).</string>
 </resources>

@@ -6,15 +6,17 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.utils.filters.AssignedFilter
-import org.dhis2.utils.filters.EnrollmentStatusFilter
-import org.dhis2.utils.filters.EventStatusFilter
-import org.dhis2.utils.filters.FilterItem
-import org.dhis2.utils.filters.Filters
-import org.dhis2.utils.filters.PeriodFilter
-import org.dhis2.utils.filters.ProgramType
-import org.dhis2.utils.filters.sorting.SortingItem
-import org.dhis2.utils.resources.ResourceManager
+import org.dhis2.commons.filters.AssignedFilter
+import org.dhis2.commons.filters.EnrollmentStatusFilter
+import org.dhis2.commons.filters.EventStatusFilter
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.PeriodFilter
+import org.dhis2.commons.filters.ProgramType
+import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.filters.sorting.SortingItem
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.FilterSetting
@@ -140,12 +142,9 @@ class FilterRepositoryTest {
 
         val result = filterRepository.globalTrackedEntityFilters()
 
-        assert(result[0].type == Filters.PERIOD)
-        assert(result[1].type == Filters.ORG_UNIT)
-        assert(result[2].type == Filters.SYNC_STATE)
-        assert(result[3].type == Filters.ENROLLMENT_STATUS)
-        assert(result[4].type == Filters.EVENT_STATUS)
-        assert(result.size == 5)
+        assert(result[0].type == Filters.ORG_UNIT)
+        assert(result[1].type == Filters.SYNC_STATE)
+        assert(result.size == 2)
     }
 
     @Test

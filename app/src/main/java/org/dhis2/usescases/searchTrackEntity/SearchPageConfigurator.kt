@@ -1,12 +1,14 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class SearchPageConfigurator(
     val searchRepository: SearchRepository,
-    val featureConfigRepository: FeatureConfigRepository
+    val schedulerProvider: SchedulerProvider
 ) : NavigationPageConfigurator {
 
     override fun displayListView(): Boolean {
@@ -18,12 +20,14 @@ class SearchPageConfigurator(
     }
 
     override fun displayMapView(): Boolean {
-        return searchRepository.programHasCoordinates()
+        return runBlocking {
+            return@runBlocking withContext(Dispatchers.IO) {
+                searchRepository.programHasCoordinates()
+            }
+        }
     }
 
     override fun displayAnalytics(): Boolean {
-        return searchRepository.programHasAnalytics() && featureConfigRepository.isFeatureEnable(
-            Feature.ANDROAPP_2557
-        ) || featureConfigRepository.isFeatureEnable(Feature.ANDROAPP_2557_VG)
+        return searchRepository.programHasAnalytics()
     }
 }

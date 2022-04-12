@@ -241,7 +241,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private void goToRelationShip(@NonNull RelationshipType relationshipTypeModel,
                                   @NonNull String teiTypeUid) {
         relationshipType = relationshipTypeModel;
-        presenter.goToAddRelationship(teiTypeUid);
+        presenter.goToAddRelationship(teiTypeUid, relationshipType);
     }
 
     @Override
@@ -330,9 +330,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                             }
                             return true;
                         })
-                        .addOnRelationshipClickListener(teiUid -> {
+                        .addOnRelationshipClickListener((teiUid, ownerType) -> {
                             if (binding.mapCarousel.getCarouselEnabled()) {
-                                presenter.openDashboard(teiUid);
+                                presenter.onRelationshipClicked(ownerType, teiUid);
                             }
                             return true;
                         })

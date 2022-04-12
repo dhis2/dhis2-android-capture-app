@@ -18,10 +18,6 @@ class GraphToTable {
                 text = context.getString(R.string.no_data)
             }
         }
-        val tableView = TableView(context)
-        val tableAdapter = GraphTableAdapter(context)
-        tableView.adapter = tableAdapter
-        tableView.headerCount = 1
 
         val series = if (graph.chartType == ChartType.NUTRITION) {
             listOf(graph.series.last())
@@ -33,11 +29,16 @@ class GraphToTable {
         val rows = rows(series)
         val cells = cells(graph, series, headers)
 
+        val tableView = TableView(context)
+        val tableAdapter = GraphTableAdapter(context)
+        tableView.isShowHorizontalSeparators = false
+        tableView.adapter = tableAdapter
+        tableView.isIgnoreSelectionColors = true
+        tableView.headerCount = rows.size
+
         tableAdapter.setAllItems(
-            listOf(
-                headers
-            ),
             rows,
+            headers,
             cells,
             false
         )
@@ -61,8 +62,23 @@ class GraphToTable {
         }
     }
 
-    private fun rows(series: List<SerieData>): List<String> {
-        return series.map { it.fieldName }
+    private fun rows(series: List<SerieData>): List<List<String>> {
+        return if (series.first().fieldName.contains("_")) {
+            val splitted = series.map { it.fieldName.split("_") }
+            val combination = splitted.first().size
+            val headerList = mutableListOf<List<String>>()
+            for (i in 0 until combination) {
+                val values = splitted.map { it[i] }
+                headerList.add(
+                    values.filterIndexed { index, value ->
+                        index == 0 || values[index - 1] != value
+                    }
+                )
+            }
+            headerList
+        } else {
+            listOf(series.map { it.fieldName })
+        }
     }
 
     private fun cells(
@@ -89,7 +105,17 @@ class GraphToTable {
                 }
             }
         } else {
-            series.map { it.coordinates.map { point -> point.fieldValue.toString() } }
+            return mutableListOf<List<String>>().apply {
+                headers.forEachIndexed { index, s ->
+                    add(
+                        series.map {
+                            it.coordinates.firstOrNull { point ->
+                                point.position?.toInt() == index
+                            }?.fieldValue?.toString() ?: ""
+                        }
+                    )
+                }
+            }
         }
     }
 }

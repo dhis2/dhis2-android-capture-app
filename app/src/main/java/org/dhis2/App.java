@@ -21,6 +21,9 @@ import org.dhis2.commons.di.dagger.PerUser;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.orgunitselector.OUTreeComponent;
+import org.dhis2.commons.orgunitselector.OUTreeModule;
+import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.data.appinspector.AppInspector;
@@ -40,6 +43,8 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
@@ -132,8 +137,13 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected void setUpServerComponent() {
-        D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
-        boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
+        boolean isLogged = false;
+        try {
+            D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+            isLogged = d2Configuration.userModule().isLogged().blockingGet();
+        } catch (Exception e) {
+            appComponent.injectCrashReportController().trackError(e, e.getMessage());
+        }
         serverComponent = appComponent.plus(new ServerModule());
 
         if (isLogged)
@@ -332,7 +342,18 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     @Override
-    public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module){
+    public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module) {
         return userComponent.plus(module);
+    }
+
+    @Override
+    public FilterPresenter provideFilterPresenter() {
+        return userComponent.filterPresenter();
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
+        return serverComponent.plus(module);
     }
 }

@@ -57,7 +57,7 @@ class ValuesD2Repository(
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
-                val assignedLegend = getAssignedLegend(teiValue.value()!!, teiValue.dataElement()!!)
+                val assignedLegend = getAssignedLegend(teiValue.value() ?:"", teiValue.dataElement()!!)
                 val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
 
                 val deFeedbackHelpRaw = deAttributeValues.firstOrNull {
@@ -79,7 +79,7 @@ class ValuesD2Repository(
                 Value(
                     teiValue.dataElement()!!,
                     deName,
-                    teiValue.userFriendlyValue(d2)!!,
+                    teiValue.userFriendlyValue(d2) ?: "",
                     FeedbackOrder(deFeedbackOrder!!.value()),
                     assignedLegend?.color(),
                     deFeedbackHelp,

@@ -3,12 +3,12 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
-import org.dhis2.utils.resources.ResourceManager
 
 internal class StageViewHolder(
     private val binding: ItemStageSectionBinding,
@@ -35,7 +35,7 @@ internal class StageViewHolder(
         binding.programStageIcon.setImageResource(
             ResourceManager(itemView.context).getObjectStyleDrawableResource(
                 stage.style().icon(),
-                R.drawable.ic_program_default
+                R.drawable.ic_default_outline
             )
         )
         binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color))

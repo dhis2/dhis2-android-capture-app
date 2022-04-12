@@ -10,7 +10,6 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -28,6 +27,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCreateProjection;
+import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.event.EventObjectRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -174,9 +174,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (!scheduleEvents.isEmpty())
             scheduleDate = scheduleEvents.get(0).dueDate();
 
-        if (activeDate != null && scheduleDate != null) {
-            return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
-        } else if (activeDate != null) {
+        if (activeDate != null) {
             return activeDate;
         } else if (scheduleDate != null) {
             return scheduleDate;
@@ -318,50 +316,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
-        if (eventUid != null)
-            return d2.eventModule().events().uid(eventUid).get().toObservable()
-                    .flatMap(event -> {
-                        if (event.attributeOptionCombo() != null)
-                            return accessWithCatOption(programUid, event.attributeOptionCombo());
-                        else
-                            return programAccess(programUid);
-                    });
-        else
-            return programAccess(programUid);
-
-
-    }
-
-    private Observable<Boolean> accessWithCatOption(String programUid, String catOptionCombo) {
-        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(catOptionCombo).get()
-                .map(data -> UidsHelper.getUidsList(data.categoryOptions()))
-                .flatMap(categoryOptionsUids -> d2.categoryModule().categoryOptions().byUid().in(categoryOptionsUids).get())
-                .toObservable()
-                .map(categoryOptions -> {
-                    boolean access = true;
-                    for (CategoryOption option : categoryOptions) {
-                        if (!option.access().data().write())
-                            access = false;
-                    }
-                    return access;
-                }).flatMap(catComboAccess -> {
-                    if (catComboAccess)
-                        return programAccess(programUid);
-                    else
-                        return Observable.just(catComboAccess);
-                });
-    }
-
-    private Observable<Boolean> programAccess(String programUid) {
-        return Observable.fromCallable(() -> {
-                    boolean programAccess = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
-                    boolean stageAccess = true;
-                    if (stageUid != null) {
-                        stageAccess = d2.programModule().programStages().uid(stageUid).blockingGet().access().data().write();
-                    }
-                    return programAccess && stageAccess;
-                }
-        );
+        if (eventUid != null) {
+            return d2.eventModule().eventService().isEditable(eventUid).toObservable();
+        } else {
+            return d2.programModule().programStages().uid(stageUid).get().toObservable()
+                    .map(programStage-> programStage.access().data().write());
+        }
     }
 
     @Override
@@ -433,9 +393,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public List<CategoryOption> getCategoryOptions(String categoryUid) {
-        return d2.categoryModule().categoryOptions()
-                .byCategoryUid(categoryUid)
-                .blockingGet();
+        return d2.categoryModule().categories()
+                .withCategoryOptions()
+                .uid(categoryUid)
+                .blockingGet().categoryOptions();
     }
 
     @Override
@@ -541,14 +502,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
-        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !DhisTextUtils.Companion.isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
-        }
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFutureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null, null, dataElement.url());
+                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask(), null, null, null,dataElement.url());
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
@@ -578,22 +536,41 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     coordinatesValue = geometry.coordinates();
                 }
             }
-            return CoordinateViewModel.create(
+            return (CoordinateViewModel) fieldFactory.create(
                     "",
                     "",
+                    ValueType.COORDINATE,
                     false,
+                    null,
                     coordinatesValue,
+                    null,
                     null,
                     accessDataWrite && !shouldBlockEdition,
                     null,
+                    null,
+                    null,
+                    null,
                     ObjectStyle.builder().build(),
+                    null,
+                    null,
+                    null,
                     featureType,
-                    true,
-                    false,
-                    processor,
-                    fieldFactory.style(),
                     null
             );
         });
+    }
+
+    @Override
+    public Flowable<EventEditableStatus> getEditableStatus() {
+        return d2.eventModule().eventService().getEditableStatus(eventUid).toFlowable();
+    }
+
+    @Override
+    public int getMinDaysFromStartByProgramStage(String programStageUid) {
+        ProgramStage programStage = d2.programModule().programStages().uid(programStageUid).blockingGet();
+        if (programStage.minDaysFromStart() != null) {
+            return programStage.minDaysFromStart();
+        }
+        return 0;
     }
 }

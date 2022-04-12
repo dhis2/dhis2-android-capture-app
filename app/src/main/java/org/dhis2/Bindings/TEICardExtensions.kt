@@ -23,10 +23,11 @@ import java.io.File
 import java.util.ArrayList
 import java.util.Date
 import org.dhis2.R
+import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
@@ -81,7 +82,7 @@ private fun getProgramDrawable(context: Context, color: Int, icon: Int): Drawabl
         Timber.log(1, e)
         iconImage = AppCompatResources.getDrawable(
             context,
-            R.drawable.ic_program_default
+            R.drawable.ic_default_outline
         )
         iconImage!!.mutate()
     }

@@ -9,12 +9,15 @@
     <group android:id="@+id/filters">
         <item
             android:id="@+id/thisyear"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/thisyear" />
         <item
             android:id="@+id/lastyear"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/lastyear" />
         <item
             android:id="@+id/last5year"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last5years" />
     </group>
 </menu>

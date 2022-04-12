@@ -12,9 +12,9 @@ import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.filters.Filters;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -89,11 +89,15 @@ public class SearchTEContractsModule {
 
         void setFormData(List<FieldUiModel> data);
 
-        void setFilters(List<FilterItem> filtersToDisplay);
+        void setInitialFilters(List<FilterItem> filtersToDisplay);
 
         void showClearSearch(boolean empty);
 
         void hideFilter();
+
+        void updateNavigationBar();
+
+        void displayMinNumberOfAttributesMessage(int minAttributes);
     }
 
     public interface Presenter {
@@ -132,7 +136,7 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        org.dhis2.data.tuples.Pair<String, Boolean> getMessage(List<SearchTeiModel> list);
+        SearchMessageResult getMessage(List<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
 
@@ -141,6 +145,8 @@ public class SearchTEContractsModule {
         void showFilter();
 
         void showFilterGeneral();
+
+        void resetSearch();
 
         void clearFilterClick();
 
@@ -181,5 +187,9 @@ public class SearchTEContractsModule {
         void setOpeningFilterToNone();
 
         void populateList(List<FieldUiModel> list);
+
+        void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
+
+        boolean selectedProgramMinNumberOfAttributesCheck();
     }
 }

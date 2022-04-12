@@ -2,6 +2,7 @@ package org.dhis2.Bindings
 
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.extension.invoke
+import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -107,13 +108,17 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
                 ""
             }
         ValueType.DATE ->
-            DateUtils.uiDateFormat().format(DateUtils.oldUiDateFormat().parse(value) ?: "")
+            DateUtils.uiDateFormat().format(
+                DateUtils.oldUiDateFormat().parse(value) ?: ""
+            )
         ValueType.DATETIME ->
             DateUtils.dateTimeFormat().format(
                 DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
             )
         ValueType.TIME ->
-            DateUtils.timeFormat().format(DateUtils.timeFormat().parse(value) ?: "")
+            DateUtils.timeFormat().format(
+                DateUtils.timeFormat().parse(value) ?: ""
+            )
         else -> value
     }
 }
@@ -126,7 +131,17 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
             val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
-            blockingSet(finalValue)
+            try {
+                blockingSet(finalValue)
+            } catch (e: Exception) {
+                val crashController = CrashReportControllerImpl()
+                crashController.addBreadCrumb(
+                    "blockingSetCheck Crash",
+                    "Attribute: $attrUid," +
+                        "" + " value: $value"
+                )
+                return false
+            }
             true
         } else {
             blockingDeleteIfExist()

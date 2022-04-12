@@ -3,19 +3,19 @@ package org.dhis2.usescases.main
 import android.view.Gravity
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
 
@@ -119,6 +119,7 @@ class MainPresenter(
                 .subscribe(
                     {
                         workManagerController.cancelAllWork()
+                        FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
                         view.startActivity(LoginActivity::class.java, null, true, true, null)

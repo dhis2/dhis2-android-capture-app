@@ -2,6 +2,7 @@ package org.dhis2.Bindings
 
 import android.content.Context
 import java.util.Date
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.utils.DateUtils
 import timber.log.Timber
 
@@ -64,5 +65,7 @@ fun String.toDate(): Date {
 
     return date
 }
+
+fun String.toTime(): Date? = DateUtils.timeFormat().parse(this)
 
 fun String.parseToDouble() = this.toDoubleOrNull()?.toString() ?: "0.0"

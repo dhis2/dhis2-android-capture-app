@@ -13,6 +13,7 @@ class RadioButtonViewModelTest {
     fun `Should set mandatory to true`() {
         val radioButtonViewModel = RadioButtonViewModel.fromRawValue(
             "123",
+            1,
             "label",
             ValueType.BOOLEAN,
             false,
@@ -23,7 +24,6 @@ class RadioButtonViewModelTest {
             ObjectStyle.builder().build(),
             ValueTypeRenderingType.DEFAULT,
             false,
-            null,
             false,
             null
         )

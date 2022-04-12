@@ -65,6 +65,7 @@
                 android:text="@{item.formattedLabel}"
                 android:visibility="@{label != null ? View.VISIBLE : View.GONE}"
                 android:alpha="@{item.editable() ? 1.0f : 0.5f}"
+                app:setTextColor="@{item.backgroundTransparent}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
                 app:layout_constraintHorizontal_bias="0"

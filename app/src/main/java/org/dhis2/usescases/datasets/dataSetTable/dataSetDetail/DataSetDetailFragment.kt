@@ -11,16 +11,16 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
-import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.FragmentDatasetDetailBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
@@ -184,7 +184,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         binding.dataSetIcon.setImageResource(
             ResourceManager(mContext).getObjectStyleDrawableResource(
                 style?.icon(),
-                R.drawable.ic_program_default
+                R.drawable.ic_default_outline
             )
         )
         binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))

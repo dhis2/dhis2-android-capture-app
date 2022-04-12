@@ -72,6 +72,7 @@ class EventTest: BaseTest() {
         prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
 
         eventRegistrationRobot {
+            openMenuMoreOptions()
             clickOnShare()
             clickOnAllQR(qrList)
         }

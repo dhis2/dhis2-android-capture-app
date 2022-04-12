@@ -9,9 +9,7 @@ import org.dhis2.usescases.event.eventRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.dhis2.usescases.teidashboard.robot.noteRobot
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DateUtils.uiDateFormat
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -81,6 +79,7 @@ class ProgramEventTest: BaseTest() {
         eventRobot {
             clickOnFormFabButton()
             clickOnFinishAndComplete()
+            waitToDebounce(400)
         }
 
         programEventsRobot {
@@ -118,6 +117,7 @@ class ProgramEventTest: BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldDeleteEvent() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"

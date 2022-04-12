@@ -26,9 +26,9 @@
 package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.general.AbstractActivityContracts
-import org.dhis2.utils.filters.FilterItem
-import org.dhis2.utils.filters.FilterManager
 
 interface MainView : AbstractActivityContracts.View {
 

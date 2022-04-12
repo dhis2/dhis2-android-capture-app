@@ -17,6 +17,9 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
@@ -29,9 +32,6 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
-import org.dhis2.utils.filters.FilterItem
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
@@ -98,15 +98,6 @@ class MainActivity :
             false
         }
 
-        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        if (restoreScreenName != null) {
-            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
-            mainNavigator.restoreScreen(restoreScreenName)
-        } else {
-            changeFragment(R.id.menu_home)
-            initCurrentScreen()
-        }
-
         binding.mainDrawerLayout.addDrawerListener(this)
 
         prefs = abstracContext.getSharedPreferences(
@@ -138,6 +129,15 @@ class MainActivity :
         }
 
         elevation = ViewCompat.getElevation(binding.toolbar)
+
+        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
+        if (restoreScreenName != null) {
+            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
+            mainNavigator.restoreScreen(restoreScreenName)
+        } else {
+            changeFragment(R.id.menu_home)
+            initCurrentScreen()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -190,6 +190,7 @@ class MainActivity :
                 ConstraintSet.BOTTOM,
                 50
             )
+            binding.navigationBar.hide()
         } else {
             initSet.connect(
                 R.id.fragment_container,
@@ -198,6 +199,7 @@ class MainActivity :
                 ConstraintSet.BOTTOM,
                 0
             )
+            binding.navigationBar.show()
         }
         initSet.applyTo(binding.backdropLayout)
         mainNavigator.getCurrentIfProgram()?.openFilter(backDropActive)
@@ -227,7 +229,7 @@ class MainActivity :
     }
 
     override fun goToHome() {
-        mainNavigator.openPrograms()
+        mainNavigator.openHome(binding.navigationBar)
     }
 
     override fun changeFragment(id: Int) {
@@ -321,7 +323,7 @@ class MainActivity :
                 presenter.logOut()
             }
             R.id.menu_home -> {
-                mainNavigator.openPrograms()
+                mainNavigator.openHome(binding.navigationBar)
             }
         }
 

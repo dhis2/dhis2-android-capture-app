@@ -44,4 +44,6 @@ public interface UserManager {
     Single<Pair<String, Integer>> getTheme();
 
     Completable logout();
+
+    boolean allowScreenShare();
 }

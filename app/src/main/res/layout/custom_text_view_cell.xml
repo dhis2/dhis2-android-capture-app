@@ -31,7 +31,7 @@
             android:id="@+id/input_editText"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/cell_edit_bg"
+            android:background="@android:color/transparent"
             android:ellipsize="end"
             android:lines="1"
             android:minHeight="@dimen/default_cell_height"

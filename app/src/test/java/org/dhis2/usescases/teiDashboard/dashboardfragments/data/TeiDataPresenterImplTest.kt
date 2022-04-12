@@ -10,8 +10,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import java.util.Date
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.filter.FilterRepository
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -20,7 +21,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContra
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenterImpl
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.event.Event

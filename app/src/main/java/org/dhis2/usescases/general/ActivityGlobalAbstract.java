@@ -1,6 +1,7 @@
 package org.dhis2.usescases.general;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -24,6 +25,8 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.CustomDialog;
+import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -31,14 +34,13 @@ import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,6 +92,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        ServerComponent serverComponent = ((App) newBase.getApplicationContext()).getServerComponent();
+        if (serverComponent != null && serverComponent.getD2().userModule().blockingIsLogged()) {
+            ContextWrapper localeUpdatedContext = new LocaleSelector(newBase, serverComponent.getD2()).updateUiLanguage();
+            super.attachBaseContext(localeUpdatedContext);
+        } else {
+            super.attachBaseContext(newBase);
+        }
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ServerComponent serverComponent = ((App) getApplicationContext()).getServerComponent();
         if (serverComponent != null) {
@@ -97,13 +110,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 showSessionExpired();
                 return Unit.INSTANCE;
             });
+            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+                    !serverComponent.userManager().allowScreenShare()) {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+            }
         }
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-        if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta"))
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();

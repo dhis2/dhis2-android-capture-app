@@ -10,12 +10,13 @@ import java.io.File
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
 import org.dhis2.uicomponents.map.model.TeiMap
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipOwnerType
 
 class CarouselRelationshipHolder(
     val binding: ItemCarouselRelationshipBinding,
     private val currentTei: String,
     val delete: (String) -> Boolean,
-    val clickListener: (String) -> Boolean,
+    val clickListener: (String, RelationshipOwnerType) -> Boolean,
     val onNavigate: (teiUid: String) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root),
@@ -36,7 +37,8 @@ class CarouselRelationshipHolder(
                     data.to.teiUid!!
                 } else {
                     data.from.teiUid!!
-                }
+                },
+                data.relationshipOwner
             )
         }
         binding.relationshipTypeName.text = data.displayName

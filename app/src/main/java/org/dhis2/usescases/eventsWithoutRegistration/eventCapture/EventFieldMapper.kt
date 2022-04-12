@@ -31,6 +31,7 @@ class EventFieldMapper(
         sectionList: MutableList<FormSectionViewModel>,
         currentSection: String,
         errors: MutableMap<String, String>,
+        warnings: MutableMap<String, String>,
         emptyMandatoryFields: MutableMap<String, FieldUiModel>,
         showErrors: Pair<Boolean, Boolean>
     ): Pair<MutableList<EventSectionModel>, MutableList<FieldUiModel>> {
@@ -54,8 +55,13 @@ class EventFieldMapper(
             var mandatoryCounter = 0
             if (showErrors.first) {
                 repeat(
-                    emptyMandatoryFields
-                        .filter { it.value.programStageSection == section.uid() }.size
+                    warnings.filter { warning ->
+                        fields.firstOrNull { field ->
+                            field.uid == warning.key && field.programStageSection == section.uid()
+                        } != null
+                    }.size +
+                        emptyMandatoryFields
+                            .filter { it.value.programStageSection == section.uid() }.size
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
@@ -240,7 +246,7 @@ class EventFieldMapper(
     }
 
     private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.getOptionSet() == null || field !is MatrixOptionSetModel
+        return field.optionSet == null || field !is MatrixOptionSetModel
     }
 
     fun completedFieldsPercentage(): Float {

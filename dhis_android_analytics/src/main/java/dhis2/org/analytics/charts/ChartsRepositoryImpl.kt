@@ -1,19 +1,21 @@
 package dhis2.org.analytics.charts
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
-import dhis2.org.analytics.charts.data.nutritionTestingData
-import dhis2.org.analytics.charts.data.pieChartTestingData
-import dhis2.org.analytics.charts.data.radarTestingData
-import dhis2.org.analytics.charts.data.visualizationGroupTestingData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
 import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
+import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
+import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
@@ -25,7 +27,7 @@ class ChartsRepositoryImpl(
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
     private val dataElementToGraph: DataElementToGraph,
     private val programIndicatorToGraph: ProgramIndicatorToGraph,
-    private val featureConfig: FeatureConfigRepository
+    private val analyticsResources: AnalyticResources
 ) : ChartsRepository {
 
     override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
@@ -33,9 +35,7 @@ class ChartsRepositoryImpl(
         if (enrollment.trackedEntityInstance() == null) return emptyList()
 
         val settingsAnalytics = getSettingsAnalytics(enrollment)
-        return if (settingsAnalytics.isNotEmpty() &&
-            !featureConfig.isFeatureEnable(Feature.FORCE_DEFAULT_ANALYTICS)
-        ) {
+        return if (settingsAnalytics.isNotEmpty()) {
             settingsAnalytics
         } else {
             getDefaultAnalytics(enrollment)
@@ -55,16 +55,30 @@ class ChartsRepositoryImpl(
                     visualizationsSetting.dataSet().containsKey(uid) -> {
                         visualizationsSetting.dataSet()[uid]
                     }
-                    else ->
-                        emptyList<AnalyticsDhisVisualizationsGroup>()
-                            .visualizationGroupTestingData(featureConfig)
+                    else -> emptyList()
                 }
-            } ?: emptyList<AnalyticsDhisVisualizationsGroup>()
-            .visualizationGroupTestingData(featureConfig)
+            } ?: emptyList()
     }
 
-    override fun getDataSetVisualization(groupUid: String?, programUid: String): List<Graph> {
-        return emptyList<Graph>().nutritionTestingData(d2)
+    override fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph> {
+        val graphList = mutableListOf<Graph>()
+        val visualizationSettings: AnalyticsDhisVisualizationsSetting? =
+            d2.settingModule().analyticsSetting()
+                .visualizationsSettings()
+                .blockingGet()
+
+        visualizationSettings
+            ?.dataSet()?.get(dataSetUid)?.filter {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }?.forEach { visualizationGroup ->
+            addVisualizationsInGroup(visualizationGroup, graphList)
+        }
+
+        return graphList
     }
 
     override fun getProgramVisualization(groupUid: String?, programUid: String): List<Graph> {
@@ -75,8 +89,19 @@ class ChartsRepositoryImpl(
                 .blockingGet()
 
         visualizationSettings
-            ?.program()?.get(programUid)?.find { it.id().equals(groupUid) }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.program()?.get(programUid)?.filter {
+            if (groupUid != null) {
+                it.id() == groupUid
+            } else {
+                true
+            }
+        }
+            ?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(
+                    visualizationGroup,
+                    graphList
+                )
+            }
 
         return graphList
     }
@@ -88,14 +113,19 @@ class ChartsRepositoryImpl(
             .blockingGet()
 
         visualizationSettings
-            ?.home()?.find {
+            ?.home()?.filter {
             if (groupUid != null) {
                 it.id() == groupUid
             } else {
                 true
             }
         }
-            ?.let { visualizationGroup -> addVisualizationsInGroup(visualizationGroup, graphList) }
+            ?.forEach { visualizationGroup ->
+                addVisualizationsInGroup(
+                    visualizationGroup,
+                    graphList
+                )
+            }
 
         return graphList
     }
@@ -105,23 +135,73 @@ class ChartsRepositoryImpl(
         graphList: MutableList<Graph>
     ) {
         visualizationGroup.visualizations().forEach { analyticVisualization ->
+            val customTitle = analyticVisualization.name()
             val visualizationUid = analyticVisualization.uid()
             val visualization = d2.visualizationModule()
                 .visualizations()
                 .uid(visualizationUid)
                 .blockingGet()
+            val selectedRelativePeriod = visualizationPeriod(visualizationUid)
+            val selectedOrgUnits = visualizationOrgUnits(visualizationUid)
+            val selectedOrgUnitType = visualizationOrgUnitsType(visualizationUid)
 
-            val gridAnalyticsResponse = d2.analyticsModule()
+            d2.analyticsModule()
                 .visualizations()
                 .withVisualization(visualizationUid)
+                .run {
+                    selectedRelativePeriod?.map { relPeriod: RelativePeriod ->
+                        DimensionItem.PeriodItem.Relative(relPeriod)
+                    }?.let { dimensionPeriods ->
+                        withPeriods(dimensionPeriods)
+                    } ?: this
+                }
+                .run {
+                    when (selectedOrgUnitType) {
+                        OrgUnitFilterType.ALL -> {
+                            withOrganisationUnits(
+                                listOf(
+                                    DimensionItem.OrganisationUnitItem.Relative(
+                                        RelativeOrganisationUnit.USER_ORGUNIT
+                                    )
+                                )
+                            )
+                        }
+                        OrgUnitFilterType.SELECTION -> {
+                            selectedOrgUnits?.map { ouUid: String ->
+                                DimensionItem.OrganisationUnitItem.Absolute(ouUid)
+                            }?.let { dimensionOrgUnits ->
+                                withOrganisationUnits(dimensionOrgUnits)
+                            } ?: this
+                        }
+                        else -> this
+                    }
+                }
                 .blockingEvaluate()
-
-            visualizationToGraph.mapToGraph(
-                visualization,
-                gridAnalyticsResponse
-            ).let {
-                graphList.add(it)
-            }
+                .fold(
+                    { gridAnalyticsResponse ->
+                        graphList.add(
+                            visualizationToGraph.mapToGraph(
+                                customTitle,
+                                visualization,
+                                gridAnalyticsResponse,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits
+                            )
+                        )
+                    },
+                    { analyticException ->
+                        analyticException.printStackTrace()
+                        graphList.add(
+                            visualizationToGraph.addErrorGraph(
+                                customTitle,
+                                visualization,
+                                selectedRelativePeriod?.firstOrNull(),
+                                selectedOrgUnits,
+                                analyticsResources.analyticsExceptionMessage(analyticException)
+                            )
+                        )
+                    }
+                )
         }
     }
 
@@ -132,6 +212,12 @@ class ChartsRepositoryImpl(
             analyticsTeiSettingsToGraph.map(
                 enrollment.trackedEntityInstance()!!,
                 analyticsSettings,
+                { analyticsSettingsUid ->
+                    visualizationPeriod(analyticsSettingsUid)
+                },
+                { analyticsSettingsUid ->
+                    visualizationOrgUnits(analyticsSettingsUid)
+                },
                 { dataElementUid ->
                     d2.dataElementModule().dataElements().uid(dataElementUid).blockingGet()
                         .displayFormName() ?: dataElementUid
@@ -158,26 +244,52 @@ class ChartsRepositoryImpl(
             val period = programStage.periodType() ?: PeriodType.Daily
 
             getNumericDataElements(programStage.uid()).map { dataElement ->
+                val selectedRelativePeriod =
+                    visualizationPeriod(
+                        enrollment.trackedEntityInstance()!! +
+                            programStage.uid() +
+                            dataElement.uid()
+                    )
+                val selectedOrgUnits =
+                    visualizationOrgUnits(
+                        enrollment.trackedEntityInstance()!! +
+                            programStage.uid() +
+                            dataElement.uid()
+                    )
                 dataElementToGraph.map(
                     dataElement,
                     programStage.uid(),
                     enrollment.trackedEntityInstance()!!,
-                    period
+                    period,
+                    selectedRelativePeriod,
+                    selectedOrgUnits
                 )
             }.union(
                 getStageIndicators(enrollment.program()).map { programIndicator ->
+                    val selectedRelativePeriod =
+                        visualizationPeriod(
+                            enrollment.trackedEntityInstance()!! +
+                                programStage.uid() +
+                                programIndicator.uid()
+                        )
+                    val selectedOrgUnits =
+                        visualizationOrgUnits(
+                            enrollment.trackedEntityInstance()!! +
+                                programStage.uid() +
+                                programIndicator.uid()
+                        )
                     programIndicatorToGraph.map(
                         programIndicator,
                         programStage.uid(),
                         enrollment.trackedEntityInstance()!!,
-                        period
+                        period,
+                        selectedRelativePeriod,
+                        selectedOrgUnits
                     )
                 }
             )
         }.flatten()
-            .filter { it.series.isNotEmpty() }
-            .radarTestingData(d2, featureConfig)
-            .pieChartTestingData(d2, featureConfig)
+            .filter { it.canBeShown() }
     }
 
     private fun getRepeatableProgramStages(program: String?) =
@@ -209,5 +321,119 @@ class ChartsRepositoryImpl(
             .byDisplayInForm().isTrue
             .byProgramUid().eq(programUid)
             .blockingGet()
+    }
+
+    override fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>) {
+        if (periods.isNotEmpty()) {
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_p")
+                .blockingSet(
+                    Gson().toJson(periods)
+                )
+        } else {
+            d2.dataStoreModule().localDataStore()
+                .value("${visualizationUid}_p")
+                .blockingDeleteIfExist()
+        }
+    }
+
+    override fun setVisualizationOrgUnits(
+        visualizationUid: String,
+        orgUnits: List<OrganisationUnit>,
+        orgUnitFilterType: OrgUnitFilterType
+    ) {
+        when (orgUnitFilterType) {
+            OrgUnitFilterType.NONE -> removeOrgUnitFilter(visualizationUid)
+            OrgUnitFilterType.ALL -> addOrgUnitFilter(visualizationUid, orgUnitFilterType, orgUnits)
+            OrgUnitFilterType.SELECTION -> {
+                if (orgUnits.isNotEmpty()) {
+                    addOrgUnitFilter(visualizationUid, orgUnitFilterType, orgUnits)
+                } else {
+                    removeOrgUnitFilter(visualizationUid)
+                }
+            }
+        }
+    }
+
+    private fun addOrgUnitFilter(
+        visualizationUid: String,
+        filterType: OrgUnitFilterType,
+        orgUnits: List<OrganisationUnit>
+    ) {
+        when (filterType) {
+            OrgUnitFilterType.NONE -> return
+            OrgUnitFilterType.ALL -> {
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingSet(filterType.name)
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingDeleteIfExist()
+            }
+            OrgUnitFilterType.SELECTION -> {
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingSet(filterType.name)
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingSet(
+                        Gson().toJson(orgUnits.map { it.uid() })
+                    )
+            }
+        }
+    }
+
+    private fun removeOrgUnitFilter(visualizationUid: String) {
+        d2.dataStoreModule().localDataStore()
+            .value("${visualizationUid}_ou_type")
+            .blockingDeleteIfExist()
+        d2.dataStoreModule().localDataStore()
+            .value("${visualizationUid}_ou")
+            .blockingDeleteIfExist()
+    }
+
+    private fun visualizationPeriod(visualizationUid: String): List<RelativePeriod>? {
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_p")
+            .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_p")
+                    .blockingGet()
+            val type = object : TypeToken<List<RelativePeriod>?>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
+    }
+
+    private fun visualizationOrgUnitsType(visualizationUid: String): OrgUnitFilterType? {
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou_type")
+            .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou_type")
+                    .blockingGet()
+            val type = object : TypeToken<OrgUnitFilterType>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
+    }
+
+    private fun visualizationOrgUnits(visualizationUid: String): List<String>? {
+        return if (d2.dataStoreModule().localDataStore().value("${visualizationUid}_ou")
+            .blockingExists()
+        ) {
+            val entry =
+                d2.dataStoreModule().localDataStore()
+                    .value("${visualizationUid}_ou")
+                    .blockingGet()
+            val type = object : TypeToken<List<String>?>() {}.type
+            return entry.value()?.let { Gson().fromJson(entry.value(), type) }
+        } else {
+            null
+        }
     }
 }

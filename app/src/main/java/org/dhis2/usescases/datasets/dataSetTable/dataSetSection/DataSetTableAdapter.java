@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -49,13 +51,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 import kotlin.Triple;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -75,6 +76,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
+    public static final String DEFAULT = "default";
     private final Context context;
     private final String defaultColumnLabel;
 
@@ -254,8 +256,9 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(
-                defaultColumnLabel != null ? defaultColumnLabel : ((CategoryOption) columnHeaderItemModel).displayName(),
-                currentTableScale
+                getColumnName((CategoryOption) columnHeaderItemModel),
+                currentTableScale,
+                position
         );
         if (((CategoryOption) columnHeaderItemModel).displayName().isEmpty()) {
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
@@ -265,6 +268,14 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                     (currentWidth * i + (int) (context.getResources().getDisplayMetrics().density * (i - 1)));
         }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
+    }
+
+    private String getColumnName(@NonNull CategoryOption columnHeaderItemModel) {
+        if (columnHeaderItemModel.displayName() != null &&
+                Objects.requireNonNull(columnHeaderItemModel.displayName()).equals(DEFAULT)) {
+            return defaultColumnLabel != null ? defaultColumnLabel : columnHeaderItemModel.displayName();
+        }
+        return columnHeaderItemModel.displayName();
     }
 
     /**
@@ -301,13 +312,14 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
         ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale, dataElementDecoration);
-        holder.itemView.getLayoutParams().height = /*currentHeight*/getColumnHeaderHeight();
+        holder.itemView.getLayoutParams().height = getColumnHeaderHeight();
     }
 
 
     @Override
     public View onCreateCornerView() {
-        return null;
+        int layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout;
+        return LayoutInflater.from(context).inflate(layout, null);
     }
 
     @Override
@@ -369,11 +381,18 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
             int oldValue = 0;
-
-            if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
-                oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
-
-            int newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
+            int newValue = 0;
+            try {
+                if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
+                    oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
+            }
+            try {
+                newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
+            }
             try {
                 if (showRowTotal) {
                     int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
