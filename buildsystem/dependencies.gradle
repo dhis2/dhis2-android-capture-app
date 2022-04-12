@@ -4,8 +4,8 @@ ext {
             sdk     : 30,
             tools   : "30.0.3",
             minSdk  : 19,
-            vCode: 110,
-            vName: "2.5.2-eyeseetea-fork-1"
+            vCode: 111,
+            vName: "2.5.2-psi-fork-1"
     ]
     libraries = [
             //DHIS2
