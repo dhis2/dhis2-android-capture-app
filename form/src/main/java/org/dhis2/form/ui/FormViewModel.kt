@@ -67,7 +67,13 @@ class FormViewModel(
     init {
         viewModelScope.launch {
             _pendingIntents
-                .distinctUntilChanged()
+                .distinctUntilChanged { old, new ->
+                    if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
+                        false
+                    } else {
+                        old == new
+                    }
+                }
                 .map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
                 .collect { result -> displayResult(result) }
