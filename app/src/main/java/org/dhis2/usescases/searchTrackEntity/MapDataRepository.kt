@@ -26,7 +26,6 @@ class MapDataRepository(
         val teis = searchRepository.searchTeiForMap(
             SearchParametersModel(
                 selectedProgram,
-                selectedProgram?.trackedEntityType()?.uid(),
                 queryData
             ),
             true

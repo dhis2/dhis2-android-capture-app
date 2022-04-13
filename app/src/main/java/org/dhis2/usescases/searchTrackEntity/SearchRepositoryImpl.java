@@ -164,7 +164,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             allowCache = true;
         }
 
-        if(!fetchedTeiUids.isEmpty()){
+        if (!fetchedTeiUids.isEmpty() && searchParametersModel.getSelectedProgram() == null) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids().in(new ArrayList<>(fetchedTeiUids));
         }
 
