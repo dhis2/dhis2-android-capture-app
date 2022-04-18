@@ -32,6 +32,9 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
     @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
@@ -183,7 +186,6 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully() {
-        val composeTestRule = createComposeRule()
         setupCredentials()
 
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -241,7 +243,6 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANewEvent() {
-        val composeTestRule = createComposeRule()
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -267,7 +268,6 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
-        val composeTestRule = createComposeRule()
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
         val labMonitoring = 2
@@ -329,45 +329,6 @@ class TeiDashboardTest : BaseTest() {
             checkEventWasScheduled(deliveryEvent, 1)
             checkEventWasScheduled(visitANCEvent, 2)
             checkEventWasCreatedAndOpen(firstANCVisitEvent, 3)
-        }
-    }
-
-    @Test
-    fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        val teiName = "Tim"
-        val teiLastName = "Johnson"
-        val relationshipName = "Filona"
-        val relationshipLastName = "Ryder"
-        val completeName = "Ryder Filona"
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            goToRelationships()
-        }
-
-        relationshipRobot {
-            clickOnFabAdd()
-            waitToDebounce(500)
-            clickOnRelationshipType()
-            waitToDebounce(500)
-        }
-
-        searchTeiRobot {
-            clickOnOpenSearch()
-            typeAttributeAtPosition(relationshipName, 0)
-            typeAttributeAtPosition(relationshipLastName, 1)
-            clickOnSearch()
-            waitToDebounce(5000)
-            clickOnTEI(relationshipName, relationshipLastName)
-        }
-
-        relationshipRobot {
-            checkRelationshipWasCreated(0, completeName)
         }
     }
 
