@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +34,7 @@ import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
 import org.dhis2.utils.Constants.MAX_ACCOUNTS
 
+@ExperimentalMaterialApi
 @Composable
 fun AccountsScreen(
     accounts: List<AccountModel>,
@@ -130,6 +128,7 @@ fun LoginHeader() {
     }
 }
 
+@ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
 fun AccountsPreview() {
