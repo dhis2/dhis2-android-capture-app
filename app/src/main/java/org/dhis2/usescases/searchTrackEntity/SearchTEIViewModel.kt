@@ -18,6 +18,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.isLandscape
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
@@ -177,8 +178,7 @@ class SearchTEIViewModel(
             SearchScreenState.LIST -> setListScreen()
             SearchScreenState.MAP -> setMapScreen()
             SearchScreenState.ANALYTICS -> setAnalyticsScreen()
-            else -> {
-            }
+            else -> onFiltersClick(isLandscape())
         }
     }
 
