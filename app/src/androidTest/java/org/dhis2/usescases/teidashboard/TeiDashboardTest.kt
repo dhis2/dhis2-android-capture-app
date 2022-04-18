@@ -5,7 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
-import org.dhis2.common.viewactions.waitForTransitionUntil
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -32,9 +31,6 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
 
     @Test
     @Ignore("SDK related")
@@ -187,6 +183,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully() {
+        val composeTestRule = createComposeRule()
         setupCredentials()
 
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -244,6 +241,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANewEvent() {
+        val composeTestRule = createComposeRule()
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -269,6 +267,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
+        val composeTestRule = createComposeRule()
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
         val labMonitoring = 2
