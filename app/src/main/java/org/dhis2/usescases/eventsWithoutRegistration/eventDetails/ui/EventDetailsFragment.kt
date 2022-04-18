@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.unnamed.b.atv.model.TreeNode
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
@@ -231,9 +230,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             dialog.dismiss()
         }
         dialog.setNegativeListener { dialog.dismiss() }
-        dialog.setNodeClickListener { node: TreeNode, _: Any? ->
-            if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
-        }
         dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 

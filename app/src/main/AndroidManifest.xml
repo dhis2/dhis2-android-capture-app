@@ -45,10 +45,6 @@
             android:name="io.sentry.traces.sample-rate"
             android:value="${sentry_sample_rate}" />
 
-        <meta-data
-            android:name="io.sentry.traces.activity.enable"
-            android:value="false" />
-
         <activity
             android:name=".usescases.splash.SplashActivity"
             android:theme="@style/SplashTheme">

@@ -9,32 +9,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.BindingAdapter
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.R
-import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIconData
-import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.databinding.CategorySelectorBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
-import org.hisp.dhis.android.core.common.ObjectStyle
-
-@BindingAdapter("set_metadata_icon")
-fun ComposeView.setIconStyle(style: ObjectStyle?) {
-    style?.let {
-        val color = ColorUtils.getColorFrom(
-            style.color(),
-            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
-        )
-        val resource = ResourceManager(context).getObjectStyleDrawableResource(
-            style.icon(),
-            R.drawable.ic_default_outline
-        )
-        setUpMetadataIcon(
-            MetadataIconData(color, resource, 48),
-            true
-        )
-    }
-}
 
 @BindingAdapter(value = ["setViewModel", "setCatCombo", "enabled"])
 fun LinearLayout.setCatCombo(

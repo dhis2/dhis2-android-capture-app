@@ -1,7 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.Bindings.blockingGetCheck
-import org.dhis2.Bindings.toRuleAttributeValue
+import org.dhis2.form.bindings.toRuleAttributeValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program

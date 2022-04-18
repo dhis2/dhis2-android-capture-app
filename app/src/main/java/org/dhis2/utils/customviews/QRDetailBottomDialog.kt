@@ -68,13 +68,18 @@ QRDetailBottomDialog(
             DataBindingUtil.inflate(inflater, R.layout.qr_detail_dialog, container, false)
 
         binding.clearButton.apply {
+            isEnabled = editable == true
+            visibility = if (editable) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,
                     primaryColor!!
                 )
             )
-            isEnabled = editable == true
             setOnClickListener {
                 onClear()
                 dismiss()
@@ -103,6 +108,11 @@ QRDetailBottomDialog(
 
         binding.scanButton.apply {
             isEnabled = editable == true
+            visibility = if (editable) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
             setImageDrawable(
                 ColorUtils.tintDrawableWithColor(
                     drawable,

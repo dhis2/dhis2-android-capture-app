@@ -415,42 +415,6 @@ public class Bindings {
         }
     }
 
-    public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
-        Resources resources = view.getContext().getResources();
-
-        if (objectStyle != null) {
-            int icon = new ResourceManager(view.getContext())
-                    .getObjectStyleDrawableResource(objectStyle.icon(), R.drawable.ic_default_outline);
-            if (view instanceof ImageView)
-                ((ImageView) view).setImageResource(icon);
-        }
-
-        if (objectStyle != null && objectStyle.color() != null) {
-            String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
-            int colorRes;
-            if (color.length() == 4)
-                colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            else
-                colorRes = Color.parseColor(color);
-
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        } else if (objectStyle != null && objectStyle.color() == null) {
-            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        }
-
-        if (objectStyle == null) {
-            Drawable drawable = resources.getDrawable(R.drawable.ic_default_outline);
-            if (view instanceof ImageView)
-                ((ImageView) view).setImageDrawable(drawable);
-            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
-            itemView.setBackgroundColor(colorRes);
-            setFromResBgColor(view, colorRes);
-        }
-    }
-
     @BindingAdapter("imageBackground")
     public static void setImageBackground(ImageView imageView, Drawable drawable) {
 

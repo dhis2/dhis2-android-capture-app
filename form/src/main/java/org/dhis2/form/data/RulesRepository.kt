@@ -6,11 +6,11 @@ import io.reactivex.Single
 import java.util.Calendar
 import java.util.Date
 import java.util.Objects
-import org.dhis2.Bindings.toRuleAttributeValue
-import org.dhis2.Bindings.toRuleDataValue
-import org.dhis2.Bindings.toRuleList
-import org.dhis2.Bindings.toRuleVariable
-import org.dhis2.Bindings.toRuleVariableList
+import org.dhis2.form.bindings.toRuleAttributeValue
+import org.dhis2.form.bindings.toRuleDataValue
+import org.dhis2.form.bindings.toRuleList
+import org.dhis2.form.bindings.toRuleVariable
+import org.dhis2.form.bindings.toRuleVariableList
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

@@ -25,7 +25,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -805,12 +804,6 @@ class FormView(
 
     private fun negativeOrZero(value: String): Int {
         return if (value.isEmpty()) 0 else -Integer.valueOf(value)
-    }
-
-    fun requestDataIntegrityCheck(): LiveData<DataIntegrityCheckResult> {
-        return viewModel.dataIntegrityResult.also {
-            viewModel.runDataIntegrityCheck()
-        }
     }
 
     fun clearValues() {
