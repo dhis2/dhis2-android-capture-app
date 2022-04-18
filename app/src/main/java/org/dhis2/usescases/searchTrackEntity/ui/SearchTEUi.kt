@@ -6,7 +6,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -39,6 +42,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -166,16 +171,24 @@ fun FullSearchButton(
             )
             if (!isLandscape && closeFilterVisibility) {
                 Spacer(modifier = Modifier.size(16.dp))
-                IconButton(onClick = onCloseFilters) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_up),
-                        contentDescription = "",
-                        tint = Color(
-                            ColorUtils.getPrimaryColor(
-                                LocalContext.current, ColorUtils.ColorType.PRIMARY
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .shadow(2.dp, CircleShape, clip = false)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                ) {
+                    IconButton(onClick = onCloseFilters) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_up),
+                            contentDescription = "",
+                            tint = Color(
+                                ColorUtils.getPrimaryColor(
+                                    LocalContext.current, ColorUtils.ColorType.PRIMARY
+                                )
                             )
                         )
-                    )
+                    }
                 }
             }
         }
