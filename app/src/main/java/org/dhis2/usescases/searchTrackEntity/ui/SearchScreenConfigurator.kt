@@ -73,7 +73,9 @@ class SearchScreenConfigurator(
         setFiltersVisibility(true)
         binding.minAttributeMessage.setContent {
             MdcTheme {
-                if (searchConfiguration.searchForm.minAttributesToSearch > 0) {
+                if (searchConfiguration.searchForm.minAttributesToSearch > 0 &&
+                    !searchConfiguration.searchFilters.isOpened
+                ) {
                     MinAttributesMessage(
                         minAttributes = searchConfiguration.searchForm.minAttributesToSearch
                     )
