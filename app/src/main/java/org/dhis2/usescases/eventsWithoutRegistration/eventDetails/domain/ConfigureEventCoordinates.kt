@@ -22,7 +22,7 @@ class ConfigureEventCoordinates(
 
     private fun getGeometryModel(value: String?): FieldUiModel {
         var model = repository.getGeometryModel()
-        value?.let { model = model.setValue(it) }
+        model = model.setValue(value)
         return model
     }
 
