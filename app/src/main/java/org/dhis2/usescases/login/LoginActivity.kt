@@ -62,7 +62,6 @@ import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.SESSION_DIALOG_RQ
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
@@ -412,7 +411,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         )
         ) {
             if (presenter.canHandleBiometrics() == true) {
-                showInfoDialog(
+                // This is commented until fingerprint login for multiuser is supported
+                /*showInfoDialog(
                     getString(R.string.biometrics_security_title),
                     getString(R.string.biometrics_security_text),
                     object : OnDialogClickListener {
@@ -429,7 +429,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             goToNextScreen()
                         }
                     }
-                )
+                )*/
+                goToNextScreen()
             } else {
                 presenter.saveUserCredentials(
                     binding.serverUrlEdit.text.toString(),
@@ -467,7 +468,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showBiometricButton() {
-        binding.biometricButton.visibility = View.VISIBLE
+        // This is commented until fingerprint login for multiuser is supported
+        // binding.biometricButton.visibility = View.VISIBLE
     }
 
     private val requestQRScanner = registerForActivityResult(
