@@ -273,6 +273,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 },
                 () -> {
+                    if (viewModel.filterIsOpen()) {
+                        showHideFilterGeneral();
+                    }
                     viewModel.setPreviousScreen();
                     return Unit.INSTANCE;
                 },
