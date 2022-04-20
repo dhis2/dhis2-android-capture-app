@@ -252,6 +252,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnFab()
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
+            waitToDebounce(2000)
             clickOnReferralNextButton()
             waitToDebounce(600)
         }
