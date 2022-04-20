@@ -114,8 +114,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
     override fun goToNextScreen(
         isUserLogged: Boolean,
         sessionLocked: Boolean,
-        initialSyncDone: Boolean,
-        hasMultipleAccounts: Boolean
+        initialSyncDone: Boolean
     ) {
         if (isUserLogged && initialSyncDone && !sessionLocked) {
             startActivity(MainActivity::class.java, null, true, true, null)
@@ -124,7 +123,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         } else {
             startActivity(
                 LoginActivity::class.java,
-                LoginActivity.bundle(goToManageAccounts = hasMultipleAccounts),
+                LoginActivity.bundle(),
                 true,
                 true,
                 null

@@ -62,7 +62,6 @@ import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.SESSION_DIALOG_RQ
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
@@ -76,7 +75,8 @@ import timber.log.Timber
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
-const val TO_MANAGE_ACCOUNT = "TO_MANAGE_ACCOUNT"
+const val IS_DELETION = "IS_DELETION"
+const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -103,12 +103,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     companion object {
         fun bundle(
             skipSync: Boolean = false,
-            goToManageAccounts: Boolean = false,
+            accountsCount: Int = -1,
+            isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null
         ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
-                putBoolean(TO_MANAGE_ACCOUNT, goToManageAccounts)
+                putBoolean(IS_DELETION, isDeletion)
+                putInt(ACCOUNTS_COUNT, accountsCount)
                 when (logOutReason) {
                     OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
                     OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
@@ -136,8 +138,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+        val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
+        val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
 
-        if (intent.getBooleanExtra(TO_MANAGE_ACCOUNT, false)) {
+        if ((isDeletion && accountsCount >= 1) || (!isDeletion && accountsCount > 1)) {
             openAccountsActivity()
         }
 
@@ -201,6 +205,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         presenter.apply {
             init(userManager)
             checkServerInfoAndShowBiometricButton()
+        }
+
+        if (!isDeletion && accountsCount == 1) {
+            blockLoginInfo()
         }
     }
 
@@ -403,7 +411,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         )
         ) {
             if (presenter.canHandleBiometrics() == true) {
-                showInfoDialog(
+                // This is commented until fingerprint login for multiuser is supported
+                /*showInfoDialog(
                     getString(R.string.biometrics_security_title),
                     getString(R.string.biometrics_security_text),
                     object : OnDialogClickListener {
@@ -420,7 +429,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             goToNextScreen()
                         }
                     }
-                )
+                )*/
+                goToNextScreen()
             } else {
                 presenter.saveUserCredentials(
                     binding.serverUrlEdit.text.toString(),
@@ -458,7 +468,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showBiometricButton() {
-        binding.biometricButton.visibility = View.VISIBLE
+        // This is commented until fingerprint login for multiuser is supported
+        // binding.biometricButton.visibility = View.VISIBLE
     }
 
     private val requestQRScanner = registerForActivityResult(
@@ -487,10 +498,21 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun resetLoginInfo() {
+        binding.serverUrlEdit.alpha = 1f
+        binding.userNameEdit.alpha = 1f
         binding.serverUrlEdit.isEnabled = true
         binding.userNameEdit.isEnabled = true
         binding.clearUrl.visibility = View.VISIBLE
         binding.clearUserNameButton.visibility = View.VISIBLE
+    }
+
+    private fun blockLoginInfo() {
+        binding.serverUrlEdit.alpha = 0.5f
+        binding.userNameEdit.alpha = 0.5f
+        binding.serverUrlEdit.isEnabled = false
+        binding.userNameEdit.isEnabled = false
+        binding.clearUrl.visibility = View.GONE
+        binding.clearUserNameButton.visibility = View.GONE
     }
 
     /*
@@ -502,19 +524,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userPassEdit.text = null
 //        skipSync = wasAccountClicked
         if (wasAccountClicked) {
-            binding.serverUrlEdit.alpha = 0.5f
-            binding.serverUrlEdit.isEnabled = false
-            binding.userNameEdit.alpha = 0.5f
-            binding.userNameEdit.isEnabled = false
-            binding.clearUrl.visibility = View.GONE
-            binding.clearUserNameButton.visibility = View.GONE
+            blockLoginInfo()
         } else {
-            binding.serverUrlEdit.alpha = 1f
-            binding.serverUrlEdit.isEnabled = true
-            binding.userNameEdit.alpha = 1f
-            binding.userNameEdit.isEnabled = true
-            binding.clearUrl.visibility = View.VISIBLE
-            binding.clearUserNameButton.visibility = View.VISIBLE
+            resetLoginInfo()
         }
     }
 

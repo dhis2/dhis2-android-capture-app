@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.livedata.observeAsState
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -17,6 +18,7 @@ class AccountsActivity : ActivityGlobalAbstract() {
     lateinit var viewModelFactory: AccountsViewModelFactory
     private val viewModel: AccountsViewModel by viewModels { viewModelFactory }
 
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
