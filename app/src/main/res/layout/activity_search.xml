@@ -145,15 +145,22 @@
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.0" />
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/maxHeightFilterGuide"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.57" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterRecyclerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingBottom="120dp"
+                android:paddingBottom="50dp"
                 android:clipToPadding="false"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/maxHeightFilterGuide"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_max="wrap"
                 app:layout_constraintStart_toStartOf="parent"
