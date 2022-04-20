@@ -65,6 +65,7 @@ import java.util.Map;
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
+import dispatch.core.DispatcherProvider;
 
 @Module
 public class SearchTEModule {
@@ -103,11 +104,12 @@ public class SearchTEModule {
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
-                                                       SearchMessageMapper searchMessageMapper) {
+                                                       SearchMessageMapper searchMessageMapper,
+                                                       DispatcherProvider customDispatcher) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, searchMessageMapper);
+                matomoAnalyticsController, searchMessageMapper, customDispatcher);
     }
 
     @Provides
@@ -271,7 +273,8 @@ public class SearchTEModule {
             SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
-            NetworkUtils networkUtils) {
+            NetworkUtils networkUtils,
+            DispatcherProvider customDispatcher) {
         return new SearchTeiViewModelFactory(
                 presenter,
                 searchRepository,
@@ -280,7 +283,8 @@ public class SearchTEModule {
                 initialQuery,
                 mapDataRepository,
                 networkUtils,
-                new SearchDispatchers()
+                new SearchDispatchers(),
+                customDispatcher
         );
     }
 

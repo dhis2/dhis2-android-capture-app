@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import dispatch.core.DispatcherProvider;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -81,6 +82,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
     private final SearchMessageMapper searchMessageMapper;
+    private final DispatcherProvider dispatcherProvider;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -94,7 +96,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper) {
+                             SearchMessageMapper searchMessageMapper,
+                             DispatcherProvider customDispatcher) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -111,6 +114,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
         this.trackedEntityType = teTypeUid;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+        this.dispatcherProvider = customDispatcher;
     }
 
     //-----------------------------------

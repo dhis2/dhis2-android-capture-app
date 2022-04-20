@@ -33,6 +33,7 @@ class GroupAnalyticsViewModel(
     }
 
     private fun fetchAnalyticsGroup(onSuccess: () -> Unit) {
+        //mycustomScope.launch
         viewModelScope.launch {
             val result = async(context = Dispatchers.IO) {
                 charts.getVisualizationGroups(uid).map {
