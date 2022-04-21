@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -40,7 +41,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 @ExperimentalCoroutinesApi
 class EventDetailsIntegrationTest {
@@ -114,29 +114,28 @@ class EventDetailsIntegrationTest {
 
     @Test
     fun `should reopen a completed event`() = runBlocking {
-        //Given an event that can be reopened
+        // Given an event that can be reopened
         whenever(eventDetailsRepository.getCanReopen()) doReturn true
 
-        //AND is not editable
+        // AND is not editable
         whenever(
             eventDetailsRepository.getEditableStatus()
         ) doReturn EventEditableStatus.NonEditable(BLOCKED_BY_COMPLETION)
 
-        //AND is completed
+        // AND is completed
         viewModel = initViewModel(
             null,
             EventCreationType.DEFAULT,
             EnrollmentStatus.COMPLETED
         )
 
-        //When user taps on reopen
+        // When user taps on reopen
         whenever(eventDetailsRepository.reopenEvent()) doReturn Result.success(Unit)
         whenever(eventDetailsRepository.getCanReopen()) doReturn false
         viewModel.onReopenClick()
 
-        //Then event should be opened
+        // Then event should be opened
         assertFalse(viewModel.eventDetails.value.canReopen)
-
     }
 
     private fun initViewModel(
