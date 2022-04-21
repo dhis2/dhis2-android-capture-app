@@ -40,7 +40,6 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
-    private val searchMessageMapper: SearchMessageMapper = mock()
 
     @Before
     fun setUp() {
@@ -72,8 +71,7 @@ class SearchTEPresenterTest {
             workingListMapper,
             filterRepository,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController,
-            searchMessageMapper
+            matomoAnalyticsController
         )
     }
 
@@ -90,7 +88,6 @@ class SearchTEPresenterTest {
         presenter.program = program
 
         verify(view, never()).clearList(program.uid())
-        verify(view, never()).setFabIcon(true)
     }
 
     @Test
@@ -135,7 +132,6 @@ class SearchTEPresenterTest {
         presenter.program = newSelectedProgram
 
         verify(view).clearList(newSelectedProgram.uid())
-        verify(view).setFabIcon(true)
     }
 
     @Test

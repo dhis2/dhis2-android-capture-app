@@ -18,6 +18,7 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
@@ -54,7 +55,8 @@ class SearchTEIViewModel(
     val isScrollingDown = MutableLiveData(false)
 
     private var searching: Boolean = false
-    private var _filtersActive = MutableLiveData(false)
+    private val _filtersActive = MutableLiveData(false)
+    val filtersActive: LiveData<Boolean> = _filtersActive
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
@@ -73,45 +75,50 @@ class SearchTEIViewModel(
     }
 
     fun setListScreen() {
+        _screenState.value.takeIf { it?.screenState == SearchScreenState.MAP }?.let {
+            searching = (it as SearchList).isSearching
+        }
         val displayFrontPageList =
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
             !searchRepository.canCreateInProgramWithoutSearch() &&
             !searching &&
             _filtersActive.value == false
+
         createButtonScrollVisibility.value = if (searching) {
             true
         } else {
             searchRepository.canCreateInProgramWithoutSearch()
         }
-        _screenState.value = when {
-            shouldOpenSearch ->
-                SearchForm(
-                    previousSate = _screenState.value?.screenState ?: SearchScreenState.LIST,
-                    queryHasData = queryData.isNotEmpty(),
-                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                        ?.minAttributesRequiredToSearch()
-                        ?: 1,
-                    isForced = true
-                )
-            else ->
-                SearchList(
-                    previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
-                    listType = SearchScreenState.LIST,
-                    displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-                        ?.displayFrontPageList()
-                        ?: false,
-                    canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
-                    queryHasData = queryData.isNotEmpty(),
-                    minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                        ?.minAttributesRequiredToSearch()
-                        ?: 0,
-                    isSearching = searching
-                )
-        }
+        _screenState.value = SearchList(
+            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+            listType = SearchScreenState.LIST,
+            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                ?.displayFrontPageList()
+                ?: false,
+            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
+            isSearching = searching,
+            searchForm = SearchForm(
+                queryHasData = queryData.isNotEmpty(),
+                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                    ?.minAttributesRequiredToSearch()
+                    ?: 1,
+                isForced = shouldOpenSearch,
+                isOpened = shouldOpenSearch
+            ),
+            searchFilters = SearchFilters(
+                hasActiveFilters = hasActiveFilters(),
+                isOpened = filterIsOpen()
+            )
+        )
     }
 
+    private fun hasActiveFilters() = _filtersActive.value == true
+
     fun setMapScreen() {
+        _screenState.value.takeIf { it?.screenState == SearchScreenState.LIST }?.let {
+            searching = (it as SearchList).isSearching
+        }
         _screenState.value = SearchList(
             previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
             listType = SearchScreenState.MAP,
@@ -119,11 +126,19 @@ class SearchTEIViewModel(
                 ?.displayFrontPageList()
                 ?: false,
             canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
-            queryHasData = queryData.isNotEmpty(),
-            minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                ?.minAttributesRequiredToSearch()
-                ?: 0,
-            isSearching = searching
+            isSearching = searching,
+            searchForm = SearchForm(
+                queryHasData = queryData.isNotEmpty(),
+                minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                    ?.minAttributesRequiredToSearch()
+                    ?: 1,
+                isForced = false,
+                isOpened = false
+            ),
+            searchFilters = SearchFilters(
+                hasActiveFilters = hasActiveFilters(),
+                isOpened = filterIsOpen()
+            )
         )
     }
 
@@ -133,67 +148,75 @@ class SearchTEIViewModel(
         )
     }
 
-    fun setSearchScreen(isLandscapeMode: Boolean) {
-        if (isLandscapeMode) {
-            setListScreen()
-        } else {
-            _screenState.value = SearchForm(
-                previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+    fun setSearchScreen() {
+        _screenState.value = SearchList(
+            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
+            listType = _screenState.value?.screenState ?: SearchScreenState.LIST,
+            displayFrontPageList = searchRepository.getProgram(initialProgramUid)
+                ?.displayFrontPageList()
+                ?: false,
+            canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
+            isSearching = searching,
+            searchForm = SearchForm(
                 queryHasData = queryData.isNotEmpty(),
                 minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
                     ?.minAttributesRequiredToSearch()
-                    ?: 0
+                    ?: 1,
+                isForced = false,
+                isOpened = true
+            ),
+            searchFilters = SearchFilters(
+                hasActiveFilters = hasActiveFilters(),
+                isOpened = false
             )
-        }
+        )
     }
 
-    fun setPreviousScreen(isLandscapeMode: Boolean) {
+    fun setPreviousScreen() {
         when (_screenState.value?.previousSate) {
             SearchScreenState.LIST -> setListScreen()
             SearchScreenState.MAP -> setMapScreen()
-            SearchScreenState.SEARCHING -> setSearchScreen(isLandscapeMode)
             SearchScreenState.ANALYTICS -> setAnalyticsScreen()
-            else -> {
-            }
+            else -> {}
         }
     }
 
     fun updateActiveFilters(filtersActive: Boolean) {
+        if (_filtersActive.value != filtersActive) searchRepository.clearFetchedList()
         _filtersActive.value = filtersActive
     }
 
     fun refreshData() {
-        onSearchClick()
+        performSearch()
     }
 
-    fun updateQueryData(rowAction: RowAction, isLandscape: Boolean = false) {
+    fun updateQueryData(rowAction: RowAction) {
         if (rowAction.type == ActionType.ON_SAVE || rowAction.type == ActionType.ON_TEXT_CHANGE) {
             if (rowAction.value != null) {
                 queryData[rowAction.id] = rowAction.value!!
             } else {
                 queryData.remove(rowAction.id)
             }
-            updateSearch(isLandscape)
+            updateSearch()
         } else if (rowAction.type == ActionType.ON_CLEAR) {
-            clearQueryData(isLandscape)
+            clearQueryData()
         }
     }
 
-    private fun clearQueryData(isLandscape: Boolean = false) {
+    private fun clearQueryData() {
         queryData.clear()
-        updateSearch(isLandscape)
+        updateSearch()
     }
 
-    private fun updateSearch(isLandscape: Boolean) {
-        when (isLandscape) {
-            true -> if (_screenState.value is SearchList) {
-                _screenState.value =
-                    (_screenState.value as SearchList).copy(queryHasData = queryData.isNotEmpty())
-            }
-            false -> if (_screenState.value is SearchForm) {
-                _screenState.value =
-                    (_screenState.value as SearchForm).copy(queryHasData = queryData.isNotEmpty())
-            }
+    private fun updateSearch() {
+        if (_screenState.value is SearchList) {
+            val currentSearchList = _screenState.value as SearchList
+            _screenState.value =
+                currentSearchList.copy(
+                    searchForm = currentSearchList.searchForm.copy(
+                        queryHasData = queryData.isNotEmpty()
+                    )
+                )
         }
     }
 
@@ -260,16 +283,15 @@ class SearchTEIViewModel(
     }
 
     fun onSearchClick(onMinAttributes: (Int) -> Unit = {}) {
+        searchRepository.clearFetchedList()
+        performSearch(onMinAttributes)
+    }
+
+    private fun performSearch(onMinAttributes: (Int) -> Unit = {}) {
         viewModelScope.launch {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
-                val currentScreenState = if (_screenState.value is SearchForm) {
-                    _screenState.value?.previousSate
-                } else {
-                    _screenState.value?.screenState
-                }
-
-                when (currentScreenState) {
+                when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
                         setListScreen()
@@ -308,8 +330,8 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun canDisplayResult(itemCount: Int): Boolean {
-        return when (initialProgramUid) {
+    fun canDisplayResult(itemCount: Int, onlineTooManyResults: Boolean): Boolean {
+        return !onlineTooManyResults && when (initialProgramUid) {
             null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
             else ->
                 searchRepository.getProgram(initialProgramUid)?.maxTeiCountToReturn()
@@ -365,9 +387,13 @@ class SearchTEIViewModel(
     fun onDataLoaded(
         programResultCount: Int,
         globalResultCount: Int? = null,
-        isLandscape: Boolean = false
+        isLandscape: Boolean = false,
+        onlineErrorCode: D2ErrorCode? = null
     ) {
-        val canDisplayResults = canDisplayResult(programResultCount)
+        val canDisplayResults = canDisplayResult(
+            programResultCount,
+            onlineErrorCode == D2ErrorCode.MAX_TEI_COUNT_REACHED
+        )
         val hasProgramResults = programResultCount > 0
         val hasGlobalResults = globalResultCount?.let { it > 0 }
 
@@ -403,7 +429,7 @@ class SearchTEIViewModel(
         }
 
         if (result.isEmpty() && _filtersActive.value == false) {
-            setSearchScreen(isLandscape)
+            setSearchScreen()
         }
 
         _dataResult.value = result
@@ -477,8 +503,8 @@ class SearchTEIViewModel(
         closeKeyboardCallback: () -> Unit
     ) {
         val searchScreenIsForced = _screenState.value?.let {
-            if (it is SearchForm) {
-                it.isForced
+            if (it is SearchList && it.searchForm.isForced) {
+                it.searchForm.isForced
             } else {
                 false
             }
@@ -497,7 +523,7 @@ class SearchTEIViewModel(
 
     fun canDisplayBottomNavigationBar(): Boolean {
         return _screenState.value?.let {
-            it is SearchList || it is SearchMap
+            it is SearchList
         } ?: false
     }
 
@@ -531,5 +557,52 @@ class SearchTEIViewModel(
 
     fun setFiltersOpened(filtersOpened: Boolean) {
         _filtersOpened.value = filtersOpened
+    }
+
+    fun onFiltersClick(isLandscape: Boolean) {
+        _screenState.value.takeIf { it is SearchList }?.let {
+            val currentScreen = (it as SearchList)
+            val filterFieldsVisible = !currentScreen.searchFilters.isOpened
+            currentScreen.copy(
+                searchForm = currentScreen.searchForm.copy(
+                    isOpened = if (filterFieldsVisible) {
+                        false
+                    } else {
+                        isLandscape
+                    }
+                ),
+                searchFilters = SearchFilters(
+                    hasActiveFilters = hasActiveFilters(),
+                    isOpened = filterFieldsVisible
+                )
+            )
+        }?.let {
+            _screenState.value = it
+        }
+    }
+
+    fun searchOrFilterIsOpen(): Boolean {
+        return _screenState.value?.takeIf { it is SearchList }?.let {
+            val currentScreen = it as SearchList
+            currentScreen.searchForm.isOpened || currentScreen.searchFilters.isOpened
+        } ?: false
+    }
+
+    fun filterIsOpen(): Boolean {
+        return _screenState.value?.takeIf { it is SearchList }?.let {
+            val currentScreen = it as SearchList
+            currentScreen.searchFilters.isOpened
+        } ?: false
+    }
+
+    fun searchIsOpen(): Boolean {
+        return _screenState.value?.takeIf { it is SearchList }?.let {
+            val currentScreen = it as SearchList
+            currentScreen.searchForm.isOpened
+        } ?: false
+    }
+
+    fun onClearFilters() {
+        presenter.clearFilterClick()
     }
 }

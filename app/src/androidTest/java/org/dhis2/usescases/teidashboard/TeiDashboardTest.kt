@@ -5,7 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
-import org.dhis2.common.viewactions.waitForTransitionUntil
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -331,51 +330,6 @@ class TeiDashboardTest : BaseTest() {
             checkEventWasScheduled(deliveryEvent, 1)
             checkEventWasScheduled(visitANCEvent, 2)
             checkEventWasCreatedAndOpen(firstANCVisitEvent, 3)
-        }
-    }
-
-    @Test
-    fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        val teiName = "Tim"
-        val teiLastName = "Johnson"
-        val relationshipName = "Filona"
-        val relationshipLastName = "Ryder"
-        val completeName = "Ryder Filona"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
-            clickOnSearch()
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            goToRelationships()
-        }
-
-        relationshipRobot {
-            clickOnFabAdd()
-            waitToDebounce(500)
-            clickOnRelationshipType()
-            waitToDebounce(500)
-        }
-
-        searchTeiRobot {
-            clickOnOpenSearch()
-            typeAttributeAtPosition(relationshipName, 0)
-            typeAttributeAtPosition(relationshipLastName, 1)
-            clickOnSearch()
-            waitToDebounce(5000)
-            clickOnTEI(relationshipName, relationshipLastName)
-        }
-
-        relationshipRobot {
-            checkRelationshipWasCreated(0, completeName)
         }
     }
 
