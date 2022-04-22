@@ -5,10 +5,10 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.Bindings.decimalFormat
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.SortedMap
+import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
