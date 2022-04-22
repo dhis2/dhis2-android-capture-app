@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import java.text.DecimalFormat
 
 fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = this.apply { setValue(initialValue) }
 
@@ -118,6 +119,9 @@ val Int.dp: Int
 
 val Int.px: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Double.decimalFormat: String
+    get() = DecimalFormat("0.##############").format(this)
 
 fun AppCompatActivity.isKeyboardOpened(): Boolean {
     val r = Rect()
