@@ -25,6 +25,10 @@ data class SearchList(
     fun displayResetFiltersButton(): Boolean {
         return searchFilters.isOpened and searchFilters.hasActiveFilters
     }
+
+    fun displayResetInLandscape(): Boolean {
+        return searchForm.queryHasData || searchFilters.hasActiveFilters
+    }
 }
 
 data class SearchForm(
