@@ -430,6 +430,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         }
                     }
                 )*/
+                // this part will be removed once the fingerprint login for multiuser is supported
+                presenter.saveUserCredentials(
+                    binding.serverUrlEdit.text.toString(),
+                    binding.userNameEdit.text.toString(),
+                    ""
+                )
+                //
                 goToNextScreen()
             } else {
                 presenter.saveUserCredentials(
