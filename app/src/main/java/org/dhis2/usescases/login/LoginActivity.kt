@@ -410,9 +410,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.text.toString()
         )
         ) {
-            if (presenter.canHandleBiometrics() == true) {
-                // This is commented until fingerprint login for multiuser is supported
-                /*showInfoDialog(
+            // This is commented until fingerprint login for multiuser is supported
+            /* if (presenter.canHandleBiometrics() == true) {
+                showInfoDialog(
                     getString(R.string.biometrics_security_title),
                     getString(R.string.biometrics_security_text),
                     object : OnDialogClickListener {
@@ -429,8 +429,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             goToNextScreen()
                         }
                     }
-                )*/
-                goToNextScreen()
+                )
+               goToNextScreen()
             } else {
                 presenter.saveUserCredentials(
                     binding.serverUrlEdit.text.toString(),
@@ -438,7 +438,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     ""
                 )
                 goToNextScreen()
-            }
+            } */
+            presenter.saveUserCredentials(
+                binding.serverUrlEdit.text.toString(),
+                binding.userNameEdit.text.toString(),
+                ""
+            )
+            goToNextScreen()
         } else {
             goToNextScreen()
         }
