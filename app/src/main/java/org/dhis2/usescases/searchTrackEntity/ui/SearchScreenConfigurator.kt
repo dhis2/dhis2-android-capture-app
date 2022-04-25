@@ -66,8 +66,7 @@ class SearchScreenConfigurator(
                 !searchConfiguration.searchFilters.isOpened
         )
         binding.clearFilterSearchButton.display(
-            searchConfiguration.displayResetSearchButton() ||
-                searchConfiguration.displayResetFiltersButton()
+            searchConfiguration.displayResetInLandscape()
         )
         syncButtonVisibility(true)
         setFiltersVisibility(true)
