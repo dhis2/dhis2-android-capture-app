@@ -62,6 +62,10 @@ android {
         psi {
 
         }
+
+        spOCC {
+
+        }
     }
 
     compileOptions {
