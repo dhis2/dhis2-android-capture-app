@@ -174,7 +174,7 @@ android {
         }
 
         spOCC {
-            applicationId "org.samaritan.dhis2_data_capture"
+            applicationId "org.samaritan.cpr"
             dimension "default"
             versionCode versions.vCode
             versionName "2.5.2-spOCC-fork-1"
