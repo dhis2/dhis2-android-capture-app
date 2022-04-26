@@ -109,10 +109,9 @@ class EventDetailsRepository(
             .uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE
     }
 
-    fun getEnrollmentDate(): Date? {
-        val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        return d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet()
-            .enrollmentDate()
+    fun getEnrollmentDate(uid: String): Date? {
+        val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
+        return enrollment.enrollmentDate()
     }
 
     fun getFilteredOrgUnits(
