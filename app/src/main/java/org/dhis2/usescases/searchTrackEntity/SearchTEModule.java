@@ -104,12 +104,11 @@ public class SearchTEModule {
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
-                                                       SearchMessageMapper searchMessageMapper,
-                                                       DispatcherProvider customDispatcher) {
+                                                       SearchMessageMapper searchMessageMapper) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, searchMessageMapper, customDispatcher);
+                matomoAnalyticsController, searchMessageMapper);
     }
 
     @Provides
@@ -273,8 +272,7 @@ public class SearchTEModule {
             SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
-            NetworkUtils networkUtils,
-            DispatcherProvider customDispatcher) {
+            NetworkUtils networkUtils) {
         return new SearchTeiViewModelFactory(
                 presenter,
                 searchRepository,
@@ -283,8 +281,7 @@ public class SearchTEModule {
                 initialQuery,
                 mapDataRepository,
                 networkUtils,
-                new SearchDispatchers(),
-                customDispatcher
+                new SearchDispatchers()
         );
     }
 

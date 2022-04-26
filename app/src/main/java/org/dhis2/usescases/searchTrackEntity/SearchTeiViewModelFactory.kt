@@ -13,8 +13,7 @@ class SearchTeiViewModelFactory(
     private val initialQuery: MutableMap<String, String>?,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
-    private val dispatchers: DispatcherProvider,
-    private val customDispatcher: dispatch.core.DispatcherProvider
+    private val dispatchers: DispatcherProvider
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SearchTEIViewModel(
@@ -25,8 +24,7 @@ class SearchTeiViewModelFactory(
             searchNavPageConfigurator,
             mapDataRepository,
             networkUtils,
-            dispatchers,
-            customDispatcher
+            dispatchers
         ) as T
     }
 }

@@ -81,8 +81,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
-    private final SearchMessageMapper searchMessageMapper;
-    private final DispatcherProvider dispatcherProvider;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -96,15 +94,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper,
-                             DispatcherProvider customDispatcher) {
+                             SearchMessageMapper searchMessageMapper) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
-        this.searchMessageMapper = searchMessageMapper;
         this.workingListMapper = workingListMapper;
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;
@@ -114,7 +110,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
         this.trackedEntityType = teTypeUid;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
-        this.dispatcherProvider = customDispatcher;
     }
 
     //-----------------------------------
