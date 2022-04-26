@@ -206,6 +206,7 @@ class SearchTEIViewModel(
     private fun clearQueryData() {
         queryData.clear()
         updateSearch()
+        performSearch()
     }
 
     private fun updateSearch() {
