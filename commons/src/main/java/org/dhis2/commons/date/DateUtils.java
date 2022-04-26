@@ -233,6 +233,16 @@ public class DateUtils {
         return calendar;
     }
 
+    public Calendar getCalendarByDate(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
     public void setCurrentDate(Date date) {
         currentDateCalendar = getCalendar();
         currentDateCalendar.setTime(date);

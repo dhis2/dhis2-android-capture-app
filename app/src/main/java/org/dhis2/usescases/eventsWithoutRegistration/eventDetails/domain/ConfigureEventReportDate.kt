@@ -105,14 +105,23 @@ class ConfigureEventReportDate(
     }
 
     private fun getNextScheduleDate(): Date {
-        val now = DateUtils.getInstance().calendar
-        now.time = repository.getStageLastDate(enrollmentId)
+        val isGeneratedEventBasedOnEnrollment =
+            repository.getProgramStage().generatedByEnrollmentDate()
+
+        val initialDate = if (isGeneratedEventBasedOnEnrollment == true){
+            val enrollmentDate = repository.getEnrollmentDate()
+            DateUtils.getInstance().getCalendarByDate(enrollmentDate)
+        } else {
+            DateUtils.getInstance().calendar
+        }
+
+        initialDate.time = repository.getStageLastDate(enrollmentId)
         val minDateFromStart =
             repository.getMinDaysFromStartByProgramStage()
         if (minDateFromStart > 0) {
-            now.add(DAY_OF_YEAR, minDateFromStart)
+            initialDate.add(DAY_OF_YEAR, minDateFromStart)
         }
-        return DateUtils.getInstance().getNextPeriod(null, now.time, 0)
+        return DateUtils.getInstance().getNextPeriod(null, initialDate.time, 0)
     }
 
     private fun getCurrentDay() = DateUtils.getInstance().today
