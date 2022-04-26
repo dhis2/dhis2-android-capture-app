@@ -31,8 +31,7 @@ class SearchTEIViewModel(
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
-    private val dispatchers: DispatcherProvider,
-    private val customDispatcher: dispatch.core.DispatcherProvider
+    private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
