@@ -282,7 +282,7 @@ fun NoMoreResults(message: String = stringResource(R.string.string_no_more_resul
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp, 96.dp, 16.dp, 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
