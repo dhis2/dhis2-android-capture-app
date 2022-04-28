@@ -24,7 +24,9 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -190,40 +192,51 @@ class FormViewModel(
         }
     }
 
-    private fun saveLastFocusedItem(rowAction: RowAction) =
-        repository.currentFocusedItem()?.takeIf {
-            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
-        }?.let {
-            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
-            if (error != null) {
-                val action = rowActionFromIntent(
-                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-                )
-                repository.updateErrorList(action)
-                StoreResult(
-                    rowAction.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
-                )
-            } else {
-                val action = rowActionFromIntent(
-                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-                )
-                val result = repository.save(it.uid, it.value, null)
-                repository.updateValueOnList(it.uid, it.value, it.valueType)
-                repository.updateErrorList(action)
-                result
-            }
-        } ?: StoreResult(
-            rowAction.id,
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED
-        )
+    private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
+        val error = checkFieldError(it.valueType, it.value, it.fieldMask)
+        if (error != null) {
+            val action = rowActionFromIntent(
+                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+            )
+            repository.updateErrorList(action)
+            StoreResult(
+                rowAction.id,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            )
+        } else {
+            val intent = getSaveIntent(it)
+            val action = rowActionFromIntent(intent)
+            val result = repository.save(it.uid, it.value, action.extraData)
+            repository.updateValueOnList(it.uid, it.value, it.valueType)
+            repository.updateErrorList(action)
+            result
+        }
+    } ?: StoreResult(
+        rowAction.id,
+        ValueStoreResult.VALUE_HAS_NOT_CHANGED
+    )
 
-    fun valueTypeIsTextField(valueType: ValueType): Boolean {
+    fun valueTypeIsTextField(valueType: ValueType, renderType: UiRenderType? = null): Boolean {
         return valueType.isNumeric ||
-            valueType.isText ||
+            valueType.isText && renderType?.isPolygon() != true ||
             valueType == ValueType.URL ||
             valueType == ValueType.EMAIL ||
             valueType == ValueType.PHONE_NUMBER
+    }
+
+    private fun getLastFocusedTextItem() = repository.currentFocusedItem()?.takeIf {
+        it.valueType?.let { valueType ->
+            valueTypeIsTextField(valueType, it.renderingType)
+        } ?: false
+    }
+
+    private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
+        ValueType.COORDINATE -> FormIntent.SaveCurrentLocation(
+            field.uid,
+            field.value,
+            getFeatureType(field.renderingType).name
+        )
+        else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
     }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
@@ -423,12 +436,8 @@ class FormViewModel(
     }
 
     fun saveDataEntry() {
-        repository.currentFocusedItem()?.takeIf {
-            it.valueType?.let { valueType -> valueTypeIsTextField(valueType) } ?: false
-        }?.let {
-            submitIntent(
-                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-            )
+        getLastFocusedTextItem()?.let {
+            submitIntent(getSaveIntent(it))
         }
         submitIntent(FormIntent.OnFinish())
     }

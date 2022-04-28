@@ -25,7 +25,7 @@ fun EditText.setLatitudeValidator(
         if (validateFilledCoordinates(
             this.text.toString(),
             longitudeEditText?.text?.toString() ?: ""
-        )
+        ) && viewModel?.renderingType?.isPolygon() == false
         ) {
             val lon = longitudeEditText?.text?.toString()?.toDoubleOrNull()
             val latitude = this.text.toString().toDoubleOrNull()
@@ -34,7 +34,7 @@ fun EditText.setLatitudeValidator(
             } else {
                 null
             }
-            viewModel?.onTextChange(value)
+            viewModel.onTextChange(value)
         }
     }
 }
@@ -48,7 +48,7 @@ fun EditText.setLongitudeValidator(
         if (validateFilledCoordinates(
             latitudeEditText?.text?.toString() ?: "",
             this.text.toString()
-        )
+        ) && viewModel?.renderingType?.isPolygon() == false
         ) {
             val lon = this.text.toString().toDoubleOrNull()
             val latitude = latitudeEditText?.text?.toString()?.toDoubleOrNull()
@@ -57,7 +57,7 @@ fun EditText.setLongitudeValidator(
             } else {
                 null
             }
-            viewModel?.onTextChange(value)
+            viewModel.onTextChange(value)
         }
     }
 }
