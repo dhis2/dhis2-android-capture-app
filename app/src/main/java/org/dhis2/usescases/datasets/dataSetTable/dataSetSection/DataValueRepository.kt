@@ -8,6 +8,7 @@ import io.reactivex.Single
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.SortedMap
+import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -568,7 +569,7 @@ class DataValueRepository(
         for (dataElement in dataTableModel.rows ?: emptyList()) {
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
-            var totalRow = 0
+            var totalRow = 0.0
             val fieldIsNumber = dataElement.valueType()!!.isNumeric
             if (!isNumber) {
                 isNumber = dataElement.valueType()!!.isNumeric
@@ -640,7 +641,7 @@ class DataValueRepository(
                 if (showRowTotals() && fieldIsNumber &&
                     fieldViewModel.value()?.isNotEmpty() == true
                 ) {
-                    totalRow += Integer.parseInt(fieldViewModel.value()!!)
+                    totalRow += fieldViewModel.value()!!.toDouble()
                 }
 
                 column++
@@ -796,7 +797,7 @@ class DataValueRepository(
         }
 
     private fun setTotalRow(
-        totalRow: Int,
+        totalRow: Double,
         fields: ArrayList<FieldViewModel>,
         values: ArrayList<String>,
         row: Int,
@@ -828,7 +829,7 @@ class DataValueRepository(
                 ""
             )
         )
-        values.add(totalRow.toString())
+        values.add(totalRow.decimalFormat)
     }
 
     private fun setTotalColumn(
@@ -856,12 +857,12 @@ class DataValueRepository(
             cells.removeAt(listFields.size - 1)
         }
 
-        val totals = IntArray(cells[0].size)
+        val totals = DoubleArray(cells[0].size)
         for (dataValues in cells) {
             for (i in dataValues.indices) {
                 if (dataValues[i].isNotEmpty()) {
                     try {
-                        val value = Integer.parseInt(dataValues[i])
+                        val value = dataValues[i].toDouble()
                         totals[i] += value
                     } catch (e: Exception) {
                         Timber.d(e)
@@ -894,7 +895,7 @@ class DataValueRepository(
                 )
             )
 
-            values.add(column.toString())
+            values.add(column.decimalFormat)
         }
 
         listFields.add(fields)
