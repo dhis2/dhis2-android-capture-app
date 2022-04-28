@@ -35,7 +35,7 @@ class ValuesD2Repository(
 
         val teiDataValues =
             d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
-                .get().blockingGet()
+                .get().blockingGet().filter { it.value() != null }
 
         val dataElementsWithFeedbackOrder =
             getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode)
