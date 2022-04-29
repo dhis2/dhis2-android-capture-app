@@ -108,7 +108,7 @@ class ConfigureEventReportDate(
         val isGeneratedEventBasedOnEnrollment =
             repository.getProgramStage().generatedByEnrollmentDate()
 
-        val initialDate = if (isGeneratedEventBasedOnEnrollment == true){
+        val initialDate = if (isGeneratedEventBasedOnEnrollment == true) {
             val enrollmentDate = repository.getEnrollmentDate(enrollmentId)
             DateUtils.getInstance().getCalendarByDate(enrollmentDate)
         } else {
