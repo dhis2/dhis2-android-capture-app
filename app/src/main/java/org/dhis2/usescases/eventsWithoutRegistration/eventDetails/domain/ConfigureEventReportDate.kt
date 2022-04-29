@@ -110,12 +110,14 @@ class ConfigureEventReportDate(
 
         val initialDate = if (isGeneratedEventBasedOnEnrollment == true){
             val enrollmentDate = repository.getEnrollmentDate(enrollmentId!!)
+
             DateUtils.getInstance().getCalendarByDate(enrollmentDate)
         } else {
-            DateUtils.getInstance().calendar
+            val date = DateUtils.getInstance().calendar
+            date.time = repository.getStageLastDate(enrollmentId)
+            date
         }
 
-        initialDate.time = repository.getStageLastDate(enrollmentId)
         val minDateFromStart =
             repository.getMinDaysFromStartByProgramStage()
         if (minDateFromStart > 0) {
