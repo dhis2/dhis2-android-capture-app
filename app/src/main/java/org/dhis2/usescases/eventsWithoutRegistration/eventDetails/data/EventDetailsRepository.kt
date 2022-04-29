@@ -276,9 +276,7 @@ class EventDetailsRepository(
                     when (type) {
                         FeatureType.POINT,
                         FeatureType.POLYGON,
-                        FeatureType.MULTI_POLYGON -> geometry?.let {
-                            eventRepository.setGeometry(it)
-                        }
+                        FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
                         else -> {
                         }
                     }
