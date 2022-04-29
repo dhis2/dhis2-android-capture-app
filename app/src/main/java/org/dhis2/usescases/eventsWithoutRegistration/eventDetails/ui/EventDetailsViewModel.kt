@@ -154,7 +154,7 @@ class EventDetailsViewModel(
         }
     }
 
-    private fun setUpCoordinates(value: String? = null) {
+    private fun setUpCoordinates(value: String? = "") {
         EventDetailIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCoordinates(value)
