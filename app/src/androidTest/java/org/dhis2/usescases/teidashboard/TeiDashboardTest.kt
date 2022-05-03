@@ -158,6 +158,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Nondeterministic")
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 

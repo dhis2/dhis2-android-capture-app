@@ -321,7 +321,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    @Ignore
+    @Ignore("Unique value exception")
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Lynn"
 
