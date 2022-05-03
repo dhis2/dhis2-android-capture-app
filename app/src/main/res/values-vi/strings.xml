@@ -1,6 +1,13 @@
 <resources>
+    <!--GENERAL-->
+    <string name="app_name">Dhis2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Lỗi</string>
+    <plurals name="error_message">
+        <item quantity="other">Lỗi</item>
+    </plurals>
     <string name="error_wrong_server_url">Sai đường dẫn đến máy chủ</string>
     <string name="error_wrong_credentials">Sai thông tin đăng nhập </string>
     <string name="error_unexpected_error">Lỗi không mong muốn</string>
@@ -8,6 +15,10 @@
     <string name="yes">có</string>
     <string name="no">không</string>
     <string name="no_value">không có giá trị</string>
+    <string name="no_reserved_values">Không có giá trị dành riêng nào nữa. Liên hệ với quản trị viên hệ thống của bạn</string>
+    <string name="no_reserved_values_connection">Không có giá trị dành riêng nào nữa. Kết nối với mạng để nạp thêm</string>
+    <string name="errors">lỗi</string>
+    <string name="something_wrong">Có lỗi</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Đồng bộ ngay</string>
     <string name="sync_text">Đang đồng bộ với máy chủ</string>
@@ -22,6 +33,14 @@
 
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Có lỗi xảy ra trong quá trình đồng bộ. Vui lòng thử lại.</string>
+    <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
+    <string name="metadata_sync_error">LỖI: Đã xảy ra lỗi trong quá trình đồng bộ hóa. Nếu bạn có kết nối, vui lòng thử lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ với quản trị viên của bạn.</string>
+    <string name="data_sync_warning">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một số dữ liệu có xung đột. Hãy Đồng bộ cấu hình và thử lại. Kiểm tra trạng thái đồng bộ của: các chương trình, Bệnh Nhân và các sự kiện có xung đột được đánh dấu tại @.</string>
+    <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy thử đồng bộ cấu hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của chương trình, các bệnh nhân và các sự kiện với các dấu hiệu xung đột là @.</string>
+    <string name="data_sync_error">LỖI: Một số dữ liệu không thể đồng bộ. Hãy kiểm tra trạng thái đồng bộ của: các chương trình với các lỗi được đánh dấu là @, các bệnh nhân và sự kiện đánh dấu là $\".</string>
+    <string name="data_sync_error_program">LỖI: Một số dữ liệu của bạn không thể đồng bộ. Hãy kiểm tra trạng thái đồng bộ của Bệnh nhân và sự kiện với các xung đột được đánh dấu là $\".</string>
+    <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
+
     <string name="search_result_text">Tìm thấy %s kết quả</string>
     <string name="add_new">Thêm mới</string>
     <string name="add">Thêm</string>
@@ -51,6 +70,9 @@
     <string name="clear_filters">Bỏ lọc</string>
     <string name="action_accept">Chấp nhận</string>
     <string name="action_share_zero_items">Chia sẻ</string>
+    <string name="action_share_single_item">Chia sẻ %d</string>
+    <string name="action_share_multiple_item">Chia sẻ %d </string>
+
     <!-- Input hints -->
     <string name="search">Tìm kiếm</string>
     <string name="enter_text">Nhập văn bản</string>
@@ -62,6 +84,8 @@
     <string name="enter_positive_integer">Nhập số nguyên</string>
     <string name="filter_options">Các lựa chọn lọc</string>
     <string name="choose_date">Chọn ngày</string>
+    <string name="change_calendar">Thay đổi lịch</string>
+
     <!-- Status -->
     <string name="program_completed">Chương trình đã hoàn tất</string>
     <string name="program_inactive">Chương trình không hoạt động</string>
@@ -77,15 +101,23 @@
     <string name="event_inactive">Sự kiện không hoạt động</string>
     <string name="read_only">Chỉ đọc</string>
     <string name="complete">Hoàn tất</string>
+    <string name="finish_and_complete">Hoàn tất và kết thúc</string>
     <string name="completed">Hoàn tất</string>
     <string name="cancelled">Đã hủy</string>
     <string name="re_open">mở lại</string>
+    <string name="activate">Kích hoạt</string>
+    <string name="active">Hoạt động</string>
+
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
+    <string name="state_to_post">Để gửi</string>
     <string name="state_to_update">Cập nhật</string>
     <string name="state_to_delete">Xóa</string>
     <string name="state_error">Lỗi</string>
     <string name="action_sync">ĐỒNG BỘ</string>
+    <string name="action_send">GỬI ĐI</string>
+    <string name="action_sync_sms">ĐỒNG BỘ TIN NHẮN SMS</string>
+
     <!--Completion-->
     <string name="completion">Hoàn thành</string>
 
@@ -94,6 +126,7 @@
     <string name="update">Cập nhật</string>
     <string name="date">Ngày</string>
     <string name="org_unit">Đơn vị</string>
+    <string name="no_org_units">Không có bất cứ Đơn Vị nào trong ngày được chọn. Xin vui lòng chọn ngày khác hoặc Đơn Vị khác.</string>
     <string name="category_option">Phân loại tùy chọn</string>
     <string name="latitude">Vĩ độ</string>
     <string name="longitude">Kinh độ</string>
@@ -106,21 +139,30 @@
 
     <!--DataSet initial-->
     <string name="report_period">Thời điểm báo cáo</string>
+    <string name="cat_option">Tùy chọn phân loại</string>
+    <string name="field_required">Nếu bạn thiết lập một giá trị, cả hàng cần tất cả giá trị để hoàn tất Biểu Nhập</string>
+    <string name="field_mandatory">Một số giá trị bắt buộc đang bị thiếu. Bạn cần đặt giá trị bắt buộc để hoàn thành Biểu Nhập.</string>
+    <string name="field_mandatory_v2">Các trường nhập bắt buộc đang bị thiếu. Xin vui lòng điền giá trị bắt buộc để hoàn thành biểu nhập.</string>
+    <string name="datavalue_saved">Giá trị đã được lưu!</string>
+    <string name="there_is_no_available_period">Không có thời điểm để chọn.</string>
     <!--Event Detail-->
     <string name="event_date">Ngày xảy ra sự kiện</string>
     <string name="due_date">Ngày đến hạn</string>
     <string name="cat_combo">Tổ hợp phân loại</string>
+    <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
     <string name="delete_event">Xóa sự kiện</string>
     <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
     <string name="event_was_deleted">Xóa sự kiện thành công</string>
     <string name="total">Tổng số</string>
+    <string name="most_recent_event_date">Ngày sự kiện gần nhất</string>
+
     <!--TEI Enrollment list-->
-    <string name="enrollment_list">Danh sách ghi danh</string>
+    <string name="enrollment_list">Danh sách đăng ký</string>
     <string name="active_programs">Các chương trình đang hoạt động</string>
-    <string name="to_enroll_programs">Chương trình để ghi danh</string>
-    <string name="enroll">Ghi danh</string>
+    <string name="to_enroll_programs">Chương trình để đăng ký</string>
+    <string name="enroll">Đăng ký</string>
     <string name="last_visit">Ngày khám cuối cùng</string>
     <string name="apply">áp dụng</string>
 
@@ -128,7 +170,7 @@
     <string name="see_details">Xem chi tiết</string>
     <string name="view_more">XEM THÊM</string>
     <string name="edit">CHỈNH SỬA</string>
-    <string name="enrolling_ou">Đơn vị đang ghi danh</string>
+    <string name="enrolling_ou">Đơn vị đăng ký:</string>
     <string name="follow_up">Theo dõi</string>
     <string name="follow_up_enabled">Đã bật theo dõi</string>
     <string name="follow_up_disabled">Đã tắt theo dõi</string>
@@ -145,8 +187,11 @@
     <!-- SYNC -->
     <string name="a_minute">1 Phút</string>
     <string name="fifteen_minute">15 Phút</string>
+    <string name="thirty_minutes">30 Phút</string>
     <string name="a_hour">1 Giờ</string>
+    <string name="every_6_hours">6 giờ</string>
     <string name="a_day">1 Ngày (Mặc định)</string>
+    <string name="every_12_hours">12 giờ</string>
     <string name="Automatic_Sync_Data">Đồng bộ dữ liệu tự động mỗi:</string>
     <string name="Manual">Thủ công</string>
     <string name="Automatic_Sync_Metadata">Đồng bộ cấu hình tự động mỗi:</string>
@@ -161,10 +206,16 @@
     <string name="SYNC_MANAGER">Cài đặt</string>
     <string name="last_data_sync_date">Đồng bộ lần cuối: %s</string>
     <string name="last_metadata_sync_date">Đồng bộ lần cuối: %s</string>
+    <string name="refill_reserved_values">Nạp lại</string>
+    <string name="settings_sms_module_title">Mô đun SMS:</string>
+    <string name="settings_sms_receiver_number">Cổng SMS</string>
+    <string name="settings_sms_result_sender_number">Người gửi kết quả SMS</string>
+    <string name="settings_sms_result_timeout">Hết thời gian trả kết quả SMS</string>
+    <string name="settings_sms_result_timeout_hint">giây</string>
     <string name="settingsReset">Đặt lại ứng dụng</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">Ngày ghi vào</string>
+    <string name="enrollmment_date">Ngày đăng ký</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">Tìm kiếm</string>
@@ -180,6 +231,7 @@
     <string name="missing_mandatory_fields_title">Thiếu trường bắt buộc</string>
     <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay trở lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
+    <string name="enrollment_coordinates">Tọa độ đăng ký</string>
     <!--EVENT SUMMARY-->
     <string name="section_list">Danh sách phần</string>
     <string name="event_summary_header" formatted="false">%s câu hỏi của %s đã hoàn thành</string>
@@ -232,12 +284,12 @@
     <string name="qr_no_data">không có dữ liệu</string>
     <string name="qr_error_id">Mã QR không hợp lệ</string>
     <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
-    <string name="qr_error_enrollment">Không thể thêm đăng ký này</string>
+    <string name="qr_error_enrollment">Không thể đăng ký</string>
     <string name="qr_error_event">Không thể thêm sự kiện này</string>
 
     <string name="jira_report">Báo vấn đề lên Jira</string>
     <string name="about">Giới thiệu</string>
-    <string name="programs_to_enroll">Chương trình để ghi danh</string>
+    <string name="programs_to_enroll">Chương trình để đăng ký</string>
     <string name="select_all">chọn tất cả</string>
     <string name="empty_program_list">Không có thông tin với các bộ lọc đã chọn. Vui lòng đổi bộ lọc.</string>
     <string name="share">Chia sẻ</string>
@@ -278,7 +330,7 @@
     <string name="online_search_parsing_error">Xảy ra lỗi khi phân tích cú pháp kết quả</string>
     <string name="online_search_error">Tìm kiếm trực tuyến trả về lỗi</string>
     <string name="online_search_response_error">Máy chủ xảy ra lỗi</string>
-    <string name="search_program_not_selected">Chọn một chương trình để kích hoạt đăng ký</string>
+    <string name="search_program_not_selected">Chọn một chương trình để đăng ký</string>
     <string name="search_access_error">Bạn không có quyền cần thiết</string>
     <string name="feature_unavaible">Chức năng này chưa hoạt động.</string>
     <string name="relationship_label_error">Có lỗi khi lấy nhãn mối quan hệ</string>
@@ -300,6 +352,7 @@
     <string name="message_generate_new_event">Bạn có muốn tạo một sự kiện khác?</string>
     <string name="event_completed_title">Sự kiện đã hoàn tất</string>
     <string name="event_completed_message">Tất cả các sự kiện trong chương trình này đã hoàn tất. Bạn có muốn đóng chương trình không?</string>
+    <string name="complete_enrollment_message">Bạn có muốn hoàn tất đăng ký?</string>
     <string name="check_event">Kiểm tra</string>
 
     <string name="menu_home">Trang chủ</string>
@@ -318,7 +371,7 @@
     <string name="tuto_dashboard_5">Nhấn để tạo hoặc đặt lịch cho một sự kiện hoặc giới thiệu sang một đơn vị khác.</string>
     <string name="tuto_dashboard_6">Tại đây bạn sẽ thấy tất cả các sự kiện. Nhấn để xem chi tiết một sự kiện.</string>
     <string name="tuto_dashboard_7">Chuyển sang thực đơn để thêm mối quan hệ, xem chỉ số hoặc viết ghi chú.</string>
-    <string name="tuto_dashboard_8">Nhấn để xem tất cả các đăng ký của thực thể hoặc tạo một đăng ký mới.</string>
+    <string name="tuto_dashboard_8">Bấm vào đây để xem tất cả các đăng ký của bệnh nhân hoặc đăng ký mới.</string>
     <string name="tuto_tei_event_1">Nhấn để xóa sự kiện này. Hành động này không thể hoàn tác.</string>
     <string name="tuto_tei_event_2">Hoàn thành sự kiện.</string>
     <string name="tuto_program_event_1">Tất cả các sự kiện liên quan tới chương trình này sẽ được liệt kê ở đây.</string>
@@ -335,31 +388,45 @@
     <string name="qr_no_id_error">Bạn cần quét QR nhận dạng trước khi lưu</string>
     <string name="dashboard_relationships">Mối quan hệ</string>
     <string name="dashboard_indicators">Các chỉ số</string>
+    <string name="dashboard_analytics">Phân tích</string>
     <string name="dashboard_notes">Ghi Chú</string>
+    <string name="unselect_enrollment">Danh sách tất cả đăng ký</string>
     <string name="event_overview">Chi tiết</string>
     <string name="event_indicators">Các chỉ số</string>
     <string name="event_notes">Ghi Chú</string>
     <string name="finish">Hoàn tất</string>
+    <string name="unique_coincidence_found">Có một sự trùng lặp trong trường duy nhất. Xin vui lòng kiểm tra lại bản nhập để lưu Đăng ký này. </string>
     <string name="please_wait">Hãy đợi</string>
     <string name="skip">Bỏ qua</string>
     <string name="reschedule">Sửa lịch</string>
     <string name="event_overdue">Quá hạn</string>
     <string name="table">Bảng</string>
     <string name="local_data_accept">Chấp nhận</string>
+    <string name="action_continue">Tiếp tục</string>
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
     <string name="state_warning">Cảnh báo</string>
+    <string name="state_relationship">Quan hệ với bệnh nhân</string>
     <string name="action_close">Đóng lại</string>
+    <string name="data_set_complete">Hoàn tất</string>
+    <string name="data_set_open">Mở</string>
     <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
     <string name="data_every_day">Hàng ngày</string>
     <string name="data_every_week">Hàng tuần</string>
     <string name="period_week">Tuần</string>
+    <string name="relationship_without_enrollment">Dữ liệu bạn đang truy xuất không có đăng ký. Bạn không thể xem Bảng Trình Bày Dữ Liệu.</string>
+    <string name="dashboard_menu_delete_enrollment">Chỉ xóa đăng ký</string>
     <string name="sms_completed">Hoàn tất</string>
+    <string name="sms_title_enrollment">Đăng ký nhận Tin Nhắn Bệnh Nhân</string>
     <string name="sms_bar_state_sending">Đang tiến hành</string>
     <string name="sms_bar_state_failed">KHÔNG THÀNH CÔNG</string>
 
+    <string name="polygon_captured">Thêm bản đồ</string>
     <string name="polygon">Đa giác</string>
     <string name="filters_title_period">Thời điểm</string>
+    <string name="filters_title_sorting">Sắp xếp thứ tự</string>
     <string name="filters_title_status">Tình trạng</string>
+    <string name="filters_title_state">Đồng bộ</string>
+    <string name="filters_title_assigned">Gán cho tôi</string>
     <string name="filter_period_today">Hôm Nay</string>
     <string name="filter_period_yesterday">Hôm Qua</string>
     <string name="filter_period_this_week">Tuần này</string>
@@ -367,4 +434,73 @@
     <string name="filter_period_this_month">Tháng này</string>
     <string name="filter_period_last_month">Tháng trước</string>
     <string name="filter_period_other">Khác</string>
+    <string name="filter_event_status_open">Mở</string>
+    <string name="filter_event_status_schedule">Lịch hẹn</string>
+    <string name="filter_event_status_overdue">Trễ hẹn</string>
+    <string name="filter_event_status_completed">Hoàn tất</string>
+    <string name="filter_event_status_skipped">Đã bỏ qua</string>
+    <string name="enrollment_data_hide">Ẩn dữ liệu đăng ký</string>
+    <string name="enrollment_data_show">Hiển thị dữ liệu đăng ký</string>
+    <string name="enrollment_data_section_label">Dữ liệu đăng ký</string>
+    <string name="granular_sync_enrollments_empty">Không có đăng ký để tải lên</string>
+    <string name="go_back">Trở lại</string>
+    <string name="data_sets">Biểu nhập</string>
+    <string name="interval_yesterday">Hôm Qua</string>
+    <string name="program_selector">Các chương trình đăng ký</string>
+    <string name="filter_sync_error">Lỗi đồng bộ</string>
+    <string name="dataset_overview">Chi tiết</string>
+    <string name="dataset_comments">Ghi chú</string>
+    <string name="name">Tên</string>
+    <string name="formula">Công thức</string>
+    <string name="filters_title_event_status">Trạng thái sự kiện</string>
+    <string name="filters_title_enrollment_status">Trạng thái đăng ký</string>
+    <string name="enrollment_date">Ngày đăng ký</string>
+    <string name="status_change_error_active_exist">Có 1 đăng ký đang hoạt động</string>
+    <string name="enrollment_status_active">Mở</string>
+    <string name="enrollment_status_completed">Hoàn tất</string>
+    <string name="enrollment_status_cancelled">Đã hủy</string>
+    <string name="event_data">Dữ liệu</string>
+    <string name="are_you_sure">Bạn có chắc chắn không?</string>
+    <string name="filters_title_date">Ngày</string>
+    <string name="filters_title_event_date">Ngày sự kiện</string>
+    <string name="dataset_data">Dữ liệu</string>
+    <string name="break_glass_error">Bạn không thể đăng ký bệnh nhân từ đơn vị khác vào chương trình này. Xin vui lòng liên hệ quản lý của bạn. </string>
+    <string name="customactivityoncrash_error_activity_restart_app">Trở lại</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Đóng</string>
+    <string name="section_charts">Biểu đồ</string>
+    <string name="navigation_analytics">Phân tích</string>
+    <string name="navigation_programs">Chương trình</string>
+    <string name="navigation_events">Sự kiện</string>
+    <string name="navigation_relationships">Quan hệ với bệnh nhân</string>
+    <string name="navigation_notes">Ghi Chú</string>
+    <string name="navigation_data_entry">Nhập dữ liệu</string>
+    <string name="navigation_tei_data">Chi tiết</string>
+    <string name="show_table_graph">Xem dạng bảng</string>
+    <string name="filter_period_this_year">Năm nay</string>
+    <string name="filter_period_this_bimonth">2-tháng này</string>
+    <string name="filter_period_last_bimonth">2-tháng trước</string>
+    <string name="filter_period_this_quarter">Quý này</string>
+    <string name="filter_period_last_quarter">Quý trước</string>
+    <string name="filter_period_weeks_this_year">Các tuần năm này</string>
+    <string name="filter_period_months_this_year">Các tháng năm này</string>
+    <string name="filter_period_bimonths_this_year">Các 2-tháng năm này</string>
+    <string name="filter_period_quarters_this_year">Các quý năm này</string>
+    <string name="filter_period_months_last_year">Các tháng năm trước</string>
+    <string name="filter_period_last_year">Năm trước</string>
+    <string name="filter_period_this_financial_year">Năm tài chính này</string>
+    <string name="filter_period_last_financial_year">Năm tài chính trước</string>
+    <string name="section_feedback">Phản hồi</string>
+    <string name="section_indicators">Các chỉ số</string>
+    <string name="value">Giá trị</string>
+    <string name="break_glass_dialog_description">Bạn phải cung cấp lý do để kiểm tra đăng ký trong chương trình này. Tất cả các thay đổi sẽ được lưu lại. </string>
+    <string name="break_glass_reason">Lý do để kiểm tra đăng ký</string>
+    <string name="login_error_bad_credentials">Sai thông tin đăng nhập </string>
+    <string name="invalid_integer">Giá trị phải là số nguyên</string>
+    <string name="available">Hiện có</string>
+    <string name="edition_enrollment_is_no_open">Dữ liệu này không thể chỉnh sửa vì bệnh nhân đã hoàn tất chương trình hoặc đã hủy. </string>
+    <string name="unknown_date">Không rõ</string>
+    <string name="troubleshooting_language_title">Ngôn ngữ</string>
+    <string name="search_too_many_results">Có quá nhiều kết quả</string>
+    <string name="search_create_new">Tạo mới</string>
+    <string name="action_ok">Tốt</string>
     </resources>
