@@ -204,6 +204,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
         }
         currentTablePosition.value = 0
+
+        if (tablesCount == binding.tableLayout.childCount / 2) {
+            presenterFragment.getDataSetIndicators()
+        }
     }
 
     private fun addSeparatorView() {
