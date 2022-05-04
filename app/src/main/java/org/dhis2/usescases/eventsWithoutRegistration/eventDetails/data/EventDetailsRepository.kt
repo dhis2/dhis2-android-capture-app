@@ -204,10 +204,11 @@ class EventDetailsRepository(
     }
 
     fun getCategoryOptions(categoryUid: String): List<CategoryOption> {
-        return d2.categoryModule().categories()
-            .withCategoryOptions()
-            .uid(categoryUid)
-            .blockingGet().categoryOptions() ?: emptyList()
+        return d2.categoryModule()
+            .categoryOptions()
+            .withOrganisationUnits()
+            .byCategoryUid(categoryUid)
+            .blockingGet() ?: emptyList()
     }
 
     fun getOptionsFromCatOptionCombo(): Map<String, CategoryOption>? {

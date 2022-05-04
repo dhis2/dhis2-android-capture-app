@@ -243,12 +243,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showCategoryPopUp(category: EventCategory) {
         CatOptionPopUp(
-            requireContext(),
-            binding.catComboLayout,
-            category.name,
-            category.options,
-            true,
-            viewModel.eventDate.value.currentDate
+            context = requireContext(),
+            anchor = binding.catComboLayout,
+            options = category.options,
+            date = viewModel.eventDate.value.currentDate,
+            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption?.uid())
             viewModel.setUpCategoryCombo(selectedOption)
