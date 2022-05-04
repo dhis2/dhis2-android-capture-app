@@ -800,4 +800,6 @@
     <string name="take_photo">التقط صورة</string>
     <string name="from_gallery">اختر من استوديو الصور</string>
     <string name="data_set_quality_check_done">تم الإنتهاء!</string>
+    <string name="invalid_integer">يجب أن تكون القيمة عدداً صحيحاً</string>
+    <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
     </resources>
