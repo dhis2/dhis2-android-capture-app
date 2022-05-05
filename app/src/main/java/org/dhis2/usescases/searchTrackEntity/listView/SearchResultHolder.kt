@@ -6,7 +6,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.databinding.ResultSearchListBinding
-import org.dhis2.usescases.searchTrackEntity.SearchResult
+import org.dhis2.usescases.searchTrackEntity.ui.SearchResultUi
 
 class SearchResultHolder(
     val binding: ResultSearchListBinding,
@@ -30,7 +30,7 @@ class SearchResultHolder(
             }
         }.setContent {
             MdcTheme {
-                SearchResult(
+                SearchResultUi(
                     searchResult = item,
                     onSearchOutsideClick = onSearchOutsideProgram
                 )

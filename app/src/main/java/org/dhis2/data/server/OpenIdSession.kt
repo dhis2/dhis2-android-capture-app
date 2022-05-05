@@ -9,6 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.user.AccountDeletionReason
 import timber.log.Timber
 
 const val EMPTY_CALLBACK =
@@ -41,6 +42,7 @@ class OpenIdSession(
                 d2.userModule().openIdHandler().logOutObservable()
                     .map { LogOutReason.OPEN_ID },
                 d2.userModule().accountManager().accountDeletionObservable()
+                    .filter { it == AccountDeletionReason.ACCOUNT_DISABLED }
                     .map { LogOutReason.DISABLED_ACCOUNT }
             ).defaultSubscribe(
                 schedulerProvider,

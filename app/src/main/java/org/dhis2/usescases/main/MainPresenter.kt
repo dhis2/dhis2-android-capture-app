@@ -166,8 +166,7 @@ class MainPresenter(
                         FilterManager.getInstance().clearAllFilters()
                         preferences.setValue(Preference.SESSION_LOCKED, false)
                         preferences.setValue(Preference.PIN, null)
-                        val canManageAccounts = repository.canManageAccounts()
-                        view.goToLogin(canManageAccounts = canManageAccounts)
+                        view.goToLogin(repository.accountsCount(), isDeletion = false)
                     },
                     { Timber.e(it) }
                 )
@@ -182,7 +181,7 @@ class MainPresenter(
         userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
         view.cancelNotifications()
 
-        view.goToLogin(repository.canManageAccounts())
+        view.goToLogin(repository.accountsCount(), isDeletion = true)
     }
 
     fun onSyncAllClick() {

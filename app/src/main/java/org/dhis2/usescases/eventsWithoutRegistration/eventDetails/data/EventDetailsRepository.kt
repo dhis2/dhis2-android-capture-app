@@ -46,11 +46,11 @@ class EventDetailsRepository(
 
     fun getObjectStyle(): ObjectStyle? {
         val programStage: ProgramStage = getProgramStage()
-        return d2.programModule()
-            .programs()
-            .uid(programStage.program()!!.uid())
-            .blockingGet()
-            .style()
+        val program = getProgram()
+        return when (program?.registration()) {
+            true -> programStage.style()
+            else -> program?.style()
+        }
     }
 
     fun getEditableStatus(): EventEditableStatus? {
@@ -277,9 +277,7 @@ class EventDetailsRepository(
                     when (type) {
                         FeatureType.POINT,
                         FeatureType.POLYGON,
-                        FeatureType.MULTI_POLYGON -> geometry?.let {
-                            eventRepository.setGeometry(it)
-                        }
+                        FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(geometry)
                         else -> {
                         }
                     }

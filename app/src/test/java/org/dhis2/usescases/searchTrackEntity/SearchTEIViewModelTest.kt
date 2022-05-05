@@ -109,7 +109,8 @@ class SearchTEIViewModelTest {
         viewModel.setListScreen()
 
         val screenState = viewModel.screenState.value
-        assertTrue(screenState is SearchForm)
+        assertTrue(screenState is SearchList)
+        assertTrue((screenState as SearchList).searchForm.isOpened)
     }
 
     @Test
@@ -130,15 +131,16 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `Should set Search screen in portrait`() {
-        viewModel.setSearchScreen(isLandscapeMode = false)
+        viewModel.setSearchScreen()
 
         val screenState = viewModel.screenState.value
-        assertTrue(screenState is SearchForm)
+        assertTrue(screenState is SearchList)
+        assertTrue((screenState as SearchList).searchForm.isOpened)
     }
 
     @Test
     fun `Should set Search screen in landscape`() {
-        viewModel.setSearchScreen(isLandscapeMode = true)
+        viewModel.setSearchScreen()
 
         val screenState = viewModel.screenState.value
         assertTrue(screenState is SearchList)
@@ -147,15 +149,15 @@ class SearchTEIViewModelTest {
     @Test
     fun `Should set previous screen`() {
         viewModel.setListScreen()
-        viewModel.setSearchScreen(isLandscapeMode = false)
-        viewModel.setPreviousScreen(isLandscapeMode = false)
+        viewModel.setSearchScreen()
+        viewModel.setPreviousScreen()
 
         val screenStateA = viewModel.screenState.value
         assertTrue(screenStateA?.screenState == SearchScreenState.LIST)
 
         viewModel.setMapScreen()
-        viewModel.setSearchScreen(isLandscapeMode = false)
-        viewModel.setPreviousScreen(isLandscapeMode = false)
+        viewModel.setSearchScreen()
+        viewModel.setPreviousScreen()
 
         val screenStateB = viewModel.screenState.value
         assertTrue(screenStateB?.screenState == SearchScreenState.MAP)
@@ -262,7 +264,7 @@ class SearchTEIViewModelTest {
     fun `Should search for list result`() {
         setCurrentProgram(testingProgram())
         viewModel.setListScreen()
-        viewModel.setSearchScreen(isLandscapeMode = false)
+        viewModel.setSearchScreen()
         viewModel.updateQueryData(
             RowAction(
                 id = "testingUid",
@@ -300,7 +302,7 @@ class SearchTEIViewModelTest {
         )
         setCurrentProgram(testingProgram())
         viewModel.setMapScreen()
-        viewModel.setSearchScreen(isLandscapeMode = false)
+        viewModel.setSearchScreen()
         viewModel.updateQueryData(
             RowAction(
                 id = "testingUid",
@@ -532,8 +534,6 @@ class SearchTEIViewModelTest {
         assertTrue(viewModel.canDisplayBottomNavigationBar())
         viewModel.setMapScreen()
         assertTrue(viewModel.canDisplayBottomNavigationBar())
-        viewModel.setSearchScreen(isLandscapeMode = false)
-        assertTrue(!viewModel.canDisplayBottomNavigationBar())
     }
 
     @ExperimentalCoroutinesApi
@@ -638,7 +638,7 @@ class SearchTEIViewModelTest {
             )
         )
         viewModel.setListScreen()
-        viewModel.setSearchScreen(false)
+        viewModel.setSearchScreen()
         viewModel.onSearchClick()
         testingDispatcher.scheduler.advanceUntilIdle()
     }

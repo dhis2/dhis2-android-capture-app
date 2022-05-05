@@ -8,7 +8,6 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
-import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
 
@@ -19,7 +18,6 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -32,7 +30,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final SchedulerProvider schedulerProvider;
     public CompositeDisposable compositeDisposable;
     private final EventCaptureContract.View view;
-    private EventStatus eventStatus;
     private boolean hasExpired;
     private final PublishProcessor<Unit> notesCounterProcessor;
     private final PreferenceProvider preferences;
@@ -89,22 +86,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         );
 
-        compositeDisposable.add(
-                eventCaptureRepository.eventStatus()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                data -> {
-                                    this.eventStatus = data;
-                                    checkExpiration();
-                                },
-                                Timber::e
-                        )
-        );
+        checkExpiration();
     }
 
     private void checkExpiration() {
-        if (eventStatus == EventStatus.COMPLETED)
+        if (getEventStatus() == EventStatus.COMPLETED)
             compositeDisposable.add(
                     eventCaptureRepository.isCompletedEventExpired(eventUid)
                             .subscribeOn(schedulerProvider.io())
@@ -133,6 +119,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             view.showErrorSnackBar();
         }
 
+        EventStatus eventStatus = getEventStatus();
         if (eventStatus != EventStatus.ACTIVE) {
             setUpActionByStatus(eventStatus);
         } else {
@@ -195,35 +182,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     }
                                 },
                                 Timber::e
-                        ));
-    }
-
-    @Override
-    public void reopenEvent() {
-        compositeDisposable.add(
-                eventCaptureRepository.canReOpenEvent()
-                        .flatMap(canReOpen -> {
-                            if (canReOpen)
-                                return Single.just(true);
-                            else
-                                return Single.error(new AuthorityException(view.getContext().getString(R.string.uncomplete_authority_error)));
-                        })
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(canReOpenEvent -> {
-                                    if (canReOpenEvent) {
-                                        if (eventCaptureRepository.reopenEvent()) {
-                                            view.showSnackBar(R.string.event_reopened);
-                                            eventStatus = EventStatus.ACTIVE;
-                                        }
-                                    }
-                                },
-                                error -> {
-                                    if (error instanceof AuthorityException)
-                                        view.displayMessage(error.getMessage());
-                                    else
-                                        Timber.e(error);
-                                }
                         ));
     }
 
@@ -326,5 +284,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public boolean getCompletionPercentageVisibility() {
         return eventCaptureRepository.showCompletionPercentage();
+    }
+
+    private EventStatus getEventStatus() {
+        return eventCaptureRepository.eventStatus().blockingFirst();
     }
 }

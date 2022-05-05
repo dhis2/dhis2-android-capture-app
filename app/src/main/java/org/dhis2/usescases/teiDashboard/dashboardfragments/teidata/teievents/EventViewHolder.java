@@ -141,7 +141,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private void renderStageIcon(ObjectStyle style) {
         int color = ColorUtils.getColorFrom(
                 style.color(),
-                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY)
+                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
         );
 
         int imageResource = new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(

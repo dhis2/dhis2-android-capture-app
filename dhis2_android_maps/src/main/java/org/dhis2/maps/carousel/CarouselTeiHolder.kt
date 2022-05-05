@@ -110,7 +110,7 @@ class CarouselTeiHolder(
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                onSyncClick(data.tei.uid())
+                onSyncClick(data.selectedEnrollment.uid())
             }
         }
 

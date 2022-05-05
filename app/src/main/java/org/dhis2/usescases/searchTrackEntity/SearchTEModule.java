@@ -102,20 +102,11 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       MatomoAnalyticsController matomoAnalyticsController,
-                                                       SearchMessageMapper searchMessageMapper) {
+                                                       MatomoAnalyticsController matomoAnalyticsController) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, searchMessageMapper);
-    }
-
-    @Provides
-    @PerActivity
-    SearchMessageMapper searchMessageMapper(Context context) {
-        return new SearchMessageMapper(
-                new SearchResources(context)
-        );
+                matomoAnalyticsController);
     }
 
     @Provides

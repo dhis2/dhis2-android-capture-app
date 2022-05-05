@@ -52,14 +52,34 @@ class DataValueRepository(
         val dataSetElements =
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                 .dataSetElements()
-        val categoryCombos = dataSetElements?.map {
-            it.categoryCombo()?.uid()
-                ?: d2.dataElementModule().dataElements()
-                    .uid(it.dataElement().uid())
+        val categoryCombos = when (sectionUid) {
+            "NO_SECTION" -> {
+                dataSetElements?.map {
+                    it.categoryCombo()?.uid()
+                        ?: d2.dataElementModule().dataElements()
+                            .uid(it.dataElement().uid())
+                            .blockingGet()
+                            .categoryComboUid()
+                }?.distinct()
+            }
+            else -> {
+                val dataElementsSectionUid = d2.dataSetModule().sections().withDataElements()
+                    .byDataSetUid().eq(dataSetUid)
+                    .uid(sectionUid)
                     .blockingGet()
-                    .categoryComboUid()
-        }?.distinct()
-
+                    .dataElements()
+                    ?.map { it.uid() }
+                dataSetElements
+                    ?.filter { dataElementsSectionUid?.contains(it.dataElement().uid()) == true }
+                    ?.map {
+                        it.categoryCombo()?.uid()
+                            ?: d2.dataElementModule().dataElements()
+                                .uid(it.dataElement().uid())
+                                .blockingGet()
+                                .categoryComboUid()
+                    }?.distinct()
+            }
+        }
         return d2.categoryModule().categoryCombos()
             .byUid().`in`(categoryCombos)
             .withCategories()

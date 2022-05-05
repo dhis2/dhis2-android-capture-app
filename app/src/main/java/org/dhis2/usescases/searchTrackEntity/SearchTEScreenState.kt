@@ -10,25 +10,38 @@ data class SearchList(
     private val listType: SearchScreenState,
     val displayFrontPageList: Boolean,
     val canCreateWithoutSearch: Boolean,
-    val queryHasData: Boolean,
-    val minAttributesToSearch: Int,
-    val isSearching: Boolean
+    val isSearching: Boolean,
+    val searchForm: SearchForm,
+    val searchFilters: SearchFilters
 ) : SearchTEScreenState(listType, previousSate) {
-    fun canDisplayCreateButton() = canCreateWithoutSearch || isSearching
+    fun displaySearchButton(): Boolean {
+        return searchForm.isOpened
+    }
+
+    fun displayResetSearchButton(): Boolean {
+        return searchForm.isOpened && searchForm.queryHasData
+    }
+
+    fun displayResetFiltersButton(): Boolean {
+        return searchFilters.isOpened and searchFilters.hasActiveFilters
+    }
+
+    fun displayResetInLandscape(): Boolean {
+        return searchForm.queryHasData || displayResetFiltersButton()
+    }
 }
 
-data class SearchMap(
-    override val previousSate: SearchScreenState,
-    private val mapType: SearchScreenState,
-    val canCreateWithoutSearch: Boolean
-) : SearchTEScreenState(mapType, previousSate)
-
 data class SearchForm(
-    override val previousSate: SearchScreenState,
     val queryHasData: Boolean,
     val minAttributesToSearch: Int,
-    val isForced: Boolean = false
-) : SearchTEScreenState(SearchScreenState.SEARCHING, previousSate)
+    val isForced: Boolean = false,
+    val isOpened: Boolean = false
+)
+
+data class SearchFilters(
+    val hasActiveFilters: Boolean = false,
+    val isOpened: Boolean = false
+)
 
 data class SearchAnalytics(
     override val previousSate: SearchScreenState
@@ -38,6 +51,5 @@ enum class SearchScreenState {
     NONE,
     LIST,
     MAP,
-    SEARCHING,
     ANALYTICS
 }

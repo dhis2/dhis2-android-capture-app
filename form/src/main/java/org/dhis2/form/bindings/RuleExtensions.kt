@@ -23,8 +23,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.Bindings
+package org.dhis2.form.bindings
 
+import org.dhis2.form.model.RuleActionError
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
@@ -77,7 +78,14 @@ fun List<ProgramRule>.toRuleList(): List<Rule> {
 
 fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
     return map {
-        it.toRuleEngineObject()
+        try {
+            it.toRuleEngineObject()
+        } catch (e: Exception) {
+            RuleActionError(
+                action = it.programRuleActionType().toString(),
+                message = e.message ?: "UNKNOWN"
+            )
+        }
     }
 }
 

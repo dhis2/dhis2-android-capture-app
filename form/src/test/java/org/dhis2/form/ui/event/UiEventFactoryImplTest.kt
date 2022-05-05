@@ -61,8 +61,7 @@ class UiEventFactoryImplTest {
         description = "description",
         valueType = valueType,
         true,
-        null,
-        true
+        null
     )
 
     private fun provideFieldUiModel() = FieldUiModelImpl(

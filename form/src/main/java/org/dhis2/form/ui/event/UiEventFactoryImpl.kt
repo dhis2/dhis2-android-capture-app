@@ -28,8 +28,7 @@ class UiEventFactoryImpl(
     val description: String?,
     val valueType: ValueType,
     val allowFutureDates: Boolean?,
-    val optionSet: String?,
-    val editable: Boolean
+    val optionSet: String?
 ) : UiEventFactory {
     override fun generateEvent(
         value: String?,
@@ -116,7 +115,7 @@ class UiEventFactoryImpl(
                             optionSet = optionSet,
                             value = value,
                             renderingType = renderingType,
-                            editable = editable
+                            editable = fieldUiModel.editable
                         )
                     } else {
                         null

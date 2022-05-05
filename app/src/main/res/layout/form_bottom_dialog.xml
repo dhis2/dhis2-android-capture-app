@@ -122,13 +122,6 @@
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp; !hasExpired &amp;&amp; skip?View.VISIBLE:View.GONE}" />
 
             <TextView
-                android:id="@+id/reopen"
-                style="@style/BottomDialogItem"
-                android:onClick="@{()->listener.onActionSelected(ActionType.REOPEN)}"
-                android:text="@string/re_open"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp; reopen?View.VISIBLE:View.GONE}" />
-
-            <TextView
                 android:id="@+id/reschedule"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.RESCHEDULE)}"

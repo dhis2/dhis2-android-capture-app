@@ -4,7 +4,6 @@ import org.hisp.dhis.android.core.program.Program
 
 data class SearchParametersModel(
     val selectedProgram: Program?,
-    val trackedEntityType: String? = null,
     val queryData: MutableMap<String, String>?
 ) {
     fun copy(): SearchParametersModel = copy(
