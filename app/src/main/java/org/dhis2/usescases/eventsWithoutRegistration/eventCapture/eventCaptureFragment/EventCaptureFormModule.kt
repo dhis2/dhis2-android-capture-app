@@ -3,10 +3,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
+import org.hisp.dhis.android.core.D2
 
-@PerFragment
 @Module
 class EventCaptureFormModule(
     val view: EventCaptureFormView,
@@ -17,12 +16,13 @@ class EventCaptureFormModule(
     @PerFragment
     fun providePresenter(
         activityPresenter: EventCaptureContract.Presenter,
-        schedulerProvider: SchedulerProvider
+        d2: D2
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(
             view,
             activityPresenter,
-            schedulerProvider
+            d2,
+            eventUid
         )
     }
 }

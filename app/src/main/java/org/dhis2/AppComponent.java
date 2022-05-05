@@ -1,6 +1,8 @@
 package org.dhis2;
 
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
 import org.dhis2.data.location.LocationModule;
@@ -50,7 +52,8 @@ import dagger.Component;
         LocationModule.class,
         FilterModule.class,
         DispatcherModule.class,
-        FeatureConfigModule.class
+        FeatureConfigModule.class,
+        NetworkUtilsModule.class
 })
 public interface AppComponent {
 
@@ -72,6 +75,8 @@ public interface AppComponent {
 
         Builder featureConfigModule(FeatureConfigModule featureConfigModule);
 
+        Builder networkUtilsModule(NetworkUtilsModule networkUtilsModule);
+
         AppComponent build();
     }
 
@@ -89,6 +94,8 @@ public interface AppComponent {
 
     LocationProvider locationProvider();
 
+    NetworkUtils networkUtilsProvider();
+
     //injection targets
     void inject(App app);
 
@@ -98,6 +105,4 @@ public interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
-
-    SessionComponent plus(PinModule pinModule);
 }

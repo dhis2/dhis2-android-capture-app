@@ -45,10 +45,6 @@
             android:name="io.sentry.traces.sample-rate"
             android:value="${sentry_sample_rate}" />
 
-        <meta-data
-            android:name="io.sentry.traces.activity.enable"
-            android:value="false" />
-
         <activity
             android:name=".usescases.splash.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -79,7 +75,7 @@
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.qrScanner.ScanActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
-        <activity android:name="org.dhis2.uicomponents.map.views.MapSelectorActivity" />
+        <activity android:name="org.dhis2.maps.views.MapSelectorActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity
@@ -114,7 +110,7 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
@@ -157,6 +153,8 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
+        <activity android:name=".data.forms.ScanCaptureActivity"/>
+        <activity android:name=".usescases.login.accounts.AccountsActivity" />
     </application>
 
 </manifest>

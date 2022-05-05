@@ -12,7 +12,6 @@ import dagger.Provides;
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
-@PerActivity
 @Module
 public class QrEventsWORegistrationModule {
     @Provides

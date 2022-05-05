@@ -18,5 +18,35 @@
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
     <string name="select_time">Select time</string>
     <string name="choose_date">Choose date</string>
+    <string name="choose_ou">Choose organisation unit</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
+    <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
+    <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
+    <string name="field_is_mandatory">This field is mandatory</string>
+    <string name="date">Date</string>
+    <string name="hint_year">Years</string>
+    <string name="hint_month">Months</string>
+    <string name="hint_day">Days</string>
+    <string name="wrong_date_format">%s can\'t be parsed as a date</string>
+    <string name="polygon">Polygon</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="coordinates_error">Coordinates values are not valid</string>
+    <string name="polygon_captured">Polygon captured</string>
+    <string name="enter_value">Enter value</string>
+    <string name="enter_url">Enter url</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
+    <string name="enter_negative_integer">Enter negative integer</string>
+    <string name="enter_positive_integer">Enter positive integer</string>
+    <string name="enter_number">Enter number</string>
+    <string name="enter_percentage">Enter percentage</string>
+    <string name="enter_unit_interval">Enter number from 0 to 1</string>
+    <string name="enter_letter">Enter letter</string>
+    <string name="enter_long_text">Enter long text</string>
+    <string name="enter_text">Enter text</string>
+    <string name="due_date">Due date</string>
+    <string name="event_date">Event date</string>
+    <string name="mandatory_field">Mandatory field</string>
 </resources>

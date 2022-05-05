@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="org.dhis2.form.model.UiRenderType" />
+
+        <import type="org.dhis2.form.model.UiEventType" />
+
+        <variable
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:background="?colorPrimary"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->item.onItemClick()}"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/renderImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:srcCompat="@drawable/sierra_leone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/FieldLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{item.formattedLabel}"
+                app:field_edition_alpha="@{item.editable}"
+                app:label_text_color="@{item.style}"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/renderImage"
+                tools:text="Form Name" />
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
+                android:layout_width="12dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{v -> item.onDescriptionClick()}"
+                android:visibility="@{item.description != null ? View.VISIBLE : View.GONE}"
+                app:description_icon_tint="@{item.style}"
+                app:layout_constraintBottom_toBottomOf="@+id/label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/label"
+                app:layout_constraintTop_toTopOf="@+id/label"
+                app:srcCompat="@drawable/ic_info_outline"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:id="@+id/fieldLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/label">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/polygonInputLayuout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/polygon"
+                    android:theme="@style/loginInputText"
+                    android:visibility="@{item.renderingType == UiRenderType.POINT ? View.GONE : View.VISIBLE}"
+                    app:input_layout_style="@{item.style}">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/polygonEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:imeOptions="actionNext"
+                        android:longClickable="false"
+                        android:textSize="@dimen/form_edit_text_size"
+                        app:setOnTouchListener="@{item}"
+                        app:geometry_polygon_value="@{item}"
+                        app:input_style="@{item}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/latitudeInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/latitude"
+                    android:theme="@style/loginInputText"
+                    android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
+                    app:field_edition_alpha="@{item.editable}"
+                    app:input_layout_style="@{item.style}">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/latitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:enabled="@{item.editable}"
+                        android:focusable="true"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal|numberSigned"
+                        android:textSize="@dimen/form_edit_text_size"
+                        android:cursorVisible="@{item.focused}"
+                        app:longitude="@{longitude}"
+                        app:setOnTouchListener="@{item}"
+                        app:error_view="@{errorMessage}"
+                        app:geometry_editor_latitude_listener="@{item}"
+                        app:geometry_editor_latitude_listener_view="@{longitude}"
+                        app:geometry_latitude_value="@{item}"
+                        app:input_style="@{item}"
+                        app:latitude_validator="@{item}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/longInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/longitude"
+                    android:theme="@style/loginInputText"
+                    android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
+                    app:field_edition_alpha="@{item.editable}"
+                    app:input_layout_style="@{item.style}">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/longitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:enabled="@{item.editable}"
+                        android:focusable="true"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberDecimal|numberSigned"
+                        android:textSize="@dimen/form_edit_text_size"
+                        android:cursorVisible="@{item.focused}"
+                        app:latitude="@{latitude}"
+                        app:error_view="@{errorMessage}"
+                        app:setOnTouchListener="@{item}"
+                        app:geometry_editor_longitude_listener="@{item}"
+                        app:geometry_editor_longitude_listener_view="@{latitude}"
+                        app:geometry_longitude_value="@{item}"
+                        app:input_style="@{item}"
+                        app:longitude_validator="@{item}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/location1"
+                    style="@style/ActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{item.editable}"
+                    android:onClick="@{()->item.invokeUiEvent(UiEventType.REQUEST_CURRENT_LOCATION)}"
+                    android:padding="8dp"
+                    android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
+                    app:field_edition_alpha="@{item.editable}"
+                    app:srcCompat="@drawable/ic_my_location"
+                    app:icon_color="@{item.style}"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/location2"
+                    style="@style/ActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{item.editable}"
+                    android:onClick="@{()->item.invokeUiEvent(UiEventType.REQUEST_LOCATION_BY_MAP)}"
+                    android:padding="8dp"
+                    app:field_edition_alpha="@{item.editable}"
+                    app:srcCompat="@drawable/ic_map"
+                    app:icon_color="@{item.style}"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/clearButton"
+                    style="@style/ActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{item.editable}"
+                    android:onClick="@{()->item.onClear()}"
+                    android:padding="8dp"
+                    android:visibility="@{item.value != null &amp;&amp; item.editable ? View.VISIBLE : View.GONE}"
+                    app:field_edition_alpha="@{item.editable}"
+                    app:srcCompat="@drawable/ic_close"
+                    app:icon_color="@{item.style}"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/errorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:padding="4dp"
+                android:textSize="@dimen/textSize_12"
+                android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
+                app:error="@{item.error}"
+                app:input_style="@{item}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fieldLayout"
+                app:warning="@{item.warning}"
+                tools:text="This is a error warning"
+                tools:textAppearance="@style/error_appearance"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

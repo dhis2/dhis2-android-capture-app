@@ -6,8 +6,10 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
-import java.util.Locale
 import org.hisp.dhis.android.core.D2
+import java.util.Locale
+
+private const val OVERRIDE_LANGUAGE_KEY = "OVERRIDE_LANGUAGE_KEY"
 
 class LocaleSelector(private val base: Context, private val d2: D2) {
 
@@ -24,8 +26,27 @@ class LocaleSelector(private val base: Context, private val d2: D2) {
         return ContextWrapper(context)
     }
 
-    private fun getUserLanguage(): String? {
-        return d2.settingModule().userSettings().blockingGet()?.keyUiLocale()
+    fun overrideUserLanguage(locale: Locale) {
+        if (locale.language == getUserLanguage()) {
+            d2.dataStoreModule().localDataStore()
+                .value(OVERRIDE_LANGUAGE_KEY)
+                .blockingDeleteIfExist()
+        } else {
+            d2.dataStoreModule().localDataStore()
+                .value(OVERRIDE_LANGUAGE_KEY)
+                .blockingSet(locale.language)
+        }
+    }
+
+    fun getUserLanguage(): String? {
+        return overridenUserLanguage() ?: d2.settingModule().userSettings().blockingGet()
+            ?.keyUiLocale()
+    }
+
+    private fun overridenUserLanguage(): String? {
+        return d2.dataStoreModule().localDataStore()
+            .value(OVERRIDE_LANGUAGE_KEY)
+            .blockingGet()?.value()
     }
 
     private fun hasLanguageChanged(): Boolean {

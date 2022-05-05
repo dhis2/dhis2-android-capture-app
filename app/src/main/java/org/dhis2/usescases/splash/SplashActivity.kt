@@ -121,7 +121,13 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         } else if (isUserLogged && !initialSyncDone) {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
-            startActivity(LoginActivity::class.java, null, true, true, null)
+            startActivity(
+                LoginActivity::class.java,
+                LoginActivity.bundle(),
+                true,
+                true,
+                null
+            )
         }
     }
 

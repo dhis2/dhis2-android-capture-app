@@ -8,6 +8,8 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
+import org.dhis2.usescases.login.accounts.AccountsComponent;
+import org.dhis2.usescases.login.accounts.AccountsModule;
 import org.dhis2.utils.category.CategoryDialogComponent;
 import org.dhis2.utils.category.CategoryDialogModule;
 import org.dhis2.utils.customviews.CategoryComboDialogComponent;
@@ -28,6 +30,8 @@ public interface ServerComponent extends Charts.Dependencies {
     @NonNull
     OpenIdSession openIdSession();
 
+    ServerStatus serverStatus();
+
     @NonNull
     UserComponent plus(@NonNull UserModule userModule);
 
@@ -45,4 +49,6 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     DhisPeriodUtils dhisPeriodUtils();
+
+    AccountsComponent plus(@NonNull AccountsModule module);
 }

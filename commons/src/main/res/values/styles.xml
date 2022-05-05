@@ -53,6 +53,14 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="ActionIconSmallPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="ActionIconNoPadding" parent="Widget.AppCompat.ImageButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -80,7 +88,8 @@
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
     </style>
-    <style name="BreakTheGlassBottomSheetDialogTheme"  parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+
+    <style name="BreakTheGlassBottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
@@ -120,5 +129,12 @@
 
     <style name="warning_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
+    </style>
+
+    <style name="ImageFieldLabel">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/textPrimary</item>
     </style>
 </resources>

@@ -10,7 +10,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import dhis2.org.R
 
 class GraphTableAdapter(val context: Context) :
-    AbstractTableAdapter<String, String, String>(context) {
+    AbstractTableAdapter<CellModel, CellModel, CellModel>(context) {
 
     private val currentWidth = 200
 
@@ -20,6 +20,7 @@ class GraphTableAdapter(val context: Context) :
         val layout = com.evrencoskun.tableview.R.layout.default_cornerview_layout
         return LayoutInflater.from(context).inflate(layout, null)
     }
+
     override fun getColumnHeaderItemViewType(position: Int): Int = 0
 
     override fun getRowHeaderItemViewType(position: Int): Int = 0
@@ -36,7 +37,7 @@ class GraphTableAdapter(val context: Context) :
         columnHeaderItemModel: Any?,
         columnPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(columnHeaderItemModel.toString())
+        (holder as GraphTableHolder).bind(columnHeaderItemModel as CellModel)
         holder.setBackground(columnPosition % 2 == 0)
         val i = getHeaderRecyclerPositionFor(columnHeaderItemModel)
         holder.itemView.updateLayoutParams {
@@ -57,7 +58,7 @@ class GraphTableAdapter(val context: Context) :
         rowHeaderItemModel: Any?,
         rowPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(rowHeaderItemModel.toString())
+        (holder as GraphTableHolder).bind(rowHeaderItemModel as CellModel)
     }
 
     override fun onCreateCellViewHolder(
@@ -73,7 +74,7 @@ class GraphTableAdapter(val context: Context) :
         columnPosition: Int,
         rowPosition: Int
     ) {
-        (holder as GraphTableHolder).bind(cellItemModel.toString())
+        (holder as GraphTableHolder).bind(cellItemModel as CellModel)
         holder.itemView.updateLayoutParams {
             width = this@GraphTableAdapter.currentWidth
         }

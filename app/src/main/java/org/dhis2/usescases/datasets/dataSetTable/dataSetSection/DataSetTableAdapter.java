@@ -42,11 +42,11 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -137,7 +137,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         if (add) {
             rowWidth += 50;
         } else {
-            rowWidth -= 50;
+            int minRowHeaderWidth = (int) context.getResources().getDimension(R.dimen.row_header_min_width);
+            if (rowWidth - 50 > minRowHeaderWidth) {
+                rowWidth -= 50;
+            }
         }
 
         Triple<String, Integer, Integer> measures =
@@ -177,8 +180,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, accessDataWrite, currentTableScale));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
-        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, SectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, SectionRenderingType.LISTING.name()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
 

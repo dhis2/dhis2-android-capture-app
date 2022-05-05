@@ -1,8 +1,12 @@
 package org.dhis2.usescases.main
 
+import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
@@ -10,9 +14,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -32,10 +38,14 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
+import org.dhis2.utils.granularsync.GranularSyncContracts
+import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
+private const val WIPE_NOTIFICATION = "wipe_notification"
+private const val RESTART = "Restart"
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -53,6 +63,8 @@ class MainActivity :
 
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
+
+    var notification: Boolean = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -77,8 +89,17 @@ class MainActivity :
         setBottomNavigationVisibility(showBottomNavigation)
     }
 
-    //region LIFECYCLE
+    companion object {
+        fun intent(context: Context, initScreen: MainNavigator.MainScreen?): Intent {
+            return Intent(context, MainActivity::class.java).apply {
+                initScreen?.let {
+                    putExtra(FRAGMENT, initScreen.name)
+                }
+            }
+        }
+    }
 
+    //region LIFECYCLE
     override fun onCreate(savedInstanceState: Bundle?) {
         app().userComponent()?.let {
             mainComponent = it.plus(MainModule(this)).apply {
@@ -131,12 +152,26 @@ class MainActivity :
         elevation = ViewCompat.getElevation(binding.toolbar)
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        if (restoreScreenName != null) {
-            changeFragment(mainNavigator.currentNavigationViewItemId(restoreScreenName))
-            mainNavigator.restoreScreen(restoreScreenName)
-        } else {
-            changeFragment(R.id.menu_home)
-            initCurrentScreen()
+        val openScreen = intent.getStringExtra(FRAGMENT)
+
+        when {
+            openScreen != null || restoreScreenName != null -> {
+                changeFragment(
+                    mainNavigator.currentNavigationViewItemId(
+                        openScreen ?: restoreScreenName!!
+                    )
+                )
+                mainNavigator.restoreScreen(
+                    screenToRestoreName = openScreen ?: restoreScreenName!!,
+                    languageSelectorOpened = openScreen != null &&
+                        MainNavigator.MainScreen.valueOf(openScreen) ==
+                        MainNavigator.MainScreen.TROUBLESHOOTING
+                )
+            }
+            else -> {
+                changeFragment(R.id.menu_home)
+                initCurrentScreen()
+            }
         }
     }
 
@@ -158,6 +193,34 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    override fun showGranularSync() {
+        SyncStatusDialog.Builder()
+            .setConflictType(SyncStatusDialog.ConflictType.ALL)
+            .setUid("")
+            .onDismissListener(
+                object : GranularSyncContracts.OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) {
+                            mainNavigator.getCurrentIfProgram()?.presenter?.updateProgramQueries()
+                        }
+                    }
+                })
+            .build().show(supportFragmentManager, "ALL_SYNC")
+    }
+
+    override fun goToLogin(accountsCount: Int, isDeletion: Boolean) {
+        startActivity(
+            LoginActivity::class.java,
+            LoginActivity.bundle(
+                accountsCount = accountsCount,
+                isDeletion = isDeletion
+            ),
+            true,
+            true,
+            null
+        )
     }
 
     override fun renderUsername(username: String) {
@@ -265,6 +328,11 @@ class MainActivity :
         } else {
             View.GONE
         }
+        binding.syncActionButton.visibility = if (showFilterButton) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     private fun setBottomNavigationVisibility(showBottomNavigation: Boolean) {
@@ -291,7 +359,7 @@ class MainActivity :
 
     override fun onDrawerClosed(drawerView: View) {
         initCurrentScreen()
-        if (mainNavigator.isPrograms()) {
+        if (mainNavigator.isPrograms() && !isNotificationRunning()) {
             presenter.initFilters()
         }
     }
@@ -325,10 +393,67 @@ class MainActivity :
             R.id.menu_home -> {
                 mainNavigator.openHome(binding.navigationBar)
             }
+            R.id.menu_troubleshooting -> {
+                mainNavigator.openTroubleShooting()
+            }
+            R.id.delete_account -> {
+                confirmAccountDelete()
+            }
         }
 
         if (backDropActive && mainNavigator.isPrograms()) {
             showHideFilter()
         }
+    }
+
+    private fun confirmAccountDelete() {
+        AlertDialog.Builder(context, R.style.CustomDialog)
+            .setTitle(getString(R.string.delete_account))
+            .setMessage(getString(R.string.wipe_data_meesage))
+            .setView(R.layout.warning_layout)
+            .setPositiveButton(getString(R.string.wipe_data_ok)) { _, _ ->
+                presenter.onDeleteAccount()
+            }
+            .setNegativeButton(getString(R.string.wipe_data_no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    override fun showProgressDeleteNotification() {
+        notification = true
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mChannel = NotificationChannel(
+                WIPE_NOTIFICATION,
+                RESTART,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(mChannel)
+        }
+        val notificationBuilder = NotificationCompat.Builder(context, WIPE_NOTIFICATION)
+            .setSmallIcon(R.drawable.ic_sync)
+            .setContentTitle(getString(R.string.wipe_data))
+            .setContentText(getString(R.string.please_wait))
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        notificationManager.notify(123456, notificationBuilder.build())
+    }
+
+    override fun obtainFileView(): File? {
+        return this.cacheDir
+    }
+
+    private fun isNotificationRunning(): Boolean {
+        return notification
+    }
+
+    override fun cancelNotifications() {
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 }

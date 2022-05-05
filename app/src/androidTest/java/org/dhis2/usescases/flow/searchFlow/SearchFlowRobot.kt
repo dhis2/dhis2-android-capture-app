@@ -22,10 +22,6 @@ class SearchFlowRobot : BaseRobot() {
     }
 
     fun checkSearchCounters(searchCount: String, filterAtPositionCount: String, filter: String, filterTotalCount: String) {
-        searchTeiRobot {
-            checkFilterCount(searchCount)
-        }
-
         filterRobot {
             checkFilterCounter(filterTotalCount)
             checkCountAtFilter(filter, filterAtPositionCount)

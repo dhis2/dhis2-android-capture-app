@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Select location</string>
+    <string name="map_layers">Map layers</string>
+    <string name="dialog_layer_street_base_map">Street view</string>
+    <string name="dialog_layer_satellite_base_map">Satellite view</string>
+    <string name="action_apply">Apply</string>
+    <string name="no_coordinates_item">This %s has no coordinates.</string>
+    <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_event">Show events</string>
+    <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
+    <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
+    <string name="dialog_layer_heatmap">Show heatmap layer</string>
+</resources>

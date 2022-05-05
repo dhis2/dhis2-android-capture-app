@@ -5,25 +5,31 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
+import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
+import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.data.RulesUtilsProvider;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
+import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository;
-import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
@@ -31,7 +37,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-@PerActivity
 @Module
 public class EventInitialModule {
 
@@ -79,20 +84,20 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager) {
         return new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
-                colorFactory,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(activityContext, true),
+                        new LongTextUiColorFactoryImpl(activityContext, true)
+                ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2));
-    }
-
-    @Provides
-    @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(activityContext, true);
+                new DisplayNameProviderImpl(d2),
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager)
+        );
     }
 
     @Provides

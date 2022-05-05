@@ -1,9 +1,5 @@
 package org.dhis2.data.forms.dataentry.tablefields;
 
-import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,16 +48,6 @@ public abstract class FormViewHolder extends AbstractViewHolder {
     }
 
     public abstract void dispose();
-
-    public void openKeyboard(View v) {
-        InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(v, InputMethodManager.SHOW_FORCED);
-    }
-
-    public void closeKeyboard(View v) {
-        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
 
     public void update(FieldViewModel fieldViewModel) {
         this.fieldViewModel = fieldViewModel;

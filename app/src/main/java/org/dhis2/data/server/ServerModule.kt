@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
-import java.util.ArrayList
 import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -14,22 +13,26 @@ import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.utils.RulesUtilsProvider
-import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
-import org.dhis2.utils.reporting.SentryOkHttpInterceptor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
 
 @Module
-@PerServer
 class ServerModule {
     @Provides
     @PerServer
     fun sdk(): D2 {
         return D2Manager.getD2()
+    }
+
+    @Provides
+    @PerServer
+    fun sdkInstantiated(): ServerStatus {
+        return ServerStatus(D2Manager.isD2Instantiated())
     }
 
     @Provides
@@ -90,11 +93,6 @@ class ServerModule {
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(context.app().appComponent().matomoController())
-                )
-            )
-            interceptors.add(
-                SentryOkHttpInterceptor(
-                    context.app().appComponent().preferenceProvider()
                 )
             )
             return D2Configuration.builder()

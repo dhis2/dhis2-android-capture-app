@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_percentage">يُسمح فقط بقيمة بين 0 و 100</string>
+    <string name="formatting_error">خطأ في التنسيق</string>
+    <string name="invalid_possitive">يُسمح فقط بالأرقام الموجبة</string>
+    <string name="invalid_phone_number">هذه ليست صيغة رقم هاتف سليمة</string>
+    <string name="invalid_email">هذه ليست صيغة بريد إلكتروني سليمة</string>
+    <string name="invalid_negative_number">يُسمح فقط بالأرقام السالبة</string>
+    <string name="invalid_possitive_zero">يُسمح فقط بالأرقام الموجبة أو صفر</string>
+    <string name="invalid_interval">يُسمح فقط بقيمة بين 0 و 1</string>
+    <string name="validation_url">هذا ليس عنوان url صالحاً</string>
+    <string name="invalid_integer">يجب أن تكون القيمة عدداً صحيحاً</string>
+    <string name="wrong_pattern">ليس تنسيقاً صحيحاً.</string>
+    <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
+    <string name="error">خطأ</string>
+    <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
+    <string name="select_time">إختر الوقت</string>
+    <string name="choose_date">اختر التاريخ</string>
+    </resources>

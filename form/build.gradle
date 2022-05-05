@@ -47,6 +47,20 @@ android {
         dataBinding true
     }
 
+    productFlavors {
+        dhis {
+
+        }
+
+        dhisNoSMS {
+
+        }
+
+        dhisUITesting {
+
+        }
+    }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -60,6 +74,12 @@ dependencies {
     debugImplementation project(':core')
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "com.facebook.flipper"
+    }
+
+    debugImplementation project(':dhis2-rule-engine')
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
     }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -83,7 +103,9 @@ dependencies {
     testImplementation "androidx.test:core:1.3.0"
     testImplementation 'androidx.test:rules:1.3.0'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
 
     //endregion
+
+    androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
 }

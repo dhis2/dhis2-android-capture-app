@@ -183,9 +183,6 @@
     <string name="log_out">Чиқиш</string>
     <string name="block_session">Сессияни блоклаш</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Жойни танланг</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 дақиқа</string>
     <string name="fifteen_minute">15 дақиқа</string>
@@ -261,7 +258,6 @@
     <string name="missing_mandatory_fields_title">Мажбурий майдонлар қолдириб кетилган</string>
     <string name="missing_mandatory_fields_text">Баъзи мажбурий майдонлар қолдириб кетилган. Агар ҳозир орқага қайтсангиз, барча сақланган маълумотлар ўчиб кетади.</string>
     <string name="missing_mandatory_fields_text_not_delete">Баъзи мажбурий майдонлар қолдириб кетилган. Агар орқага қайтмоқчи бўлсангиз, Илтимос, уларни тўлдиринг.</string>
-    <string name="missing_mandatory_fields_events">Баъзи мажбурий майдонлар қолдириб кетилган. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
     <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
     <string name="missing_mandatory_fields_events_2.0">Баъзи мажбурий майдонлар қолдириб кетилган: \n   %sда\n. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
@@ -451,7 +447,6 @@
     <string name="dashboard_analytics">Аналитика</string>
     <string name="empty_indicators">Ушбу дастур учун индикатор мавжуд эмас.</string>
     <string name="dashboard_notes">Изоҳлар</string>
-    <string name="unable_to_complete">Тугалланмади</string>
     <string name="field_errors">Баъзи майдонларда хатолар мавжуд. Илтимос, уларни бажариш учун уларни текширинг</string>
     <string name="unselect_enrollment">Барча қайдлар</string>
     <string name="unselect_enrollment_description">Барча фаол дастурлар билан бошқарув панелини кўрсатиш</string>
@@ -462,7 +457,6 @@
     <string name="sectionSelectorPrev">ОЛДИНГИ</string>
     <string name="sectionSelectorNext">КЕЙИНГИ</string>
     <string name="event_overview">Тафсилотлари</string>
-    <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="event_indicators">Индикаторлар</string>
     <string name="event_notes">Изоҳлар</string>
     <string name="complete_add_new"><![CDATA[Якунлаш ва Янги қўшиш]]></string>
@@ -537,7 +531,6 @@
     <string name="dashboard_menu_delete_tei">TEI ни ўчириб ташлаш</string>
     <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
     <string name="delete_authority_error">Ушбу ёзувни ўчириб ташлаш ҳуқуқига эга эмассиз</string>
-    <string name="record_marked_for_deletion">Ушбу ёзув ўчириб ташлаш учун белгилаб қўйилган. Сизда кириб кўриш ҳуқуқи мавжуд эмас.</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
     <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
     <string name="adjusting_form">Шакл созланмоқда...</string>
@@ -591,10 +584,8 @@
     <string name="value_required_but_not_provided">%s мажбурий, аммо таыдим этилмаган</string>
     <string name="polygon_captured">Кўпбурчак ушланди</string>
     <string name="polygon">Полигон</string>
-    <string name="map_layers">Харита қаватлари</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">Бу тўғри формат эмас.</string>
     <string name="fingerprint_title">Бармоқ излари</string>
     <string name="fingerprint_message">Илтимос, бармоқ изини киритинг</string>
     <string name="security_title">Хавфсизлик</string>
@@ -686,13 +677,6 @@
     <string name="syncing_period_not_editable">Синхронизация даври таҳрирланмайди</string>
     <string name="sync_parameters_not_editable">Синхронизация параметри таҳрирланмайди</string>
     <string name="rv_no_editable">Юкланган ҳимояланган қийматлар сони таҳрирланмайди</string>
-    <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
-    <string name="dialog_layer_satellite_base_map">Суньий йўлдош кўриниши</string>
-    <string name="dialog_layer_street_base_map">Кўча кўриниши</string>
-    <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>
-    <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
-    <string name="dialog_layer_enrollment_coordinates">Қайд этилганлар координаталарини кўрсатиш</string>
-    <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>
     <string name="downloading">Юклаб олинмоқда</string>
     <string name="filter_sync_synced">Синхронизацияланган</string>
     <string name="filter_sync_not_synced">Синхронизацияланмаган</string>
@@ -712,7 +696,6 @@
     <string name="filters_title_event_status">Ҳодиса/Тадбир ҳолати</string>
     <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
     <string name="enrollment_date">Қайд қилинган сана</string>
-    <string name="action_apply">Мурожаат қилиш</string>
     <string name="dataset_empty_list_can_create">Маълумот йўқ. Янги ёзув қўшиш учун \"+\" тугмасини босинг</string>
     <string name="dataset_emtpy_list_can_not_create">Маълумот йўқ. Сизда янги ёзувларни қўшишга рухсат йўқ.</string>
     <string name="validation_rules_empty_description">Ҳеч қандай тавсиф ёки кўрсатма берилмаган</string>
@@ -722,8 +705,6 @@
     <string name="enrollment_status_active">Очиш</string>
     <string name="enrollment_status_completed">Бажарилди</string>
     <string name="enrollment_status_cancelled">Бекор қилинди</string>
-    <string name="no_data">Маълумот йўқ</string>
-    <string name="no_coordinates_item">Ушбу %s координаталарга эга эмас</string>
     <string name="event_data">Маълумот</string>
     <string name="download_tei_error">Танланган %s  юкланмади.</string>
     <string name="completed_by">%s  томонидан бажарилган: %s</string>
@@ -742,7 +723,6 @@
     <string name="open_privacy_policy">Махфийлик сиёсатини текшириш учун шу ерни босинг</string>
     <string name="coordinates_error">Координата қийматлари яроқсиз</string>
     <string name="break_glass_error">Сиз ушбу дастурда бошқа ташкилий бўлимлар номидан TEI қайд эта олмайсиз, чунки у ҳимояланган. \N тизим маъмури билан боғланинг.</string>
-    <string name="add_image">Расм қўшиш</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 
@@ -780,7 +760,6 @@
     <string name="filter_period_this_biweek">Жорий жуфт ҳафта</string>
     <string name="filter_period_last_biweek">Охирги жуфт ҳафта</string>
     <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
-    <string name="enrolled_in">Қайд этилган:</string>
     <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
     <string name="take_photo">Суратга олиш</string>
     <string name="from_gallery">Галереядан танлаш</string>
@@ -792,5 +771,4 @@
     <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>
     <string name="openid_session_expired">Сессия муддати тугаган</string>
     <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
-    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     </resources>

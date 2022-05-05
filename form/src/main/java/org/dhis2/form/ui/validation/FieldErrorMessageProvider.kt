@@ -104,4 +104,8 @@ class FieldErrorMessageProvider(private val context: Context) {
             NumberFailure.NumberFormatException -> R.string.formatting_error
             NumberFailure.ScientificNotationException -> R.string.formatting_error
         }
+
+    fun mandatoryWarning(): String {
+        return context.getString(R.string.field_is_mandatory)
+    }
 }

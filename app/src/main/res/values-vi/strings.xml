@@ -142,9 +142,6 @@
     <string name="log_out">Đăng xuất</string>
     <string name="block_session">Khóa phiên</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Chọn địa điểm</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Phút</string>
     <string name="fifteen_minute">15 Phút</string>
@@ -182,7 +179,6 @@
     <string name="enroll_in">Đăng ký vào %s</string>
     <string name="missing_mandatory_fields_title">Thiếu trường bắt buộc</string>
     <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay trở lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
-    <string name="missing_mandatory_fields_events">Một số trường bắt buộc bị thiếu. Bạn có thể quay lại bay giờ, nhưng sự kiện này sẽ không thể hoàn thành.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
     <!--EVENT SUMMARY-->
     <string name="section_list">Danh sách phần</string>
@@ -341,7 +337,6 @@
     <string name="dashboard_indicators">Các chỉ số</string>
     <string name="dashboard_notes">Ghi Chú</string>
     <string name="event_overview">Chi tiết</string>
-    <string name="event_event">Sự Kiện</string>
     <string name="event_indicators">Các chỉ số</string>
     <string name="event_notes">Ghi Chú</string>
     <string name="finish">Hoàn tất</string>

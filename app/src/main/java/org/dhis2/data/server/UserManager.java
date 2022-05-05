@@ -40,6 +40,8 @@ public interface UserManager {
 
     D2 getD2();
 
+    Boolean hasMultipleAccounts();
+
     @NonNull
     Single<Pair<String, Integer>> getTheme();
 

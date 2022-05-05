@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.openKeyboard;
+
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -47,6 +50,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
                              ObservableBoolean isEditable, TableView tableView) {
         super(binding);
+        setIsRecyclable(false);
         editText = binding.inputEditText;
         textView = editText;
         accessDataWrite = isEditable.get();
@@ -95,7 +99,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         super.update(model);
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
-
+        editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         customBinding.inputEditText.setText(model.value());
 
         if (editTextModel.mandatory())
@@ -296,15 +300,25 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void selectNext() {
         editText.clearFocus();
 
-        if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
+        if (canMoveInTheRow()) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
-        } else if (tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1) {
+        } else if (canMoveToNextColumn()) {
             tableView.scrollToStart();
             tableView.setSelectedCell(0, tableView.getSelectedRow() + 1);
         } else {
             setSelected(SelectionState.UNSELECTED);
             tableView.getSelectionHandler().clearSelection();
         }
+    }
+
+    private boolean canMoveInTheRow(){
+        int totalColumns = tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount();
+        if(tableView.getAdapter().hasTotal()) totalColumns--;
+        return totalColumns > tableView.getSelectedColumn() + 1;
+    }
+
+    private boolean canMoveToNextColumn(){
+        return  tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1;
     }
 
     @Override

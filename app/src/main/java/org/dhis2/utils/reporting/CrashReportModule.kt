@@ -5,7 +5,6 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-@Singleton
 class CrashReportModule internal constructor() {
 
     @Provides

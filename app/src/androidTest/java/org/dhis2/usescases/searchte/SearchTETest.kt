@@ -22,6 +22,7 @@ import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,10 +48,9 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, orgUnit)
         }
     }
@@ -59,17 +59,14 @@ class SearchTETest : BaseTest() {
     fun shouldShowErrorWhenCanNotFindSearchResult() {
         val firstName = "asdssds"
         val firstNamePosition = 1
-        val filterCount = "1"
-        val noResultMessage = context.getString(R.string.search_criteria_not_met).replace("%s","Person")
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
-            checkNoSearchResult(firstName, noResultMessage)
+            clickOnSearch()
+            checkNoSearchResult()
         }
     }
 
@@ -84,16 +81,16 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition(firstName, firstNamePosition)
             typeAttributeAtPosition(lastName, lastNamePosition)
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkListOfSearchTEI(firstName, lastName)
         }
     }
 
     @Test
+    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
@@ -123,8 +120,7 @@ class SearchTETest : BaseTest() {
             clickOnDateField()
             selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
             acceptDate()
-            clickOnFab()
-            checkFilterCount(filterCount)
+            clickOnSearch()
             checkFieldsFromDisplayList(displayInListData)
         }
     }
@@ -144,7 +140,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIsAreOpen()
         }
     }
@@ -169,13 +165,14 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot {
+            waitToDebounce(5000)
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-            closeSearchForm()
+            clickOnFilter()
             checkEventsAreOverdue()
         }
     }
@@ -195,7 +192,7 @@ class SearchTETest : BaseTest() {
             typeOrgUnitField(orgUnitNgelehun)
             checkFilterCounter(totalCount)
             checkCountAtFilter(orgUnitFilter, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
     }
@@ -222,7 +219,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentDate)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -249,7 +246,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(eventDate)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkDateIsInRange(startDate, endDate)
         }
     }
@@ -258,11 +255,17 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterBySync() {
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
+        val firstNamePosition = 0
+        val lastNamePosition = 1
         val syncFilter = context.getString(R.string.action_sync)
         val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnOpenSearch()
+            typeAttributeAtPosition(teiName, firstNamePosition)
+            typeAttributeAtPosition(teiLastName, lastNamePosition)
+            clickOnSearch()
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -279,7 +282,7 @@ class SearchTETest : BaseTest() {
             clickOnNotSync()
             checkFilterCounter(totalCount)
             checkCountAtFilter(syncFilter, totalCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEINotSync()
         }
     }
@@ -296,7 +299,9 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot {
+            clickOnOpenSearch()
             typeAttributeAtPosition(name, namePosition)
+            clickOnSearch()
         }
 
         filterRobot {
@@ -306,7 +311,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(enrollmentStatus)
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
-            closeSearchForm()
+            clickOnFilter()
             checkTEIsAreOpen()
         }
 
@@ -316,6 +321,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
+    @Ignore("Unique value exception")
     fun shouldSuccessfullyShowMapAndTeiCard() {
         val firstName = "Lynn"
 

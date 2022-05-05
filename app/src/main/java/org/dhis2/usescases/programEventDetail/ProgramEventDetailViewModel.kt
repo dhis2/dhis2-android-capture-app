@@ -11,6 +11,7 @@ class ProgramEventDetailViewModel : ViewModel() {
     val eventSyncClicked = MutableLiveData<String?>(null)
     val eventClicked = MutableLiveData<Pair<String, String>?>(null)
     var updateEvent: String? = null
+    var recreationActivity: Boolean = false
     enum class EventProgramScreen {
         LIST, MAP, ANALYTICS
     }
@@ -34,5 +35,9 @@ class ProgramEventDetailViewModel : ViewModel() {
 
     fun showAnalytics() {
         _currentScreen.value = EventProgramScreen.ANALYTICS
+    }
+
+    fun onRecreationActivity(isRecreating: Boolean) {
+        recreationActivity = isRecreating
     }
 }

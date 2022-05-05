@@ -8,19 +8,13 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.Date
 import java.util.GregorianCalendar
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -30,11 +24,10 @@ import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
-import org.hisp.dhis.android.core.option.OptionGroup
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
-import org.hisp.dhis.android.core.settings.CompletionSpinner
+import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Test
@@ -42,11 +35,8 @@ import org.mockito.Mockito
 
 class EventCaptureRepositoryImplTest {
 
-    private val fieldFactory: FieldViewModelFactory = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
     private val eventUid = "eventUid"
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val resourceManager: ResourceManager = mock()
 
     private val trackerEventEnrollmentUid = "enrollmentUid"
     private val testEventStageUid = "stageUid"
@@ -77,11 +67,8 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         assertTrue(repository.isEnrollmentOpen)
@@ -97,11 +84,8 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.isEnrollmentOpen
@@ -120,11 +104,8 @@ class EventCaptureRepositoryImplTest {
         ) doReturn null
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         assertTrue(!repository.isEnrollmentCancelled)
@@ -143,11 +124,8 @@ class EventCaptureRepositoryImplTest {
             .build()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         assertTrue(repository.isEnrollmentCancelled)
@@ -159,11 +137,8 @@ class EventCaptureRepositoryImplTest {
         mockEmptySections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.isEventEditable(eventUid)
@@ -188,11 +163,8 @@ class EventCaptureRepositoryImplTest {
         )
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         val testObserver = repository.programStageName().test()
@@ -206,11 +178,9 @@ class EventCaptureRepositoryImplTest {
         mockEmptySections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.eventDate().test()
@@ -224,11 +194,9 @@ class EventCaptureRepositoryImplTest {
         mockEmptySections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -257,11 +225,9 @@ class EventCaptureRepositoryImplTest {
             .build()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.catOption().test()
@@ -284,11 +250,9 @@ class EventCaptureRepositoryImplTest {
             .build()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.catOption().test()
@@ -307,78 +271,14 @@ class EventCaptureRepositoryImplTest {
         ) doReturn null
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.catOption().test()
             .assertNoErrors()
             .assertValue { it.isEmpty() }
-    }
-
-    @Test
-    fun `Should return empty section list if event is deleted`() {
-        mockEvent(trackerEventEnrollmentUid, null, true)
-        mockEmptySections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        repository.eventSections().test()
-            .assertNoErrors()
-            .assertValue { it.isEmpty() }
-    }
-
-    @Test
-    fun `Should return single item section list if stage sections is empty`() {
-        mockEvent(trackerEventEnrollmentUid)
-        mockEmptySections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        repository.eventSections().test()
-            .assertNoErrors()
-            .assertValue {
-                it.size == 1 &&
-                    it[0].sectionUid()?.isEmpty() == true
-            }
-    }
-
-    @Test
-    fun `Should return sorted section list`() {
-        mockEvent(trackerEventEnrollmentUid)
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        repository.eventSections().test()
-            .assertNoErrors()
-            .assertValue {
-                it.size == 3 &&
-                    it[0].sectionUid() == sectionUidA &&
-                    it[1].sectionUid() == sectionUidB &&
-                    it[2].sectionUid() == sectionUidC
-            }
     }
 
     @Ignore("Use EventCaptureFieldProvider in the list method of the repository")
@@ -387,40 +287,14 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should calculate rules`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        whenever(
-            ruleEngineRepository.calculate()
-        ) doReturn Flowable.just(
-            Result.success(listOf())
-        )
-
-        repository.calculate().test()
-            .assertNoErrors()
-            .assertValue { it.error() == null && it.items().isEmpty() }
-    }
-
-    @Test
     fun `Should complete event`() {
         mockEvent()
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -438,11 +312,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -461,62 +333,14 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should reopen event`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid)
-        ) doReturn mock()
-
-        assertTrue(repository.reopenEvent())
-    }
-
-    @Test
-    fun `Should throw error when reopening event`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().uid(eventUid).setStatus(any())
-        ) doThrow D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("error test")
-            .build()
-
-        assertTrue(!repository.reopenEvent())
-    }
-
-    @Test
     fun `Should delete event`() {
         mockEvent()
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -534,11 +358,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
         val testStatus = EventStatus.SKIPPED
         whenever(
@@ -556,11 +378,8 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
         val testNewDate = GregorianCalendar(3021, 11, 1).time
         whenever(
@@ -581,11 +400,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.programStage().test()
@@ -599,11 +416,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -621,11 +436,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.eventStatus().test()
@@ -634,35 +447,14 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should return section uid from field`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
-            eventUid,
-            d2,
-            resourceManager
-        )
-
-        assertTrue(repository.getSectionFor(sectionADataElementA) == sectionUidA)
-        assertTrue(repository.getSectionFor(sectionBDataElementA) == sectionUidB)
-        assertTrue(repository.getSectionFor(sectionBDataElementB) == sectionUidB)
-        assertTrue(repository.getSectionFor(sectionCDataElementA) == sectionUidC)
-    }
-
-    @Test
     fun `Should check if event can be opened`() {
         mockEvent()
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -699,11 +491,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -723,11 +513,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -747,11 +535,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.eventIntegrityCheck().test()
@@ -765,11 +551,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         repository.eventIntegrityCheck().test()
@@ -783,11 +567,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
         val numberOfNotes = 12
         whenever(
@@ -811,11 +593,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -831,11 +611,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -843,9 +621,11 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         whenever(
-            d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(testEventProgramUid)
-        ) doReturn CompletionSpinner.builder()
-            .visible(true)
+            d2.settingModule()
+                .appearanceSettings()
+                .getProgramConfigurationByUid(testEventProgramUid)
+        ) doReturn ProgramConfigurationSetting.builder()
+            .completionSpinner(true)
             .build()
 
         assertTrue(repository.showCompletionPercentage())
@@ -857,11 +637,9 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
+
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
 
         whenever(
@@ -869,9 +647,11 @@ class EventCaptureRepositoryImplTest {
         ) doReturn true
 
         whenever(
-            d2.settingModule().appearanceSettings().getCompletionSpinnerByUid(testEventProgramUid)
-        ) doReturn CompletionSpinner.builder()
-            .visible(false)
+            d2.settingModule()
+                .appearanceSettings()
+                .getProgramConfigurationByUid(testEventProgramUid)
+        ) doReturn ProgramConfigurationSetting.builder()
+            .completionSpinner(false)
             .build()
 
         assertTrue(!repository.showCompletionPercentage())
@@ -883,11 +663,8 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-            fieldFactory,
-            ruleEngineRepository,
             eventUid,
-            d2,
-            resourceManager
+            d2
         )
         whenever(
             d2.programModule().programIndicators().byProgramUid().eq(testEventProgramUid)
@@ -990,35 +767,4 @@ class EventCaptureRepositoryImplTest {
                 .build()
         )
     }
-
-    private fun mockedOptions() = listOf(
-        OptionGroup.builder()
-            .uid("optionGroup1")
-            .options(
-                listOf(
-                    ObjectWithUid.create("option1"),
-                    ObjectWithUid.create("option2")
-                )
-            )
-            .build(),
-        OptionGroup.builder()
-            .uid("optionGroup2")
-            .options(
-                listOf(
-                    ObjectWithUid.create("option1"),
-                    ObjectWithUid.create("option4")
-                )
-            )
-            .build(),
-        OptionGroup.builder()
-            .uid("optionGroup3")
-            .options(
-                listOf(
-                    ObjectWithUid.create("option1"),
-                    ObjectWithUid.create("option3"),
-                    ObjectWithUid.create("option4")
-                )
-            )
-            .build()
-    )
 }

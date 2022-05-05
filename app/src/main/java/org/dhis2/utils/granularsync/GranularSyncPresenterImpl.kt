@@ -34,24 +34,27 @@ import androidx.work.WorkInfo
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
-import java.util.Collections
 import java.util.Date
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.sms.SmsSendingService
+import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO
 import org.dhis2.utils.Constants.CONFLICT_TYPE
 import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PERIOD_ID
 import org.dhis2.utils.Constants.UID
+import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.ALL
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_SET
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_VALUES
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.EVENT
@@ -59,10 +62,8 @@ import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.PROGRAM
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.TEI
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 import org.hisp.dhis.android.core.systeminfo.SMSVersion
@@ -70,6 +71,7 @@ import timber.log.Timber
 
 class GranularSyncPresenterImpl(
     val d2: D2,
+    private val dhisProgramUtils: DhisProgramUtils,
     val schedulerProvider: SchedulerProvider,
     private val conflictType: SyncStatusDialog.ConflictType,
     private val recordUid: String,
@@ -77,7 +79,8 @@ class GranularSyncPresenterImpl(
     private val dvAttrCombo: String?,
     private val dvPeriodId: String?,
     private val workManagerController: WorkManagerController,
-    private val errorMapper: ErrorModelMapper
+    private val errorMapper: ErrorModelMapper,
+    private val preferenceProvider: PreferenceProvider
 ) : GranularSyncContracts.Presenter {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
@@ -91,22 +94,29 @@ class GranularSyncPresenterImpl(
 
         disposable.add(
             getTitle()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.showTitle(it.displayName()!!) },
-                    { view.closeDialog() }
+                .defaultSubscribe(
+                    schedulerProvider,
+                    { title ->
+                        if (title.isNotEmpty()) {
+                            view.showTitle(title)
+                        } else {
+                            view.showRefreshTitle()
+                        }
+                    },
+                    { error ->
+                        Timber.e(error)
+                        view.closeDialog()
+                    }
                 )
         )
 
         disposable.add(
             Single.zip(
                 getState(),
-                getConflicts(conflictType),
-                BiFunction { state: State, conflicts: MutableList<TrackerImportConflict> ->
-                    Pair(state, conflicts)
-                }
-            ).subscribeOn(schedulerProvider.io())
+                getConflicts(conflictType)
+            ) { state: State, conflicts: MutableList<TrackerImportConflict> ->
+                Pair(state, conflicts)
+            }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { stateAndConflicts ->
@@ -115,8 +125,19 @@ class GranularSyncPresenterImpl(
                             stateAndConflicts.second
                         )
                     },
-                    { view.closeDialog() }
+                    { error ->
+                        Timber.e(error)
+                        view.closeDialog()
+                    }
                 )
+        )
+
+        disposable.add(
+            getLastSynced().defaultSubscribe(
+                schedulerProvider,
+                { result -> view.setLastUpdated(result) },
+                { error -> Timber.e(error) }
+            )
         )
     }
 
@@ -152,27 +173,37 @@ class GranularSyncPresenterImpl(
                         getDataSetCatOptCombos().blockingGet().toTypedArray()
                     )
                     .build()
+            ALL -> {
+            }
         }
-        var uid = recordUid
-        if (dataToDataValues == null) {
-            dataToDataValues = Data.Builder()
-                .putString(UID, recordUid)
-                .putString(CONFLICT_TYPE, conflictTypeData!!.name)
-                .build()
+        var workName: String
+        if (conflictType != ALL) {
+            workName = recordUid
+            if (dataToDataValues == null) {
+                dataToDataValues = Data.Builder()
+                    .putString(UID, recordUid)
+                    .putString(CONFLICT_TYPE, conflictTypeData!!.name)
+                    .build()
+            } else {
+                workName = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
+            }
+
+            val workerItem =
+                WorkerItem(
+                    workName,
+                    WorkerType.GRANULAR,
+                    data = dataToDataValues,
+                    policy = ExistingWorkPolicy.KEEP
+                )
+
+            workManagerController.beginUniqueWork(workerItem)
         } else {
-            uid = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
-        }
-
-        val workerItem =
-            WorkerItem(
-                uid,
-                WorkerType.GRANULAR,
-                data = dataToDataValues,
-                policy = ExistingWorkPolicy.KEEP
+            workName = Constants.INITIAL_SYNC
+            workManagerController.syncDataForWorkers(
+                Constants.META_NOW, Constants.DATA_NOW, Constants.INITIAL_SYNC
             )
-
-        workManagerController.beginUniqueWork(workerItem)
-        return workManagerController.getWorkInfosForUniqueWorkLiveData(uid)
+        }
+        return workManagerController.getWorkInfosForUniqueWorkLiveData(workName)
     }
 
     override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
@@ -319,21 +350,28 @@ class GranularSyncPresenterImpl(
     }
 
     @VisibleForTesting
-    fun getTitle(): Single<out BaseIdentifiableObject> {
+    fun getTitle(): Single<String> {
         return when (conflictType) {
-            PROGRAM -> d2.programModule().programs().uid(recordUid).get()
-            TEI ->
+            ALL -> Single.just("")
+            PROGRAM -> d2.programModule().programs().uid(recordUid).get().map { it.displayName() }
+            TEI -> {
+                val enrollment =
+                    d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
                 d2.trackedEntityModule().trackedEntityTypes().uid(
-                    d2.trackedEntityModule().trackedEntityInstances().uid(recordUid)
+                    d2.trackedEntityModule().trackedEntityInstances()
+                        .uid(enrollment.trackedEntityInstance()!!)
                         .blockingGet().trackedEntityType()
                 )
-                    .get()
+                    .get().map { it.displayName() }
+            }
             EVENT ->
                 d2.programModule().programStages().uid(
                     d2.eventModule().events().uid(recordUid).blockingGet().programStage()
-                ).get()
-            DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
-            DATA_VALUES -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
+                ).get().map { it.displayName() }
+            DATA_SET, DATA_VALUES ->
+                d2.dataSetModule().dataSets().withDataSetElements()
+                    .uid(recordUid).get()
+                    .map { it.displayName() }
         }
     }
 
@@ -342,18 +380,17 @@ class GranularSyncPresenterImpl(
             PROGRAM ->
                 d2.programModule().programs().uid(recordUid).get()
                     .map {
-                        if (it.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                            getStateFromEventProgram(it.uid())
-                        } else {
-                            getStateFromTrackerProgram(it.uid())
-                        }
+                        dhisProgramUtils.getProgramState(it)
                     }
-            TEI ->
-                d2.trackedEntityModule().trackedEntityInstances().uid(recordUid).get()
-                    .map { it.state() }
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance()).get()
+                    .map { it.aggregatedSyncState() }
+            }
             EVENT ->
                 d2.eventModule().events().uid(recordUid).get()
-                    .map { it.state() }
+                    .map { it.aggregatedSyncState() }
             DATA_SET ->
                 d2.dataSetModule().dataSetInstances()
                     .byDataSetUid().eq(recordUid).get()
@@ -369,71 +406,64 @@ class GranularSyncPresenterImpl(
                     .map { dataSetInstance ->
                         getStateFromCanditates(dataSetInstance.map { it.state() }.toMutableList())
                     }
+            ALL -> Single.just(dhisProgramUtils.getServerState())
         }
     }
 
-    fun getConflicts(
+    private fun getLastSynced(): Single<SyncDate> {
+        return when (conflictType) {
+            PROGRAM ->
+                d2.programModule().programs().uid(recordUid).get()
+                    .map {
+                        SyncDate(it.lastUpdated())
+                    }
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance()).get()
+                    .map { SyncDate(it.lastUpdated()) }
+            }
+            EVENT ->
+                d2.eventModule().events().uid(recordUid).get()
+                    .map { SyncDate(it.lastUpdated()) }
+            DATA_SET ->
+                d2.dataSetModule().dataSets()
+                    .uid(recordUid).get()
+                    .map { dataSet ->
+                        SyncDate(dataSet.lastUpdated())
+                    }
+            DATA_VALUES ->
+                d2.dataSetModule().dataSetInstances()
+                    .byOrganisationUnitUid().eq(dvOrgUnit)
+                    .byPeriod().eq(dvPeriodId)
+                    .byAttributeOptionComboUid().eq(dvAttrCombo)
+                    .byDataSetUid().eq(recordUid).get()
+                    .map { dataSetInstance ->
+                        dataSetInstance.sortBy { it.lastUpdated() }
+                        SyncDate(
+                            dataSetInstance.apply {
+                                sortBy { it.lastUpdated() }
+                            }.first().lastUpdated()
+                        )
+                    }
+            ALL ->
+                Single.just(SyncDate(preferenceProvider.lastSync()))
+        }
+    }
+
+    private fun getConflicts(
         conflictType: SyncStatusDialog.ConflictType
     ): Single<MutableList<TrackerImportConflict>> {
         return when (conflictType) {
-            TEI ->
+            TEI -> {
+                val enrollment = d2.enrollmentModule().enrollments().uid(recordUid).blockingGet()
                 d2.importModule().trackerImportConflicts()
-                    .byTrackedEntityInstanceUid().eq(recordUid).get()
+                    .byTrackedEntityInstanceUid().eq(enrollment.trackedEntityInstance()).get()
+            }
             EVENT ->
                 d2.importModule().trackerImportConflicts()
                     .byEventUid().eq(recordUid).get()
             else -> Single.just(mutableListOf())
-        }
-    }
-
-    fun getStateFromTrackerProgram(programUid: String): State {
-        val teiRepository =
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList(programUid)
-            )
-
-        return when {
-            teiRepository.byAggregatedSyncState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
-                State.ERROR
-            teiRepository.byAggregatedSyncState().`in`(State.WARNING).blockingGet().isNotEmpty() ->
-                State.WARNING
-            teiRepository.byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
-                .blockingGet().isNotEmpty() ->
-                State.SENT_VIA_SMS
-            teiRepository.byAggregatedSyncState().`in`(
-                State.TO_UPDATE,
-                State.TO_POST,
-                State.UPLOADING
-            ).blockingGet().isNotEmpty() ||
-                teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
-                State.TO_UPDATE
-            else -> State.SYNCED
-        }
-    }
-
-    fun getStateFromEventProgram(programUid: String): State {
-        val eventRepository =
-            d2.eventModule().events().byProgramUid().eq(programUid)
-
-        return when {
-            eventRepository
-                .byAggregatedSyncState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
-                State.ERROR
-            eventRepository
-                .byAggregatedSyncState().`in`(State.WARNING)
-                .blockingGet().isNotEmpty() ->
-                State.WARNING
-            eventRepository.byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
-                .blockingGet().isNotEmpty() ->
-                State.SENT_VIA_SMS
-            eventRepository.byAggregatedSyncState().`in`(
-                State.TO_UPDATE,
-                State.TO_POST,
-                State.UPLOADING
-            ).blockingGet().isNotEmpty() ||
-                eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
-                State.TO_UPDATE
-            else -> State.SYNCED
         }
     }
 
@@ -442,7 +472,7 @@ class GranularSyncPresenterImpl(
             stateCandidates.addAll(
                 d2.dataSetModule().dataSetCompleteRegistrations()
                     .byDataSetUid().eq(recordUid)
-                    .blockingGet().map { it.state() }
+                    .blockingGet().map { it.syncState() }
             )
         } else {
             stateCandidates.addAll(
@@ -451,7 +481,7 @@ class GranularSyncPresenterImpl(
                     .byPeriod().eq(dvPeriodId)
                     .byAttributeOptionComboUid().eq(dvAttrCombo)
                     .byDataSetUid().eq(recordUid).get()
-                    .blockingGet().map { it.state() }
+                    .blockingGet().map { it.syncState() }
             )
         }
 

@@ -4,15 +4,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
 import org.dhis2.common.coroutine.DispatcherTestingModule
 import org.dhis2.common.di.TestingInjector
+import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.commons.schedulers.SchedulerModule
 import org.dhis2.commons.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.user.UserModule
+import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.usescases.sync.MockedWorkManagerController
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
+import org.hisp.dhis.android.core.D2Manager.setCredentials
+import org.hisp.dhis.android.core.D2Manager.setTestingSecureStore
 
 class AppTest : App() {
 
@@ -32,8 +37,17 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setTestingDatabase(DB_TO_IMPORT, USERNAME)
-        D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
+        D2Manager.setTestingDatabase(MOCK_SERVER_URL, DB_TO_IMPORT, USERNAME)
+        val keystoreRobot = TestingInjector.providesKeyStoreRobot(applicationContext)
+        keystoreRobot.apply {
+            setData(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.USERNAME)
+            setData(KeyStoreRobot.KEYSTORE_PASSWORD, KeyStoreRobot.PASSWORD)
+        }
+        D2Manager.also {
+            setTestingSecureStore(TestingInjector.getStorage())
+            blockingInstantiateD2(ServerModule.getD2Configuration(this))
+            setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
+        }
 
         serverComponent = appComponent.plus(ServerModule())
 

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mapNavigateFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_map_navigate"
+            tools:ignore="ContentDescription" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/relationshipCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="8dp"
+            android:minHeight="72dp"
+            android:layout_marginStart="4.3dp"
+            app:rippleColor="@color/rippleColor"
+            android:elevation="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="6dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/toTeiImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/avatar_main_defalut_bg"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@tools:sample/avatars" />
+
+                <ImageView
+                    android:id="@+id/borderImage"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    android:src="@drawable/ic_oval_shape_white"
+                    app:layout_constraintBottom_toBottomOf="@id/toTeiImage"
+                    app:layout_constraintEnd_toEndOf="@id/toTeiImage"
+                    tools:src="@tools:sample/avatars" />
+
+                <ImageView
+                    android:id="@+id/fromTeiImage"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    android:background="@drawable/avatar_sec_defalut_bg"
+                    app:layout_constraintTop_toTopOf="@id/borderImage"
+                    app:layout_constraintBottom_toBottomOf="@id/borderImage"
+                    app:layout_constraintEnd_toEndOf="@id/borderImage"
+                    app:layout_constraintStart_toStartOf="@+id/borderImage"
+                    tools:src="@tools:sample/avatars" />
+
+                <TextView
+                    android:id="@+id/imageText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    android:textSize="15sp"
+                    app:layout_constraintTop_toTopOf="@id/fromTeiImage"
+                    app:layout_constraintBottom_toBottomOf="@id/fromTeiImage"
+                    app:layout_constraintEnd_toEndOf="@id/fromTeiImage"
+                    app:layout_constraintStart_toStartOf="@+id/fromTeiImage"
+                    tools:text="A"/>
+
+                <TextView
+                    android:id="@+id/toRelationshipName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@id/clearButton"
+                    app:layout_constraintStart_toEndOf="@id/toTeiImage"
+                    app:layout_constraintTop_toTopOf="@id/toTeiImage"
+                    tools:text="@tools:sample/full_names" />
+
+                <TextView
+                    android:id="@+id/fromRelationshipName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/clearButton"
+                    app:layout_constraintStart_toEndOf="@id/toTeiImage"
+                    app:layout_constraintTop_toBottomOf="@id/toRelationshipName"
+                    tools:text="@tools:sample/full_names" />
+
+                <TextView
+                    android:id="@+id/relationshipTypeName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/clearButton"
+                    app:layout_constraintStart_toEndOf="@id/fromTeiImage"
+                    app:layout_constraintTop_toBottomOf="@id/fromRelationshipName"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:text="@tools:sample/full_names" />
+
+                <ImageView
+                    android:id="@+id/clearButton"
+                    style="@style/ActionIconNoPadding"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_delete_forever"
+                    app:tint="@color/text_black_8A3" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</layout>

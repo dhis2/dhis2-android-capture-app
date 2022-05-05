@@ -64,8 +64,8 @@ class DataSetTableRepositoryTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
-            it[0] == "section_1" &&
-                it[1] == "section_2"
+            it[0].uid == "section_1" &&
+                it[1].uid == "section_2"
         }
     }
 
@@ -83,7 +83,7 @@ class DataSetTableRepositoryTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
-            it[0] == "NO_SECTION"
+            it[0].uid == "NO_SECTION"
         }
     }
 

@@ -5,9 +5,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.time.Instant
-import java.util.Collections
 import java.util.Date
 import junit.framework.Assert.assertTrue
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -39,18 +40,21 @@ import org.mockito.Mockito.mock
 class GranularSyncPresenterTest {
 
     private val d2: D2 = mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val programUtils: DhisProgramUtils = mock()
     private val view = mock(GranularSyncContracts.View::class.java)
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
     private val errorMapper: ErrorModelMapper = ErrorModelMapper("%s %s %s %s")
     private val testProgram = getProgram()
+    private val preferenceProvider: PreferenceProvider = mock()
 
     @Test
     fun simplePresenterTest() {
         // GIVEN
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -58,7 +62,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
         Mockito.`when`(d2.programModule().programs())
@@ -77,6 +82,7 @@ class GranularSyncPresenterTest {
     fun `should return tracker program error state`() {
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -84,39 +90,13 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
 
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programs()) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid")) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid").get()) doReturn Single.just(
-            getProgram()
-        )
-
-        whenever(d2.trackedEntityModule()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            )
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR)
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR).blockingGet()
-        ) doReturn getListOfTEIsWithError()
+            programUtils.getProgramState("test_uid")
+        )doReturn State.ERROR
         val testSubscriber = presenter.getState().test()
 
         testSubscriber.assertSubscribed()
@@ -144,6 +124,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -151,7 +132,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -179,6 +161,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -186,7 +169,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -214,6 +198,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -221,7 +206,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
@@ -233,6 +219,7 @@ class GranularSyncPresenterTest {
     fun `Should get list of sync errors order by date`() {
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -240,7 +227,8 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider
         )
 
         whenever(

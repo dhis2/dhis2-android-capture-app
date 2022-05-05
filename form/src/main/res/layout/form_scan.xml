@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="org.dhis2.form.model.UiEventType" />
+
+        <variable
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:background="?colorPrimary"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/sierra_leone" />
+
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.formattedLabel}"
+            app:label_text_color="@{item.style}"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:view_edition="@{item.editable}"
+            tools:text="@string/lorem" />
+
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            style="@style/ActionIconUnwrap"
+            android:layout_width="12dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="@{v -> item.onDescriptionClick()}"
+            android:visibility="@{item.description != null? View.VISIBLE : View.GONE}"
+            app:description_icon_tint="@{item.style}"
+            app:layout_constraintBottom_toBottomOf="@+id/label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/label"
+            app:layout_constraintTop_toTopOf="@+id/label"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:view_edition="@{item.editable}" />
+
+
+        <LinearLayout
+            android:id="@+id/inputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@{item.hint}"
+                android:theme="@style/loginInputText"
+                app:error_message="@{item.error}"
+                app:input_layout_style="@{item.style}"
+                app:warning_message="@{item.warning}">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{item.editable}"
+                    android:imeOptions="actionNext"
+                    android:onTextChanged="@{(txt, start, before, count )->item.onTextChange(txt)}"
+                    android:singleLine="true"
+                    android:text="@{item.value}"
+                    android:textSize="@dimen/form_edit_text_size"
+                    app:action_handler="@{item}"
+                    app:input_style="@{item}"
+                    app:requestFocus="@{item.focused}"
+                    app:view_edition="@{item.editable}"
+                    tools:text="111-111-111" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/descIcon"
+                style="@style/ActionIconUnwrap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->item.invokeUiEvent(UiEventType.QR_CODE)}"
+                android:padding="11dp"
+                app:action_icon="@{item}"
+                app:action_icon_tint="@{item.style}"
+                app:view_edition="@{item.editable}"
+                tools:srcCompat="@drawable/ic_form_barcode" />
+
+            <ImageView
+                android:id="@+id/delete"
+                style="@style/ActionIcon"
+                android:onClick="@{()->item.onClear()}"
+                android:visibility="@{(item.editable &amp;&amp; item.value != null) ? View.VISIBLE : View.GONE}"
+                app:action_icon_tint="@{item.style}"
+                app:srcCompat="@drawable/ic_close"
+                app:tint="@color/colorGreyDefault"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

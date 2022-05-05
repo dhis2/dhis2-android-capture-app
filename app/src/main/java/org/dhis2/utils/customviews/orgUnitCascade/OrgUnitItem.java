@@ -1,6 +1,6 @@
 package org.dhis2.utils.customviews.orgUnitCascade;
 
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;

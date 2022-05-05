@@ -60,7 +60,9 @@
                 android:text='@{title}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
@@ -88,6 +90,16 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
                 android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
                 android:onClick="@{ () -> presenter.generalFiltersClick() }"
@@ -106,7 +118,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_map"
                 app:tint="@color/white"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"/>
 
             <ImageView
                 android:id="@+id/moreOptions"

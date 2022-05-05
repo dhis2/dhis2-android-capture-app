@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="org.dhis2.form.model.UiEventType" />
+
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
@@ -114,10 +116,10 @@
                         android:enabled="@{item.editable}"
                         android:focusable="false"
                         android:inputType="date"
-                        android:onClick="@{() -> item.invokeUiEvent()}"
-                        android:textSize="@dimen/form_edit_text_size"
+                        android:onClick="@{() -> item.invokeUiEvent(UiEventType.DATE_TIME)}"
                         android:text="@{item.displayName}"
-                        app:input_style="@{item}"/>
+                        android:textSize="@dimen/form_edit_text_size"
+                        app:input_style="@{item}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,7 +131,7 @@
                     android:layout_gravity="center"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:enabled="@{item.editable}"
-                    android:onClick="@{() -> item.invokeUiEvent()}"
+                    android:onClick="@{() -> item.invokeUiEvent(UiEventType.DATE_TIME)}"
                     app:iconResource="@{item.style.descriptionIcon}"
                     app:icon_color="@{item.style}"
                     tools:visibility="visible" />

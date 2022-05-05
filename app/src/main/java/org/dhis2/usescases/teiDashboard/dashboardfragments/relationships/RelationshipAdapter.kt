@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.R
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.databinding.ItemRelationshipBinding
 
 class RelationshipAdapter(private val presenter: RelationshipPresenter) :

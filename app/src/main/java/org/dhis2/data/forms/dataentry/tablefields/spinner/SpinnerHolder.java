@@ -1,10 +1,12 @@
 package org.dhis2.data.forms.dataentry.tablefields.spinner;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+
 import androidx.fragment.app.FragmentActivity;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.customviews.OptionSetCellPopUp;
 import org.dhis2.utils.optionset.OptionSetDialog;
@@ -64,7 +66,10 @@ public class SpinnerHolder extends FormViewHolder {
 
             if (dialog.showDialog()) {
                 dialog.setListener(binding.optionSetView);
-                dialog.setClearListener((view) -> binding.optionSetView.deleteSelectedOption());
+                dialog.setClearListener((view) -> processor.onNext(
+                        RowAction.create(viewModel.uid(), null, null, viewModel.dataElement(),
+                                viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column())
+                ));
                 dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
             } else {
                 dialog.dismiss();

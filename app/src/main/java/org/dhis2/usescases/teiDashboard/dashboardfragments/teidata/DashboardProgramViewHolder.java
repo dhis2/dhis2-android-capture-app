@@ -23,8 +23,7 @@ public class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
         Enrollment enrollment = dashboardProgramModel.getEnrollmentForProgram(program.uid());
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, program);
-
-        Bindings.setObjectStyle(binding.programImage, binding.programImage, dashboardProgramModel.getObjectStyleForProgram(program.uid()));
+        binding.setVariable(BR.style, dashboardProgramModel.getObjectStyleForProgram(program.uid()));
 
         if (enrollment != null)
             binding.setVariable(BR.enrollment, enrollment);

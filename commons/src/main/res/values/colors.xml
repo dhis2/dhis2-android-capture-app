@@ -451,7 +451,7 @@
     <color name="state_error">#26FF0000</color>
     <color name="state_to_post">#26000000</color>
     <color name="state_warning">#26FF8A00</color>
-    <color name="state_synced">#26168646</color>
+    <color name="state_synced">#0D000000</color>
 
     <color name="sms_sync_last_event">#504eba</color>
     <color name="sms_sync_title_bar">#dee7ee</color>

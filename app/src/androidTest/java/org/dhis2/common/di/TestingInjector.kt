@@ -9,15 +9,17 @@ import org.dhis2.common.preferences.PreferenceTestingImpl
 import org.dhis2.common.preferences.PreferencesRobot
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.mockwebserver.Dhis2MockServer
-import org.hisp.dhis.android.core.sms.data.localdbrepository.internal.LocalDbRepositoryImpl
 
 class TestingInjector {
 
     companion object {
         private const val CONFIG_FILE = "smsconfig"
 
+        private var keystore: AndroidSecureStore? = null
+
         fun providesKeyStoreRobot(context: Context): KeyStoreRobot {
-            return KeyStoreRobot(AndroidSecureStore(context))
+             keystore = AndroidSecureStore(context)
+             return KeyStoreRobot(AndroidSecureStore(context))
         }
         fun providesPreferencesRobot(context: Context): PreferencesRobot {
             return PreferencesRobot(PreferenceTestingImpl(context),
@@ -31,6 +33,9 @@ class TestingInjector {
         }
         fun provideDBImporter(context: Context): DBTestLoader {
             return DBTestLoader(context)
+        }
+        fun getStorage(): AndroidSecureStore {
+            return keystore!!
         }
     }
 }

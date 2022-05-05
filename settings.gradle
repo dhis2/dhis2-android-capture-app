@@ -1,2 +1,5 @@
-include ':app', ':viewpagerdotsindicator', ':dhis2-rule-engine', ':core', ':tableview', ':dhis_android_analytics', ':form', ':commons'
+include ':app', ':viewpagerdotsindicator', ':dhis2-rule-engine', ':core',
+        ':tableview', ':dhis_android_analytics', ':form', ':commons', ':dhis2_android_maps',
+        ':zxing-android'
 project(':core').projectDir = new File('dhis2-android-sdk/core')
+project(':zxing-android').projectDir = new File('zxing-core/core')

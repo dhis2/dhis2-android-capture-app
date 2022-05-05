@@ -13,6 +13,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import org.dhis2.commons.network.NetworkUtilsModule;
+import org.dhis2.maps.MapController;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.di.dagger.PerActivity;
@@ -36,15 +38,13 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
-import org.dhis2.uicomponents.map.MapController;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsModule;
-import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
@@ -140,6 +140,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         boolean isLogged = false;
         try {
             D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+            d2Configuration.userModule().accountManager().setMaxAccounts(Constants.MAX_ACCOUNTS);
             isLogged = d2Configuration.userModule().isLogged().blockingGet();
         } catch (Exception e) {
             appComponent.injectCrashReportController().trackError(e, e.getMessage());
@@ -169,6 +170,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
+                .networkUtilsModule(new NetworkUtilsModule())
                 .workManagerController(new WorkManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule())
@@ -208,10 +210,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @Override
     public ServerComponent createServerComponent() {
-        if (serverComponent == null)
-            serverComponent = appComponent.plus(new ServerModule());
+        if (!D2Manager.INSTANCE.isD2Instantiated())
+            setUpServerComponent();
         return serverComponent;
-
     }
 
     @Nullable
@@ -225,6 +226,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         serverComponent = null;
     }
 
+    @Nullable
     public ServerComponent getServerComponent() {
         return serverComponent;
     }
@@ -275,7 +277,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     @NotNull
     public SessionComponent createSessionComponent(PinModule pinModule) {
-        return (sessionComponent = appComponent.plus(pinModule));
+        return (sessionComponent = userComponent.plus(pinModule));
     }
 
     public void releaseSessionComponent() {

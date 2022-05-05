@@ -9,6 +9,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by ppajuelo on 16/04/2018.
  */
+@Deprecated
 public class NetworkUtils {
 
     /**

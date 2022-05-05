@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_data">No data</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>

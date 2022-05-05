@@ -58,7 +58,11 @@ class SplashPresenter internal constructor(
                         { Timber.d(it) }
                     )
             )
-        } ?: view.goToNextScreen(false, sessionLocked = false, initialSyncDone = false)
+        } ?: view.goToNextScreen(
+            false,
+            sessionLocked = false,
+            initialSyncDone = false
+        )
     }
 
     private fun trackUserInfo() {

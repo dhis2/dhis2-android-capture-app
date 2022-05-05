@@ -9,7 +9,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 

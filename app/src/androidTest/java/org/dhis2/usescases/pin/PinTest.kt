@@ -23,10 +23,6 @@ class PinTest : BaseTest() {
     @get:Rule
     val ruleLoginActivity = ActivityTestRule(LoginActivity::class.java, false, false)
 
-    override fun getPermissionsToBeAccepted(): Array<String> {
-        return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    }
-
     @Test
     fun openPin() {
         startActivity()

@@ -4,31 +4,39 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.LayoutProviderImpl;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.data.FormValueStore;
+import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.form.model.RowAction;
+import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.ui.FieldViewModelFactoryImpl;
+import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.style.FormUiColorFactory;
+import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
+import org.dhis2.form.ui.provider.LegendValueProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
+import org.dhis2.form.ui.provider.UiStyleProviderImpl;
+import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
+import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
-import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
@@ -38,7 +46,6 @@ import dagger.Provides;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-@PerActivity
 @Module
 public class EventCaptureModule {
 
@@ -55,16 +62,16 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    @NonNull RulesUtilsProvider ruleUtils,
-                                                    @NonNull ValueStore valueStore,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
-                                                    GetNextVisibleSection getNextVisibleSection,
-                                                    EventFieldMapper fieldMapper,
-                                                    FlowableProcessor<RowAction> onFieldActionProcessor,
-                                                    FieldViewModelFactory fieldFactory) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider,
-                preferences, getNextVisibleSection, fieldMapper, onFieldActionProcessor, fieldFactory.sectionProcessor());
+                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+        return new EventCapturePresenterImpl(
+                view,
+                eventUid,
+                eventCaptureRepository,
+                schedulerProvider,
+                preferences,
+                configureEventCompletionDialog);
     }
 
     @Provides
@@ -75,30 +82,29 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventCaptureContract.EventCaptureRepository provideRepository(FieldViewModelFactory fieldFactory,
-                                                                  RuleEngineRepository ruleEngineRepository,
-                                                                  D2 d2,
-                                                                  ResourceManager resourceManager
-    ) {
-        return new EventCaptureRepositoryImpl(fieldFactory, ruleEngineRepository, eventUid, d2, resourceManager);
+    EventCaptureContract.EventCaptureRepository provideRepository(D2 d2) {
+        return new EventCaptureRepositoryImpl(eventUid, d2);
     }
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, FormUiColorFactory colorFactory, D2 d2) {
+    FieldViewModelFactory fieldFactory(
+            Context context,
+            D2 d2,
+            ResourceManager resourceManager
+    ) {
         return new FieldViewModelFactoryImpl(
-                ValueTypeExtensionsKt.valueTypeHintMap(context),
                 false,
-                colorFactory,
+                new UiStyleProviderImpl(
+                        new FormUiModelColorFactoryImpl(activityContext, true),
+                        new LongTextUiColorFactoryImpl(activityContext, true)
+                ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2));
-    }
-
-    @Provides
-    @PerActivity
-    FormUiColorFactory provideFormUiColorFactory() {
-        return new FormUiModelColorFactoryImpl(activityContext, true);
+                new DisplayNameProviderImpl(d2),
+                new UiEventTypesProviderImpl(),
+                new KeyboardActionProviderImpl(),
+                new LegendValueProviderImpl(d2, resourceManager));
     }
 
     @Provides
@@ -122,20 +128,22 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    ValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController) {
+    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController, NetworkUtils networkUtils, SearchTEIRepository searchTEIRepository) {
         return new ValueStoreImpl(
                 d2,
                 eventUid,
                 DataEntryStore.EntryMode.DE,
                 new DhisEnrollmentUtils(d2),
-                crashReportController
+                crashReportController,
+                networkUtils,
+                searchTEIRepository
         );
     }
 
     @Provides
     @PerActivity
-    GetNextVisibleSection getNextVisibleSection() {
-        return new GetNextVisibleSection();
+    SearchTEIRepository searchTEIRepository(D2 d2) {
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
     }
 
     @Provides
@@ -148,7 +156,11 @@ public class EventCaptureModule {
     @PerActivity
     org.dhis2.form.data.FormRepository provideEventsFormRepository(
             @NonNull D2 d2,
-            CrashReportController crashReportController
+            org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
+            CrashReportController crashReportController,
+            NetworkUtils networkUtils,
+            SearchTEIRepository searchTEIRepository,
+            ResourceManager resourceManager
     ) {
         return new FormRepositoryImpl(
                 new ValueStoreImpl(
@@ -156,10 +168,29 @@ public class EventCaptureModule {
                         eventUid,
                         DataEntryStore.EntryMode.DE,
                         new DhisEnrollmentUtils(d2),
-                        crashReportController
+                        crashReportController,
+                        networkUtils,
+                        searchTEIRepository
                 ),
                 new FieldErrorMessageProvider(activityContext),
-                new DisplayNameProviderImpl(d2)
+                new DisplayNameProviderImpl(d2),
+                eventDataEntryRepository,
+                new org.dhis2.form.data.EventRuleEngineRepository(d2, eventUid),
+                new RulesUtilsProviderImpl(d2),
+                new LegendValueProviderImpl(d2, resourceManager)
+        );
+    }
+
+    @Provides
+    @PerActivity
+    org.dhis2.data.forms.dataentry.EventRepository provideEventDataEntryRepository(
+            D2 d2,
+            FieldViewModelFactory modelFactory
+    ) {
+        return new org.dhis2.data.forms.dataentry.EventRepository(
+                modelFactory,
+                eventUid,
+                d2
         );
     }
 
@@ -169,5 +200,21 @@ public class EventCaptureModule {
             EventCaptureContract.EventCaptureRepository repository
     ) {
         return new EventPageConfigurator(repository);
+    }
+
+    @Provides
+    @PerActivity
+    ConfigureEventCompletionDialog provideConfigureEventCompletionDialog(
+            EventCaptureResourcesProvider eventCaptureResourcesProvider
+    ) {
+        return new ConfigureEventCompletionDialog(eventCaptureResourcesProvider);
+    }
+
+    @Provides
+    @PerActivity
+    EventCaptureResourcesProvider provideEventCaptureResourcesProvider(
+            ResourceManager resourceManager
+    ) {
+        return new EventCaptureResourcesProvider(resourceManager);
     }
 }

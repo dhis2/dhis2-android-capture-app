@@ -1,6 +1,7 @@
 package org.dhis2.uicomponents.map.geometry.polygon
 
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

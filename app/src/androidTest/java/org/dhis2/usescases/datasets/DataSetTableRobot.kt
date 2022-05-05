@@ -10,7 +10,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
+import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.assertTrue

@@ -163,9 +163,6 @@
     <string name="log_out">Déconnecter</string>
     <string name="block_session">Bloquer la session</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Sélectionnez l\'emplacement</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
     <string name="fifteen_minute">15 Minutes</string>
@@ -218,7 +215,6 @@
     <string name="missing_mandatory_fields_title">Les champs obligatoires sont manquant</string>
     <string name="missing_mandatory_fields_text">Certains des champs obligatoires sont manquant. Si vous voulez retourner, tout l´information sera supprimer</string>
     <string name="missing_mandatory_fields_text_not_delete">Certains champs obligatoires sont vides. Si vous voulez retourner, veuillez les renseigner. </string>
-    <string name="missing_mandatory_fields_events">Certain des champs obligatoires sont manquants. Vous pouvez retourner mainténant, mais l´événement ne sera pas completé</string>
     <string name="title_delete_go_back">Vos données n\'ont pas été sauvegardées</string>
     <string name="delete_go_back">Si vous retournez maintenant, toute information saisie sera supprimée.</string>
     <string name="missing_mandatory_fields_events_2.0">Certains champs obligatoires sont vides:\n%s\nVous pouvez retourner maintenant, mais cet évènement ne pourra etre complété.</string>
@@ -403,7 +399,6 @@
     <string name="dashboard_indicators">Indicateurs</string>
     <string name="empty_indicators">Il n\'y a pas d\'indicateurs pour ce programme.</string>
     <string name="dashboard_notes">Notes</string>
-    <string name="unable_to_complete">Impossible de terminer</string>
     <string name="field_errors">Certains champs comportent des erreurs. Merci de les vérifier pour compléter.</string>
     <string name="unselect_enrollment">Désélectionner l\'inscription</string>
     <string name="unselect_enrollment_description">Montrer le tableau de bord avec tous les programmes actifs</string>
@@ -414,7 +409,6 @@
     <string name="sectionSelectorPrev">PREC</string>
     <string name="sectionSelectorNext">SUIV.</string>
     <string name="event_overview">Détails</string>
-    <string name="event_event">Evènement</string>
     <string name="event_indicators">Indicateurs</string>
     <string name="event_notes">Notes</string>
     <string name="complete_add_new"><![CDATA[Compléter & ajouter nouveau]]></string>
@@ -480,7 +474,6 @@
     <string name="dashboard_menu_delete_tei">Supprimer TEI</string>
     <string name="dashboard_menu_delete_enrollment">Supprimer seulement l\'enrôlement</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
-    <string name="record_marked_for_deletion">La donnée est marquée pour être supprimée. Vous ne pouvez pas y accéder</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
     <string name="adjusting_form">Adapter le formulaire...</string>

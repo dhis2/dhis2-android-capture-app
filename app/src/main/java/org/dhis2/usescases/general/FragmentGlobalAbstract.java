@@ -12,10 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 import javax.inject.Inject;
 
