@@ -48,4 +48,19 @@
     <string name="visualization_error">Hay algo erróneo en esta visualización</string>
     <string name="visualization_failure">Hay algo erróneo con las visualizaciones</string>
     <string name="visualization_groups_failure">Hay algo erróneo con los grupos de visualizaciones</string>
-    </resources>
+    <string name="pie_chart_no_data">Todos los datos tienen valor cero</string>
+    <string name="error_invalid_arguments">Esta visualización no se encuentra bien configurada, por favor contacte a su administrador.</string>
+    <string name="error_invalid_category">No tiene acceso a la categoría %s</string>
+    <string name="error_invalid_category_option">No tiene acceso a la opción de la categoría %s</string>
+    <string name="error_invalid_data_element">No tiene acceso al elemento de datos %s</string>
+    <string name="error_invalid_data_element_operand">No tiene acceso al elemento %s</string>
+    <string name="error_invalid_indicator">No tiene acceso al indicador %s</string>
+    <string name="error_invalid_org_unit">No tiene acceso a la unidad organizativa %s</string>
+    <string name="error_invalid_org_unit_group">No tiene acceso al grupo de la unidad organizativa %s</string>
+    <string name="error_invalid_org_unit_level">No tiene acceso al nivel de la unidad organizativa %s</string>
+    <string name="error_invalid_program_indicator">No tiene acceso indicador del programa %s</string>
+    <string name="error_invalid_visualization">La visualización %s no se encuentra disponible</string>
+    <string name="error_parsing_visualization">Esta visualización no se encuentra bien configurada, por favor contacte a su administrador.</string>
+    <string name="error_invalid_custom_boundaries">Los límites personalizados de indicadores de programa no son compatibles con los graficos de Android%s</string>
+    <string name="error_database">No se puede acceder a la base de datos. Por favor, contacta con tu administrador.</string>
+</resources>

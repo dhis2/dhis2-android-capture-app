@@ -74,6 +74,7 @@ dependencies {
     debugImplementation project(':core')
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "com.facebook.flipper"
     }
 
     debugImplementation project(':dhis2-rule-engine')

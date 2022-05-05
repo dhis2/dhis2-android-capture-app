@@ -1,8 +1,12 @@
-This is a patch version that fixes:
-- [ANDROAPP-4620] Option set DE is hidden when selecting an option in another option set
-- [ANDROAPP-4570] Dropdown selections in TEI search end up in wrong attributes
-- [ANDROAPP-4568] Crash when opening Event-Program relationship in a map
-- [ANDROAPP-4567] Bidirectional relationships are created in reverse order
-- This patch release updates the Android SDK to version 1.5.3.
-....
-You can find all the details on Jira and Github.
+This new version includes the following features:
+- Support multiple users offline.
+- Support legends for tables in analytics.
+- Break the glass.
+- Make mandatory TEI search configurable.
+- Separate offline/online search flows.
+- can and display GS1 Data matrix QR codes.
+- Allow the user to "refresh data" to get last updated data from server.
+- Render Icons in enrollment forms.
+- ...
+
+You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).

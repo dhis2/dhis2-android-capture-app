@@ -50,7 +50,12 @@ android {
 dependencies {
 
     implementation project(":commons")
-    implementation project(":core")
+
+    debugImplementation project(':core')
+    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "com.facebook.flipper"
+    }
 
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
     implementation "androidx.core:core-ktx:${libraries.corektx}"
