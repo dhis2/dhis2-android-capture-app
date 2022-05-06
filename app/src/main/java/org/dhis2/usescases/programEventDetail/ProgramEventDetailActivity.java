@@ -24,6 +24,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.bindings.BindingsKt;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -244,7 +245,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
 
         if (backDropActive) {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, ExtensionsKt.getDp(16));
             binding.navigationBar.hide();
         } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);

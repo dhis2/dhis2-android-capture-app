@@ -12,21 +12,24 @@
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:mapbox_uiAttributionGravity="top|start"
+            app:mapbox_uiLogoGravity="top|start" />
 
         <org.dhis2.maps.views.CarouselView
             android:id="@+id/map_carousel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="56dp"
+            android:layout_gravity="bottom"
             android:clipToPadding="false"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="20dp"
             app:layout_constraintBottom_toBottomOf="@id/mapView"
-            app:layout_constraintStart_toStartOf="@id/mapView"
+            app:layout_constraintStart_toStartOf="parent"
             tools:listitem="@layout/item_carousel_event" />
 
         <ImageView
