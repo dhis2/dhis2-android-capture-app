@@ -254,17 +254,17 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
             @Override
             public void onTransitionCancel(Transition transition) {
-
+                /*No action needed*/
             }
 
             @Override
             public void onTransitionPause(Transition transition) {
-
+                /*No action needed*/
             }
 
             @Override
             public void onTransitionResume(Transition transition) {
-
+                /*No action needed*/
             }
         });
         transition.setDuration(200);
