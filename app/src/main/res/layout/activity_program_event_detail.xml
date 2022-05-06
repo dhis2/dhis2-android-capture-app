@@ -156,72 +156,28 @@
                 app:layout_constraintVertical_bias="0"
                 tools:listitem="@layout/item_header_filter" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/eventsLayout"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/clearFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{()->presenter.clearFilterClick()}"
+                app:backgroundTint="@color/white"
+                app:elevation="4dp"
+                app:fabSize="mini"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/filterLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_refresh"
+                app:tint="?colorPrimary" />
+
+            <FrameLayout
+                android:id="@+id/fragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/backdropGuideTop">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/filterOpen"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="visible">
-
-                    <View
-                        android:id="@+id/view"
-                        android:layout_width="24dp"
-                        android:layout_height="4dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/ic_bottom_sheet_thumb"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/clear_filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:onClick="@{()->presenter.clearFilterClick()}"
-                        android:padding="4dp"
-                        app:viewVisibility="@{totalFilters>0}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/close_filter"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_refresh"
-                        app:tint="?colorPrimary" />
-
-                    <ImageView
-                        android:id="@+id/close_filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:onClick="@{()->presenter.showFilter()}"
-                        android:padding="4dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_arrow_up"
-                        app:tint="?colorPrimary" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <FrameLayout
-                    android:id="@+id/fragmentContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintTop_toBottomOf="@id/backdropGuideTop" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/addEventButton"

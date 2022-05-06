@@ -19,6 +19,9 @@ class ProgramEventDetailViewModel : ViewModel() {
     val currentScreen: LiveData<EventProgramScreen>
         get() = Transformations.distinctUntilChanged(_currentScreen)
 
+    private val _backdropActive = MutableLiveData<Boolean>()
+    val backdropActive: LiveData<Boolean> get() = _backdropActive
+
     fun setProgress(showProgress: Boolean) {
         progress.value = showProgress
     }
@@ -39,5 +42,9 @@ class ProgramEventDetailViewModel : ViewModel() {
 
     fun onRecreationActivity(isRecreating: Boolean) {
         recreationActivity = isRecreating
+    }
+
+    fun updateBackdrop(isActive: Boolean) {
+        _backdropActive.value = isActive
     }
 }

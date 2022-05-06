@@ -110,7 +110,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     return false;
             }
         });
-        ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.fragmentContainer, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
         binding.syncButton.setOnClickListener(view-> showSyncDialogProgram());
@@ -236,19 +236,48 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void showHideFilter() {
         Transition transition = new ChangeBounds();
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                if(!backDropActive){
+                    binding.clearFilters.hide();
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                programEventsViewModel.updateBackdrop(backDropActive);
+                if(backDropActive){
+                    binding.clearFilters.show();
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
         transition.setDuration(200);
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
-        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
-        ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
 
         if (backDropActive) {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, ExtensionsKt.getDp(16));
+            initSet.connect(R.id.fragmentContainer, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, ExtensionsKt.getDp(16));
             binding.navigationBar.hide();
         } else {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.fragmentContainer, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
             binding.navigationBar.show();
         }
 
