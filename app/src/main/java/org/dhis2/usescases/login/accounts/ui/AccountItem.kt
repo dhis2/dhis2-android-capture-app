@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login.accounts.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
 
+@ExperimentalMaterialApi
 @Composable
 fun AccountItem(
     modifier: Modifier = Modifier,
@@ -34,8 +35,8 @@ fun AccountItem(
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
-            .fillMaxWidth()
-            .clickable { onItemClicked(account) }
+            .fillMaxWidth(),
+        onClick = { onItemClicked(account) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -71,6 +72,7 @@ fun AccountItem(
     }
 }
 
+@ExperimentalMaterialApi
 @Preview(showBackground = false)
 @Composable
 fun AccountPreview() {

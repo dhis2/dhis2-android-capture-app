@@ -42,7 +42,6 @@ class DataValuePresenter(
 
         disposable.add(
             dataTableModelConnectable.map(repository::setTableData)
-                .doOnComplete { getDataSetIndicators() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -122,7 +121,7 @@ class DataValuePresenter(
         )
     }
 
-    private fun getDataSetIndicators() {
+    fun getDataSetIndicators() {
         disposable.add(
             repository.getDataSetIndicators()
                 .subscribeOn(schedulerProvider.io())

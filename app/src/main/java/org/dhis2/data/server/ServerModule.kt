@@ -17,7 +17,6 @@ import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
-import org.dhis2.utils.reporting.SentryOkHttpInterceptor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
@@ -94,11 +93,6 @@ class ServerModule {
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(context.app().appComponent().matomoController())
-                )
-            )
-            interceptors.add(
-                SentryOkHttpInterceptor(
-                    context.app().appComponent().preferenceProvider()
                 )
             )
             return D2Configuration.builder()

@@ -2,8 +2,8 @@ package org.dhis2.data.forms.dataentry;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.data.forms.FormRepository;
+import org.dhis2.form.bindings.RuleExtensionsKt;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;

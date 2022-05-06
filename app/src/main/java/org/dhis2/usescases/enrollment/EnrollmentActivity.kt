@@ -239,7 +239,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
-            formView.onSaveClick()
+            formView.onBackPressed()
         } else {
             showDeleteDialog()
         }

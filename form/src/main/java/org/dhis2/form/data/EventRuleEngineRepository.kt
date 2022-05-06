@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import org.dhis2.Bindings.toRuleDataValue
+import org.dhis2.form.bindings.toRuleDataValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program

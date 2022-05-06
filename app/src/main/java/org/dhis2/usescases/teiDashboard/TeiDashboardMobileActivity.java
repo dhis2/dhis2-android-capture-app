@@ -228,7 +228,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.TEI)
-                .setUid(teiUid)
+                .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
                     if(hasChanged && !restartingActivity) {
                         restartingActivity = true;
@@ -399,6 +399,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
 
         setViewpagerAdapter();
+        binding.searchFilterGeneral.setVisibility(View.GONE);
+        binding.relationshipMapIcon.setVisibility(View.GONE);
 
         if (OrientationUtilsKt.isLandscape()) {
             getSupportFragmentManager().beginTransaction()

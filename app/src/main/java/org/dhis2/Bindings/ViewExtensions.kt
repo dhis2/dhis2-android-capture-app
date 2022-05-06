@@ -6,8 +6,13 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
+import android.widget.ListPopupWindow
+import android.widget.Spinner
 import android.widget.TextView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tbuonomo.viewpagerdotsindicator.R
+import java.lang.Exception
 import org.dhis2.commons.extensions.closeKeyboard
 
 fun View.getThemePrimaryColor(): Int {
@@ -67,5 +72,45 @@ fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
             }
         }
         clipToOutline = true
+    }
+}
+
+fun Spinner.overrideHeight(desiredHeight: Int) {
+    try {
+        val popup = Spinner::class.java.getDeclaredField("mPopup")
+        popup.isAccessible = true
+
+        // Get private mPopup member variable and try cast to ListPopupWindow
+        val popupWindow = popup[this] as ListPopupWindow
+
+        // Set popupWindow height
+        popupWindow.height = desiredHeight
+    } catch (e: Exception) {
+        // silently fail...
+    }
+}
+
+fun Spinner.doOnItemSelected(onItemSelected: (selectedIndex: Int) -> Unit) {
+    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            adapterView: AdapterView<*>?,
+            view: View?,
+            selectedIndex: Int,
+            id: Long
+        ) {
+            onItemSelected(selectedIndex)
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            // Don't do anything
+        }
+    }
+}
+
+fun FloatingActionButton.display(shouldBeDisplayed: Boolean) {
+    if (shouldBeDisplayed) {
+        show()
+    } else {
+        hide()
     }
 }

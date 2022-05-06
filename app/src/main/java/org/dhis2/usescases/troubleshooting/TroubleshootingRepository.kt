@@ -1,11 +1,11 @@
 package org.dhis2.usescases.troubleshooting
 
-import java.util.HashMap
-import org.dhis2.Bindings.toRuleEngineObject
-import org.dhis2.Bindings.toRuleVariableList
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.form.bindings.toRuleEngineObject
+import org.dhis2.form.bindings.toRuleVariableList
+import org.dhis2.form.model.RuleActionError
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
@@ -51,10 +51,16 @@ class TroubleshootingRepository(
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
             }
             val ruleActionConditions = rule.actions().mapNotNull { ruleAction ->
-                if (ruleAction is RuleActionUnsupported) {
-                    "%s is not supported".format(ruleAction.actionValueType())
-                } else {
-                    evaluateAction(ruleAction, valueMap)
+                when (ruleAction) {
+                    is RuleActionUnsupported -> {
+                        "%s is not supported".format(ruleAction.actionValueType())
+                    }
+                    is RuleActionError -> {
+                        ruleAction.action + " : " + ruleAction.message
+                    }
+                    else -> {
+                        evaluateAction(ruleAction, valueMap)
+                    }
                 }
             }
             if (ruleActionConditions.isNotEmpty()) {

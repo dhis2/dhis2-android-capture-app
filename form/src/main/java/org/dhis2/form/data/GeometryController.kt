@@ -42,6 +42,7 @@ class GeometryController(private val geometryParser: GeometryParser) {
             override fun intent(intent: FormIntent) {
                 when (intent) {
                     is FormIntent.SaveCurrentLocation -> updateCoordinates(intent.value)
+                    is FormIntent.ClearValue -> updateCoordinates(null)
                     else -> {
                     }
                 }

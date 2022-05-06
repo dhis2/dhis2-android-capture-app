@@ -11,7 +11,7 @@ class ConfigureEventCoordinates(
     private val repository: EventDetailsRepository
 ) {
 
-    operator fun invoke(value: String? = null): Flow<EventCoordinates> {
+    operator fun invoke(value: String? = ""): Flow<EventCoordinates> {
         return flowOf(
             EventCoordinates(
                 active = isActive(),
@@ -22,7 +22,9 @@ class ConfigureEventCoordinates(
 
     private fun getGeometryModel(value: String?): FieldUiModel {
         var model = repository.getGeometryModel()
-        value?.let { model = model.setValue(it) }
+        if (value?.isNotEmpty() != false) {
+            model = model.setValue(value)
+        }
         return model
     }
 

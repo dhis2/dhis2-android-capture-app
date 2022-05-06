@@ -333,48 +333,6 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should reopen event`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2
-        )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid)
-        ) doReturn mock()
-
-        assertTrue(repository.reopenEvent())
-    }
-
-    @Test
-    fun `Should throw error when reopening event`() {
-        mockEvent()
-        mockSections()
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2
-        )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().uid(eventUid).setStatus(any())
-        ) doThrow D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("error test")
-            .build()
-
-        assertTrue(!repository.reopenEvent())
-    }
-
-    @Test
     fun `Should delete event`() {
         mockEvent()
         mockSections()
@@ -420,7 +378,6 @@ class EventCaptureRepositoryImplTest {
         mockSections()
 
         val repository = EventCaptureRepositoryImpl(
-
             eventUid,
             d2
         )

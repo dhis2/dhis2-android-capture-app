@@ -93,8 +93,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController,
-                             SearchMessageMapper searchMessageMapper) {
+                             MatomoAnalyticsController matomoAnalyticsController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -234,7 +233,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (otherProgramSelected) {
             selectedProgram = newProgramSelected;
             view.clearList(newProgramSelected == null ? null : newProgramSelected.uid());
-            view.setFabIcon(true);
             preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             searchRepository.setCurrentProgram(newProgramSelected != null ? newProgramSelected.uid() : null);
         }
@@ -249,8 +247,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onClearClick() {
-        view.setFabIcon(true);
-        view.showClearSearch(false);
         searchRepository.setCurrentProgram(selectedProgram != null ? selectedProgram.uid() : null);
         currentProgram.onNext(selectedProgram != null ? selectedProgram.uid() : "");
     }
@@ -479,11 +475,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onSyncIconClick(String teiUid) {
         matomoAnalyticsController.trackEvent(TRACKER_LIST, SYNC_TEI, CLICK);
         view.showSyncDialog(teiUid);
-    }
-
-    @Override
-    public void showFilter() {
-        view.showHideFilter();
     }
 
     @Override

@@ -32,6 +32,8 @@ public interface SearchRepository {
     @NonNull
     LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline);
 
+    void clearFetchedList();
+
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 

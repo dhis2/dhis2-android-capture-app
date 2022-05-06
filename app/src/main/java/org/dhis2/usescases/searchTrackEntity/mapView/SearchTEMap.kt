@@ -27,7 +27,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
-import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -101,7 +100,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.openSearchButton.setOnClickListener {
-            viewModel.setSearchScreen(isLandscape())
+            viewModel.setSearchScreen()
         }
 
         teiMapManager = TeiMapManager(binding.mapView)

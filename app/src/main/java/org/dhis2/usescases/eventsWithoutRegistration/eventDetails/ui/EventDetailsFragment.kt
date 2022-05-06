@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.unnamed.b.atv.model.TreeNode
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
@@ -231,9 +230,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             dialog.dismiss()
         }
         dialog.setNegativeListener { dialog.dismiss() }
-        dialog.setNodeClickListener { node: TreeNode, _: Any? ->
-            if (node.children.isNotEmpty()) node.isExpanded = node.isExpanded
-        }
         dialog.show(requireActivity().supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
@@ -243,12 +239,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showCategoryPopUp(category: EventCategory) {
         CatOptionPopUp(
-            requireContext(),
-            binding.catComboLayout,
-            category.name,
-            category.options,
-            true,
-            viewModel.eventDate.value.currentDate
+            context = requireContext(),
+            anchor = binding.catComboLayout,
+            options = category.options,
+            date = viewModel.eventDate.value.currentDate,
+            orgUnitUid = viewModel.eventDetails.value.selectedOrgUnit
         ) { categoryOption ->
             val selectedOption = Pair(category.uid, categoryOption?.uid())
             viewModel.setUpCategoryCombo(selectedOption)

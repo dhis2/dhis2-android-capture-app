@@ -48,7 +48,5 @@ class HomeRepositoryImpl(
         return d2.systemInfoModule().systemInfo().get()
     }
 
-    override fun canManageAccounts(): Boolean {
-        return d2.userModule().accountManager().getAccounts().size > 1
-    }
+    override fun accountsCount() = d2.userModule().accountManager().getAccounts().count()
 }

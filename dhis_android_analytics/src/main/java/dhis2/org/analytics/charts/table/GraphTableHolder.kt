@@ -11,7 +11,7 @@ class GraphTableHolder(itemView: View) : AbstractViewHolder(itemView) {
         val textView = itemView.findViewById<TextView>(R.id.text)
         textView.text = model.text
 
-        if (model.color != null && model.color != null) {
+        if (model.color != null) {
             textView.setBackgroundColor(model.color)
         } else {
             textView.setBackgroundColor(

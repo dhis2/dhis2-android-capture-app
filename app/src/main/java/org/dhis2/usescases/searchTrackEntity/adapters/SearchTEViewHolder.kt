@@ -6,7 +6,7 @@ import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 
 class SearchTEViewHolder(
     private val binding: ItemSearchTrackedEntityBinding,
-    private val onSyncIconClick: (teiUid: String) -> Unit,
+    private val onSyncIconClick: (enrollmentUid: String) -> Unit,
     private val onDownloadTei: (teiUid: String, enrollmentUid: String?) -> Unit,
     private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit
 ) : BaseTeiViewHolder(binding) {
@@ -25,7 +25,7 @@ class SearchTEViewHolder(
                 itemView.context,
                 itemView.context.getString(R.string.record_marked_for_deletion),
                 Toast.LENGTH_SHORT
-            ).show() else onSyncIconClick(teiModel.tei.uid())
+            ).show() else onSyncIconClick(teiModel.selectedEnrollment.uid())
         }
 
         binding.download.setOnClickListener {

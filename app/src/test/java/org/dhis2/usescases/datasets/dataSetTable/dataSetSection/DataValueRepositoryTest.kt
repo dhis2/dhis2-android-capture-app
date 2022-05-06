@@ -111,7 +111,9 @@ class DataValueRepositoryTest {
     @Test
     fun `Should return catOptions when there are no section and dataSetElement have catOptions`() {
         val dataSetElements = listOf(dummyDataSetElement(), dummyDataSetElement())
-
+        val dataElements = dataSetElements.map {
+            DataElement.builder().uid(it.dataElement().uid()).build()
+        }
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
         ) doReturn mock()
@@ -122,6 +124,36 @@ class DataValueRepositoryTest {
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                 .dataSetElements()
         ) doReturn dataSetElements
+
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+                .dataElements()
+        ) doReturn dataElements
 
         val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
         val categoryCombos = dataSetElements.map {
@@ -162,7 +194,9 @@ class DataValueRepositoryTest {
         val dataSetElements = listOf(dummyDataSetElementWithNoCatCombo())
         val categoryCombos = listOf(dummyCategoryCombo())
         val categoryCombosUids = categoryCombos.map { it.uid() }
-
+        val dataElements = dataSetElements.map {
+            DataElement.builder().uid(it.dataElement().uid()).build()
+        }
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
         ) doReturn mock()
@@ -193,6 +227,35 @@ class DataValueRepositoryTest {
                 .categoryComboUid()
         ) doReturn categoryCombosUids.first()
 
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+                .dataElements()
+        ) doReturn dataElements
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
         ) doReturn mock()
@@ -225,7 +288,6 @@ class DataValueRepositoryTest {
     @Test
     fun `Should return catOptions for a section and dataSetElement have catOptions`() {
         val dataSetElements = listOf(dummyDataSetElement(), dummyDataSetElement())
-        val sectionName = "section"
         val dataElements = dataSetElements.map {
             DataElement.builder().uid(it.dataElement().uid()).build()
         }
@@ -242,54 +304,32 @@ class DataValueRepositoryTest {
         ) doReturn dataSetElements
 
         whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
+            d2.dataSetModule().sections().withDataElements()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid()
         ) doReturn mock()
         whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
+            d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
         ) doReturn mock()
         whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
+            d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
-                .byDisplayName()
+                .uid(sectionUid)
         ) doReturn mock()
         whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
+            d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
-                .byDisplayName().eq(sectionName)
+                .uid(sectionUid)
+                .blockingGet()
         ) doReturn mock()
         whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
+            d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
-                .byDisplayName().eq(sectionName)
-                .one()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
-                .byDataSetUid().eq(dataSetUid)
-                .byDisplayName().eq(sectionName)
-                .one().blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule()
-                .sections()
-                .withDataElements()
-                .byDataSetUid().eq(dataSetUid)
-                .byDisplayName().eq(sectionName)
-                .one().blockingGet()
+                .uid(sectionUid)
+                .blockingGet()
                 .dataElements()
         ) doReturn dataElements
 
