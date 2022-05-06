@@ -109,6 +109,11 @@ class EventDetailsRepository(
             .uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE
     }
 
+    fun getEnrollmentDate(uid: String?): Date? {
+        val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
+        return enrollment.enrollmentDate()
+    }
+
     fun getFilteredOrgUnits(
         date: String?,
         parentUid: String?

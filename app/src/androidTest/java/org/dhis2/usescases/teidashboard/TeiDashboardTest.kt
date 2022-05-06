@@ -242,6 +242,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Nondeterministic")
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
