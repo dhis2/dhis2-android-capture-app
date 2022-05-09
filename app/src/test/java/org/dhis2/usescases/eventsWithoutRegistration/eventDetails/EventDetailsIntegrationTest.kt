@@ -35,9 +35,7 @@ import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -94,31 +92,9 @@ class EventDetailsIntegrationTest {
     private lateinit var viewModel: EventDetailsViewModel
 
     @Test
-    @Ignore
-    fun shouldShowExistingEditableEvent() = runBlocking {
-        // When opening event details
-        viewModel = initViewModel(
-            periodType = PeriodType.Daily,
-            enrollmentStatus = EnrollmentStatus.ACTIVE
-        )
-
-        // Then we should see event info
-        assertEquals(viewModel.eventDetails.value.name, PROGRAM_STAGE_NAME)
-        assertEquals(viewModel.eventDetails.value.style, style)
-        assertEquals(viewModel.eventDetails.value.selectedDate, eventDate)
-        assertEquals(viewModel.eventDetails.value.selectedOrgUnit, ORG_UNIT_UID)
-        assertEquals(viewModel.eventCoordinates.value.model?.value, COORDINATES)
-    }
-
-    @Test
     fun `should reopen a completed event`() = runBlocking {
         // Given an event that can be reopened
         whenever(eventDetailsRepository.getCanReopen()) doReturn true
-
-        // AND is not editable
-        /*whenever(
-            eventDetailsRepository.getEditableStatus()
-        ) doReturn EventEditableStatus.NonEditable(BLOCKED_BY_COMPLETION)*/
 
         // AND is completed
         viewModel = initViewModel(

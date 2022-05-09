@@ -78,7 +78,6 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    //Reopen could be moved to EventDetailsIntegrationTest
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
         val eventOrgUnit = "Ngelehun CHC"

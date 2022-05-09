@@ -58,8 +58,6 @@ class EventTest: BaseTest() {
     }
 
     @Test
-    //Missing tab interaction (maybe flows)
-    //Missing completion percentage
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
         val eventDetails = createEventDetails()
 
