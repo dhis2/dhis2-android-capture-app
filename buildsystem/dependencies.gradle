@@ -76,7 +76,7 @@ ext {
             crashactivity             : "2.3.0",
 
             //QR/Barcode scanner
-            zxing                     : "3.4.2-SNAPSHOT",
+            zxing                     : "3.5.0",
             zxingbarcode              : "1.9.8",
             zxingandroid              : "4.3.0",
 
