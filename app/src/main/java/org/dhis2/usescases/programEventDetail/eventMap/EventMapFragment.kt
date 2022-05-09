@@ -12,8 +12,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
-import org.dhis2.commons.animations.hide
-import org.dhis2.commons.animations.show
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
 import org.dhis2.maps.carousel.CarouselAdapter
