@@ -29,11 +29,22 @@ class FeedbackHelpItemBinder : TreeAdapterBinder(FeedbackHelpItem::class.java) {
 
             refreshShowingAll(holder, feedbackHelpItem)
 
+            helpText.setOnClickListener {
+                expandOrCollapse(holder, feedbackHelpItem)
+            }
+
             arrow.setOnClickListener {
-                feedbackHelpItem.showingAll = !feedbackHelpItem.showingAll
-                refreshShowingAll(holder, feedbackHelpItem)
+                expandOrCollapse(holder, feedbackHelpItem)
             }
         }
+    }
+
+    private fun expandOrCollapse(
+        holder: RecyclerView.ViewHolder,
+        feedbackHelpItem: FeedbackHelpItem
+    ) {
+        feedbackHelpItem.showingAll = !feedbackHelpItem.showingAll
+        refreshShowingAll(holder, feedbackHelpItem)
     }
 
     private fun refreshShowingAll(
