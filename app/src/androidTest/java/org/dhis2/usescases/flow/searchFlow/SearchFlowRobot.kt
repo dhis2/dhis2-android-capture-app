@@ -21,11 +21,11 @@ class SearchFlowRobot : BaseRobot() {
         }
     }
 
-    fun checkSearchCounters(searchCount: String, filterAtPositionCount: String, filter: String, filterTotalCount: String) {
+    fun checkSearchCounters(filterAtPositionCount: String, filter: String, filterTotalCount: String) {
         filterRobot {
             checkFilterCounter(filterTotalCount)
             checkCountAtFilter(filter, filterAtPositionCount)
-            closeSearchForm()
+            clickOnFilter()
         }
     }
 
