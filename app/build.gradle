@@ -211,8 +211,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycleviewmodel}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
 
-    debugImplementation project(':dhis2-rule-engine')
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+    implementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
     }
 
