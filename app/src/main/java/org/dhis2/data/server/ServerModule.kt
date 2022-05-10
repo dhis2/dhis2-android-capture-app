@@ -11,10 +11,14 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
+import org.dhis2.metadata.usecases.ProgramConfiguration
+import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
+import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.hisp.dhis.android.core.D2
@@ -80,6 +84,16 @@ class ServerModule {
     @PerServer
     fun providesRepository(d2: D2, systemStyleMapper: SystemStyleMapper): ServerSettingsRepository {
         return ServerSettingsRepository(d2, systemStyleMapper)
+    }
+
+    @Provides
+    @PerServer
+    fun providesThemeManager(d2: D2, preferenceProvider: PreferenceProvider): ThemeManager {
+        return ThemeManager(
+            ProgramConfiguration(d2),
+            TrackedEntityTypeConfiguration(d2),
+            preferenceProvider
+        )
     }
 
     companion object {

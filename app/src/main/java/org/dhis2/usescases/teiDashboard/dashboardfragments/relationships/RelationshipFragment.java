@@ -24,6 +24,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.data.RelationshipViewModel;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
@@ -62,6 +63,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     CarouselViewAnimations animations;
     @Inject
     ExternalMapNavigation mapNavigation;
+    @Inject
+    ThemeManager themeManager;
 
     private FragmentRelationshipsBinding binding;
 
@@ -87,6 +90,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         return bundle;
     }
 
+    private String programUid(){
+        return getArguments().getString("ARG_PROGRAM_UID");
+    }
+
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
@@ -95,7 +102,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             ((App) context.getApplicationContext()).userComponent()
                     .plus(new RelationshipModule(
                             this,
-                            getArguments().getString("ARG_PROGRAM_UID"),
+                            programUid(),
                             getArguments().getString("ARG_TEI_UID"),
                             getArguments().getString("ARG_ENROLLMENT_UID"),
                             getArguments().getString("ARG_EVENT_UID"))
@@ -207,6 +214,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        themeManager.setProgramTheme(programUid());
         if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {

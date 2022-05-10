@@ -225,23 +225,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public int getProgramTheme(int appTheme) {
-        return preferenceProvider.getInt(Constants.PROGRAM_THEME, preferenceProvider.getInt(Constants.THEME, appTheme));
-    }
-
-    @Override
     public void prefSaveCurrentProgram(String programUid) {
         preferenceProvider.setValue(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid);
-    }
-
-    @Override
-    public void saveProgramTheme(int programTheme) {
-        preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
-    }
-
-    @Override
-    public void removeProgramTheme() {
-        preferenceProvider.removeValue(Constants.PROGRAM_THEME);
     }
 
     @Override
