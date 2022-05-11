@@ -509,7 +509,6 @@
     <string name="sync_setting">同步设置：%s</string>
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>
     <string name="formatting_error">格式化错误</string>
-    <string name="dashboard_menu_delete_tei">删除实体（TEI）</string>
     <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
     <string name="validation_url">没有有效的URL</string>

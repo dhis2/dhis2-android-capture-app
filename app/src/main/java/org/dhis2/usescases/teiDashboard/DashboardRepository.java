@@ -88,4 +88,6 @@ public interface DashboardRepository {
     boolean programHasRelationships();
 
     boolean programHasAnalytics();
+
+    String getTETypeName();
 }

@@ -535,7 +535,6 @@
     <string name="sync_setting">إعداد المزامنة: %s</string>
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>
     <string name="formatting_error">خطأ في التنسيق</string>
-    <string name="dashboard_menu_delete_tei">حذف الكيان المتعقب</string>
     <string name="dashboard_menu_delete_enrollment">حذف التسجيل فقط</string>
     <string name="delete_authority_error">ليس لديك الصلاحية لحذف هذا السجل</string>
     <string name="validation_url">هذا ليس عنوان url صالحاً</string>

@@ -471,7 +471,6 @@
     <string name="sync_setting">Paramètre de synchronisation: %s</string>
     <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
-    <string name="dashboard_menu_delete_tei">Supprimer TEI</string>
     <string name="dashboard_menu_delete_enrollment">Supprimer seulement l\'enrôlement</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
