@@ -55,6 +55,7 @@ class GranularSyncContracts {
         fun reportError(throwable: Throwable)
         fun sendSMS()
         fun syncErrors(): List<ErrorViewModel>
+        fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String?
     }
 
     interface OnDismissListener {
