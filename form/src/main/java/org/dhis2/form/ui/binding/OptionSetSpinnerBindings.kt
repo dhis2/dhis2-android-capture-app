@@ -1,11 +1,14 @@
 package org.dhis2.form.ui.binding
 
+import android.widget.ArrayAdapter
+import androidx.appcompat.widget.ListPopupWindow
 import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 
@@ -26,21 +29,15 @@ fun TextView.addOptions(field: FieldUiModel) {
 private fun showOptions(view: View, field: FieldUiModel) {
     when (field.optionsToDisplay?.size) {
         in 0..15 -> {
-            PopupMenu(view.context, view).apply {
-                setOnMenuItemClickListener { item ->
+            ListPopupWindow(view.context, null, R.attr.listPopupWindowStyle).apply {
+                anchorView = view
+                val list = field.optionsToDisplay?.map { it.displayName() } ?: emptyList()
+                val adapter = ArrayAdapter(view.context, R.layout.pop_up_menu_item, list)
+                setAdapter(adapter)
+
+                setOnItemClickListener { _, _, position, _ ->
+                    field.optionsToDisplay?.get(position)?.code()?.let { field.onSave(it) }
                     dismiss()
-                    val optionSelected =
-                        field.optionsToDisplay?.first { it.displayName() == item.title }
-                    field.onSave(optionSelected?.code())
-                    true
-                }
-                field.optionsToDisplay?.forEachIndexed { index, option ->
-                    menu.add(
-                        Menu.NONE,
-                        Menu.NONE,
-                        index + 1,
-                        option.displayName()
-                    )
                 }
                 show()
             }
