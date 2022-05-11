@@ -54,7 +54,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
                 break;
             case PROTECTED_PROGRAM_DENIED:
             case CLOSED_PROGRAM_DENIED:
-                view.displayBreakGlassError();
+                view.displayBreakGlassError(program.typeName());
                 break;
             case READ_ACCESS:
             case NO_ACCESS:
