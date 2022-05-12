@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
 import org.dhis2.utils.Constants
@@ -14,10 +15,12 @@ import org.junit.Test
 
 class ThemeManagerTest {
     private val programConfiguration: ProgramConfiguration = mock()
+    private val dataSetConfiguration: DataSetConfiguration = mock()
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val themeManager = ThemeManager(
         programConfiguration,
+        dataSetConfiguration,
         trackedEntityTypeConfiguration,
         preferenceProvider
     )
