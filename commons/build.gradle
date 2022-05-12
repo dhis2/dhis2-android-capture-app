@@ -66,6 +66,10 @@ dependencies {
         exclude group: "com.facebook.flipper"
     }
 
+    api ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
+    }
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //region GOOGLE AUTO VALUE
@@ -75,43 +79,46 @@ dependencies {
     kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
 
 
-    implementation "androidx.core:core-ktx:${libraries.corektx}"
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "com.google.android.material:material:${libraries.material}"
-    implementation "com.google.code.gson:gson:${libraries.gson}"
-    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-    implementation "com.google.dagger:dagger:${libraries.dagger}"
+    api "androidx.core:core-ktx:${libraries.corektx}"
+    api "androidx.appcompat:appcompat:${libraries.appcompat}"
+    api "com.google.android.material:material:${libraries.material}"
+    api "com.google.code.gson:gson:${libraries.gson}"
+    api "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+    api "com.google.dagger:dagger:${libraries.dagger}"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
-    implementation "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
-    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
-    implementation "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
-    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    api "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
+    api "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
+    api "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+    api "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
+
+    api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
 
     //compose
-    debugApi "androidx.compose.ui:ui-tooling:1.0.4"
+    debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
 
     //Timber
-    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+    api "com.jakewharton.timber:timber:${libraries.timber}"
 
     //Compose
-    api 'androidx.compose.material:material:1.0.4'
+    api "androidx.compose.material:material:${libraries.compose}"
     api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
-    api "com.google.android.material:compose-theme-adapter:1.0.4"
-    api 'androidx.compose.ui:ui-tooling-preview:1.0.4'
-    api("androidx.compose.ui:ui:1.0.4")
-    api("androidx.compose.runtime:runtime-livedata:1.0.4")
-    debugApi "androidx.compose.ui:ui-tooling:1.0.4"
+    api "com.google.android.material:compose-theme-adapter:${libraries.compose}"
+    api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
+    api "androidx.compose.ui:ui:${libraries.compose}"
+    api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
+    debugApi "androidx.compose.ui:ui-tooling:${libraries.compose}"
 
     api "com.github.bumptech.glide:glide:${libraries.glide}"
     kapt "com.github.bumptech.glide:compiler:${libraries.glide}"
 
-    testImplementation 'junit:junit:4.13.2'
+    testApi "junit:junit:${libraries.junit}"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    androidTestApi 'androidx.test.ext:junit:1.1.2'
+    androidTestApi 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestApi 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    api 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    api 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
 
 }
