@@ -61,13 +61,7 @@ public class TeiDashboardContracts {
 
         void refreshTabCounters();
 
-        int getProgramTheme(int appTheme);
-
         void prefSaveCurrentProgram(String programUid);
-
-        void saveProgramTheme(int programTheme);
-
-        void removeProgramTheme();
 
         Boolean getProgramGrouping();
 

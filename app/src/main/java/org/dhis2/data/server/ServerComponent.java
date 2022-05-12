@@ -8,6 +8,7 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.login.accounts.AccountsComponent;
 import org.dhis2.usescases.login.accounts.AccountsModule;
 import org.dhis2.utils.category.CategoryDialogComponent;
@@ -31,6 +32,8 @@ public interface ServerComponent extends Charts.Dependencies {
     OpenIdSession openIdSession();
 
     ServerStatus serverStatus();
+
+    ThemeManager themeManager();
 
     @NonNull
     UserComponent plus(@NonNull UserModule userModule);

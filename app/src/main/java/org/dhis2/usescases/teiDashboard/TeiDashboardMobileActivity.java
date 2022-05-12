@@ -1,5 +1,15 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.TEI_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,23 +37,21 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.Filters;
-import org.dhis2.utils.granularsync.GranularSyncContracts;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,17 +60,9 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
-
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TEI_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
@@ -78,6 +78,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Inject
     public NavigationPageConfigurator pageConfigurator;
+
+    @Inject
+    public ThemeManager themeManager;
 
     protected DashboardProgramModel programModel;
 
@@ -126,7 +129,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait())).inject(this);
-        setTheme(presenter.getProgramTheme(R.style.AppTheme));
+        setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
@@ -230,7 +233,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 .setConflictType(SyncStatusDialog.ConflictType.TEI)
                 .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
-                    if(hasChanged && !restartingActivity) {
+                    if (hasChanged && !restartingActivity) {
                         restartingActivity = true;
                         startActivity(intent(getContext(), teiUid, programUid, enrollmentUid));
                         finish();
@@ -320,9 +323,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
-        setProgramColor(style == null ? "" : style.color());
-
+        themeManager.setProgramTheme(program.getCurrentProgram().uid());
+        setProgramColor(program.getCurrentProgram().uid());
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
@@ -386,7 +388,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
         dashboardViewModel.updateDashboard(program);
-        setProgramColor("");
+        themeManager.clearProgramTheme();
+        setProgramColor(null);
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
@@ -479,38 +482,29 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         fromRelationship = true;
     }
 
-    private void setProgramColor(String color) {
-        int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
+    private void setProgramColor(@Nullable String programUid) {
 
-        if (programTheme != -1) {
-            presenter.saveProgramTheme(programTheme);
-            binding.toolbar.setBackgroundColor(programColor);
-            binding.navigationBar.setIconsColor(programColor);
-        } else {
-            presenter.removeProgramTheme();
-            int colorPrimary;
-            switch (presenter.getProgramTheme(R.style.AppTheme)) {
-                case R.style.RedTheme:
-                    colorPrimary = R.color.colorPrimaryRed;
-                    break;
-                case R.style.OrangeTheme:
-                    colorPrimary = R.color.colorPrimaryOrange;
-                    break;
-                case R.style.GreenTheme:
-                    colorPrimary = R.color.colorPrimaryGreen;
-                    break;
-                case R.style.AppTheme:
-                default:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-            }
-            binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
-        }
+        themeManager.getThemePrimaryColor(
+                programUid,
+                new Function1<Integer, Unit>() {
+                    @Override
+                    public Unit invoke(Integer programColor) {
+                        binding.toolbar.setBackgroundColor(programColor);
+                        binding.navigationBar.setIconsColor(programColor);
+                        return Unit.INSTANCE;
+                    }
+                },
+                new Function1<Integer, Unit>() {
+                    @Override
+                    public Unit invoke(Integer themeColorRes) {
+                        binding.toolbar.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, themeColorRes));
+                        binding.navigationBar.setIconsColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, themeColorRes));
+                        return Unit.INSTANCE;
+                    }
+                });
 
         binding.executePendingBindings();
-        setTheme(presenter.getProgramTheme(R.style.AppTheme));
+        setTheme(themeManager.getProgramTheme());
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

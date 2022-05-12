@@ -3,9 +3,8 @@ package org.dhis2.usescases.main.program
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.utils.Constants.PROGRAM_THEME
+import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK_ON
@@ -17,7 +16,7 @@ class ProgramPresenter internal constructor(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val preferenceProvider: PreferenceProvider,
+    private val themeManager: ThemeManager,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
@@ -88,13 +87,8 @@ class ProgramPresenter internal constructor(
         filterManager.publishData()
     }
 
-    fun onItemClick(programModel: ProgramViewModel, programTheme: Int) {
-        if (programTheme != -1) {
-            preferenceProvider.setValue(PROGRAM_THEME, programTheme)
-        } else {
-            preferenceProvider.removeValue(PROGRAM_THEME)
-        }
-
+    fun onItemClick(programModel: ProgramViewModel) {
+        themeManager.setProgramTheme(programModel.id())
         view.navigateTo(programModel)
     }
 
