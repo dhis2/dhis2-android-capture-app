@@ -102,6 +102,16 @@ class ProgramPresenterTest {
     }
 
     @Test
+    fun `Should navigate to dataSet clicked and save program's theme setting if it has a theme`() {
+        val dataSetViewModel = dataSetViewModel()
+
+        presenter.onItemClick(dataSetViewModel)
+
+        verify(themeManager).setDataSetTheme(dataSetViewModel.id())
+        verify(view).navigateTo(dataSetViewModel)
+    }
+
+    @Test
     fun `Should show program description when image is clicked`() {
         presenter.showDescription("description")
 
@@ -160,6 +170,24 @@ class ProgramPresenterTest {
             "type",
             "typeName",
             "programType",
+            "description",
+            onlyEnrollOnce = true,
+            accessDataWrite = true,
+            state = "Synced",
+            hasOverdueEvent = false
+        )
+    }
+
+    private fun dataSetViewModel(): ProgramViewModel {
+        return ProgramViewModel.create(
+            "uid",
+            "displayName",
+            "#ffcdd2",
+            "icon",
+            1,
+            "type",
+            "typeName",
+            "",
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,

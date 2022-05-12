@@ -16,6 +16,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
+import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
 import org.dhis2.ui.ThemeManager
@@ -91,6 +92,7 @@ class ServerModule {
     fun providesThemeManager(d2: D2, preferenceProvider: PreferenceProvider): ThemeManager {
         return ThemeManager(
             ProgramConfiguration(d2),
+            DataSetConfiguration(d2),
             TrackedEntityTypeConfiguration(d2),
             preferenceProvider
         )

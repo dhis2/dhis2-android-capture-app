@@ -3,12 +3,14 @@ package org.dhis2.ui
 import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
 import org.dhis2.utils.Constants
 
 class ThemeManager(
     private val programConfiguration: ProgramConfiguration,
+    private val dataSetConfiguration: DataSetConfiguration,
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration,
     private val preferenceProvider: PreferenceProvider
 ) {
@@ -21,6 +23,13 @@ class ThemeManager(
     }
 
     fun getProgramColor(programUid: String) = programConfiguration.getProgramColor(programUid)
+
+    fun setDataSetTheme(dataSetUid: String) {
+        val dataSetColor = getDataSetColor(dataSetUid)
+        setThemeFromColor(dataSetColor)
+    }
+
+    fun getDataSetColor(dataSetUid: String) = dataSetConfiguration.getDataSetColor(dataSetUid)
 
     fun setTrackedEntityTypeTheme(teTypeUid: String) {
         val teTypeColor = getTeTypeColor(teTypeUid)

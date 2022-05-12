@@ -88,7 +88,11 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        themeManager.setProgramTheme(programModel.id())
+        if (programModel.programType().isNotEmpty()) {
+            themeManager.setProgramTheme(programModel.id())
+        } else {
+            themeManager.setDataSetTheme(programModel.id())
+        }
         view.navigateTo(programModel)
     }
 
