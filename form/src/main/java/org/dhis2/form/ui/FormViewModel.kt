@@ -452,7 +452,7 @@ class FormViewModel(
                 _items.postValue(result.await())
             } catch (e: Exception) {
                 Timber.e(e)
-                _items.value = emptyList()
+                _items.postValue(emptyList())
             }
         }
     }
