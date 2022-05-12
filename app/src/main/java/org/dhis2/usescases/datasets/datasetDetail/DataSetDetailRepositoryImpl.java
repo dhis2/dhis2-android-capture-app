@@ -76,6 +76,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         state = dscr.state();
                     }
 
+                    boolean isCompleted = false;
+                    if (dscr != null) {
+                        if (Boolean.FALSE.equals(dscr.deleted())) {
+                            isCompleted = true;
+                        }
+                    }
 
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),
@@ -87,7 +93,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             state,
                             dataSetReport.periodType().name(),
                             dataSetOrgUnitNumber > 1,
-                            dscr != null);
+                            isCompleted);
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
