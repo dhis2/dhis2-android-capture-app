@@ -65,30 +65,28 @@ class TeiProgramListPresenterTest {
 
     @Test
     fun `Should show message for closed program`() {
+        val testingProgram = mockedProgramViewModel()
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
         ) doReturn EnrollmentAccess.CLOSED_PROGRAM_DENIED
-        presenter.onEnrollClick(
-            mockedProgramViewModel()
-        )
-        verify(view).displayBreakGlassError()
+        presenter.onEnrollClick(testingProgram)
+        verify(view).displayBreakGlassError(testingProgram.typeName())
     }
 
     @Test
     fun `Should show message for protected program`() {
+        val testingProgram = mockedProgramViewModel()
         whenever(
             enrollmentService.blockingGetEnrollmentAccess(
                 anyString(),
                 anyString()
             )
         ) doReturn EnrollmentAccess.PROTECTED_PROGRAM_DENIED
-        presenter.onEnrollClick(
-            mockedProgramViewModel()
-        )
-        verify(view).displayBreakGlassError()
+        presenter.onEnrollClick(testingProgram)
+        verify(view).displayBreakGlassError(testingProgram.typeName())
     }
 
     @Test
