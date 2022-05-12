@@ -76,12 +76,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         state = dscr.state();
                     }
 
-                    boolean isCompleted = false;
-                    if (dscr != null) {
-                        if (Boolean.FALSE.equals(dscr.deleted())) {
-                            isCompleted = true;
-                        }
-                    }
+                    boolean isCompleted = dscr != null && Boolean.FALSE.equals(dscr.deleted());
 
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),
