@@ -360,11 +360,10 @@ class FormRepositoryImpl(
     private fun List<FieldUiModel>.mergeListWithErrorFields(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldUiModel> {
-        return map { item ->
+        mandatoryItemsWithoutValue.clear()
+        val mergedList = this.map { item ->
             if (item.mandatory && item.value == null) {
                 mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
-            } else {
-                mandatoryItemsWithoutValue.remove(item.label)
             }
             fieldsWithError.find { it.id == item.uid }?.let { action ->
                 val error = action.error?.let {
@@ -379,6 +378,7 @@ class FormRepositoryImpl(
                     )
             } ?: item
         }
+        return mergedList
     }
 
     override fun updateErrorList(action: RowAction) {
