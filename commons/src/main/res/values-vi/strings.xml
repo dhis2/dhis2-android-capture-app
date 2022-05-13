@@ -29,12 +29,12 @@
     <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="events">sự kiện</string>
     <string name="data_sets">Biểu nhập</string>
-    <string name="tei">ĐỐI TƯỢNG THEO DÕI</string>
+    <string name="tei">Đối Tượng Theo Dõi</string>
     <string name="info">Thông tin</string>
-    <string name="done">Hoàn tất</string>
+    <string name="done">Hoàn thành</string>
 
     <!-- Filters -->
-    <string name="filters_active">Các bộ lọc đang được áp dụng</string>
+    <string name="filters_active">Đang áp dụng các bộ lọc</string>
     <string name="filters_disabled">Không có bộ lọc nào được áp dụng</string>
     <string name="filters_title_period">Thời điểm</string>
     <string name="filters_title_org_unit">Đơn vị</string>
@@ -57,14 +57,14 @@
     <string name="state_error">Lỗi</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="state_uploading">Đang tải lên</string>
-    <string name="state_relationship">Quan hệ</string>
+    <string name="state_relationship">Mối quan hệ</string>
     <string name="sent_by_sms">Đã gửi bằng sms</string>
     <string name="sync_by_sms">Đã đồng bộ bằng SMS</string>
 
     <!-- Status -->
     <string name="filter_event_status_open">Mở</string>
     <string name="filter_event_status_schedule">Lịch hẹn</string>
-    <string name="filter_event_status_overdue">Trễ hẹn</string>
+    <string name="filter_event_status_overdue">Quá hạn</string>
     <string name="filter_event_status_visited">Đã đến</string>
     <string name="filter_event_status_completed">Hoàn tất</string>
     <string name="filter_event_status_skipped">Đã bỏ qua</string>
@@ -204,4 +204,6 @@
     <string name="error_min_attributes">Không có đủ yếu tố để thực hiện tìm kiếm. Vui lòng kiểm tra với nhiều yếu tố hơn.</string>
     <string name="error_org_unit_scope">Tìm kiếm trực tuyến chỉ hiển thị trong các đơn vị mà tài khoảng của bạn được cấp.</string>
     <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
-    </resources>
+    <string name="unsupported_field_description">Trường này không hiển thị để nhập dữ liệu bằng điện thoại</string>
+    <string name="add_image">Thêm hình ảnh</string>
+</resources>
