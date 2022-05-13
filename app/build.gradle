@@ -314,6 +314,11 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation 'com.google.truth:truth:0.43'
 
+    implementation(platform("com.rickbusarow.dispatch:dispatch-bom:1.0.0-beta10"))
+    implementation("com.rickbusarow.dispatch:dispatch-core")
+
+    androidTestImplementation("com.rickbusarow.dispatch:dispatch-android-espresso:1.0.0-beta10")
+
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
     androidTestImplementation "androidx.test:runner:1.4.0"
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'

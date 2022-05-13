@@ -174,6 +174,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .workManagerController(new WorkManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule())
+                .customDispatcher(new CustomDispatcherModule())
                 .featureConfigModule(new FeatureConfigModule());
     }
 

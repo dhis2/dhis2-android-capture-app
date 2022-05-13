@@ -9,6 +9,9 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import dispatch.android.espresso.IdlingDispatcherProvider
+import dispatch.android.espresso.IdlingDispatcherProviderRule
+import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
@@ -37,6 +40,14 @@ class SearchTETest : BaseTest() {
 
     private var mapIdlingResource: MapIdlingResource? = null
     private var map: MapboxMap? = null
+
+    val customDispatcherProvider = context.applicationContext.app().appComponent().customDispatcherProvider()
+
+    @JvmField
+    @Rule
+    val idlingRule = IdlingDispatcherProviderRule {
+        IdlingDispatcherProvider(customDispatcherProvider)
+    }
 
     @Test
     fun shouldSuccessfullySearchByName() {

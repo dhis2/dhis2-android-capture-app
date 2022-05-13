@@ -66,6 +66,7 @@ import java.util.Map;
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
+import dispatch.core.DispatcherProvider;
 
 @Module
 public class SearchTEModule {
