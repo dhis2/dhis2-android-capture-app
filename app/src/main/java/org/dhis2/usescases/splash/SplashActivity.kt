@@ -123,7 +123,9 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         } else {
             startActivity(
                 LoginActivity::class.java,
-                LoginActivity.bundle(),
+                LoginActivity.bundle(
+                    accountsCount = presenter.getAccounts()
+                ),
                 true,
                 true,
                 null

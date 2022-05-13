@@ -72,4 +72,8 @@ class SplashPresenter internal constructor(
         crashReportController.trackServer(server)
         crashReportController.trackUser(username, server)
     }
+
+    fun getAccounts(): Int {
+        return userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+    }
 }

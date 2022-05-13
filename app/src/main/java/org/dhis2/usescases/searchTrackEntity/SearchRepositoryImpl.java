@@ -36,6 +36,7 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.model.StoreResult;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -107,7 +108,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final NetworkUtils networkUtils;
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
-    private PreferenceProvider prefs;
+    private ThemeManager themeManager;
     private HashSet<String> fetchedTeiUids = new HashSet<>();
 
     SearchRepositoryImpl(String teiType,
@@ -121,7 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                          CrashReportController crashReportController,
                          NetworkUtils networkUtils,
                          SearchTEIRepository searchTEIRepository,
-                         PreferenceProvider prefs
+                         ThemeManager themeManager
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -134,7 +135,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.currentProgram = initialProgram;
         this.networkUtils = networkUtils;
         this.searchTEIRepository = searchTEIRepository;
-        this.prefs = prefs;
+        this.themeManager = themeManager;
     }
 
     @Override
@@ -550,22 +551,10 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public void setCurrentTheme(@Nullable Program selectedProgram) {
-        String metadataColor;
-        if (selectedProgram != null) {
-            metadataColor = getProgramColor(selectedProgram.uid());
-        } else {
-            metadataColor = d2.trackedEntityModule().trackedEntityTypes().uid(teiType)
-                    .blockingGet()
-                    .style()
-                    .color();
-        }
-
-        int programTheme = ColorUtils.getThemeFromColor(metadataColor);
-
-        if (programTheme != -1) {
-            prefs.setValue(Constants.PROGRAM_THEME, programTheme);
-        } else {
-            prefs.removeValue(Constants.PROGRAM_THEME);
+        if(selectedProgram != null) {
+            themeManager.setProgramTheme(selectedProgram.uid());
+        }else{
+            themeManager.setTrackedEntityTypeTheme(teiType);
         }
     }
 

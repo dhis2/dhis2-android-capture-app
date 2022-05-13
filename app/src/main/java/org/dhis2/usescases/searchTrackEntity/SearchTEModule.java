@@ -54,6 +54,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.EventToEventUiComponent;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -142,10 +143,10 @@ public class SearchTEModule {
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
                                       SearchTEIRepository searchTEIRepository,
-                                      PreferenceProvider preferenceProvider) {
+                                      ThemeManager themeManager) {
         return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
                 searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
-                preferenceProvider);
+                themeManager);
     }
 
     @Provides

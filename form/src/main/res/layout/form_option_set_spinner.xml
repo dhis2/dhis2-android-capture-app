@@ -60,6 +60,8 @@
                 android:layout_height="wrap_content"
                 android:alpha="@{item.editable? 1f : 0.5f}"
                 android:text="@{item.formattedLabel}"
+                android:enabled="@{item.editable}"
+                app:options="@{item}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"

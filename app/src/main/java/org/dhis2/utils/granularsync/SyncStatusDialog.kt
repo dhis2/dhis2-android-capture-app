@@ -351,6 +351,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.noConflictMessage.visibility = View.VISIBLE
 
         binding!!.noConflictMessage.text = getString(R.string.data_values_error_sync_message)
+        setNetworkMessage()
     }
 
     private fun getColorForState(state: State): Int {

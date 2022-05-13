@@ -46,6 +46,7 @@
             layout="@layout/item_no_coordinates"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_gravity="bottom"
             android:layout_marginStart="4.3dp"
             android:layout_marginEnd="2dp"
             android:layout_marginBottom="8dp"
@@ -56,19 +57,24 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/eventInfoCard"
             android:layout_width="match_parent"
-            android:layout_height="81dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:layout_marginStart="4.3dp"
             android:layout_marginEnd="2dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="6dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:rippleColor="@color/rippleColor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:minHeight="96dp"
                 android:padding="16dp">
 
                 <androidx.compose.ui.platform.ComposeView
@@ -79,15 +85,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:layout_width="40dp"
                     tools:layout_height="40dp" />
-
-                <!--<ImageView
-                    android:id="@+id/programStageImage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/square_rounded_corners_2"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/avatars" />-->
 
                 <ImageView
                     android:id="@+id/borderImage"
