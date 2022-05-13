@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import javax.inject.Inject
+import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
@@ -55,7 +58,7 @@ class EventMapFragment :
             eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
             eventMapManager?.onCreate(savedInstanceState)
             eventMapManager?.featureType = presenter.programFeatureType()
-            eventMapManager?. onMapClickListener = this@EventMapFragment
+            eventMapManager?.onMapClickListener = this@EventMapFragment
             eventMapManager?.init(
                 onInitializationFinished = {
                     presenter.init()
@@ -77,6 +80,18 @@ class EventMapFragment :
                 }
             }
         }
+
+        programEventsViewModel.backdropActive.observe(viewLifecycleOwner) { backdropActive ->
+            binding.mapView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                val bottomMargin = if (backdropActive) {
+                    0
+                } else {
+                    40.dp
+                }
+                setMargins(0, 0, 0, bottomMargin)
+            }
+        }
+
         return binding.root
     }
 

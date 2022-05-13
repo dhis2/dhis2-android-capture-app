@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import java.io.File
 import javax.inject.Inject
+import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
@@ -21,12 +24,15 @@ import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.managers.TeiMapManager
 import org.dhis2.maps.model.MapStyle
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.searchTrackEntity.SearchList
+import org.dhis2.usescases.searchTrackEntity.SearchScreenState
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.isPortrait
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
@@ -136,6 +142,20 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             }
         )
         binding.content.clipWithRoundedCorners()
+
+        viewModel.screenState.observe(viewLifecycleOwner) {
+            if (it.screenState == SearchScreenState.MAP) {
+                val backdropActive = isPortrait() && (it as SearchList).searchFilters.isOpened
+                binding.mapView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    val bottomMargin = if (backdropActive) {
+                        0
+                    } else {
+                        40.dp
+                    }
+                    setMargins(0, 0, 0, bottomMargin)
+                }
+            }
+        }
 
         return binding.root
     }
