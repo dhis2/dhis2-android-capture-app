@@ -221,7 +221,7 @@ class ChartCoordinatesProviderImpl(
                     metadata[it]?.displayName.toString()
                 }
 
-                val position = if (periodId == ""){
+                val position = if (periodId == "") {
                     0f
                 } else {
                     periodId.let {
