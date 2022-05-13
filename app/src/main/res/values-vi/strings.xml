@@ -213,6 +213,7 @@
     <string name="settings_sms_result_timeout">Hết thời gian trả kết quả SMS</string>
     <string name="settings_sms_result_timeout_hint">giây</string>
     <string name="settings_sms_result_sender_hint">số</string>
+    <string name="settings_sms_receiver_number_hint">số</string>
     <string name="settings_sms_module_switch">Cho phép nộp SMS</string>
     <string name="settings_sms_response_wait_switch">Đợi phản hồi kết quả SMS</string>
     <plurals name="settings_specific_programs">
@@ -232,7 +233,14 @@
     <string name="settingsSyncParameters">Đồng bộ tham số</string>
     <string name="settingsReservedValues">Các giá trị dành riêng</string>
     <string name="settingsReservedValues_descr">Tại đây, bạn có thể thấy số giá trị dành riêng có thể sử dụng khi ngoại tuyến và đặt thêm các giá trị mới.</string>
-    <string name="settingsReset">Đặt lại ứng dụng</string>
+    <string name="settingsErrorLog">Mở nhật ký lỗi đồng bộ</string>
+    <string name="settingsErrorLog_descr">Nhật ký này chứa tất cả các lỗi gây ra khi đồng bộ dữ liệu và siêu dữ liệu của bạn.</string>
+    <string name="settingsDeleteLocalData">Xóa dữ liệu nội bộ</string>
+    <string name="settingsDeleteLocalData_descr">Tất cả dữ liệu của Ứng Dụng này được lưu trữ trong thiết bị của bạn sẽ bị xóa. Dữ liệu chưa được đồng bộ lên máy chủ sẽ bị mất.</string>
+    <string name="settingsReset">Cài đặt lại dữ liệu và cấu hình</string>
+    <string name="settingsReset_descr">Cấu hình và dữ liệu trong ứng dụng của bạn được lưu trữ trong thiết bị sẽ bị xóa. Bạn sẽ được yêu cầu đăng nhập lại và dữ liệu chưa đồng bộ lên máy chủ sẽ bị mất.</string>
+    <string name="settingsSms">Cài đặt SMS</string>
+    <string name="settingsSms_descr">Kiểm tra và chỉnh sửa các tham số liên quan tới cổng sms</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Ngày đăng ký</string>
@@ -242,28 +250,38 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">Ngày báo cáo</string>
     <string name="add_file">Thêm tập tin</string>
-    <string name="write_new_note">Viết chú thích mới</string>
+    <string name="write_new_note">Viết ghi chú mới</string>
     <string name="clear">xóa</string>
-    <string name="add_note">Thêm chú thích</string>
-    <string name="revert">Hoàn nguyên</string>
+    <string name="add_note">Thêm ghi chú</string>
+    <string name="revert">Hoàn tác</string>
     <string name="activated">Đã hoạt động</string>
     <string name="enroll_in">Đăng ký vào %s</string>
-    <string name="missing_mandatory_fields_title">Thiếu trường bắt buộc</string>
-    <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay trở lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
+    <string name="missing_mandatory_fields_title">Thiếu trường dữ liệu bắt buộc</string>
+    <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Một số trường bắt buộc nhập bị thiếu. Nếu bạn muốn quay lại, vui lòng nhập giá trị cho chúng</string>
+    <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
+    <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
+    <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
+    <string name="missing_mandatory_fields_events_2.0">Một số trường bắt buộc nhập bị thiếu:\n %s\n Bạn có thể quay trở lại bây giờ, nhưng sự kiện này sẽ không thể hoàn tất.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
+    <string name="error_fields">Một vài trường dữ liệu có lỗi:\n %s\nVui lòng kiểm tra.</string>
+    <string name="missing_mandatory_fields_finish">Một số trường bắt buộc bị thiếu. Bạn có thể lưu biểu nhập và tắt, nhưng sự kiện chưa hoàn tất.</string>
     <string name="enrollment_coordinates">Tọa độ đăng ký</string>
+    <string name="tei_coordinates">Tọa độ của </string>
+
     <!--EVENT SUMMARY-->
-    <string name="section_list">Danh sách phần</string>
-    <string name="event_summary_header" formatted="false">%s câu hỏi của %s đã hoàn thành</string>
-    <string name="event_summary_sections_header" formatted="false">%s của %s đã hoàn thành</string>
-    <string name="complete_and_close">Hoàn thành và đóng</string>
+    <string name="section_list">Danh sách phân đoạn</string>
+    <string name="event_summary_header" formatted="false">%s câu hỏi của %s đã hoàn tất</string>
+    <string name="event_summary_sections_header" formatted="false">%s của %s đã hoàn tất</string>
+    <string name="complete_and_close">Hoàn tất và Đóng</string>
 
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">Ngày</string>
     <string name="hint_month">Tháng</string>
     <string name="hint_year">Năm</string>
     <string name="week">Tuần</string>
-    <string name="incident_date">Ngày đến</string>
+    <string name="incident_date">Ngày khởi phát</string>
     <string name="local_results">Kết quả cục bộ</string>
     <string name="online_results">Kết quả trực tuyến</string>
     <string name="past_programs">Các chương trình cũ</string>
@@ -275,31 +293,33 @@
     <string name="date_dialog_clear">Xóa</string>
     <string name="period">Thời điểm</string>
     <string name="org_unit_filter">(%d) Đơn vị</string>
+    <string name="org_unit_select_level">Tuyến %d</string>
     <string name="tuto_main_1">Chào mừng đến với dhis2</string>
     <string name="tuto_main_2">Bạn có thể xem các hoạt động của mình tại đây</string>
     <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc...</string>
-    <string name="tuto_main_4">...bằng cách thay đổi thời gian và ngày đang chọn</string>
+    <string name="tuto_main_4">...bằng cách thay đổi thời điểm và chọn ngày</string>
     <string name="tuto_main_5">...hoặc lọc theo Đơn vị</string>
-    <string name="tuto_main_6">Xem các hoạt động khác ở thực đơn chính</string>
+    <string name="tuto_main_6">Xem các hoạt động khác ở trình đơn chính</string>
 
     <!-- RELATIONSHIPS -->
     <string name="default_relationship_label">Tạo mối quan hệ</string>
-    <string name="next">Sau</string>
+    <string name="next">Tiếp tục</string>
     <string name="search_min_num_attr">Bạn cần nhập ít nhất %d thuộc tính để thực hiện tìm kiếm</string>
-    <string name="search_max_tei_reached">Có nhiều hơn %d kết quả. Vui lòng nhập thêm thông số tìm kiếm khác nữa</string>
-    <string name="search_criteria_not_met">Không có kết quả nào phù hợp với thông số tìm kiếm của bạn.\nXem lại thông số tìm kiếm hoặc đăng ký mới %s</string>
+    <string name="search_attr">Bạn cần nhập ít nhất một thuộc tính để tìm kiếm</string>
+    <string name="search_max_tei_reached">Có nhiều hơn %d kết quả. Vui lòng nhập thêm thông số tìm kiếm khác</string>
+    <string name="search_criteria_not_met">Thông số tìm kiếm của bạn không trả về kết quả nào. \n Sửa lại thông số tìm kiếm hoặc đăng ký %s mới</string>
     <string name="search_init">Nhập thông số tìm kiếm của bạn</string>
 
     <!-- QR -->
     <string name="QR_SCANNER">Nhập dữ liệu QR</string>
-    <string name="SAVE">Lưu lại</string>
-    <string name="button_ok">Có</string>
+    <string name="SAVE">Lưu</string>
+    <string name="button_ok">OK</string>
     <string name="qr_id">Nhận dạng</string>
     <string name="qr_attributes">Thuộc Tính</string>
     <string name="qr_enrollment">Đăng ký</string>
     <string name="qr_events">Sự kiện</string>
     <string name="qr_relationships">Mối quan hệ</string>
-    <string name="read_more_qr">Đọc QR tiếp theo để lấy thêm thông tin</string>
+    <string name="read_more_qr">Đọc mã QR tiếp theo để lấy thêm thông tin</string>
     <string name="save_qr">Ngừng đọc và lưu dữ liệu</string>
     <string name="qr_no_data">không có dữ liệu</string>
     <string name="qr_error_id">Mã QR không hợp lệ</string>
@@ -307,33 +327,38 @@
     <string name="qr_error_enrollment">Không thể đăng ký</string>
     <string name="qr_error_event">Không thể thêm sự kiện này</string>
 
-    <string name="jira_report">Báo vấn đề lên Jira</string>
+    <string name="jira_report">Báo cáo vấn đề lên Jira</string>
     <string name="about">Giới thiệu</string>
     <string name="programs_to_enroll">Chương trình để đăng ký</string>
     <string name="select_all">chọn tất cả</string>
+    <string name="clear_all">Bỏ chọn</string>
     <string name="empty_program_list">Không có thông tin với các bộ lọc đã chọn. Vui lòng đổi bộ lọc.</string>
     <string name="share">Chia sẻ</string>
-    <string name="share_qr">Chia sẻ QR</string>
+    <string name="share_qr">Chia sẻ mã QR</string>
     <string name="teiType_search_online">Không thể tìm kiếm theo loại khi tìm kiếm trực tuyến.\nVui lòng chọn một chương trình trong danh sách.</string>
     <string name="max">Lớn nhất</string>
     <string name="current">Hiện tại</string>
-    <string name="tei">THỰC THỂ THEO DÕI</string>
+    <string name="tei">ĐỐI TƯỢNG THEO DÕI</string>
+    <string name="teis">ĐỐI TƯỢNG THEO DÕI</string>
     <string name="limit_by_organisation_unit">GIới hạn bởi đơn vị</string>
+    <string name="limit_by_program">Giới hạn bởi chương trình</string>
     <string name="programs_list">Danh sách chương trình</string>
-    <string name="wipe_data">Đặt lại ứng dụng</string>
+    <string name="wipe_data">Cài đặt lại Dữ liệu &am; cấu hình</string>
     <string name="add_relationship_error">Không thể thêm mối quan hệ này</string>
     <string name="warning_error_on_complete_title">Kiểm tra lại!</string>
     <string name="warning_on_complete_title">Cảnh báo</string>
     <string name="error_on_complete_title">Lỗi</string>
     <string name="save">Lưu lại</string>
-    <string name="downloaded_confirm">Bạn có muốn thêm dữ liệu từ QR</string>
+    <string name="reserved_value">Giá trị dành riêng</string>
+
+    <string name="downloaded_confirm">Bạn có muốn thêm dữ liệu từ mã QR không?</string>
 
     <!--ABOUT-->
     <string name="about_app">Phiên bản Ứng dụng: %s</string>
     <string name="about_sdk">Phiên bản SDK: %s</string>
     <string name="about_connected">Đã kết nối đến: %s</string>
     <string name="about_user">Người dùng hiện tại: %s</string>
-    <string name="about_more">Để tìm hiểu thêm về ứng dụng này: đọc \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">đây</a>\" để biết ứng dụng hỗ trợ và không hỗ trợ gì</string>
+    <string name="about_more">Để tìm hiểu thêm về ứng dụng này: đọc<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">đây</a> để biết ứng dụng hỗ trợ và không hỗ trợ gì</string>
     <string name="about_git">\"Phiên bản này và các phiên bản trước cùng với mã nguồn của ứng dụng có thể tìm được tại \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Nhập với Android được cấp giấy phép theo Giấy phép Công cộng GNU được xuất bản bởi Tổ chức Phần mềm tự do - xem \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">\"Phát triển và duy trì bởi dự án \"<a href="https://www.dhis2.org/">DHIS2</a>\", thuộc trường Đại học Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">Bộ môn Tin học</a>.</string>
     <string name="about_contact">\"Để biết thêm thông tin hoặc hỏi về ứng dụng này, vui lòng gửi thư đến \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
@@ -509,16 +534,51 @@
     <string name="filter_period_last_year">Năm trước</string>
     <string name="filter_period_this_financial_year">Năm tài chính này</string>
     <string name="filter_period_last_financial_year">Năm tài chính trước</string>
+    <string name="filter_period_last_n_biweeks">%d 2-Tuần trước</string>
     <string name="section_feedback">Phản hồi</string>
-    <string name="section_indicators">Các chỉ số</string>
+    <string name="section_indicators">Chỉ Số</string>
+    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
     <string name="value">Giá trị</string>
+    <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
+    <string name="from_gallery">Chọn từ thư viện ảnh</string>
+    <string name="data_set_quality_check_done">Hoàn thành!</string>
+    <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
     <string name="break_glass_dialog_description">Bạn phải cung cấp lý do để kiểm tra đăng ký trong chương trình này. Tất cả các thay đổi sẽ được lưu lại. </string>
     <string name="break_glass_reason">Lý do để kiểm tra đăng ký</string>
+    <string name="break_glass_hint">Mô tả lý do ở đây</string>
+    <string name="authenticating">Đang xác thực</string>
+    <string name="login_error_no_dhis_instance">Đường dẫn liên kết đã cung cấp không phải là đường dẫn đến máy chủ DHIS2</string>
     <string name="login_error_bad_credentials">Sai thông tin đăng nhập </string>
+    <string name="login_error_unknown_host">Máy chủ không xác định</string>
     <string name="invalid_integer">Giá trị phải là số nguyên</string>
+    <string name="openid_session_expired">Phiên đăng nhập đã hết hạn</string>
+    <string name="openid_session_expired_message">Phiên đăng nhập của bạn đã hết hạn. Vì lý do bảo mật, bạn cần cung cấp thông tin đăng nhập lại. </string>
+    <string name="dataset_column_default">Giá trị</string>
+    <string name="week_period_span_default_label">Tuần 1%d 2%s đến 2%s</string>
+    <string name="action_do_not_show_again">Không hiển thị lại</string>
+    <string name="feature_configuration">Cấu hình chức năng</string>
+    <string name="show_radar_graph">Xem Radar</string>
+    <string name="coordinate_feature_type_error">Không thể cài đặt kiểu tọa độ</string>
+    <string name="filter_follow_up_label">Đã theo dõi %s</string>
+    <string name="wrong_date_format">%s không thể chuyển đổi thành Ngày</string>
+    <string name="update_field_error">Không thể cập nhật trường dữ liệu này. Xin vui lòng thử lại.</string>
+    <string name="edition">Chỉnh sửa</string>
     <string name="available">Hiện có</string>
-    <string name="edition_enrollment_is_no_open">Dữ liệu này không thể chỉnh sửa vì bệnh nhân đã hoàn tất chương trình hoặc đã hủy. </string>
+    <string name="blocked_by_completion">Không thể chỉnh sửa dữ liệu này bởi vị chúng được đánh dấu đã hoàn tất</string>
+    <string name="edition_expired">Không thể chỉnh sửa dữ liệu này bởi vì thời gian chỉnh sửa đã hết hạn</string>
+    <string name="edition_no_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
+    <string name="event_date_not_in_orgunit_range">Dữ liệu này không thể sửa bởi vì đơn vị đã bị đóng</string>
+    <string name="edition_no_catcombo_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
+    <string name="edition_enrollment_is_no_open">Dữ liệu này không thể chỉnh sửa vì các đăng ký đã hoàn tất hoặc đã hủy. </string>
+    <string name="edition_orgunit_capture_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
+    <string name="reload_list">Đặt lại Tìm Kiếm</string>
+    <string name="error_tei_online_search_title">Tìm kiếm trực tuyến trả về tin nhắn sau: </string>
+    <string name="program_rules_loop_warning_title">Cảnh báo quy tắc chương trình</string>
+    <string name="program_rules_loop_warning_message">Có một vấn đề cấu hình gây ra một vòng lặp trong các quy tắc chương trình. Hãy liên lạc với quản lý của bạn.</string>
+    <string name="granular_sync_refresh">LÀM MỚI</string>
     <string name="unknown_date">Không rõ</string>
+    <string name="granular_sync_refresh_title">Làm mới lại tất cả dữ liệu</string>
+    <string name="max_accounts_text">Bạn đã đạt số lượng tài khoản tối đa (%d). Để tạo thêm tài khoản, hãy đăng nhập và xóa một trong những tài khoản của bạn.</string>
     <string name="add_accout">Thêm Tài khoản</string>
     <string name="delete_account">Xóa Tài khoản</string>
     <string name="manage_accounts">Quản lý Tài Khoản</string>
