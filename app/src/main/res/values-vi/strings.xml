@@ -343,7 +343,7 @@
     <string name="limit_by_organisation_unit">GIới hạn bởi đơn vị</string>
     <string name="limit_by_program">Giới hạn bởi chương trình</string>
     <string name="programs_list">Danh sách chương trình</string>
-    <string name="wipe_data">Cài đặt lại Dữ liệu &amp; cấu hình</string>
+    <string name="wipe_data">Cài đặt lại Dữ liệu &am; cấu hình</string>
     <string name="add_relationship_error">Không thể thêm mối quan hệ này</string>
     <string name="warning_error_on_complete_title">Kiểm tra lại!</string>
     <string name="warning_on_complete_title">Cảnh báo</string>
