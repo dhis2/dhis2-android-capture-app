@@ -331,7 +331,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
-            editText.requestFocus();
             editText.setSelection(editText.getText().length());
             openKeyboard(editText);
         } else if (!editTextModel.editable()) {

@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
+import com.evrencoskun.tableview.handler.SelectionHandler
 import java.util.ArrayList
 import java.util.SortedMap
 import javax.inject.Inject
@@ -343,6 +344,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         for (adapter in adapters)
             if (adapter.catCombo == catCombo) {
                 adapter.updateValue(rowAction)
+                adapter.tableView.selectionHandler.clearIfCellSelected(
+                    rowAction.rowPos(),
+                    rowAction.columnPos()
+                )
             }
     }
 
