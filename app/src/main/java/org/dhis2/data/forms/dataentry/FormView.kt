@@ -86,21 +86,21 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
-class FormView(
-    formRepository: FormRepository,
-    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
-    private val locationProvider: LocationProvider?,
-    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
-    private val onFocused: (() -> Unit)?,
-    private val onFinishDataEntry: (() -> Unit)?,
-    private val onActivityForResult: (() -> Unit)?,
-    private val needToForceUpdate: Boolean = false,
-    private val completionListener: ((percentage: Float) -> Unit)?,
-    private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
-    private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
-    dispatchers: DispatcherProvider
-) : Fragment() {
+class FormView : Fragment() {
+
+    private lateinit var formRepository: FormRepository
+    private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+    private var locationProvider: LocationProvider? = null
+    private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
+    private var onFocused: (() -> Unit)? = null
+    private var onFinishDataEntry: (() -> Unit)? = null
+    private var onActivityForResult: (() -> Unit)? = null
+    private var needToForceUpdate: Boolean = false
+    private var completionListener: ((percentage: Float) -> Unit)? = null
+    private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
+    private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+    private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private lateinit var dispatchers: DispatcherProvider
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -283,7 +283,7 @@ class FormView(
             viewLifecycleOwner
         ) { loading ->
             if (onLoadingListener != null) {
-                onLoadingListener.invoke(loading)
+                onLoadingListener?.invoke(loading)
             } else {
                 if (loading) {
                     binding.progress.show()
@@ -327,7 +327,7 @@ class FormView(
             viewLifecycleOwner
         ) { result ->
             if (onDataIntegrityCheck != null) {
-                onDataIntegrityCheck.invoke(result)
+                onDataIntegrityCheck?.invoke(result)
             } else {
                 when (result) {
                     is SuccessfulResult -> onFinishDataEntry?.invoke()
@@ -821,6 +821,36 @@ class FormView(
 
     fun reload() {
         viewModel.loadData()
+    }
+
+    fun setConfiguration(
+        formRepository: FormRepository,
+        onItemChangeListener: ((action: RowAction) -> Unit)?,
+        locationProvider: LocationProvider?,
+        onLoadingListener: ((loading: Boolean) -> Unit)?,
+        onFocused: (() -> Unit)?,
+        onFinishDataEntry: (() -> Unit)?,
+        onActivityForResult: (() -> Unit)?,
+        needToForceUpdate: Boolean,
+        completionListener: ((percentage: Float) -> Unit)?,
+        onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
+        onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+        dispatchers: DispatcherProvider
+    ) {
+        this.formRepository = formRepository
+        this.onItemChangeListener = onItemChangeListener
+        this.locationProvider = locationProvider
+        this.onLoadingListener = onLoadingListener
+        this.onFocused = onFocused
+        this.onFinishDataEntry = onFinishDataEntry
+        this.onActivityForResult = onActivityForResult
+        this.needToForceUpdate = needToForceUpdate
+        this.completionListener = completionListener
+        this.onDataIntegrityCheck = onDataIntegrityCheck
+        this.onFieldItemsRendered = onFieldItemsRendered
+        this.resultDialogUiProvider = resultDialogUiProvider
+        this.dispatchers = dispatchers
     }
 
     class Builder {
