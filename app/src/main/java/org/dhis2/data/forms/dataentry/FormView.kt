@@ -823,34 +823,42 @@ class FormView : Fragment() {
         viewModel.loadData()
     }
 
-    fun setConfiguration(
-        formRepository: FormRepository,
-        onItemChangeListener: ((action: RowAction) -> Unit)?,
+    internal fun setConfiguration(
         locationProvider: LocationProvider?,
+        needToForceUpdate: Boolean,
+        completionListener: ((percentage: Float) -> Unit)?,
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+    ) {
+        this.locationProvider = locationProvider
+        this.needToForceUpdate = needToForceUpdate
+        this.completionListener = completionListener
+        this.resultDialogUiProvider = resultDialogUiProvider
+    }
+
+    internal fun setFormConfiguration(
+        formRepository: FormRepository,
+        dispatchers: DispatcherProvider
+    ) {
+        this.formRepository = formRepository
+        this.dispatchers = dispatchers
+    }
+
+    internal fun setCallbackConfiguration(
+        onItemChangeListener: ((action: RowAction) -> Unit)?,
         onLoadingListener: ((loading: Boolean) -> Unit)?,
         onFocused: (() -> Unit)?,
         onFinishDataEntry: (() -> Unit)?,
         onActivityForResult: (() -> Unit)?,
-        needToForceUpdate: Boolean,
-        completionListener: ((percentage: Float) -> Unit)?,
         onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
-        onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
-        dispatchers: DispatcherProvider
+        onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?
     ) {
-        this.formRepository = formRepository
         this.onItemChangeListener = onItemChangeListener
-        this.locationProvider = locationProvider
         this.onLoadingListener = onLoadingListener
         this.onFocused = onFocused
         this.onFinishDataEntry = onFinishDataEntry
         this.onActivityForResult = onActivityForResult
-        this.needToForceUpdate = needToForceUpdate
-        this.completionListener = completionListener
         this.onDataIntegrityCheck = onDataIntegrityCheck
         this.onFieldItemsRendered = onFieldItemsRendered
-        this.resultDialogUiProvider = resultDialogUiProvider
-        this.dispatchers = dispatchers
     }
 
     class Builder {

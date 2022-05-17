@@ -27,20 +27,24 @@ class FormViewFragmentFactory(
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
             FormView::class.java.name -> FormView().apply {
-                setConfiguration(
+                setFormConfiguration(
                     formRepository = formRepository,
+                    dispatchers = dispatchers
+                )
+                setCallbackConfiguration(
                     onItemChangeListener = onItemChangeListener,
-                    locationProvider = locationProvider,
                     onLoadingListener = onLoadingListener,
                     onFocused = onFocused,
                     onFinishDataEntry = onFinishDataEntry,
                     onActivityForResult = onActivityForResult,
+                    onDataIntegrityCheck = onDataIntegrityCheck,
+                    onFieldItemsRendered = onFieldItemsRendered
+                )
+                setConfiguration(
+                    locationProvider = locationProvider,
                     needToForceUpdate = needToForceUpdate,
                     completionListener = completionListener,
-                    onDataIntegrityCheck = onDataIntegrityCheck,
-                    onFieldItemsRendered = onFieldItemsRendered,
-                    resultDialogUiProvider = resultDialogUiProvider,
-                    dispatchers = dispatchers
+                    resultDialogUiProvider = resultDialogUiProvider
                 )
             }
 
