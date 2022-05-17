@@ -548,4 +548,18 @@ class GranularSyncPresenterImpl(
             }
         }
     }
+
+    override fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String? {
+        return d2.enrollmentModule().enrollments()
+            .uid(enrollmentUid)
+            .get().flatMap { enrollment ->
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance())
+                    .get()
+            }.flatMap { tei ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                    .uid(tei.trackedEntityType())
+                    .get()
+            }.blockingGet().displayName()
+    }
 }

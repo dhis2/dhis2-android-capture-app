@@ -125,6 +125,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public String getTEType() {
+        return dashboardRepository.getTETypeName();
+    }
+
+    @Override
     public void onEnrollmentSelectorClick() {
         view.goToEnrollmentList();
     }

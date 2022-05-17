@@ -38,7 +38,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-
     }
 
     @Override
@@ -117,8 +116,8 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void displayBreakGlassError() {
-        displayMessage(getString(R.string.break_glass_error));
+    public void displayBreakGlassError(String teTypeName) {
+        displayMessage(getString(R.string.break_glass_error_v2, teTypeName));
     }
 
     @Override

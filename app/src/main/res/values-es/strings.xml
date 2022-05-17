@@ -540,7 +540,6 @@
     <string name="sync_setting">Parámetros de configuración: %s</string>
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
-    <string name="dashboard_menu_delete_tei">Borrar TEI</string>
     <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="validation_url">La URL no es válida</string>

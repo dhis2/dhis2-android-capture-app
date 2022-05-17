@@ -528,7 +528,6 @@
     <string name="sync_setting">Синхронизация созланмаси: %s</string>
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
-    <string name="dashboard_menu_delete_tei">TEI ни ўчириб ташлаш</string>
     <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
     <string name="delete_authority_error">Ушбу ёзувни ўчириб ташлаш ҳуқуқига эга эмассиз</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>

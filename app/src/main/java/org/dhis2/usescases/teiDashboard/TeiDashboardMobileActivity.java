@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -544,6 +545,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             menu = R.menu.dashboard_menu;
         }
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
+        MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
+        deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(),presenter.getTEType()));
 
         if (enrollmentUid != null) {
             EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);

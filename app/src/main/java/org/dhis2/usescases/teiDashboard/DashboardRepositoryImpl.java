@@ -6,10 +6,10 @@ import androidx.annotation.Nullable;
 import org.dhis2.R;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.Legend;
-import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -509,5 +508,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String getTETypeName() {
+        return getTrackedEntityInstance(teiUid).flatMap(tei ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                        .uid(tei.trackedEntityType())
+                        .get()
+                        .toObservable()
+        ).blockingFirst().displayName();
     }
 }
