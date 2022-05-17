@@ -6,6 +6,7 @@ import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 
 class SearchTEIRepositoryImpl(
     private val d2: D2,
@@ -45,21 +46,7 @@ class SearchTEIRepositoryImpl(
 
                 return teiList.none { it.uid() != teiUid }
             } catch (e: Exception) {
-                val exception = if (e.cause != null && e.cause is D2Error) {
-                    val d2Error = e.cause as D2Error
-                    "component: ${d2Error.errorComponent()}," +
-                        " code: ${d2Error.errorCode()}," +
-                        " description: ${d2Error.errorDescription()}"
-                } else {
-                    "No d2 Error"
-                }
-                crashcontroller.addBreadCrumb(
-                    "SearchTEIRepositoryImpl.isUniqueAttribute",
-                    "programUid: $programUid ," +
-                        " attruid: ${attribute.uid()} ," +
-                        " attrvalue: $value, $exception"
-                )
-                return true
+                return trackSentryError(e, programUid, attribute, value)
             }
         } else if (isUnique && orgUnitScope) {
             val orgUnit = enrollmentUtils.getOrgUnit(teiUid)
@@ -83,6 +70,29 @@ class SearchTEIRepositoryImpl(
 
             return teiList.none { it.uid() != teiUid }
         }
+        return true
+    }
+
+    private fun trackSentryError(
+        e: Exception,
+        programUid: String?,
+        attribute: TrackedEntityAttribute,
+        value: String?
+    ): Boolean {
+        val exception = if (e.cause != null && e.cause is D2Error) {
+            val d2Error = e.cause as D2Error
+            "component: ${d2Error.errorComponent()}," +
+                " code: ${d2Error.errorCode()}," +
+                " description: ${d2Error.errorDescription()}"
+        } else {
+            "No d2 Error"
+        }
+        crashcontroller.addBreadCrumb(
+            "SearchTEIRepositoryImpl.isUniqueAttribute",
+            "programUid: $programUid ," +
+                " attruid: ${attribute.uid()} ," +
+                " attrvalue: $value, $exception"
+        )
         return true
     }
 }
