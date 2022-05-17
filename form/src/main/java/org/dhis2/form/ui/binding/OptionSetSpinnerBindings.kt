@@ -1,11 +1,9 @@
 package org.dhis2.form.ui.binding
 
-import android.widget.ArrayAdapter
-import androidx.appcompat.widget.ListPopupWindow
-import android.view.Menu
 import android.view.View
-import android.widget.PopupMenu
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.form.R
