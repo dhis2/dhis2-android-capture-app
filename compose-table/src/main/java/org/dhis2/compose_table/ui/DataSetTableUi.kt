@@ -1,4 +1,4 @@
-package org.dhis2.usescases.datasets
+package org.dhis2.compose_table.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -18,10 +18,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
+import org.dhis2.compose_table.model.TableHeader
+import org.dhis2.compose_table.model.TableHeaderCell
+import org.dhis2.compose_table.model.TableModel
+import org.dhis2.compose_table.model.TableRowModel
 
 @Composable
 fun TableHeader(
@@ -145,7 +146,7 @@ fun ItemValues(
                 focusRequester = focusRequester,
                 onNext = {
                     coroutineScope.launch {
-                        horizontalScrollState.scrollTo((columnIndex+1) * defaultWidthPx.toInt())
+                        horizontalScrollState.scrollTo((columnIndex + 1) * defaultWidthPx.toInt())
                     }
                 }
             )
@@ -154,7 +155,12 @@ fun ItemValues(
 }
 
 @Composable
-fun TableCell(modifier: Modifier, cellValue: String, focusRequester: FocusManager, onNext:()->Unit) {
+fun TableCell(
+    modifier: Modifier,
+    cellValue: String,
+    focusRequester: FocusManager,
+    onNext: () -> Unit
+) {
     var value by remember { mutableStateOf(cellValue) }
     BasicTextField(
         modifier = modifier,
@@ -174,20 +180,20 @@ fun TableCell(modifier: Modifier, cellValue: String, focusRequester: FocusManage
 
 private val tableHeaderModel = TableHeader(
     rows = listOf(
-        TableHeaderRow(
+        org.dhis2.compose_table.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("<18"),
                 TableHeaderCell(">18 <65"),
                 TableHeaderCell(">65")
             )
         ),
-        TableHeaderRow(
+        org.dhis2.compose_table.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("Male"),
                 TableHeaderCell("Female")
             )
         ),
-        TableHeaderRow(
+        org.dhis2.compose_table.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("Fixed"),
                 TableHeaderCell("Outreach"),

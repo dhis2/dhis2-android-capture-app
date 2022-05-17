@@ -1,7 +1,10 @@
-package org.dhis2.usescases.datasets
+package org.dhis2.compose_table
 
 import androidx.compose.ui.unit.dp
-import org.junit.Assert.*
+import org.dhis2.compose_table.model.TableHeader
+import org.dhis2.compose_table.model.TableHeaderCell
+import org.dhis2.compose_table.model.TableHeaderRow
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TableHeaderTest {

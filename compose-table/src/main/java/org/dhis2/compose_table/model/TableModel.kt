@@ -1,4 +1,4 @@
-package org.dhis2.usescases.datasets
+package org.dhis2.compose_table.model
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
