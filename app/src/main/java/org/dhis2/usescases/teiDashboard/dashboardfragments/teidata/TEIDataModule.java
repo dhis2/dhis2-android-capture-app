@@ -19,6 +19,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -74,7 +75,7 @@ public class TEIDataModule {
     @Provides
     @PerFragment
     SearchTEIRepository searchTEIRepository(D2 d2){
-        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
 
     @Provides
