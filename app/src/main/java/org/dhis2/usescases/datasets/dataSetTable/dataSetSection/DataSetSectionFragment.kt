@@ -15,7 +15,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import com.evrencoskun.tableview.handler.SelectionHandler
 import java.util.ArrayList
 import java.util.SortedMap
 import javax.inject.Inject
