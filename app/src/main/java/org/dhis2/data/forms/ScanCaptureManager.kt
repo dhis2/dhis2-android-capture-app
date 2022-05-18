@@ -24,7 +24,7 @@ class ScanCaptureManager(val activity: Activity, barcodeView: DecoratedBarcodeVi
         fun resultIntent(rawResult: BarcodeResult?, barcodeImagePath: String?): Intent {
             val intent = CaptureManager.resultIntent(rawResult, barcodeImagePath)
             rawResult?.resultMetadata?.get(ResultMetadataType.SYMBOLOGY_IDENTIFIER)?.let {
-                val result = if (it == GS1_IDENTIFIER){
+                val result = if (it == GS1_IDENTIFIER) {
                     intent.putExtra(SCAN_SYMBOLOGY_ID, it.toString())
                     it.toString() + intent.getStringExtra(Intents.Scan.RESULT)
                 } else {
