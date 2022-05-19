@@ -9,6 +9,7 @@ import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 
 const val SCAN_SYMBOLOGY_ID = "SCAN_SYMBOLOGY_ID"
+const val GS1_IDENTIFIER = "]d2"
 
 class ScanCaptureManager(val activity: Activity, barcodeView: DecoratedBarcodeView) :
     CaptureManager(activity, barcodeView) {
@@ -23,10 +24,15 @@ class ScanCaptureManager(val activity: Activity, barcodeView: DecoratedBarcodeVi
         fun resultIntent(rawResult: BarcodeResult?, barcodeImagePath: String?): Intent {
             val intent = CaptureManager.resultIntent(rawResult, barcodeImagePath)
             rawResult?.resultMetadata?.get(ResultMetadataType.SYMBOLOGY_IDENTIFIER)?.let {
-                intent.putExtra(SCAN_SYMBOLOGY_ID, it.toString())
+                val result = if (it == GS1_IDENTIFIER) {
+                    intent.putExtra(SCAN_SYMBOLOGY_ID, it.toString())
+                    it.toString() + intent.getStringExtra(Intents.Scan.RESULT)
+                } else {
+                    intent.getStringExtra(Intents.Scan.RESULT)
+                }
                 intent.putExtra(
                     Intents.Scan.RESULT,
-                    it.toString() + intent.getStringExtra(Intents.Scan.RESULT)
+                    result
                 )
             }
             return intent
