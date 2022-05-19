@@ -93,7 +93,7 @@ android {
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
-            testCoverageEnabled = false
+            testCoverageEnabled = true
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
