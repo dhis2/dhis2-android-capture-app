@@ -25,6 +25,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -379,6 +380,15 @@ fun RadioGroup.checkListener(item: FieldUiModel) {
         when (checkedId) {
             R.id.yes -> item.onSaveBoolean(true)
             R.id.no -> item.onSaveBoolean(false)
+        }
+    }
+}
+
+@BindingAdapter("onTyping")
+fun EditText.setOnTyping(item: FieldUiModel) {
+    doOnTextChanged { text, _, _, _ ->
+        if (hasFocus()) {
+            item.onTextChange(text)
         }
     }
 }
