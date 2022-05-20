@@ -343,6 +343,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         for (adapter in adapters)
             if (adapter.catCombo == catCombo) {
                 adapter.updateValue(rowAction)
+                adapter.tableView.selectionHandler.clearIfCellSelected(
+                    rowAction.rowPos(),
+                    rowAction.columnPos()
+                )
             }
     }
 

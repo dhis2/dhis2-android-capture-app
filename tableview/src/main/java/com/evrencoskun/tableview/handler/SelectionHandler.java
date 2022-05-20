@@ -411,6 +411,12 @@ public class SelectionHandler {
         }
     }
 
+    public void clearIfCellSelected(int row, int column) {
+        if (mSelectedRowPosition == row && mSelectedColumnPosition == column) {
+            clearSelection();
+        }
+    }
+
     public void clearSelection() {
         unselectedCellView();
         mSelectedColumnPosition = UNSELECTED_POSITION;

@@ -31,6 +31,7 @@ import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -45,6 +46,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     FlowableProcessor<RowAction> processor;
     private Map<ValueType, Validator> validators;
     private Validator validator;
+    AtomicBoolean isMovingToNext = new AtomicBoolean(false);
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
@@ -87,6 +89,11 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
             if (hasFocus) {
                 tableView.scrollToColumnPosition(getAdapterPosition(), DEFAULT_CELL_OFFSET);
+            } else {
+                if (!isMovingToNext.getAndSet(false)) {
+                    setSelected(SelectionState.UNSELECTED);
+                    tableView.getSelectionHandler().clearSelection();
+                }
             }
         });
 
@@ -298,8 +305,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     }
 
     public void selectNext() {
-        editText.clearFocus();
-
+        isMovingToNext.set(true);
         if (canMoveInTheRow()) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
         } else if (canMoveToNextColumn()) {
@@ -325,7 +331,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
-            editText.requestFocus();
             editText.setSelection(editText.getText().length());
             openKeyboard(editText);
         } else if (!editTextModel.editable()) {
