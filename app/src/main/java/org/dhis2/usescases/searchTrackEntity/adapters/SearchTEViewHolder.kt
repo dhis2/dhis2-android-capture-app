@@ -36,11 +36,18 @@ class SearchTEViewHolder(
         }
 
         binding.cardView.setOnClickListener {
-            onTeiClick(
-                teiModel.tei.uid(),
-                teiModel.selectedEnrollment?.uid(),
-                teiModel.isOnline
-            )
+            if (teiModel.isOnline) {
+                onDownloadTei(
+                    teiModel.tei.uid(),
+                    teiModel.selectedEnrollment?.uid()
+                )
+            } else {
+                onTeiClick(
+                    teiModel.tei.uid(),
+                    teiModel.selectedEnrollment?.uid(),
+                    teiModel.isOnline
+                )
+            }
         }
     }
 }
