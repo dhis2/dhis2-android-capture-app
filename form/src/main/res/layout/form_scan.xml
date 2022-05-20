@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:enabled="@{item.editable}"
                     android:imeOptions="actionNext"
-                    android:onTextChanged="@{(txt, start, before, count )->item.onTextChange(txt)}"
+                    app:onTyping="@{item}"
                     android:singleLine="true"
                     android:text="@{item.value}"
                     android:textSize="@dimen/form_edit_text_size"
