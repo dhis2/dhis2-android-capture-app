@@ -14,7 +14,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragme
 import org.dhis2.utils.isLandscape
 
 class DashboardPagerAdapter(
-    fa: FragmentActivity,
+    private val fa: FragmentActivity,
     private val currentProgram: String?,
     private val teiUid: String,
     private val enrollmentUid: String?,
@@ -47,7 +47,7 @@ class DashboardPagerAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return createFragmentForPage(
-            if (isLandscape()) {
+            if (fa.isLandscape()) {
                 landscapePages[position]
             } else {
                 portraitPages[position]
@@ -90,7 +90,7 @@ class DashboardPagerAdapter(
     }
 
     override fun getItemCount() =
-        if (isLandscape()) landscapePages.size else portraitPages.size
+        if (fa.isLandscape()) landscapePages.size else portraitPages.size
 
     fun getNavigationPagePosition(navigationId: Int): Int {
         val pageType = when (navigationId) {
@@ -103,7 +103,7 @@ class DashboardPagerAdapter(
         }
 
         return pageType?.let {
-            if (isLandscape()) {
+            if (fa.isLandscape()) {
                 landscapePages.indexOf(pageType)
             } else {
                 portraitPages.indexOf(pageType)
@@ -112,7 +112,7 @@ class DashboardPagerAdapter(
     }
 
     fun pageType(position: Int): DashboardPageType {
-        return if (isLandscape()) {
+        return if (fa.isLandscape()) {
             landscapePages[position]
         } else {
             portraitPages[position]

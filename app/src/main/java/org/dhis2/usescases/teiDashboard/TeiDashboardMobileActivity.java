@@ -129,7 +129,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait())).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this))).inject(this);
         setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -150,7 +150,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
-                if (OrientationUtilsKt.isLandscape()) {
+                if (OrientationUtilsKt.isLandscape(this)) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
                     binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
@@ -166,7 +166,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         presenter.prefSaveCurrentProgram(programUid);
 
         filtersShowing.observe(this, showFilter -> {
-            if (OrientationUtilsKt.isPortrait()) {
+            if (OrientationUtilsKt.isPortrait(this)) {
                 presenter.handleShowHideFilters(showFilter);
             }
         });
@@ -198,12 +198,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onResume();
 
         if (currentOrientation != -1) {
-            int nextOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
             if (currentOrientation != nextOrientation && adapter != null) {
                 adapter.notifyDataSetChanged();
             }
         }
-        currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
 
         if (adapter == null) {
             restoreAdapter(programUid);
@@ -254,7 +254,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 pageConfigurator.displayRelationships()
         );
 
-        if (OrientationUtilsKt.isPortrait()) {
+        if (OrientationUtilsKt.isPortrait(this)) {
             binding.teiPager.setAdapter(null);
             binding.teiPager.setUserInputEnabled(false);
             binding.teiPager.setAdapter(adapter);
@@ -340,7 +340,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         this.enrollmentUid = program.getCurrentEnrollment().uid();
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             if (binding.teiTablePager.getAdapter() == null) {
                 setViewpagerAdapter();
             }
@@ -406,7 +406,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.searchFilterGeneral.setVisibility(View.GONE);
         binding.relationshipMapIcon.setVisibility(View.GONE);
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
@@ -461,7 +461,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             setTutorial();
         } else {
             if (binding.teiPager.getCurrentItem() == 0)
