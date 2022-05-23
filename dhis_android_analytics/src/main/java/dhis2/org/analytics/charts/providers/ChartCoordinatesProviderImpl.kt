@@ -217,20 +217,7 @@ class ChartCoordinatesProviderImpl(
         return gridResponseValueList.filter { it.value != null }
             .mapIndexed { index, gridResponseValue ->
 
-                val periodId = gridResponseValue.rows.joinToString(separator = " - ") {
-                    metadata[it]?.displayName.toString()
-                }
-
-                val position = if (periodId == "") {
-                    0f
-                } else {
-                    periodId.let {
-                        when (metadata[periodId]) {
-                            is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
-                            else -> categories.indexOf(periodId)
-                        }
-                    }
-                }
+                val position = index
 
                 val columnLegend = gridResponseValue.columns.firstOrNull()?.let {
                     when (val metadataItem = metadata[it]) {
