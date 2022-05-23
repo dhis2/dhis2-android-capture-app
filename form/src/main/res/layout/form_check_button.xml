@@ -124,7 +124,7 @@
                             android:checked="@{item.isAffirmativeChecked}"
                             android:onClick="@{v -> item.onSaveBoolean(true)}"
                             android:textSize="@dimen/form_edit_text_size"
-                            android:text="@string/yes"
+                            android:text='@{item.valueType != ValueType.TRUE_ONLY ? @string/yes : ""}'
                             app:optionTint="@{item.style}"
                             android:enabled="@{item.editable}"
                             android:alpha="@{item.editable ? 1.0f : 0.5f}"
