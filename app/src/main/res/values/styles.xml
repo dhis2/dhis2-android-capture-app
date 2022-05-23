@@ -235,7 +235,7 @@
     </style>
 
     <style name="PopupMenuMarginStyle" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
         <item name="android:dropDownVerticalOffset">4dp</item>
     </style>
 </resources>
