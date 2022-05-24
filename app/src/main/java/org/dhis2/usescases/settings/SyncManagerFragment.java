@@ -40,7 +40,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.work.WorkInfo;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -85,7 +84,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private FragmentSettingsBinding binding;
     private Context context;
 
-    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             presenter.checkData();
@@ -97,7 +96,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
-    private int theme;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -131,25 +129,37 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
-                binding.syncMetaLayout.message.setText(metaText);
-            } else {
-                presenter.checkData();
-            }
+            SyncWorkInfoHelper.INSTANCE.onWorkStatusesUpdate(
+                    workStatuses,
+                    ()->{
+                        binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                        String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+                        binding.syncMetaLayout.message.setText(metaText);
+                        return Unit.INSTANCE;
+                    },
+                    ()->{
+                        presenter.checkData();
+                        return Unit.INSTANCE;
+                    }
+            );
             checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
-                binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncDataLayout.message.setText(dataText);
-                dataWorkRunning = true;
-            } else {
-                dataWorkRunning = false;
-                presenter.checkData();
-            }
+            SyncWorkInfoHelper.INSTANCE.onWorkStatusesUpdate(
+                    workStatuses,
+                    ()->{
+                        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+                        binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                        binding.syncDataLayout.message.setText(dataText);
+                        dataWorkRunning = true;
+                        return Unit.INSTANCE;
+                    },
+                    ()->{
+                        dataWorkRunning = false;
+                        presenter.checkData();
+                        return Unit.INSTANCE;
+                    }
+            );
             checkSyncDataButtonStatus();
         });
         presenter.init();
