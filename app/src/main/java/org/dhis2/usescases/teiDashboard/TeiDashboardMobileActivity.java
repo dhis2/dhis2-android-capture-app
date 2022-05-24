@@ -19,12 +19,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +38,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -56,14 +55,10 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import javax.inject.Inject;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import timber.log.Timber;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
@@ -519,23 +514,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
         int menu;
         if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
@@ -544,56 +522,60 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } else {
             menu = R.menu.dashboard_menu;
         }
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
-        MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
-        deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(),presenter.getTEType()));
+        new AppMenuHelper.Builder()
+                .anchor(view)
+                .menu(this, menu)
+                .onMenuInflated(popupMenu -> {
+                            MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
+                            deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(), presenter.getTEType()));
 
-        if (enrollmentUid != null) {
-            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
-            if (status == EnrollmentStatus.COMPLETED) {
-                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
-            } else if (status == EnrollmentStatus.CANCELLED) {
-                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
-            } else {
-                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
-            }
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(true);
-                    break;
-                case R.id.deleteTei:
-                    presenter.deleteTei();
-                    break;
-                case R.id.deleteEnrollment:
-                    presenter.deleteEnrollment();
-                    break;
-                case R.id.programSelector:
-                    presenter.onEnrollmentSelectorClick();
-                    break;
-                case R.id.groupEvents:
-                    groupByStage.setValue(true);
-                    break;
-                case R.id.showTimeline:
-                    groupByStage.setValue(false);
-                    break;
-                case R.id.complete:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
-                    break;
-                case R.id.activate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
-                    break;
-                case R.id.deactivate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
-                    break;
-            }
-            return true;
-
-        });
-        popupMenu.show();
+                            if (enrollmentUid != null) {
+                                EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+                                if (status == EnrollmentStatus.COMPLETED) {
+                                    popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+                                } else if (status == EnrollmentStatus.CANCELLED) {
+                                    popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+                                } else {
+                                    popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+                                }
+                            }
+                            return Unit.INSTANCE;
+                        }
+                )
+                .onMenuItemClicked(itemId->{
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(true);
+                            break;
+                        case R.id.deleteTei:
+                            presenter.deleteTei();
+                            break;
+                        case R.id.deleteEnrollment:
+                            presenter.deleteEnrollment();
+                            break;
+                        case R.id.programSelector:
+                            presenter.onEnrollmentSelectorClick();
+                            break;
+                        case R.id.groupEvents:
+                            groupByStage.setValue(true);
+                            break;
+                        case R.id.showTimeline:
+                            groupByStage.setValue(false);
+                            break;
+                        case R.id.complete:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
+                            break;
+                        case R.id.activate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
+                            break;
+                        case R.id.deactivate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
+                            break;
+                    }
+                    return true;
+                })
+                .build().show();
     }
 
     @Override

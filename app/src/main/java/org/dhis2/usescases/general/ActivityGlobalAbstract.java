@@ -30,6 +30,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.data.server.OpenIdSession;
 import org.dhis2.data.location.LocationProvider;
@@ -226,29 +227,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-            showTutorial(false);
-            return false;
-        });
-        popupMenu.show();
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.home_menu)
+                .anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(item -> {
+                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                    showTutorial(false);
+                    return false;
+                })
+                .build()
+                .show();
     }
 
     public Context getContext() {
