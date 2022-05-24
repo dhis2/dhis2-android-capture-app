@@ -7,7 +7,7 @@
     <string name="error">Error</string>
     <plurals name="error_message">
         <item quantity="one">Error</item>
-        <item quantity="two">Errores</item>
+        <item quantity="many">Errores</item>
         <item quantity="other">Errores</item>
     </plurals>
     <string name="error_wrong_server_url">URL incorrecta</string>
@@ -220,7 +220,7 @@
     <string name="settings_sms_response_wait_switch">Esperar confirmación por SMS</string>
     <plurals name="settings_specific_programs">
         <item quantity="one">Hay %s programa con una configuración específica</item>
-        <item quantity="two">Hay %s programas con configuraciones específicas</item>
+        <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
     <string name="settings_sync_period">Periodo de sincronización</string>
