@@ -5,7 +5,7 @@ import android.view.animation.AnticipateOvershootInterpolator
 
 class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
 
-    private val hideAnimationDuration = 700L
+    private val hideAnimationDuration = 200L
     private val selectionInDuration = 200L
     private val selectionOutDuration = 200L
 
