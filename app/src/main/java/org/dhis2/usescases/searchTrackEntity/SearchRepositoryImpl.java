@@ -706,11 +706,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, @Nullable String reason) {
         return teiDownloader.download(teiUid, enrollmentUid, reason);
-        /*if (downloadRepository != null && reason != null) {
-            return breakTheGlass(teiUid, reason);
-        } else {
-            return defaultDownload(teiUid, enrollmentUid);
-        }*/
     }
 
     private TeiDownloadResult defaultDownload(String teiUid, @Nullable String enrollmentUid) {
