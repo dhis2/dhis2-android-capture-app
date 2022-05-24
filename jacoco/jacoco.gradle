@@ -1,51 +1,12 @@
-private static boolean isAndroidModule(Project project) {
-    boolean isAndroidLibrary = project.plugins.hasPlugin('com.android.library')
-    boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
-    return isAndroidLibrary || isAndroidApp
-}
-
-afterEvaluate { project ->
-    def projectName = project.name
-    if (isAndroidModule(project)) setupAndroidReporting()
-    else setupKotlinReporting()
-}
-
-def setupKotlinReporting() {
-    jacocoTestReport {
-        dependsOn test
-        reports {
-            csv.enabled false // change if needed
-            xml.enabled false // change if needed
-            html {
-                enabled true
-                destination file("${buildDir}/coverage-report")
-            }
-        }
-        afterEvaluate {
-            classDirectories.from = files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        // dagger
-                        '**/*_MembersInjector.class',
-                        '**/Dagger*Component.class',
-                        '**/Dagger*Component$Builder.class',
-                        '**/Dagger*Subcomponent*.class',
-                        '**/*Subcomponent$Builder.class',
-                        '**/*Module_*Factory.class',
-                        '**/di/module/*',
-                        '**/*_Factory*.*',
-                        '**/*Module*.*',
-                        '**/*Dagger*.*',
-                        '**/*Hilt*.*',
-                ])
-            })
-        }
-    }
+project.afterEvaluate { project ->
+    setupAndroidReporting()
 }
 
 def setupAndroidReporting() {
     tasks.withType(Test) {
         // Whether or not classes without source location should be instrumented
-        jacoco.includeNoLocationClasses true
+        jacoco.includeNoLocationClasses = true
+        jacoco.excludes = ['jdk.internal.*']
     }
 
     // Grab all build types and product flavors
@@ -88,18 +49,6 @@ def setupAndroidReporting() {
                         '**/Manifest*.*',
                         '**/*Test*.*',
                         'android/**/*.*',
-                        // dagger
-                        '**/*_MembersInjector.class',
-                        '**/Dagger*Component.class',
-                        '**/Dagger*Component$Builder.class',
-                        '**/Dagger*Subcomponent*.class',
-                        '**/*Subcomponent$Builder.class',
-                        '**/*Module_*Factory.class',
-                        '**/di/module/*',
-                        '**/*_Factory*.*',
-                        '**/*Module*.*',
-                        '**/*Dagger*.*',
-                        '**/*Hilt*.*',
                         // kotlin
                         '**/*MapperImpl*.*',
                         '**/*$ViewInjector*.*',
@@ -145,6 +94,14 @@ def setupAndroidReporting() {
                     }
                 }
             }
+        }
+    }
+}
+
+android {
+    buildTypes {
+        debug {
+            testCoverageEnabled false
         }
     }
 }
