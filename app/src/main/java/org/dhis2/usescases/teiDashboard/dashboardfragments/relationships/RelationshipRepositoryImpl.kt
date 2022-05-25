@@ -368,28 +368,32 @@ class RelationshipRepositoryImpl(
     }
 
     private fun getTeiAttributesForRelationship(teiUid: String): List<Pair<String, String>> {
+        val teiTypeUid = d2.trackedEntityModule()
+            .trackedEntityInstances().uid(teiUid).blockingGet().trackedEntityType()
         val attrFromType = d2.trackedEntityModule().trackedEntityTypeAttributes()
+            .byTrackedEntityTypeUid().eq(teiTypeUid)
             .byDisplayInList().isTrue.blockingGet().mapNotNull {
                 it.trackedEntityAttribute()?.uid() to it
             }.toMap()
 
-        val attrValuesFromType = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(teiUid)
-            .byTrackedEntityAttribute().`in`(attrFromType.keys.toList())
-            .blockingGet().mapNotNull { attributeValue ->
-                val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(attributeValue.trackedEntityAttribute()).blockingGet().displayFormName()
-                val value = attributeValue.userFriendlyValue(d2)
-                if (fieldName != null && value != null) {
-                    Pair(fieldName, value)
-                } else {
-                    null
-                }
+        val attrValuesFromType = attrFromType.mapNotNull {
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byTrackedEntityAttribute().eq(it.key)
+                .one()
+                .blockingGet()
+        }.mapNotNull { attributeValue ->
+            val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                .uid(attributeValue.trackedEntityAttribute()).blockingGet().displayFormName()
+            val value = attributeValue.userFriendlyValue(d2)
+            if (fieldName != null && value != null) {
+                Pair(fieldName, value)
+            } else {
+                null
             }
+        }
 
         val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
-        val teiTypeUid = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(teiUid).blockingGet().trackedEntityType()
         val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
             .uid(teiTypeUid).blockingGet().name()!!
 
@@ -403,22 +407,24 @@ class RelationshipRepositoryImpl(
                         it.trackedEntityAttribute()?.uid() to it
                     }.toMap()
 
-            d2.trackedEntityModule()
-                .trackedEntityAttributeValues()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byTrackedEntityAttribute().`in`(
-                    attrFromProgramTrackedEntityAttribute.keys.toList()
-                ).blockingGet().mapNotNull { attributeValue ->
-                    val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(attributeValue.trackedEntityAttribute())
-                        .blockingGet().displayFormName()
-                    val value = attributeValue.userFriendlyValue(d2)
-                    if (fieldName != null && value != null) {
-                        attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
-                    } else {
-                        null
-                    }
+            attrFromProgramTrackedEntityAttribute.mapNotNull {
+                d2.trackedEntityModule()
+                    .trackedEntityAttributeValues()
+                    .byTrackedEntityInstance().eq(teiUid)
+                    .byTrackedEntityAttribute().eq(it.key)
+                    .one()
+                    .blockingGet()
+            }.mapNotNull { attributeValue ->
+                val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(attributeValue.trackedEntityAttribute())
+                    .blockingGet().displayFormName()
+                val value = attributeValue.userFriendlyValue(d2)
+                if (fieldName != null && value != null) {
+                    attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
+                } else {
+                    null
                 }
+            }
         }
 
         return when {
