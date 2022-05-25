@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import androidx.annotation.LayoutRes
 import kotlin.reflect.KClass
 import org.dhis2.form.R
 import org.dhis2.form.ui.provider.LayoutProvider
@@ -29,18 +30,12 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.COORDINATE -> R.layout.form_coordinate_custom
             ValueType.IMAGE -> R.layout.form_picture
             ValueType.TEXT ->
-                return when {
-                    shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
-                        R.layout.form_option_set_matrix
-                    shouldRenderAsSelector(optionSet, renderingType) ->
-                        R.layout.form_option_set_selector
-                    shouldRenderAsSpinner(optionSet) ->
-                        R.layout.form_option_set_spinner
-                    shouldRenderAsScan(renderingType) ->
-                        R.layout.form_scan
-                    else ->
-                        R.layout.form_edit_text_custom
-                }
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_edit_text_custom
+                )
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
                 ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
@@ -57,13 +52,55 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.LETTER -> R.layout.form_letter
             ValueType.PHONE_NUMBER -> R.layout.form_phone_number
             ValueType.EMAIL -> R.layout.form_email
-            ValueType.NUMBER -> R.layout.form_number
-            ValueType.UNIT_INTERVAL -> R.layout.form_unit_interval
-            ValueType.PERCENTAGE -> R.layout.form_percentage
-            ValueType.INTEGER -> R.layout.form_integer
-            ValueType.INTEGER_POSITIVE -> R.layout.form_integer_positive
-            ValueType.INTEGER_NEGATIVE -> R.layout.form_integer_negative
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> R.layout.form_integer_zero_positive
+            ValueType.NUMBER ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_number
+                )
+            ValueType.UNIT_INTERVAL ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_unit_interval
+                )
+            ValueType.PERCENTAGE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_percentage
+                )
+            ValueType.INTEGER ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_integer
+                )
+            ValueType.INTEGER_POSITIVE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_integer_positive
+                )
+            ValueType.INTEGER_NEGATIVE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_integer_negative
+                )
+            ValueType.INTEGER_ZERO_OR_POSITIVE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_integer_zero_positive
+                )
             ValueType.URL -> R.layout.form_url
             ValueType.REFERENCE,
             ValueType.GEOJSON,
@@ -71,6 +108,26 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
             else -> R.layout.form_edit_text_custom
+        }
+    }
+
+    private fun getLayoutForOptionSet(
+        optionSet: String?,
+        sectionRenderingType: SectionRenderingType?,
+        renderingType: ValueTypeRenderingType?,
+        @LayoutRes defaultLayout: Int
+    ): Int {
+        return when {
+            shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
+                R.layout.form_option_set_matrix
+            shouldRenderAsSelector(optionSet, renderingType) ->
+                R.layout.form_option_set_selector
+            shouldRenderAsSpinner(optionSet) ->
+                R.layout.form_option_set_spinner
+            shouldRenderAsScan(renderingType) ->
+                R.layout.form_scan
+            else ->
+                defaultLayout
         }
     }
 
