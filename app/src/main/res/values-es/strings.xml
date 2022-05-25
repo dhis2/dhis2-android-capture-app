@@ -886,4 +886,4 @@
     <string name="account_disable_title">Cuenta deshabilitada</string>
     <string name="account_disable_message">Tu cuenta ha sido deshabilitada por un administrador</string>
     <string name="search_unable_search_outside">Para hacer una búsqueda fuera del programa, debe abrir el formulario de búsqueda y llenar uno de los siguientes campos %s :</string>
-</resources>
+    </resources>
