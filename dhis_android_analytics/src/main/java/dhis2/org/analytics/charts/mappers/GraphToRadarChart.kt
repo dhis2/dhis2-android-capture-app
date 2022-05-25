@@ -34,12 +34,18 @@ class GraphToRadarChart {
 
             setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    data = if (e?.data is String) {
-                        GraphToRadarData().map(graph, e.data as String)
-                    } else {
-                        GraphToRadarData().map(graph)
+                    if (e?.data is String) {
+                        graph.series.find { it.fieldName == e.data as String }?.coordinates?.maxByOrNull { it.fieldValue }
+                            ?.let {
+                                yAxis.axisMaximum = it.fieldValue
+                            }
+                        data = GraphToRadarData().map(graph, e.data as String)
+                        invalidate()
+                    }else{
+                        data = GraphToRadarData().map(graph)
+                        yAxis.calculate(graph.minValue(), graph.maxValue())
+                        invalidate()
                     }
-                    invalidate()
                 }
 
                 override fun onNothingSelected() {
