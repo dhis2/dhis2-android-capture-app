@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.work.WorkInfo;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -129,37 +130,19 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            SyncWorkInfoHelper.INSTANCE.onWorkStatusesUpdate(
-                    workStatuses,
-                    ()->{
-                        binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                        String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
-                        binding.syncMetaLayout.message.setText(metaText);
-                        return Unit.INSTANCE;
-                    },
-                    ()->{
-                        presenter.checkData();
-                        return Unit.INSTANCE;
-                    }
-            );
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
+            }
+            presenter.onWorkStatusesUpdate(workState, META_NOW);
             checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            SyncWorkInfoHelper.INSTANCE.onWorkStatusesUpdate(
-                    workStatuses,
-                    ()->{
-                        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
-                        binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                        binding.syncDataLayout.message.setText(dataText);
-                        dataWorkRunning = true;
-                        return Unit.INSTANCE;
-                    },
-                    ()->{
-                        dataWorkRunning = false;
-                        presenter.checkData();
-                        return Unit.INSTANCE;
-                    }
-            );
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
+            }
+            presenter.onWorkStatusesUpdate(workState, DATA_NOW);
             checkSyncDataButtonStatus();
         });
         presenter.init();
@@ -851,6 +834,32 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void displaySmsEnableError() {
         binding.settingsSms.settingsSmsSwitch.setChecked(false);
+    }
+
+    @Override
+    public void onMetadataSyncInProgress() {
+        binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+        binding.syncMetaLayout.message.setText(metaText);
+    }
+
+    @Override
+    public void onMetadataFinished() {
+        presenter.checkData();
+    }
+
+    @Override
+    public void onDataSyncInProgress() {
+        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+        binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        binding.syncDataLayout.message.setText(dataText);
+        dataWorkRunning = true;
+    }
+
+    @Override
+    public void onDataFinished() {
+        dataWorkRunning = false;
+        presenter.checkData();
     }
 
     private void checkSyncDataButtonStatus() {
