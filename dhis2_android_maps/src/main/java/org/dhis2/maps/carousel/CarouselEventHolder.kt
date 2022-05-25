@@ -77,17 +77,6 @@ class CarouselEventHolder(
             )
         }
 
-        if (data.event.geometry() == null) {
-            binding.noCoordinatesLabel.root.visibility = View.VISIBLE
-            binding.noCoordinatesLabel.noCoordinatesMessage.text =
-                itemView.context.getString(R.string.no_coordinates_item).format(
-                    itemView.context.getString(R.string.event_event)
-                        .toLowerCase(Locale.getDefault())
-                )
-        } else {
-            binding.noCoordinatesLabel.root.visibility = View.GONE
-        }
-
         binding.mapNavigateFab.setOnClickListener {
             onNavigate(data.eventUid)
         }

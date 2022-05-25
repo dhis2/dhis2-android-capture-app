@@ -99,7 +99,7 @@ class ProgramEventMapper @Inject constructor(
     }
 
     fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> {
-        return events.map { event -> eventToProgramEvent(event) }
+        return events.filter { it.geometry() != null }.map { event -> eventToProgramEvent(event) }
     }
 
     private fun getOrgUnitName(orgUnitUid: String?) =
