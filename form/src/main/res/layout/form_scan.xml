@@ -12,6 +12,10 @@
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
+
+        <variable
+            name="textWatcher"
+            type="android.text.TextWatcher" />
     </data>
 
 
@@ -113,6 +117,7 @@
                     android:enabled="@{item.editable}"
                     android:imeOptions="actionNext"
                     app:onTyping="@{item}"
+                    app:textWatcher="@{textWatcher}"
                     android:singleLine="true"
                     android:text="@{item.value}"
                     android:textSize="@dimen/form_edit_text_size"

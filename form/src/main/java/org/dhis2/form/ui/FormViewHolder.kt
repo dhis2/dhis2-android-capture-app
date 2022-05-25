@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import android.text.TextWatcher
 import android.widget.ImageView
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,7 @@ class FormViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHo
         fieldSelected?.clipWithAllRoundedCorners(2.dp)
     }
 
-    fun bind(uiModel: FieldUiModel, callback: FieldItemCallback) {
+    fun bind(uiModel: FieldUiModel, callback: FieldItemCallback, textWatcher: TextWatcher) {
         val itemCallback: FieldUiModel.Callback = object : FieldUiModel.Callback {
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
                 callback.recyclerViewEvent(uiEvent)
@@ -37,6 +38,7 @@ class FormViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHo
             }
         }
         uiModel.setCallback(itemCallback)
+        binding.setVariable(BR.textWatcher, textWatcher)
         binding.setVariable(BR.item, uiModel)
         binding.executePendingBindings()
     }
