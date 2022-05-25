@@ -38,6 +38,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,19 +260,53 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     }).toObservable();
 
         } else {
-            return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
-                    .map(attributeValueList -> {
-                        List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
-                            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                            if (attribute.valueType() != ValueType.IMAGE) {
-                                attributeValues.add(
-                                        ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
-                                );
-                            }
-                        }
-                        return attributeValues;
-                    }).toObservable();
+            String teType = d2.trackedEntityModule()
+                    .trackedEntityInstances().uid(teiUid).blockingGet().trackedEntityType();
+            List<TrackedEntityTypeAttribute> trackedEntityTypeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(teType)
+                    .byDisplayInList().isTrue().blockingGet();
+
+            List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
+
+            for (TrackedEntityTypeAttribute trackedEntityTypeAttribute: trackedEntityTypeAttributes) {
+                TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                        .byTrackedEntityInstance().eq(teiUid)
+                        .byTrackedEntityAttribute().eq(trackedEntityTypeAttribute.trackedEntityAttribute().uid())
+                        .one()
+                        .blockingGet();
+                if (attributeValue != null) {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                    if (attribute.valueType() != ValueType.IMAGE) {
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
+            }
+
+            if (attributeValues.isEmpty()) {
+                Program program = d2.programModule().programs()
+                        .byTrackedEntityTypeUid().eq(teType).blockingGet().get(0);
+                List<ProgramTrackedEntityAttribute> attrFromProgramTrackedEntityAttribute =
+                        d2.programModule().programTrackedEntityAttributes()
+                                .byProgram().eq(program.uid()).byDisplayInList().isTrue()
+                                .blockingGet();
+
+                for (ProgramTrackedEntityAttribute programTrackedEntityAttribute : attrFromProgramTrackedEntityAttribute) {
+                    TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .byTrackedEntityInstance().eq(teiUid)
+                            .byTrackedEntityAttribute().eq(programTrackedEntityAttribute.trackedEntityAttribute().uid())
+                            .one()
+                            .blockingGet();
+                    if (attributeValue != null) {
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
+            }
+            return Observable.just(attributeValues);
         }
     }
 
