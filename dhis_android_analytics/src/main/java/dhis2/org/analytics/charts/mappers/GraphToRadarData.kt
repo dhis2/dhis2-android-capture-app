@@ -19,18 +19,28 @@ class GraphToRadarData {
                 addDataSet(radarDataSet)
             }
             graph.series.forEachIndexed { index: Int, serie: SerieData ->
-                val radarEntry = graph.categories.mapIndexed { categoryIndex, categoryLabel ->
-                    val point = serie.coordinates.find { it.position == categoryIndex.toFloat() }
-                    RadarEntry(point?.fieldValue ?: 0f, serie.fieldName)
-                }
-                val dataSet = RadarDataSet(radarEntry, serie.fieldName).withGlobalStyle()
-                val colorIndex = index % serieColors.size
-                val isHighlighted = serieToHighlight == null || dataSet.label == serieToHighlight
-                val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
-                dataSet.color = serieColor
-                dataSet.setDrawFilled(true)
-                dataSet.setDrawValues(graph.series.size == 1 || dataSet.label == serieToHighlight)
-                addDataSet(dataSet)
+                    val radarEntry = graph.categories.mapIndexed { categoryIndex, categoryLabel ->
+                        val point =
+                            serie.coordinates.find { it.position == categoryIndex.toFloat() }
+                        RadarEntry(point?.fieldValue ?: 0f, serie.fieldName)
+                    }
+                    val dataSet = RadarDataSet(radarEntry, serie.fieldName).apply {
+                        if (graph.series.size == 1 || label == serieToHighlight) {
+                            withHighlightStyle()
+                        } else {
+                            withGlobalStyle()
+                        }
+                    }
+
+                    val colorIndex = index % serieColors.size
+                    val isHighlighted =
+                        serieToHighlight == null || dataSet.label == serieToHighlight
+                    val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
+                    dataSet.color = serieColor
+                    dataSet.fillColor = serieColor
+                    dataSet.setDrawFilled(true)
+                    dataSet.setDrawValues(graph.series.size == 1 || dataSet.label == serieToHighlight)
+                    addDataSet(dataSet)
             }
         }
     }

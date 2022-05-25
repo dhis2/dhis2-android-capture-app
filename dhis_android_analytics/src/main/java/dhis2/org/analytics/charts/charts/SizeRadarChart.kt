@@ -8,5 +8,6 @@ class SizeRadarChart(context: Context) : RadarChart(context) {
     override fun init() {
         super.init()
         this.mXAxisRenderer = RadarRenderer(mViewPortHandler, mXAxis, this)
+        this.renderer = CustomRadarRenderer(this, this.animator, this.viewPortHandler)
     }
 }
