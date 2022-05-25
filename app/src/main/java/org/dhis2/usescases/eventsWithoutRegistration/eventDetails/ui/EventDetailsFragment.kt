@@ -217,10 +217,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showOrgUnitDialog() {
         val dialog = OrgUnitDialog.getInstace()
-            .setTitle(
-                viewModel.eventOrgUnit.value.selectedOrgUnit?.displayName()
-                    ?: getString(R.string.org_unit)
-            )
+            .setTitle(getString(R.string.org_unit))
             .setMultiSelection(false)
             .setOrgUnits(viewModel.eventOrgUnit.value.orgUnits)
             .setProgram(viewModel.eventOrgUnit.value.programUid)
