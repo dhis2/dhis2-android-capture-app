@@ -1,7 +1,7 @@
 package org.dhis2.commons.filters.data
 
+import org.dhis2.commons.filters.FilterResources
 import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.AssignedUserMode
 import org.hisp.dhis.android.core.event.search.EventQueryRepositoryScope
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryRepositoryScope
@@ -97,28 +97,28 @@ data class EventWorkingListScope(
 }
 
 fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
-    resources: ResourceManager
+    resources: FilterResources
 ): TeiWorkingListScope {
     return TeiWorkingListScope(
-        enrollmentStatus()?.let { resources.filterResources.enrollmentStatusToText(it) },
-        programDate()?.let { resources.filterResources.dateFilterPeriodToText(it) },
-        resources.filterResources.eventStatusToText(
+        enrollmentStatus()?.let { resources.enrollmentStatusToText(it) },
+        programDate()?.let { resources.dateFilterPeriodToText(it) },
+        resources.eventStatusToText(
             eventFilters().mapNotNull { it.eventStatus() }
                 .flatten().distinct()
         ),
         eventFilters().mapNotNull { it.eventDate() }
-            .mapNotNull { resources.filterResources.dateFilterPeriodToText(it) },
+            .mapNotNull { resources.dateFilterPeriodToText(it) },
         eventFilters().mapNotNull { it.assignedUserMode() }.distinct()
     )
 }
 
 fun EventQueryRepositoryScope.mapToEventWorkingListScope(
-    resources: ResourceManager
+    resources: FilterResources
 ): EventWorkingListScope {
     return EventWorkingListScope(
         programStage(),
-        eventDate()?.let { resources.filterResources.dateFilterPeriodToText(it) },
-        eventStatus()?.let { resources.filterResources.eventStatusToText(it) },
+        eventDate()?.let { resources.dateFilterPeriodToText(it) },
+        eventStatus()?.let { resources.eventStatusToText(it) },
         assignedUserMode()
     )
 }

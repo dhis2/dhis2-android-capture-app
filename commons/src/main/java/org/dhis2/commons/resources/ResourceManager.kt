@@ -5,12 +5,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
-import org.dhis2.commons.filters.FilterResources
 import org.hisp.dhis.android.core.D2Manager
 
 class ResourceManager(val context: Context) {
-
-    val filterResources by lazy { FilterResources(getWrapperContext()) }
 
     fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
 
@@ -72,7 +69,7 @@ class ResourceManager(val context: Context) {
 
     fun defaultIndicatorLabel(): String = getWrapperContext().getString(R.string.info)
 
-    private fun getWrapperContext() = try {
+    fun getWrapperContext() = try {
         LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
     } catch (exception: IllegalStateException) {
         context
