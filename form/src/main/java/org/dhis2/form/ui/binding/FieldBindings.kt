@@ -383,14 +383,13 @@ fun RadioGroup.checkListener(item: FieldUiModel) {
     }
 }
 
-@BindingAdapter(value = ["onTyping", "textWatcher"], requireAll = false)
-fun EditText.setOnTyping(item: FieldUiModel, textWatcher: TextWatcher?) {
-    textWatcher?.let {
-        if (item.focused) {
-            addTextChangedListener(textWatcher)
-        } else {
-            removeTextChangedListener(textWatcher)
-        }
+@BindingAdapter(value = ["onTyping", "textWatcher"], requireAll = true)
+fun EditText.setOnTyping(item: FieldUiModel, textWatcher: TextWatcher) {
+    removeTextChangedListener(textWatcher)
+    setText(item.value)
+    setSelection(length())
+    if(item.focused) {
+        addTextChangedListener(textWatcher)
     }
 }
 

@@ -131,7 +131,6 @@
                     app:textWatcher="@{textWatcher}"
                     android:paddingTop="8dp"
                     android:paddingBottom="36dp"
-                    android:text="@{item.value}"
                     android:textAlignment="textStart"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"

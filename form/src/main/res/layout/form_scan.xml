@@ -119,7 +119,6 @@
                     app:onTyping="@{item}"
                     app:textWatcher="@{textWatcher}"
                     android:singleLine="true"
-                    android:text="@{item.value}"
                     android:textSize="@dimen/form_edit_text_size"
                     app:action_handler="@{item}"
                     app:input_style="@{item}"
