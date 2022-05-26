@@ -884,4 +884,4 @@
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
     <string name="search_unable_search_outside">Để tìm kiếm bên ngoài chương trình này, mở biểu tìm kiếm và điền một trong những trường %ssau:</string>
-</resources>
+    </resources>

@@ -7,6 +7,7 @@
     <string name="error">Error</string>
     <plurals name="error_message">
         <item quantity="one">Error</item>
+        <item quantity="many">Errores</item>
         <item quantity="other">Errores</item>
     </plurals>
     <string name="error_wrong_server_url">URL incorrecta</string>
@@ -219,6 +220,7 @@
     <string name="settings_sms_response_wait_switch">Esperar confirmación por SMS</string>
     <plurals name="settings_specific_programs">
         <item quantity="one">Hay %s programa con una configuración específica</item>
+        <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
     <string name="settings_sync_period">Periodo de sincronización</string>
@@ -884,4 +886,4 @@
     <string name="account_disable_title">Cuenta deshabilitada</string>
     <string name="account_disable_message">Tu cuenta ha sido deshabilitada por un administrador</string>
     <string name="search_unable_search_outside">Para hacer una búsqueda fuera del programa, debe abrir el formulario de búsqueda y llenar uno de los siguientes campos %s :</string>
-</resources>
+    </resources>
