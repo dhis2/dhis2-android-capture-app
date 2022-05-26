@@ -74,12 +74,12 @@
                         android:id="@+id/eventStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         app:enrollmentStatusIcon="@{enrollment}"
                         app:eventProgram="@{program}"
                         app:eventProgramStage="@{stage}"
                         app:eventStatusIcon="@{event}"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_event_status_open"
@@ -93,7 +93,8 @@
                     android:layout_marginStart="38dp"
                     android:layout_marginTop="30dp"
                     app:cardBackgroundColor="@color/white"
-                    app:cardElevation="9dp"
+                    app:cardElevation="1dp"
+                    android:shadowColor="@color/light_shadow"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 

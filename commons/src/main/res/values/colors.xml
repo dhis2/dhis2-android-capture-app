@@ -480,4 +480,6 @@
     <color name="unselected_tab_badge_color">#B3FFFFFF</color>
     <color name="pink_500">#E91E63</color>
 
+    <color name="light_shadow">#1F000000</color>
+
 </resources>
