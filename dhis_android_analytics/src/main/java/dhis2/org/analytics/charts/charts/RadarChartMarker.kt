@@ -5,20 +5,25 @@ import android.content.Context
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.github.mikephil.charting.components.MarkerView
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
+import com.github.mikephil.charting.utils.ViewPortHandler
 import dhis2.org.R
 import org.dhis2.commons.bindings.dp
 
 @SuppressLint("ViewConstructor")
 class RadarChartMarker(
     context: Context,
+    private val viewPort: ViewPortHandler,
+    private val xAxis: XAxis,
     private val yAxis: YAxis,
     @LayoutRes layoutRes: Int = R.layout.chart_marker,
-    forceTopMarkerPlacement: Boolean = false
-) : MarkerView(context, layoutRes) {
+    private val forceTopMarkerPlacement: Boolean = false
+) :
+    MarkerView(context, layoutRes) {
     private enum class MarkerPlacement {
         TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT
     }
@@ -32,6 +37,7 @@ class RadarChartMarker(
     }
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
+//        highlight?.let { markerPlacement(highlight.xPx, highlight.yPx) }
         val formattedYValue = yAxis.valueFormatter.getAxisLabel(e?.y ?: 0f, yAxis)
         contentY.text = formattedYValue
         super.refreshContent(e, highlight)
@@ -48,6 +54,19 @@ class RadarChartMarker(
             MarkerPlacement.BOTTOM_LEFT ->
                 MPPointF(-width.toFloat() / 2f, markerVerticalPadding.toFloat())
             null -> MPPointF((-(width / 2)).toFloat(), (-height).toFloat())
+        }
+    }
+
+    private fun markerPlacement(xEntryPx: Float, yEntryPx: Float) {
+        val contentCenterX = viewPort.contentCenter.x
+        val contentCenterY = viewPort.contentCenter.y
+        markerPlacement = when {
+            forceTopMarkerPlacement -> MarkerPlacement.TOP_RIGHT
+            xEntryPx <= contentCenterX && yEntryPx >= contentCenterY -> MarkerPlacement.TOP_RIGHT
+            xEntryPx < contentCenterX && yEntryPx < contentCenterY -> MarkerPlacement.BOTTOM_RIGHT
+            xEntryPx > contentCenterX && yEntryPx > contentCenterY -> MarkerPlacement.TOP_LEFT
+            xEntryPx >= contentCenterX && yEntryPx <= contentCenterY -> MarkerPlacement.BOTTOM_LEFT
+            else -> MarkerPlacement.TOP_RIGHT
         }
     }
 }
