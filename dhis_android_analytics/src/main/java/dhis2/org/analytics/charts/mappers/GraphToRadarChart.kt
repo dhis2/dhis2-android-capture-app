@@ -53,7 +53,7 @@ class GraphToRadarChart {
             extraRightOffset = 5f
             data = radarData
 
-            marker = RadarChartMarker(context, viewPortHandler, xAxis, yAxis)
+            marker = RadarChartMarker(context, yAxis)
 
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
