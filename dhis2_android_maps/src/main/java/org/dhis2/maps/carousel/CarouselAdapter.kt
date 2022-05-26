@@ -149,7 +149,11 @@ class CarouselAdapter private constructor(
             when (currentLayer) {
                 is TeiMapLayer -> {
                     if (currentLayer.visible) {
-                        teisToShow.addAll(allItems.filterIsInstance<SearchTeiModel>())
+                        teisToShow.addAll(
+                            allItems.filterIsInstance<SearchTeiModel>().filter {
+                                it.tei.geometry() != null
+                            }
+                        )
                     }
                 }
                 is EnrollmentMapLayer -> {
