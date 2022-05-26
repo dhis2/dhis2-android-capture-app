@@ -388,7 +388,7 @@ fun EditText.setOnTyping(item: FieldUiModel, textWatcher: TextWatcher) {
     removeTextChangedListener(textWatcher)
     setText(item.value)
     setSelection(length())
-    if(item.focused) {
+    if (item.focused) {
         addTextChangedListener(textWatcher)
     }
 }
