@@ -1,5 +1,7 @@
 package org.dhis2.form.ui
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -32,6 +34,20 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
 
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            // Not needed
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            currentList.find { it.focused }?.onTextChange(p0)
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            // Not needed
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
         val layoutInflater =
             if (refactoredViews.contains(viewType) && searchStyle) {
@@ -53,7 +69,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         if (getItem(position) is SectionUiModelImpl) {
             updateSectionData(position, false)
         }
-        holder.bind(getItem(position), this)
+        holder.bind(getItem(position), this, textWatcher)
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {

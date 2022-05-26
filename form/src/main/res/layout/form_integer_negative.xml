@@ -13,6 +13,9 @@
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
 
+        <variable
+            name="textWatcher"
+            type="android.text.TextWatcher" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,7 +128,7 @@
                         android:gravity="start"
                         android:maxLines="1"
                         app:onTyping="@{item}"
-                        android:text="@{item.value}"
+                        app:textWatcher="@{textWatcher}"
                         android:textAlignment="textStart"
                         android:textSize="@dimen/form_edit_text_size"
                         app:input_style="@{item}"
