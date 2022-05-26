@@ -46,7 +46,7 @@ fun RadarDataSet.withGlobalStyle(): RadarDataSet {
     }
 }
 
-fun RadarDataSet.withHighlightStyle():RadarDataSet {
+fun RadarDataSet.withHighlightStyle(): RadarDataSet {
     return this.apply {
         lineWidth = 2.5f
         valueTypeface = Typeface.DEFAULT_BOLD

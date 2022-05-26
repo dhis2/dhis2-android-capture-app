@@ -7,6 +7,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.charts.RadarChartMarker
 import dhis2.org.analytics.charts.charts.SizeRadarChart
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
@@ -30,20 +31,15 @@ class GraphToRadarChart {
             }
 
             legend.withGlobalStyle()
+
             setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    if (e?.data is String) {
-                        graph.series.find { it.fieldName == e.data as String }?.coordinates?.maxByOrNull { it.fieldValue }
-                            ?.let {
-                                yAxis.axisMaximum = it.fieldValue
-                            }
-                        data = GraphToRadarData().map(graph, e.data as String)
-                        invalidate()
-                    }else{
-                        data = GraphToRadarData().map(graph)
-                        yAxis.calculate(graph.minValue(), graph.maxValue())
-                        invalidate()
+                    data = if (e?.data is String) {
+                        GraphToRadarData().map(graph, e.data as String)
+                    } else {
+                        GraphToRadarData().map(graph)
                     }
+                    invalidate()
                 }
 
                 override fun onNothingSelected() {
@@ -56,6 +52,8 @@ class GraphToRadarChart {
             extraLeftOffset = 5f
             extraRightOffset = 5f
             data = radarData
+
+            marker = RadarChartMarker(context, viewPortHandler, xAxis, yAxis)
 
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
