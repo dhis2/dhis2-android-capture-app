@@ -1,6 +1,7 @@
 package org.dhis2.usescases.settings
 
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkInfo
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -20,6 +21,8 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
+import org.dhis2.utils.Constants.DATA_NOW
+import org.dhis2.utils.Constants.META_NOW
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -81,6 +84,36 @@ class SyncManagerPresenterTest {
         verify(view).setParameterSettings(mockedParamsViewModel())
         verify(view).setReservedValuesSettings(mockedReservecValuesViewModel())
         verify(view).setSMSSettings(mockedSMSViewModel())
+    }
+
+    @Test
+    fun `should call work in progress`() {
+        presenter.onWorkStatusesUpdate(WorkInfo.State.ENQUEUED, META_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.RUNNING, META_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.BLOCKED, META_NOW)
+
+        presenter.onWorkStatusesUpdate(WorkInfo.State.ENQUEUED, DATA_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.RUNNING, DATA_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.BLOCKED, DATA_NOW)
+
+        verify(view, times(3)).onMetadataSyncInProgress()
+        verify(view, times(3)).onDataSyncInProgress()
+    }
+
+    @Test
+    fun `should call work finished`() {
+        presenter.onWorkStatusesUpdate(null, META_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.SUCCEEDED, META_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.FAILED, META_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.CANCELLED, META_NOW)
+
+        presenter.onWorkStatusesUpdate(null, DATA_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.SUCCEEDED, DATA_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.FAILED, DATA_NOW)
+        presenter.onWorkStatusesUpdate(WorkInfo.State.CANCELLED, DATA_NOW)
+
+        verify(view, times(4)).onMetadataFinished()
+        verify(view, times(4)).onDataFinished()
     }
 
     private fun mockedMetaViewModel(): MetadataSettingsViewModel {
