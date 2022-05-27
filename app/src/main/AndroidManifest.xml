@@ -156,6 +156,7 @@
         <activity android:name=".data.forms.ScanCaptureActivity"/>
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
         <activity
+            android:exported="false"
             android:name=".usescases.crash.CrashActivity"
             android:process=":error_activity">
             <intent-filter>
