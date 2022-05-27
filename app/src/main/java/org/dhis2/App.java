@@ -38,6 +38,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
@@ -121,7 +122,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private void initCustomCrashActivity() {
         CaocConfig.Builder.create()
-                .errorDrawable(R.drawable.ic_dhis)
+                .errorActivity(CrashActivity.class)
                 .apply();
     }
 
