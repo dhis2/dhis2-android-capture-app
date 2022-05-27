@@ -110,13 +110,13 @@
                 app:error="@{item.error}"
                 app:warning="@{item.warning}"
                 app:input_style="@{item}"
-                android:textSize="@dimen/textSize_12"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginHorizontal="16dp"
                 app:layout_constraintTop_toBottomOf="@id/yesOnlyToggle"
-                tools:text="This is a error message" />
+                tools:text="This is a error message"
+                tools:textAppearance="@style/warning_appearance"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
