@@ -82,7 +82,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun hasLocationEnabled(): Boolean {
+    override fun hasLocationEnabled(): Boolean {
         return locationProvider?.let { locationManager.isProviderEnabled(it) } ?: false
     }
 
