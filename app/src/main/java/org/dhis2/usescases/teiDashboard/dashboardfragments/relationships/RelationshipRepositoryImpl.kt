@@ -8,6 +8,7 @@ import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -24,7 +25,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 class RelationshipRepositoryImpl(
     private val d2: D2,
     private val config: RelationshipConfiguration,
-    private val resources: ResourceManager
+    private val resources: ResourceManager,
+    private val teiAttributesProvider: TeiAttributesProvider
 ) : RelationshipRepository {
 
     override fun relationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
@@ -370,61 +372,38 @@ class RelationshipRepositoryImpl(
     private fun getTeiAttributesForRelationship(teiUid: String): List<Pair<String, String>> {
         val teiTypeUid = d2.trackedEntityModule()
             .trackedEntityInstances().uid(teiUid).blockingGet().trackedEntityType()
-        val attrFromType = d2.trackedEntityModule().trackedEntityTypeAttributes()
-            .byTrackedEntityTypeUid().eq(teiTypeUid)
-            .byDisplayInList().isTrue.blockingGet().mapNotNull {
-                it.trackedEntityAttribute()?.uid() to it
-            }.toMap()
 
-        val attrValuesFromType = attrFromType.mapNotNull {
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byTrackedEntityAttribute().eq(it.key)
-                .one()
-                .blockingGet()
-        }.mapNotNull { attributeValue ->
-            val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                .uid(attributeValue.trackedEntityAttribute()).blockingGet().displayFormName()
-            val value = attributeValue.userFriendlyValue(d2)
-            if (fieldName != null && value != null) {
-                Pair(fieldName, value)
-            } else {
-                null
+        val attrValuesFromType = mutableListOf<Pair<String, String>>()
+        teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teiTypeUid, teiUid)
+            .mapNotNull { attributeValue ->
+                val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(attributeValue.trackedEntityAttribute()).blockingGet()
+                    .displayFormName()
+                val value = attributeValue.userFriendlyValue(d2)
+                if (fieldName != null && value != null) {
+                    attrValuesFromType.add(Pair(fieldName, value))
+                } else {
+                    null
+                }
             }
-        }
 
         val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
         val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
             .uid(teiTypeUid).blockingGet().name()!!
 
         if (attrValuesFromType.isEmpty()) {
-            val program = d2.programModule().programs()
-                .byTrackedEntityTypeUid().eq(teiTypeUid).blockingGet()[0]
-            val attrFromProgramTrackedEntityAttribute =
-                d2.programModule().programTrackedEntityAttributes()
-                    .byProgram().eq(program.uid()).byDisplayInList().isTrue
-                    .blockingGet().mapNotNull {
-                        it.trackedEntityAttribute()?.uid() to it
-                    }.toMap()
-
-            attrFromProgramTrackedEntityAttribute.mapNotNull {
-                d2.trackedEntityModule()
-                    .trackedEntityAttributeValues()
-                    .byTrackedEntityInstance().eq(teiUid)
-                    .byTrackedEntityAttribute().eq(it.key)
-                    .one()
-                    .blockingGet()
-            }.mapNotNull { attributeValue ->
-                val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(attributeValue.trackedEntityAttribute())
-                    .blockingGet().displayFormName()
-                val value = attributeValue.userFriendlyValue(d2)
-                if (fieldName != null && value != null) {
-                    attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
-                } else {
-                    null
+            teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teiTypeUid, teiUid)
+                .mapNotNull { attributeValue ->
+                    val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                        .uid(attributeValue.trackedEntityAttribute())
+                        .blockingGet().displayFormName()
+                    val value = attributeValue.userFriendlyValue(d2)
+                    if (fieldName != null && value != null) {
+                        attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
+                    } else {
+                        null
+                    }
                 }
-            }
         }
 
         return when {
