@@ -62,7 +62,7 @@ class TeiAttributesProvider(private val d2: D2) {
     private fun getTrackedEntityAttributeValue(
         trackedEntityInstanceUid: String,
         trackedEntityAttributeUid: String?
-    ): TrackedEntityAttributeValue {
+    ): TrackedEntityAttributeValue? {
         return d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityInstance().eq(trackedEntityInstanceUid)
             .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
