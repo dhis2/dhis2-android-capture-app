@@ -66,8 +66,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(D2 d2, Charts charts, ResourceManager resources) {
-        return new DashboardRepositoryImpl(d2, charts, teiUid, programUid, enrollmentUid, resources);
+    DashboardRepository dashboardRepository(D2 d2, Charts charts, ResourceManager resources, TeiAttributesProvider teiAttributesProvider) {
+        return new DashboardRepositoryImpl(d2, charts, teiUid, programUid, enrollmentUid, resources, teiAttributesProvider);
     }
 
     @Provides
@@ -96,5 +96,11 @@ public class TeiDashboardModule {
     @PerActivity
     NavigationPageConfigurator pageConfigurator(DashboardRepository dashboardRepository) {
         return new TeiDashboardPageConfigurator(dashboardRepository, isPortrait);
+    }
+
+    @Provides
+    @PerActivity
+    TeiAttributesProvider teiAttributesProvider(D2 d2) {
+        return new TeiAttributesProvider(d2);
     }
 }

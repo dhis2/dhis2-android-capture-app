@@ -9,6 +9,7 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
@@ -49,14 +50,16 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationshipRepository providesRepository(D2 d2, ResourceManager resourceManager) {
+    RelationshipRepository providesRepository(D2 d2,
+                                              ResourceManager resourceManager,
+                                              TeiAttributesProvider attributesProvider) {
         RelationshipConfiguration config;
         if (teiUid != null) {
             config = new TrackerRelationshipConfiguration(enrollmentUid, teiUid);
         } else {
             config = new EventRelationshipConfiguration(eventUid);
         }
-        return new RelationshipRepositoryImpl(d2, config, resourceManager);
+        return new RelationshipRepositoryImpl(d2, config, resourceManager, attributesProvider);
     }
 
     @Provides
@@ -74,5 +77,11 @@ public class RelationshipModule {
     @PerFragment
     CarouselViewAnimations animations() {
         return new CarouselViewAnimations();
+    }
+
+    @Provides
+    @PerFragment
+    TeiAttributesProvider teiAttributesProvider(D2 d2) {
+        return new TeiAttributesProvider(d2);
     }
 }
