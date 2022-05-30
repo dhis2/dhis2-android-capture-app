@@ -316,7 +316,7 @@ class LoginPresenter(
         if (userResponse.isSuccessful) {
             trackServerVersion()
             if (view.isNetworkAvailable()) {
-                preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+                preferenceProvider.setValue(Preference.INITIAL_METADATA_SYNC_DONE, false)
             }
 
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
