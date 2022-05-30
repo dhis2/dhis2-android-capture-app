@@ -900,4 +900,9 @@
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
     <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
     <string name="enrollment_org_unit">Enrollment Org Unit</string>
+    <string name="customactivityoncrash_error_activity_build_version">Build version: %s</string>
+    <string name="customactivityoncrash_error_activity_buid_date">Build date: %s</string>
+    <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
+    <string name="customactivityoncrash_error_activity_device">Device: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
 </resources>
