@@ -89,8 +89,13 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesThemeManager(d2: D2, preferenceProvider: PreferenceProvider): ThemeManager {
+    fun providesThemeManager(
+        userManager: UserManager,
+        d2: D2,
+        preferenceProvider: PreferenceProvider
+    ): ThemeManager {
         return ThemeManager(
+            userManager,
             ProgramConfiguration(d2),
             DataSetConfiguration(d2),
             TrackedEntityTypeConfiguration(d2),
