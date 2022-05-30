@@ -53,8 +53,6 @@ public class TEIDataContracts {
 
         void seeDetails(Intent intent, Bundle bundle);
 
-        void showQR(Intent intent);
-
         void openEventDetails(Intent intent, Bundle bundle);
 
         void openEventInitial(Intent intent);
@@ -101,8 +99,6 @@ public class TEIDataContracts {
         void completeEnrollment();
 
         void onFollowUp(DashboardProgramModel dashboardProgramModel);
-
-        void onShareClick(android.view.View mView);
 
         void seeDetails(android.view.View sharedView, DashboardProgramModel dashboardProgramModel);
 

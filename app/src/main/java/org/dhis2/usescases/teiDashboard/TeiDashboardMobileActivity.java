@@ -8,7 +8,10 @@ import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +46,7 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
@@ -572,6 +576,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         case R.id.deactivate:
                             presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
                             break;
+                        case R.id.share:
+                            startQRActivity();
+                            break;
                     }
                     return true;
                 })
@@ -649,5 +656,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void hideFilter() {
         binding.searchFilterGeneral.setVisibility(View.GONE);
+    }
+
+    private void startQRActivity() {
+        analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        Intent intent = new Intent(getContext(), QrActivity.class);
+        intent.putExtra(TEI_UID, teiUid);
+        startActivity(intent);
     }
 }

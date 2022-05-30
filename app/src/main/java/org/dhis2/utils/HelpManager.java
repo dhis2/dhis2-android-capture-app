@@ -185,15 +185,7 @@ public class HelpManager {
         FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_2))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.viewMore))
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .titleGravity(Gravity.BOTTOM)
-                .closeOnTouch(true)
-                .build();
-        FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_dashboard_3))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.shareContainer))
+                .focusOn(activity.findViewById(R.id.detailsButton))
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .titleGravity(Gravity.BOTTOM)
                 .closeOnTouch(true)
@@ -229,7 +221,6 @@ public class HelpManager {
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
         steps.add(tuto2);
-        steps.add(tuto3);
         steps.add(tuto4);
         steps.add(tuto5);
         steps.add(tuto6);
