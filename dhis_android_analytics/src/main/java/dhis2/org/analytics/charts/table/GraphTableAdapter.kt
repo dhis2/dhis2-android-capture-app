@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
@@ -43,6 +44,7 @@ class GraphTableAdapter(val context: Context) :
         holder.itemView.updateLayoutParams {
             width = currentWidth * i + (context.resources.displayMetrics.density * (i - 1)).toInt()
         }
+        holder.itemView.findViewById<TextView>(R.id.text).isSelected = true
     }
 
     override fun onCreateRowHeaderViewHolder(
@@ -59,6 +61,7 @@ class GraphTableAdapter(val context: Context) :
         rowPosition: Int
     ) {
         (holder as GraphTableHolder).bind(rowHeaderItemModel as CellModel)
+        holder.itemView.findViewById<TextView>(R.id.text).isSelected = true
     }
 
     override fun onCreateCellViewHolder(
