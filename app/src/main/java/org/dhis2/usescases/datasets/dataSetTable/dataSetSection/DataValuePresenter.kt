@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.tuples.Trio
@@ -50,49 +51,7 @@ class DataValuePresenter(
                 view.clearTables()
             }.publish()
 
-        if (featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true) {
-            view.updateProgressVisibility()
-            disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
-                    .map { tableData ->
-                        mapper.map(tableData)
-                    }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        {
-                            tableState.value = tableState.value?.toMutableList()?.apply {
-                                add(it)
-                            }
-                            updateTableList()
-                        }
-                    ) { Timber.e(it) }
-            )
-
-            disposable.add(
-                repository.getDataSetIndicators().map { indicatorsData ->
-                    mapper.map(indicatorsData)
-                }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        {
-                            indicatorsState.value = listOf(it)
-                            updateTableList()
-                        },
-                        { Timber.e(it) }
-                    )
-            )
-        } else {
-            disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        view::setTableData
-                    ) { Timber.e(it) }
-            )
-        }
+        initTables(dataTableModelConnectable)
 
         disposable.add(
             dataTableModelConnectable
@@ -164,6 +123,52 @@ class DataValuePresenter(
         disposable.add(
             dataTableModelConnectable.connect()
         )
+    }
+
+    private fun initTables(dataTableModelConnectable: ConnectableFlowable<DataTableModel>) {
+        if (featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true) {
+            view.updateProgressVisibility()
+            disposable.add(
+                dataTableModelConnectable.map(repository::setTableData)
+                    .map { tableData ->
+                        mapper.map(tableData)
+                    }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {
+                            tableState.value = tableState.value?.toMutableList()?.apply {
+                                add(it)
+                            }
+                            updateTableList()
+                        }
+                    ) { Timber.e(it) }
+            )
+
+            disposable.add(
+                repository.getDataSetIndicators().map { indicatorsData ->
+                    mapper.map(indicatorsData)
+                }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {
+                            indicatorsState.value = listOf(it)
+                            updateTableList()
+                        },
+                        { Timber.e(it) }
+                    )
+            )
+        } else {
+            disposable.add(
+                dataTableModelConnectable.map(repository::setTableData)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        view::setTableData
+                    ) { Timber.e(it) }
+            )
+        }
     }
 
     private fun updateTableList() {
