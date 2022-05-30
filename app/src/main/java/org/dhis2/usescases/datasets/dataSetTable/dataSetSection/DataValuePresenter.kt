@@ -1,11 +1,16 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.compose_table.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.form.model.StoreResult
@@ -18,10 +23,15 @@ class DataValuePresenter(
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
-    private val updateProcessor: FlowableProcessor<Unit>
+    private val updateProcessor: FlowableProcessor<Unit>,
+    private val featureConfigRepository: FeatureConfigRepository? = null
 ) {
-
+    private val mapper = TableDataToTableModelMapper()
     var disposable: CompositeDisposable = CompositeDisposable()
+
+    private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
+    private val indicatorsState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
+    private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
 
     private val processor: FlowableProcessor<RowAction> =
         PublishProcessor.create()
@@ -40,14 +50,49 @@ class DataValuePresenter(
                 view.clearTables()
             }.publish()
 
-        disposable.add(
-            dataTableModelConnectable.map(repository::setTableData)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view::setTableData
-                ) { Timber.e(it) }
-        )
+        if (featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true) {
+            view.updateProgressVisibility()
+            disposable.add(
+                dataTableModelConnectable.map(repository::setTableData)
+                    .map { tableData ->
+                        mapper.map(tableData)
+                    }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {
+                            tableState.value = tableState.value?.toMutableList()?.apply {
+                                add(it)
+                            }
+                            updateTableList()
+                        }
+                    ) { Timber.e(it) }
+            )
+
+            disposable.add(
+                repository.getDataSetIndicators().map { indicatorsData ->
+                    mapper.map(indicatorsData)
+                }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {
+                            indicatorsState.value = listOf(it)
+                            updateTableList()
+                        },
+                        { Timber.e(it) }
+                    )
+            )
+        } else {
+            disposable.add(
+                dataTableModelConnectable.map(repository::setTableData)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        view::setTableData
+                    ) { Timber.e(it) }
+            )
+        }
 
         disposable.add(
             dataTableModelConnectable
@@ -121,6 +166,13 @@ class DataValuePresenter(
         )
     }
 
+    private fun updateTableList() {
+        allTableState.value = mutableListOf<TableModel>().apply {
+            addAll(tableState.value ?: emptyList())
+            addAll(indicatorsState.value ?: emptyList())
+        }
+    }
+
     fun getDataSetIndicators() {
         disposable.add(
             repository.getDataSetIndicators()
@@ -148,4 +200,6 @@ class DataValuePresenter(
     fun saveCurrentSectionMeasures(rowHeaderWidth: Int, columnHeaderHeight: Int) {
         repository.saveCurrentSectionMeasures(rowHeaderWidth, columnHeaderHeight)
     }
+
+    fun tableData(): LiveData<List<TableModel>> = allTableState
 }
