@@ -87,7 +87,10 @@ def setupAndroidReporting() {
 
                 reports {
                     csv.enabled false // change if needed
-                    xml.enabled false // change if needed
+                    xml {
+                        enabled true
+                        destination file("${buildDir}/coverage-report/jacocoTestReport.xml")
+                    }
                     html {
                         enabled true
                         destination file("${buildDir}/coverage-report")

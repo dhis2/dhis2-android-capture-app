@@ -21,7 +21,7 @@ trigger_map:
   workflow: primary
 - push_branch: hotfix/2.4.2
   workflow: primary
-- push_branch: release/2.6
+- push_branch: release/2.6.1
   workflow: primary
 - pull_request_target_branch: "*"
   workflow: primary
@@ -98,6 +98,7 @@ workflows:
               exit 0
             fi
 
+
             FILE=zxing-core/core/build.gradle
             if [ -f "$FILE" ]; then
                 echo "$FILE exist"
@@ -129,6 +130,8 @@ workflows:
         asset_urls:
           icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/sign-apk/assets/icon.svg
         inputs:
+        - signer_scheme: v2
+        - use_apk_signer: 'true'
         - android_app: "$BITRISE_APK_PATH_LIST"
     - deploy-to-bitrise-io:
         asset_urls:
@@ -199,73 +202,6 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -321,73 +257,41 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
         - content: |-
             chmod +x ./scripts/change_java_version.sh
             ./scripts/change_java_version.sh
+    - script:
+        title: zxing build.gradle
+        asset_urls:
+          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
+              exit 0
+            fi
+
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
+            fi
     - install-missing-android-tools:
         inputs:
         - gradlew_path: "./gradlew"
@@ -500,27 +404,6 @@ workflows:
             cd scripts/
             chmod +x flow_tests_configurator.sh
             ./flow_tests_configurator.sh
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - android-build-for-ui-testing@0:
         inputs:
         - variant: dhisUITestingDebug
@@ -611,73 +494,6 @@ workflows:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.1: {}
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
-              exit 0
-            fi
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -808,27 +624,6 @@ workflows:
         - mapping_file_include_filter: ''
         - retry_on_failure: 'no'
         - gradle_task: ":app:ktlintCheck :form:ktlintCheck :dhis_android_analytics:ktlintCheck"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - android-unit-test@1:
         inputs:
         - variant: dhisDebug
@@ -850,22 +645,6 @@ workflows:
 
             chmod +x ./browserstackBitrise.sh
             ./browserstackBitrise.sh
-    - slack@3.1.3:
-        inputs:
-        - channel: "#android-capture-app-ci"
-        - emoji: ":white_check_mark:"
-        - from_username: Continuous integration
-        - buttons: |
-            View Build|${BITRISE_BUILD_URL}
-            View UnitTests|https://addons-testing.bitrise.io/builds/${BITRISE_BUILD_SLUG}/summary?status=all
-            View UITests|${BROWSERSTACK_TEST_REPORTS}
-            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-        - emoji_on_error: ":laptop:"
-        - from_username_on_error: Local Continuous integration
-        - color_on_error: "#f01f33"
-        - pretext: "*Local Build Succeeded!*"
-        - pretext_on_error: "*Local Build Failed!*"
-        - webhook_url: "$SLACK_CI_WEBHOOK"
   LocalUITest:
     description: |+
       Workflow that
@@ -1159,68 +938,77 @@ workflows:
           icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
         is_always_run: true
         inputs:
-        - content: |
+        - content: |-
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
             # debug log
             set -x
 
-            cd dhis2-rule-engine
+            SUBMODULE=dhis2-rule-engine
+            if [ -d "$SUBMODULE" ]; then
+              cd dhis2-rule-engine
 
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
+              FILE=build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE rule engine exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'
+
+              dependencies {
+
+                  testImplementation 'junit:junit:4.12'
+                  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
+                  testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
+                  testCompile 'com.google.truth:truth:0.30'
+                  testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
+
+                  implementation 'com.google.code.findbugs:jsr305:3.0.1'
+                  compileOnly 'com.google.auto.value:auto-value:1.3'
+                  annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
+                  compile 'com.google.guava:guava:16+'
+                  compile 'joda-time:joda-time:2.10.5'
+                  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+                  implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
+                  implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
+              }" > build.gradle
+
+              cd ..
+              echo "Rule engine build gradle created"
+
             fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
     - script:
         title: zxing build.gradle
         asset_urls:
           icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
         is_always_run: true
         inputs:
-        - content: |
+        - content: |+
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
             # debug log
             set -x
 
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
               exit 0
             fi
 
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
             fi
 
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - install-missing-android-tools:
         inputs:
         - gradlew_path: "./gradlew"
@@ -1244,7 +1032,7 @@ workflows:
     - script@1:
         title: BrowserStack Tests
         inputs:
-        - content: |-
+        - content: |+
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
@@ -1255,8 +1043,9 @@ workflows:
 
             apt-get install "-y" "jq"
 
-            chmod +x ./uiTests.sh
-            ./uiTests.sh
+            chmod +x ./browserstackBitrise.sh
+            ./browserstackBitrise.sh
+
     - slack@3.1.3:
         inputs:
         - channel: "#android-capture-app-ci"
@@ -2290,67 +2079,6 @@ workflows:
         inputs:
         - limit_submodule_update_depth: 'no'
     - cache-pull: {}
-    - script:
-        title: Rule engine build.gradle
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            cd dhis2-rule-engine
-
-            FILE=build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE rule engine exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'
-
-            dependencies {
-
-                testImplementation 'junit:junit:4.12'
-                testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-                testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.2.9'
-                testCompile 'com.google.truth:truth:0.30'
-                testCompile group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.1.6'
-
-                implementation 'com.google.code.findbugs:jsr305:3.0.1'
-                compileOnly 'com.google.auto.value:auto-value:1.3'
-                annotationProcessor 'com.google.auto.value:auto-value:1.5.2'
-                compile 'com.google.guava:guava:16+'
-                compile 'joda-time:joda-time:2.10.5'
-                implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-                implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-                implementation group : 'org.apache.commons', name : 'commons-jexl', version: '2.1.1'
-            }" > build.gradle
-
-            cd ..
-            echo "Rule engine build gradle created"
-    - script:
-        title: zxing build.gradle
-        asset_urls:
-          icon.svg: https://bitrise-steplib-collection.s3.amazonaws.com/steps/script/assets/icon.svg
-        is_always_run: true
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
-            fi
-
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
     - script@1:
         title: Set Java 8 as default
         inputs:
@@ -2490,14 +2218,22 @@ workflows:
             # debug log
             set -x
 
-            FILE=zxing-core/core/build.gradle
-            if [ -f "$FILE" ]; then
-                echo "$FILE exist"
-                exit 0
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
+              exit 0
             fi
 
-            echo "apply plugin: 'java'" > $FILE
-            echo "zxing build gradle created"
+            SUBMODULE=zxing-core
+            if [ -d "$SUBMODULE" ]; then
+              echo "$SUBMODULE exist"
+              FILE=zxing-core/core/build.gradle
+              if [ -f "$FILE" ]; then
+                  echo "$FILE exist"
+                  exit 0
+              fi
+
+              echo "apply plugin: 'java'" > $FILE
+              echo "zxing build gradle created"
+            fi
     - script@1:
         title: Sets JAVA 8
         inputs:
@@ -2622,7 +2358,7 @@ workflows:
             # debug log
             set -x
 
-            if [ "$BITRISE_GIT_BRANCH" = "master" ]; then
+            if [ "$BITRISE_GIT_BRANCH" = "master_legacy" ]; then
               exit 0
             fi
 
