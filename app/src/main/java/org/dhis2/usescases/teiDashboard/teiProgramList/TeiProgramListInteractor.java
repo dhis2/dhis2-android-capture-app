@@ -201,7 +201,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
             boolean isAlreadyEnrolled = false;
             boolean onlyEnrollOnce = false;
             for (Program program : alreadyEnrolledPrograms) {
-                if (programViewModel.id().equals(program.uid())) {
+                if (programViewModel.getUid().equals(program.uid())) {
                     isAlreadyEnrolled = true;
                     onlyEnrollOnce = program.onlyEnrollOnce();
                 }
@@ -210,7 +210,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 programListToPrint.add(programViewModel);
             }
         }
-        Collections.sort(programListToPrint, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
+        Collections.sort(programListToPrint, (program1, program2) -> program1.getTitle().compareToIgnoreCase(program2.getTitle()));
         view.setPrograms(programListToPrint);
     }
 

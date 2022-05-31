@@ -179,39 +179,39 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
 
     override fun navigateTo(program: ProgramViewModel) {
         val bundle = Bundle()
-        val idTag = if (program.programType().isEmpty()) {
+        val idTag = if (program.programType.isEmpty()) {
             Constants.DATASET_UID
         } else {
             Constants.PROGRAM_UID
         }
 
-        if (!TextUtils.isEmpty(program.type())) {
-            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type())
+        if (!TextUtils.isEmpty(program.type)) {
+            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type)
         }
 
         abstractActivity.analyticsHelper.setEvent(
             TYPE_PROGRAM_SELECTED,
-            if (program.programType().isNotEmpty()) {
-                program.programType()
+            if (program.programType.isNotEmpty()) {
+                program.programType
             } else {
-                program.typeName()
+                program.typeName
             },
             SELECT_PROGRAM
         )
-        bundle.putString(idTag, program.id())
-        bundle.putString(Constants.DATA_SET_NAME, program.title())
+        bundle.putString(idTag, program.uid)
+        bundle.putString(Constants.DATA_SET_NAME, program.title)
         bundle.putString(
             Constants.ACCESS_DATA,
-            program.accessDataWrite().toString()
+            program.accessDataWrite.toString()
         )
 
-        when (program.programType()) {
+        when (program.programType) {
             ProgramType.WITH_REGISTRATION.name ->
                 startActivity(SearchTEActivity::class.java, bundle, false, false, null)
             ProgramType.WITHOUT_REGISTRATION.name ->
                 startActivity(
                     ProgramEventDetailActivity::class.java,
-                    ProgramEventDetailActivity.getBundle(program.id()),
+                    ProgramEventDetailActivity.getBundle(program.uid),
                     false, false, null
                 )
             else -> startActivity(DataSetDetailActivity::class.java, bundle, false, false, null)
@@ -221,13 +221,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.programType().isNotEmpty()) {
+                if (program.programType.isNotEmpty()) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET
                 }
             )
-            .setUid(program.id())
+            .setUid(program.uid)
             .onDismissListener(
                 object : GranularSyncContracts.OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {

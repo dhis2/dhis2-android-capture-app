@@ -38,7 +38,7 @@ class ProgramPresenter internal constructor(
                             }
                         )
                         .flatMapIterable { data -> data }
-                        .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
+                        .sorted { p1, p2 -> p1.title.compareTo(p2.title, ignoreCase = true) }
                         .toList().toFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .onErrorReturn { arrayListOf() }
@@ -78,7 +78,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun onSyncStatusClick(program: ProgramViewModel) {
-        val programTitle = "$CLICK_ON${program.title()}"
+        val programTitle = "$CLICK_ON${program.title}"
         matomoAnalyticsController.trackEvent(HOME, SYNC_BTN, programTitle)
         view.showSyncDialog(program)
     }
@@ -88,10 +88,10 @@ class ProgramPresenter internal constructor(
     }
 
     fun onItemClick(programModel: ProgramViewModel) {
-        if (programModel.programType().isNotEmpty()) {
-            themeManager.setProgramTheme(programModel.id())
+        if (programModel.programType.isNotEmpty()) {
+            themeManager.setProgramTheme(programModel.uid)
         } else {
-            themeManager.setDataSetTheme(programModel.id())
+            themeManager.setDataSetTheme(programModel.uid)
         }
         view.navigateTo(programModel)
     }

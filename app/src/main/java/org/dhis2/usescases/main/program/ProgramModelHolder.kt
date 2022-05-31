@@ -24,7 +24,7 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         binding.presenter = presenter
 
         val color = ColorUtils.getColorFrom(
-            programViewModel.color(),
+            programViewModel.color,
             ColorUtils.getPrimaryColor(
                 itemView.context,
                 ColorUtils.ColorType.PRIMARY_LIGHT
@@ -32,7 +32,7 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         )
 
         val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
-            programViewModel.icon(),
+            programViewModel.icon,
             R.drawable.ic_default_outline
         )
 

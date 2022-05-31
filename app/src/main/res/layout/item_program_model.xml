@@ -33,7 +33,7 @@
             android:id="@+id/imageLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->presenter.showDescription(program.description())}"
+            android:onClick="@{()->presenter.showDescription(program.description)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -49,7 +49,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+                android:visibility="@{program.description==null?View.GONE:View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:srcCompat="@drawable/ic_circle_white"
@@ -59,7 +59,7 @@
                 android:id="@+id/info"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+                android:visibility="@{program.description==null?View.GONE:View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:srcCompat="@drawable/ic_info_layer"
@@ -75,7 +75,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="16dp"
             android:gravity="center"
-            android:text="@{Integer.toString(program.count())}"
+            android:text="@{Integer.toString(program.count)}"
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
@@ -90,7 +90,7 @@
             android:layout_marginStart="6dp"
             android:fontFamily="@font/rubik_light"
             android:gravity="center"
-            android:text="@{program.typeName()}"
+            android:text="@{program.typeName}"
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/count"
@@ -105,7 +105,7 @@
             android:ellipsize="end"
             android:lineSpacingExtra="0.dp"
             android:maxLines="2"
-            android:text="@{program.title()}"
+            android:text="@{program.title}"
             android:textColor="@color/text_black_333"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -124,7 +124,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:stateIcon="@{program.getState()}"
+            app:stateIcon="@{program.state}"
             tools:src="@drawable/ic_sync" />
 
         <ImageView
@@ -135,6 +135,6 @@
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_overdue"
-            android:visibility="@{program.hasOverdue()?View.VISIBLE:View.GONE}"/>
+            android:visibility="@{program.hasOverdueEvent?View.VISIBLE:View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

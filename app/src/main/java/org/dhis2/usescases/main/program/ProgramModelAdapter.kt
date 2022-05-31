@@ -9,10 +9,6 @@ import java.util.ArrayList
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramModelBinding
 
-/**
- * QUADRAM. Created by ppajuelo on 13/06/2018.
- */
-
 class ProgramModelAdapter(
     private val presenter: ProgramPresenter
 ) : RecyclerView.Adapter<ProgramModelHolder>() {
@@ -39,7 +35,7 @@ class ProgramModelAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return programList[position].id().hashCode().toLong()
+        return programList[position].uid.hashCode().toLong()
     }
 
     override fun getItemCount(): Int {
@@ -62,7 +58,7 @@ class ProgramModelAdapter(
         override fun getNewListSize(): Int = newFields.size
 
         override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-            return oldFields[oldItem].id() == newFields[newItem].id()
+            return oldFields[oldItem].uid == newFields[newItem].uid
         }
 
         override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {

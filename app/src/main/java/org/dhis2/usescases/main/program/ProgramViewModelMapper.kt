@@ -14,23 +14,23 @@ class ProgramViewModelMapper {
         hasOverdue: Boolean,
         filtersAreActive: Boolean
     ): ProgramViewModel {
-        return ProgramViewModel.create(
-            program.uid(),
-            program.displayName()!!,
-            if (program.style() != null) program.style()!!.color() else null,
-            if (program.style() != null) program.style()!!.icon() else null,
-            recordCount,
-            if (program.trackedEntityType() != null) {
+        return ProgramViewModel(
+            uid = program.uid(),
+            title = program.displayName()!!,
+            color = if (program.style() != null) program.style()!!.color() else null,
+            icon = if (program.style() != null) program.style()!!.icon() else null,
+            count = recordCount,
+            type = if (program.trackedEntityType() != null) {
                 program.trackedEntityType()!!.uid()
             } else {
                 null
             },
-            recordLabel,
-            program.programType()!!.name,
-            program.displayDescription(),
+            typeName = recordLabel,
+            programType = program.programType()!!.name,
+            description = program.displayDescription(),
             onlyEnrollOnce = program.onlyEnrollOnce() == true,
             accessDataWrite = program.access().data().write(),
-            state = state.name,
+            state = State.valueOf(state.name),
             hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive
         )
@@ -43,19 +43,19 @@ class ProgramViewModelMapper {
         dataSetLabel: String,
         filtersAreActive: Boolean
     ): ProgramViewModel {
-        return ProgramViewModel.create(
-            dataSetInstanceSummary.dataSetUid(),
-            dataSetInstanceSummary.dataSetDisplayName(),
-            dataSet.style().color(),
-            dataSet.style().icon(),
-            recordCount,
-            null,
+        return ProgramViewModel(
+            uid = dataSetInstanceSummary.dataSetUid(),
+            title = dataSetInstanceSummary.dataSetDisplayName(),
+            color = dataSet.style().color(),
+            icon = dataSet.style().icon(),
+            count = recordCount,
+            type = null,
             typeName = dataSetLabel,
             programType = "",
             description = dataSet.description(),
             onlyEnrollOnce = false,
             accessDataWrite = dataSet.access().data().write(),
-            state = dataSetInstanceSummary.state().name,
+            state = dataSetInstanceSummary.state(),
             hasOverdueEvent = false,
             filtersAreActive = filtersAreActive
         )
