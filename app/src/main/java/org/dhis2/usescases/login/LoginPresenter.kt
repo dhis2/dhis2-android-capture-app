@@ -9,7 +9,6 @@ import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -327,13 +326,6 @@ class LoginPresenter(
             } else {
                 false
             }
-            //     val isInitialSyncDone = !entry.value().isNullOrEmpty() && entry.value() == "True"
-            //    val isInitialSyncDone = initialSync.isNotEmpty() && initialSync[0].value() == "True"
-
-            /*  if (view.isNetworkAvailable()) {
-                  preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, isInitialSyncDone)
-              } */
-
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
                 updatedServer.add(server)
@@ -389,10 +381,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS
-                        )
+                        SECURE_SERVER_URL,
+                        SECURE_USER_NAME,
+                        SECURE_PASS
+                    )
                     ) {
                         Result.success(result)
                     } else {
