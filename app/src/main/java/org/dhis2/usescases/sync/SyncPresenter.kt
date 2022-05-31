@@ -14,6 +14,8 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.Constants
 import timber.log.Timber
 
+const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
+
 class SyncPresenter internal constructor(
     private val view: SyncView,
     private val userManager: UserManager?,
@@ -84,6 +86,9 @@ class SyncPresenter internal constructor(
     }
 
     fun onDataSyncSuccess() {
+        userManager!!.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            .blockingSet("True")
+
         preferences.setValue(Preference.INITIAL_SYNC_DONE, true)
         val workerItem = WorkerItem(
             Constants.RESERVED,
@@ -99,7 +104,7 @@ class SyncPresenter internal constructor(
     }
 
     fun onLogout() {
-        userManager?. let { userManager ->
+        userManager?.let { userManager ->
             disposable.add(
                 userManager.logout()
                     .subscribeOn(schedulerProvider.io())

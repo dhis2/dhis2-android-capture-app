@@ -21,6 +21,7 @@ import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.Constants.PREFS_URLS
 import org.dhis2.utils.Constants.PREFS_USERS
 import org.dhis2.utils.Constants.SERVER
@@ -315,9 +316,23 @@ class LoginPresenter(
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
             trackServerVersion()
-            if (view.isNetworkAvailable()) {
-                preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+            val entryExists = userManager!!.d2.dataStoreModule().localDataStore().value(
+                WAS_INITIAL_SYNC_DONE
+            ).blockingExists()
+            val isInitialSyncDone = if (entryExists) {
+                val entry = userManager!!.d2.dataStoreModule().localDataStore().value(
+                    WAS_INITIAL_SYNC_DONE
+                ).blockingGet()
+                !entry.value().isNullOrEmpty() && entry.value() == "True"
+            } else {
+                false
             }
+            //     val isInitialSyncDone = !entry.value().isNullOrEmpty() && entry.value() == "True"
+            //    val isInitialSyncDone = initialSync.isNotEmpty() && initialSync[0].value() == "True"
+
+            /*  if (view.isNetworkAvailable()) {
+                  preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, isInitialSyncDone)
+              } */
 
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
@@ -331,7 +346,7 @@ class LoginPresenter(
             preferenceProvider.setValue(PREFS_URLS, updatedServer)
             preferenceProvider.setValue(PREFS_USERS, updatedUsers)
 
-            view.saveUsersData()
+            view.saveUsersData(isInitialSyncDone)
         }
     }
 
@@ -374,10 +389,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                        SECURE_SERVER_URL,
-                        SECURE_USER_NAME,
-                        SECURE_PASS
-                    )
+                            SECURE_SERVER_URL,
+                            SECURE_USER_NAME,
+                            SECURE_PASS
+                        )
                     ) {
                         Result.success(result)
                     } else {
