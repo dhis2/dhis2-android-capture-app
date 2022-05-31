@@ -59,8 +59,6 @@ class SyncActivityTest : BaseTest() {
             checkDataIsWaiting()
             workInfoStatusLiveData.postValue(arrayListOf(mockedMetaWorkInfo(WorkInfo.State.SUCCEEDED)))
             waitToDebounce(3000)
-            checkMetadataIsReady()
-            waitToDebounce(3000)
             checkMainActivityIsLaunched()
         }
     }
