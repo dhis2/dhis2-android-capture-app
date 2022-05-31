@@ -68,6 +68,7 @@ internal class StageViewHolder(
         }
         binding.addStageButton.setOnClickListener { view ->
             presenter.onAddNewEvent(view, stage)
+            stageSelector.onNext(stage.uid())
         }
         binding.programStageCount.text =
             "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"

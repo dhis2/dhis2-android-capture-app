@@ -128,7 +128,6 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            isSelected,
                             canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
@@ -148,7 +147,6 @@ class TeiDataRepositoryImpl(
                                     event,
                                     0,
                                     null,
-                                    isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = d2.organisationUnitModule().organisationUnits()
                                         .uid(event.organisationUnit()).blockingGet().displayName()
@@ -200,7 +198,6 @@ class TeiDataRepositoryImpl(
                             event,
                             0,
                             null,
-                            isSelected = true,
                             canAddNewEvent = true,
                             orgUnitName = d2.organisationUnitModule().organisationUnits()
                                 .uid(event.organisationUnit()).blockingGet().displayName()

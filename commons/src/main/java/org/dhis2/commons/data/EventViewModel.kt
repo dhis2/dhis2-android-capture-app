@@ -10,7 +10,6 @@ data class EventViewModel(
     val event: Event?,
     val eventCount: Int,
     val lastUpdate: Date?,
-    val isSelected: Boolean,
     val canAddNewEvent: Boolean,
     val orgUnitName: String,
     val catComboName: String?,
@@ -27,7 +26,7 @@ data class EventViewModel(
 
     fun canShowAddButton(): Boolean {
         return if (type == EventViewModelType.STAGE) {
-            canAddNewEvent && (isSelected || eventCount == 0)
+            canAddNewEvent && (stage?.repeatable() == true || eventCount == 0)
         } else {
             true
         }

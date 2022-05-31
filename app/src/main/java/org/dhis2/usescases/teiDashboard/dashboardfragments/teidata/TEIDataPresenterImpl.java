@@ -447,6 +447,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
+        currentStage = "";
         view.showNewEventOptions(anchor, stage);
         if (stage.hideDueDate() != null && stage.hideDueDate()) {
             view.hideDueDate();
