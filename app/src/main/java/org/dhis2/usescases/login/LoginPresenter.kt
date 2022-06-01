@@ -313,19 +313,10 @@ class LoginPresenter(
     @VisibleForTesting
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
+
         if (userResponse.isSuccessful) {
             trackServerVersion()
-            val entryExists = userManager!!.d2.dataStoreModule().localDataStore().value(
-                WAS_INITIAL_SYNC_DONE
-            ).blockingExists()
-            val isInitialSyncDone = if (entryExists) {
-                val entry = userManager!!.d2.dataStoreModule().localDataStore().value(
-                    WAS_INITIAL_SYNC_DONE
-                ).blockingGet()
-                !entry.value().isNullOrEmpty() && entry.value() == "True"
-            } else {
-                false
-            }
+            val isInitialSyncDone = wasInitialSyncPerformedBefore()
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
                 updatedServer.add(server)
@@ -340,6 +331,21 @@ class LoginPresenter(
 
             view.saveUsersData(isInitialSyncDone)
         }
+    }
+
+    private fun wasInitialSyncPerformedBefore(): Boolean {
+        val entryExists = userManager!!.d2.dataStoreModule().localDataStore().value(
+            WAS_INITIAL_SYNC_DONE
+        ).blockingExists()
+        val isInitialSyncDone = if (entryExists) {
+            val entry = userManager!!.d2.dataStoreModule().localDataStore().value(
+                WAS_INITIAL_SYNC_DONE
+            ).blockingGet()
+            !entry.value().isNullOrEmpty() && entry.value() == "True"
+        } else {
+            false
+        }
+        return isInitialSyncDone
     }
 
     private fun handleError(
