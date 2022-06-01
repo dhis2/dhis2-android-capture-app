@@ -248,25 +248,7 @@ fun visibility(): Boolean {
 @Composable
 fun ProgramTest() {
     ProgramItem(
-        programViewModel = ProgramViewModel(
-            uid = "qweqwe",
-            title = "Program title",
-            metadataIconData = MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
-                iconResource = R.drawable.ic_positive_negative
-            ),
-            count = 12,
-            type = "type",
-            typeName = "Persons",
-            programType = "WITH_REGISTRATION",
-            description = null,
-            onlyEnrollOnce = false,
-            accessDataWrite = true,
-            state = State.SYNCED,
-            hasOverdueEvent = true,
-            false,
-            downloadState = ProgramDownloadState.NONE
-        )
+        programViewModel = testingProgramModel()
     )
 }
 
@@ -274,51 +256,7 @@ fun ProgramTest() {
 @Composable
 fun ProgramTestToPost() {
     ProgramItem(
-        programViewModel = ProgramViewModel(
-            uid = "qweqwe",
-            title = "Program title",
-            metadataIconData = MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
-                iconResource = R.drawable.ic_positive_negative
-            ),
-            count = 12,
-            type = "type",
-            typeName = "Persons",
-            programType = "WITH_REGISTRATION",
-            description = null,
-            onlyEnrollOnce = false,
-            accessDataWrite = true,
-            state = State.TO_POST,
-            hasOverdueEvent = true,
-            false,
-            downloadState = ProgramDownloadState.NONE
-        )
-    )
-}
-
-@Preview
-@Composable
-fun ProgramTestDownloading() {
-    ProgramItem(
-        programViewModel = ProgramViewModel(
-            uid = "qweqwe",
-            title = "Program title",
-            metadataIconData = MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
-                iconResource = R.drawable.ic_positive_negative
-            ),
-            count = 12,
-            type = "type",
-            typeName = "Persons",
-            programType = "WITH_REGISTRATION",
-            description = null,
-            onlyEnrollOnce = false,
-            accessDataWrite = true,
-            state = State.SYNCED,
-            hasOverdueEvent = true,
-            false,
-            downloadState = ProgramDownloadState.DOWNLOADING
-        )
+        programViewModel = testingProgramModel().copy(state = State.TO_POST)
     )
 }
 
@@ -329,25 +267,7 @@ fun ProgramTestDownloaded() {
         mutableStateOf(ProgramDownloadState.DOWNLOADING)
     }
     ProgramItem(
-        programViewModel = ProgramViewModel(
-            uid = "qweqwe",
-            title = "Program title",
-            metadataIconData = MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
-                iconResource = R.drawable.ic_positive_negative
-            ),
-            count = 12,
-            type = "type",
-            typeName = "Persons",
-            programType = "WITH_REGISTRATION",
-            description = null,
-            onlyEnrollOnce = false,
-            accessDataWrite = true,
-            state = State.SYNCED,
-            hasOverdueEvent = true,
-            false,
-            downloadState = downloadState
-        ),
+        programViewModel = testingProgramModel().copy(downloadState = downloadState),
         onItemClick = {
             downloadState = if (downloadState == ProgramDownloadState.DOWNLOADING) {
                 ProgramDownloadState.DOWNLOADED
@@ -357,6 +277,26 @@ fun ProgramTestDownloaded() {
         }
     )
 }
+
+private fun testingProgramModel() = ProgramViewModel(
+    uid = "qweqwe",
+    title = "Program title",
+    metadataIconData = MetadataIconData(
+        programColor = android.graphics.Color.parseColor("#00BCD4"),
+        iconResource = R.drawable.ic_positive_negative
+    ),
+    count = 12,
+    type = "type",
+    typeName = "Persons",
+    programType = "WITH_REGISTRATION",
+    description = null,
+    onlyEnrollOnce = false,
+    accessDataWrite = true,
+    state = State.SYNCED,
+    hasOverdueEvent = true,
+    false,
+    downloadState = ProgramDownloadState.NONE
+)
 
 const val HOME_ITEMS = "HOME_ITEMS"
 const val HOME_ITEM = "HOME_ITEMS_%s"

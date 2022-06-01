@@ -66,8 +66,6 @@ class MainRobot : BaseRobot() {
 
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
-        /* onView(withId(R.id.program_recycler))
-             .check(matches(allOf(isDisplayed(), isNotEmpty())))*/
     }
 
     fun checkLogInIsLaunched() {
@@ -76,8 +74,6 @@ class MainRobot : BaseRobot() {
 
     fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
-        /*onView(withId(R.id.program_recycler))
-            .check(matches(isDisplayed()))*/
     }
 
     fun openFilters() {
@@ -88,7 +84,6 @@ class MainRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(HOME_ITEMS)
             .onChildAt(position)
             .performClick()
-//        onView(withId(R.id.program_recycler)).perform(actionOnItemAtPosition<ProgramModelHolder>(position, click()))
     }
 
     fun filterByPeriodToday() {
