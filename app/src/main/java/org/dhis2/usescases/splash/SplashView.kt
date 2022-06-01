@@ -30,6 +30,7 @@ interface SplashView {
     fun goToNextScreen(
         isUserLogged: Boolean,
         sessionLocked: Boolean,
-        initialSyncDone: Boolean
+        initialSyncDone: Boolean,
+        initialDataSyncDone: Boolean
     )
 }

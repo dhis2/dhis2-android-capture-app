@@ -51,8 +51,16 @@ class SplashPresenter internal constructor(
                             }
                             view.goToNextScreen(
                                 userLogged,
-                                preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
-                                preferenceProvider.getBoolean(Preference.INITIAL_SYNC_DONE, false)
+                                preferenceProvider.getBoolean(
+                                    Preference.SESSION_LOCKED, false
+                                ),
+                                preferenceProvider.getBoolean(
+                                    Preference.INITIAL_METADATA_SYNC_DONE, false
+                                ),
+                                preferenceProvider.getBoolean(
+                                    Preference.INITIAL_DATA_SYNC_DONE,
+                                    false
+                                )
                             )
                         },
                         { Timber.d(it) }
@@ -61,7 +69,8 @@ class SplashPresenter internal constructor(
         } ?: view.goToNextScreen(
             false,
             sessionLocked = false,
-            initialSyncDone = false
+            initialSyncDone = false,
+            initialDataSyncDone = false
         )
     }
 
