@@ -176,6 +176,13 @@ fun ProgramItem(
                 tint = Color.Unspecified
             )
         }
+        when (programViewModel.downloadState) {
+            ProgramDownloadState.DOWNLOADING -> DownloadingProgress()
+            ProgramDownloadState.DOWNLOADED -> DownloadedIcon()
+            ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
+                onGranularSyncClick(programViewModel)
+            }
+        }
     }
 }
 
