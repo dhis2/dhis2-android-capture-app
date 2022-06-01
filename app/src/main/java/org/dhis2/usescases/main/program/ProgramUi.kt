@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -42,9 +43,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,10 +89,12 @@ fun ProgramList(
             }
         else ->
             LazyColumn(
+                modifier = Modifier.testTag(HOME_ITEMS),
                 contentPadding = PaddingValues(bottom = 56.dp)
             ) {
-                items(items = programs) { program ->
+                itemsIndexed(items = programs) { index, program ->
                     ProgramItem(
+                        modifier = Modifier.semantics { testTag = HOME_ITEM.format(index) },
                         programViewModel = program,
                         onItemClick = onItemClick,
                         onGranularSyncClick = onGranularSyncClick
@@ -105,14 +111,17 @@ fun ProgramList(
 
 @Composable
 fun ProgramItem(
+    modifier: Modifier = Modifier,
     programViewModel: ProgramViewModel,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit = {},
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable { onItemClick(programViewModel) }
+            .clickable(enabled = !programViewModel.isDownloading()) {
+                onItemClick(programViewModel)
+            }
             .background(color = Color.White)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -348,3 +357,6 @@ fun ProgramTestDownloaded() {
         }
     )
 }
+
+const val HOME_ITEMS = "HOME_ITEMS"
+const val HOME_ITEM = "HOME_ITEMS_%s"
