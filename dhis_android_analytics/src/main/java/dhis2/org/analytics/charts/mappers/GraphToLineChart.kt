@@ -57,9 +57,20 @@ class GraphToLineChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                val padding = ceil((graph.maxValue() - graph.minValue()) * 0.05f)
-                axisMaximum = graph.maxValue() + padding
-                axisMinimum = graph.minValue() - padding
+                val minValue = if (graph.isSingleValue()) {
+                    0f
+                } else {
+                    graph.minValue()
+                }
+                val padding = ceil((graph.maxValue() - minValue) * 0.05f)
+                if (graph.isSingleValue() && graph.series[0].coordinates[0].fieldValue < 0) {
+                    axisMaximum = minValue
+                    axisMinimum = graph.maxValue() + padding
+                } else {
+                    axisMaximum = graph.maxValue() + padding
+                    axisMinimum = minValue - padding
+                }
+
                 setDrawLimitLinesBehindData(true)
             }
             axisRight.isEnabled = false
