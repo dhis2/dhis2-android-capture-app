@@ -19,6 +19,8 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.work.WorkInfo
+import java.io.File
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -41,8 +43,6 @@ import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
-import java.io.File
-import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
