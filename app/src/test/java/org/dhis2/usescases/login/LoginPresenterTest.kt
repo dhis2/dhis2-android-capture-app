@@ -348,6 +348,7 @@ class LoginPresenterTest {
                 .blockingExists()
         ) doReturn false
 
+        loginPresenter.init(userManager)
         loginPresenter.handleResponse(response, "userName", "serverUrl")
 
         verify(view).saveUsersData(false)

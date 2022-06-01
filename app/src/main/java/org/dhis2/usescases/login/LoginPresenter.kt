@@ -20,7 +20,6 @@ import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.Constants.PREFS_URLS
 import org.dhis2.utils.Constants.PREFS_USERS
 import org.dhis2.utils.Constants.SERVER
@@ -60,7 +59,7 @@ class LoginPresenter(
 
     fun init(userManager: UserManager?) {
         this.userManager = userManager
-        syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager!!)
+        syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
         this.userManager?.let {
             disposable.add(
                 it.isUserLoggedIn

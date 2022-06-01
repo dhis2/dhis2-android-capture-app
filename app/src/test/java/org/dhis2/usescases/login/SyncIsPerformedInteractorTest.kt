@@ -17,14 +17,19 @@ class SyncIsPerformedInteractorTest {
 
     @Before
     fun setup() {
-      interactor = SyncIsPerformedInteractor(userManager)
+        interactor = SyncIsPerformedInteractor(userManager)
     }
 
     @Test
     fun `Should check if entry exists on datastore module`() {
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
-        whenever(userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)) doReturn mock()
-        whenever(userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE).blockingExists()) doReturn false
+        whenever(
+            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+        ) doReturn mock()
+        whenever(
+            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+                .blockingExists()
+        ) doReturn false
 
         val result = interactor.execute()
 
