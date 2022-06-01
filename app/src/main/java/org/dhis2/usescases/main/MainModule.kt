@@ -51,7 +51,7 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor{
+    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor {
         return SyncIsPerformedInteractor(userManager)
     }
 

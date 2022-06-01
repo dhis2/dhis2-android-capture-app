@@ -192,7 +192,7 @@ class MainActivity :
         }
 
         presenter.observeDataSync().observe(this) {
-            if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED){
+            if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED) {
                 presenter.onDataSuccess()
             }
         }

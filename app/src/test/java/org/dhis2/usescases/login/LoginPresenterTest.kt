@@ -334,13 +334,18 @@ class LoginPresenterTest {
         whenever(userManager.d2.systemInfoModule()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet()) doReturn mock()
-        whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet().version()) doReturn "1234"
+        whenever(
+            userManager.d2.systemInfoModule().systemInfo().blockingGet().version()
+        ) doReturn "1234"
 
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
-        whenever(userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone").blockingExists()
+            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+        ) doReturn mock()
+        whenever(
+            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+                .blockingExists()
         ) doReturn false
 
         loginPresenter.handleResponse(response, "userName", "serverUrl")
