@@ -13,6 +13,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +66,10 @@ fun ProgramList(
     val conf = LocalConfiguration.current
     when (conf.orientation) {
         Configuration.ORIENTATION_LANDSCAPE ->
-            LazyVerticalGrid(cells = GridCells.Fixed(3)) {
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(3),
+                contentPadding = PaddingValues(bottom = 56.dp)
+            ) {
                 items(items = programs) { program ->
                     ProgramItem(
                         programViewModel = program,
@@ -80,7 +84,9 @@ fun ProgramList(
                 }
             }
         else ->
-            LazyColumn {
+            LazyColumn(
+                contentPadding = PaddingValues(bottom = 56.dp)
+            ) {
                 items(items = programs) { program ->
                     ProgramItem(
                         programViewModel = program,

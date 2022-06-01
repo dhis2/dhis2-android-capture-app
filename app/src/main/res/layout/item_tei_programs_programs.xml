@@ -46,7 +46,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_centerInParent="true"
-                    app:set_metadata_icon="@{style}" />
+                    app:set_metadata_icon_data="@{program.metadataIconData}" />
             </RelativeLayout>
 
             <TextView

@@ -47,7 +47,7 @@ class ResourceManager(val context: Context) {
     fun getColorOrDefaultFrom(hexColor: String?): Int {
         return ColorUtils.getColorFrom(
             hexColor,
-            ColorUtils.getPrimaryColor(getWrapperContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
+            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
         )
     }
 

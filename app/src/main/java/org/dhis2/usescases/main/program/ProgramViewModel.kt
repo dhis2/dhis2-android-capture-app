@@ -1,14 +1,14 @@
 package org.dhis2.usescases.main.program
 
+import org.dhis2.commons.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 
 data class ProgramViewModel(
-    val uid:String,
-    val title:String,
-    val color:String?,
-    val icon:String?,
-    val count:Int,
-    val type:String?,
+    val uid: String,
+    val title: String,
+    val metadataIconData: MetadataIconData,
+    val count: Int,
+    val type: String?,
     val typeName: String,
     val programType: String,
     val description: String?,
@@ -16,9 +16,24 @@ data class ProgramViewModel(
     val accessDataWrite: Boolean,
     val state: State,
     val hasOverdueEvent: Boolean,
-    val filtersAreActive: Boolean
-){
-    fun translucent():Boolean {
-        return filtersAreActive && count == 0
+    val filtersAreActive: Boolean,
+    val downloadState: ProgramDownloadState
+) {
+    fun translucent(): Boolean {
+        return (filtersAreActive && count == 0) || downloadState == ProgramDownloadState.DOWNLOADING
     }
+
+    fun countDescription() = "%s %s".format(count, typeName)
+
+    fun isDownloading() = downloadState == ProgramDownloadState.DOWNLOADING
+
+    fun getAlphaValue() = if (isDownloading()) {
+        0.5f
+    } else {
+        1f
+    }
+}
+
+enum class ProgramDownloadState {
+    DOWNLOADING, DOWNLOADED, NONE
 }

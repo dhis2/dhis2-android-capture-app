@@ -8,10 +8,14 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
+import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.ui.MetadataIconData
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.common.State
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -26,6 +30,7 @@ class ProgramPresenterTest {
     private val themeManager: ThemeManager = mock()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val syncStatusController: SyncStatusController = mock()
 
     @Before
     fun setUp() {
@@ -35,7 +40,8 @@ class ProgramPresenterTest {
             schedulers,
             themeManager,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            syncStatusController
         )
     }
 
@@ -97,7 +103,7 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(programViewModel)
 
-        verify(themeManager).setProgramTheme(programViewModel.id())
+        verify(themeManager).setProgramTheme(programViewModel.uid)
         verify(view).navigateTo(programViewModel)
     }
 
@@ -107,7 +113,7 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(dataSetViewModel)
 
-        verify(themeManager).setDataSetTheme(dataSetViewModel.id())
+        verify(themeManager).setDataSetTheme(dataSetViewModel.uid)
         verify(view).navigateTo(dataSetViewModel)
     }
 
@@ -161,11 +167,13 @@ class ProgramPresenterTest {
     }
 
     private fun programViewModel(): ProgramViewModel {
-        return ProgramViewModel.create(
+        return ProgramViewModel(
             "uid",
             "displayName",
-            "#ffcdd2",
-            "icon",
+            MetadataIconData(
+                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                iconResource = R.drawable.ic_home_positive
+            ),
             1,
             "type",
             "typeName",
@@ -173,17 +181,21 @@ class ProgramPresenterTest {
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
-            state = "Synced",
-            hasOverdueEvent = false
+            state = State.SYNCED,
+            hasOverdueEvent = false,
+            filtersAreActive = false,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 
     private fun dataSetViewModel(): ProgramViewModel {
-        return ProgramViewModel.create(
+        return ProgramViewModel(
             "uid",
             "displayName",
-            "#ffcdd2",
-            "icon",
+            MetadataIconData(
+                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                iconResource = R.drawable.ic_home_positive
+            ),
             1,
             "type",
             "typeName",
@@ -191,8 +203,10 @@ class ProgramPresenterTest {
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
-            state = "Synced",
-            hasOverdueEvent = false
+            state = State.SYNCED,
+            hasOverdueEvent = false,
+            filtersAreActive = false,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 }

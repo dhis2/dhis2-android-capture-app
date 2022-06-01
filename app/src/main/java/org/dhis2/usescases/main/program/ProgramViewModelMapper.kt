@@ -1,11 +1,14 @@
 package org.dhis2.usescases.main.program
 
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
 import org.hisp.dhis.android.core.program.Program
 
-class ProgramViewModelMapper {
+class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
     fun map(
         program: Program,
         recordCount: Int,
@@ -17,8 +20,13 @@ class ProgramViewModelMapper {
         return ProgramViewModel(
             uid = program.uid(),
             title = program.displayName()!!,
-            color = if (program.style() != null) program.style()!!.color() else null,
-            icon = if (program.style() != null) program.style()!!.icon() else null,
+            metadataIconData = MetadataIconData(
+                programColor = resourceManager.getColorOrDefaultFrom(program.style()?.color()),
+                iconResource = resourceManager.getObjectStyleDrawableResource(
+                    program.style()?.icon(),
+                    R.drawable.ic_default_outline
+                )
+            ),
             count = recordCount,
             type = if (program.trackedEntityType() != null) {
                 program.trackedEntityType()!!.uid()
@@ -32,7 +40,8 @@ class ProgramViewModelMapper {
             accessDataWrite = program.access().data().write(),
             state = State.valueOf(state.name),
             hasOverdueEvent = hasOverdue,
-            filtersAreActive = filtersAreActive
+            filtersAreActive = filtersAreActive,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 
@@ -46,8 +55,13 @@ class ProgramViewModelMapper {
         return ProgramViewModel(
             uid = dataSetInstanceSummary.dataSetUid(),
             title = dataSetInstanceSummary.dataSetDisplayName(),
-            color = dataSet.style().color(),
-            icon = dataSet.style().icon(),
+            metadataIconData = MetadataIconData(
+                programColor = resourceManager.getColorOrDefaultFrom(dataSet.style()?.color()),
+                iconResource = resourceManager.getObjectStyleDrawableResource(
+                    dataSet.style()?.icon(),
+                    R.drawable.ic_default_outline
+                )
+            ),
             count = recordCount,
             type = null,
             typeName = dataSetLabel,
@@ -57,7 +71,8 @@ class ProgramViewModelMapper {
             accessDataWrite = dataSet.access().data().write(),
             state = dataSetInstanceSummary.state(),
             hasOverdueEvent = false,
-            filtersAreActive = filtersAreActive
+            filtersAreActive = filtersAreActive,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 }

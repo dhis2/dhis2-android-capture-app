@@ -141,9 +141,9 @@ class ProgramRepositoryImplTest {
             .assertNoErrors()
             .assertValue {
                 it.size == 2 &&
-                    it[0].count() == 0 &&
+                    it[0].count == 0 &&
                     it[0].translucent() &&
-                    it[1].count() == 0 &&
+                    it[1].count == 0 &&
                     it[1].translucent()
             }
     }
@@ -160,11 +160,11 @@ class ProgramRepositoryImplTest {
             .assertNoErrors()
             .assertValue {
                 it.size == mockedPrograms().size &&
-                    it[0].count() == 10 &&
-                    it[0].typeName() == "event" &&
-                    it[1].count() == 2 &&
-                    it[1].hasOverdue() &&
-                    it[1].typeName() == "tei"
+                    it[0].count == 10 &&
+                    it[0].typeName == "event" &&
+                    it[1].count == 2 &&
+                    it[1].hasOverdueEvent &&
+                    it[1].typeName == "tei"
             }
     }
 
