@@ -51,10 +51,7 @@ class GraphToBarChart {
                     DEFAULT_GRID_SPACE_LENGTH,
                     DEFAULT_GRIP_PHASE
                 )
-                var minValue = graph.minValue()
-                if (graph.isSingleValue()) {
-                    minValue = 0f
-                }
+                val minValue = getMinValue(graph)
                 val padding = ceil((graph.maxValue() - minValue) * 0.05f)
                 axisMaximum = graph.maxValue() + padding
                 axisMinimum = if (minValue == 0f) {
@@ -101,6 +98,14 @@ class GraphToBarChart {
 
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
+        }
+    }
+
+    private fun getMinValue(graph: Graph): Float {
+        return if (graph.isSingleValue()) {
+            0f
+        } else {
+            graph.minValue()
         }
     }
 }
