@@ -11,12 +11,19 @@ class MockedWorkManagerController(private val workInfoStatuses: LiveData<List<Wo
     override fun syncDataForWorker(workerItem: WorkerItem) {
     }
 
+    override fun syncDataForWorker(metadataWorkerTag: String, workName: String) {
+
+    }
+
     override fun syncDataForWorkers(
         metadataWorkerTag: String,
         dataWorkerTag: String,
         workName: String
     ) {
 
+    }
+
+    override fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String) {
     }
 
     override fun beginUniqueWork(workerItem: WorkerItem) {
@@ -30,6 +37,10 @@ class MockedWorkManagerController(private val workInfoStatuses: LiveData<List<Wo
     }
 
     override fun getWorkInfosByTagLiveData(tag: String): LiveData<List<WorkInfo>> {
+        return workInfoStatuses
+    }
+
+    override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> {
         return workInfoStatuses
     }
 

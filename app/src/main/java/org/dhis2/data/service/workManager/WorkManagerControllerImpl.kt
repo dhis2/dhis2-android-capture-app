@@ -28,11 +28,14 @@
 
 package org.dhis2.data.service.workManager
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.service.ReservedValuesWorker
@@ -77,6 +80,32 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
             .enqueue()
     }
 
+    override fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String) {
+        val workerOneBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
+        workerOneBuilder
+            .addTag(metadataWorkerTag)
+            .setConstraints(
+                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            )
+
+        workManager
+            .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerOneBuilder.build())
+            .enqueue()
+    }
+
+    override fun syncDataForWorker(dataWorkerTag: String, workName: String) {
+        val workerTwoBuilder = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
+        workerTwoBuilder
+            .addTag(dataWorkerTag)
+            .setConstraints(
+                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            )
+
+        workManager
+            .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerTwoBuilder.build())
+            .enqueue()
+    }
+
     override fun beginUniqueWork(workerItem: WorkerItem) {
         val request = createOneTimeBuilder(workerItem).build()
         workerItem.policy?.let {
@@ -96,6 +125,16 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
 
     override fun getWorkInfosByTagLiveData(tag: String) =
         workManager.getWorkInfosByTagLiveData(tag)
+
+    override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> {
+        return MediatorLiveData<List<WorkInfo>>().apply {
+            tags.forEach { tag ->
+                addSource(getWorkInfosByTagLiveData(tag)) {
+                    this.value = it
+                }
+            }
+        }
+    }
 
     override fun cancelAllWork() {
         workManager.cancelAllWork()

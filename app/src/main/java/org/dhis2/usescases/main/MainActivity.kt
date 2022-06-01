@@ -44,6 +44,7 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
+private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
 
@@ -90,12 +91,27 @@ class MainActivity :
     }
 
     companion object {
-        fun intent(context: Context, initScreen: MainNavigator.MainScreen?): Intent {
+        fun intent(
+            context: Context,
+            initScreen: MainNavigator.MainScreen? = null,
+            launchDataSync: Boolean = false
+        ): Intent {
             return Intent(context, MainActivity::class.java).apply {
                 initScreen?.let {
                     putExtra(FRAGMENT, initScreen.name)
                 }
+                putExtra(INIT_DATA_SYNC, launchDataSync)
             }
+        }
+
+        fun bundle(
+            initScreen: MainNavigator.MainScreen? = null,
+            launchDataSync: Boolean = false
+        ) = Bundle().apply {
+            initScreen?.let {
+                putString(FRAGMENT, initScreen.name)
+            }
+            putBoolean(INIT_DATA_SYNC, launchDataSync)
         }
     }
 
@@ -172,6 +188,14 @@ class MainActivity :
                 changeFragment(R.id.menu_home)
                 initCurrentScreen()
             }
+        }
+
+        presenter.observeDataSync().observe(this) {
+            /*Update ui with work info data*/
+        }
+
+        if (intent.getBooleanExtra(INIT_DATA_SYNC, false)) {
+            presenter.launchInitialDataSync()
         }
     }
 
