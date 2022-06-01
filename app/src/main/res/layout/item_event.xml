@@ -79,7 +79,7 @@
                         app:eventProgram="@{program}"
                         app:eventProgramStage="@{stage}"
                         app:eventStatusIcon="@{event}"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="16dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_event_status_open"
