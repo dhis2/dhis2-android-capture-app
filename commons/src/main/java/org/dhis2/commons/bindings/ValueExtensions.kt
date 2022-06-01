@@ -1,4 +1,4 @@
-package org.dhis2.Bindings
+package org.dhis2.commons.bindings
 
 import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -158,7 +158,7 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER_ZERO_OR_POSITIVE -> (
                     it.toIntOrNull() ?: it.toFloat().toInt()
                     ).toString()
-            ValueType.UNIT_INTERVAL -> it.toFloat().toString()
+            ValueType.UNIT_INTERVAL -> (it.toIntOrNull() ?: it.toFloat()).toString()
             else -> this
         }
     } ?: this
