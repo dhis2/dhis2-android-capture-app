@@ -1,4 +1,4 @@
-package org.dhis2.commons.bindings
+package org.dhis2.Bindings
 
 import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.D2
