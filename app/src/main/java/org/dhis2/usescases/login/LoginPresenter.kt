@@ -53,12 +53,14 @@ class LoginPresenter(
 ) {
 
     private var userManager: UserManager? = null
+    private lateinit var syncIsPerformedInteractor: SyncIsPerformedInteractor
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
 
     fun init(userManager: UserManager?) {
         this.userManager = userManager
+        syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager!!)
         this.userManager?.let {
             disposable.add(
                 it.isUserLoggedIn
@@ -316,7 +318,7 @@ class LoginPresenter(
 
         if (userResponse.isSuccessful) {
             trackServerVersion()
-            val isInitialSyncDone = wasInitialSyncPerformedBefore()
+            val isInitialSyncDone = syncIsPerformedInteractor.execute()
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
                 updatedServer.add(server)

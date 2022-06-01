@@ -10,7 +10,6 @@ import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.reporting.CrashReportController
-
 /**
  * QUADRAM. Created by ppajuelo on 07/02/2018.
  */

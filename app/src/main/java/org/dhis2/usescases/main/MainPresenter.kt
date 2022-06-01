@@ -16,7 +16,9 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
+import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.Constants
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
@@ -41,7 +43,8 @@ class MainPresenter(
     private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
-    private val deleteUserData: DeleteUserData
+    private val deleteUserData: DeleteUserData,
+    private val syncIsPerformedInteractor: SyncIsPerformedInteractor
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -256,5 +259,14 @@ class MainPresenter(
             Constants.DATA_NOW,
             Constants.DATA
         )
+    }
+
+    fun wasSyncAlreadyDone(): Boolean {
+        return syncIsPerformedInteractor.execute()
+    }
+
+    fun onDataSuccess() {
+        userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            .blockingSet("True")
     }
 }

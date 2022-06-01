@@ -11,6 +11,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -30,7 +31,8 @@ class MainModule(val view: MainView) {
         filterRepository: FilterRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
         userManager: UserManager,
-        deleteUserData: DeleteUserData
+        deleteUserData: DeleteUserData,
+        syncIsPerformedInteractor: SyncIsPerformedInteractor
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -42,8 +44,15 @@ class MainModule(val view: MainView) {
             filterRepository,
             matomoAnalyticsController,
             userManager,
-            deleteUserData
+            deleteUserData,
+            syncIsPerformedInteractor
         )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor{
+        return SyncIsPerformedInteractor(userManager)
     }
 
     @Provides

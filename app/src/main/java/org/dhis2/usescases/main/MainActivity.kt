@@ -18,6 +18,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.work.WorkInfo
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -191,10 +192,12 @@ class MainActivity :
         }
 
         presenter.observeDataSync().observe(this) {
-            /*Update ui with work info data*/
+            if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED){
+                presenter.onDataSuccess()
+            }
         }
 
-        if (intent.getBooleanExtra(INIT_DATA_SYNC, false)) {
+        if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
         }
     }
