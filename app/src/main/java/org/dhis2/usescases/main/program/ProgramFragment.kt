@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
@@ -72,24 +73,32 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         return binding.apply {
             presenter = this@ProgramFragment.presenter
             drawerLayout.clipWithRoundedCorners(16.dp)
+            initList()
+        }.also {
+            presenter.downloadState().observe(viewLifecycleOwner) {
+                presenter.setIsDownloading()
+            }
+        }.root
+    }
 
-            programList.setContent {
-                val items by this@ProgramFragment.presenter.programs().observeAsState(emptyList())
+    private fun initList() {
+        binding.programList.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                val items by presenter.programs().observeAsState(emptyList())
                 ProgramList(
                     programs = items,
                     onItemClick = {
-                        this@ProgramFragment.presenter.onItemClick(it)
+                        presenter.onItemClick(it)
                     },
                     onGranularSyncClick = {
                         showSyncDialog(it)
                     }
                 )
             }
-        }.also {
-            presenter.downloadState().observe(viewLifecycleOwner) {
-                presenter.setIsDownloading()
-            }
-        }.root
+        }
     }
 
     override fun onResume() {

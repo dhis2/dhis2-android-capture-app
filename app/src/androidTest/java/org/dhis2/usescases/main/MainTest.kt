@@ -74,27 +74,6 @@ class MainTest : BaseTest() {
     }
 
     @Test
-    fun shouldApplyFilterInProgramThatDoesNotApplyInHome(){
-        setupCredentials()
-        startActivity()
-        val programPosition = 3 // This could be any program
-
-        homeRobot {
-            openProgramByPosition(composeTestRule, programPosition)
-        }
-
-        filterRobot {
-            clickOnFilter()
-            clickOnEnrollmentDateFilter()
-            clickOnTodayEnrollmentDate()
-        }
-
-        homeRobot {
-            pressBack()
-        }
-    }
-
-    @Test
     @Ignore
     fun shouldShowDialogToDeleteAccount() {
         setupCredentials()
