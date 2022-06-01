@@ -322,7 +322,7 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should clear INITIAL_SYNC_DONE preference if network is available`() {
+    fun `Should handle successfull response`() {
         val response = Response.success(
             User.builder()
                 .uid("userUid")
@@ -345,10 +345,6 @@ class LoginPresenterTest {
 
         loginPresenter.handleResponse(response, "userName", "serverUrl")
 
-        /*
-         preferenceProvider.setValue(PREFS_URLS, updatedServer)
-           preferenceProvider.setValue(PREFS_USERS, updatedUsers)
-           view.saveUsersData(isInitialSyncDone)
-         */
+        verify(view).saveUsersData(false)
     }
 }
