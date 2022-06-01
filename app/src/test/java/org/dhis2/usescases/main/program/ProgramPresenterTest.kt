@@ -1,5 +1,7 @@
 package org.dhis2.usescases.main.program
 
+import androidx.lifecycle.MutableLiveData
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -13,6 +15,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.MetadataIconData
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.State
@@ -50,14 +53,15 @@ class ProgramPresenterTest {
         val programs = listOf(programViewModel())
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
+        val syncStatusData = SyncStatusData()
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(programRepository.programModels()) doReturn programsFlowable
         whenever(
-            programRepository.aggregatesModels()
-        ) doReturn Flowable.empty()
+            syncStatusController.observeDownloadProcess()
+        ) doReturn MutableLiveData(syncStatusData)
+        whenever(programRepository.homeItems(any())) doReturn programsFlowable
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
@@ -69,15 +73,17 @@ class ProgramPresenterTest {
     @Test
     fun `Should render error when there is a problem getting programs`() {
         val filterManagerFlowable = Flowable.just(filterManager)
+        val syncStatusData = SyncStatusData()
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(
-            programRepository.programModels()
-        ) doReturn Flowable.error(Exception(""))
+            syncStatusController.observeDownloadProcess()
+        ) doReturn MutableLiveData(syncStatusData)
+
         whenever(
-            programRepository.aggregatesModels()
-        ) doReturn mock()
+            programRepository.homeItems(syncStatusData)
+        ) doReturn Flowable.error(Exception(""))
 
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 

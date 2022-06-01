@@ -42,7 +42,7 @@ class ProgramPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programs ->
-                        this.programs.value = programs
+                        this.programs.postValue(programs)
                         view.swapProgramModelData(programs)
                     },
                     { throwable -> Timber.d(throwable) },
