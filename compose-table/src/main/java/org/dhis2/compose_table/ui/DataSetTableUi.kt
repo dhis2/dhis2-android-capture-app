@@ -50,6 +50,13 @@ fun TableHeader(
                 }
             }
         }
+        if(tableHeaderModel.hasTotals){
+            HeaderCell(
+                columnIndex = tableHeaderModel.rows.size,
+                headerCell = TableHeaderCell("Total"),
+                headerWidth = tableHeaderModel.defaultCellWidth
+            )
+        }
     }
 }
 
@@ -217,10 +224,8 @@ private val tableModel = TableModel(
 )
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
-fun TableList() {
-    val tableList = listOf(tableModel, tableModel, tableModel, tableModel, tableModel, tableModel)
+fun TableList(tableList:List<TableModel>){
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     LazyColumn {
         tableList.forEachIndexed { index, currentTableModel ->
@@ -240,4 +245,12 @@ fun TableList() {
             }
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview
+@Composable
+fun TableListPreview() {
+    val tableList = listOf(tableModel, tableModel, tableModel, tableModel, tableModel, tableModel)
+    TableList(tableList)
 }

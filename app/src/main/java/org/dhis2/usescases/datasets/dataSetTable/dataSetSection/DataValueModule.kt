@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -38,14 +39,16 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        updateProcessor: FlowableProcessor<Unit>
+        updateProcessor: FlowableProcessor<Unit>,
+        featureConfigRepository: FeatureConfigRepository
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
             repository,
             valueStore,
             schedulerProvider,
-            updateProcessor
+            updateProcessor,
+            featureConfigRepository
         )
     }
 

@@ -9,19 +9,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import java.util.ArrayList
+import com.google.android.material.composethemeadapter.MdcTheme
 import java.util.SortedMap
 import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
+import org.dhis2.compose_table.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -86,7 +89,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         savedInstanceState: Bundle?
     ): View {
         return FragmentDatasetSectionBinding.inflate(inflater, container, false)
-            .also { binding = it }
+            .also {
+                binding = it
+                binding.tables.setContent {
+                    MdcTheme {
+                        val tableData by presenterFragment.tableData().observeAsState(emptyList())
+                        TableList(tableData)
+                    }
+                }
+            }
             .root
     }
 
@@ -359,6 +370,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun clearTables() {
         binding.tableLayout.removeAllViews()
         adapters.clear()
+    }
+
+    override fun updateProgressVisibility() {
+        when (binding.programProgress.visibility) {
+            View.GONE -> binding.programProgress.visibility = View.VISIBLE
+            View.VISIBLE -> binding.programProgress.visibility = View.GONE
+        }
     }
 
     override fun showSnackBar() {
