@@ -378,14 +378,19 @@ class FormViewModel(
         featureType: String,
         coordinates: String?
     ): RowAction {
+        val type = FeatureType.valueOf(featureType)
         val geometryCoordinates = coordinates?.let {
             geometryController.generateLocationFromCoordinates(
-                FeatureType.valueOf(featureType),
+                type,
                 coordinates
             )?.coordinates()
         }
 
-        val error = checkFieldError(ValueType.COORDINATE, geometryCoordinates, null)
+        val error = if (type == FeatureType.POINT) {
+            checkFieldError(ValueType.COORDINATE, geometryCoordinates, null)
+        } else {
+            null
+        }
 
         return createRowAction(
             uid = fieldUid,
