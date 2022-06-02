@@ -193,12 +193,16 @@ class MainActivity :
 
         presenter.observeDataSync().observe(this) {
             if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED) {
+                setFilterButtonVisibility(true)
+                setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
             }
         }
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
+            setFilterButtonVisibility(false)
+            setBottomNavigationVisibility(false)
         }
     }
 
