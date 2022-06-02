@@ -38,7 +38,7 @@ class FieldErrorMessageProvider(private val context: Context) {
         }
 
     private fun getCoordinateError(error: CoordinateFailure) =
-        when(error){
+        when (error) {
             CoordinateFailure.CoordinateMalformedException -> R.string.wrong_pattern
         }
 
