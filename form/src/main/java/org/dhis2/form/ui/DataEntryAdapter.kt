@@ -19,15 +19,6 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
-    private val refactoredViews = intArrayOf(
-        R.layout.form_age_custom,
-        R.layout.form_date_time,
-        R.layout.form_scan,
-        R.layout.form_org_unit,
-        R.layout.form_coordinate_custom,
-        R.layout.form_edit_text_custom
-    )
-
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
 
@@ -50,7 +41,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
         val layoutInflater =
-            if (refactoredViews.contains(viewType) && searchStyle) {
+            if (searchStyle) {
                 LayoutInflater.from(
                     ContextThemeWrapper(
                         parent.context,
@@ -58,7 +49,12 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
                     )
                 )
             } else {
-                LayoutInflater.from(parent.context)
+                LayoutInflater.from(
+                    ContextThemeWrapper(
+                        parent.context,
+                        R.style.formInputText
+                    )
+                )
             }
         val binding =
             DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
