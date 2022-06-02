@@ -71,7 +71,7 @@ class ResourceManager(val context: Context) {
 
     fun getWrapperContext() = try {
         LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
-    } catch (exception: IllegalStateException) {
+    } catch (exception: Exception) {
         context
     }
 }
