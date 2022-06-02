@@ -20,6 +20,7 @@ import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.Constants
+import org.dhis2.utils.TRUE
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
@@ -267,6 +268,6 @@ class MainPresenter(
 
     fun onDataSuccess() {
         userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
-            .blockingSet("True")
+            .blockingSet(TRUE)
     }
 }
