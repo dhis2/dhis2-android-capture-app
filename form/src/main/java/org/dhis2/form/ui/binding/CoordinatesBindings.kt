@@ -17,10 +17,10 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
 @BindingAdapter(value = ["onLatitudeTyping", "textWatcher"], requireAll = true)
-fun EditText.setOnLatitudeTyping(item: FieldUiModel, textWatcher: LatitudeLongitudeTextWatcher) {
-    removeTextChangedListener(textWatcher.latitudeWatcher())
+fun EditText.setOnLatitudeTyping(item: FieldUiModel?, textWatcher: LatitudeLongitudeTextWatcher?) {
+    textWatcher?.let { removeTextChangedListener(it.latitudeWatcher()) }
 
-    val lonLatPair = when (item.renderingType) {
+    val lonLatPair = when (item?.renderingType) {
         UiRenderType.POINT -> getCurrentGeometry(item)?.let { geometry ->
             Pair(
                 GeometryHelper.getPoint(geometry)[0]?.toString(),
@@ -35,18 +35,18 @@ fun EditText.setOnLatitudeTyping(item: FieldUiModel, textWatcher: LatitudeLongit
 
     setText(latitudeValue)
 
-    if (item.focused) {
+    if (item?.focused == true) {
         if (hasFocus()) setSelection(latitudeValue?.length ?: 0)
-        textWatcher.resetCurrentValues(latitudeValue, longitudeValue)
-        addTextChangedListener(textWatcher.latitudeWatcher())
+        textWatcher?.resetCurrentValues(latitudeValue, longitudeValue)
+        textWatcher?.let { addTextChangedListener(it.latitudeWatcher()) }
     }
 }
 
 @BindingAdapter(value = ["onLongitudeTyping", "textWatcher"], requireAll = true)
-fun EditText.setOnLongitudeTyping(item: FieldUiModel, textWatcher: LatitudeLongitudeTextWatcher) {
-    removeTextChangedListener(textWatcher.longitudeWatcher())
+fun EditText.setOnLongitudeTyping(item: FieldUiModel?, textWatcher: LatitudeLongitudeTextWatcher?) {
+    textWatcher?.let { removeTextChangedListener(it.longitudeWatcher()) }
 
-    val lonLatPair = when (item.renderingType) {
+    val lonLatPair = when (item?.renderingType) {
         UiRenderType.POINT -> getCurrentGeometry(item)?.let { geometry ->
             Pair(
                 GeometryHelper.getPoint(geometry)[0]?.toString(),
@@ -61,10 +61,10 @@ fun EditText.setOnLongitudeTyping(item: FieldUiModel, textWatcher: LatitudeLongi
 
     setText(longitudeValue)
 
-    if (item.focused) {
+    if (item?.focused == true) {
         if (hasFocus()) setSelection(longitudeValue?.length ?: 0)
-        textWatcher.resetCurrentValues(latitudeValue, longitudeValue)
-        addTextChangedListener(textWatcher.longitudeWatcher())
+        textWatcher?.resetCurrentValues(latitudeValue, longitudeValue)
+        textWatcher?.let { addTextChangedListener(it.longitudeWatcher()) }
     }
 }
 
