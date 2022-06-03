@@ -125,10 +125,16 @@
 
     <style name="error_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/error_color</item>
+        <item name="android:textSize">10sp</item>
+        <item name="lineHeight">10dp</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
     </style>
 
     <style name="warning_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
+        <item name="android:textSize">10sp</item>
+        <item name="lineHeight">10dp</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
     </style>
 
     <style name="ImageFieldLabel">

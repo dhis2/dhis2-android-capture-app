@@ -50,7 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textSize="10sp"
             android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
             app:error="@{item.error}"
             app:input_style="@{item}"
