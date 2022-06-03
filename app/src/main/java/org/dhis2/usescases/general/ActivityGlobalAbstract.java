@@ -80,15 +80,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation() {
-        displayMessage(getString(R.string.enable_location_message));
-    }
-
     public enum Status {
         ON_PAUSE,
         ON_RESUME
     }
-
 
     public void setScreenName(String name) {
         crashReportController.trackScreenName(name);

@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.location.LocationSettingLauncher;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;
@@ -120,7 +121,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            permissionManager.requestLocationPermissions(getActivity());
+            if(locationProvider.hasLocationEnabled()) {
+                permissionManager.requestLocationPermissions(getActivity());
+            }else{
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext());
+            }
             return Unit.INSTANCE;
         });
 
