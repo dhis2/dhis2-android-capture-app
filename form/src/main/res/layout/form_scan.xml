@@ -105,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@{item.hint}"
-                android:theme="@style/loginInputText"
+                android:theme="@style/formInputText"
                 app:error_message="@{item.error}"
                 app:input_layout_style="@{item.style}"
                 app:warning_message="@{item.warning}">

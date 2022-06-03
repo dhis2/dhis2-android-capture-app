@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/polygon"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.GONE : View.VISIBLE}"
                     app:input_layout_style="@{item.style}">
 
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/latitude"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
                     app:input_layout_style="@{item.style}">
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/longitude"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     android:visibility="@{item.renderingType == UiRenderType.POINT ? View.VISIBLE : View.GONE}"
                     app:field_edition_alpha="@{item.editable}"
                     app:input_layout_style="@{item.style}">

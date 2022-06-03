@@ -13,7 +13,7 @@
         <item name="android:textColor">@color/placeholder</item>
     </style>
 
-    <style name="loginInputText"><!--parent="TextAppearance.AppCompat"-->
+    <style name="formInputText"><!--parent="TextAppearance.AppCompat"-->
         <item name="android:textColorHint">@color/textSecondary</item>
         <item name="colorControlNormal">@color/textPrimary</item>
         <item name="android:textColor">@color/textPrimary</item>
