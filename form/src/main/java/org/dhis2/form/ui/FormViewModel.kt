@@ -247,23 +247,39 @@ class FormViewModel(
                 actionType = ActionType.ON_CLEAR
             )
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
-            is FormIntent.SelectLocationFromCoordinates -> createRowAction(
-                uid = intent.uid,
-                value = intent.coordinates,
-                extraData = intent.extraData,
-                valueType = ValueType.COORDINATE
-            )
+            is FormIntent.SelectLocationFromCoordinates -> {
+                val error = checkFieldError(
+                    ValueType.COORDINATE,
+                    intent.coordinates,
+                    null
+                )
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.coordinates,
+                    extraData = intent.extraData,
+                    error = error,
+                    valueType = ValueType.COORDINATE
+                )
+            }
             is FormIntent.SelectLocationFromMap -> setCoordinateFieldValue(
                 fieldUid = intent.uid,
                 featureType = intent.featureType,
                 coordinates = intent.coordinates
             )
-            is FormIntent.SaveCurrentLocation -> createRowAction(
-                uid = intent.uid,
-                value = intent.value,
-                extraData = intent.featureType,
-                valueType = ValueType.COORDINATE
-            )
+            is FormIntent.SaveCurrentLocation -> {
+                val error = checkFieldError(
+                    ValueType.COORDINATE,
+                    intent.value,
+                    null
+                )
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    extraData = intent.featureType,
+                    error = error,
+                    valueType = ValueType.COORDINATE
+                )
+            }
             is FormIntent.OnNext -> createRowAction(
                 uid = intent.uid,
                 value = intent.value,
@@ -362,16 +378,25 @@ class FormViewModel(
         featureType: String,
         coordinates: String?
     ): RowAction {
+        val type = FeatureType.valueOf(featureType)
         val geometryCoordinates = coordinates?.let {
             geometryController.generateLocationFromCoordinates(
-                FeatureType.valueOf(featureType),
+                type,
                 coordinates
             )?.coordinates()
         }
+
+        val error = if (type == FeatureType.POINT) {
+            checkFieldError(ValueType.COORDINATE, geometryCoordinates, null)
+        } else {
+            null
+        }
+
         return createRowAction(
             uid = fieldUid,
             value = geometryCoordinates,
             extraData = featureType,
+            error = error,
             valueType = ValueType.COORDINATE
         )
     }

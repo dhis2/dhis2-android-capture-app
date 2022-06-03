@@ -14,6 +14,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FormViewHolder.FieldItemCallback
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.android.core.common.ValueType
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
@@ -37,6 +38,11 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         override fun afterTextChanged(p0: Editable?) {
             // Not needed
         }
+    }
+
+    val coordinateWatcher = LatitudeLongitudeTextWatcher { coordinates ->
+        currentList.find { it.focused && it.valueType == ValueType.COORDINATE }
+            ?.onTextChange(coordinates)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
@@ -65,7 +71,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         if (getItem(position) is SectionUiModelImpl) {
             updateSectionData(position, false)
         }
-        holder.bind(getItem(position), this, textWatcher)
+        holder.bind(getItem(position), this, textWatcher, coordinateWatcher)
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
