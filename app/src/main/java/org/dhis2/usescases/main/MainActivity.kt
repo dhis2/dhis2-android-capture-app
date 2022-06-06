@@ -48,6 +48,7 @@ private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
+const val AVOID_SYNC = "AvoidSync"
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -67,6 +68,7 @@ class MainActivity :
     lateinit var pageConfigurator: NavigationPageConfigurator
 
     var notification: Boolean = false
+    var forceToNotSynced = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -125,6 +127,7 @@ class MainActivity :
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false)
         if (::presenter.isInitialized) {
             binding.presenter = presenter
         } else {
@@ -480,6 +483,10 @@ class MainActivity :
 
     private fun isNotificationRunning(): Boolean {
         return notification
+    }
+
+    override fun hasToNotSync(): Boolean {
+        return forceToNotSynced
     }
 
     override fun cancelNotifications() {

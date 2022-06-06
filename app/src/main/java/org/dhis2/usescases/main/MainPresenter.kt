@@ -263,6 +263,9 @@ class MainPresenter(
     }
 
     fun wasSyncAlreadyDone(): Boolean {
+        if (view.hasToNotSync()) {
+            return true
+        }
         return syncIsPerformedInteractor.execute()
     }
 
