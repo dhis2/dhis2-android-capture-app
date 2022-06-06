@@ -35,7 +35,9 @@ import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.data.server.OpenIdSession;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.login.accounts.AccountsActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ActivityResultObservable;
@@ -118,12 +120,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         SharedPreferences prefs = getSharedPreferences();
-        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
+        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity || this instanceof AccountsActivity) {
+            if(serverComponent!=null){
+                serverComponent.themeManager().clearProgramTheme();
+            }
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
-            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity) && !(this instanceof AccountsActivity)) {
+            if(serverComponent!=null) {
+                setTheme(serverComponent.themeManager().getProgramTheme());
+            }else {
+                setTheme(R.style.AppTheme);
+            }
+        }
 
         super.onCreate(savedInstanceState);
     }
