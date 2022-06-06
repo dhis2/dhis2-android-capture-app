@@ -1,12 +1,7 @@
-This new version includes the following features:
-- Support multiple users offline.
-- Support legends for tables in analytics.
-- Break the glass.
-- Make mandatory TEI search configurable.
-- Separate offline/online search flows.
-- can and display GS1 Data matrix QR codes.
-- Allow the user to "refresh data" to get last updated data from server.
-- Render Icons in enrollment forms.
-- ...
-
-You can find all details in Jira and Github (github.com/dhis2/dhis2-android-capture-app).
+This is a patch version that fixes:
+- ANDROAPP-4745 QR scanner appending wrong identifier
+- ANDROAPP-4743 Numeric option sets not being displayed
+- ANDROAPP-4719 Wrong screen being opened when having several users
+....
+General system stability improvements to enhance the user's experience.
+You can find all the details on Jira and Github.
