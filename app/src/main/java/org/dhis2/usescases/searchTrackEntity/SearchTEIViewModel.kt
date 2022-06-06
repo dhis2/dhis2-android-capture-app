@@ -9,6 +9,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.search.SearchParametersModel
@@ -446,7 +447,8 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() -> {
+                    searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                    filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -456,7 +458,8 @@ class SearchTEIViewModel(
                 )
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.trackedEntityTypeFields().isNotEmpty() -> {
+                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                    filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -475,6 +478,10 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.NO_RESULTS))
         }
         _dataResult.value = result
+    }
+
+    fun filtersApplyOnGlobalSearch(): Boolean = with(FilterManager.getInstance()) {
+      return totalFilters == 0 || orgUnitFilters.isNotEmpty() || stateFilters.isNotEmpty()
     }
 
     private fun handleInitWithoutData() {
