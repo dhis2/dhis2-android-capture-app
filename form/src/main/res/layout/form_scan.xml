@@ -12,6 +12,10 @@
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
+
+        <variable
+            name="textWatcher"
+            type="android.text.TextWatcher" />
     </data>
 
 
@@ -54,7 +58,10 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:alpha="@{item.editable? 1f : 0.5f}"
             android:text="@{item.formattedLabel}"
+            android:onClick="@{() -> item.onItemClick()}"
+            android:enabled="@{item.editable}"
             app:label_text_color="@{item.style}"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
@@ -98,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@{item.hint}"
-                android:theme="@style/loginInputText"
+                android:theme="@style/formInputText"
                 app:error_message="@{item.error}"
                 app:input_layout_style="@{item.style}"
                 app:warning_message="@{item.warning}">
@@ -109,9 +116,9 @@
                     android:layout_height="wrap_content"
                     android:enabled="@{item.editable}"
                     android:imeOptions="actionNext"
-                    android:onTextChanged="@{(txt, start, before, count )->item.onTextChange(txt)}"
+                    app:onTyping="@{item}"
+                    app:textWatcher="@{textWatcher}"
                     android:singleLine="true"
-                    android:text="@{item.value}"
                     android:textSize="@dimen/form_edit_text_size"
                     app:action_handler="@{item}"
                     app:input_style="@{item}"

@@ -31,18 +31,6 @@
             app:srcCompat="@drawable/ic_map_navigate"
             tools:ignore="ContentDescription" />
 
-        <include
-            android:id="@+id/noCoordinatesLabel"
-            layout="@layout/item_no_coordinates"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginStart="4.3dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@id/eventInfoCard"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/eventInfoCard"
             android:layout_width="match_parent"

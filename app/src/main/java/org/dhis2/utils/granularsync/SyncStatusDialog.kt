@@ -36,7 +36,6 @@ import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
-import org.dhis2.usescases.sms.StatusText
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -70,6 +69,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
     private var syncing: Boolean = false
+
+    private val config: SyncStatusDialogUiConfig by lazy {
+        SyncStatusDialogUiConfig(resources, presenter, getInputArguments())
+    }
 
     enum class ConflictType {
         ALL, PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
@@ -351,6 +354,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         binding!!.noConflictMessage.visibility = View.VISIBLE
 
         binding!!.noConflictMessage.text = getString(R.string.data_values_error_sync_message)
+        setNetworkMessage()
     }
 
     private fun getColorForState(state: State): Int {
@@ -446,14 +450,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
         if (states.isNullOrEmpty()) return
 
-        states.forEach {
-            adapter!!.addItem(
-                StatusLogItem.create(
-                    Date(),
-                    StatusText.getTextSubmissionType(resources, getInputArguments()) + ": " +
-                        StatusText.getTextForStatus(resources, it)
-                )
-            )
+        states.forEach { status ->
+            adapter!!.addItem(config.initialStatusLogItem(status))
         }
 
         val lastState = states[states.size - 1]

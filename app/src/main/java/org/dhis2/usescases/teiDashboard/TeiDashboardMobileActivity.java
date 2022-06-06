@@ -1,5 +1,15 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
+import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.TEI_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,11 +19,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,42 +36,29 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.filters.Filters;
-import org.dhis2.utils.granularsync.GranularSyncContracts;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
-import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TEI_UID;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
@@ -78,6 +74,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Inject
     public NavigationPageConfigurator pageConfigurator;
+
+    @Inject
+    public ThemeManager themeManager;
 
     protected DashboardProgramModel programModel;
 
@@ -125,8 +124,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait())).inject(this);
-        setTheme(presenter.getProgramTheme(R.style.AppTheme));
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this))).inject(this);
+        setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
@@ -146,7 +145,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
-                if (OrientationUtilsKt.isLandscape()) {
+                if (OrientationUtilsKt.isLandscape(this)) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
                     binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
@@ -162,7 +161,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         presenter.prefSaveCurrentProgram(programUid);
 
         filtersShowing.observe(this, showFilter -> {
-            if (OrientationUtilsKt.isPortrait()) {
+            if (OrientationUtilsKt.isPortrait(this)) {
                 presenter.handleShowHideFilters(showFilter);
             }
         });
@@ -194,12 +193,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onResume();
 
         if (currentOrientation != -1) {
-            int nextOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
             if (currentOrientation != nextOrientation && adapter != null) {
                 adapter.notifyDataSetChanged();
             }
         }
-        currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
 
         if (adapter == null) {
             restoreAdapter(programUid);
@@ -230,7 +229,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 .setConflictType(SyncStatusDialog.ConflictType.TEI)
                 .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
-                    if(hasChanged && !restartingActivity) {
+                    if (hasChanged && !restartingActivity) {
                         restartingActivity = true;
                         startActivity(intent(getContext(), teiUid, programUid, enrollmentUid));
                         finish();
@@ -250,7 +249,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 pageConfigurator.displayRelationships()
         );
 
-        if (OrientationUtilsKt.isPortrait()) {
+        if (OrientationUtilsKt.isPortrait(this)) {
             binding.teiPager.setAdapter(null);
             binding.teiPager.setUserInputEnabled(false);
             binding.teiPager.setAdapter(adapter);
@@ -320,9 +319,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
-        setProgramColor(style == null ? "" : style.color());
-
+        themeManager.setProgramTheme(program.getCurrentProgram().uid());
+        setProgramColor(program.getCurrentProgram().uid());
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
@@ -337,7 +335,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         this.enrollmentUid = program.getCurrentEnrollment().uid();
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             if (binding.teiTablePager.getAdapter() == null) {
                 setViewpagerAdapter();
             }
@@ -386,7 +384,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
         dashboardViewModel.updateDashboard(program);
-        setProgramColor("");
+        themeManager.clearProgramTheme();
+        setProgramColor(null);
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
@@ -402,7 +401,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.searchFilterGeneral.setVisibility(View.GONE);
         binding.relationshipMapIcon.setVisibility(View.GONE);
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
@@ -457,7 +456,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             setTutorial();
         } else {
             if (binding.teiPager.getCurrentItem() == 0)
@@ -479,38 +478,29 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         fromRelationship = true;
     }
 
-    private void setProgramColor(String color) {
-        int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
+    private void setProgramColor(@Nullable String programUid) {
 
-        if (programTheme != -1) {
-            presenter.saveProgramTheme(programTheme);
-            binding.toolbar.setBackgroundColor(programColor);
-            binding.navigationBar.setIconsColor(programColor);
-        } else {
-            presenter.removeProgramTheme();
-            int colorPrimary;
-            switch (presenter.getProgramTheme(R.style.AppTheme)) {
-                case R.style.RedTheme:
-                    colorPrimary = R.color.colorPrimaryRed;
-                    break;
-                case R.style.OrangeTheme:
-                    colorPrimary = R.color.colorPrimaryOrange;
-                    break;
-                case R.style.GreenTheme:
-                    colorPrimary = R.color.colorPrimaryGreen;
-                    break;
-                case R.style.AppTheme:
-                default:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-            }
-            binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.navigationBar.setIconsColor(ContextCompat.getColor(this, colorPrimary));
-        }
+        themeManager.getThemePrimaryColor(
+                programUid,
+                new Function1<Integer, Unit>() {
+                    @Override
+                    public Unit invoke(Integer programColor) {
+                        binding.toolbar.setBackgroundColor(programColor);
+                        binding.navigationBar.setIconsColor(programColor);
+                        return Unit.INSTANCE;
+                    }
+                },
+                new Function1<Integer, Unit>() {
+                    @Override
+                    public Unit invoke(Integer themeColorRes) {
+                        binding.toolbar.setBackgroundColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, themeColorRes));
+                        binding.navigationBar.setIconsColor(ContextCompat.getColor(TeiDashboardMobileActivity.this, themeColorRes));
+                        return Unit.INSTANCE;
+                    }
+                });
 
         binding.executePendingBindings();
-        setTheme(presenter.getProgramTheme(R.style.AppTheme));
+        setTheme(themeManager.getProgramTheme());
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -524,23 +514,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
         int menu;
         if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
@@ -549,54 +522,60 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } else {
             menu = R.menu.dashboard_menu;
         }
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
+        new AppMenuHelper.Builder()
+                .anchor(view)
+                .menu(this, menu)
+                .onMenuInflated(popupMenu -> {
+                            MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
+                            deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(), presenter.getTEType()));
 
-        if (enrollmentUid != null) {
-            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
-            if (status == EnrollmentStatus.COMPLETED) {
-                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
-            } else if (status == EnrollmentStatus.CANCELLED) {
-                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
-            } else {
-                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
-            }
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(true);
-                    break;
-                case R.id.deleteTei:
-                    presenter.deleteTei();
-                    break;
-                case R.id.deleteEnrollment:
-                    presenter.deleteEnrollment();
-                    break;
-                case R.id.programSelector:
-                    presenter.onEnrollmentSelectorClick();
-                    break;
-                case R.id.groupEvents:
-                    groupByStage.setValue(true);
-                    break;
-                case R.id.showTimeline:
-                    groupByStage.setValue(false);
-                    break;
-                case R.id.complete:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
-                    break;
-                case R.id.activate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
-                    break;
-                case R.id.deactivate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
-                    break;
-            }
-            return true;
-
-        });
-        popupMenu.show();
+                            if (enrollmentUid != null) {
+                                EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+                                if (status == EnrollmentStatus.COMPLETED) {
+                                    popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+                                } else if (status == EnrollmentStatus.CANCELLED) {
+                                    popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+                                } else {
+                                    popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+                                }
+                            }
+                            return Unit.INSTANCE;
+                        }
+                )
+                .onMenuItemClicked(itemId->{
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(true);
+                            break;
+                        case R.id.deleteTei:
+                            presenter.deleteTei();
+                            break;
+                        case R.id.deleteEnrollment:
+                            presenter.deleteEnrollment();
+                            break;
+                        case R.id.programSelector:
+                            presenter.onEnrollmentSelectorClick();
+                            break;
+                        case R.id.groupEvents:
+                            groupByStage.setValue(true);
+                            break;
+                        case R.id.showTimeline:
+                            groupByStage.setValue(false);
+                            break;
+                        case R.id.complete:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
+                            break;
+                        case R.id.activate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
+                            break;
+                        case R.id.deactivate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
+                            break;
+                    }
+                    return true;
+                })
+                .build().show();
     }
 
     @Override

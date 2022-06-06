@@ -118,7 +118,7 @@ class FormRepositoryImplTest {
 
         whenever(
             fieldErrorMessageProvider.getFriendlyErrorMessage(any())
-        )doReturn "errorMessage"
+        ) doReturn "errorMessage"
 
         // Then item should not be saved
         assertTrue(repository.composeList().find { it.uid == "uid001" }?.error == "errorMessage")
@@ -200,7 +200,7 @@ class FormRepositoryImplTest {
                 any(),
                 any()
             )
-        )doReturnConsecutively listOf(
+        ) doReturnConsecutively listOf(
             section1().apply { totalFields = 3 },
             section2().apply { totalFields = 0 }
         )
@@ -211,6 +211,18 @@ class FormRepositoryImplTest {
         assertTrue(
             result.find { it.isSection() && it.uid == "section2" } == null
         )
+    }
+
+    @Test
+    fun `Should clear mandatory fields when composing a new list`() {
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideMandatoryItemList())
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        whenever(
+            dataEntryRepository.list()
+        ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
     }
 
     private fun mockList(listToReturn: List<FieldUiModel>) {
@@ -309,5 +321,30 @@ class FormRepositoryImplTest {
             uiEventFactory = null
         ),
         section2()
+    )
+
+    private fun provideMandatoryItemList() = listOf(
+        section1(),
+        FieldUiModelImpl(
+            uid = "uid001",
+            layoutId = 1,
+            value = null,
+            displayName = "displayValue",
+            label = "field1",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            mandatory = true
+        ),
+        FieldUiModelImpl(
+            uid = "uid002",
+            layoutId = 2,
+            value = "value",
+            displayName = "displayValue",
+            label = "field2",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null
+        )
     )
 }

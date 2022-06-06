@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import java.text.DecimalFormat
 import org.dhis2.App
 import org.dhis2.data.user.UserComponent
 import org.hisp.dhis.android.core.D2
@@ -118,6 +119,9 @@ val Int.dp: Int
 
 val Int.px: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Double.decimalFormat: String
+    get() = DecimalFormat("0.##############").format(this)
 
 fun AppCompatActivity.isKeyboardOpened(): Boolean {
     val r = Rect()

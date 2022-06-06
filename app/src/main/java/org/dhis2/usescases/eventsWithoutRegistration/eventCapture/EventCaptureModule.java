@@ -39,6 +39,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -143,7 +144,7 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     SearchTEIRepository searchTEIRepository(D2 d2) {
-        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
 
     @Provides

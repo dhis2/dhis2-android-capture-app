@@ -54,10 +54,12 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.EventToEventUiComponent;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import java.util.Map;
@@ -65,6 +67,7 @@ import java.util.Map;
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
+import dispatch.core.DispatcherProvider;
 
 @Module
 public class SearchTEModule {
@@ -141,16 +144,16 @@ public class SearchTEModule {
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
                                       SearchTEIRepository searchTEIRepository,
-                                      PreferenceProvider preferenceProvider) {
+                                      ThemeManager themeManager) {
         return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
                 searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
-                preferenceProvider);
+                themeManager);
     }
 
     @Provides
     @PerActivity
     SearchTEIRepository searchTEIRepository(D2 d2) {
-        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2));
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
 
     @Provides

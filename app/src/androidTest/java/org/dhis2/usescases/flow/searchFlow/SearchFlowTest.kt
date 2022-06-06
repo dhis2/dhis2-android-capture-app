@@ -9,7 +9,6 @@ import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,12 +23,10 @@ class SearchFlowTest : BaseTest() {
     private val dateEnrollment = createEnrollmentDate()
 
     @Test
-    @Ignore
     fun shouldCreateTEIAndFilterByEnrollment() {
         setDatePicker()
         val registerTEIDetails = createRegisterTEI()
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
-        val searchCounter = "3"
         val filterCounter = "1"
         val filterTotalCount = "2"
         prepareWomanProgrammeIntentAndLaunchActivity(rule)
@@ -41,10 +38,9 @@ class SearchFlowTest : BaseTest() {
 
         searchFlowRobot {
             filterByOpenEnrollmentStatus(enrollmentStatus)
-            checkSearchCounters(searchCounter, filterCounter, enrollmentStatus, filterTotalCount)
+            checkSearchCounters(filterCounter, enrollmentStatus, filterTotalCount)
             checkTEIEnrollment()
         }
-
     }
 
     private fun createRegisterTEI() = RegisterTEIUIModel(

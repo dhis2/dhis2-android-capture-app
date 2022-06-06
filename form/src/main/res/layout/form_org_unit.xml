@@ -59,6 +59,8 @@
                 android:layout_height="wrap_content"
                 android:alpha="@{item.editable? 1f : 0.5f}"
                 android:text="@{item.formattedLabel}"
+                android:enabled="@{item.editable}"
+                android:onClick="@{() -> item.invokeUiEvent(UiEventType.ORG_UNIT)}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
@@ -99,7 +101,7 @@
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@{item.hint}"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     app:inputError="@{item.error}"
                     app:inputWarning="@{item.warning}"
                     app:input_layout_style="@{item.style}">

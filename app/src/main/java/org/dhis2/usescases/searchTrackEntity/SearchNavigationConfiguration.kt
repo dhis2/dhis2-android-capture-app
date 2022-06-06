@@ -19,10 +19,10 @@ class SearchNavigationConfiguration(val d2: D2) {
 
     fun refreshDataOnBackFromDashboard(): Boolean {
         val refresh = openedTei?.let { tei ->
-            val previousLastUpdate = tei.lastUpdated()
+            val previousLastUpdate = tei.lastUpdated() ?: Date()
             val newLastUpdate = tei(tei.uid())?.lastUpdated() ?: Date()
-            return previousLastUpdate?.before(newLastUpdate) ?: false
-        } ?: false
+            return previousLastUpdate != newLastUpdate
+        } ?: true
 
         openedTei = null
 

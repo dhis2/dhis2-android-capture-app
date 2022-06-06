@@ -31,6 +31,7 @@ import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.ui.DataEntryDialogUiModel;
 import org.dhis2.ui.DialogButtonStyle;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
@@ -62,6 +63,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     EventCaptureContract.Presenter presenter;
     @Inject
     NavigationPageConfigurator pageConfigurator;
+    @Inject
+    ThemeManager themeManager;
 
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
@@ -89,6 +92,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                         eventUid,
                         getContext()));
         eventCaptureComponent.inject(this);
+        themeManager.setProgramTheme(getIntent().getStringExtra(PROGRAM_UID));
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);

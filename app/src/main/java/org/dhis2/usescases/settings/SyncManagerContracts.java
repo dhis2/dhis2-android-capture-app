@@ -1,5 +1,8 @@
 package org.dhis2.usescases.settings;
 
+import androidx.annotation.Nullable;
+import androidx.work.WorkInfo;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
@@ -56,6 +59,14 @@ public class SyncManagerContracts {
         void setReservedValuesSettings(ReservedValueSettingsViewModel reservedValueSettingsViewModel);
 
         void displaySmsEnableError();
+
+        void onMetadataSyncInProgress();
+
+        void onMetadataFinished();
+
+        void onDataSyncInProgress();
+
+        void onDataFinished();
     }
 
     public interface Presenter {
@@ -119,5 +130,7 @@ public class SyncManagerContracts {
         void enableSmsModule(boolean enableSms);
 
         void resetFilters();
+
+        void onWorkStatusesUpdate(@Nullable WorkInfo.State workState, String workerTag);
     }
 }

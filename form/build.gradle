@@ -71,31 +71,8 @@ dependencies {
 
     implementation project(":commons")
 
-    debugImplementation project(':core')
-    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-        exclude group: "org.hisp.dhis", module: "core-rules"
-        exclude group: "com.facebook.flipper"
-    }
-
-    debugImplementation project(':dhis2-rule-engine')
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
-        exclude group: "junit", module: "junit"
-    }
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation "com.google.android.material:material:${libraries.material}"
-    implementation "androidx.core:core-ktx:${libraries.corektx}"
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
-    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    implementation 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
-
-    //Timber
-    implementation "com.jakewharton.timber:timber:${libraries.timber}"
-
-    //region Test
-    testImplementation "junit:junit:${libraries.junit}"
     testImplementation 'org.mockito:mockito-core:3.4.6'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"

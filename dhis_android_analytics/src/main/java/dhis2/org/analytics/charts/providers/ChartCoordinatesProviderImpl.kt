@@ -221,10 +221,14 @@ class ChartCoordinatesProviderImpl(
                     metadata[it]?.displayName.toString()
                 }
 
-                val position = periodId.let {
-                    when (metadata[periodId]) {
-                        is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
-                        else -> categories.indexOf(periodId)
+                val position = if (periodId == "") {
+                    0f
+                } else {
+                    periodId.let {
+                        when (metadata[periodId]) {
+                            is MetadataItem.RelativePeriodItem -> categories.indexOf(periodId)
+                            else -> categories.indexOf(periodId)
+                        }
                     }
                 }
 

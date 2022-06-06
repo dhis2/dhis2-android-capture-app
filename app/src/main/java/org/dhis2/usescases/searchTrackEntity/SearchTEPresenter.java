@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import dispatch.core.DispatcherProvider;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -279,8 +280,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
-        orgUnitDialog.setTitle("Enrollment Org Unit")
-                .setPossitiveListener(v -> {
+        orgUnitDialog.setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
                         showCalendar(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid, queryData);
                     orgUnitDialog.dismiss();

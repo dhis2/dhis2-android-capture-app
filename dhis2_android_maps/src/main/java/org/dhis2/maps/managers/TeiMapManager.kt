@@ -59,6 +59,11 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         this.teiFeatureCollections?.putAll(eventsFeatureCollection.featureCollectionMap)
         this.fieldFeatureCollections = fieldFeatures
         this.boundingBox = boundingBox
+
+        teiImages.forEach {entry->
+            style?.removeImage(entry.key)
+        }
+
         addDynamicIcons()
         teiFeatureCollections[TEIS_SOURCE_ID]?.let {
             setTeiImages(it)

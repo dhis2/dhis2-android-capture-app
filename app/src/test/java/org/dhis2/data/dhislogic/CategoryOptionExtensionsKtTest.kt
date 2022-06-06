@@ -58,19 +58,28 @@ class CategoryOptionExtensionsKtTest {
     }
 
     @Test
-    fun `Should return true if orgUnitUid is null`() {
+    fun `Should return true if orgUnitUid is null and orgUnits are not empty`() {
+        val orgUnitUid = "orgUnitUid"
+        val orgUnits = listOf(ObjectWithUid.create(orgUnitUid))
         assertTrue(
             catOption(null).inOrgUnit(null) &&
-                catOption(listOf()).inOrgUnit(null)
+                catOption(orgUnits).inOrgUnit(null)
         )
     }
 
     @Test
-    fun `Should return true if orgUnits are null or empty`() {
+    fun `Should return true if orgUnits are null`() {
         val orgUnitUid = "orgUnitUid"
         assertTrue(
-            catOption(null).inOrgUnit(orgUnitUid) &&
-                catOption(listOf()).inOrgUnit(orgUnitUid)
+            catOption(null).inOrgUnit(orgUnitUid)
+        )
+    }
+
+    @Test
+    fun `Should return false if orgUnits are empty`() {
+        val orgUnitUid = "orgUnitUid"
+        assertFalse(
+            catOption(listOf()).inOrgUnit(orgUnitUid)
         )
     }
 

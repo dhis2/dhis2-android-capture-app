@@ -205,6 +205,7 @@
     <string name="settings_sms_response_wait_switch">Aguardar resposta do resultado do SMS</string>
     <plurals name="settings_specific_programs">
         <item quantity="one">Há sim %s programa com configurações específicas</item>
+        <item quantity="many">Há%s programas com configurações específicas</item>
         <item quantity="other">Há%s programas com configurações específicas</item>
     </plurals>
     <string name="settings_sync_period">Período de sincronização</string>
@@ -510,7 +511,6 @@
     <string name="sync_setting">Configuração de sincronização: %s</string>
     <string name="relationship_without_enrollment">O registro que você está tentando acessar não tem inscrição. Você não pode acessar o painel.</string>
     <string name="formatting_error">Erro de formatação</string>
-    <string name="dashboard_menu_delete_tei">SUPRIMIR TEI</string>
     <string name="dashboard_menu_delete_enrollment">Suprimir somente inscrição</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
     <string name="validation_url">Este url não é válido</string>

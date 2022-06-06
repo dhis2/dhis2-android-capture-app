@@ -544,7 +544,7 @@
     <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
-    <string name="dashboard_menu_delete_tei">Delete TEI</string>
+    <string name="dashboard_menu_delete_tei_v2">Delete %s</string>
     <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
     <string name="validation_url">This is not a valid url</string>
@@ -745,6 +745,7 @@
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
     <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
+    <string name="break_glass_error_v2">You cannot enroll a %s from other org units in this program because it is protected.\nContact your administrator.</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
 
@@ -898,4 +899,5 @@
     <string name="account_disable_title">Account disabled</string>
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
     <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
+    <string name="enrollment_org_unit">Enrollment Org Unit</string>
 </resources>

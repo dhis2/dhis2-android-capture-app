@@ -30,7 +30,7 @@ class FormRepositoryImpl(
     private val mandatoryItemsWithoutValue: MutableMap<String, String> = mutableMapOf()
     private var openedSectionUid: String? = null
     private var itemList: List<FieldUiModel> = emptyList()
-    private var focusedItem: RowAction? = null
+    private var focusedItemId: String? = null
     private var ruleEffectsResult: RuleUtilsProviderResult? = null
     private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
@@ -220,13 +220,7 @@ class FormRepositoryImpl(
     }
 
     private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> {
-        return focusedItem?.let {
-            val uid = when (it.type) {
-                ActionType.ON_NEXT -> getNextItem(it.id)
-                ActionType.ON_FINISH -> null
-                else -> it.id
-            }
-
+        return focusedItemId?.let { uid ->
             find { item ->
                 item.uid == uid
             }?.let { item ->
@@ -360,11 +354,10 @@ class FormRepositoryImpl(
     private fun List<FieldUiModel>.mergeListWithErrorFields(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldUiModel> {
-        return map { item ->
+        mandatoryItemsWithoutValue.clear()
+        val mergedList = this.map { item ->
             if (item.mandatory && item.value == null) {
                 mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
-            } else {
-                mandatoryItemsWithoutValue.remove(item.label)
             }
             fieldsWithError.find { it.id == item.uid }?.let { action ->
                 val error = action.error?.let {
@@ -379,6 +372,7 @@ class FormRepositoryImpl(
                     )
             } ?: item
         }
+        return mergedList
     }
 
     override fun updateErrorList(action: RowAction) {
@@ -398,11 +392,15 @@ class FormRepositoryImpl(
     }
 
     override fun setFocusedItem(action: RowAction) {
-        focusedItem = action
+        focusedItemId = when (action.type) {
+            ActionType.ON_NEXT -> getNextItem(action.id)
+            ActionType.ON_FINISH -> null
+            else -> action.id
+        }
     }
 
     override fun currentFocusedItem(): FieldUiModel? {
-        return itemList.find { focusedItem?.id == it.uid }
+        return itemList.find { focusedItemId == it.uid }
     }
 
     override fun updateSectionOpened(action: RowAction) {

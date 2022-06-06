@@ -2,7 +2,6 @@ package org.dhis2
 
 import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
-import org.dhis2.common.coroutine.DispatcherTestingModule
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.preferences.PreferencesTestingModule
@@ -74,7 +73,8 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
-            .coroutineDispatchers(DispatcherTestingModule())
+            //.coroutineDispatchers(DispatcherTestingModule())
+            .customDispatcher(CustomDispatcherModule())
             .workManagerController(
                 MockedWorkManagerModule(
                     MockedWorkManagerController(

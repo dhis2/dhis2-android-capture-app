@@ -226,14 +226,16 @@ class GranularSyncPresenterImpl(
                 if (enrollmentUids.isNotEmpty()) {
                     smsSender.convertEnrollment(enrollmentUids[0])
                 } else if (!d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(
-                    recordUid
-                ).blockingIsEmpty()
+                        recordUid
+                    ).blockingIsEmpty()
                 ) {
                     smsSender.convertEnrollment(
                         d2.enrollmentModule().enrollments()
                             .byTrackedEntityInstance().eq(recordUid)
                             .one().blockingGet().uid()
                     )
+                } else if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
+                    smsSender.convertEnrollment(recordUid)
                 } else {
                     Single.error(Exception(view.emptyEnrollmentError()))
                 }
@@ -322,8 +324,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-            last.sent == sent &&
-            last.total == total
+                last.sent == sent &&
+                last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -489,11 +491,11 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                stateCandidates.contains(State.UPLOADING) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                    stateCandidates.contains(State.UPLOADING) ||
+                    stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -547,5 +549,19 @@ class GranularSyncPresenterImpl(
                 it.creationDate?.time
             }
         }
+    }
+
+    override fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String? {
+        return d2.enrollmentModule().enrollments()
+            .uid(enrollmentUid)
+            .get().flatMap { enrollment ->
+                d2.trackedEntityModule().trackedEntityInstances()
+                    .uid(enrollment.trackedEntityInstance())
+                    .get()
+            }.flatMap { tei ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                    .uid(tei.trackedEntityType())
+                    .get()
+            }.blockingGet().displayName()
     }
 }

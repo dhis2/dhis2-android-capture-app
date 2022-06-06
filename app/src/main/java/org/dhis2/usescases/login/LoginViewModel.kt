@@ -74,4 +74,9 @@ class LoginViewModel : ViewModel() {
             this.testingCredentials!![testingCredential.server_url] = testingCredential
         }
     }
+
+    fun setAccountInfo(serverUrl: String?, userName: String?) {
+        this.serverUrl.value = serverUrl
+        this.userName.value = userName
+    }
 }

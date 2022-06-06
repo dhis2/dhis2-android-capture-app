@@ -383,6 +383,16 @@ fun RadioGroup.checkListener(item: FieldUiModel) {
     }
 }
 
+@BindingAdapter(value = ["onTyping", "textWatcher"], requireAll = true)
+fun EditText.setOnTyping(item: FieldUiModel, textWatcher: TextWatcher) {
+    removeTextChangedListener(textWatcher)
+    setText(item.value)
+    setSelection(length())
+    if (item.focused) {
+        addTextChangedListener(textWatcher)
+    }
+}
+
 fun getListFromPreference(context: Context, uid: String): MutableList<String> {
     val gson = Gson()
     val json = context.getSharedPreferences(
