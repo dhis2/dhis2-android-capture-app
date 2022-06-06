@@ -148,5 +148,4 @@ class EventTest: BaseTest() {
         "1/6/2020",
         "Ngelehun CHC"
     )
-
 }
