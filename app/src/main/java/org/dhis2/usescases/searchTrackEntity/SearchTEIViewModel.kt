@@ -447,8 +447,8 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                    searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
-                    filtersApplyOnGlobalSearch() -> {
+                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -458,8 +458,8 @@ class SearchTEIViewModel(
                 )
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                    filtersApplyOnGlobalSearch() -> {
+                searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -481,7 +481,7 @@ class SearchTEIViewModel(
     }
 
     fun filtersApplyOnGlobalSearch(): Boolean = with(FilterManager.getInstance()) {
-      return totalFilters == 0 || orgUnitFilters.isNotEmpty() || stateFilters.isNotEmpty()
+        return totalFilters == 0 || orgUnitFilters.isNotEmpty() || stateFilters.isNotEmpty()
     }
 
     private fun handleInitWithoutData() {
