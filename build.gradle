@@ -16,6 +16,7 @@ buildscript {
         // without breaking incremental compilation
         classpath "hu.supercluster:paperwork-plugin:1.2.7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jacoco:org.jacoco.core:0.8.7"
     }
 }
 
@@ -25,8 +26,17 @@ plugins {
 
 apply from: 'buildsystem/dependencies.gradle'
 
-
 allprojects {
+    configurations.all{
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
+        }
+    }
+    apply plugin: 'jacoco'
     repositories {
         google()
         jcenter() {
