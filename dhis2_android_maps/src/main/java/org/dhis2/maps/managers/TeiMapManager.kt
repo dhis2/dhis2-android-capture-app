@@ -43,6 +43,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     var enrollmentFeatureType: FeatureType? = FeatureType.POINT
     private var boundingBox: BoundingBox? = null
 
+    init {
+        numberOfUiIcons = 3
+    }
+
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
         const val ENROLLMENT_SOURCE_ID = "ENROLLMENT_SOURCE_ID"

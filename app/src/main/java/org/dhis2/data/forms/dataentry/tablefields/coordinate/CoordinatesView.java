@@ -29,6 +29,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.App;
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.location.LocationSettingLauncher;
 import org.dhis2.maps.geometry.LngLatValidatorKt;
 import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.commons.dialogs.CustomDialog;
@@ -307,7 +308,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     return Unit.INSTANCE;
                 },
                 () -> {
-                    ((ActivityGlobalAbstract) this.getContext()).requestEnableLocation();
+                    LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(getContext());
                     return Unit.INSTANCE;
                 });
     }

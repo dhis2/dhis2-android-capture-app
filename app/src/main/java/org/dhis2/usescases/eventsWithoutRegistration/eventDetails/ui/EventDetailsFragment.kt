@@ -18,6 +18,7 @@ import org.dhis2.R
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.data.location.LocationSettingLauncher
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -161,7 +162,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
 
         viewModel.showEnableLocationMessage = {
-            displayMessage(getString(R.string.enable_location_message))
+            LocationSettingLauncher.requestEnableLocationSetting(requireContext())
         }
 
         viewModel.onButtonClickCallback = {

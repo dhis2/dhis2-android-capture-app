@@ -17,6 +17,7 @@ import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.data.location.LocationSettingLauncher
 import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter
@@ -100,8 +101,12 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.mapPositionButton.setOnClickListener {
-            teiMapManager?.centerCameraOnMyPosition { permissionManager ->
-                permissionManager?.requestLocationPermissions(requireActivity())
+            if (locationProvider.hasLocationEnabled()) {
+                teiMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
+            } else {
+                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
             }
         }
 

@@ -25,5 +25,7 @@ public class DataValueContract {
         void onValueProcessed();
 
         void clearTables();
+
+        void updateProgressVisibility();
     }
 }

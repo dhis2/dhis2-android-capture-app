@@ -105,10 +105,14 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         propertyName: String,
         propertyValue: String
     ): Feature? {
-        return featureCollection?.features()?.firstOrNull {
-            it.getStringProperty(propertyName) == propertyValue
-        } ?: deFeatureCollection[source]?.features()?.firstOrNull {
-            it.getStringProperty(propertyName) == propertyValue
+        return if(source == EVENTS){
+            featureCollection?.features()?.firstOrNull {
+                it.getStringProperty(propertyName) == propertyValue
+            }
+        }else{
+            deFeatureCollection[source]?.features()?.firstOrNull {
+                it.getStringProperty(propertyName) == propertyValue
+            }
         }
     }
 
