@@ -185,7 +185,7 @@ class SMSSyncProviderTest {
     @Test
     fun `should send sms and wait for response with timeout`() {
         mockSendingSMS(true)
-        mockConfirmationSMS()
+        mockConfirmationSMSTimeout()
         val statuses = mutableListOf<SmsSendingService.SendingStatus>()
         val testObserver = smsSyncProvider(SyncStatusDialog.ConflictType.TEI)
             .sendSms(
@@ -197,9 +197,6 @@ class SMSSyncProviderTest {
                 }
             )
             .test()
-        testObserver
-            .assertNoErrors()
-            .assertComplete()
         statuses.apply {
             assertTrue(size == 7)
             assertTrue(first().state == SmsSendingService.State.STARTED)
