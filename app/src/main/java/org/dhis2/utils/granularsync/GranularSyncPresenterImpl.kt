@@ -31,12 +31,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
@@ -64,8 +62,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
-import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 import org.hisp.dhis.android.core.systeminfo.SMSVersion
 import timber.log.Timber
 
@@ -80,13 +76,13 @@ class GranularSyncPresenterImpl(
     private val dvPeriodId: String?,
     private val workManagerController: WorkManagerController,
     private val errorMapper: ErrorModelMapper,
-    private val preferenceProvider: PreferenceProvider
+    private val preferenceProvider: PreferenceProvider,
+    private val smsSyncProvider: SMSSyncProvider
 ) : GranularSyncContracts.Presenter {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
     private lateinit var view: GranularSyncContracts.View
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
-    private lateinit var smsSender: SmsSubmitCase
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
 
     override fun configure(view: GranularSyncContracts.View) {
@@ -207,45 +203,11 @@ class GranularSyncPresenterImpl(
     }
 
     override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
-        smsSender = d2.smsModule().smsSubmitCase()
         statesList = ArrayList()
         states = MutableLiveData()
 
-        val convertTask = when (conflictType) {
-            EVENT -> smsSender.convertSimpleEvent(recordUid)
-            TEI -> {
-                // TODO: GET ALL ENROLLMENTS FROM TEI
-                val enrollmentUids = UidsHelper.getUidsList(
-                    d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
-                        .byAggregatedSyncState().`in`(
-                            State.TO_POST,
-                            State.TO_UPDATE,
-                            State.UPLOADING
-                        ).blockingGet()
-                )
-                if (enrollmentUids.isNotEmpty()) {
-                    smsSender.convertEnrollment(enrollmentUids[0])
-                } else if (!d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(
-                    recordUid
-                ).blockingIsEmpty()
-                ) {
-                    smsSender.convertEnrollment(
-                        d2.enrollmentModule().enrollments()
-                            .byTrackedEntityInstance().eq(recordUid)
-                            .one().blockingGet().uid()
-                    )
-                } else if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
-                    smsSender.convertEnrollment(recordUid)
-                } else {
-                    Single.error(Exception(view.emptyEnrollmentError()))
-                }
-            }
-            DATA_VALUES -> smsSender.convertDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
-            else -> Single.error(Exception(view.unsupportedTask()))
-        }
-
         disposable.add(
-            convertTask
+            smsSyncProvider.getConvertTask()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
@@ -265,47 +227,30 @@ class GranularSyncPresenterImpl(
     }
 
     override fun sendSMS() {
-        val startDate = Date()
         disposable.add(
-            smsSender.send().doOnNext { state ->
-                if (!isLastSendingStateTheSame(state.sent, state.total)) {
-                    reportState(
-                        if (state.sent == 0) SmsSendingService.State.STARTED
-                        else SmsSendingService.State.SENDING,
-                        state.sent,
-                        state.total
-                    )
-                }
-            }.ignoreElements().doOnComplete {
-                reportState(
-                    SmsSendingService.State.SENT,
-                    0,
-                    0
-                )
-            }.andThen(
-                d2.smsModule().configCase().smsModuleConfig
-            ).flatMapCompletable { config ->
-                if (config.isWaitingForResult) {
+            smsSyncProvider.sendSms(
+                doOnNext = { sent, total ->
+                    if (!isLastSendingStateTheSame(sent, total)) {
+                        reportState(
+                            if (sent == 0) SmsSendingService.State.STARTED else SmsSendingService.State.SENDING,
+                            sent,
+                            total
+                        )
+                    }
+                },
+                doOnSent = {
+                    reportState(SmsSendingService.State.SENT, 0, 0)
+                },
+                doOnWaitingResult = {
                     reportState(SmsSendingService.State.WAITING_RESULT, 0, 0)
-                    smsSender.checkConfirmationSms(startDate)
-                        .doOnError { throwable ->
-                            if (throwable is SmsRepository.ResultResponseException) {
-                                val reason = throwable.reason
-                                if (reason == SmsRepository.ResultResponseIssue.TIMEOUT) {
-                                    reportState(
-                                        SmsSendingService.State.WAITING_RESULT_TIMEOUT,
-                                        0,
-                                        0
-                                    )
-                                }
-                            }
-                        }.doOnComplete {
-                            reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
-                        }
-                } else {
-                    Completable.complete()
+                },
+                doOnTimeOutResult = {
+                    reportState(SmsSendingService.State.WAITING_RESULT_TIMEOUT, 0, 0)
+                },
+                doOnResult = {
+                    reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
                 }
-            }
+            )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribeWith(object : DisposableCompletableObserver() {
@@ -324,8 +269,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-            last.sent == sent &&
-            last.total == total
+                last.sent == sent &&
+                last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -491,11 +436,11 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                stateCandidates.contains(State.UPLOADING) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                    stateCandidates.contains(State.UPLOADING) ||
+                    stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
