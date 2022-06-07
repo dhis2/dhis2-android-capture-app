@@ -33,7 +33,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -62,7 +61,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import org.hisp.dhis.android.core.systeminfo.SMSVersion
 import timber.log.Timber
 
 class GranularSyncPresenterImpl(
@@ -138,16 +136,7 @@ class GranularSyncPresenterImpl(
     }
 
     override fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
-        val hasCorrectSmsVersion = if (isTrackerSync) {
-            d2.systemInfoModule().versionManager().smsVersion == SMSVersion.V2
-        } else {
-            true
-        }
-
-        val smsModuleIsEnabled =
-            d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
-
-        return hasCorrectSmsVersion && smsModuleIsEnabled
+        return smsSyncProvider.isSMSEnabled(isTrackerSync)
     }
 
     override fun initGranularSync(): LiveData<List<WorkInfo>> {
@@ -210,16 +199,10 @@ class GranularSyncPresenterImpl(
             smsSyncProvider.getConvertTask()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(
-                    { count ->
-                        reportState(SmsSendingService.State.CONVERTED, 0, count!!)
-                        reportState(
-                            SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
-                            0,
-                            count
-                        )
-                    },
-                    { this.reportError(it) }
+                .subscribeWith(
+                    smsSyncProvider.onConvertingObserver {
+                        updateStateList(it)
+                    }
                 )
         )
 
@@ -229,39 +212,28 @@ class GranularSyncPresenterImpl(
     override fun sendSMS() {
         disposable.add(
             smsSyncProvider.sendSms(
-                doOnNext = { sent, total ->
-                    if (!isLastSendingStateTheSame(sent, total)) {
-                        reportState(
-                            if (sent == 0) SmsSendingService.State.STARTED else SmsSendingService.State.SENDING,
-                            sent,
-                            total
-                        )
+                doOnNext = { sendingStatus: SmsSendingService.SendingStatus ->
+                    if (!isLastSendingStateTheSame(sendingStatus.sent, sendingStatus.total)) {
+                        updateStateList(sendingStatus)
                     }
                 },
-                doOnSent = {
-                    reportState(SmsSendingService.State.SENT, 0, 0)
-                },
-                doOnWaitingResult = {
-                    reportState(SmsSendingService.State.WAITING_RESULT, 0, 0)
-                },
-                doOnTimeOutResult = {
-                    reportState(SmsSendingService.State.WAITING_RESULT_TIMEOUT, 0, 0)
-                },
-                doOnResult = {
-                    reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                doOnNewState = {
+                    updateStateList(it)
                 }
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
-                .subscribeWith(object : DisposableCompletableObserver() {
-                    override fun onError(e: Throwable) {
-                        reportError(e)
+                .subscribeWith(
+                    smsSyncProvider.onSendingObserver {
+                        updateStateList(it)
                     }
+                )
+        )
+    }
 
-                    override fun onComplete() {
-                        reportState(SmsSendingService.State.COMPLETED, 0, 0)
-                    }
-                })
+    override fun onSmsNotAccepted() {
+        updateStateList(
+            smsSyncProvider.onSmsNotAccepted()
         )
     }
 
@@ -269,30 +241,15 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
-    override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
-        val submissionId = smsSender.submissionId
-        val currentStatus = SmsSendingService.SendingStatus(submissionId, state, null, sent, total)
-        statesList.clear()
+    private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {
+        if (currentStatus.state != SmsSendingService.State.ERROR) {
+            statesList.clear()
+        }
         statesList.add(currentStatus)
-        states.postValue(statesList)
-    }
-
-    override fun reportError(throwable: Throwable) {
-        Timber.tag(SmsSendingService::class.java.simpleName).e(throwable)
-        val submissionId = smsSender.submissionId
-        statesList.add(
-            SmsSendingService.SendingStatus(
-                submissionId,
-                SmsSendingService.State.ERROR,
-                throwable,
-                0,
-                0
-            )
-        )
         states.postValue(statesList)
     }
 
@@ -436,11 +393,11 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.UPLOADING) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.UPLOADING) ||
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }

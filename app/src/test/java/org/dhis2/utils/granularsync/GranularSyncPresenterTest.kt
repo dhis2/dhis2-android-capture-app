@@ -48,6 +48,7 @@ class GranularSyncPresenterTest {
     private val errorMapper: ErrorModelMapper = ErrorModelMapper("%s %s %s %s")
     private val testProgram = getProgram()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val smsSyncProvider: SMSSyncProvider = mock()
 
     @Test
     fun simplePresenterTest() {
@@ -63,7 +64,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
         Mockito.`when`(d2.programModule().programs())
@@ -91,7 +93,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
 
         whenever(
@@ -133,7 +136,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -170,7 +174,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -207,7 +212,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
@@ -228,7 +234,8 @@ class GranularSyncPresenterTest {
             null,
             workManager,
             errorMapper,
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
         )
 
         whenever(

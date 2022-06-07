@@ -175,6 +175,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         (context.applicationContext as App).serverComponent()!!.plus(
             GranularSyncModule(
+                requireContext(),
                 conflictType,
                 recordUid,
                 orgUnitDataValue,
@@ -483,7 +484,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             if (accepted) {
                 presenter.sendSMS()
             } else {
-                presenter.reportState(SmsSendingService.State.COUNT_NOT_ACCEPTED, 0, 0)
+                presenter.onSmsNotAccepted()
             }
         }
         dialog.arguments = args
@@ -594,14 +595,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             else -> {
             }
         }
-    }
-
-    override fun emptyEnrollmentError(): String {
-        return getString(R.string.granular_sync_enrollments_empty)
-    }
-
-    override fun unsupportedTask(): String {
-        return getString(R.string.granular_sync_unsupported_task)
     }
 
     override fun setLastUpdated(result: SyncDate) {
