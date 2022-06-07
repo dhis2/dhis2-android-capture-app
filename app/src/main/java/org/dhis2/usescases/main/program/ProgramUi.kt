@@ -178,7 +178,7 @@ fun ProgramItem(
         }
         when (programViewModel.downloadState) {
             ProgramDownloadState.DOWNLOADING -> DownloadingProgress()
-            ProgramDownloadState.DOWNLOADED -> DownloadedIcon()
+            ProgramDownloadState.DOWNLOADED -> DownloadedIcon(programViewModel)
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
