@@ -254,9 +254,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     private fun setNetworkMessage() {
         if (!networkUtils.isOnline()) {
-            if (presenter.isSMSEnabled(conflictType == ConflictType.TEI) &&
-                context?.showSMS() == true
-            ) {
+            if (presenter.isSMSEnabled(context?.showSMS() == true)) {
                 if (conflictType != ConflictType.PROGRAM &&
                     conflictType != ConflictType.DATA_SET
                 ) {

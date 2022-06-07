@@ -1,5 +1,6 @@
 package org.dhis2.utils.granularsync
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -99,7 +100,7 @@ class GranularSyncPresenterTest {
 
         whenever(
             programUtils.getProgramState("test_uid")
-        )doReturn State.ERROR
+        ) doReturn State.ERROR
         val testSubscriber = presenter.getState().test()
 
         testSubscriber.assertSubscribed()
@@ -277,6 +278,36 @@ class GranularSyncPresenterTest {
         assertTrue(errors[0].errorCode == "500")
         assertTrue(errors[1].errorCode == "FK")
         assertTrue(errors[2].errorCode == "API")
+    }
+
+    @Test
+    fun `should block sms for some conflict types`() {
+        whenever(
+            smsSyncProvider.isSMSEnabled(any())
+        )doReturn true
+        val result = SyncStatusDialog.ConflictType.values().associate {
+            val enable = GranularSyncPresenterImpl(
+                d2,
+                programUtils,
+                trampolineSchedulerProvider,
+                it,
+                "test_uid",
+                null,
+                null,
+                null,
+                workManager,
+                errorMapper,
+                preferenceProvider,
+                smsSyncProvider
+            ).isSMSEnabled(true)
+            it to enable
+        }
+        assertTrue(result[SyncStatusDialog.ConflictType.PROGRAM] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.ALL] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.DATA_SET] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.TEI] == true)
+        assertTrue(result[SyncStatusDialog.ConflictType.EVENT] == true)
+        assertTrue(result[SyncStatusDialog.ConflictType.DATA_VALUES] == true)
     }
 
     private fun getMockedCompleteRegistrations(

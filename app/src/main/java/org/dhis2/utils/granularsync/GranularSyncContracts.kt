@@ -45,7 +45,7 @@ class GranularSyncContracts {
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
-        fun isSMSEnabled(isTrackerSync: Boolean): Boolean
+        fun isSMSEnabled(showSms: Boolean): Boolean
         fun configure(view: View)
         fun initGranularSync(): LiveData<List<WorkInfo>>
         fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>>
