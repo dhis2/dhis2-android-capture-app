@@ -234,6 +234,8 @@ class GranularSyncPresenterImpl(
                             .byTrackedEntityInstance().eq(recordUid)
                             .one().blockingGet().uid()
                     )
+                } else if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
+                    smsSender.convertEnrollment(recordUid)
                 } else {
                     Single.error(Exception(view.emptyEnrollmentError()))
                 }

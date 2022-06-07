@@ -5,19 +5,21 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
-import org.dhis2.commons.filters.FilterResources
+import org.hisp.dhis.android.core.D2Manager
 
 class ResourceManager(val context: Context) {
 
-    val filterResources by lazy { FilterResources(context) }
-
-    fun getString(@StringRes stringResource: Int) = context.getString(stringResource)
+    fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
-            var iconResource =
-                context.resources.getIdentifier(iconName, "drawable", context.packageName)
+            val iconResource =
+                getWrapperContext().resources.getIdentifier(
+                    iconName,
+                    "drawable",
+                    getWrapperContext().packageName
+                )
             if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)
             ) {
                 iconResource
@@ -29,7 +31,7 @@ class ResourceManager(val context: Context) {
 
     private fun drawableExists(iconResource: Int): Boolean {
         return try {
-            ContextCompat.getDrawable(context, iconResource)
+            ContextCompat.getDrawable(getWrapperContext(), iconResource)
             true
         } catch (e: Exception) {
             false
@@ -45,20 +47,31 @@ class ResourceManager(val context: Context) {
     fun getColorOrDefaultFrom(hexColor: String?): Int {
         return ColorUtils.getColorFrom(
             hexColor,
-            ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY_LIGHT)
+            ColorUtils.getPrimaryColor(getWrapperContext(), ColorUtils.ColorType.PRIMARY_LIGHT)
         )
     }
 
-    fun parseD2Error(throwable: Throwable) = D2ErrorUtils(context).getErrorMessage(throwable)
+    fun parseD2Error(throwable: Throwable) =
+        D2ErrorUtils(getWrapperContext()).getErrorMessage(throwable)
 
-    fun defaultEventLabel(): String = context.getString(R.string.events)
-    fun defaultDataSetLabel(): String = context.getString(R.string.data_sets)
-    fun defaultTeiLabel(): String = context.getString(R.string.tei)
-    fun jiraIssueSentMessage(): String = context.getString(R.string.jira_issue_sent)
-    fun jiraIssueSentErrorMessage(): String = context.getString(R.string.jira_issue_sent_error)
-    fun sectionFeedback(): String = context.getString(R.string.section_feedback)
-    fun sectionIndicators(): String = context.getString(R.string.section_indicators)
-    fun sectionCharts(): String = context.getString(R.string.section_charts)
-    fun sectionChartsAndIndicators(): String = context.getString(R.string.section_charts_indicators)
-    fun defaultIndicatorLabel(): String = context.getString(R.string.info)
+    fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
+    fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
+    fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
+    fun jiraIssueSentMessage(): String = getWrapperContext().getString(R.string.jira_issue_sent)
+    fun jiraIssueSentErrorMessage(): String =
+        getWrapperContext().getString(R.string.jira_issue_sent_error)
+
+    fun sectionFeedback(): String = getWrapperContext().getString(R.string.section_feedback)
+    fun sectionIndicators(): String = getWrapperContext().getString(R.string.section_indicators)
+    fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)
+    fun sectionChartsAndIndicators(): String =
+        getWrapperContext().getString(R.string.section_charts_indicators)
+
+    fun defaultIndicatorLabel(): String = getWrapperContext().getString(R.string.info)
+
+    fun getWrapperContext() = try {
+        LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
+    } catch (exception: Exception) {
+        context
+    }
 }

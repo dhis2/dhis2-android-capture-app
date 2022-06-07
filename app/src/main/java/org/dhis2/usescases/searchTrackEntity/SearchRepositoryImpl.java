@@ -24,8 +24,6 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
@@ -36,7 +34,11 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.model.StoreResult;
+import org.dhis2.metadata.usecases.FileResourceConfiguration;
+import org.dhis2.metadata.usecases.ProgramConfiguration;
+import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
 import org.dhis2.ui.ThemeManager;
+import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -110,6 +112,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private TrackedEntityInstanceDownloader downloadRepository = null;
     private ThemeManager themeManager;
     private HashSet<String> fetchedTeiUids = new HashSet<>();
+    private TeiDownloader teiDownloader;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -136,6 +139,12 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.networkUtils = networkUtils;
         this.searchTEIRepository = searchTEIRepository;
         this.themeManager = themeManager;
+        this.teiDownloader = new TeiDownloader(
+                new ProgramConfiguration(d2),
+                new TrackedEntityInstanceConfiguration(d2),
+                new FileResourceConfiguration(d2),
+                currentProgram,
+                resources);
     }
 
     @Override
@@ -551,9 +560,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public void setCurrentTheme(@Nullable Program selectedProgram) {
-        if(selectedProgram != null) {
+        if (selectedProgram != null) {
             themeManager.setProgramTheme(selectedProgram.uid());
-        }else{
+        } else {
             themeManager.setTrackedEntityTypeTheme(teiType);
         }
     }
@@ -574,7 +583,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .byTrackedEntityTypeUid().eq(teiType)
                     .byTrackedEntityAttributeUid().eq(attrUid)
                     .blockingIsEmpty();
-            if(isTrackedEntityTypeAttribute) {
+            if (isTrackedEntityTypeAttribute) {
                 TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes()
                         .uid(attrUid)
                         .blockingGet();
@@ -696,33 +705,39 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, @Nullable String reason) {
-        if (downloadRepository != null && reason != null) {
-            return breakTheGlass(teiUid, reason);
-        } else {
-            return defaultDownload(teiUid, enrollmentUid);
-        }
+        return teiDownloader.download(teiUid, enrollmentUid, reason);
     }
 
     private TeiDownloadResult defaultDownload(String teiUid, @Nullable String enrollmentUid) {
-        downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
-                .byUid().eq(teiUid)
-                .byProgramUid(currentProgram);
+        if (currentProgram != null) {
+            downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                    .byUid().eq(teiUid)
+                    .byProgramUid(currentProgram);
+        } else {
+            downloadRepository = d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                    .byUid().eq(teiUid);
+        }
 
         try {
             downloadRepository.overwrite(true).blockingDownload();
             return checkDownload(teiUid, enrollmentUid);
         } catch (Exception e) {
             if (e instanceof D2Error) {
-                D2Error d2Error = (D2Error) e;
-                switch (d2Error.errorCode()) {
-                    case OWNERSHIP_ACCESS_DENIED:
-                        return new TeiDownloadResult.BreakTheGlassResult(teiUid, enrollmentUid);
-                    default:
-                        return new TeiDownloadResult.ErrorResult(resources.parseD2Error(e));
-                }
+                return handleD2Error((D2Error) e, teiUid, enrollmentUid);
+            } else if (e.getCause() instanceof D2Error) {
+                return handleD2Error((D2Error) e.getCause(), teiUid, enrollmentUid);
             } else {
                 return new TeiDownloadResult.ErrorResult(e.getLocalizedMessage());
             }
+        }
+    }
+
+    private TeiDownloadResult handleD2Error(D2Error d2Error, String teiUid, String enrollmentUid) {
+        switch (d2Error.errorCode()) {
+            case OWNERSHIP_ACCESS_DENIED:
+                return new TeiDownloadResult.BreakTheGlassResult(teiUid, enrollmentUid);
+            default:
+                return new TeiDownloadResult.ErrorResult(resources.parseD2Error(d2Error));
         }
     }
 
@@ -763,10 +778,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private boolean hasEnrollmentInCurrentProgram(String teiUid) {
-        return !d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(currentProgram)
-                .blockingIsEmpty();
+        if (currentProgram != null) {
+            return !d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(teiUid)
+                    .byProgram().eq(currentProgram)
+                    .blockingIsEmpty();
+        } else {
+            return false;
+        }
     }
 
     private String getEnrollmentInProgram(String teiUid) {
@@ -779,6 +798,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private boolean canEnrollInCurrentProgram() {
+        if (currentProgram == null) return false;
         Program selectedProgram = d2.programModule().programs().uid(currentProgram).blockingGet();
         boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();
         boolean teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
@@ -793,13 +813,13 @@ public class SearchRepositoryImpl implements SearchRepository {
         } catch (Throwable e) {
             SearchTeiModel errorModel = new SearchTeiModel();
             errorModel.onlineErrorMessage = resources.parseD2Error(e);
-            errorModel.onlineErrorCode = ((D2Error)e).errorCode();
+            errorModel.onlineErrorCode = ((D2Error) e).errorCode();
             return errorModel;
         }
     }
 
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
-        if(!fetchedTeiUids.contains(tei.uid())) {
+        if (!fetchedTeiUids.contains(tei.uid())) {
             fetchedTeiUids.add(tei.uid());
         }
         SearchTeiModel searchTei = new SearchTeiModel();

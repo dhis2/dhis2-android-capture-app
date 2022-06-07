@@ -19,12 +19,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +38,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -56,14 +55,10 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import javax.inject.Inject;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import timber.log.Timber;
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View, MapButtonObservable {
 
@@ -129,7 +124,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait())).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this))).inject(this);
         setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -150,7 +145,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (adapter == null) return true;
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
-                if (OrientationUtilsKt.isLandscape()) {
+                if (OrientationUtilsKt.isLandscape(this)) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
                     binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
@@ -166,7 +161,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         presenter.prefSaveCurrentProgram(programUid);
 
         filtersShowing.observe(this, showFilter -> {
-            if (OrientationUtilsKt.isPortrait()) {
+            if (OrientationUtilsKt.isPortrait(this)) {
                 presenter.handleShowHideFilters(showFilter);
             }
         });
@@ -198,12 +193,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onResume();
 
         if (currentOrientation != -1) {
-            int nextOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
             if (currentOrientation != nextOrientation && adapter != null) {
                 adapter.notifyDataSetChanged();
             }
         }
-        currentOrientation = OrientationUtilsKt.isLandscape() ? 1 : 0;
+        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
 
         if (adapter == null) {
             restoreAdapter(programUid);
@@ -254,7 +249,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 pageConfigurator.displayRelationships()
         );
 
-        if (OrientationUtilsKt.isPortrait()) {
+        if (OrientationUtilsKt.isPortrait(this)) {
             binding.teiPager.setAdapter(null);
             binding.teiPager.setUserInputEnabled(false);
             binding.teiPager.setAdapter(adapter);
@@ -340,7 +335,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         this.enrollmentUid = program.getCurrentEnrollment().uid();
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             if (binding.teiTablePager.getAdapter() == null) {
                 setViewpagerAdapter();
             }
@@ -406,7 +401,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.searchFilterGeneral.setVisibility(View.GONE);
         binding.relationshipMapIcon.setVisibility(View.GONE);
 
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
@@ -461,7 +456,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (OrientationUtilsKt.isLandscape()) {
+        if (OrientationUtilsKt.isLandscape(this)) {
             setTutorial();
         } else {
             if (binding.teiPager.getCurrentItem() == 0)
@@ -519,23 +514,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
         int menu;
         if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
@@ -544,56 +522,60 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } else {
             menu = R.menu.dashboard_menu;
         }
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
-        MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
-        deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(),presenter.getTEType()));
+        new AppMenuHelper.Builder()
+                .anchor(view)
+                .menu(this, menu)
+                .onMenuInflated(popupMenu -> {
+                            MenuItem deleteTeiItem = popupMenu.getMenu().findItem(R.id.deleteTei);
+                            deleteTeiItem.setTitle(String.format(deleteTeiItem.getTitle().toString(), presenter.getTEType()));
 
-        if (enrollmentUid != null) {
-            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
-            if (status == EnrollmentStatus.COMPLETED) {
-                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
-            } else if (status == EnrollmentStatus.CANCELLED) {
-                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
-            } else {
-                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
-            }
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.showHelp:
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(true);
-                    break;
-                case R.id.deleteTei:
-                    presenter.deleteTei();
-                    break;
-                case R.id.deleteEnrollment:
-                    presenter.deleteEnrollment();
-                    break;
-                case R.id.programSelector:
-                    presenter.onEnrollmentSelectorClick();
-                    break;
-                case R.id.groupEvents:
-                    groupByStage.setValue(true);
-                    break;
-                case R.id.showTimeline:
-                    groupByStage.setValue(false);
-                    break;
-                case R.id.complete:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
-                    break;
-                case R.id.activate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
-                    break;
-                case R.id.deactivate:
-                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
-                    break;
-            }
-            return true;
-
-        });
-        popupMenu.show();
+                            if (enrollmentUid != null) {
+                                EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+                                if (status == EnrollmentStatus.COMPLETED) {
+                                    popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+                                } else if (status == EnrollmentStatus.CANCELLED) {
+                                    popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+                                } else {
+                                    popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+                                }
+                            }
+                            return Unit.INSTANCE;
+                        }
+                )
+                .onMenuItemClicked(itemId->{
+                    switch (itemId) {
+                        case R.id.showHelp:
+                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                            showTutorial(true);
+                            break;
+                        case R.id.deleteTei:
+                            presenter.deleteTei();
+                            break;
+                        case R.id.deleteEnrollment:
+                            presenter.deleteEnrollment();
+                            break;
+                        case R.id.programSelector:
+                            presenter.onEnrollmentSelectorClick();
+                            break;
+                        case R.id.groupEvents:
+                            groupByStage.setValue(true);
+                            break;
+                        case R.id.showTimeline:
+                            groupByStage.setValue(false);
+                            break;
+                        case R.id.complete:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
+                            break;
+                        case R.id.activate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
+                            break;
+                        case R.id.deactivate:
+                            presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
+                            break;
+                    }
+                    return true;
+                })
+                .build().show();
     }
 
     @Override

@@ -89,14 +89,7 @@ class CarouselTeiHolder(
             ) {
                 attributeVisibilityCallback(this)
             }
-            if (tei.geometry() == null) {
-                binding.noCoordinatesLabel.root.visibility = View.VISIBLE
-                binding.noCoordinatesLabel.noCoordinatesMessage.text =
-                    itemView.context.getString(R.string.no_coordinates_item)
-                        .format(teTypeName.toLowerCase(Locale.ROOT))
-            } else {
-                binding.noCoordinatesLabel.root.visibility = View.GONE
-            }
+
             binding.sortingFieldName.text = data.sortingKey
             binding.sortingFieldValue.text = data.sortingValue
         }

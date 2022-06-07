@@ -44,6 +44,7 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.forms.ScanContract
 import org.dhis2.data.location.LocationProvider
+import org.dhis2.data.location.LocationSettingLauncher
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.Injector
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -86,21 +87,21 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
-class FormView(
-    formRepository: FormRepository,
-    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
-    private val locationProvider: LocationProvider?,
-    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
-    private val onFocused: (() -> Unit)?,
-    private val onFinishDataEntry: (() -> Unit)?,
-    private val onActivityForResult: (() -> Unit)?,
-    private val needToForceUpdate: Boolean = false,
-    private val completionListener: ((percentage: Float) -> Unit)?,
-    private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
-    private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
-    dispatchers: DispatcherProvider
-) : Fragment() {
+class FormView : Fragment() {
+
+    private lateinit var formRepository: FormRepository
+    private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+    private var locationProvider: LocationProvider? = null
+    private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
+    private var onFocused: (() -> Unit)? = null
+    private var onFinishDataEntry: (() -> Unit)? = null
+    private var onActivityForResult: (() -> Unit)? = null
+    private var needToForceUpdate: Boolean = false
+    private var completionListener: ((percentage: Float) -> Unit)? = null
+    private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
+    private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+    private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private lateinit var dispatchers: DispatcherProvider
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -283,7 +284,7 @@ class FormView(
             viewLifecycleOwner
         ) { loading ->
             if (onLoadingListener != null) {
-                onLoadingListener.invoke(loading)
+                onLoadingListener?.invoke(loading)
             } else {
                 if (loading) {
                     binding.progress.show()
@@ -327,7 +328,7 @@ class FormView(
             viewLifecycleOwner
         ) { result ->
             if (onDataIntegrityCheck != null) {
-                onDataIntegrityCheck.invoke(result)
+                onDataIntegrityCheck?.invoke(result)
             } else {
                 when (result) {
                     is SuccessfulResult -> onFinishDataEntry?.invoke()
@@ -602,11 +603,7 @@ class FormView(
                 )
             },
             {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.enable_location_message),
-                    Toast.LENGTH_SHORT
-                ).show()
+                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
             }
         )
     }
@@ -821,6 +818,44 @@ class FormView(
 
     fun reload() {
         viewModel.loadData()
+    }
+
+    internal fun setConfiguration(
+        locationProvider: LocationProvider?,
+        needToForceUpdate: Boolean,
+        completionListener: ((percentage: Float) -> Unit)?,
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+    ) {
+        this.locationProvider = locationProvider
+        this.needToForceUpdate = needToForceUpdate
+        this.completionListener = completionListener
+        this.resultDialogUiProvider = resultDialogUiProvider
+    }
+
+    internal fun setFormConfiguration(
+        formRepository: FormRepository,
+        dispatchers: DispatcherProvider
+    ) {
+        this.formRepository = formRepository
+        this.dispatchers = dispatchers
+    }
+
+    internal fun setCallbackConfiguration(
+        onItemChangeListener: ((action: RowAction) -> Unit)?,
+        onLoadingListener: ((loading: Boolean) -> Unit)?,
+        onFocused: (() -> Unit)?,
+        onFinishDataEntry: (() -> Unit)?,
+        onActivityForResult: (() -> Unit)?,
+        onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
+        onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?
+    ) {
+        this.onItemChangeListener = onItemChangeListener
+        this.onLoadingListener = onLoadingListener
+        this.onFocused = onFocused
+        this.onFinishDataEntry = onFinishDataEntry
+        this.onActivityForResult = onActivityForResult
+        this.onDataIntegrityCheck = onDataIntegrityCheck
+        this.onFieldItemsRendered = onFieldItemsRendered
     }
 
     class Builder {

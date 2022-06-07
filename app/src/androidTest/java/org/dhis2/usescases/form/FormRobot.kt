@@ -15,6 +15,7 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -33,6 +34,7 @@ import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.anything
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.not
 
@@ -72,7 +74,10 @@ class FormRobot : BaseRobot() {
     }
 
     private fun selectAction(action: String, position: Int) {
-        onData(instanceOf(MenuItem::class.java)).atPosition(position).perform(click())
+        onData(anything())
+            .inRoot(isPlatformPopup())
+            .atPosition(position)
+            .perform(click())
     }
 
     fun resetToNoAction(label: String, position: Int) {

@@ -54,12 +54,6 @@ class FormTest: BaseTest() {
             checkHiddenSection("Gamma Rules A")
         }
 
-        /*formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
-            checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
-        }*/
-
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_WARNING, SHOW_WARNING_POSITION)
@@ -100,6 +94,19 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_OPTION_GROUP, SHOW_OPTION_POSITION)
             checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
             checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
+        }
+    }
+
+    @Test
+    fun shouldApplyAssignAction(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
+            checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
         }
     }
 

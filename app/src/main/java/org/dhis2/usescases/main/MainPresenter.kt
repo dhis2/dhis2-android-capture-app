@@ -1,6 +1,8 @@
 package org.dhis2.usescases.main
 
 import android.view.Gravity
+import androidx.lifecycle.LiveData
+import androidx.work.WorkInfo
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.filters.FilterManager
@@ -12,7 +14,10 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
+import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.DeleteUserData
+import org.dhis2.utils.Constants
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
@@ -228,5 +233,28 @@ class MainPresenter(
 
     fun setOpeningFilterToNone() {
         filterRepository.collapseAllFilters()
+    }
+
+    fun launchInitialDataSync() {
+        workManagerController
+            .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
+        val workerItem = WorkerItem(
+            Constants.RESERVED,
+            WorkerType.RESERVED,
+            null,
+            null,
+            null,
+            null
+        )
+        workManagerController.cancelAllWorkByTag(workerItem.workerName)
+        workManagerController.syncDataForWorker(workerItem)
+    }
+
+    fun observeDataSync(): LiveData<List<WorkInfo>> {
+        return workManagerController.getWorkInfosForTags(
+            Constants.INITIAL_SYNC,
+            Constants.DATA_NOW,
+            Constants.DATA
+        )
     }
 }

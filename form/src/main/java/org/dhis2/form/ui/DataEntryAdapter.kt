@@ -1,5 +1,7 @@
 package org.dhis2.form.ui
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,19 +14,11 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FormViewHolder.FieldItemCallback
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.android.core.common.ValueType
 
 class DataEntryAdapter(private val searchStyle: Boolean) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
-
-    private val refactoredViews = intArrayOf(
-        R.layout.form_age_custom,
-        R.layout.form_date_time,
-        R.layout.form_scan,
-        R.layout.form_org_unit,
-        R.layout.form_coordinate_custom,
-        R.layout.form_edit_text_custom
-    )
 
     var onIntent: ((intent: FormIntent) -> Unit)? = null
     var onRecyclerViewUiEvents: ((uiEvent: RecyclerViewUiEvents) -> Unit)? = null
@@ -32,9 +26,28 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
     private val sectionHandler = SectionHandler()
     var sectionPositions: MutableMap<String, Int> = LinkedHashMap()
 
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            // Not needed
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            currentList.find { it.focused }?.onTextChange(p0)
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            // Not needed
+        }
+    }
+
+    val coordinateWatcher = LatitudeLongitudeTextWatcher { coordinates ->
+        currentList.find { it.focused && it.valueType == ValueType.COORDINATE }
+            ?.onTextChange(coordinates)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FormViewHolder {
         val layoutInflater =
-            if (refactoredViews.contains(viewType) && searchStyle) {
+            if (searchStyle) {
                 LayoutInflater.from(
                     ContextThemeWrapper(
                         parent.context,
@@ -42,7 +55,12 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
                     )
                 )
             } else {
-                LayoutInflater.from(parent.context)
+                LayoutInflater.from(
+                    ContextThemeWrapper(
+                        parent.context,
+                        R.style.formInputText
+                    )
+                )
             }
         val binding =
             DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
@@ -53,7 +71,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         if (getItem(position) is SectionUiModelImpl) {
             updateSectionData(position, false)
         }
-        holder.bind(getItem(position), this)
+        holder.bind(getItem(position), this, textWatcher, coordinateWatcher)
     }
 
     fun updateSectionData(position: Int, isHeader: Boolean) {

@@ -30,11 +30,14 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.data.server.OpenIdSession;
 import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
+import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.login.accounts.AccountsActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ActivityResultObservable;
@@ -79,15 +82,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     private ActivityResultObserver activityResultObserver;
 
-    public void requestEnableLocation() {
-        displayMessage(getString(R.string.enable_location_message));
-    }
-
     public enum Status {
         ON_PAUSE,
         ON_RESUME
     }
-
 
     public void setScreenName(String name) {
         crashReportController.trackScreenName(name);
@@ -122,12 +120,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         SharedPreferences prefs = getSharedPreferences();
-        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
+        if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity || this instanceof AccountsActivity) {
+            if(serverComponent!=null){
+                serverComponent.themeManager().clearProgramTheme();
+            }
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
-            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity) && !(this instanceof AccountsActivity)) {
+            if(serverComponent!=null) {
+                setTheme(serverComponent.themeManager().getProgramTheme());
+            }else {
+                setTheme(R.style.AppTheme);
+            }
+        }
 
         super.onCreate(savedInstanceState);
     }
@@ -226,29 +232,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-            showTutorial(false);
-            return false;
-        });
-        popupMenu.show();
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.home_menu)
+                .anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(item -> {
+                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                    showTutorial(false);
+                    return false;
+                })
+                .build()
+                .show();
     }
 
     public Context getContext() {

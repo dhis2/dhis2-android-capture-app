@@ -348,9 +348,9 @@ class DataSetTableRepositoryImpl(
                 ) {
                     d2.dataValueModule().dataValues()
                         .value(periodId, orgUnitUid, de.uid(), catOptCombo.uid(), this.catOptCombo)
-                        .blockingGet().value() ?: "?"
+                        .blockingGet().value() ?: "-"
                 } else {
-                    "?"
+                    "-"
                 }
                 val isFromDefaultCatCombo = d2.categoryModule().categoryCombos()
                     .uid(catOptCombo.categoryCombo()?.uid()).blockingGet().isDefault == true

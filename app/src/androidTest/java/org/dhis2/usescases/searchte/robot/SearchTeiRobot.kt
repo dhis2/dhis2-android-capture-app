@@ -87,6 +87,14 @@ class SearchTeiRobot : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<SearchTEViewHolder>(
                     position,
+                    click()
+                )
+            )
+
+        onView(withId(R.id.recyclerView))
+            .perform(
+                actionOnItemAtPosition<SearchTEViewHolder>(
+                    position,
                     typeChildViewWithId(searchWord, R.id.input_editText)
                 )
             )

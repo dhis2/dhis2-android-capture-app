@@ -42,6 +42,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val stagesToHide = mutableListOf<String>()
     private val valuesToChange = mutableMapOf<String, String?>()
 
+    @Synchronized
     override fun applyRuleEffects(
         applyForEvent: Boolean,
         fieldViewModels: MutableMap<String, FieldUiModel>,

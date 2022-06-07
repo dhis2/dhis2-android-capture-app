@@ -2,6 +2,7 @@ package org.dhis2.usescases.settings;
 
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.WorkInfo;
 
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.prefs.PreferenceProvider;
@@ -31,8 +32,12 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
+import static org.dhis2.utils.Constants.DATA_NOW;
+import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
@@ -238,6 +243,38 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void resetFilters() {
         FilterManager.getInstance().clearAllFilters();
+    }
+
+    @Override
+    public void onWorkStatusesUpdate(WorkInfo.State workState,String workerTag) {
+        if(workState!=null){
+            switch (workState){
+                case ENQUEUED:
+                case RUNNING:
+                case BLOCKED:
+                    if(workerTag.equals(META_NOW)){
+                        view.onMetadataSyncInProgress();
+                    }else if(workerTag.equals(DATA_NOW)){
+                        view.onDataSyncInProgress();
+                    }
+                    break;
+                case SUCCEEDED:
+                case FAILED:
+                case CANCELLED:
+                default:
+                    if(workerTag.equals(META_NOW)){
+                        view.onMetadataFinished();
+                    }else if(workerTag.equals(DATA_NOW)){
+                        view.onDataFinished();
+                    }
+            }
+        }else{
+            if(workerTag.equals(META_NOW)){
+                view.onMetadataFinished();
+            }else if(workerTag.equals(DATA_NOW)){
+                view.onDataFinished();
+            }
+        }
     }
 
     @Override

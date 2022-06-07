@@ -72,9 +72,8 @@ class EnrollmentRuleEngineRepository(
 
     override fun calculate(): List<RuleEffect> {
         val attributes = queryAttributes()
-        ruleEnrollmentBuilder.attributeValues(attributes)
         return try {
-            ruleEngine.evaluate(ruleEnrollmentBuilder.build()).call()
+            ruleEngine.evaluate(ruleEnrollmentBuilder.attributeValues(attributes).build()).call()
         } catch (e: Exception) {
             emptyList()
         }

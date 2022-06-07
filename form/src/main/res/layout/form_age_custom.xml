@@ -103,7 +103,7 @@
                     android:layout_weight="2"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/date"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -129,7 +129,7 @@
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_year"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -157,7 +157,7 @@
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_month"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -184,7 +184,7 @@
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:hint="@string/hint_day"
-                    android:theme="@style/loginInputText"
+                    android:theme="@style/formInputText"
                     app:input_layout_style="@{item.style}">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -210,7 +210,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
-                android:textSize="@dimen/textSize_12"
                 android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
                 app:error="@{item.error}"
                 app:input_style="@{item}"

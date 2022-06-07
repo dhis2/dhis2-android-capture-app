@@ -527,6 +527,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
         serverUrl?.let { binding.serverUrlEdit.setText(it) }
         binding.userNameEdit.setText(userName ?: "")
+        loginViewModel.setAccountInfo(serverUrl, userName)
         binding.userPassEdit.text = null
 //        skipSync = wasAccountClicked
         if (wasAccountClicked) {

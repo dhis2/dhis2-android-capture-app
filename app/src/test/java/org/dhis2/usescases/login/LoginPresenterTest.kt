@@ -332,6 +332,6 @@ class LoginPresenterTest {
         whenever(view.isNetworkAvailable()) doReturn true
         loginPresenter.handleResponse(response, "userName", "serverUrl")
         verify(view, times(1)).isNetworkAvailable()
-        verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_SYNC_DONE, false)
+        verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_METADATA_SYNC_DONE, false)
     }
 }

@@ -85,7 +85,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private FragmentSettingsBinding binding;
     private Context context;
 
-    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             presenter.checkData();
@@ -97,7 +97,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
-    private int theme;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -131,25 +130,19 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
-                binding.syncMetaLayout.message.setText(metaText);
-            } else {
-                presenter.checkData();
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
             }
+            presenter.onWorkStatusesUpdate(workState, META_NOW);
             checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
-                binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncDataLayout.message.setText(dataText);
-                dataWorkRunning = true;
-            } else {
-                dataWorkRunning = false;
-                presenter.checkData();
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
             }
+            presenter.onWorkStatusesUpdate(workState, DATA_NOW);
             checkSyncDataButtonStatus();
         });
         presenter.init();
@@ -841,6 +834,32 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void displaySmsEnableError() {
         binding.settingsSms.settingsSmsSwitch.setChecked(false);
+    }
+
+    @Override
+    public void onMetadataSyncInProgress() {
+        binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+        binding.syncMetaLayout.message.setText(metaText);
+    }
+
+    @Override
+    public void onMetadataFinished() {
+        presenter.checkData();
+    }
+
+    @Override
+    public void onDataSyncInProgress() {
+        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+        binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        binding.syncDataLayout.message.setText(dataText);
+        dataWorkRunning = true;
+    }
+
+    @Override
+    public void onDataFinished() {
+        dataWorkRunning = false;
+        presenter.checkData();
     }
 
     private void checkSyncDataButtonStatus() {

@@ -17,13 +17,7 @@ class LocaleSelector(private val base: Context, private val d2: D2) {
     private val configuration: Configuration = resources.configuration
 
     fun updateUiLanguage(): ContextWrapper {
-        val context = if (hasLanguageChanged()) {
-            changeToUserLanguage(base)
-        } else {
-            base
-        }
-
-        return ContextWrapper(context)
+        return ContextWrapper(changeToUserLanguage(base))
     }
 
     fun overrideUserLanguage(locale: Locale) {
