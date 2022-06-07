@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -112,6 +113,7 @@ class MainTest : BaseTest() {
     }
 
     private fun startActivity() {
-        rule.launchActivity(null)
+        val intent = Intent().putExtra(AVOID_SYNC, true)
+        rule.launchActivity(intent)
     }
 }

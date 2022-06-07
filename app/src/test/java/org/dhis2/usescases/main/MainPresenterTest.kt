@@ -26,6 +26,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
@@ -52,6 +53,7 @@ class MainPresenterTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
+    private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
 
     @Rule
     @JvmField
@@ -70,7 +72,8 @@ class MainPresenterTest {
                 filterRepository,
                 matomoAnalyticsController,
                 userManager,
-                deleteUserData
+                deleteUserData,
+                syncIsPerfomedInteractor
             )
     }
 

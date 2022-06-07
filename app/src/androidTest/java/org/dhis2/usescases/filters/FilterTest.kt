@@ -1,11 +1,13 @@
 package org.dhis2.usescases.filters
 
+import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.form.formRobot
+import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -167,9 +169,8 @@ class FilterTest: BaseTest() {
         cleanLocalDatabase()
     }
 
-
-
     private fun startActivity() {
-        rule.launchActivity(null)
+        val intent = Intent().putExtra(AVOID_SYNC, true)
+        rule.launchActivity(intent)
     }
 }

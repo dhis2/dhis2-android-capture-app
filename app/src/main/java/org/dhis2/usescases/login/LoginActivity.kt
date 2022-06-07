@@ -401,9 +401,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun saveUsersData() {
+    override fun saveUsersData(isInitialSyncDone: Boolean) {
         (context.applicationContext as App).createUserComponent()
-
+        skipSync = isInitialSyncDone
         if (!presenter.areSameCredentials(
             binding.serverUrlEdit.text.toString(),
             binding.userNameEdit.text.toString(),

@@ -9,7 +9,6 @@ import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -53,12 +52,14 @@ class LoginPresenter(
 ) {
 
     private var userManager: UserManager? = null
+    private lateinit var syncIsPerformedInteractor: SyncIsPerformedInteractor
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
 
     fun init(userManager: UserManager?) {
         this.userManager = userManager
+        syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
         this.userManager?.let {
             disposable.add(
                 it.isUserLoggedIn
@@ -313,12 +314,10 @@ class LoginPresenter(
     @VisibleForTesting
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
+
         if (userResponse.isSuccessful) {
             trackServerVersion()
-            if (view.isNetworkAvailable()) {
-                preferenceProvider.setValue(Preference.INITIAL_METADATA_SYNC_DONE, false)
-            }
-
+            val isInitialSyncDone = syncIsPerformedInteractor.execute()
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
                 updatedServer.add(server)
@@ -331,7 +330,7 @@ class LoginPresenter(
             preferenceProvider.setValue(PREFS_URLS, updatedServer)
             preferenceProvider.setValue(PREFS_USERS, updatedUsers)
 
-            view.saveUsersData()
+            view.saveUsersData(isInitialSyncDone)
         }
     }
 

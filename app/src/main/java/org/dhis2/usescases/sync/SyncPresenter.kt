@@ -12,6 +12,8 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.Constants
 import timber.log.Timber
 
+const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
+
 class SyncPresenter internal constructor(
     private val view: SyncView,
     private val userManager: UserManager?,

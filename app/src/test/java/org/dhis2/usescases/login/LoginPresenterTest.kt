@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
@@ -323,15 +322,35 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should clear INITIAL_SYNC_DONE preference if network is available`() {
+    fun `Should handle successfull response`() {
         val response = Response.success(
             User.builder()
                 .uid("userUid")
                 .build()
         )
-        whenever(view.isNetworkAvailable()) doReturn true
+        loginPresenter.setUserManager(userManager)
+
+        whenever(userManager.d2) doReturn mock()
+        whenever(userManager.d2.systemInfoModule()) doReturn mock()
+        whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
+        whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet()) doReturn mock()
+        whenever(
+            userManager.d2.systemInfoModule().systemInfo().blockingGet().version()
+        ) doReturn "1234"
+
+        whenever(userManager.d2.dataStoreModule()) doReturn mock()
+        whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
+        whenever(
+            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+        ) doReturn mock()
+        whenever(
+            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+                .blockingExists()
+        ) doReturn false
+
+        loginPresenter.init(userManager)
         loginPresenter.handleResponse(response, "userName", "serverUrl")
-        verify(view, times(1)).isNetworkAvailable()
-        verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_METADATA_SYNC_DONE, false)
+
+        verify(view).saveUsersData(false)
     }
 }

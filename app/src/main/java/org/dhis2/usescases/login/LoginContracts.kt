@@ -21,7 +21,7 @@ class LoginContracts {
         fun setAutocompleteAdapters()
 
         @UiThread
-        fun saveUsersData()
+        fun saveUsersData(isInitialSyncDone: Boolean)
 
         fun handleLogout()
 
