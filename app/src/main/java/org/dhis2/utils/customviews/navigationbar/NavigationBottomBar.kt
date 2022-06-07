@@ -249,8 +249,8 @@ class NavigationBottomBar @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        setCurrentItemIndicatorPosition(
-            findViewById(currentItemId)
-        )
+        findViewById<View>(currentItemId)?.let {
+            setCurrentItemIndicatorPosition(it)
+        }
     }
 }
