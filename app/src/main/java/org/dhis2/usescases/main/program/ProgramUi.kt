@@ -166,7 +166,7 @@ fun ProgramItem(
         }
         when (programViewModel.downloadState) {
             ProgramDownloadState.DOWNLOADING -> DownloadingProgress()
-            ProgramDownloadState.DOWNLOADED -> DownloadedIcon()
+            ProgramDownloadState.DOWNLOADED -> DownloadedIcon(programViewModel)
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
@@ -210,8 +210,8 @@ fun DownloadingProgress() {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun DownloadedIcon() {
-    val visible = visibility()
+fun DownloadedIcon(programViewModel: ProgramViewModel) {
+    val visible = visibility(programViewModel)
     AnimatedVisibility(
         visible = visible,
         enter = expandIn(
@@ -225,7 +225,7 @@ fun DownloadedIcon() {
         exit = shrinkOut(shrinkTowards = Alignment.Center)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_status_synced),
+            painter = painterResource(id = R.drawable.ic_download_done),
             contentDescription = "downloaded",
             tint = Color.Unspecified
         )
@@ -233,11 +233,14 @@ fun DownloadedIcon() {
 }
 
 @Composable
-fun visibility(): Boolean {
-    var visible by remember { mutableStateOf(true) }
+fun visibility(viewModel: ProgramViewModel): Boolean {
+    var visible by remember { mutableStateOf(!viewModel.hasShowCompleteSyncAnimation()) }
     DisposableEffect(Unit) {
         val handler = Handler(Looper.getMainLooper())
-        val runnable = { visible = false }
+        val runnable = {
+            visible = false
+            viewModel.setCompleteSyncAnimation()
+        }
         handler.postDelayed(runnable, 3000)
         onDispose { handler.removeCallbacks(runnable) }
     }

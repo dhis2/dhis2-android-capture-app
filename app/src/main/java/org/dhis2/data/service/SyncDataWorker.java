@@ -120,6 +120,8 @@ public class SyncDataWorker extends Worker {
                 false,
                 false);
 
+        syncController.finishSync();
+
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 "Syncing resources",

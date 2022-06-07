@@ -21,4 +21,14 @@ class SyncStatusController {
             )
         )
     }
+
+    fun finishSync() {
+        downloadStatus.postValue(
+            downloadStatus.value?.copy(
+                trackerGlobalSyncStatus = false,
+                eventGlobalSyncStatus = false,
+                dataSetGlobalSyncStatus = false
+            )
+        )
+    }
 }

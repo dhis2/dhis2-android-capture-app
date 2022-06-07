@@ -19,6 +19,14 @@ data class ProgramViewModel(
     val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState
 ) {
+    private var hasShownCompleteSyncAnimation = false
+
+    fun setCompleteSyncAnimation() {
+        hasShownCompleteSyncAnimation = true
+    }
+
+    fun hasShowCompleteSyncAnimation() = hasShownCompleteSyncAnimation
+
     fun translucent(): Boolean {
         return (filtersAreActive && count == 0) || downloadState == ProgramDownloadState.DOWNLOADING
     }
