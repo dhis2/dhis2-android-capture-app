@@ -36,6 +36,7 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
+import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
@@ -268,6 +269,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
+        DetailsButtonKt.setButtonContent(
+                binding.cardFront.detailsButton,
+                activity.presenter.getTEType(),
+                () -> {
+                    presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
+                    return Unit.INSTANCE;
+                }
+        );
+
         binding.executePendingBindings();
 
         if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
@@ -494,11 +504,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void seeDetails(Intent intent, Bundle bundle) {
         this.startActivityForResult(intent, REQ_DETAILS, bundle);
-    }
-
-    @Override
-    public void showQR(Intent intent) {
-        startActivity(intent);
     }
 
     @Override

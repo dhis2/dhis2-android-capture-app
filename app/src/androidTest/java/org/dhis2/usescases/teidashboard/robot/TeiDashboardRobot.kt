@@ -194,7 +194,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnShareButton() {
-        onView(withId(R.id.shareContainer)).perform(click())
+        onView(withText(R.string.share)).perform(click())
     }
 
     fun clickOnNextQR() {
@@ -220,7 +220,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.viewMore)).perform(click())
+        onView(withId(R.id.detailsButton)).perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {

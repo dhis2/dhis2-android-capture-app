@@ -905,4 +905,6 @@
     <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
     <string name="customactivityoncrash_error_activity_device">Device: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
+    <string name="open_details">Open %s details</string>
+
 </resources>

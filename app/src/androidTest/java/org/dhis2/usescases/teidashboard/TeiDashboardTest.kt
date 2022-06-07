@@ -134,6 +134,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
+            clickOnMenuMoreOptions()
             clickOnShareButton()
             clickOnNextQR()
         }
