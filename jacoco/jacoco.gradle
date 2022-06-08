@@ -83,8 +83,10 @@ def setupAndroidReporting() {
                         '**/*Contract*.*',
                         '**/*Bindings*.*',
                         '**/AutoValue*.*',
-                        '**/*new Function*',
-                        '**/*Navigator.*'
+                        '**/*$*',
+                        '**/*Navigator.*',
+                        '**/*$*$*.*',
+                        '**/animations/*.*'
                 ]
 
                 def javaTree = fileTree(dir: "${project.buildDir}/intermediates/javac/$sourceName/classes", excludes: fileFilter)
