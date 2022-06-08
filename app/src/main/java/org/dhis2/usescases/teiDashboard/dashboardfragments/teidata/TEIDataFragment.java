@@ -23,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -310,7 +311,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
+    public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram);
             adapter.setEnrollment(currentEnrollment);

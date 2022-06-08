@@ -22,7 +22,8 @@ interface TeiDataRepository {
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
+        showOptions: Boolean
     ): Single<List<EventViewModel>>
 
     fun getEnrollment(): Single<Enrollment>

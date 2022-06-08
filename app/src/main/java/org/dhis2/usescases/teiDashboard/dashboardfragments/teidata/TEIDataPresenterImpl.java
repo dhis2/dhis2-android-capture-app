@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -150,19 +151,14 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         if (programUid != null) {
 
-            Flowable<String> sectionFlowable = view.observeStageSelection(
+            Flowable<StageSection> sectionFlowable = view.observeStageSelection(
                     d2.programModule().programs().uid(programUid).blockingGet(),
                     d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
             )
-                    .startWith("")
+                    .startWith(new StageSection("", false))
                     .map(selectedStage -> {
-                        if (!selectedStage.equals(currentStage)) {
-                            currentStage = selectedStage;
-                            return selectedStage;
-                        } else {
-                            currentStage = "";
-                            return "";
-                        }
+                        currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
+                        return new StageSection(currentStage, selectedStage.getShowOptions());
                     });
             Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
                     getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
@@ -178,7 +174,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
-                                                    stageAndGrouping.val1().isEmpty() ? null : stageAndGrouping.val1(),
+                                                    stageAndGrouping.val1().getStageUid().isEmpty() ? null : stageAndGrouping.val1().getStageUid(),
                                                     stageAndGrouping.val2(),
                                                     filterManager.getPeriodFilters(),
                                                     filterManager.getOrgUnitUidsFilters(),
@@ -186,7 +182,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                                     filterManager.getAssignedFilter(),
                                                     filterManager.getEventStatusFilters(),
                                                     filterManager.getCatOptComboFilters(),
-                                                    filterManager.getSortingItem()
+                                                    filterManager.getSortingItem(),
+                                                    stageAndGrouping.val1().getShowOptions()
                                             ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
@@ -447,7 +444,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
-        currentStage = "";
         view.showNewEventOptions(anchor, stage);
         if (stage.hideDueDate() != null && stage.hideDueDate()) {
             view.hideDueDate();

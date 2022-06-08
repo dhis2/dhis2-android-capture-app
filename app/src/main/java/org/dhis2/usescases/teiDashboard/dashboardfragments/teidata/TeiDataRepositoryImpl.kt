@@ -42,7 +42,8 @@ class TeiDataRepositoryImpl(
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>,
-        sortingItem: SortingItem?
+        sortingItem: SortingItem?,
+        showOptions: Boolean
     ): Single<List<EventViewModel>> {
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
@@ -60,7 +61,7 @@ class TeiDataRepositoryImpl(
         )
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage, sortingItem)
+            getGroupedEvents(eventRepo, selectedStage, showOptions, sortingItem)
         } else {
             getTimelineEvents(eventRepo, sortingItem)
         }
@@ -94,6 +95,7 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: String?,
+        showOptions: Boolean,
         sortingItem: SortingItem?
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
@@ -128,6 +130,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
+                            showOptions && isSelected,
                             canAddEventToEnrollment,
                             orgUnitName = "",
                             catComboName = "",
@@ -147,6 +150,7 @@ class TeiDataRepositoryImpl(
                                     event,
                                     0,
                                     null,
+                                    isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = d2.organisationUnitModule().organisationUnits()
                                         .uid(event.organisationUnit()).blockingGet().displayName()
@@ -198,6 +202,7 @@ class TeiDataRepositoryImpl(
                             event,
                             0,
                             null,
+                            isSelected = true,
                             canAddNewEvent = true,
                             orgUnitName = d2.organisationUnitModule().organisationUnits()
                                 .uid(event.organisationUnit()).blockingGet().displayName()

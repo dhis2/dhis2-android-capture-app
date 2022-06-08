@@ -41,6 +41,7 @@ class ProgramEventMapper @Inject constructor(
             event,
             0,
             event.lastUpdated(),
+            isSelected = false,
             canAddNewEvent = true,
             orgUnitName = d2.organisationUnitModule().organisationUnits()
                 .uid(event.organisationUnit())
