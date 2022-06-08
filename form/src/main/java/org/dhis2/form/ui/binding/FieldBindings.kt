@@ -97,6 +97,22 @@ fun TextView.setInputStyle(styleItem: FieldUiModel?) {
             )
         }
     }
+
+    styleItem?.style?.let {
+        it.getColors()[FormUiColorType.FIELD_LABEL_TEXT]?.let { color ->
+            val colorStateList = ColorStateList(
+                arrayOf(
+                    intArrayOf(android.R.attr.state_focused),
+                    intArrayOf(-android.R.attr.state_focused)
+                ),
+                intArrayOf(
+                    color,
+                    color
+                )
+            )
+            setHintTextColor(colorStateList)
+        }
+    }
 }
 
 @BindingAdapter("input_layout_style")
