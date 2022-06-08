@@ -183,6 +183,14 @@ fun ProgramItem(
                 onGranularSyncClick(programViewModel)
             }
         }
+
+        if (programViewModel.hasOverdueEvent) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_overdue),
+                contentDescription = "Overdue",
+                tint = Color.Unspecified
+            )
+        }
     }
 }
 
