@@ -27,10 +27,14 @@ plugins {
 
 sonarqube {
     properties {
+        def branch = System.getenv("BITRISE_GIT_BRANCH")
+        def targetBranch = System.getenv("BITRISEIO_GIT_BRANCH_DEST")
         property "sonar.projectKey", "dhis2_dhis2-android-capture-app"
         property "sonar.organization", "dhis2"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.projectName", "android capture app"
+        property "sonar.branch.name", branch
+        property "sonar.branch.target", targetBranch
     }
 }
 
