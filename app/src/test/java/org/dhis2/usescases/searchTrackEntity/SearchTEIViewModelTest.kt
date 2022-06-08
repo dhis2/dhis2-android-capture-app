@@ -482,6 +482,20 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return no more results for global search when filter do not apply for it`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn false
+        performSearch()
+        viewModel.onDataLoaded(1, 1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,
