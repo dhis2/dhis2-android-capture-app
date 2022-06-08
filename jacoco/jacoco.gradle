@@ -77,7 +77,10 @@ def setupAndroidReporting() {
                         '**/customviews/*.*',
                         '**/ui/*.class',
                         '**/*Activity.*',
+                        '**/Activity*.*',
+                        '**/*Activity*.*',
                         '**/*Fragment.*',
+                        '**/Fragment*.*',
                         '**/*View.*',
                         '**/*Adapter.*',
                         '**/*Contract*.*',
@@ -86,7 +89,13 @@ def setupAndroidReporting() {
                         '**/*$*',
                         '**/*Navigator.*',
                         '**/*$*$*.*',
-                        '**/animations/*.*'
+                        '**/animations/*.*',
+                        '**/*Holder*.*',
+                        '**/*Dialog*.*',
+                        '**/*Service*.*',
+                        '**/*Button*.*',
+                        '**/SearchTEList.*',
+                        '**/lambda$*$*.*'
                 ]
 
                 def javaTree = fileTree(dir: "${project.buildDir}/intermediates/javac/$sourceName/classes", excludes: fileFilter)
