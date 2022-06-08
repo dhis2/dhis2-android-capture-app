@@ -25,7 +25,7 @@ class ProgramPresenter internal constructor(
 ) {
 
     private val programs = MutableLiveData<List<ProgramViewModel>>(emptyList())
-
+    private val refreshData = PublishProcessor.create<Unit>()
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
@@ -34,9 +34,11 @@ class ProgramPresenter internal constructor(
         disposable.add(
             applyFiler
                 .switchMap {
-                    programRepository.homeItems(
-                        syncStatusController.observeDownloadProcess().value!!
-                    )
+                    refreshData.startWith(Unit).flatMap {
+                        programRepository.homeItems(
+                            syncStatusController.observeDownloadProcess().value!!
+                        )
+                    }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -122,6 +124,6 @@ class ProgramPresenter internal constructor(
     fun downloadState() = syncStatusController.observeDownloadProcess()
 
     fun setIsDownloading() {
-        filterManager.publishData()
+        refreshData.onNext(Unit)
     }
 }

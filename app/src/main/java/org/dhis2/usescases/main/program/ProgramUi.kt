@@ -157,19 +157,21 @@ fun ProgramItem(
                 )
             )
         }
-        if (programViewModel.hasOverdueEvent) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_overdue),
-                contentDescription = "Overdue",
-                tint = Color.Unspecified
-            )
-        }
+
         when (programViewModel.downloadState) {
             ProgramDownloadState.DOWNLOADING -> DownloadingProgress()
             ProgramDownloadState.DOWNLOADED -> DownloadedIcon(programViewModel)
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
+        }
+
+        if (programViewModel.hasOverdueEvent) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_overdue),
+                contentDescription = "Overdue",
+                tint = Color.Unspecified
+            )
         }
     }
 }
