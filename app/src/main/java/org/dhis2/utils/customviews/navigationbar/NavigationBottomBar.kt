@@ -246,4 +246,11 @@ class NavigationBottomBar @JvmOverloads constructor(
         }
         return visibleMenuItems
     }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        findViewById<View>(currentItemId)?.let {
+            setCurrentItemIndicatorPosition(it)
+        }
+    }
 }
