@@ -174,7 +174,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
-                                                    stageAndGrouping.val1().getStageUid().isEmpty() ? null : stageAndGrouping.val1().getStageUid(),
+                                                    stageAndGrouping.val1(),
                                                     stageAndGrouping.val2(),
                                                     filterManager.getPeriodFilters(),
                                                     filterManager.getOrgUnitUidsFilters(),
@@ -182,8 +182,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                                     filterManager.getAssignedFilter(),
                                                     filterManager.getEventStatusFilters(),
                                                     filterManager.getCatOptComboFilters(),
-                                                    filterManager.getSortingItem(),
-                                                    stageAndGrouping.val1().getShowOptions()
+                                                    filterManager.getSortingItem()
                                             ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),

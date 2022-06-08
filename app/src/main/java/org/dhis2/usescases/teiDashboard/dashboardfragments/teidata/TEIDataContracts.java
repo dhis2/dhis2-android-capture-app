@@ -26,7 +26,6 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
-import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
