@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
+
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
@@ -33,6 +36,22 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        dhis {
+
+        }
+
+        dhisNoSMS {
+
+        }
+
+        dhisUITesting {
+
+        }
     }
 
     buildFeatures {
