@@ -71,4 +71,6 @@ public interface SearchRepository {
     void setCurrentTheme(@org.jetbrains.annotations.Nullable Program selectedProgram);
 
     List<String> trackedEntityTypeFields();
+
+    boolean filtersApplyOnGlobalSearch();
 }

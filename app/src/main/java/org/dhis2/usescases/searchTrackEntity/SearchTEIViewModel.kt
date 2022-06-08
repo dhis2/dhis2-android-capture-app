@@ -9,7 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.data.SearchTeiModel
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.search.SearchParametersModel
@@ -448,7 +447,7 @@ class SearchTEIViewModel(
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
                 searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
-                filtersApplyOnGlobalSearch() -> {
+                searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -459,7 +458,7 @@ class SearchTEIViewModel(
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
                 searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                filtersApplyOnGlobalSearch() -> {
+                searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -480,9 +479,7 @@ class SearchTEIViewModel(
         _dataResult.value = result
     }
 
-    fun filtersApplyOnGlobalSearch(): Boolean = with(FilterManager.getInstance()) {
-        return totalFilters == 0 || orgUnitFilters.isNotEmpty() || stateFilters.isNotEmpty()
-    }
+    fun filtersApplyOnGlobalSearch(): Boolean = searchRepository.filtersApplyOnGlobalSearch()
 
     private fun handleInitWithoutData() {
         val result = when (searchRepository.canCreateInProgramWithoutSearch()) {

@@ -53,6 +53,7 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram())
         whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
         whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
