@@ -34,7 +34,7 @@ sonarqube {
         property "sonar.organization", "dhis2"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.projectName", "android capture app"
-        if (pullRequestId.isEmpty()) {
+        if (pullRequestId == null) {
             property "sonar.branch.name", branch
             property "sonar.branch.target", targetBranch
         } else {
