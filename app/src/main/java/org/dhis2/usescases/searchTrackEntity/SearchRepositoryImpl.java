@@ -9,6 +9,8 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
+
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
@@ -591,6 +593,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
         return attrNames;
+    }
+
+    @Override
+    public boolean filtersApplyOnGlobalSearch() {
+        return FilterManager.getInstance().getTotalFilters() == 0 ||
+        !FilterManager.getInstance().getOrgUnitFilters().isEmpty() ||
+        !FilterManager.getInstance().getStateFilters().isEmpty();
     }
 
     @Override

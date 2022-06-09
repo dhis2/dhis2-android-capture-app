@@ -262,7 +262,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun restoreAdapters() {
         initLoading(null)
         liveAdapter.clearList()
-        if (viewModel.filtersActive.value != true) {
+        if (!viewModel.filtersApplyOnGlobalSearch()) {
             globalAdapter.clearList()
         } else if (globalAdapter.itemCount > 0) {
             initGlobalData()
