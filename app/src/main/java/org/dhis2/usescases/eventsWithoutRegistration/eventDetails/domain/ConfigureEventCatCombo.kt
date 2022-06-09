@@ -97,9 +97,11 @@ class ConfigureEventCatCombo(
     }
 
     private fun getTest() {
+        val number: String? = null
         selectedCategoryOptions.forEach { _ ->
             Timber.d("Test")
         }
+        number!!.toInt()
     }
 
     private fun getCategoryOptions(): Map<String, CategoryOption>? {
