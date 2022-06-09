@@ -86,6 +86,7 @@ class ConfigureEventCatCombo(
     }
 
     private fun getCategories(categories: MutableList<Category>?): List<EventCategory> {
+        getTest()
         return categories?.map { category ->
             EventCategory(
                 uid = category.uid(),
