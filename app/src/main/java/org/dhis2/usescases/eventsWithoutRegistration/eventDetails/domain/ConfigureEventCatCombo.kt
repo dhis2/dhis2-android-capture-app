@@ -8,6 +8,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryOption
+import timber.log.Timber
 
 class ConfigureEventCatCombo(
     val repository: EventDetailsRepository
@@ -85,6 +86,7 @@ class ConfigureEventCatCombo(
     }
 
     private fun getCategories(categories: MutableList<Category>?): List<EventCategory> {
+        getTest()
         return categories?.map { category ->
             EventCategory(
                 uid = category.uid(),
@@ -93,6 +95,12 @@ class ConfigureEventCatCombo(
                 options = repository.getCategoryOptions(category.uid())
             )
         } ?: emptyList()
+    }
+
+    private fun getTest() {
+        selectedCategoryOptions.forEach { _ ->
+            Timber.d("Test")
+        }
     }
 
     private fun getCategoryOptions(): Map<String, CategoryOption>? {
