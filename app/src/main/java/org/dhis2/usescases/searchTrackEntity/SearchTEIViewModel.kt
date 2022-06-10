@@ -19,7 +19,6 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
-import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
@@ -538,7 +537,7 @@ class SearchTEIViewModel(
 
     fun onProgramSelected(
         programIndex: Int,
-        programs: List<Program>,
+        programs: List<ProgramSpinnerModel>,
         onProgramChanged: (selectedProgramUid: String?) -> Unit
     ) {
         val selectedProgram = when {
@@ -549,8 +548,8 @@ class SearchTEIViewModel(
         }
         searchRepository.setCurrentTheme(selectedProgram)
 
-        if (selectedProgram?.uid() != initialProgramUid) {
-            onProgramChanged(selectedProgram?.uid())
+        if (selectedProgram?.uid != initialProgramUid) {
+            onProgramChanged(selectedProgram?.uid)
         }
     }
 

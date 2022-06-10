@@ -561,9 +561,9 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public void setCurrentTheme(@Nullable Program selectedProgram) {
+    public void setCurrentTheme(@Nullable ProgramSpinnerModel selectedProgram) {
         if (selectedProgram != null) {
-            themeManager.setProgramTheme(selectedProgram.uid());
+            themeManager.setProgramTheme(selectedProgram.getUid());
         } else {
             themeManager.setTrackedEntityTypeTheme(teiType);
         }

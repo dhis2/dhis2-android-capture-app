@@ -461,8 +461,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setPrograms(List<Program> programs) {
-        binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programs, presenter.getTrackedEntityName().displayName()));
+    public void setPrograms(List<ProgramSpinnerModel> programs) {
+        binding.programSpinner.setAdapter(new ProgramAdapter(this,
+                R.layout.spinner_program_layout,
+                R.id.spinner_text,
+                programs,
+                presenter.getTrackedEntityName().displayName()));
         if (initialProgram != null && !initialProgram.isEmpty())
             setInitialProgram(programs);
         else
@@ -490,9 +494,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         syncDialog.show(getSupportFragmentManager(), "TEI_SYNC");
     }
 
-    private void setInitialProgram(List<Program> programs) {
+    private void setInitialProgram(List<ProgramSpinnerModel> programs) {
         for (int i = 0; i < programs.size(); i++) {
-            if (programs.get(i).uid().equals(initialProgram)) {
+            if (programs.get(i).getUid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
             }
         }

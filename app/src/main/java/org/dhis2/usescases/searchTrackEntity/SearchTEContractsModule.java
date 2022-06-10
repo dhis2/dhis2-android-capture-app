@@ -33,7 +33,7 @@ public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setPrograms(List<Program> programModels);
+        void setPrograms(List<ProgramSpinnerModel> programModels);
 
         void clearList(String uid);
 
