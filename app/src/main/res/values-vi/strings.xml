@@ -884,4 +884,12 @@
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
     <string name="search_unable_search_outside">Để tìm kiếm bên ngoài chương trình này, mở biểu tìm kiếm và điền một trong những trường %ssau:</string>
-    </resources>
+    <string name="enrollment_org_unit">Đơn vị đăng ký</string>
+    <string name="customactivityoncrash_error_activity_build_version">Phiên bản cài đặt: %s</string>
+    <string name="customactivityoncrash_error_activity_buid_date">Ngày cài đặt: %s</string>
+    <string name="customactivityoncrash_error_activity_current_date">Ngày hiện tại: %s</string>
+    <string name="customactivityoncrash_error_activity_device">Thiết bị: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Phiên bản hệ điều hành: %s</string>
+    <string name="open_details">Mở chi tiết %s</string>
+
+</resources>
