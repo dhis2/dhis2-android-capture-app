@@ -176,9 +176,7 @@ class FormView : Fragment() {
             }
         }
 
-    private val viewModel: FormViewModel by viewModels {
-        Injector.provideFormViewModelFactory(formRepository, dispatchers)
-    }
+    private lateinit var viewModel: FormViewModel
 
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
@@ -219,6 +217,7 @@ class FormView : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
