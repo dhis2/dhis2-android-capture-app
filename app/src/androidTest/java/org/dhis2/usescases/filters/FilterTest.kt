@@ -43,9 +43,9 @@ class FilterTest: BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(4,"Child Programme", "3")
-            checkItemsInProgram(6, "Contraceptives Voucher Program", "5")
-            checkItemsInProgram(27, "Mortality < 5 years", "4")
+            checkItemsInProgram(composeTestRule,3,"Child Programme", "3")
+            checkItemsInProgram(composeTestRule,5, "Contraceptives Voucher Program", "5")
+            checkItemsInProgram(composeTestRule,26, "Mortality < 5 years", "4")
         }
         cleanLocalDatabase()
     }
@@ -67,9 +67,9 @@ class FilterTest: BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(4,"Child Programme", "0")
-            checkItemsInProgram(43, "XX TEST EVENT FULL", "2")
-            checkItemsInProgram(45, "XX TEST TRACKER PROGRAM", "4")
+            checkItemsInProgram(composeTestRule,3,"Child Programme", "0")
+            checkItemsInProgram(composeTestRule,41, "XX TEST EVENT FULL", "2")
+            checkItemsInProgram(composeTestRule,43, "XX TEST TRACKER PROGRAM", "4")
         }
         cleanLocalDatabase()
     }
@@ -91,9 +91,9 @@ class FilterTest: BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(4,"Child Programme", "0")
-            checkItemsInProgram(43, "XX TEST EVENT FULL", "2")
-            checkItemsInProgram(45, "XX TEST TRACKER PROGRAM", "4")
+            checkItemsInProgram(composeTestRule,3,"Child Programme", "0")
+            checkItemsInProgram(composeTestRule,41, "XX TEST EVENT FULL", "2")
+            checkItemsInProgram(composeTestRule,43, "XX TEST TRACKER PROGRAM", "4")
         }
         cleanLocalDatabase()
     }
@@ -104,7 +104,7 @@ class FilterTest: BaseTest() {
         startActivity()
 
         homeRobot {
-            openProgramByPosition(0)
+            openProgramByPosition(composeTestRule,0)
         }
         eventWithoutRegistrationRobot {
             clickOnEventAtPosition(0)
@@ -123,8 +123,8 @@ class FilterTest: BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(0,"Antenatal care visit", "1")
-            checkItemsInProgram(4,"Child Programme", "0")
+            checkItemsInProgram(composeTestRule,0,"Antenatal care visit", "1")
+            checkItemsInProgram(composeTestRule,3,"Child Programme", "0")
         }
         cleanLocalDatabase()
     }
@@ -136,7 +136,7 @@ class FilterTest: BaseTest() {
         startActivity()
 
         homeRobot {
-            openProgramByPosition(41)
+            openProgramByPosition(composeTestRule,41)
         }
         eventWithoutRegistrationRobot {
             clickOnEventAtPosition(0)
@@ -161,9 +161,9 @@ class FilterTest: BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(37,"TB program", "0")
+            checkItemsInProgram(composeTestRule,37,"TB program", "0")
             waitToDebounce(700)
-            checkItemsInProgram(41, "XX TEST EVENT FULL", "1")
+            checkItemsInProgram(composeTestRule,41, "XX TEST EVENT FULL", "1")
             waitToDebounce(700)
         }
         cleanLocalDatabase()

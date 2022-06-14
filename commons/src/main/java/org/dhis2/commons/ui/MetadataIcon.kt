@@ -22,10 +22,11 @@ import org.dhis2.commons.resources.ColorUtils
 
 @Composable
 fun MetadataIcon(
+    modifier: Modifier = Modifier,
     metadataIconData: MetadataIconData
 ) {
     Image(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .background(color = Color(metadataIconData.programColor))
             .size(metadataIconData.sizeInDp.dp),
@@ -46,7 +47,7 @@ fun ComposeView.setUpMetadataIcon(
     }
     setContent {
         MdcTheme {
-            MetadataIcon(metadataIconData)
+            MetadataIcon(metadataIconData = metadataIconData)
         }
     }
 }
@@ -62,7 +63,7 @@ fun ComposeView.handleComposeDispose(){
 fun MetadataIconPreview(
     @PreviewParameter(MetadataIconDataParamProvider::class) metadataIconData: MetadataIconData
 ) {
-    MetadataIcon(metadataIconData)
+    MetadataIcon(metadataIconData = metadataIconData)
 }
 
 class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData> {

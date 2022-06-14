@@ -199,13 +199,14 @@ class MainActivity :
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
+            } else if (it.firstOrNull()?.state == WorkInfo.State.RUNNING) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
             }
         }
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
-            setFilterButtonVisibility(false)
-            setBottomNavigationVisibility(false)
         }
     }
 

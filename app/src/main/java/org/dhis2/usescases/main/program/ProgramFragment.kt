@@ -4,15 +4,18 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DividerItemDecoration
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
@@ -46,9 +49,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     lateinit var presenter: ProgramPresenter
 
     @Inject
-    lateinit var adapter: ProgramModelAdapter
-
-    @Inject
     lateinit var animation: ProgramAnimation
 
     // -------------------------------------------
@@ -73,15 +73,32 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         return binding.apply {
             presenter = this@ProgramFragment.presenter
             drawerLayout.clipWithRoundedCorners(16.dp)
-            programRecycler.itemAnimator = null
-            programRecycler.adapter = adapter
-            programRecycler.addItemDecoration(
-                DividerItemDecoration(
-                    context,
-                    DividerItemDecoration.VERTICAL
-                )
-            )
+            initList()
+        }.also {
+            presenter.downloadState().observe(viewLifecycleOwner) {
+                presenter.setIsDownloading()
+            }
         }.root
+    }
+
+    private fun initList() {
+        binding.programList.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                val items by presenter.programs().observeAsState(emptyList())
+                ProgramList(
+                    programs = items,
+                    onItemClick = {
+                        presenter.onItemClick(it)
+                    },
+                    onGranularSyncClick = {
+                        showSyncDialog(it)
+                    }
+                )
+            }
+        }
     }
 
     override fun onResume() {
@@ -105,7 +122,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun swapProgramModelData(programs: List<ProgramViewModel>) {
         binding.progressLayout.visibility = View.GONE
         binding.emptyView.visibility = if (programs.isEmpty()) View.VISIBLE else View.GONE
-        (binding.programRecycler.adapter as ProgramModelAdapter).setData(programs)
     }
 
     override fun showFilterProgress() {
@@ -142,13 +158,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun setTutorial() {
         try {
             if (context != null && isAdded) {
-                Handler().postDelayed(
+                Handler(Looper.getMainLooper()).postDelayed(
                     {
                         if (abstractActivity != null) {
                             val stepCondition = SparseBooleanArray()
                             stepCondition.put(
                                 7,
-                                binding.programRecycler.adapter!!.itemCount > 0
+                                presenter.programs().value?.size ?: 0 > 0
                             )
                             HelpManager.getInstance().show(
                                 abstractActivity,
@@ -179,39 +195,39 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
 
     override fun navigateTo(program: ProgramViewModel) {
         val bundle = Bundle()
-        val idTag = if (program.programType().isEmpty()) {
+        val idTag = if (program.programType.isEmpty()) {
             Constants.DATASET_UID
         } else {
             Constants.PROGRAM_UID
         }
 
-        if (!TextUtils.isEmpty(program.type())) {
-            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type())
+        if (!TextUtils.isEmpty(program.type)) {
+            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type)
         }
 
         abstractActivity.analyticsHelper.setEvent(
             TYPE_PROGRAM_SELECTED,
-            if (program.programType().isNotEmpty()) {
-                program.programType()
+            if (program.programType.isNotEmpty()) {
+                program.programType
             } else {
-                program.typeName()
+                program.typeName
             },
             SELECT_PROGRAM
         )
-        bundle.putString(idTag, program.id())
-        bundle.putString(Constants.DATA_SET_NAME, program.title())
+        bundle.putString(idTag, program.uid)
+        bundle.putString(Constants.DATA_SET_NAME, program.title)
         bundle.putString(
             Constants.ACCESS_DATA,
-            program.accessDataWrite().toString()
+            program.accessDataWrite.toString()
         )
 
-        when (program.programType()) {
+        when (program.programType) {
             ProgramType.WITH_REGISTRATION.name ->
                 startActivity(SearchTEActivity::class.java, bundle, false, false, null)
             ProgramType.WITHOUT_REGISTRATION.name ->
                 startActivity(
                     ProgramEventDetailActivity::class.java,
-                    ProgramEventDetailActivity.getBundle(program.id()),
+                    ProgramEventDetailActivity.getBundle(program.uid),
                     false, false, null
                 )
             else -> startActivity(DataSetDetailActivity::class.java, bundle, false, false, null)
@@ -221,13 +237,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.programType().isNotEmpty()) {
+                if (program.programType.isNotEmpty()) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET
                 }
             )
-            .setUid(program.id())
+            .setUid(program.uid)
             .onDismissListener(
                 object : GranularSyncContracts.OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
