@@ -126,7 +126,7 @@ class DataValuePresenter(
     }
 
     private fun initTables(dataTableModelConnectable: ConnectableFlowable<DataTableModel>) {
-        if (featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true) {
+        if (isComposeTableEnable()) {
             view.updateProgressVisibility()
             disposable.add(
                 dataTableModelConnectable.map(repository::setTableData)
@@ -207,4 +207,7 @@ class DataValuePresenter(
     }
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
+    fun isComposeTableEnable(): Boolean {
+        return featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true
+    }
 }

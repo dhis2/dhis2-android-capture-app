@@ -91,10 +91,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         return FragmentDatasetSectionBinding.inflate(inflater, container, false)
             .also {
                 binding = it
-                binding.tables.setContent {
-                    MdcTheme {
-                        val tableData by presenterFragment.tableData().observeAsState(emptyList())
-                        TableList(tableData)
+                if (presenterFragment.isComposeTableEnable()) {
+                    binding.tables.setContent {
+                        MdcTheme {
+                            val tableData by presenterFragment.tableData()
+                                .observeAsState(emptyList())
+                            TableList(tableData)
+                        }
                     }
                 }
             }
