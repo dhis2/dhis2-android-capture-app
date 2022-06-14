@@ -184,13 +184,17 @@ class MainPresenter(
 
     fun onDeleteAccount() {
         view.showProgressDeleteNotification()
+        try {
+            workManagerController.cancelAllWork()
+            deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+            userManager.d2?.wipeModule()?.wipeEverything()
+            userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
+            view.cancelNotifications()
 
-        deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
-        userManager.d2?.wipeModule()?.wipeEverything()
-        userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
-        view.cancelNotifications()
-
-        view.goToLogin(repository.accountsCount(), isDeletion = true)
+            view.goToLogin(repository.accountsCount(), isDeletion = true)
+        } catch (exception: Exception){
+            Timber.e(exception)
+        }
     }
 
     fun onSyncAllClick() {
