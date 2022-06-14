@@ -859,9 +859,9 @@
     <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
-    <string name="search_no_results_in_program">Không có kết quả cho %s</string>
+    <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>
-    <string name="string_no_more_results">Không có kết quả</string>
+    <string name="string_no_more_results">Không còn kết quả khác</string>
     <string name="search_no_more_results_offline">Tìm kiếm thêm nhiều kết quả khác</string>
     <string name="search_no_results">Không có kết quả cho tìm kiếm này</string>
     <string name="search_too_many_results">Có quá nhiều kết quả</string>
@@ -891,5 +891,4 @@
     <string name="customactivityoncrash_error_activity_device">Thiết bị: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Phiên bản hệ điều hành: %s</string>
     <string name="open_details">Mở chi tiết %s</string>
-
-</resources>
+    </resources>
