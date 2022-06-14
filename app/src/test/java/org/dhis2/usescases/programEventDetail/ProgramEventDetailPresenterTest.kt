@@ -92,7 +92,7 @@ class ProgramEventDetailPresenterTest {
             Event.builder().uid("event").build(),
             eventCount = 0,
             lastUpdate = null,
-            isSelected = false,
+            isSelected = true,
             canAddNewEvent = true,
             orgUnitName = "orgUnit",
             catComboName = "catComboName",

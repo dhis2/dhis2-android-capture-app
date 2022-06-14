@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.commons.filters.FilterItem;
@@ -65,7 +66,7 @@ public class TEIDataContracts {
 
         void hideFilters();
 
-        Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
+        Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 
         void showNewEventOptions(android.view.View view, ProgramStage stageUid);
 
