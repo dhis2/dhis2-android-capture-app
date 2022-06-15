@@ -132,12 +132,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSearchForm();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+
         searchScreenConfigurator = new SearchScreenConfigurator(
                 binding,
                 isOpen -> {
                     viewModel.setFiltersOpened(isOpen);
                     return Unit.INSTANCE;
                 });
+        int initialPage = 0;
+        if (savedInstanceState != null && savedInstanceState.containsKey("initialPage")) {
+            initialPage = savedInstanceState.getInt("initialPage");
+            binding.setNavigationInitialPage(initialPage);
+        }
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
@@ -175,7 +181,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
 
         configureBottomNavigation();
-        showList();
+        if (initialPage == 0) {
+            showList();
+        }
         observeScreenState();
         observeDownload();
     }
@@ -295,6 +303,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, (Serializable) viewModel.getQueryData());
+        outState.putInt("initialPage", binding.navigationBar.currentPage());
     }
 
     private void openSyncDialog() {
@@ -366,9 +375,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
             binding.navigationBar.setOnConfigurationFinishListener(() -> {
-                if (viewModel.canDisplayBottomNavigationBar()) {
-                    binding.navigationBar.show();
-                }
+                binding.navigationBar.show();
                 return Unit.INSTANCE;
             });
             binding.navigationBar.pageConfiguration(pageConfigurator);
