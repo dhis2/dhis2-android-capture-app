@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import org.dhis2.data.location.LocationProvider
+import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.DispatcherProvider

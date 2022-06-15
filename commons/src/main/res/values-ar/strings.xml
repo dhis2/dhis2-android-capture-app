@@ -171,4 +171,5 @@
     <string name="error_url_not_found">لم نتمكن من العثور على URL. الرجاء التحقق منه.</string>
     <string name="error_account_disabled">تم تعطيل حساب المستخدم الخاص بك. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
     <string name="error_account_locked">حساب المستخدم الخاص بك مغلق. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
+    <string name="enable_location_message">خدمة تحديد الموقع ليست قيد التشغيل. يرجى تشغيلها لإلتقاط الإحداثيات</string>
     </resources>

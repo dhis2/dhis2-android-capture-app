@@ -740,7 +740,6 @@
     <string name="jira_issue_sent">Муаммо юборилди</string>
     <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
     <string name="section_charts">Диаграммалар</string>
-    <string name="enable_location_message">Сизнинг қўрилмангиз интернет алоқаси узилди. Илтимос, координаталарни олиш учун уни ёқинг</string>
     <string name="navigation_list_view">Рўйхат кўриниши</string>
     <string name="navigation_table_view">Жадвал кўриниши</string>
     <string name="navigation_map_view">Харита кўриниши</string>

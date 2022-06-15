@@ -1,10 +1,10 @@
-package org.dhis2.data.location
+package org.dhis2.commons.locationprovider
 
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
-import org.dhis2.R
+import org.dhis2.commons.R
 
 object LocationSettingLauncher {
     fun requestEnableLocationSetting(activityContext: Context) {

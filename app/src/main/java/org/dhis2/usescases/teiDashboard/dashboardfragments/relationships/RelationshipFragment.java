@@ -15,7 +15,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.location.LocationSettingLauncher;
+import org.dhis2.commons.locationprovider.LocationSettingLauncher;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;

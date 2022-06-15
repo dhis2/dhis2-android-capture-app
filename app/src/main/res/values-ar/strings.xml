@@ -747,7 +747,6 @@
     <string name="jira_issue_sent">تم إرسال المشكلة</string>
     <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
     <string name="section_charts">المخططات البيانية</string>
-    <string name="enable_location_message">خدمة تحديد الموقع ليست قيد التشغيل. يرجى تشغيلها لإلتقاط الإحداثيات</string>
     <string name="navigation_list_view">عرض قائمة</string>
     <string name="navigation_table_view">عرض جدول</string>
     <string name="navigation_map_view">عرض خريطة</string>
