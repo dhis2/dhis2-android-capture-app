@@ -75,4 +75,13 @@ class ProgramViewModelMapper(private val resourceManager: ResourceManager) {
             downloadState = ProgramDownloadState.NONE
         )
     }
+
+    fun map(
+        programViewModel: ProgramViewModel,
+        downloadState: ProgramDownloadState
+    ): ProgramViewModel {
+        return programViewModel.copy(
+            downloadState = downloadState
+        )
+    }
 }

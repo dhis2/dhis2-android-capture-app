@@ -6,6 +6,9 @@ import android.widget.DatePicker;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.data.service.SyncStatusController;
+import org.dhis2.data.service.SyncStatusData;
+import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -21,7 +24,9 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 import timber.log.Timber;
 
 /**
@@ -35,9 +40,16 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     private CompositeDisposable compositeDisposable;
     private final TeiProgramListRepository teiProgramListRepository;
     private Date selectedEnrollmentDate;
+    private PublishProcessor<Unit> refreshData = PublishProcessor.create();
+    private SyncStatusController syncStatusController;
+    private SyncStatusData lastSyncData = null;
 
-    TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository) {
+    TeiProgramListInteractor(
+            TeiProgramListRepository teiProgramListRepository,
+            SyncStatusController syncStatusController
+    ) {
         this.teiProgramListRepository = teiProgramListRepository;
+        this.syncStatusController = syncStatusController;
     }
 
     @Override
@@ -176,13 +188,46 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     }
 
     private void getPrograms() {
-        compositeDisposable.add(teiProgramListRepository.allPrograms(trackedEntityId)
+        compositeDisposable.add(
+                refreshData.startWith(Unit.INSTANCE)
+                .flatMap(unit -> teiProgramListRepository.allPrograms(trackedEntityId))
+                .map(programViewModels -> {
+                    List<ProgramViewModel> programModels = new ArrayList<>();
+                    for (ProgramViewModel programModel : programViewModels) {
+                        programModels.add(
+                                teiProgramListRepository.updateProgramViewModel(
+                                        programModel,
+                                        getSyncState(programModel)
+                                )
+                        );
+                    }
+                    return programModels;
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         this::getAlreadyEnrolledPrograms,
                         Timber::d)
         );
+    }
+
+    private ProgramDownloadState getSyncState(ProgramViewModel programViewModel) {
+        ProgramDownloadState programDownloadState;
+        if (syncStatusController.observeDownloadProcess().getValue().isProgramDownloading(
+                programViewModel.getUid(),
+                programViewModel.getProgramType()
+        )) {
+            programDownloadState = ProgramDownloadState.DOWNLOADING;
+        } else if (syncStatusController.observeDownloadProcess().getValue().wasProgramDownloading(
+                lastSyncData,
+                programViewModel.getUid(),
+                programViewModel.getProgramType())
+        ) {
+            programDownloadState = ProgramDownloadState.DOWNLOADED;
+        } else {
+            programDownloadState = ProgramDownloadState.NONE;
+        }
+        return programDownloadState;
     }
 
     private void getAlreadyEnrolledPrograms(List<ProgramViewModel> programs) {
@@ -222,5 +267,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     @Override
     public void onDettach() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void refreshData() {
+        refreshData.onNext(Unit.INSTANCE);
     }
 }
