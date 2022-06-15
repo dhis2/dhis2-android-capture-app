@@ -3,7 +3,6 @@ package org.dhis2.commons.orgunitselector
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit

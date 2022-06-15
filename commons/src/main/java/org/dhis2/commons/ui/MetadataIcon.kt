@@ -51,7 +51,7 @@ fun ComposeView.setUpMetadataIcon(
     }
 }
 
-fun ComposeView.handleComposeDispose(){
+fun ComposeView.handleComposeDispose() {
     setViewCompositionStrategy(
         ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
     )

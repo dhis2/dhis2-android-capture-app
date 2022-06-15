@@ -1,6 +1,5 @@
 package org.dhis2.maps.carousel
 
-import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,6 @@ import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.model.EventUiComponentModel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import java.util.Locale
 
 class CarouselEventHolder(
     val binding: ItemCarouselEventBinding,

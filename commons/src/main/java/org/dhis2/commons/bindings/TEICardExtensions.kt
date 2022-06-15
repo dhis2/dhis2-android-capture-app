@@ -9,16 +9,13 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.Dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -26,8 +23,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.composethemeadapter.MdcTheme
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 import org.dhis2.commons.R
-import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
@@ -40,9 +39,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
@@ -52,8 +48,11 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
     } ?: false
 }
 
-fun List<Program>.addEnrollmentIcons(context: Context, parent: ComposeView, currentProgram: String?) {
-
+fun List<Program>.addEnrollmentIcons(
+    context: Context,
+    parent: ComposeView,
+    currentProgram: String?
+) {
     parent.apply {
         setContent {
             MdcTheme {
