@@ -445,7 +445,9 @@ class DataValueRepository(
                             attributeOptionComboUid
                         ).toInt().toString()
                 }
-                return@map dataSetIndicators.toSortedMap(compareBy { it })
+                return@map dataSetIndicators
+                    .toSortedMap(compareBy { it })
+                    .takeIf { it.isNotEmpty() }
             }
     }
 

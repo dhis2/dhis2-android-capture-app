@@ -1,9 +1,9 @@
-package org.dhis2.composetable
+package org.dhis2.compose_table
 
 import androidx.compose.ui.unit.dp
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
+import org.dhis2.compose_table.model.TableHeader
+import org.dhis2.compose_table.model.TableHeaderCell
+import org.dhis2.compose_table.model.TableHeaderRow
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Test
@@ -28,9 +28,9 @@ class TableHeaderTest {
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach")
+                    TableHeaderCell("Outreach"),
                 )
-            )
+            ),
         )
     )
 
@@ -43,9 +43,9 @@ class TableHeaderTest {
 
     @Ignore
     @Test
-    fun widthCellInHeaderRow() {
-        assertTrue(tableHeaderModel.cellWidth(0) == 200.dp)
-        assertTrue(tableHeaderModel.cellWidth(1) == 100.dp)
-        assertTrue(tableHeaderModel.cellWidth(2) == 50.dp)
+    fun widthCellInHeaderRow(){
+        assertTrue(tableHeaderModel.headerCellWidth(0) == 200.dp)
+        assertTrue(tableHeaderModel.headerCellWidth(1) == 100.dp)
+        assertTrue(tableHeaderModel.headerCellWidth(2) == 50.dp)
     }
 }

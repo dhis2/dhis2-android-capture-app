@@ -1,11 +1,12 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import java.util.SortedMap
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
+import org.dhis2.compose_table.model.TableHeader
+import org.dhis2.compose_table.model.TableHeaderCell
+import org.dhis2.compose_table.model.TableHeaderRow
+import org.dhis2.compose_table.model.TableModel
+import org.dhis2.compose_table.model.TableRowModel
+import org.dhis2.compose_table.model.RowHeader
 
 class TableDataToTableModelMapper {
     fun map(tableData: TableData): TableModel {
@@ -24,7 +25,7 @@ class TableDataToTableModelMapper {
 
         val tableRows = tableData.rows()?.mapIndexed { index, dataElement ->
             TableRowModel(
-                rowHeader = dataElement.displayName()!!,
+                rowHeader = RowHeader(dataElement.displayName()!!),
                 values = tableData.cells[index].mapIndexed { columnIndex, s ->
                     columnIndex to TableHeaderCell(s)
                 }.toMap()
@@ -50,7 +51,7 @@ class TableDataToTableModelMapper {
 
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = indicatorName!!,
+                rowHeader = RowHeader(indicatorName!!),
                 values = mapOf(Pair(0, TableHeaderCell(indicatorValue)))
             )
         }
