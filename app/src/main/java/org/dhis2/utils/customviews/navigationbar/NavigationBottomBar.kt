@@ -253,4 +253,8 @@ class NavigationBottomBar @JvmOverloads constructor(
             setCurrentItemIndicatorPosition(it)
         }
     }
+
+    fun currentPage(): Int {
+        return visibleItemCount().indexOfFirst { it.itemId == currentItemId }
+    }
 }
