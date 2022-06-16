@@ -26,7 +26,6 @@ import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerManager
 
-
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     var map: MapboxMap? = null
@@ -44,7 +43,6 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     val defaultUiIconRightMargin = 9.dp
     val defaultUiIconBottomMargin = 0.dp
     val defaultUiIconSize = 40.dp
-
 
     fun init(
         onInitializationFinished: () -> Unit = {},
@@ -86,7 +84,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 uiSettings.setCompassMargins(
                     defaultUiIconLeftMargin,
                     numberOfUiIcons * defaultUiIconSize +
-                            (numberOfUiIcons + 1) * defaultUiIconTopMargin,
+                        (numberOfUiIcons + 1) * defaultUiIconTopMargin,
                     defaultUiIconRightMargin,
                     defaultUiIconBottomMargin
                 )

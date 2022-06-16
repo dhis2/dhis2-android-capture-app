@@ -6,8 +6,8 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
-import org.hisp.dhis.android.core.D2
 import java.util.Locale
+import org.hisp.dhis.android.core.D2
 
 private const val OVERRIDE_LANGUAGE_KEY = "OVERRIDE_LANGUAGE_KEY"
 
