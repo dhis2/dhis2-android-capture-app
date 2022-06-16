@@ -8,8 +8,11 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,9 +98,7 @@ fun HeaderCell(
             color = HeaderText,
             text = headerCell.value,
             textAlign = TextAlign.Center,
-            fontSize = 10.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            fontSize = 10.sp
         )
         Divider(
             color = MaterialTheme.colors.primary,
@@ -130,7 +131,7 @@ fun TableItemRow(
     dataElementValues: Map<Int, TableHeaderCell>
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
-        Row {
+        Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(rowHeader)
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
@@ -145,12 +146,12 @@ fun TableItemRow(
 
 @Composable
 fun TableCorner(tableModel: TableModel) {
-    Row(Modifier.height(IntrinsicSize.Min)) {
-        Box(
-            modifier = Modifier
-                .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
-                .width(tableModel.tableRows.first().rowHeader.defaultWidth)
-        )
+    Box(
+        modifier = Modifier
+            .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
+            .width(tableModel.tableRows.first().rowHeader.defaultWidth),
+        contentAlignment = Alignment.CenterEnd
+    ) {
         Divider(
             Modifier
                 .fillMaxHeight()
@@ -162,20 +163,29 @@ fun TableCorner(tableModel: TableModel) {
 
 @Composable
 fun ItemHeader(rowHeader: RowHeader) {
-    Row(Modifier.height(IntrinsicSize.Min)) {
+    Row(
+        modifier = Modifier
+            .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
+            .width(rowHeader.defaultWidth)
+            .height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
-            modifier = Modifier
-                .height(rowHeader.defaultCellHeight)
-                .width(rowHeader.defaultWidth)
-                .padding(horizontal = 3.dp),
+            modifier = Modifier.padding(horizontal = 3.dp).weight(1f),
             text = rowHeader.title,
             color = MaterialTheme.colors.primary,
             fontSize = 10.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
+        if (rowHeader.showDecoration) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "info",
+                modifier = Modifier.padding(end = 4.dp).height(10.dp).width(10.dp),
+                tint = MaterialTheme.colors.primary
+            )
+        }
         Divider(
-            Modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
             color = MaterialTheme.colors.primary
@@ -201,7 +211,8 @@ fun ItemValues(
             TableCell(
                 modifier = Modifier
                     .width(defaultWidth)
-                    .height(defaultHeight),
+                    .fillMaxHeight()
+                    .defaultMinSize(minHeight = defaultHeight),
                 cellValue = cellValues[columnIndex]?.value ?: "",
                 focusRequester = focusRequester,
                 onNext = {
@@ -224,37 +235,41 @@ fun TableCell(
     var value by remember { mutableStateOf(cellValue) }
     var borderColor by remember { mutableStateOf(Color.White) }
     val primaryColor = MaterialTheme.colors.primary
-    BasicTextField(
-        modifier = modifier
-            .border(1.dp, borderColor)
-            .onFocusChanged {
-                borderColor = when {
-                    it.isFocused -> primaryColor
-                    else -> Color.White
+    Box(
+        modifier = modifier.border(1.dp, borderColor),
+        contentAlignment = Alignment.Center
+    ) {
+        BasicTextField(
+            modifier = Modifier
+                .onFocusChanged {
+                    borderColor = when {
+                        it.isFocused -> primaryColor
+                        else -> Color.White
+                    }
                 }
-            }
-            .padding(horizontal = 4.dp),
-        singleLine = true,
-        textStyle = TextStyle.Default.copy(fontSize = 10.sp, textAlign = TextAlign.End),
-        value = value,
-        onValueChange = { newValue ->
-            value = newValue
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = {
-            onNext()
-            focusRequester.moveFocus(
-                FocusDirection.Right
-            )
-        })
-    )
+                .padding(horizontal = 4.dp),
+            singleLine = true,
+            textStyle = TextStyle.Default.copy(fontSize = 10.sp, textAlign = TextAlign.End),
+            value = value,
+            onValueChange = { newValue ->
+                value = newValue
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = {
+                onNext()
+                focusRequester.moveFocus(
+                    FocusDirection.Right
+                )
+            })
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TableList(tableList: List<TableModel>) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
-    LazyColumn {
+    LazyColumn(Modifier.padding(16.dp)) {
         tableList.forEachIndexed { index, currentTableModel ->
             stickyHeader {
                 TableHeaderRow(
@@ -304,10 +319,20 @@ fun TableListPreview() {
     )
 
     val tableRows = TableRowModel(
-        rowHeader = RowHeader("Data Element"),
+        rowHeader = RowHeader("Data Element Element Element ", true),
         values = mapOf(
+            Pair(0, TableHeaderCell("12")),
+            Pair(1, TableHeaderCell("12")),
             Pair(2, TableHeaderCell("12")),
-            Pair(4, TableHeaderCell("55"))
+            Pair(3, TableHeaderCell("12")),
+            Pair(4, TableHeaderCell("12")),
+            Pair(5, TableHeaderCell("12")),
+            Pair(6, TableHeaderCell("55")),
+            Pair(7, TableHeaderCell("12")),
+            Pair(8, TableHeaderCell("12")),
+            Pair(9, TableHeaderCell("12")),
+            Pair(10, TableHeaderCell("12")),
+            Pair(11, TableHeaderCell("12"))
         )
     )
 
