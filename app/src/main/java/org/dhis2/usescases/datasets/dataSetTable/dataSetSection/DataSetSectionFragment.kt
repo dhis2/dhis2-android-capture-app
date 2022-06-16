@@ -104,7 +104,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                     primary = MaterialTheme.colors.primary,
                                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                                 )
-                            )
+                            ) { cell -> presenterFragment.onValueChange(cell) }
                         }
                     }
                 }

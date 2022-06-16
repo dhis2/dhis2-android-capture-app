@@ -580,14 +580,6 @@ class DataValueRepository(
             dataTableModel.catOptionOrder
         )
 
-        /*getCatOptionComboOrder(
-                getCatOptionComboFrom(
-                    dataTableModel.catCombo?.uid(),
-                    dataTableModel.catOptionOrder
-                ),
-                dataTableModel.catOptionOrder ?: mutableListOf()
-            )*/
-
         for (dataElement in dataTableModel.rows ?: emptyList()) {
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
@@ -612,49 +604,29 @@ class DataValueRepository(
                         compulsoryDataElement.dataElement()?.uid() == dataElement.uid()
                 }?.let { true } ?: false
 
-                val fieldViewModel = dataTableModel.dataValues?.find { dataSetTableModel ->
+                val fieldValue = dataTableModel.dataValues?.find { dataSetTableModel ->
                     dataSetTableModel.dataElement == dataElement.uid() &&
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
-                }?.let { dataSetTableModel ->
-                    fieldFactory.create(
-                        dataSetTableModel.id(),
-                        dataElement.displayFormName()!!,
-                        dataElement.valueType()!!,
-                        mandatory,
-                        dataElement.optionSetUid(),
-                        dataSetTableModel.value,
-                        sectionUid,
-                        true,
-                        isEditable,
-                        null,
-                        categoryOptionCombo.displayName(),
-                        dataElement.uid(),
-                        ArrayList(),
-                        "android",
-                        row,
-                        column,
-                        dataSetTableModel.categoryOptionCombo,
-                        dataSetTableModel.catCombo
-                    )
-                } ?: fieldFactory.create(
-                    "",
+                }?.value
+                val fieldViewModel = fieldFactory.create(
+                    dataElement.uid() + "_" + categoryOptionCombo.uid(),
                     dataElement.displayFormName()!!,
                     dataElement.valueType()!!,
                     mandatory,
                     dataElement.optionSetUid(),
-                    "",
+                    fieldValue,
                     sectionUid,
                     true,
                     isEditable,
                     null,
-                    categoryOptionCombo.displayName(),
+                    dataElement.displayDescription(),
                     dataElement.uid(),
-                    ArrayList(),
+                    emptyList(),
                     "android",
                     row,
                     column,
                     categoryOptionCombo.uid(),
-                    dataTableModel.catCombo!!.uid()
+                    dataTableModel.catCombo?.uid()
                 )
 
                 fields.add(fieldViewModel)
@@ -668,17 +640,6 @@ class DataValueRepository(
 
                 column++
             }
-
-            /* for (fieldViewModel in fields) {
-                 for (compulsoryDataElement in dataTableModel.compulsoryCells ?: emptyList())
-                     if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
-                         fieldViewModel.categoryOptionCombo() &&
-                         compulsoryDataElement.dataElement()!!.uid() ==
-                         fieldViewModel.dataElement()
-                     ) {
-                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
-                     }
-             }*/
 
             if (showRowTotals() && fieldIsNumber) {
                 setTotalRow(totalRow, fields, values, row, column)

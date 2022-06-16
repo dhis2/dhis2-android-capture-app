@@ -17,7 +17,7 @@ class TableDataToTableModelMapper {
                     cells = catOptions.distinctBy { it.uid() }
                         .filter { it.uid() != null && it.uid().isNotEmpty() }
                         .map { categoryOption ->
-                            TableHeaderCell(categoryOption.displayName()!!)
+                            TableCell(value = categoryOption.displayName()!!)
                         }
                 )
             } ?: emptyList(),
@@ -36,7 +36,7 @@ class TableDataToTableModelMapper {
                         id = field.uid(),
                         row = rowIndex,
                         column = columnIndex,
-                        value = tableData.cells[rowIndex][columnIndex],
+                        value = field.value(),
                         editable = field.editable(),
                         mandatory = field.mandatory(),
                         error = field.error()
@@ -46,6 +46,7 @@ class TableDataToTableModelMapper {
         } ?: emptyList()
 
         return TableModel(
+            id = tableData.catCombo()?.uid(),
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
@@ -56,7 +57,7 @@ class TableDataToTableModelMapper {
             rows = listOf(
                 TableHeaderRow(
                     cells = listOf(
-                        TableHeaderCell("Value")
+                        TableCell(value = "Value")
                     )
                 )
             )
