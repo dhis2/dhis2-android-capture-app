@@ -1,5 +1,7 @@
 package org.dhis2.usescases.main.program
 
+import androidx.lifecycle.MutableLiveData
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -8,10 +10,15 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
+import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.ui.MetadataIconData
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.hisp.dhis.android.core.common.State
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -26,6 +33,7 @@ class ProgramPresenterTest {
     private val themeManager: ThemeManager = mock()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val syncStatusController: SyncStatusController = mock()
 
     @Before
     fun setUp() {
@@ -35,7 +43,8 @@ class ProgramPresenterTest {
             schedulers,
             themeManager,
             filterManager,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            syncStatusController
         )
     }
 
@@ -44,14 +53,15 @@ class ProgramPresenterTest {
         val programs = listOf(programViewModel())
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
+        val syncStatusData = SyncStatusData()
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(programRepository.programModels()) doReturn programsFlowable
         whenever(
-            programRepository.aggregatesModels()
-        ) doReturn Flowable.empty()
+            syncStatusController.observeDownloadProcess()
+        ) doReturn MutableLiveData(syncStatusData)
+        whenever(programRepository.homeItems(any())) doReturn programsFlowable
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
@@ -63,15 +73,17 @@ class ProgramPresenterTest {
     @Test
     fun `Should render error when there is a problem getting programs`() {
         val filterManagerFlowable = Flowable.just(filterManager)
+        val syncStatusData = SyncStatusData()
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(
-            programRepository.programModels()
-        ) doReturn Flowable.error(Exception(""))
+            syncStatusController.observeDownloadProcess()
+        ) doReturn MutableLiveData(syncStatusData)
+
         whenever(
-            programRepository.aggregatesModels()
-        ) doReturn mock()
+            programRepository.homeItems(syncStatusData)
+        ) doReturn Flowable.error(Exception(""))
 
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
@@ -97,7 +109,7 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(programViewModel)
 
-        verify(themeManager).setProgramTheme(programViewModel.id())
+        verify(themeManager).setProgramTheme(programViewModel.uid)
         verify(view).navigateTo(programViewModel)
     }
 
@@ -107,7 +119,7 @@ class ProgramPresenterTest {
 
         presenter.onItemClick(dataSetViewModel)
 
-        verify(themeManager).setDataSetTheme(dataSetViewModel.id())
+        verify(themeManager).setDataSetTheme(dataSetViewModel.uid)
         verify(view).navigateTo(dataSetViewModel)
     }
 
@@ -161,11 +173,13 @@ class ProgramPresenterTest {
     }
 
     private fun programViewModel(): ProgramViewModel {
-        return ProgramViewModel.create(
+        return ProgramViewModel(
             "uid",
             "displayName",
-            "#ffcdd2",
-            "icon",
+            MetadataIconData(
+                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                iconResource = R.drawable.ic_home_positive
+            ),
             1,
             "type",
             "typeName",
@@ -173,17 +187,21 @@ class ProgramPresenterTest {
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
-            state = "Synced",
-            hasOverdueEvent = false
+            state = State.SYNCED,
+            hasOverdueEvent = false,
+            filtersAreActive = false,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 
     private fun dataSetViewModel(): ProgramViewModel {
-        return ProgramViewModel.create(
+        return ProgramViewModel(
             "uid",
             "displayName",
-            "#ffcdd2",
-            "icon",
+            MetadataIconData(
+                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                iconResource = R.drawable.ic_home_positive
+            ),
             1,
             "type",
             "typeName",
@@ -191,8 +209,10 @@ class ProgramPresenterTest {
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
-            state = "Synced",
-            hasOverdueEvent = false
+            state = State.SYNCED,
+            hasOverdueEvent = false,
+            filtersAreActive = false,
+            downloadState = ProgramDownloadState.NONE
         )
     }
 }

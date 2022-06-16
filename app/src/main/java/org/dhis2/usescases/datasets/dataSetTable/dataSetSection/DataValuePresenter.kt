@@ -11,7 +11,7 @@ import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.compose_table.model.TableModel
+import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.form.model.StoreResult
@@ -126,7 +126,7 @@ class DataValuePresenter(
     }
 
     private fun initTables(dataTableModelConnectable: ConnectableFlowable<DataTableModel>) {
-        if (featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true) {
+        if (isComposeTableEnable()) {
             view.updateProgressVisibility()
             disposable.add(
                 dataTableModelConnectable.map(repository::setTableData)
@@ -207,4 +207,7 @@ class DataValuePresenter(
     }
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
+    fun isComposeTableEnable(): Boolean {
+        return featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true
+    }
 }

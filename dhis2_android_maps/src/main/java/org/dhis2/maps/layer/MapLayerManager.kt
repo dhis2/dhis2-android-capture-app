@@ -102,7 +102,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
                 )
             }
 
-            if(mapLayers.size == 1){
+            if (mapLayers.size == 1) {
                 handleLayer(sourceId ?: layerType.toString(), true)
             }
         }

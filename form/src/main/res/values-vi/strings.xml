@@ -48,4 +48,6 @@
     <string name="due_date">Ngày đến hạn</string>
     <string name="event_date">Ngày sự kiện</string>
     <string name="mandatory_field">Trường bắt buộc</string>
+    <string name="form_latitude_prefix">Vĩ độ: </string>
+    <string name="form_longitude_prefix">Kinh độ: </string>
 </resources>

@@ -46,7 +46,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_centerInParent="true"
-                    app:set_metadata_icon="@{style}" />
+                    app:set_metadata_icon_data="@{program.metadataIconData}" />
             </RelativeLayout>
 
             <TextView
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="2"
-                android:text='@{program.title()}'
+                android:text='@{program.title}'
                 android:textColor="@color/text_black_333"
                 android:textSize="16sp"
                 tools:text="ANC PROGRAM" />

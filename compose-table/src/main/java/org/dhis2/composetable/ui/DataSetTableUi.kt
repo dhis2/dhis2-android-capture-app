@@ -1,14 +1,27 @@
-package org.dhis2.compose_table.ui
+package org.dhis2.composetable.ui
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
@@ -19,10 +32,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.launch
-import org.dhis2.compose_table.model.TableHeader
-import org.dhis2.compose_table.model.TableHeaderCell
-import org.dhis2.compose_table.model.TableModel
-import org.dhis2.compose_table.model.TableRowModel
+import org.dhis2.composetable.model.TableHeader
+import org.dhis2.composetable.model.TableHeaderCell
+import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TableRowModel
 
 @Composable
 fun TableHeader(
@@ -50,7 +63,7 @@ fun TableHeader(
                 }
             }
         }
-        if(tableHeaderModel.hasTotals){
+        if (tableHeaderModel.hasTotals) {
             HeaderCell(
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
@@ -115,7 +128,7 @@ fun TableCorner(tableModel: TableModel) {
     Box(
         modifier = Modifier
             .height(tableModel.tableHeaderModel.defaultCellHeight)
-            .width(tableRows.defaultWidth),
+            .width(tableRows.defaultWidth)
     )
 }
 
@@ -144,20 +157,25 @@ fun ItemValues(
         modifier = Modifier
             .horizontalScroll(state = horizontalScrollState)
     ) {
-        repeat(times = columnCount, action = { columnIndex ->
-            TableCell(
-                modifier = Modifier
-                    .width(defaultWidth)
-                    .height(defaultHeight),
-                cellValue = cellValues[columnIndex]?.value ?: "",
-                focusRequester = focusRequester,
-                onNext = {
-                    coroutineScope.launch {
-                        horizontalScrollState.scrollTo((columnIndex + 1) * defaultWidthPx.toInt())
+        repeat(
+            times = columnCount,
+            action = { columnIndex ->
+                TableCell(
+                    modifier = Modifier
+                        .width(defaultWidth)
+                        .height(defaultHeight),
+                    cellValue = cellValues[columnIndex]?.value ?: "",
+                    focusRequester = focusRequester,
+                    onNext = {
+                        coroutineScope.launch {
+                            horizontalScrollState.scrollTo(
+                                (columnIndex + 1) * defaultWidthPx.toInt()
+                            )
+                        }
                     }
-                }
-            )
-        })
+                )
+            }
+        )
     }
 }
 
@@ -176,36 +194,38 @@ fun TableCell(
             value = newValue
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = {
-            onNext()
-            focusRequester.moveFocus(
-                FocusDirection.Right
-            )
-        })
+        keyboardActions = KeyboardActions(
+            onNext = {
+                onNext()
+                focusRequester.moveFocus(
+                    FocusDirection.Right
+                )
+            }
+        )
     )
 }
 
 private val tableHeaderModel = TableHeader(
     rows = listOf(
-        org.dhis2.compose_table.model.TableHeaderRow(
+        org.dhis2.composetable.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("<18"),
                 TableHeaderCell(">18 <65"),
                 TableHeaderCell(">65")
             )
         ),
-        org.dhis2.compose_table.model.TableHeaderRow(
+        org.dhis2.composetable.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("Male"),
                 TableHeaderCell("Female")
             )
         ),
-        org.dhis2.compose_table.model.TableHeaderRow(
+        org.dhis2.composetable.model.TableHeaderRow(
             cells = listOf(
                 TableHeaderCell("Fixed"),
-                TableHeaderCell("Outreach"),
+                TableHeaderCell("Outreach")
             )
-        ),
+        )
     ),
     hasTotals = true
 )
@@ -225,7 +245,7 @@ private val tableModel = TableModel(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(tableList:List<TableModel>){
+fun TableList(tableList: List<TableModel>) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     LazyColumn {
         tableList.forEachIndexed { index, currentTableModel ->

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Locale
 import org.dhis2.commons.animations.collapse
 import org.dhis2.commons.animations.expand
 import org.dhis2.commons.data.ProgramEventViewModel
