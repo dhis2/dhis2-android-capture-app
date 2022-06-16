@@ -752,7 +752,6 @@
     <string name="jira_issue_sent">Đã gửi vấn đề</string>
     <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="section_charts">Biểu đồ</string>
-    <string name="enable_location_message">Tính năng chia sẻ vị trí thiết bị của bạn bị tắt. Vui lòng mở nó để thu thập tọa độ.</string>
     <string name="navigation_list_view">Xem danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>
     <string name="navigation_map_view">Xem bản đồ</string>
@@ -868,7 +867,6 @@
     <string name="search_too_many_results_message">Thử thay đổi tìm kiếm của bạn để thu hẹp kết quả.</string>
     <string name="search_create_new">Tạo mới</string>
     <string name="search_min_attributes_message">Cần phải nhập ít nhất %sthuộc tính để tìm kiếm</string>
-    <string name="action_ok">Ok</string>
     <string name="init_search">Mở trang tìm kiếm để tìm bất cứ %snào</string>
     <string name="search_or_create">Bạn có thể tìm kiếm hoặc tạo một %smới</string>
     <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>

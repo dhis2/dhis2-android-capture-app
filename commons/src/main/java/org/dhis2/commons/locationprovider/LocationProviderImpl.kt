@@ -1,4 +1,4 @@
-package org.dhis2.data.location
+package org.dhis2.commons.locationprovider
 
 import android.Manifest
 import android.annotation.SuppressLint

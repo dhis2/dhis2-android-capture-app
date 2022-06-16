@@ -13,7 +13,7 @@ import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.data.location.LocationSettingLauncher
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerDialog

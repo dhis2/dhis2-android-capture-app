@@ -754,7 +754,6 @@
     <string name="jira_issue_sent">Incidencia reportada</string>
     <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
     <string name="section_charts">Gráficas</string>
-    <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítela para capturar coordenadas. </string>
     <string name="navigation_list_view">Vista de lista</string>
     <string name="navigation_table_view">Vista de tabla</string>
     <string name="navigation_map_view">Vista del mapa</string>
