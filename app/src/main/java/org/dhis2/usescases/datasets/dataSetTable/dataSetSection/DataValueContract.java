@@ -1,7 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import org.dhis2.compose_table.model.TableCell;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,5 +29,7 @@ public class DataValueContract {
         void clearTables();
 
         void updateProgressVisibility();
+
+        void showCalendar(DataElement dataElement, TableCell cell);
     }
 }

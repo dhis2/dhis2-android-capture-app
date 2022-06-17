@@ -9,14 +9,18 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
 
 class DataValuePresenter(
@@ -89,8 +93,15 @@ class DataValuePresenter(
                         }
 
                         dataSetTableModel?.let {
-                            view.updateData(rowAction, it.catCombo)
-                            valueStore.save(it)
+                            val result = valueStore.save(it)
+                            if (result.blockingFirst().valueStoreResult == VALUE_CHANGED &&
+                                featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
+                            ) {
+                                updateData(it)
+                            } else {
+                                view.updateData(rowAction, it.catCombo)
+                            }
+                            result
                         } ?: Flowable.just(
                             StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED)
                         )
@@ -99,7 +110,7 @@ class DataValuePresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        val valueChange = ValueStoreResult.VALUE_CHANGED
+                        val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
                             view.showSnackBar()
@@ -171,6 +182,22 @@ class DataValuePresenter(
         }
     }
 
+    private fun updateData(datasetTableModel: DataSetTableModel) {
+        val dataTableModel =
+            repository.getDataTableModel(datasetTableModel.catCombo!!)
+                .blockingFirst()
+        val tableData = repository.setTableData(dataTableModel)
+        val updatedTableModel = mapper.map(tableData)
+
+        allTableState.value = allTableState.value?.map { tableModel ->
+            if (tableModel.id == datasetTableModel.catCombo) {
+                updatedTableModel
+            } else {
+                tableModel
+            }
+        }
+    }
+
     private fun updateTableList() {
         allTableState.postValue(
             mutableListOf<TableModel>().apply {
@@ -210,6 +237,72 @@ class DataValuePresenter(
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
     fun isComposeTableEnable(): Boolean {
-        return featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true
+        return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
+    }
+
+    fun onCellClick(cell: TableCell) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val dataElement = getDataElement(dataElementUid)
+        handleElementInteraction(dataElement, cell)
+    }
+
+    private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
+        when (dataElement.valueType()) {
+            ValueType.TEXT -> onCellValueChange(cell)
+            ValueType.LONG_TEXT -> onCellValueChange(cell)
+            ValueType.LETTER -> onCellValueChange(cell)
+            ValueType.PHONE_NUMBER -> onCellValueChange(cell)
+            ValueType.EMAIL -> onCellValueChange(cell)
+            ValueType.BOOLEAN -> TODO()
+            ValueType.TRUE_ONLY -> TODO()
+            ValueType.DATE -> view.showCalendar(dataElement, cell)
+            ValueType.DATETIME -> TODO()
+            ValueType.TIME -> TODO()
+            ValueType.NUMBER -> onCellValueChange(cell)
+            ValueType.UNIT_INTERVAL -> TODO()
+            ValueType.PERCENTAGE -> onCellValueChange(cell)
+            ValueType.INTEGER -> onCellValueChange(cell)
+            ValueType.INTEGER_POSITIVE -> onCellValueChange(cell)
+            ValueType.INTEGER_NEGATIVE -> onCellValueChange(cell)
+            ValueType.INTEGER_ZERO_OR_POSITIVE -> onCellValueChange(cell)
+            ValueType.TRACKER_ASSOCIATE -> TODO()
+            ValueType.USERNAME -> onCellValueChange(cell)
+            ValueType.COORDINATE -> TODO()
+            ValueType.ORGANISATION_UNIT -> TODO()
+            ValueType.REFERENCE -> TODO()
+            ValueType.AGE -> TODO()
+            ValueType.URL -> TODO()
+            ValueType.FILE_RESOURCE -> TODO()
+            ValueType.IMAGE -> TODO()
+            ValueType.GEOJSON -> TODO()
+            null -> TODO()
+        }
+    }
+
+    private fun getDataElement(dataElementUid: String): DataElement {
+        return repository.getDataElement(dataElementUid)
+    }
+
+    fun onCellValueChange(cell: TableCell) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val catOptCombUid = ids[1]
+        val catComboUid = allTableState.value?.find { tableModel ->
+            tableModel.tableRows.find { tableRowModel ->
+                tableRowModel.values.values.find { it.id == cell.id } != null
+            } != null
+        }?.id
+
+        val row = RowAction.create(
+            cell.id!!,
+            cell.value,
+            dataElementUid,
+            catOptCombUid,
+            catComboUid,
+            cell.row!!,
+            cell.column!!
+        )
+        processor.onNext(row)
     }
 }

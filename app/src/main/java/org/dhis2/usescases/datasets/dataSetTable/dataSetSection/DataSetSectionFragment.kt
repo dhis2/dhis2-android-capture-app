@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.compose.material.MaterialTheme
@@ -24,9 +25,14 @@ import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
+import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableList
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -35,7 +41,11 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
+import org.dhis2.utils.DateUtils
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.android.core.dataelement.DataElement
+import java.util.Calendar
+import java.util.Date
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -104,7 +114,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                     primary = MaterialTheme.colors.primary,
                                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                                 )
-                            ) { cell -> presenterFragment.onValueChange(cell) }
+                            ) { cell -> presenterFragment.onCellClick(cell) }
                         }
                     }
                 }
@@ -398,6 +408,31 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         if (modified) {
             activity.update()
         }
+    }
+
+    override fun showCalendar(dataElement: DataElement, cell: TableCell) {
+        val dialog = CalendarPicker(binding.root.context)
+        dialog.setTitle(dataElement.displayFormName())
+        dialog.setInitialDate(cell.value?.toDate())
+        dialog.isFutureDatesAllowed(true)
+        dialog.setListener(object : OnDatePickerListener {
+            override fun onNegativeClick() {
+                presenterFragment.onCellValueChange(cell.copy(value = null))
+            }
+
+            override fun onPositiveClick(datePicker: DatePicker) {
+                val calendar = Calendar.getInstance()
+                calendar.set(Calendar.YEAR, datePicker.year)
+                calendar.set(Calendar.MONTH, datePicker.month)
+                calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                val selectedDate: Date = calendar.time
+                val result = DateUtils.oldUiDateFormat().format(selectedDate)
+                presenterFragment.onCellValueChange(cell.copy(value = result))
+            }
+        })
+        dialog.show()
     }
 
     companion object {
