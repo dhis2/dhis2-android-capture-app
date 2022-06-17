@@ -1,9 +1,24 @@
 package org.dhis2.compose_table.ui
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,7 +28,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -22,16 +42,23 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import org.dhis2.compose_table.model.*
+import org.dhis2.compose_table.R
+import org.dhis2.compose_table.model.RowHeader
+import org.dhis2.compose_table.model.TableCell
+import org.dhis2.compose_table.model.TableHeader
+import org.dhis2.compose_table.model.TableHeaderCell
+import org.dhis2.compose_table.model.TableHeaderRow
+import org.dhis2.compose_table.model.TableModel
+import org.dhis2.compose_table.model.TableRowModel
 
 @Composable
 fun TableHeader(
@@ -128,7 +155,7 @@ fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     rowHeader: RowHeader,
-    dataElementValues: Map<Int, TableHeaderCell>
+    dataElementValues: Map<Int, TableCell>
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -171,7 +198,9 @@ fun ItemHeader(rowHeader: RowHeader) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 3.dp).weight(1f),
+            modifier = Modifier
+                .padding(horizontal = 3.dp)
+                .weight(1f),
             text = rowHeader.title,
             color = MaterialTheme.colors.primary,
             fontSize = 10.sp,
@@ -180,7 +209,10 @@ fun ItemHeader(rowHeader: RowHeader) {
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = "info",
-                modifier = Modifier.padding(end = 4.dp).height(10.dp).width(10.dp),
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .height(10.dp)
+                    .width(10.dp),
                 tint = MaterialTheme.colors.primary
             )
         }
@@ -196,7 +228,7 @@ fun ItemHeader(rowHeader: RowHeader) {
 @Composable
 fun ItemValues(
     horizontalScrollState: ScrollState,
-    cellValues: Map<Int, TableHeaderCell>,
+    cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp
 ) {
@@ -213,7 +245,7 @@ fun ItemValues(
                     .width(defaultWidth)
                     .fillMaxHeight()
                     .defaultMinSize(minHeight = defaultHeight),
-                cellValue = cellValues[columnIndex]?.value ?: "",
+                cellValue = cellValues[columnIndex]!!,
                 focusRequester = focusRequester,
                 onNext = {
                     coroutineScope.launch {
@@ -228,28 +260,33 @@ fun ItemValues(
 @Composable
 fun TableCell(
     modifier: Modifier,
-    cellValue: String,
+    cellValue: TableCell,
     focusRequester: FocusManager,
     onNext: () -> Unit
 ) {
-    var value by remember { mutableStateOf(cellValue) }
-    var borderColor by remember { mutableStateOf(Color.White) }
+    var value by remember { mutableStateOf(cellValue.value) }
+    var borderColor by remember { mutableStateOf(Color.Transparent) }
     val primaryColor = MaterialTheme.colors.primary
+    val tableCellUiOptions = TableCellUiOptions(cellValue, value)
     Box(
-        modifier = modifier.border(1.dp, borderColor),
-        contentAlignment = Alignment.Center
+        modifier = modifier
+            .border(1.dp, borderColor)
+            .background(tableCellUiOptions.backgroundColor)
     ) {
         BasicTextField(
             modifier = Modifier
+                .align(Alignment.Center)
                 .onFocusChanged {
-                    borderColor = when {
-                        it.isFocused -> primaryColor
-                        else -> Color.White
-                    }
+                    borderColor = tableCellUiOptions.borderColor(it, primaryColor)
                 }
                 .padding(horizontal = 4.dp),
+            enabled = tableCellUiOptions.enabled,
             singleLine = true,
-            textStyle = TextStyle.Default.copy(fontSize = 10.sp, textAlign = TextAlign.End),
+            textStyle = TextStyle.Default.copy(
+                fontSize = 10.sp,
+                textAlign = TextAlign.End,
+                color = tableCellUiOptions.textColor
+            ),
             value = value,
             onValueChange = { newValue ->
                 value = newValue
@@ -262,6 +299,26 @@ fun TableCell(
                 )
             })
         )
+        if (cellValue.mandatory == true) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_mandatory),
+                contentDescription = "mandatory",
+                modifier = Modifier
+                    .padding(4.dp)
+                    .width(6.dp)
+                    .height(6.dp)
+                    .align(tableCellUiOptions.mandatoryAlignment),
+                tint = tableCellUiOptions.mandatoryColor
+            )
+        }
+        if (cellValue.error != null) {
+            Divider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                color = ErrorColor
+            )
+        }
     }
 }
 
@@ -285,6 +342,7 @@ fun TableList(tableList: List<TableModel>) {
                     dataElementValues = tableRowModel.values
                 )
             }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }
@@ -321,18 +379,18 @@ fun TableListPreview() {
     val tableRows = TableRowModel(
         rowHeader = RowHeader("Data Element Element Element ", true),
         values = mapOf(
-            Pair(0, TableHeaderCell("12")),
-            Pair(1, TableHeaderCell("12")),
-            Pair(2, TableHeaderCell("12")),
-            Pair(3, TableHeaderCell("12")),
-            Pair(4, TableHeaderCell("12")),
-            Pair(5, TableHeaderCell("12")),
-            Pair(6, TableHeaderCell("55")),
-            Pair(7, TableHeaderCell("12")),
-            Pair(8, TableHeaderCell("12")),
-            Pair(9, TableHeaderCell("12")),
-            Pair(10, TableHeaderCell("12")),
-            Pair(11, TableHeaderCell("12"))
+            Pair(0, TableCell("12", mandatory = true)),
+            Pair(1, TableCell("12", editable = false)),
+            Pair(2, TableCell("", mandatory = true)),
+            Pair(3, TableCell("12", mandatory = true, error = "Error")),
+            Pair(4, TableCell("1", error = "Error")),
+            Pair(5, TableCell("12")),
+            Pair(6, TableCell("55")),
+            Pair(7, TableCell("12")),
+            Pair(8, TableCell("12")),
+            Pair(9, TableCell("12")),
+            Pair(10, TableCell("12")),
+            Pair(11, TableCell("12"))
         )
     )
 

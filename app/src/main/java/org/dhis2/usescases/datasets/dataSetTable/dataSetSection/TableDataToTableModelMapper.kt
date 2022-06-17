@@ -7,6 +7,7 @@ import org.dhis2.compose_table.model.TableHeaderRow
 import org.dhis2.compose_table.model.TableModel
 import org.dhis2.compose_table.model.TableRowModel
 import org.dhis2.compose_table.model.RowHeader
+import org.dhis2.compose_table.model.TableCell
 
 class TableDataToTableModelMapper {
     fun map(tableData: TableData): TableModel {
@@ -26,8 +27,13 @@ class TableDataToTableModelMapper {
         val tableRows = tableData.rows()?.mapIndexed { index, dataElement ->
             TableRowModel(
                 rowHeader = RowHeader(dataElement.displayName()!!),
-                values = tableData.cells[index].mapIndexed { columnIndex, s ->
-                    columnIndex to TableHeaderCell(s)
+                values = tableData.fieldViewModels[index].mapIndexed { columnIndex, field ->
+                    columnIndex to TableCell(
+                        tableData.cells[index][columnIndex],
+                        field.editable(),
+                        field.mandatory(),
+                        field.error()
+                    )
                 }.toMap()
             )
         } ?: emptyList()
@@ -52,7 +58,7 @@ class TableDataToTableModelMapper {
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
                 rowHeader = RowHeader(indicatorName!!),
-                values = mapOf(Pair(0, TableHeaderCell(indicatorValue)))
+                values = mapOf(Pair(0, TableCell(indicatorValue)))
             )
         }
 

@@ -9,7 +9,7 @@ data class TableModel(
 )
 
 data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = false) {
-    val defaultCellWidth = 44.dp
+    val defaultCellWidth = 52.dp
     val defaultHeaderHeight = 24.dp
     fun numberOfColumns(rowIndex: Int): Int {
         var totalCells = 1
@@ -29,8 +29,14 @@ data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = 
 
 data class TableHeaderRow(val cells: List<TableHeaderCell>)
 data class TableHeaderCell(val value: String)
+data class TableCell(
+    val value: String,
+    val editable: Boolean? = true,
+    val mandatory: Boolean? = false,
+    val error: String? = null
+)
 
-data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableHeaderCell>)
+data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableCell>)
 data class RowHeader(val title: String, val showDecoration: Boolean = false) {
     val defaultCellHeight = 36.dp
     val defaultWidth = 60.dp

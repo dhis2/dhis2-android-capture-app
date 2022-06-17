@@ -61,7 +61,7 @@ class DataValuePresenter(
                         var dataSetTableModel: DataSetTableModel? = null
                         val dataValue = dataTableModel.dataValues?.firstOrNull {
                             it.dataElement == rowAction.dataElement() &&
-                                it.categoryOptionCombo == rowAction.catOptCombo()
+                                    it.categoryOptionCombo == rowAction.catOptCombo()
                         }
                         when (dataValue) {
                             null -> if (!rowAction.value().isNullOrEmpty()) {
@@ -172,10 +172,12 @@ class DataValuePresenter(
     }
 
     private fun updateTableList() {
-        allTableState.value = mutableListOf<TableModel>().apply {
-            addAll(tableState.value ?: emptyList())
-            addAll(indicatorsState.value ?: emptyList())
-        }
+        allTableState.postValue(
+            mutableListOf<TableModel>().apply {
+                addAll(tableState.value ?: emptyList())
+                addAll(indicatorsState.value ?: emptyList())
+            }
+        )
     }
 
     fun getDataSetIndicators() {
