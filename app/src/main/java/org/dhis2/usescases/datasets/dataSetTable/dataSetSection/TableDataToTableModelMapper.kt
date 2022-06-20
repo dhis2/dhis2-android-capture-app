@@ -1,13 +1,13 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import java.util.SortedMap
-import org.dhis2.table.model.RowHeader
-import org.dhis2.table.model.TableCell
-import org.dhis2.table.model.TableHeader
-import org.dhis2.table.model.TableHeaderCell
-import org.dhis2.table.model.TableHeaderRow
-import org.dhis2.table.model.TableModel
-import org.dhis2.table.model.TableRowModel
+import org.dhis2.composetable.model.RowHeader
+import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableHeader
+import org.dhis2.composetable.model.TableHeaderCell
+import org.dhis2.composetable.model.TableHeaderRow
+import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TableRowModel
 
 class TableDataToTableModelMapper {
     fun map(tableData: TableData): TableModel {

@@ -1,9 +1,9 @@
-package org.dhis2.table.ui
+package org.dhis2.composetable.ui
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
-import org.dhis2.table.model.TableCell
+import org.dhis2.composetable.model.TableCell
 
 data class TableCellUiOptions(val cellValue: TableCell, val value: String) {
 

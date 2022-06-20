@@ -11,11 +11,11 @@ import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.table.model.TableModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import timber.log.Timber
 

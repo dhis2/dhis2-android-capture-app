@@ -1,4 +1,4 @@
-package org.dhis2.table.ui
+package org.dhis2.composetable.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
@@ -52,13 +52,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.compose_table.R
-import org.dhis2.table.model.RowHeader
-import org.dhis2.table.model.TableCell
-import org.dhis2.table.model.TableHeader
-import org.dhis2.table.model.TableHeaderCell
-import org.dhis2.table.model.TableHeaderRow
-import org.dhis2.table.model.TableModel
-import org.dhis2.table.model.TableRowModel
+import org.dhis2.composetable.model.RowHeader
+import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableHeader
+import org.dhis2.composetable.model.TableHeaderCell
+import org.dhis2.composetable.model.TableHeaderRow
+import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TableRowModel
 
 @Composable
 fun TableHeader(
