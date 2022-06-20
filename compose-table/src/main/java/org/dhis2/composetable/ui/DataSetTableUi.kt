@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -155,6 +156,7 @@ fun HeaderCell(
         )
     }
 }
+
 @Composable
 fun TableHeaderRow(
     tableModel: TableModel,
@@ -296,7 +298,8 @@ fun ItemValues(
                             )
                         }
                     },
-                    selectionState = selectionState
+                    selectionState = selectionState,
+                    onValueChange = onValueChange
                 )
             }
         )
