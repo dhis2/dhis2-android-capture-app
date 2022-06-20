@@ -29,9 +29,9 @@ class DataValuePresenter(
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
     private val updateProcessor: FlowableProcessor<Unit>,
-    private val featureConfigRepository: FeatureConfigRepository? = null
+    private val featureConfigRepository: FeatureConfigRepository? = null,
+    private val mapper: TableDataToTableModelMapper
 ) {
-    private val mapper = TableDataToTableModelMapper()
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
@@ -249,25 +249,25 @@ class DataValuePresenter(
 
     private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
         when (dataElement.valueType()) {
-            ValueType.TEXT -> onCellValueChange(cell)
-            ValueType.LONG_TEXT -> onCellValueChange(cell)
-            ValueType.LETTER -> onCellValueChange(cell)
-            ValueType.PHONE_NUMBER -> onCellValueChange(cell)
-            ValueType.EMAIL -> onCellValueChange(cell)
-            ValueType.BOOLEAN -> TODO()
-            ValueType.TRUE_ONLY -> TODO()
-            ValueType.DATE -> view.showCalendar(dataElement, cell)
-            ValueType.DATETIME -> TODO()
-            ValueType.TIME -> TODO()
-            ValueType.NUMBER -> onCellValueChange(cell)
-            ValueType.UNIT_INTERVAL -> TODO()
-            ValueType.PERCENTAGE -> onCellValueChange(cell)
-            ValueType.INTEGER -> onCellValueChange(cell)
-            ValueType.INTEGER_POSITIVE -> onCellValueChange(cell)
-            ValueType.INTEGER_NEGATIVE -> onCellValueChange(cell)
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> onCellValueChange(cell)
-            ValueType.TRACKER_ASSOCIATE -> TODO()
+            ValueType.TEXT,
+            ValueType.LONG_TEXT,
+            ValueType.LETTER,
+            ValueType.PHONE_NUMBER,
+            ValueType.NUMBER,
+            ValueType.EMAIL,
+            ValueType.PERCENTAGE,
+            ValueType.INTEGER,
+            ValueType.INTEGER_POSITIVE,
+            ValueType.INTEGER_NEGATIVE,
+            ValueType.INTEGER_ZERO_OR_POSITIVE,
             ValueType.USERNAME -> onCellValueChange(cell)
+            ValueType.BOOLEAN,
+            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
+            ValueType.DATE -> view.showCalendar(dataElement, cell, false)
+            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
+            ValueType.TIME -> view.showTimePicker(dataElement, cell)
+            ValueType.UNIT_INTERVAL -> TODO()
+            ValueType.TRACKER_ASSOCIATE -> TODO()
             ValueType.COORDINATE -> TODO()
             ValueType.ORGANISATION_UNIT -> TODO()
             ValueType.REFERENCE -> TODO()

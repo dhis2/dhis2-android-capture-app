@@ -1,14 +1,18 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.LinearLayout
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
@@ -29,11 +33,13 @@ import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableList
+import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
@@ -42,10 +48,14 @@ import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -410,7 +420,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
     }
 
-    override fun showCalendar(dataElement: DataElement, cell: TableCell) {
+    override fun showCalendar(dataElement: DataElement, cell: TableCell, showTimePicker: Boolean) {
         val dialog = CalendarPicker(binding.root.context)
         dialog.setTitle(dataElement.displayFormName())
         dialog.setInitialDate(cell.value?.toDate())
@@ -429,10 +439,85 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 calendar.set(Calendar.MINUTE, 0)
                 val selectedDate: Date = calendar.time
                 val result = DateUtils.oldUiDateFormat().format(selectedDate)
-                presenterFragment.onCellValueChange(cell.copy(value = result))
+                if (showTimePicker) {
+                    showTimePicker(dataElement, cell)
+                } else {
+                    presenterFragment.onCellValueChange(cell.copy(value = result))
+                }
             }
         })
         dialog.show()
+    }
+
+    override fun showTimePicker(dataElement: DataElement, cell: TableCell) {
+        val c = Calendar.getInstance()
+        cell.value?.let { c.time = DateUtils.timeFormat().parse(it)!! }
+
+        val hour = c[Calendar.HOUR_OF_DAY]
+        val minute = c[Calendar.MINUTE]
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+        val twentyFourHourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val twelveHourFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val dialog = TimePickerDialog(
+            context,
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                val calendar = Calendar.getInstance()
+                calendar[Calendar.HOUR_OF_DAY] = hourOfDay
+                calendar[Calendar.MINUTE] = minutes
+                val selectedDate = calendar.time
+                val calendarTime: String = if (is24HourFormat) {
+                    twentyFourHourFormat.format(selectedDate)
+                } else {
+                    twelveHourFormat.format(selectedDate)
+                }
+                presenterFragment.onCellValueChange(cell.copy(value = calendarTime))
+            }, hour, minute, is24HourFormat
+        )
+        dialog.setTitle(dataElement.displayFormName())
+
+        dialog.setButton(
+            DialogInterface.BUTTON_NEGATIVE, requireContext().getString(R.string.date_dialog_clear)
+        ) { _: DialogInterface?, _: Int ->
+            presenterFragment.onCellValueChange(cell.copy(value = null))
+        }
+        dialog.show()
+    }
+
+    override fun showBooleanDialog(dataElement: DataElement, cell: TableCell) {
+        val yesNoView = YesNoView(context)
+        yesNoView.setIsBgTransparent(true)
+        yesNoView.setValueType(dataElement.valueType())
+        yesNoView.setRendering(ValueTypeRenderingType.DEFAULT)
+        yesNoView.clearButton.visibility = View.GONE
+
+        if (!cell.value.isNullOrEmpty()) {
+            if (cell.value.toBoolean()) {
+                yesNoView.radioGroup.check(R.id.yes)
+            } else {
+                yesNoView.radioGroup.check(R.id.no)
+            }
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            yesNoView,
+            object : DialogClickListener {
+                override fun onPositive() {
+                    val newValue = when (yesNoView.radioGroup.checkedRadioButtonId) {
+                        R.id.yes -> true.toString()
+                        R.id.no -> false.toString()
+                        else -> null
+                    }
+                    presenterFragment.onCellValueChange(cell.copy(value = newValue))
+                }
+
+                override fun onNegative() {}
+            }
+        ) {
+            yesNoView.radioGroup.clearCheck()
+        }.show()
     }
 
     companion object {
