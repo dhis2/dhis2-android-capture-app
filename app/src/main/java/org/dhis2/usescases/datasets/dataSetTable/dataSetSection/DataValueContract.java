@@ -30,6 +30,10 @@ public class DataValueContract {
 
         void updateProgressVisibility();
 
-        void showCalendar(DataElement dataElement, TableCell cell);
+        void showCalendar(DataElement dataElement, TableCell cell, Boolean showTimePicker);
+
+        void showTimePicker(DataElement dataElement, TableCell cell);
+
+        void showBooleanDialog(DataElement dataElement, TableCell cell);
     }
 }
