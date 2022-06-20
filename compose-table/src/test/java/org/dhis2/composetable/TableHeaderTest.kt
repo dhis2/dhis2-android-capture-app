@@ -1,9 +1,9 @@
 package org.dhis2.compose_table
 
 import androidx.compose.ui.unit.dp
-import org.dhis2.compose_table.model.TableHeader
-import org.dhis2.compose_table.model.TableHeaderCell
-import org.dhis2.compose_table.model.TableHeaderRow
+import org.dhis2.table.model.TableHeader
+import org.dhis2.table.model.TableHeaderCell
+import org.dhis2.table.model.TableHeaderRow
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Test
@@ -28,7 +28,7 @@ class TableHeaderTest {
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach"),
+                    TableHeaderCell("Outreach")
                 )
             ),
         )

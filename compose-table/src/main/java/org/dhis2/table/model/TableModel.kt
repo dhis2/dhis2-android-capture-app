@@ -1,4 +1,4 @@
-package org.dhis2.composetable.model
+package org.dhis2.table.model
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

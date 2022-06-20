@@ -1,4 +1,4 @@
-package org.dhis2.compose_table.ui
+package org.dhis2.table.ui
 
 import androidx.compose.ui.graphics.Color
 

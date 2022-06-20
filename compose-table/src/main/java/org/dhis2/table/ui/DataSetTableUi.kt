@@ -1,4 +1,4 @@
-package org.dhis2.compose_table.ui
+package org.dhis2.table.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
@@ -52,13 +52,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.compose_table.R
-import org.dhis2.compose_table.model.RowHeader
-import org.dhis2.compose_table.model.TableCell
-import org.dhis2.compose_table.model.TableHeader
-import org.dhis2.compose_table.model.TableHeaderCell
-import org.dhis2.compose_table.model.TableHeaderRow
-import org.dhis2.compose_table.model.TableModel
-import org.dhis2.compose_table.model.TableRowModel
+import org.dhis2.table.model.RowHeader
+import org.dhis2.table.model.TableCell
+import org.dhis2.table.model.TableHeader
+import org.dhis2.table.model.TableHeaderCell
+import org.dhis2.table.model.TableHeaderRow
+import org.dhis2.table.model.TableModel
+import org.dhis2.table.model.TableRowModel
 
 @Composable
 fun TableHeader(
@@ -203,7 +203,7 @@ fun ItemHeader(rowHeader: RowHeader) {
                 .weight(1f),
             text = rowHeader.title,
             color = MaterialTheme.colors.primary,
-            fontSize = 10.sp,
+            fontSize = 10.sp
         )
         if (rowHeader.showDecoration) {
             Icon(
@@ -369,7 +369,7 @@ fun TableListPreview() {
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach"),
+                    TableHeaderCell("Outreach")
                 )
             ),
         ),
