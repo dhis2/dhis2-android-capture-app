@@ -271,7 +271,7 @@ class DataValuePresenter(
             ValueType.COORDINATE -> TODO()
             ValueType.ORGANISATION_UNIT -> TODO()
             ValueType.REFERENCE -> TODO()
-            ValueType.AGE -> TODO()
+            ValueType.AGE -> view.showAgeDialog(dataElement, cell)
             ValueType.URL -> TODO()
             ValueType.FILE_RESOURCE -> TODO()
             ValueType.IMAGE -> TODO()

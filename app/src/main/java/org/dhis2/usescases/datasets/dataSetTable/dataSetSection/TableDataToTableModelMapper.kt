@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import org.dhis2.Bindings.toDate
+import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -9,6 +11,7 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
+import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import java.util.SortedMap
@@ -69,6 +72,9 @@ class TableDataToTableModelMapper(val resources: ResourceManager) {
                 } else {
                     field.value()
                 }
+            }
+            ValueType.AGE -> field.value()?.let {
+                DateUtils.uiDateFormat().format(it.toDate())
             }
             else -> field.value()
         }

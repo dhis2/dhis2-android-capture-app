@@ -39,6 +39,7 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -518,6 +519,37 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         ) {
             yesNoView.radioGroup.clearCheck()
         }.show()
+    }
+
+    override fun showAgeDialog(dataElement: DataElement, cell: TableCell) {
+        val ageView = AgeView(context)
+        ageView.setIsBgTransparent()
+        if (!cell.value.isNullOrEmpty()) {
+            ageView.setInitialValue(cell.value)
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            ageView,
+            object : DialogClickListener {
+
+                override fun onPositive() {
+                    val date: String = ageView.selectedDate?.let {
+                        DateUtils.oldUiDateFormat().format(it)
+                    } ?: ""
+                    if (cell.value != date) {
+                        presenterFragment.onCellValueChange(cell.copy(value = date))
+                    }
+                }
+
+                override fun onNegative() {}
+            },
+            null
+        ).show()
+
+        fun dispose() {}
     }
 
     companion object {

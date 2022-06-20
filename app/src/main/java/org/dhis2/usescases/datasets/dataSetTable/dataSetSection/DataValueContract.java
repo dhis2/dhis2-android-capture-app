@@ -35,5 +35,7 @@ public class DataValueContract {
         void showTimePicker(DataElement dataElement, TableCell cell);
 
         void showBooleanDialog(DataElement dataElement, TableCell cell);
+
+        void showAgeDialog(DataElement dataElement, TableCell cell);
     }
 }
