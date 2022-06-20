@@ -36,8 +36,8 @@ import org.dhis2.composetable.ui.TableList
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
+import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.databinding.FragmentDatasetSectionBinding
