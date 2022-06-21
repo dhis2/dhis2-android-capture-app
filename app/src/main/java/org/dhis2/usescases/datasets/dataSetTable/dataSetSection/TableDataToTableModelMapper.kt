@@ -118,7 +118,10 @@ class TableDataToTableModelMapper(
                 }
             }
             ValueType.IMAGE,
-            ValueType.FILE_RESOURCE -> resources.getString(R.string.unsupported_value_type)
+            ValueType.FILE_RESOURCE,
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.REFERENCE,
+            ValueType.GEOJSON-> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }
