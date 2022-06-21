@@ -16,8 +16,8 @@ import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter

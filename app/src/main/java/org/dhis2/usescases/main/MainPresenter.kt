@@ -192,7 +192,7 @@ class MainPresenter(
             view.cancelNotifications()
 
             view.goToLogin(repository.accountsCount(), isDeletion = true)
-        } catch (exception: Exception){
+        } catch (exception: Exception) {
             Timber.e(exception)
         }
     }

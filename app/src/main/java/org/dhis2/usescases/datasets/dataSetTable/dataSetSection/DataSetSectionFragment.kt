@@ -24,6 +24,10 @@ import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.SortedMap
 import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
@@ -40,6 +44,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
+import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -51,12 +56,9 @@ import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -472,7 +474,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                     twelveHourFormat.format(selectedDate)
                 }
                 presenterFragment.onCellValueChange(cell.copy(value = calendarTime))
-            }, hour, minute, is24HourFormat
+            },
+            hour, minute, is24HourFormat
         )
         dialog.setTitle(dataElement.displayFormName())
 
@@ -548,8 +551,34 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             },
             null
         ).show()
+    }
 
-        fun dispose() {}
+    override fun showCoordinatesDialog(dataElement: DataElement, cell: TableCell) {
+        val coordinatesView = CoordinatesView(context)
+        coordinatesView.setIsBgTransparent(true)
+        coordinatesView.featureType = FeatureType.POINT
+        if (!cell.value.isNullOrEmpty()) {
+            coordinatesView.setInitialValue(cell.value)
+        }
+
+        TableFieldDialog(
+            requireContext(),
+            dataElement.displayFormName()!!,
+            dataElement.displayDescription() ?: "",
+            coordinatesView,
+            object : DialogClickListener {
+                override fun onPositive() {
+                    if (cell.value != coordinatesView.currentCoordinates()) {
+                        presenterFragment.onCellValueChange(
+                            cell.copy(value = coordinatesView.currentCoordinates())
+                        )
+                    }
+                }
+
+                override fun onNegative() {}
+            },
+            null
+        ).show()
     }
 
     companion object {
