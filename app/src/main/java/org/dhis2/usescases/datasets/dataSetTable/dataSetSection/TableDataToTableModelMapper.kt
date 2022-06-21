@@ -76,6 +76,8 @@ class TableDataToTableModelMapper(val resources: ResourceManager) {
             ValueType.AGE -> field.value()?.let {
                 DateUtils.uiDateFormat().format(it.toDate())
             }
+            ValueType.IMAGE,
+            ValueType.FILE_RESOURCE -> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }
