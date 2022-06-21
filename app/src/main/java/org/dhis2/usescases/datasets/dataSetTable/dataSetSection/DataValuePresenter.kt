@@ -273,8 +273,8 @@ class DataValuePresenter(
             ValueType.REFERENCE -> TODO()
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
             ValueType.URL -> TODO()
-            ValueType.FILE_RESOURCE -> TODO()
-            ValueType.IMAGE -> TODO()
+            ValueType.FILE_RESOURCE,
+            ValueType.IMAGE -> { }
             ValueType.GEOJSON -> TODO()
             null -> TODO()
         }
