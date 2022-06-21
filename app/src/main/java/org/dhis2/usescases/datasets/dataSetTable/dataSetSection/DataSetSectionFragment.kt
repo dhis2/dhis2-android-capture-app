@@ -426,8 +426,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showCalendar(dataElement: DataElement, cell: TableCell, showTimePicker: Boolean) {
         val dialog = CalendarPicker(binding.root.context)
         dialog.setTitle(dataElement.displayFormName())
+
+        val calendar = Calendar.getInstance()
         if (!cell.value.isNullOrEmpty()) {
             dialog.setInitialDate(cell.value!!.toDate())
+            calendar.time = cell.value!!.toDate()
         }
         dialog.isFutureDatesAllowed(true)
         dialog.setListener(object : OnDatePickerListener {
@@ -436,21 +439,41 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
 
             override fun onPositiveClick(datePicker: DatePicker) {
-                val calendar = Calendar.getInstance()
                 calendar.set(Calendar.YEAR, datePicker.year)
                 calendar.set(Calendar.MONTH, datePicker.month)
                 calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
-                calendar.set(Calendar.HOUR_OF_DAY, 0)
-                calendar.set(Calendar.MINUTE, 0)
-                val selectedDate: Date = calendar.time
-                val result = DateUtils.oldUiDateFormat().format(selectedDate)
                 if (showTimePicker) {
-                    showTimePicker(dataElement, cell)
+                    showDateTime(dataElement, cell, calendar)
                 } else {
+                    calendar.set(Calendar.HOUR_OF_DAY, 0)
+                    calendar.set(Calendar.MINUTE, 0)
+                    val selectedDate: Date = calendar.time
+                    val result = DateUtils.oldUiDateFormat().format(selectedDate)
                     presenterFragment.onCellValueChange(cell.copy(value = result))
                 }
             }
         })
+        dialog.show()
+    }
+
+    private fun showDateTime(dataElement: DataElement, cell: TableCell, calendar: Calendar) {
+        val hour = calendar[Calendar.HOUR_OF_DAY]
+        val minute = calendar[Calendar.MINUTE]
+        val is24HourFormat = DateFormat.is24HourFormat(context)
+
+        val dialog = TimePickerDialog(
+            context,
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minutes)
+                val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
+                presenterFragment.onCellValueChange(cell.copy(value = result))
+            },
+            hour,
+            minute,
+            is24HourFormat
+        )
+        dialog.setTitle(dataElement.displayFormName())
         dialog.show()
     }
 

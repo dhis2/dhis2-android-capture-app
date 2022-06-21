@@ -248,7 +248,9 @@ class DataValuePresenter(
     }
 
     private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
-        when (dataElement.valueType()) {
+        if (dataElement.optionSetUid() != null) {
+            TODO ("ShowOptionSet")
+        } else when (dataElement.valueType()) {
             ValueType.TEXT,
             ValueType.LONG_TEXT,
             ValueType.LETTER,
@@ -260,23 +262,17 @@ class DataValuePresenter(
             ValueType.INTEGER_POSITIVE,
             ValueType.INTEGER_NEGATIVE,
             ValueType.INTEGER_ZERO_OR_POSITIVE,
-            ValueType.USERNAME -> onCellValueChange(cell)
+            ValueType.USERNAME,
+            ValueType.UNIT_INTERVAL,
+            ValueType.URL -> onCellValueChange(cell)
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
             ValueType.DATE -> view.showCalendar(dataElement, cell, false)
             ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
             ValueType.TIME -> view.showTimePicker(dataElement, cell)
-            ValueType.UNIT_INTERVAL -> TODO()
-            ValueType.TRACKER_ASSOCIATE -> TODO()
             ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
             ValueType.ORGANISATION_UNIT -> TODO()
-            ValueType.REFERENCE -> TODO()
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
-            ValueType.URL -> TODO()
-            ValueType.FILE_RESOURCE,
-            ValueType.IMAGE -> { }
-            ValueType.GEOJSON -> TODO()
-            null -> TODO()
         }
     }
 
