@@ -249,7 +249,7 @@ class DataValuePresenter(
 
     private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
         if (dataElement.optionSetUid() != null) {
-            TODO ("ShowOptionSet")
+            TODO("ShowOptionSet")
         } else when (dataElement.valueType()) {
             ValueType.TEXT,
             ValueType.LONG_TEXT,
@@ -271,7 +271,11 @@ class DataValuePresenter(
             ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
             ValueType.TIME -> view.showTimePicker(dataElement, cell)
             ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
-            ValueType.ORGANISATION_UNIT -> TODO()
+            ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
+                dataElement,
+                cell,
+                repository.orgUnits()
+            )
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
         }
     }

@@ -100,8 +100,9 @@ class DataValueModule(
     @Provides
     @PerFragment
     fun provideTableDataToTableModelMapper(
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
+        repository: DataValueRepository
     ): TableDataToTableModelMapper {
-        return TableDataToTableModelMapper(resourceManager)
+        return TableDataToTableModelMapper(resourceManager, repository)
     }
 }
