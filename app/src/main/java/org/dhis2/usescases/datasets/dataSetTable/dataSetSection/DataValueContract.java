@@ -37,5 +37,7 @@ public class DataValueContract {
         void showBooleanDialog(DataElement dataElement, TableCell cell);
 
         void showAgeDialog(DataElement dataElement, TableCell cell);
+
+        void showCoordinatesDialog(DataElement dataElement, TableCell cell);
     }
 }

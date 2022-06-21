@@ -268,7 +268,7 @@ class DataValuePresenter(
             ValueType.TIME -> view.showTimePicker(dataElement, cell)
             ValueType.UNIT_INTERVAL -> TODO()
             ValueType.TRACKER_ASSOCIATE -> TODO()
-            ValueType.COORDINATE -> TODO()
+            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
             ValueType.ORGANISATION_UNIT -> TODO()
             ValueType.REFERENCE -> TODO()
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
