@@ -117,6 +117,8 @@ class TableDataToTableModelMapper(
                     field.value()
                 }
             }
+            ValueType.IMAGE,
+            ValueType.FILE_RESOURCE -> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }
