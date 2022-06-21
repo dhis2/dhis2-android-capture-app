@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import java.util.SortedMap
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -15,8 +14,12 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import java.util.SortedMap
 
-class TableDataToTableModelMapper(val resources: ResourceManager) {
+class TableDataToTableModelMapper(
+    val resources: ResourceManager,
+    val repository: DataValueRepository
+) {
     fun map(tableData: TableData): TableModel {
         val tableHeader = TableHeader(
             rows = tableData.columnHeaders()?.map { catOptions ->
@@ -73,14 +76,25 @@ class TableDataToTableModelMapper(val resources: ResourceManager) {
                     field.value()
                 }
             }
-            ValueType.AGE -> field.value()?.let {
-                DateUtils.uiDateFormat().format(it.toDate())
+            ValueType.AGE -> {
+                if (!field.value().isNullOrEmpty()) {
+                    DateUtils.uiDateFormat().format(field.value()!!.toDate())
+                } else {
+                    field.value()
+                }
             }
             ValueType.IMAGE,
             ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.REFERENCE,
-            ValueType.GEOJSON-> resources.getString(R.string.unsupported_value_type)
+            ValueType.GEOJSON -> resources.getString(R.string.unsupported_value_type)
+            ValueType.ORGANISATION_UNIT -> {
+                if (!field.value().isNullOrEmpty()) {
+                    repository.getOrgUnitById(field.value()!!)
+                } else {
+                    field.value()
+                }
+            }
             else -> field.value()
         }
     }

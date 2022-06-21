@@ -48,11 +48,13 @@ import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -606,6 +608,33 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             },
             null
         ).show()
+    }
+
+    override fun showOtgUnitDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        orgUnits: List<OrganisationUnit>
+    ) {
+        val orgUnitDialog = OrgUnitDialog()
+        orgUnitDialog.setTitle(dataElement.displayFormName())
+            .setMultiSelection(false)
+            .setOrgUnits(orgUnits)
+            .setPossitiveListener {
+                presenterFragment.onCellValueChange(
+                    cell.copy(value = orgUnitDialog.selectedOrgUnit)
+                )
+                orgUnitDialog.dismiss()
+            }
+            .setNegativeListener {
+                orgUnitDialog.dismiss()
+            }
+        if (!orgUnitDialog.isAdded) {
+            orgUnitDialog.show(
+                parentFragmentManager,
+                dataElement.displayFormName()
+            )
+        }
+
     }
 
     companion object {
