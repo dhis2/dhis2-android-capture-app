@@ -24,12 +24,6 @@ import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.SortedMap
-import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
@@ -59,6 +53,12 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.SortedMap
+import javax.inject.Inject
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -231,10 +231,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
+                                                   _: Int,
+                                                   scrollY: Int,
+                                                   _: Int,
+                                                   _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -308,7 +308,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
+                        binding.headerContainer.getChildAt(0).layoutParams.height
             }
 
             val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
@@ -426,7 +426,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showCalendar(dataElement: DataElement, cell: TableCell, showTimePicker: Boolean) {
         val dialog = CalendarPicker(binding.root.context)
         dialog.setTitle(dataElement.displayFormName())
-        dialog.setInitialDate(cell.value?.toDate())
+        if (!cell.value.isNullOrEmpty()) {
+            dialog.setInitialDate(cell.value!!.toDate())
+        }
         dialog.isFutureDatesAllowed(true)
         dialog.setListener(object : OnDatePickerListener {
             override fun onNegativeClick() {
@@ -454,7 +456,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
     override fun showTimePicker(dataElement: DataElement, cell: TableCell) {
         val c = Calendar.getInstance()
-        cell.value?.let { c.time = DateUtils.timeFormat().parse(it)!! }
+        if (!cell.value.isNullOrEmpty()) {
+            c.time = DateUtils.timeFormat().parse(cell.value!!)!!
+        }
 
         val hour = c[Calendar.HOUR_OF_DAY]
         val minute = c[Calendar.MINUTE]
