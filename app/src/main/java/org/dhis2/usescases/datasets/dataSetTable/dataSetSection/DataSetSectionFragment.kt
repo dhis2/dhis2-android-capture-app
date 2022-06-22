@@ -651,7 +651,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dialog.create(requireContext())
         dialog.optionSetTable = spinnerViewModel
 
-        if (dialog.showDialog()) {
+        /**
+         * This code is commented because I can't find a way to anchor PopUpMenu to compose item
+         * I have created a issue() to refactor OptionSetCellPopUp to compose in order to use it in both sides
+         * After implement new menu, please, uncomment this code
+         */
+//        if (dialog.showDialog()) {
             dialog.listener = OptionSetOnClickListener {
                 presenterFragment.onCellValueChange(cell.copy(value = it.code()))
             }
@@ -659,7 +664,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 presenterFragment.onCellValueChange(cell.copy(value = null))
             }
             dialog.show(parentFragmentManager, TAG)
-        } else {
+        /*} else {
             dialog.dismiss()
             OptionSetCellPopUp(
                 requireContext(),
@@ -668,7 +673,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             ) {
                 presenterFragment.onCellValueChange(cell.copy(value = it.code()))
             }
-        }
+        }*/
     }
 
     companion object {
