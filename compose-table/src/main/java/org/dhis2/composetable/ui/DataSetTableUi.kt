@@ -273,7 +273,8 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onValueChange: (TableCell) -> Unit
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
