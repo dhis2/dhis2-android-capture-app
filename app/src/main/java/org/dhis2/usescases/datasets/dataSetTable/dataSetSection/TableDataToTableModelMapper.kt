@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import java.util.SortedMap
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -14,7 +15,6 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
-import java.util.SortedMap
 
 class TableDataToTableModelMapper(
     val resources: ResourceManager,
@@ -49,7 +49,8 @@ class TableDataToTableModelMapper(
                         value = mapFieldValueToUser(field, dataElement),
                         editable = field.editable(),
                         mandatory = field.mandatory(),
-                        error = field.error()
+                        error = field.error(),
+                        isReadOnly = isReadyOnly(dataElement)
                     )
                 }.toMap()
             )
@@ -60,6 +61,27 @@ class TableDataToTableModelMapper(
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
+    }
+
+    private fun isReadyOnly(dataElement: DataElement): Boolean {
+        return if (dataElement.optionSetUid() != null) {
+            true
+        } else when (dataElement.valueType()) {
+            ValueType.BOOLEAN,
+            ValueType.TRUE_ONLY,
+            ValueType.DATE,
+            ValueType.DATETIME,
+            ValueType.TIME,
+            ValueType.COORDINATE,
+            ValueType.ORGANISATION_UNIT,
+            ValueType.AGE,
+            ValueType.IMAGE,
+            ValueType.FILE_RESOURCE,
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.REFERENCE,
+            ValueType.GEOJSON -> true
+            else -> false
+        }
     }
 
     private fun mapFieldValueToUser(field: FieldViewModel, dataElement: DataElement): String? {

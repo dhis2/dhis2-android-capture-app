@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -289,7 +290,7 @@ fun ItemValues(
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight),
-                    cellValue = cellValues[columnIndex]!!,
+                    cellValue = cellValues[columnIndex] ?: TableCell(value = ""),
                     focusRequester = focusRequester,
                     onNext = {
                         coroutineScope.launch {
@@ -312,64 +313,76 @@ fun TableCell(
     cellValue: TableCell,
     focusRequester: FocusManager,
     onNext: () -> Unit,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onValueChange: (TableCell) -> Unit
 ) {
-    var value by remember { mutableStateOf(cellValue.value) }
-    var focused by remember { mutableStateOf(false) }
-    val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
-    Box(
-        modifier = modifier
-            .border(1.dp, tableCellUiOptions.borderColor())
-            .background(tableCellUiOptions.backgroundColor())
-    ) {
-        BasicTextField(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .onFocusChanged {
-                    focused = it.isFocused
-                    selectionState.selectCell()
-                }
-                .padding(horizontal = 4.dp),
-            enabled = tableCellUiOptions.enabled,
-            singleLine = true,
-            textStyle = TextStyle.Default.copy(
-                fontSize = 10.sp,
-                textAlign = TextAlign.End,
-                color = tableCellUiOptions.textColor()
-            ),
-            value = value,
-            onValueChange = { newValue ->
-                value = newValue
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    onNext()
-                    focusRequester.moveFocus(
-                        FocusDirection.Right
-                    )
-                }
-            )
+    if (cellValue.isReadOnly) {
+        ClickableText(
+            modifier = modifier,
+            text = AnnotatedString(cellValue.value ?: ""),
+            onClick = {
+                onValueChange(cellValue)
+            }
         )
-        if (cellValue.mandatory == true) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_mandatory),
-                contentDescription = "mandatory",
+    } else {
+        var value by remember { mutableStateOf(cellValue.value) }
+        var focused by remember { mutableStateOf(false) }
+        val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
+        Box(
+            modifier = modifier
+                .border(1.dp, tableCellUiOptions.borderColor())
+                .background(tableCellUiOptions.backgroundColor())
+        ) {
+            BasicTextField(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .width(6.dp)
-                    .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment()),
-                tint = tableCellUiOptions.mandatoryColor()
+                    .align(Alignment.Center)
+                    .onFocusChanged {
+                        focused = it.isFocused
+                        selectionState.selectCell()
+                    }
+                    .padding(horizontal = 4.dp),
+                enabled = tableCellUiOptions.enabled,
+                singleLine = true,
+                textStyle = TextStyle.Default.copy(
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.End,
+                    color = tableCellUiOptions.textColor()
+                ),
+                value = value ?: "",
+                onValueChange = { newValue ->
+                    value = newValue
+                    onValueChange(cellValue.copy(value = value))
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        onNext()
+                        focusRequester.moveFocus(
+                            FocusDirection.Right
+                        )
+                    }
+                )
             )
-        }
-        if (cellValue.error != null) {
-            Divider(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                color = TableTheme.colors.errorColor
-            )
+            if (cellValue.mandatory == true) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_mandatory),
+                    contentDescription = "mandatory",
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(6.dp)
+                        .height(6.dp)
+                        .align(tableCellUiOptions.mandatoryAlignment()),
+                    tint = tableCellUiOptions.mandatoryColor()
+                )
+            }
+            if (cellValue.error != null) {
+                Divider(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                    color = TableTheme.colors.errorColor
+                )
+            }
         }
     }
 }
