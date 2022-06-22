@@ -15,6 +15,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
@@ -249,7 +250,7 @@ class DataValuePresenter(
 
     private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
         if (dataElement.optionSetUid() != null) {
-            TODO("ShowOptionSet")
+            view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
         } else when (dataElement.valueType()) {
             ValueType.TEXT,
             ValueType.LONG_TEXT,
@@ -278,6 +279,10 @@ class DataValuePresenter(
             )
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
         }
+    }
+
+    private fun getSpinnerViewModel(dataElement: DataElement, cell: TableCell): SpinnerViewModel {
+        return repository.getOptionSetViewModel(dataElement, cell)
     }
 
     private fun getDataElement(dataElementUid: String): DataElement {

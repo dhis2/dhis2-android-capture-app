@@ -40,6 +40,7 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
@@ -48,9 +49,13 @@ import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.customviews.OptionSetCellPopUp
+import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.isPortrait
+import org.dhis2.utils.optionset.OptionSetDialog
+import org.dhis2.utils.optionset.OptionSetDialog.Companion.TAG
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -635,6 +640,35 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             )
         }
 
+    }
+
+    override fun showOptionSetDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        spinnerViewModel: SpinnerViewModel
+    ) {
+        val dialog = OptionSetDialog()
+        dialog.create(requireContext())
+        dialog.optionSetTable = spinnerViewModel
+
+        if (dialog.showDialog()) {
+            dialog.listener = OptionSetOnClickListener {
+                presenterFragment.onCellValueChange(cell.copy(value = it.code()))
+            }
+            dialog.clearListener = View.OnClickListener {
+                presenterFragment.onCellValueChange(cell.copy(value = null))
+            }
+            dialog.show(parentFragmentManager, TAG)
+        } else {
+            dialog.dismiss()
+            OptionSetCellPopUp(
+                requireContext(),
+                requireView(),
+                spinnerViewModel
+            ) {
+                presenterFragment.onCellValueChange(cell.copy(value = it.code()))
+            }
+        }
     }
 
     companion object {
