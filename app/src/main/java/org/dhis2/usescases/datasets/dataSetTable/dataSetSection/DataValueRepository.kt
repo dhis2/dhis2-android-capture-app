@@ -8,9 +8,11 @@ import io.reactivex.Single
 import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -945,5 +947,27 @@ class DataValueRepository(
             .uid(orgUnitUid)
             .blockingGet()
             .displayName()
+    }
+
+
+    fun getOptionSetViewModel(dataElement: DataElement, cell: TableCell): SpinnerViewModel {
+        return SpinnerViewModel.create(
+            cell.id,
+            dataElement.displayFormName()!!,
+            "",
+            false,
+            dataElement.optionSetUid(),
+            cell.value,
+            sectionUid,
+            null,
+            dataElement.displayDescription(),
+            dataElement.uid(),
+            emptyList(),
+            "android",
+            0,
+            0,
+            cell.id!!.split("_")[1],
+            dataElement.categoryComboUid()
+        )
     }
 }
