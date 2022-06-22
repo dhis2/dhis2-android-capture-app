@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import com.nhaarman.mockitokotlin2.mock
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
@@ -21,6 +22,8 @@ class DataValuePresenterTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
     private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
+    private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val mapper: TableDataToTableModelMapper = mock()
 
     @Before
     fun setup() {
@@ -30,7 +33,9 @@ class DataValuePresenterTest {
                 dataValueRepository,
                 valueStore,
                 schedulers,
-                updateProcessor
+                updateProcessor,
+                featureConfigRepository,
+                mapper
             )
     }
 
