@@ -49,6 +49,7 @@ import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
@@ -97,6 +98,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
+    private SettingItem settingOpened = null;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -285,46 +287,115 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void openItem(SettingItem settingsItem) {
-        binding.syncDataActions.setVisibility(View.GONE);
-        binding.syncMetadataActions.setVisibility(View.GONE);
-        binding.parameterData.setVisibility(View.GONE);
-        binding.reservedValuesActions.setVisibility(View.GONE);
-        binding.deleteDataButton.setVisibility(View.GONE);
-        binding.resetButton.setVisibility(View.GONE);
-        binding.smsContent.setVisibility(View.GONE);
-        binding.dataDivider.setVisibility(View.VISIBLE);
-        binding.metaDivider.setVisibility(View.VISIBLE);
-        binding.parameterDivider.setVisibility(View.VISIBLE);
-        binding.reservedValueDivider.setVisibility(View.VISIBLE);
+        if (settingsItem != settingOpened) {
+            closedSettingItem(settingOpened);
+            settingOpened = settingsItem;
+            binding.dataDivider.setVisibility(View.VISIBLE);
+            binding.metaDivider.setVisibility(View.VISIBLE);
+            binding.parameterDivider.setVisibility(View.VISIBLE);
+            binding.reservedValueDivider.setVisibility(View.VISIBLE);
 
-        switch (settingsItem) {
-            case DATA_SYNC:
-                binding.syncDataActions.setVisibility(View.VISIBLE);
-                binding.dataDivider.setVisibility(View.GONE);
-                break;
-            case META_SYNC:
-                binding.syncMetadataActions.setVisibility(View.VISIBLE);
-                binding.metaDivider.setVisibility(View.GONE);
-                break;
-            case SYNC_PARAMETERS:
-                binding.parameterData.setVisibility(View.VISIBLE);
-                binding.parameterDivider.setVisibility(View.GONE);
-                break;
-            case RESERVED_VALUES:
-                binding.reservedValuesActions.setVisibility(View.VISIBLE);
-                binding.reservedValueDivider.setVisibility(View.GONE);
-                break;
-            case DELETE_LOCAL_DATA:
-                binding.deleteDataButton.setVisibility(View.VISIBLE);
-                break;
-            case RESET_APP:
-                binding.resetButton.setVisibility(View.VISIBLE);
-                break;
-            case SMS:
-                binding.smsContent.setVisibility(View.VISIBLE);
-                break;
-            default:
-                break;
+            switch (settingsItem) {
+                case DATA_SYNC:
+                    ViewAnimationsKt.expand(binding.syncDataActions, false, () -> {
+                        binding.syncDataActions.setVisibility(View.VISIBLE);
+                        binding.dataDivider.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case META_SYNC:
+                    ViewAnimationsKt.expand(binding.syncMetadataActions, false, () -> {
+                        binding.syncMetadataActions.setVisibility(View.VISIBLE);
+                        binding.metaDivider.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SYNC_PARAMETERS:
+                    ViewAnimationsKt.expand(binding.parameterData, false, () -> {
+                        binding.parameterData.setVisibility(View.VISIBLE);
+                        binding.parameterDivider.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case RESERVED_VALUES:
+                    ViewAnimationsKt.expand(binding.reservedValuesActions, false, () -> {
+                        binding.reservedValuesActions.setVisibility(View.VISIBLE);
+                        binding.reservedValueDivider.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case DELETE_LOCAL_DATA:
+                    ViewAnimationsKt.expand(binding.deleteDataButton, false, () -> {
+                        binding.deleteDataButton.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case RESET_APP:
+                    ViewAnimationsKt.expand(binding.resetButton, false, () -> {
+                        binding.resetButton.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SMS:
+                    ViewAnimationsKt.expand(binding.smsContent, false, () -> {
+                        binding.smsContent.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void closedSettingItem(SettingItem settingItemToClose) {
+        if (settingItemToClose != null) {
+            switch (settingItemToClose) {
+                case DATA_SYNC:
+                    ViewAnimationsKt.collapse(binding.syncDataActions, () -> {
+                        binding.syncDataActions.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case META_SYNC:
+                    ViewAnimationsKt.collapse(binding.syncMetadataActions, () -> {
+                        binding.syncMetadataActions.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SYNC_PARAMETERS:
+                    ViewAnimationsKt.collapse(binding.parameterData, () -> {
+                        binding.parameterData.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case RESERVED_VALUES:
+                    ViewAnimationsKt.collapse(binding.reservedValuesActions, () -> {
+                        binding.reservedValuesActions.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case DELETE_LOCAL_DATA:
+                    ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
+                        binding.deleteDataButton.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case RESET_APP:
+                    ViewAnimationsKt.collapse(binding.resetButton, () -> {
+                        binding.resetButton.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SMS:
+                    ViewAnimationsKt.collapse(binding.smsContent, () -> {
+                        binding.smsContent.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
