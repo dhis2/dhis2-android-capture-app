@@ -1,38 +1,48 @@
 package org.dhis2.composetable.ui
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import org.dhis2.composetable.model.TableCell
 
-data class TableCellUiOptions(val cellValue: TableCell, val value: String) {
+class TableCellUiOptions(
+    private val cellValue: TableCell,
+    val value: String,
+    val focused: Boolean,
+    val selectionState: SelectionState
+) {
 
-    val backgroundColor = when (cellValue.editable) {
-        false -> DisabledCellBackground
-        else -> Color.Transparent
+    @Composable
+    fun backgroundColor() = when (cellValue.editable) {
+        false -> TableTheme.colors.disabledCellBackground
+        else -> selectionState.colorForCell(column = cellValue.column, row = cellValue.row)
     }
 
-    val textColor = when {
-        cellValue.error != null -> ErrorColor
-        cellValue.editable == false -> DisabledCellText
-        else -> CellText
+    @Composable
+    fun textColor() = when {
+        cellValue.error != null -> TableTheme.colors.errorColor
+        cellValue.editable == false -> TableTheme.colors.disabledCellText
+        else -> TableTheme.colors.cellText
     }
 
-    val mandatoryColor = when {
+    @Composable
+    fun mandatoryColor() = when {
         value.isNotEmpty() -> Color.LightGray
-        else -> ErrorColor
+        else -> TableTheme.colors.errorColor
     }
-    val mandatoryAlignment = when {
+    @Composable
+    fun mandatoryAlignment() = when {
         value.isNotEmpty() -> Alignment.TopStart
         else -> Alignment.CenterEnd
     }
 
     val enabled = cellValue.editable == true
 
-    fun borderColor(focusState: FocusState, primary: Color) = when {
-        focusState.isFocused -> when {
-            cellValue.error != null -> ErrorColor
-            else -> primary
+    @Composable
+    fun borderColor() = when {
+        focused -> when {
+            cellValue.error != null -> TableTheme.colors.errorColor
+            else -> TableTheme.colors.primary
         }
         else -> Color.Transparent
     }

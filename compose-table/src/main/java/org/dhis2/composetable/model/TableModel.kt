@@ -30,6 +30,9 @@ data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = 
 data class TableHeaderRow(val cells: List<TableHeaderCell>)
 data class TableHeaderCell(val value: String)
 data class TableCell(
+    val id: String? = null,
+    val row: Int? = null,
+    val column: Int? = null,
     val value: String,
     val editable: Boolean? = true,
     val mandatory: Boolean? = false,
@@ -37,7 +40,7 @@ data class TableCell(
 )
 
 data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableCell>)
-data class RowHeader(val title: String, val showDecoration: Boolean = false) {
+data class RowHeader(val title: String, val row: Int? = null, val showDecoration: Boolean = false) {
     val defaultCellHeight = 36.dp
     val defaultWidth = 60.dp
 }

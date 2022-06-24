@@ -24,15 +24,18 @@ class TableDataToTableModelMapper {
             hasTotals = tableData.showRowTotals
         )
 
-        val tableRows = tableData.rows()?.mapIndexed { index, dataElement ->
+        val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
-                rowHeader = RowHeader(dataElement.displayName()!!),
-                values = tableData.fieldViewModels[index].mapIndexed { columnIndex, field ->
+                rowHeader = RowHeader(dataElement.displayName()!!, rowIndex),
+                values = tableData.fieldViewModels[rowIndex].mapIndexed { columnIndex, field ->
                     columnIndex to TableCell(
-                        tableData.cells[index][columnIndex],
-                        field.editable(),
-                        field.mandatory(),
-                        field.error()
+                        id = field.uid(),
+                        row = rowIndex,
+                        column = columnIndex,
+                        value = tableData.cells[rowIndex][columnIndex],
+                        editable = field.editable(),
+                        mandatory = field.mandatory(),
+                        error = field.error()
                     )
                 }.toMap()
             )
@@ -58,7 +61,7 @@ class TableDataToTableModelMapper {
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
                 rowHeader = RowHeader(indicatorName!!),
-                values = mapOf(Pair(0, TableCell(indicatorValue)))
+                values = mapOf(Pair(0, TableCell(value = indicatorValue)))
             )
         }
 

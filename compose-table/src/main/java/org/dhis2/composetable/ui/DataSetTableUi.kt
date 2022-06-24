@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
@@ -51,7 +52,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import org.dhis2.compose_table.R
+import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -64,7 +65,8 @@ import org.dhis2.composetable.model.TableRowModel
 fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
-    horizontalScrollState: ScrollState
+    horizontalScrollState: ScrollState,
+    selectionState: SelectionState
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
         Column {
@@ -77,10 +79,26 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
-                                columnIndex = cellIndex,
+                                columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
                                 headerWidth = tableHeaderModel.headerCellWidth(rowIndex),
-                                headerHeight = tableHeaderModel.defaultHeaderHeight
+                                headerHeight = tableHeaderModel.defaultHeaderHeight,
+                                cellStyle = selectionState.styleForColumnHeader(
+                                    columnIndex,
+                                    rowIndex
+                                ),
+                                onCellSelected = {
+
+                                    selectionState.sonsOfHeader = tableHeaderModel.rows
+                                        .filterIndexed { index, _ -> index > rowIndex }
+                                        .map { row -> row.cells.size }
+                                        .reduceOrNull { acc, i -> acc * i }
+
+                                    selectionState.selectCell(
+                                        column = it,
+                                        columnHeaderRow = rowIndex,
+                                    )
+                                }
                             )
                         }
                     )
@@ -92,7 +110,12 @@ fun TableHeader(
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
                 headerWidth = tableHeaderModel.defaultCellWidth,
-                headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size
+                headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size,
+                cellStyle = selectionState.styleForColumnHeader(
+                    tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
+                    tableHeaderModel.rows.size - 1
+                ),
+                onCellSelected = {}
             )
         }
     }
@@ -103,32 +126,31 @@ fun HeaderCell(
     columnIndex: Int,
     headerCell: TableHeaderCell,
     headerWidth: Dp,
-    headerHeight: Dp
+    headerHeight: Dp,
+    cellStyle: CellStyle,
+    onCellSelected: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
             .width(IntrinsicSize.Min)
             .height(headerHeight)
-            .background(
-                if (columnIndex % 2 == 0) {
-                    HeaderBackground1
-                } else {
-                    HeaderBackground2
-                }
-            )
+            .background(cellStyle.backgroundColor)
+            .clickable {
+                onCellSelected(columnIndex)
+            }
     ) {
         Text(
             modifier = Modifier
                 .width(headerWidth)
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
-            color = HeaderText,
+            color = cellStyle.textColor,
             text = headerCell.value,
             textAlign = TextAlign.Center,
             fontSize = 10.sp
         )
         Divider(
-            color = MaterialTheme.colors.primary,
+            color = TableTheme.colors.primary,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
@@ -138,14 +160,16 @@ fun HeaderCell(
 @Composable
 fun TableHeaderRow(
     tableModel: TableModel,
-    horizontalScrollState: ScrollState
+    horizontalScrollState: ScrollState,
+    selectionState: SelectionState
 ) {
     Row(Modifier.background(Color.White)) {
-        TableCorner(tableModel)
+        TableCorner(tableModel, selectionState)
         TableHeader(
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
-            horizontalScrollState = horizontalScrollState
+            horizontalScrollState = horizontalScrollState,
+            selectionState = selectionState
         )
     }
 }
@@ -155,16 +179,24 @@ fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     rowHeader: RowHeader,
-    dataElementValues: Map<Int, TableCell>
+    dataElementValues: Map<Int, TableCell>,
+    selectionState: SelectionState
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            ItemHeader(rowHeader)
+            ItemHeader(
+                rowHeader = rowHeader,
+                cellStyle = selectionState.styleForRowHeader(rowHeader.row),
+                onCellSelected = {
+                    selectionState.selectCell(row = it, rowHeader = true)
+                }
+            )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
                 defaultHeight = rowHeader.defaultCellHeight,
-                defaultWidth = tableModel.tableHeaderModel.defaultCellWidth
+                defaultWidth = tableModel.tableHeaderModel.defaultCellWidth,
+                selectionState = selectionState
             )
         }
         Divider(modifier = Modifier.fillMaxWidth())
@@ -172,29 +204,38 @@ fun TableItemRow(
 }
 
 @Composable
-fun TableCorner(tableModel: TableModel) {
+fun TableCorner(tableModel: TableModel, selectionState: SelectionState) {
     Box(
         modifier = Modifier
             .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
-            .width(tableModel.tableRows.first().rowHeader.defaultWidth),
+            .width(tableModel.tableRows.first().rowHeader.defaultWidth)
+            .background(selectionState.backgroundColorForCorner())
+            .clickable { selectionState.selectCell(all = true) },
         contentAlignment = Alignment.CenterEnd
     ) {
         Divider(
             Modifier
                 .fillMaxHeight()
                 .width(1.dp),
-            color = MaterialTheme.colors.primary
+            color = TableTheme.colors.primary
         )
     }
 }
 
 @Composable
-fun ItemHeader(rowHeader: RowHeader) {
+fun ItemHeader(
+    rowHeader: RowHeader,
+    cellStyle: CellStyle,
+    onCellSelected: (Int?) -> Unit
+
+) {
     Row(
         modifier = Modifier
             .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
             .width(rowHeader.defaultWidth)
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .background(cellStyle.backgroundColor)
+            .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -202,7 +243,7 @@ fun ItemHeader(rowHeader: RowHeader) {
                 .padding(horizontal = 3.dp)
                 .weight(1f),
             text = rowHeader.title,
-            color = MaterialTheme.colors.primary,
+            color = cellStyle.textColor,
             fontSize = 10.sp
         )
         if (rowHeader.showDecoration) {
@@ -213,14 +254,14 @@ fun ItemHeader(rowHeader: RowHeader) {
                     .padding(end = 4.dp)
                     .height(10.dp)
                     .width(10.dp),
-                tint = MaterialTheme.colors.primary
+                tint = TableTheme.colors.primary
             )
         }
         Divider(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
-            color = MaterialTheme.colors.primary
+            color = TableTheme.colors.primary
         )
     }
 }
@@ -230,7 +271,8 @@ fun ItemValues(
     horizontalScrollState: ScrollState,
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
-    defaultWidth: Dp
+    defaultWidth: Dp,
+    selectionState: SelectionState
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -251,7 +293,8 @@ fun ItemValues(
                     coroutineScope.launch {
                         horizontalScrollState.scrollTo((columnIndex + 1) * defaultWidthPx.toInt())
                     }
-                }
+                },
+                selectionState = selectionState
             )
         })
     }
@@ -262,22 +305,23 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     focusRequester: FocusManager,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    selectionState: SelectionState
 ) {
     var value by remember { mutableStateOf(cellValue.value) }
-    var borderColor by remember { mutableStateOf(Color.Transparent) }
-    val primaryColor = MaterialTheme.colors.primary
-    val tableCellUiOptions = TableCellUiOptions(cellValue, value)
+    var focused by remember { mutableStateOf(false) }
+    val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
     Box(
         modifier = modifier
-            .border(1.dp, borderColor)
-            .background(tableCellUiOptions.backgroundColor)
+            .border(1.dp, tableCellUiOptions.borderColor())
+            .background(tableCellUiOptions.backgroundColor())
     ) {
         BasicTextField(
             modifier = Modifier
                 .align(Alignment.Center)
                 .onFocusChanged {
-                    borderColor = tableCellUiOptions.borderColor(it, primaryColor)
+                    focused = it.isFocused
+                    selectionState.selectCell()
                 }
                 .padding(horizontal = 4.dp),
             enabled = tableCellUiOptions.enabled,
@@ -285,7 +329,7 @@ fun TableCell(
             textStyle = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
-                color = tableCellUiOptions.textColor
+                color = tableCellUiOptions.textColor()
             ),
             value = value,
             onValueChange = { newValue ->
@@ -307,8 +351,8 @@ fun TableCell(
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment),
-                tint = tableCellUiOptions.mandatoryColor
+                    .align(tableCellUiOptions.mandatoryAlignment()),
+                tint = tableCellUiOptions.mandatoryColor()
             )
         }
         if (cellValue.error != null) {
@@ -316,7 +360,7 @@ fun TableCell(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
-                color = ErrorColor
+                color = TableTheme.colors.errorColor
             )
         }
     }
@@ -324,25 +368,30 @@ fun TableCell(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(tableList: List<TableModel>) {
-    val horizontalScrollStates = tableList.map { rememberScrollState() }
-    LazyColumn(Modifier.padding(16.dp)) {
-        tableList.forEachIndexed { index, currentTableModel ->
-            stickyHeader {
-                TableHeaderRow(
-                    tableModel = currentTableModel,
-                    horizontalScrollState = horizontalScrollStates[index]
-                )
+fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
+    TableTheme(tableColors) {
+        val horizontalScrollStates = tableList.map { rememberScrollState() }
+        val selectionStates = tableList.map { rememberSelectionState() }
+        LazyColumn(Modifier.padding(16.dp)) {
+            tableList.forEachIndexed { index, currentTableModel ->
+                stickyHeader {
+                    TableHeaderRow(
+                        tableModel = currentTableModel,
+                        horizontalScrollState = horizontalScrollStates[index],
+                        selectionState = selectionStates[index]
+                    )
+                }
+                items(items = currentTableModel.tableRows) { tableRowModel ->
+                    TableItemRow(
+                        tableModel = currentTableModel,
+                        horizontalScrollState = horizontalScrollStates[index],
+                        rowHeader = tableRowModel.rowHeader,
+                        dataElementValues = tableRowModel.values,
+                        selectionState = selectionStates[index]
+                    )
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
-            items(items = currentTableModel.tableRows) { tableRowModel ->
-                TableItemRow(
-                    tableModel = currentTableModel,
-                    horizontalScrollState = horizontalScrollStates[index],
-                    rowHeader = tableRowModel.rowHeader,
-                    dataElementValues = tableRowModel.values
-                )
-            }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }
@@ -377,9 +426,9 @@ fun TableListPreview() {
     )
 
     val tableRows = TableRowModel(
-        rowHeader = RowHeader("Data Element Element Element ", true),
+        rowHeader = RowHeader("Data Element Element Element ", 0, true),
         values = mapOf(
-            Pair(0, TableCell("12", mandatory = true)),
+            /*Pair(0, TableCell("12", mandatory = true)),
             Pair(1, TableCell("12", editable = false)),
             Pair(2, TableCell("", mandatory = true)),
             Pair(3, TableCell("12", mandatory = true, error = "Error")),
@@ -390,7 +439,7 @@ fun TableListPreview() {
             Pair(8, TableCell("12")),
             Pair(9, TableCell("12")),
             Pair(10, TableCell("12")),
-            Pair(11, TableCell("12"))
+            Pair(11, TableCell("12"))*/
         )
     )
 
