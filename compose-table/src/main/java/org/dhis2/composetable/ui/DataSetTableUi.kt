@@ -96,7 +96,7 @@ fun TableHeader(
 
                                     selectionState.selectCell(
                                         column = it,
-                                        columnHeaderRow = rowIndex,
+                                        columnHeaderRow = rowIndex
                                     )
                                 }
                             )
@@ -428,18 +428,18 @@ fun TableListPreview() {
     val tableRows = TableRowModel(
         rowHeader = RowHeader("Data Element Element Element ", 0, true),
         values = mapOf(
-            /*Pair(0, TableCell("12", mandatory = true)),
-            Pair(1, TableCell("12", editable = false)),
-            Pair(2, TableCell("", mandatory = true)),
-            Pair(3, TableCell("12", mandatory = true, error = "Error")),
-            Pair(4, TableCell("1", error = "Error")),
-            Pair(5, TableCell("12")),
-            Pair(6, TableCell("55")),
-            Pair(7, TableCell("12")),
-            Pair(8, TableCell("12")),
-            Pair(9, TableCell("12")),
-            Pair(10, TableCell("12")),
-            Pair(11, TableCell("12"))*/
+            Pair(0, TableCell(value = "12", mandatory = true)),
+            Pair(1, TableCell(value = "12", editable = false)),
+            Pair(2, TableCell(value = "", mandatory = true)),
+            Pair(3, TableCell(value = "12", mandatory = true, error = "Error")),
+            Pair(4, TableCell(value = "1", error = "Error")),
+            Pair(5, TableCell(value = "12")),
+            Pair(6, TableCell(value = "55")),
+            Pair(7, TableCell(value = "12")),
+            Pair(8, TableCell(value = "12")),
+            Pair(9, TableCell(value = "12")),
+            Pair(10, TableCell(value = "12")),
+            Pair(11, TableCell(value = "12"))
         )
     )
 
