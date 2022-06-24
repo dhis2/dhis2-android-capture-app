@@ -1,4 +1,4 @@
-package org.dhis2.compose_table
+package org.dhis2.composetable
 
 import androidx.compose.ui.unit.dp
 import org.dhis2.composetable.model.TableHeader
@@ -30,7 +30,7 @@ class TableHeaderTest {
                     TableHeaderCell("Fixed"),
                     TableHeaderCell("Outreach")
                 )
-            ),
+            )
         )
     )
 

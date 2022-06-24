@@ -36,7 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
@@ -88,7 +87,6 @@ fun TableHeader(
                                     rowIndex
                                 ),
                                 onCellSelected = {
-
                                     selectionState.sonsOfHeader = tableHeaderModel.rows
                                         .filterIndexed { index, _ -> index > rowIndex }
                                         .map { row -> row.cells.size }
@@ -281,22 +279,27 @@ fun ItemValues(
         modifier = Modifier
             .horizontalScroll(state = horizontalScrollState)
     ) {
-        repeat(times = cellValues.size, action = { columnIndex ->
-            TableCell(
-                modifier = Modifier
-                    .width(defaultWidth)
-                    .fillMaxHeight()
-                    .defaultMinSize(minHeight = defaultHeight),
-                cellValue = cellValues[columnIndex]!!,
-                focusRequester = focusRequester,
-                onNext = {
-                    coroutineScope.launch {
-                        horizontalScrollState.scrollTo((columnIndex + 1) * defaultWidthPx.toInt())
-                    }
-                },
-                selectionState = selectionState
-            )
-        })
+        repeat(
+            times = cellValues.size,
+            action = { columnIndex ->
+                TableCell(
+                    modifier = Modifier
+                        .width(defaultWidth)
+                        .fillMaxHeight()
+                        .defaultMinSize(minHeight = defaultHeight),
+                    cellValue = cellValues[columnIndex]!!,
+                    focusRequester = focusRequester,
+                    onNext = {
+                        coroutineScope.launch {
+                            horizontalScrollState.scrollTo(
+                                (columnIndex + 1) * defaultWidthPx.toInt()
+                            )
+                        }
+                    },
+                    selectionState = selectionState
+                )
+            }
+        )
     }
 }
 
@@ -336,12 +339,14 @@ fun TableCell(
                 value = newValue
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = {
-                onNext()
-                focusRequester.moveFocus(
-                    FocusDirection.Right
-                )
-            })
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    onNext()
+                    focusRequester.moveFocus(
+                        FocusDirection.Right
+                    )
+                }
+            )
         )
         if (cellValue.mandatory == true) {
             Icon(
@@ -420,7 +425,7 @@ fun TableListPreview() {
                     TableHeaderCell("Fixed"),
                     TableHeaderCell("Outreach")
                 )
-            ),
+            )
         ),
         hasTotals = true
     )
