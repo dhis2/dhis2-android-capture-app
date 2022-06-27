@@ -53,7 +53,7 @@ public class SyncDataWorker extends Worker {
     public Result doWork() {
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
 
-        syncController.updateDownloadProcess(true, true, true);
+        presenter.initSyncControllerMap();
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
@@ -84,10 +84,6 @@ public class SyncDataWorker extends Worker {
             isEventOk = false;
         }
 
-        syncController.updateDownloadProcess(true,
-                false,
-                true);
-
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 "Syncing tracked entities",
@@ -100,10 +96,6 @@ public class SyncDataWorker extends Worker {
             isTeiOk = false;
         }
 
-        syncController.updateDownloadProcess(false,
-                false,
-                true);
-
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 "Syncing data sets",
@@ -115,10 +107,6 @@ public class SyncDataWorker extends Worker {
             Timber.e(e);
             isDataValue = false;
         }
-
-        syncController.updateDownloadProcess(false,
-                false,
-                false);
 
         syncController.finishSync();
 

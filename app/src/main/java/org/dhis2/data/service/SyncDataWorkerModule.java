@@ -20,8 +20,9 @@ public class SyncDataWorkerModule {
             @NonNull D2 d2,
             @NonNull PreferenceProvider preferences,
             @NonNull WorkManagerController workManagerController,
-            @NonNull AnalyticsHelper analyticsHelper
+            @NonNull AnalyticsHelper analyticsHelper,
+            @NonNull SyncStatusController syncStatusController
             ) {
-        return new SyncPresenterImpl(d2, preferences, workManagerController,analyticsHelper);
+        return new SyncPresenterImpl(d2, preferences, workManagerController,analyticsHelper, syncStatusController);
     }
 }

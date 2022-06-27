@@ -29,6 +29,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.DEFAULT_EXTERNAL_TRACKER_NAME
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
+import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
@@ -36,14 +37,33 @@ import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
+import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress
 import timber.log.Timber
 
 class SyncPresenterImpl(
     private val d2: D2,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val syncStatusController: SyncStatusController
 ) : SyncPresenter {
+
+    override fun initSyncControllerMap() {
+        Completable.fromCallable {
+            val programMap: Map<String, D2ProgressStatus> =
+                d2.programModule().programs().blockingGetUids().associateWith {
+                    D2ProgressStatus(false, null)
+                }
+            val aggregateMap: Map<String, D2ProgressStatus> =
+                d2.dataSetModule().dataSets().blockingGetUids().associateWith {
+                    D2ProgressStatus(false, null)
+                }
+            val allMap = programMap.toMutableMap().apply {
+                putAll(aggregateMap)
+            }.toMap()
+            syncStatusController.initDownloadProcess(allMap)
+        }.blockingAwait()
+    }
 
     override fun syncAndDownloadEvents() {
         val (eventLimit, limitByOU, limitByProgram) = getDownloadLimits()
@@ -56,7 +76,9 @@ class SyncPresenterImpl(
                         .limit(eventLimit)
                         .limitByOrgunit(limitByOU)
                         .limitByProgram(limitByProgram)
-                        .download()
+                        .download().doOnNext { d2Progress ->
+                            syncStatusController.updateDownloadProcess(d2Progress.programs())
+                        }
                 )
             ).blockingAwait()
     }
@@ -110,6 +132,7 @@ class SyncPresenterImpl(
                             val callsDone = data.doneCalls().size
                             val totalCalls = data.totalCalls()
                             Timber.d("$percentage% $callsDone/$totalCalls")
+                            syncStatusController.updateDownloadProcess(data.programs())
                         }
                 )
                     .doOnError { Timber.d("error while downloading TEIs") }
@@ -127,7 +150,11 @@ class SyncPresenterImpl(
                     )
                 )
                 .andThen(
-                    Completable.fromObservable(d2.aggregatedModule().data().download())
+                    Completable.fromObservable(
+                        d2.aggregatedModule().data().download().doOnNext {
+                            syncStatusController.updateDownloadProcess(it.dataSets())
+                        }
+                    )
                 ).blockingAwait()
         }
     }
@@ -214,7 +241,7 @@ class SyncPresenterImpl(
         return SyncResult.ERROR
     }
 
-    override fun syncGranularEvent(eventUid: String): Observable<D2Progress> {
+    override fun syncGranularEvent(eventUid: String): Observable<TrackerD2Progress> {
         Completable.fromObservable(d2.eventModule().events().byUid().eq(eventUid).upload())
             .blockingAwait()
         return d2.eventModule().eventDownloader().byUid().eq(eventUid).download()
@@ -330,7 +357,7 @@ class SyncPresenterImpl(
             }
     }
 
-    override fun syncGranularTEI(uid: String): Observable<D2Progress> {
+    override fun syncGranularTEI(uid: String): Observable<TrackerD2Progress> {
         val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
         Completable.fromObservable(
             d2.trackedEntityModule().trackedEntityInstances()
