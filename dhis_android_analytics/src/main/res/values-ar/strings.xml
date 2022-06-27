@@ -43,4 +43,4 @@
     <string name="no_data_to_display">ليس لديك أي بيانات ليتم عرضها</string>
     <string name="pie_chart_no_data">كل البيانات صفر</string>
     <string name="error_database">لا يمكن الوصول إلى قاعدة البيانات. الرجاء الاتصال بالمسؤول الخاص بك.</string>
-</resources>
+    </resources>
