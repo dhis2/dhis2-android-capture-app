@@ -119,16 +119,6 @@
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/content_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

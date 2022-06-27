@@ -31,7 +31,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
 import java.io.File
 import java.util.Calendar
-import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
@@ -41,11 +40,12 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
-import org.dhis2.data.forms.ScanContract
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.data.forms.ScanContract
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
@@ -210,6 +210,7 @@ class FormView : Fragment() {
         if (needToForceUpdate) {
             retainInstance = true
         }
+        FormFileProvider.init(contextWrapper.applicationContext)
         return binding.root
     }
 
@@ -664,7 +665,7 @@ class FormView : Fragment() {
                         requireContext().getString(R.string.take_photo) -> {
                             val photoUri = FileProvider.getUriForFile(
                                 requireContext(),
-                                BuildConfig.APPLICATION_ID + ".provider",
+                                FormFileProvider.fileProviderAuthority,
                                 File(
                                     FileResourceDirectoryHelper.getFileResourceDirectory(
                                         requireContext()
