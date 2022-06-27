@@ -26,7 +26,9 @@ val LocalTableColors = staticCompositionLocalOf { TableColors() }
 @Composable
 fun TableTheme(
     tableColors: TableColors?,
-    content: @Composable () -> Unit
+    content:
+        @Composable
+        () -> Unit
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors())
