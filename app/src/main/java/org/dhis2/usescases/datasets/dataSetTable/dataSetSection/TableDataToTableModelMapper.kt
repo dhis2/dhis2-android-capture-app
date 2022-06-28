@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import java.util.SortedMap
+import org.dhis2.composetable.model.RowHeader
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
@@ -22,11 +24,23 @@ class TableDataToTableModelMapper {
             hasTotals = tableData.showRowTotals
         )
 
-        val tableRows = tableData.rows()?.mapIndexed { index, dataElement ->
+        val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
-                rowHeader = dataElement.displayName()!!,
-                values = tableData.cells[index].mapIndexed { columnIndex, s ->
-                    columnIndex to TableHeaderCell(s)
+                rowHeader = RowHeader(
+                    dataElement.displayName()!!,
+                    rowIndex,
+                    tableData.hasDataElementDecoration && dataElement.displayDescription() != null
+                ),
+                values = tableData.fieldViewModels[rowIndex].mapIndexed { columnIndex, field ->
+                    columnIndex to TableCell(
+                        id = field.uid(),
+                        row = rowIndex,
+                        column = columnIndex,
+                        value = tableData.cells[rowIndex][columnIndex],
+                        editable = field.editable(),
+                        mandatory = field.mandatory(),
+                        error = field.error()
+                    )
                 }.toMap()
             )
         } ?: emptyList()
@@ -50,8 +64,8 @@ class TableDataToTableModelMapper {
 
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = indicatorName!!,
-                values = mapOf(Pair(0, TableHeaderCell(indicatorValue)))
+                rowHeader = RowHeader(indicatorName!!),
+                values = mapOf(Pair(0, TableCell(value = indicatorValue)))
             )
         }
 
