@@ -22,10 +22,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import org.dhis2.Bindings.clipWithRoundedCorners
-import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.QrDetailDialogBinding
+import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import timber.log.Timber
@@ -179,7 +179,7 @@ QRDetailBottomDialog(
             stream.close()
             qrContentUri = FileProvider.getUriForFile(
                 requireContext(),
-                BuildConfig.APPLICATION_ID + ".provider",
+                FormFileProvider.fileProviderAuthority,
                 File(cachePath, "qrImage.png")
             )
         } catch (e: IOException) {
