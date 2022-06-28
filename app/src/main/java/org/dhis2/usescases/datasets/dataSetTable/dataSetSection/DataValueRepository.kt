@@ -731,6 +731,8 @@ class DataValueRepository(
                 ) &&
             !isApproval().blockingFirst()
 
+        val hasDataElementDecoration = getDataSet().blockingFirst().dataElementDecoration() == true
+
         return TableData(
             dataTableModel,
             listFields,
@@ -738,7 +740,8 @@ class DataValueRepository(
             isEditable,
             showRowTotals(),
             showColumnTotals(),
-            getCurrentSectionMeasure()
+            getCurrentSectionMeasure(),
+            hasDataElementDecoration
         )
     }
 

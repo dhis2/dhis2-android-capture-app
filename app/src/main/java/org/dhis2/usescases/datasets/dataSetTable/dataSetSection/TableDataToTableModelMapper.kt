@@ -26,7 +26,11 @@ class TableDataToTableModelMapper {
 
         val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
-                rowHeader = RowHeader(dataElement.displayName()!!, rowIndex),
+                rowHeader = RowHeader(
+                    dataElement.displayName()!!,
+                    rowIndex,
+                    tableData.hasDataElementDecoration && dataElement.displayDescription() != null
+                ),
                 values = tableData.fieldViewModels[rowIndex].mapIndexed { columnIndex, field ->
                     columnIndex to TableCell(
                         id = field.uid(),

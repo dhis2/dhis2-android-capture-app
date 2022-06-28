@@ -252,7 +252,7 @@ fun ItemHeader(
                     .padding(end = 4.dp)
                     .height(10.dp)
                     .width(10.dp),
-                tint = TableTheme.colors.primary
+                tint = cellStyle.textColor
             )
         }
         Divider(
