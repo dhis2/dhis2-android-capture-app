@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,7 +45,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -322,67 +322,48 @@ fun TableCell(
     var value by remember { mutableStateOf(cellValue.value) }
     var focused by remember { mutableStateOf(false) }
     val tableCellUiOptions = TableCellUiOptions(cellValue, value ?: "", focused, selectionState)
+    val source = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .border(1.dp, tableCellUiOptions.borderColor())
             .background(tableCellUiOptions.backgroundColor())
-            .clickable(
-                onClick = {
-                    if (tableCellUiOptions.enabled) {
-                        onClick(cellValue)
-                    }
+    ) {
+        if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
+            onClick(cellValue)
+        }
+
+        BasicTextField(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .onFocusChanged {
+                    focused = it.isFocused
+                    selectionState.selectCell()
+                }
+                .padding(horizontal = 4.dp),
+            enabled = tableCellUiOptions.enabled,
+            interactionSource = source,
+            readOnly = cellValue.isReadOnly,
+            singleLine = true,
+            textStyle = TextStyle.Default.copy(
+                fontSize = 10.sp,
+                textAlign = TextAlign.End,
+                color = tableCellUiOptions.textColor()
+            ),
+            value = value ?: "",
+            onValueChange = { newValue ->
+                value = newValue
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    onNext()
+                    focusRequester.moveFocus(
+                        FocusDirection.Right
+                    )
                 }
             )
-    ) {
-        if (cellValue.isReadOnly) {
-            BasicText(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .onFocusChanged {
-                        focused = it.isFocused
-                        selectionState.selectCell()
-                    }
-                    .padding(horizontal = 4.dp),
-                maxLines = 1,
-                style = TextStyle.Default.copy(
-                    fontSize = 10.sp,
-                    textAlign = TextAlign.End,
-                    color = tableCellUiOptions.textColor()
-                ),
-                text = AnnotatedString(value ?: "")
-            )
-        } else {
-            BasicTextField(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .onFocusChanged {
-                        focused = it.isFocused
-                        selectionState.selectCell()
-                    }
-                    .padding(horizontal = 4.dp),
-                enabled = tableCellUiOptions.enabled,
-                singleLine = true,
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 10.sp,
-                    textAlign = TextAlign.End,
-                    color = tableCellUiOptions.textColor()
-                ),
-                value = value ?: "",
-                onValueChange = { newValue ->
-                    value = newValue
-                    onClick(cellValue.copy(value = value))
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        onNext()
-                        focusRequester.moveFocus(
-                            FocusDirection.Right
-                        )
-                    }
-                )
-            )
-        }
+        )
+
         if (cellValue.mandatory == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_mandatory),
