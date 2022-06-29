@@ -20,12 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -181,7 +181,8 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onClick: (TableCell) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -197,7 +198,8 @@ fun TableItemRow(
                 cellValues = dataElementValues,
                 defaultHeight = rowHeader.defaultCellHeight,
                 defaultWidth = tableModel.tableHeaderModel.defaultCellWidth,
-                selectionState = selectionState
+                selectionState = selectionState,
+                onClick = onClick
             )
         }
         Divider(modifier = Modifier.fillMaxWidth())
@@ -274,7 +276,7 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     selectionState: SelectionState,
-    onValueChange: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -301,7 +303,7 @@ fun ItemValues(
                         }
                     },
                     selectionState = selectionState,
-                    onValueChange = onValueChange
+                    onClick = onClick
                 )
             }
         )
@@ -315,25 +317,41 @@ fun TableCell(
     focusRequester: FocusManager,
     onNext: () -> Unit,
     selectionState: SelectionState,
-    onValueChange: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit
 ) {
-    if (cellValue.isReadOnly) {
-        ClickableText(
-            modifier = modifier,
-            text = AnnotatedString(cellValue.value ?: ""),
-            onClick = {
-                onValueChange(cellValue)
-            }
-        )
-    } else {
-        var value by remember { mutableStateOf(cellValue.value) }
-        var focused by remember { mutableStateOf(false) }
-        val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
-        Box(
-            modifier = modifier
-                .border(1.dp, tableCellUiOptions.borderColor())
-                .background(tableCellUiOptions.backgroundColor())
-        ) {
+    var value by remember { mutableStateOf(cellValue.value) }
+    var focused by remember { mutableStateOf(false) }
+    val tableCellUiOptions = TableCellUiOptions(cellValue, value ?: "", focused, selectionState)
+    Box(
+        modifier = modifier
+            .border(1.dp, tableCellUiOptions.borderColor())
+            .background(tableCellUiOptions.backgroundColor())
+            .clickable(
+                onClick = {
+                    if (tableCellUiOptions.enabled) {
+                        onClick(cellValue)
+                    }
+                }
+            )
+    ) {
+        if (cellValue.isReadOnly) {
+            BasicText(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .onFocusChanged {
+                        focused = it.isFocused
+                        selectionState.selectCell()
+                    }
+                    .padding(horizontal = 4.dp),
+                maxLines = 1,
+                style = TextStyle.Default.copy(
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.End,
+                    color = tableCellUiOptions.textColor()
+                ),
+                text = AnnotatedString(value ?: "")
+            )
+        } else {
             BasicTextField(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -352,7 +370,7 @@ fun TableCell(
                 value = value ?: "",
                 onValueChange = { newValue ->
                     value = newValue
-                    onValueChange(cellValue.copy(value = value))
+                    onClick(cellValue.copy(value = value))
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
@@ -364,33 +382,37 @@ fun TableCell(
                     }
                 )
             )
-            if (cellValue.mandatory == true) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_mandatory),
-                    contentDescription = "mandatory",
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .width(6.dp)
-                        .height(6.dp)
-                        .align(tableCellUiOptions.mandatoryAlignment()),
-                    tint = tableCellUiOptions.mandatoryColor()
-                )
-            }
-            if (cellValue.error != null) {
-                Divider(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth(),
-                    color = TableTheme.colors.errorColor
-                )
-            }
+        }
+        if (cellValue.mandatory == true) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_mandatory),
+                contentDescription = "mandatory",
+                modifier = Modifier
+                    .padding(4.dp)
+                    .width(6.dp)
+                    .height(6.dp)
+                    .align(tableCellUiOptions.mandatoryAlignment()),
+                tint = tableCellUiOptions.mandatoryColor()
+            )
+        }
+        if (cellValue.error != null) {
+            Divider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                color = TableTheme.colors.errorColor
+            )
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
+fun TableList(
+    tableList: List<TableModel>,
+    tableColors: TableColors? = null,
+    onClick: (TableCell) -> Unit
+) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val selectionStates = tableList.map { rememberSelectionState() }
@@ -409,7 +431,8 @@ fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
                         horizontalScrollState = horizontalScrollStates[index],
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
-                        selectionState = selectionStates[index]
+                        selectionState = selectionStates[index],
+                        onClick = onClick
                     )
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -418,7 +441,6 @@ fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun TableListPreview() {
@@ -466,9 +488,10 @@ fun TableListPreview() {
     )
 
     val tableModel = TableModel(
+        "",
         tableHeaderModel,
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList)
+    TableList(tableList = tableList) {}
 }

@@ -1,8 +1,8 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.unit.dp
-import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
+import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
@@ -14,21 +14,21 @@ class TableHeaderTest {
         rows = listOf(
             TableHeaderRow(
                 cells = listOf(
-                    TableCell(value = "<18"),
-                    TableCell(value = ">18 <65"),
-                    TableCell(value = ">65")
+                    TableHeaderCell(value = "<18"),
+                    TableHeaderCell(value = ">18 <65"),
+                    TableHeaderCell(value = ">65")
                 )
             ),
             TableHeaderRow(
                 cells = listOf(
-                    TableCell(value = "Male"),
-                    TableCell(value = "Female")
+                    TableHeaderCell(value = "Male"),
+                    TableHeaderCell(value = "Female")
                 )
             ),
             TableHeaderRow(
                 cells = listOf(
-                    TableCell(value = "Fixed"),
-                    TableCell(value = "Outreach")
+                    TableHeaderCell(value = "Fixed"),
+                    TableHeaderCell(value = "Outreach")
                 )
             )
         )
@@ -41,7 +41,7 @@ class TableHeaderTest {
         assertTrue(tableHeaderModel.numberOfColumns(2) == 12)
     }
 
-    @Ignore
+    @Ignore("Indeterministic")
     @Test
     fun widthCellInHeaderRow() {
         assertTrue(tableHeaderModel.headerCellWidth(0) == 200.dp)

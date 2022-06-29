@@ -35,12 +35,11 @@ import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
-import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableList
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
