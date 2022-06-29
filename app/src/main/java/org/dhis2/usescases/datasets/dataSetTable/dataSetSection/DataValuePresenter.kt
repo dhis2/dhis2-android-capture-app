@@ -265,7 +265,9 @@ class DataValuePresenter(
             ValueType.INTEGER_ZERO_OR_POSITIVE,
             ValueType.USERNAME,
             ValueType.UNIT_INTERVAL,
-            ValueType.URL -> onCellValueChange(cell)
+            ValueType.URL -> {
+                // Create method to show component and then send to onCellValueChange(cell)
+            }
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
             ValueType.DATE -> view.showCalendar(dataElement, cell, false)

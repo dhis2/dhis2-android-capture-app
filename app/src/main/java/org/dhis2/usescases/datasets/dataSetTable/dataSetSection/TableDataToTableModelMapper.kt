@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import java.util.SortedMap
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -15,6 +14,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import java.util.SortedMap
 
 class TableDataToTableModelMapper(
     val resources: ResourceManager,
@@ -27,7 +27,7 @@ class TableDataToTableModelMapper(
                     cells = catOptions.distinctBy { it.uid() }
                         .filter { it.uid() != null && it.uid().isNotEmpty() }
                         .map { categoryOption ->
-                            TableCell(value = categoryOption.displayName()!!)
+                            TableHeaderCell(value = categoryOption.displayName()!!)
                         }
                 )
             } ?: emptyList(),
@@ -126,7 +126,7 @@ class TableDataToTableModelMapper(
             rows = listOf(
                 TableHeaderRow(
                     cells = listOf(
-                        TableCell(value = "Value")
+                        TableHeaderCell(value = "Value")
                     )
                 )
             )
