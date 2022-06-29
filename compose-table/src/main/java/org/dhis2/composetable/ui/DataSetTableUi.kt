@@ -343,7 +343,6 @@ fun TableCell(
             enabled = tableCellUiOptions.enabled,
             interactionSource = source,
             readOnly = cellValue.isReadOnly,
-            singleLine = true,
             textStyle = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
