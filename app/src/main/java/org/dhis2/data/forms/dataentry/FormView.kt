@@ -24,7 +24,6 @@ import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -45,7 +44,6 @@ import org.dhis2.commons.extensions.truncate
 import org.dhis2.data.forms.ScanContract
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
-import org.dhis2.form.Injector
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
@@ -175,9 +173,7 @@ class FormView : Fragment() {
             }
         }
 
-    private val viewModel: FormViewModel by viewModels {
-        Injector.provideFormViewModelFactory(formRepository, dispatchers)
-    }
+    private lateinit var viewModel: FormViewModel
 
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
@@ -219,6 +215,7 @@ class FormView : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         FormCountingIdlingResource.increment()
+        viewModel = FormViewModel(formRepository, dispatchers)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
