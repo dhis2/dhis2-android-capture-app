@@ -72,4 +72,6 @@ interface SyncPresenter {
     void updateProyectAnalytics();
 
     void initSyncControllerMap();
+
+    void finishSync();
 }

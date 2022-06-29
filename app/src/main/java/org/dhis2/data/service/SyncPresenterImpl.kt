@@ -51,9 +51,9 @@ class SyncPresenterImpl(
     override fun initSyncControllerMap() {
         Completable.fromCallable {
             val programMap: Map<String, D2ProgressStatus> =
-                d2.programModule().programs().blockingGetUids().associateWith {
-                    D2ProgressStatus(false, null)
-                }
+                d2.programModule().programs().blockingGetUids().map { programUid ->
+                    programUid to D2ProgressStatus(false, null)
+                }.toMap()
             val aggregateMap: Map<String, D2ProgressStatus> =
                 d2.dataSetModule().dataSets().blockingGetUids().associateWith {
                     D2ProgressStatus(false, null)
@@ -63,6 +63,10 @@ class SyncPresenterImpl(
             }.toMap()
             syncStatusController.initDownloadProcess(allMap)
         }.blockingAwait()
+    }
+
+    override fun finishSync() {
+        syncStatusController.finishSync()
     }
 
     override fun syncAndDownloadEvents() {

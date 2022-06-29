@@ -37,9 +37,6 @@ public class SyncDataWorker extends Worker {
     SyncPresenter presenter;
 
     @Inject
-    SyncStatusController syncController;
-
-    @Inject
     PreferenceProvider prefs;
 
     public SyncDataWorker(
@@ -108,7 +105,7 @@ public class SyncDataWorker extends Worker {
             isDataValue = false;
         }
 
-        syncController.finishSync();
+        presenter.finishSync();
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
