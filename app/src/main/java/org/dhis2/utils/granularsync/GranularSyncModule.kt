@@ -30,6 +30,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -38,6 +39,7 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 class GranularSyncModule(
+    private val context: Context,
     private val conflictType: SyncStatusDialog.ConflictType,
     private val recordUid: String,
     private val dvOrgUnit: String?,
@@ -51,7 +53,8 @@ class GranularSyncModule(
         d2: D2,
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
-        preferenceProvider: PreferenceProvider
+        preferenceProvider: PreferenceProvider,
+        smsSyncProvider: SMSSyncProvider
     ): GranularSyncContracts.Presenter {
         return GranularSyncPresenterImpl(
             d2,
@@ -64,7 +67,21 @@ class GranularSyncModule(
             dvPeriodId,
             workManagerController,
             ErrorModelMapper(context.getString(R.string.fk_message)),
-            preferenceProvider
+            preferenceProvider,
+            smsSyncProvider
+        )
+    }
+
+    @Provides
+    fun smsSyncProvider(d2: D2): SMSSyncProvider {
+        return SMSSyncProvider(
+            d2,
+            conflictType,
+            recordUid,
+            dvOrgUnit,
+            dvAttrCombo,
+            dvPeriodId,
+            ResourceManager(context)
         )
     }
 }
