@@ -1,10 +1,14 @@
 package org.dhis2.form.ui.provider
 
 import org.dhis2.commons.date.DateUtils
-import org.hisp.dhis.android.core.D2
+import org.dhis2.form.data.metadata.OptionSetConfiguration
+import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.hisp.dhis.android.core.common.ValueType
 
-class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
+class DisplayNameProviderImpl(
+    private val optionSetConfiguration: OptionSetConfiguration,
+    private val orgUnitConfiguration: OrgUnitConfiguration
+) : DisplayNameProvider {
 
     override fun provideDisplayName(
         valueType: ValueType?,
@@ -12,42 +16,38 @@ class DisplayNameProviderImpl(val d2: D2) : DisplayNameProvider {
         optionSet: String?
     ): String? {
         return value?.let {
-            when (valueType) {
-                ValueType.ORGANISATION_UNIT ->
-                    d2.organisationUnitModule()
-                        .organisationUnits()
-                        .uid(value)
-                        .blockingGet()
-                        ?.displayName()
-                        ?: value
+            optionSet?.let { optionSetUid ->
+                return getOptionSetValue(value, optionSetUid)
+            } ?: getValueTypeValue(value, valueType)
+        }
+    }
 
-                ValueType.DATE ->
-                    DateUtils.uiDateFormat().format(
-                        DateUtils.oldUiDateFormat().parse(value) ?: ""
-                    )
-                ValueType.DATETIME ->
-                    DateUtils.dateTimeFormat().format(
-                        DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
-                    )
-                ValueType.TIME ->
-                    DateUtils.timeFormat().format(
-                        DateUtils.timeFormat().parse(value) ?: ""
-                    )
-                ValueType.TEXT -> optionSet?.let {
-                    val byCode = d2.optionModule().options()
-                        .byOptionSetUid().eq(optionSet)
-                        .byCode().eq(value).one()
-                    val byName = d2.optionModule().options()
-                        .byOptionSetUid().eq(optionSet)
-                        .byDisplayName().eq(value).one()
-                    when {
-                        byCode.blockingExists() -> return byCode.blockingGet().displayName()
-                        byName.blockingExists() -> return byName.blockingGet().displayName()
-                        else -> value
-                    }
-                }
-                else -> value
-            }
+    private fun getOptionSetValue(value: String, optionSet: String): String? {
+        return optionSetConfiguration.optionInDataSetByCode(optionSet, value)?.displayName()
+            ?: optionSetConfiguration.optionInDataSetByName(optionSet, value)?.displayName()
+            ?: value
+    }
+
+    private fun getValueTypeValue(value: String, valueType: ValueType?): String? {
+        return when (valueType) {
+            ValueType.ORGANISATION_UNIT ->
+                orgUnitConfiguration.orgUnitByUid(value)
+                    ?.displayName()
+                    ?: value
+
+            ValueType.DATE ->
+                DateUtils.uiDateFormat().format(
+                    DateUtils.oldUiDateFormat().parse(value) ?: ""
+                )
+            ValueType.DATETIME ->
+                DateUtils.dateTimeFormat().format(
+                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
+                )
+            ValueType.TIME ->
+                DateUtils.timeFormat().format(
+                    DateUtils.timeFormat().parse(value) ?: ""
+                )
+            else -> value
         }
     }
 }

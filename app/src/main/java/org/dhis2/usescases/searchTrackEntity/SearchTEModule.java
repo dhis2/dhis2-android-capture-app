@@ -25,6 +25,8 @@ import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.data.metadata.OptionSetConfiguration;
+import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
@@ -172,7 +174,10 @@ public class SearchTEModule {
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager));
@@ -237,7 +242,10 @@ public class SearchTEModule {
         return new FormRepositoryImpl(
                 null,
                 new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(d2),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
                 dataEntryRepository,
                 null,
                 null,

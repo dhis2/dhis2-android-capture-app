@@ -131,6 +131,26 @@ class LayoutProviderImpl : LayoutProvider {
         }
     }
 
+    private fun getLayoutForOptionSet(
+        optionSet: String?,
+        sectionRenderingType: SectionRenderingType?,
+        renderingType: ValueTypeRenderingType?,
+        @LayoutRes defaultLayout: Int
+    ): Int {
+        return when {
+            shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
+                R.layout.form_option_set_matrix
+            shouldRenderAsSelector(optionSet, renderingType) ->
+                R.layout.form_option_set_selector
+            shouldRenderAsSpinner(optionSet) ->
+                R.layout.form_option_set_spinner
+            shouldRenderAsScan(renderingType) ->
+                R.layout.form_scan
+            else ->
+                defaultLayout
+        }
+    }
+
     private fun shouldRenderAsScan(renderingType: ValueTypeRenderingType?): Boolean {
         return when (renderingType) {
             ValueTypeRenderingType.QR_CODE, ValueTypeRenderingType.BAR_CODE -> true
