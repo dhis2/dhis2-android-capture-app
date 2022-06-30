@@ -214,14 +214,12 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     private ProgramDownloadState getSyncState(ProgramViewModel programViewModel) {
         ProgramDownloadState programDownloadState;
         if (syncStatusController.observeDownloadProcess().getValue().isProgramDownloading(
-                programViewModel.getUid(),
-                programViewModel.getProgramType()
+                programViewModel.getUid()
         )) {
             programDownloadState = ProgramDownloadState.DOWNLOADING;
         } else if (syncStatusController.observeDownloadProcess().getValue().wasProgramDownloading(
                 lastSyncData,
-                programViewModel.getUid(),
-                programViewModel.getProgramType())
+                programViewModel.getUid())
         ) {
             programDownloadState = ProgramDownloadState.DOWNLOADED;
         } else {
