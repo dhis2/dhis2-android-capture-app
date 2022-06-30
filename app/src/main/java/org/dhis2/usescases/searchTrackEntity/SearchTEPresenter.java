@@ -603,8 +603,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 program.uid(),
                 program.displayName(),
                 syncStatusController.observeDownloadProcess().getValue().isProgramDownloading(
-                        program.uid(),
-                        program.programType().name()
+                        program.uid()
                 )
         )).collect(Collectors.toList());
     }
