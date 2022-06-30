@@ -102,7 +102,6 @@
     <string name="event_approved">Evento aprobado</string>
     <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Sólo lectura</string>
-    <string name="complete">Completo</string>
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
@@ -458,7 +457,6 @@
     <string name="unable_to_save">No se pudo guardar</string>
     <string name="warnings_in_form">Hay mensajes de aviso en el formulario</string>
     <string name="what_to_do">¿Qué quiere hacer?</string>
-    <string name="review">Revisar</string>
     <string name="field_errors">Algunos campos contienen errores. Por favor, revíselos para poder completar.</string>
     <string name="unselect_enrollment">Deseleccionar inscripción</string>
     <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
@@ -855,10 +853,6 @@
     <string name="troubleshooting_pass_rule_validation">No se encontraron advertencias</string>
     <string name="troobleshooting_pass_rule_validation_title">¡Parece que todo está bien!</string>
     <string name="not_saved">No guardado</string>
-    <string name="discard_changes">Descartar los cambios</string>
-    <string name="keep_editing">Seguir editando</string>
-    <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
-    <string name="not_now">Ahora no</string>
     <string name="search_loading_more">Cargando más resultados</string>
     <string name="search_no_results_in_program">No hay más resultados para %s</string>
     <string name="search_outside_action">Búsqueda fuera del programa</string>

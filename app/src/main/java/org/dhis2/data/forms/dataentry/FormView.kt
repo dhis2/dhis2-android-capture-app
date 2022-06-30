@@ -58,6 +58,7 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.DataEntryAdapter
 import org.dhis2.form.ui.DataEntryHeaderHelper
 import org.dhis2.form.ui.FormViewModel
+import org.dhis2.form.ui.dialog.DataEntryBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
@@ -71,7 +72,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPr
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
-import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.QRDetailBottomDialog

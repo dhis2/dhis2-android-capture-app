@@ -210,4 +210,8 @@
     <string name="add_image">Add Image</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="not_now">Not now</string>
+    <string name="review">Review</string>
+    <string name="complete">Complete</string>
 </resources>

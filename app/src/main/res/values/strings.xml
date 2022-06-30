@@ -104,7 +104,6 @@
     <string name="event_approved">Event Approved</string>
     <string name="event_inactive">Event Inactive</string>
     <string name="read_only">Read only</string>
-    <string name="complete">Complete</string>
     <string name="finish_and_complete">Finish and complete</string>
     <string name="completed">Completed</string>
     <string name="cancelled">Cancelled</string>
@@ -460,7 +459,6 @@
     <string name="unable_to_save">Unable to save</string>
     <string name="warnings_in_form">There are warnings in the form</string>
     <string name="what_to_do">What do yo want to do?</string>
-    <string name="review">Review</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
     <string name="unselect_enrollment">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
@@ -868,10 +866,7 @@
     <string name="troubleshooting_pass_rule_validation">No warnings found</string>
     <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
     <string name="not_saved">Not saved</string>
-    <string name="discard_changes">Discard changes</string>
-    <string name="keep_editing">Keep editing</string>
     <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
-    <string name="not_now">Not now</string>
     <string name="search_loading_more">Loading more results</string>
     <string name="search_no_results_in_program">No more results for %s</string>
     <string name="search_outside_action">Search outside this program</string>
