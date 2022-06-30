@@ -1,4 +1,4 @@
-package org.dhis2.ui
+package org.dhis2.form.ui.dialog
 
 import org.dhis2.commons.data.FieldWithIssue
 
