@@ -87,4 +87,14 @@ public class DataSetDetailModule {
     NavigationPageConfigurator providePageConfigurator(DataSetDetailRepository dataSetDetailRepository) {
         return new DataSetPageConfigurator(dataSetDetailRepository);
     }
+
+    @Provides
+    @PerActivity
+    DataSetDetailViewModelFactory providesViewModelFactory(
+            DataSetDetailRepository dataSetDetailRepository
+    ) {
+        return new DataSetDetailViewModelFactory(
+                new DataSetPageConfigurator(dataSetDetailRepository)
+        );
+    }
 }
