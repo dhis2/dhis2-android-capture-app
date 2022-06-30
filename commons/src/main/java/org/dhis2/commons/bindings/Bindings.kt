@@ -179,8 +179,8 @@ fun ComposeView.setIconStyle(style: ObjectStyle?) {
 
 @BindingAdapter("set_metadata_icon_data")
 fun ComposeView.setIconData(iconData: MetadataIconData) {
-        setUpMetadataIcon(
-            metadataIconData = iconData.copy(sizeInDp =  48),
-            true
-        )
+    setUpMetadataIcon(
+        metadataIconData = iconData.copy(sizeInDp = 48),
+        true
+    )
 }
