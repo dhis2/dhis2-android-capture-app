@@ -193,9 +193,7 @@ class GranularSyncPresenterImpl(
             workManagerController.beginUniqueWork(workerItem)
         } else {
             workName = Constants.INITIAL_SYNC
-            workManagerController.syncDataForWorkers(
-                Constants.META_NOW, Constants.DATA_NOW, Constants.INITIAL_SYNC
-            )
+            workManagerController.syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         }
         return workManagerController.getWorkInfosForUniqueWorkLiveData(workName)
     }
