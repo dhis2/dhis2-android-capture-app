@@ -43,6 +43,12 @@ class AnalyticResources(val context: Context) {
                     .format(analyticsException.programIndicator.displayName())
             is AnalyticsException.SQLException ->
                 context.getString(R.string.error_database)
+            is AnalyticsException.InvalidProgram ->
+                context.getString(R.string.error_invalid_program)
+                    .format(analyticsException.uid)
+            is AnalyticsException.InvalidTrackedEntityAttribute ->
+                context.getString(R.string.error_invalid_attribute)
+                    .format(analyticsException.uid)
         }
     }
 }
