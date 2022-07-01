@@ -36,7 +36,9 @@ class MatomoAnalyticsControllerImpl(
     }
 
     private fun updateDhisImplementationTrackerFirstTime() {
-        if (dhisImplementationTracker == null && D2Manager.isD2Instantiated()) {
+        if (dhisImplementationTracker == null && D2Manager.isD2Instantiated() && D2Manager.getD2()
+                .userModule().isLogged.blockingGet()
+        ) {
             D2Manager.getD2().settingModule()?.let { settingModule ->
                 val settings = settingModule.generalSetting().blockingGet()
                 settings?.let {
