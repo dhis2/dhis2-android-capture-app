@@ -13,6 +13,8 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.form.data.RulesRepository;
+import org.dhis2.form.data.metadata.OptionSetConfiguration;
+import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -93,7 +95,10 @@ public class EventInitialModule {
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager)
