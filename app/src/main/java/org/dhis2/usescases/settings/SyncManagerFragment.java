@@ -302,6 +302,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.dataDivider.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
+                    binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
+                    binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
                     break;
                 case META_SYNC:
                     ViewAnimationsKt.expand(binding.syncMetadataActions, false, () -> {
@@ -309,6 +311,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.metaDivider.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
+                    binding.metaDataTopShadow.setVisibility(View.VISIBLE);
+                    binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
                     break;
                 case SYNC_PARAMETERS:
                     ViewAnimationsKt.expand(binding.parameterData, false, () -> {
@@ -316,6 +320,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.parameterDivider.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
+                    binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
+                    binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
                     break;
                 case RESERVED_VALUES:
                     ViewAnimationsKt.expand(binding.reservedValuesActions, false, () -> {
@@ -323,6 +329,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.reservedValueDivider.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
+                    binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
+                    binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
                     break;
                 case DELETE_LOCAL_DATA:
                     ViewAnimationsKt.expand(binding.deleteDataButton, false, () -> {
@@ -341,10 +349,15 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.smsContent.setVisibility(View.VISIBLE);
                         return Unit.INSTANCE;
                     });
+                    binding.smsTopShadow.setVisibility(View.VISIBLE);
+                    binding.smsBottomShadow.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
             }
+        } else {
+            closedSettingItem(settingOpened);
+            settingOpened = null;
         }
     }
 
@@ -354,24 +367,32 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 case DATA_SYNC:
                     ViewAnimationsKt.collapse(binding.syncDataActions, () -> {
                         binding.syncDataActions.setVisibility(View.GONE);
+                        binding.dataSyncTopShadow.setVisibility(View.GONE);
+                        binding.dataSyncBottomShadow.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
                 case META_SYNC:
                     ViewAnimationsKt.collapse(binding.syncMetadataActions, () -> {
                         binding.syncMetadataActions.setVisibility(View.GONE);
+                        binding.metaDataTopShadow.setVisibility(View.GONE);
+                        binding.metaDataBottomShadow.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
                 case SYNC_PARAMETERS:
                     ViewAnimationsKt.collapse(binding.parameterData, () -> {
                         binding.parameterData.setVisibility(View.GONE);
+                        binding.itemParamsSyncTopShadow.setVisibility(View.GONE);
+                        binding.itemParamsSyncBottomShadow.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
                 case RESERVED_VALUES:
                     ViewAnimationsKt.collapse(binding.reservedValuesActions, () -> {
                         binding.reservedValuesActions.setVisibility(View.GONE);
+                        binding.reservedValueTopShadow.setVisibility(View.GONE);
+                        binding.reservedValueBottomShadow.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -390,6 +411,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 case SMS:
                     ViewAnimationsKt.collapse(binding.smsContent, () -> {
                         binding.smsContent.setVisibility(View.GONE);
+                        binding.smsTopShadow.setVisibility(View.GONE);
+                        binding.smsBottomShadow.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
