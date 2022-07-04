@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
+import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
+
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -13,16 +15,16 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsSetting;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
-
-import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
@@ -31,7 +33,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     private final DhisPeriodUtils periodUtils;
     private final Charts charts;
 
-    public DataSetDetailRepositoryImpl(String dataSetUid, D2 d2,DhisPeriodUtils periodUtils, Charts charts) {
+    public DataSetDetailRepositoryImpl(String dataSetUid, D2 d2, DhisPeriodUtils periodUtils, Charts charts) {
         this.d2 = d2;
         this.dataSetUid = dataSetUid;
         this.periodUtils = periodUtils;
@@ -150,6 +152,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @Override
     public boolean dataSetHasAnalytics() {
-        return charts != null && !charts.getDataSetVisualizations(null, dataSetUid).isEmpty();
+        AnalyticsDhisVisualizationsSetting visualizationSettings = d2.settingModule().analyticsSetting()
+                .visualizationsSettings()
+                .blockingGet();
+
+        return visualizationSettings.dataSet().get(dataSetUid) != null &&
+                !Objects.requireNonNull(visualizationSettings.dataSet().get(dataSetUid)).isEmpty();
+
     }
 }
