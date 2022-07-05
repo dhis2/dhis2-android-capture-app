@@ -143,4 +143,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/textPrimary</item>
     </style>
+
+    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
+    </style>
 </resources>

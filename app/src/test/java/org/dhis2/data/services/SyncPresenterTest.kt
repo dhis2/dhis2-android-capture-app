@@ -12,10 +12,11 @@ import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.call.D2Progress
+import org.hisp.dhis.android.core.arch.call.BaseD2Progress
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
@@ -32,10 +33,17 @@ class SyncPresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val syncStatusController: SyncStatusController = mock()
 
     @Before
     fun setUp() {
-        presenter = SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper)
+        presenter = SyncPresenterImpl(
+            d2,
+            preferences,
+            workManagerController,
+            analyticsHelper,
+            syncStatusController
+        )
     }
 
     @Test
@@ -100,12 +108,14 @@ class SyncPresenterTest {
 
     @Test
     fun `Should upload file resources`() {
-        val completable = Completable.fromObservable(Observable.just(D2Progress.empty(1))).test()
+        val completable = Completable.fromObservable(
+            Observable.just(BaseD2Progress.empty(1))
+        ).test()
         whenever(d2.fileResourceModule()) doReturn mock()
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
             d2.fileResourceModule().fileResources().upload()
-        ) doReturn Observable.just(D2Progress.empty(1))
+        ) doReturn Observable.just(BaseD2Progress.empty(1))
 
         presenter.uploadResources()
 
@@ -117,7 +127,7 @@ class SyncPresenterTest {
         whenever(
             d2.metadataModule().download()
         ) doReturn Observable.fromArray(
-            D2Progress.empty(2)
+            BaseD2Progress.empty(2)
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
@@ -136,7 +146,7 @@ class SyncPresenterTest {
         whenever(
             d2.metadataModule().download()
         ) doReturn Observable.fromArray(
-            D2Progress.empty(2)
+            BaseD2Progress.empty(2)
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
@@ -153,7 +163,7 @@ class SyncPresenterTest {
         whenever(
             d2.metadataModule().download()
         ) doReturn Observable.fromArray(
-            D2Progress.empty(2)
+            BaseD2Progress.empty(2)
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()
@@ -168,7 +178,7 @@ class SyncPresenterTest {
         whenever(
             d2.metadataModule().download()
         ) doReturn Observable.fromArray(
-            D2Progress.empty(2)
+            BaseD2Progress.empty(2)
         )
         whenever(
             d2.settingModule().generalSetting().blockingGet()

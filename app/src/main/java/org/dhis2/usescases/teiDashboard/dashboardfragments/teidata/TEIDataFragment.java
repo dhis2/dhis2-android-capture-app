@@ -22,6 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
@@ -596,11 +597,20 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private void showHideFilters(boolean showFilters) {
         if (showFilters) {
-            binding.teiData.setVisibility(View.GONE);
-            binding.filterLayout.setVisibility(View.VISIBLE);
+            ViewAnimationsKt.expand(binding.filterLayout, false, () -> {
+                binding.teiData.setVisibility(View.GONE);
+                binding.filterLayout.setVisibility(View.VISIBLE);
+                return Unit.INSTANCE;
+            });
+
         } else {
-            binding.teiData.setVisibility(View.VISIBLE);
-            binding.filterLayout.setVisibility(View.GONE);
+            ViewAnimationsKt.collapse(binding.filterLayout, () -> {
+                binding.teiData.setVisibility(View.VISIBLE);
+                binding.filterLayout.setVisibility(View.GONE);
+                return Unit.INSTANCE;
+            });
+
+
         }
     }
 

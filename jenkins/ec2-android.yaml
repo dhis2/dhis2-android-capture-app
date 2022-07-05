@@ -1,0 +1,64 @@
+#cloud-config
+# Info: If you're running it locally do not forget to get the container's shell and add $PATH to your .profile/bashrc
+# For instance: vim /home/ubuntu/.profile and add
+# PATH=$PATH:/opt/gradle/bin:/opt/kotlinc/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/cmdline-tools/tools/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/emulator
+
+# Install required packages
+package_update: true
+packages:
+  - openjdk-11-jdk
+  - git
+  - hub
+  - docker.io
+  - unzip
+  - jq
+  - python3-pip
+
+# Create jenkins user and add to docker group
+users:
+  - default
+  - name: jenkins
+    shell: /bin/bash
+    groups: docker
+
+# Add default user to docker group
+system_info:
+  default_user:
+    groups: [docker]
+
+# Set ANDROID environment variable
+write_files:
+  - path: /etc/environment
+    content: |
+      JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+      GRADLE_HOME="/opt/gradle"
+      KOTLIN_HOME="/opt/kotlinc"
+      ANDROID_SDK_ROOT="/opt/android-sdk"
+      LD_LIBRARY_PATH="/opt/android-sdk/emulator/lib64:/opt/android-sdk/emulator/lib64/qt/lib"
+      QTWEBENGINE_DISABLE_SANDBOX="1"
+    append: true
+
+runcmd:
+  - [ curl, -L, "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-linux-x86_64", -o, /usr/local/bin/docker-compose ]
+  - [ chmod, +x, /usr/local/bin/docker-compose ]
+  - [ curl, "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", -o, "awscliv2.zip" ]
+  - [ unzip, -q, "awscliv2.zip" ]
+  - [ ./aws/install ]
+  - [ aws, configure, set, credential_source, Ec2InstanceMetadata ]
+  - [ aws, configure, set, region, "eu-west-1" ]
+  - [ wget, -O, "/opt/gradle.zip", "https://services.gradle.org/distributions/gradle-7.0.2-bin.zip" ]
+  - [ unzip, "opt/gradle.zip", -d, /opt ]
+  - [ sh, -xc, "cd /opt && ls -d */ | sed 's/\/*$//g' | xargs -I{} mv {} gradle && cd /root" ]
+  - [ rm, "opt/gradle.zip" ]
+  - [ wget, -O, "/opt/kotlin.zip", "https://github.com/JetBrains/kotlin/releases/download/v1.5.21/kotlin-compiler-1.5.21.zip" ]
+  - [ unzip, "opt/kotlin.zip", -d, /opt ]
+  - [ rm, "opt/kotlin.zip" ]
+  - 'mkdir -p /opt/android-sdk/cmdline-tools'
+  - [ curl, "https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip", -o, "/opt/toolslinux.zip" ]
+  - [ unzip, "/opt/toolslinux.zip", -d , /opt/android-sdk/cmdline-tools ]
+  - [ mv, /opt/android-sdk/cmdline-tools/cmdline-tools, /opt/android-sdk/cmdline-tools/tools ]
+  - [ rm, "opt/toolslinux.zip" ]
+  - [ wget, -O, "/opt/license_accepter.sh", "https://raw.githubusercontent.com/dhis2/dhis2-android-capture-app/develop/jenkins/license_accepter.sh" ]
+  - 'chmod +x /opt/license_accepter.sh && /opt/license_accepter.sh /opt/android-sdk'
+  - 'dpkg --add-architecture i386 && apt-get update && apt-get dist-upgrade -y'
+  - 'apt-get install -y --no-install-recommends libncurses5:i386 libc6:i386 libstdc++6:i386 lib32gcc-s1 lib32ncurses6 lib32z1 zlib1g:i386'

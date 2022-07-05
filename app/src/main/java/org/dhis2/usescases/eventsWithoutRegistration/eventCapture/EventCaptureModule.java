@@ -22,6 +22,8 @@ import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProviderImpl;
+import org.dhis2.form.data.metadata.OptionSetConfiguration;
+import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
@@ -102,7 +104,10 @@ public class EventCaptureModule {
                 ),
                 new LayoutProviderImpl(),
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(d2),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager));
@@ -174,7 +179,10 @@ public class EventCaptureModule {
                         searchTEIRepository
                 ),
                 new FieldErrorMessageProvider(activityContext),
-                new DisplayNameProviderImpl(d2),
+                new DisplayNameProviderImpl(
+                        new OptionSetConfiguration(d2),
+                        new OrgUnitConfiguration(d2)
+                ),
                 eventDataEntryRepository,
                 new org.dhis2.form.data.EventRuleEngineRepository(d2, eventUid),
                 new RulesUtilsProviderImpl(d2),

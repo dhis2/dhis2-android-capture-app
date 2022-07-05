@@ -104,7 +104,6 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
 
-            resValue "string", "content_provider", "com.dhis2.debug.provider"
             buildConfigField "int", "MATOMO_ID", "2"
 
             applicationVariants.all { variant ->
@@ -126,7 +125,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField "int", "MATOMO_ID", "1"
-            resValue "string", "content_provider", "com.dhis2.provider"
 
             //Sentry variables
             manifestPlaceholders = [

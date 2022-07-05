@@ -43,5 +43,5 @@ data class ProgramViewModel(
 }
 
 enum class ProgramDownloadState {
-    DOWNLOADING, DOWNLOADED, NONE
+    DOWNLOADING, DOWNLOADED, ERROR, NONE
 }

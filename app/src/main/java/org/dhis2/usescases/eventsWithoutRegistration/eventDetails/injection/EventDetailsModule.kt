@@ -5,13 +5,15 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.data.location.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.metadata.OptionSetConfiguration
+import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
@@ -83,7 +85,10 @@ class EventDetailsModule(
                 ),
                 LayoutProviderImpl(),
                 HintProviderImpl(context),
-                DisplayNameProviderImpl(d2),
+                DisplayNameProviderImpl(
+                    OptionSetConfiguration(d2),
+                    OrgUnitConfiguration(d2)
+                ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
                 LegendValueProviderImpl(d2, resourceManager)

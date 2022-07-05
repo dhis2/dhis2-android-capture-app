@@ -1,27 +1,19 @@
 package org.dhis2.data.service
 
-import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 
 data class SyncStatusData(
-    val programSyncStatusMap: Map<String, Boolean> = emptyMap(),
-    val trackerGlobalSyncStatus: Boolean = false,
-    val eventGlobalSyncStatus: Boolean = false,
-    val dataSetGlobalSyncStatus: Boolean = false
+    val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap()
 ) {
-    fun isProgramDownloading(uid: String, programType: String): Boolean {
-        return when (programType) {
-            ProgramType.WITH_REGISTRATION.name -> trackerGlobalSyncStatus
-            ProgramType.WITHOUT_REGISTRATION.name -> eventGlobalSyncStatus
-            else -> dataSetGlobalSyncStatus
-        }
+    fun isProgramDownloading(uid: String): Boolean {
+        return programSyncStatusMap.isNotEmpty() && programSyncStatusMap[uid]?.isComplete == false
     }
 
     fun wasProgramDownloading(
         lastStatus: SyncStatusData?,
-        uid: String,
-        programType: String
+        uid: String
     ): Boolean {
-        return lastStatus?.isProgramDownloading(uid, programType) == true &&
-            !isProgramDownloading(uid, programType)
+        return lastStatus?.programSyncStatusMap?.get(uid)?.isComplete == false &&
+            programSyncStatusMap[uid]?.isComplete == true
     }
 }

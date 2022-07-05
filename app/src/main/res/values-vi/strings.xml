@@ -752,7 +752,6 @@
     <string name="jira_issue_sent">Đã gửi vấn đề</string>
     <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="section_charts">Biểu đồ</string>
-    <string name="enable_location_message">Tính năng chia sẻ vị trí thiết bị của bạn bị tắt. Vui lòng mở nó để thu thập tọa độ.</string>
     <string name="navigation_list_view">Xem danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>
     <string name="navigation_map_view">Xem bản đồ</string>

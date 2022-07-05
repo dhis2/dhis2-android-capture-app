@@ -3,11 +3,19 @@ package org.dhis2.composetable.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,25 +23,40 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.R
+import org.dhis2.composetable.model.RowHeader
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
+import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 
@@ -41,7 +64,8 @@ import org.dhis2.composetable.model.TableRowModel
 fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
-    horizontalScrollState: ScrollState
+    horizontalScrollState: ScrollState,
+    selectionState: SelectionState
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
         Column {
@@ -54,9 +78,25 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
-                                cellIndex,
+                                columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
-                                headerWidth = tableHeaderModel.cellWidth(rowIndex)
+                                headerWidth = tableHeaderModel.headerCellWidth(rowIndex),
+                                headerHeight = tableHeaderModel.defaultHeaderHeight,
+                                cellStyle = selectionState.styleForColumnHeader(
+                                    columnIndex,
+                                    rowIndex
+                                ),
+                                onCellSelected = {
+                                    selectionState.sonsOfHeader = tableHeaderModel.rows
+                                        .filterIndexed { index, _ -> index > rowIndex }
+                                        .map { row -> row.cells.size }
+                                        .reduceOrNull { acc, i -> acc * i }
+
+                                    selectionState.selectCell(
+                                        column = it,
+                                        columnHeaderRow = rowIndex
+                                    )
+                                }
                             )
                         }
                     )
@@ -67,39 +107,67 @@ fun TableHeader(
             HeaderCell(
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
-                headerWidth = tableHeaderModel.defaultCellWidth
+                headerWidth = tableHeaderModel.defaultCellWidth,
+                headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size,
+                cellStyle = selectionState.styleForColumnHeader(
+                    tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
+                    tableHeaderModel.rows.size - 1
+                ),
+                onCellSelected = {}
             )
         }
     }
 }
 
 @Composable
-fun HeaderCell(columnIndex: Int, headerCell: TableHeaderCell, headerWidth: Dp) {
-    Text(
+fun HeaderCell(
+    columnIndex: Int,
+    headerCell: TableHeaderCell,
+    headerWidth: Dp,
+    headerHeight: Dp,
+    cellStyle: CellStyle,
+    onCellSelected: (Int) -> Unit
+) {
+    Box(
         modifier = Modifier
-            .width(headerWidth)
-            .background(
-                if (columnIndex % 2 == 0) {
-                    Color.Gray
-                } else {
-                    Color.LightGray
-                }
-            ),
-        text = headerCell.value
-    )
+            .width(IntrinsicSize.Min)
+            .height(headerHeight)
+            .background(cellStyle.backgroundColor)
+            .clickable {
+                onCellSelected(columnIndex)
+            }
+    ) {
+        Text(
+            modifier = Modifier
+                .width(headerWidth)
+                .align(Alignment.Center)
+                .padding(horizontal = 4.dp),
+            color = cellStyle.textColor,
+            text = headerCell.value,
+            textAlign = TextAlign.Center,
+            fontSize = 10.sp
+        )
+        Divider(
+            color = TableTheme.colors.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        )
+    }
 }
-
 @Composable
 fun TableHeaderRow(
     tableModel: TableModel,
-    horizontalScrollState: ScrollState
+    horizontalScrollState: ScrollState,
+    selectionState: SelectionState
 ) {
-    Row {
-        TableCorner(tableModel)
+    Row(Modifier.background(Color.White)) {
+        TableCorner(tableModel, selectionState)
         TableHeader(
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
-            horizontalScrollState = horizontalScrollState
+            horizontalScrollState = horizontalScrollState,
+            selectionState = selectionState
         )
     }
 }
@@ -108,47 +176,101 @@ fun TableHeaderRow(
 fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    dataElementLabel: String,
-    dataElementValues: Map<Int, TableHeaderCell>
+    rowHeader: RowHeader,
+    dataElementValues: Map<Int, TableCell>,
+    selectionState: SelectionState
 ) {
-    Row {
-        ItemHeader(dataElementLabel)
-        ItemValues(
-            horizontalScrollState = horizontalScrollState,
-            columnCount = tableHeaderModel.tableMaxColumns(),
-            cellValues = dataElementValues,
-            defaultHeight = tableModel.tableHeaderModel.defaultCellHeight,
-            defaultWidth = tableModel.tableHeaderModel.defaultCellWidth
+    Column(Modifier.width(IntrinsicSize.Min)) {
+        Row(Modifier.height(IntrinsicSize.Min)) {
+            ItemHeader(
+                rowHeader = rowHeader,
+                cellStyle = selectionState.styleForRowHeader(rowHeader.row),
+                onCellSelected = {
+                    selectionState.selectCell(row = it, rowHeader = true)
+                }
+            )
+            ItemValues(
+                horizontalScrollState = horizontalScrollState,
+                cellValues = dataElementValues,
+                defaultHeight = rowHeader.defaultCellHeight,
+                defaultWidth = tableModel.tableHeaderModel.defaultCellWidth,
+                selectionState = selectionState
+            )
+        }
+        Divider(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+fun TableCorner(tableModel: TableModel, selectionState: SelectionState) {
+    Box(
+        modifier = Modifier
+            .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
+            .width(tableModel.tableRows.first().rowHeader.defaultWidth)
+            .background(selectionState.backgroundColorForCorner())
+            .clickable { selectionState.selectCell(all = true) },
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Divider(
+            Modifier
+                .fillMaxHeight()
+                .width(1.dp),
+            color = TableTheme.colors.primary
         )
     }
 }
 
 @Composable
-fun TableCorner(tableModel: TableModel) {
-    Box(
-        modifier = Modifier
-            .height(tableModel.tableHeaderModel.defaultCellHeight)
-            .width(tableRows.defaultWidth)
-    )
-}
+fun ItemHeader(
+    rowHeader: RowHeader,
+    cellStyle: CellStyle,
+    onCellSelected: (Int?) -> Unit
 
-@Composable
-fun ItemHeader(dataElementLabel: String) {
-    Text(
+) {
+    Row(
         modifier = Modifier
-            .height(tableModel.tableHeaderModel.defaultCellHeight)
-            .width(tableModel.tableHeaderModel.defaultCellWidth),
-        text = dataElementLabel
-    )
+            .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
+            .width(rowHeader.defaultWidth)
+            .height(IntrinsicSize.Min)
+            .background(cellStyle.backgroundColor)
+            .clickable { onCellSelected(rowHeader.row) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 3.dp)
+                .weight(1f),
+            text = rowHeader.title,
+            color = cellStyle.textColor,
+            fontSize = 10.sp
+        )
+        if (rowHeader.showDecoration) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "info",
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .height(10.dp)
+                    .width(10.dp),
+                tint = cellStyle.textColor
+            )
+        }
+        Divider(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp),
+            color = TableTheme.colors.primary
+        )
+    }
 }
 
 @Composable
 fun ItemValues(
     horizontalScrollState: ScrollState,
-    columnCount: Int,
-    cellValues: Map<Int, TableHeaderCell>,
+    cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
-    defaultWidth: Dp
+    defaultWidth: Dp,
+    selectionState: SelectionState
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -158,13 +280,14 @@ fun ItemValues(
             .horizontalScroll(state = horizontalScrollState)
     ) {
         repeat(
-            times = columnCount,
+            times = cellValues.size,
             action = { columnIndex ->
                 TableCell(
                     modifier = Modifier
                         .width(defaultWidth)
-                        .height(defaultHeight),
-                    cellValue = cellValues[columnIndex]?.value ?: "",
+                        .fillMaxHeight()
+                        .defaultMinSize(minHeight = defaultHeight),
+                    cellValue = cellValues[columnIndex]!!,
                     focusRequester = focusRequester,
                     onNext = {
                         coroutineScope.launch {
@@ -172,7 +295,8 @@ fun ItemValues(
                                 (columnIndex + 1) * defaultWidthPx.toInt()
                             )
                         }
-                    }
+                    },
+                    selectionState = selectionState
                 )
             }
         )
@@ -182,95 +306,152 @@ fun ItemValues(
 @Composable
 fun TableCell(
     modifier: Modifier,
-    cellValue: String,
+    cellValue: TableCell,
     focusRequester: FocusManager,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    selectionState: SelectionState
 ) {
-    var value by remember { mutableStateOf(cellValue) }
-    BasicTextField(
-        modifier = modifier,
-        value = value,
-        onValueChange = { newValue ->
-            value = newValue
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(
-            onNext = {
-                onNext()
-                focusRequester.moveFocus(
-                    FocusDirection.Right
-                )
-            }
+    var value by remember { mutableStateOf(cellValue.value) }
+    var focused by remember { mutableStateOf(false) }
+    val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
+    Box(
+        modifier = modifier
+            .border(1.dp, tableCellUiOptions.borderColor())
+            .background(tableCellUiOptions.backgroundColor())
+    ) {
+        BasicTextField(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .onFocusChanged {
+                    focused = it.isFocused
+                    selectionState.selectCell()
+                }
+                .padding(horizontal = 4.dp),
+            enabled = tableCellUiOptions.enabled,
+            singleLine = true,
+            textStyle = TextStyle.Default.copy(
+                fontSize = 10.sp,
+                textAlign = TextAlign.End,
+                color = tableCellUiOptions.textColor()
+            ),
+            value = value,
+            onValueChange = { newValue ->
+                value = newValue
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    onNext()
+                    focusRequester.moveFocus(
+                        FocusDirection.Right
+                    )
+                }
+            )
         )
-    )
+        if (cellValue.mandatory == true) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_mandatory),
+                contentDescription = "mandatory",
+                modifier = Modifier
+                    .padding(4.dp)
+                    .width(6.dp)
+                    .height(6.dp)
+                    .align(tableCellUiOptions.mandatoryAlignment()),
+                tint = tableCellUiOptions.mandatoryColor()
+            )
+        }
+        if (cellValue.error != null) {
+            Divider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                color = TableTheme.colors.errorColor
+            )
+        }
+    }
 }
-
-private val tableHeaderModel = TableHeader(
-    rows = listOf(
-        org.dhis2.composetable.model.TableHeaderRow(
-            cells = listOf(
-                TableHeaderCell("<18"),
-                TableHeaderCell(">18 <65"),
-                TableHeaderCell(">65")
-            )
-        ),
-        org.dhis2.composetable.model.TableHeaderRow(
-            cells = listOf(
-                TableHeaderCell("Male"),
-                TableHeaderCell("Female")
-            )
-        ),
-        org.dhis2.composetable.model.TableHeaderRow(
-            cells = listOf(
-                TableHeaderCell("Fixed"),
-                TableHeaderCell("Outreach")
-            )
-        )
-    ),
-    hasTotals = true
-)
-
-private val tableRows = TableRowModel(
-    rowHeader = "Data Element",
-    values = mapOf(
-        Pair(2, TableHeaderCell("12")),
-        Pair(4, TableHeaderCell("55"))
-    )
-)
-
-private val tableModel = TableModel(
-    tableHeaderModel,
-    listOf(tableRows, tableRows, tableRows, tableRows)
-)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(tableList: List<TableModel>) {
-    val horizontalScrollStates = tableList.map { rememberScrollState() }
-    LazyColumn {
-        tableList.forEachIndexed { index, currentTableModel ->
-            stickyHeader {
-                TableHeaderRow(
-                    tableModel = currentTableModel,
-                    horizontalScrollState = horizontalScrollStates[index]
-                )
-            }
-            items(items = currentTableModel.tableRows) { tableRowModel ->
-                TableItemRow(
-                    tableModel = tableModel,
-                    horizontalScrollState = horizontalScrollStates[index],
-                    dataElementLabel = tableRowModel.rowHeader,
-                    dataElementValues = tableRowModel.values
-                )
+fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
+    TableTheme(tableColors) {
+        val horizontalScrollStates = tableList.map { rememberScrollState() }
+        val selectionStates = tableList.map { rememberSelectionState() }
+        LazyColumn(Modifier.padding(16.dp)) {
+            tableList.forEachIndexed { index, currentTableModel ->
+                stickyHeader {
+                    TableHeaderRow(
+                        tableModel = currentTableModel,
+                        horizontalScrollState = horizontalScrollStates[index],
+                        selectionState = selectionStates[index]
+                    )
+                }
+                items(items = currentTableModel.tableRows) { tableRowModel ->
+                    TableItemRow(
+                        tableModel = currentTableModel,
+                        horizontalScrollState = horizontalScrollStates[index],
+                        rowHeader = tableRowModel.rowHeader,
+                        dataElementValues = tableRowModel.values,
+                        selectionState = selectionStates[index]
+                    )
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun TableListPreview() {
-    val tableList = listOf(tableModel, tableModel, tableModel, tableModel, tableModel, tableModel)
+    val tableHeaderModel = TableHeader(
+        rows = listOf(
+            TableHeaderRow(
+                cells = listOf(
+                    TableHeaderCell("<18"),
+                    TableHeaderCell(">18 <65"),
+                    TableHeaderCell(">65")
+                )
+            ),
+            TableHeaderRow(
+                cells = listOf(
+                    TableHeaderCell("Male"),
+                    TableHeaderCell("Female")
+                )
+            ),
+            TableHeaderRow(
+                cells = listOf(
+                    TableHeaderCell("Fixed"),
+                    TableHeaderCell("Outreach")
+                )
+            )
+        ),
+        hasTotals = true
+    )
+
+    val tableRows = TableRowModel(
+        rowHeader = RowHeader("Data Element Element Element ", 0, true),
+        values = mapOf(
+            Pair(0, TableCell(value = "12", mandatory = true)),
+            Pair(1, TableCell(value = "12", editable = false)),
+            Pair(2, TableCell(value = "", mandatory = true)),
+            Pair(3, TableCell(value = "12", mandatory = true, error = "Error")),
+            Pair(4, TableCell(value = "1", error = "Error")),
+            Pair(5, TableCell(value = "12")),
+            Pair(6, TableCell(value = "55")),
+            Pair(7, TableCell(value = "12")),
+            Pair(8, TableCell(value = "12")),
+            Pair(9, TableCell(value = "12")),
+            Pair(10, TableCell(value = "12")),
+            Pair(11, TableCell(value = "12"))
+        )
+    )
+
+    val tableModel = TableModel(
+        tableHeaderModel,
+        listOf(tableRows, tableRows, tableRows, tableRows)
+    )
+    val tableList = listOf(tableModel)
     TableList(tableList)
 }

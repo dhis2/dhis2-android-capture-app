@@ -164,6 +164,9 @@ fun ProgramItem(
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
+            ProgramDownloadState.ERROR -> DownloadErrorIcon {
+                onGranularSyncClick(programViewModel)
+            }
         }
 
         if (programViewModel.hasOverdueEvent) {
@@ -232,6 +235,16 @@ fun DownloadedIcon(programViewModel: ProgramViewModel) {
             tint = Color.Unspecified
         )
     }
+}
+
+@Composable
+fun DownloadErrorIcon(onClick: () -> Unit) {
+    Icon(
+        modifier = Modifier.clickable { onClick() },
+        painter = painterResource(id = R.drawable.ic_download_error),
+        contentDescription = "download error",
+        tint = Color.Unspecified
+    )
 }
 
 @Composable

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
@@ -24,6 +25,7 @@ import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
+import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.databinding.FragmentDatasetSectionBinding
@@ -96,7 +98,13 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         MdcTheme {
                             val tableData by presenterFragment.tableData()
                                 .observeAsState(emptyList())
-                            TableList(tableData)
+                            TableList(
+                                tableList = tableData,
+                                tableColors = TableColors(
+                                    primary = MaterialTheme.colors.primary,
+                                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                                )
+                            )
                         }
                     }
                 }

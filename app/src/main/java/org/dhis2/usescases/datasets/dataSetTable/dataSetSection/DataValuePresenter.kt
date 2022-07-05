@@ -172,10 +172,12 @@ class DataValuePresenter(
     }
 
     private fun updateTableList() {
-        allTableState.value = mutableListOf<TableModel>().apply {
-            addAll(tableState.value ?: emptyList())
-            addAll(indicatorsState.value ?: emptyList())
-        }
+        allTableState.postValue(
+            mutableListOf<TableModel>().apply {
+                addAll(tableState.value ?: emptyList())
+                addAll(indicatorsState.value ?: emptyList())
+            }
+        )
     }
 
     fun getDataSetIndicators() {

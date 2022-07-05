@@ -25,9 +25,7 @@ class TeiFilterToWorkingListItemMapperTest {
                 .uid("uid")
                 .displayName("name")
                 .entityQueryCriteria(
-                    EntityQueryCriteria.builder()
-                        .enrollmentStatus(EnrollmentStatus.ACTIVE)
-                        .build()
+                    EntityQueryCriteria.builder().enrollmentStatus(EnrollmentStatus.ACTIVE).build()
                 )
                 .eventFilters(
                     listOf(

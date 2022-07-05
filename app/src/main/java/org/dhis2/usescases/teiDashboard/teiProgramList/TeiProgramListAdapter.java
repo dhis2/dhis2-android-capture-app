@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
+import androidx.compose.ui.platform.ComposeView;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.annotation.NonNull;
@@ -12,10 +13,6 @@ import org.dhis2.usescases.main.program.ProgramViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
 
 public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEnrollmentViewHolder> {
 
@@ -40,6 +37,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     public TeiProgramListEnrollmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding binding;
+        ComposeView composeView = null;
 
         switch (viewType) {
             case TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD:
@@ -65,13 +63,14 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_programs, parent, false);
+                composeView = new ComposeView(parent.getContext());
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment, parent, false);
                 break;
         }
 
-        return new TeiProgramListEnrollmentViewHolder(binding);
+        return new TeiProgramListEnrollmentViewHolder(binding, composeView);
     }
 
     @Override

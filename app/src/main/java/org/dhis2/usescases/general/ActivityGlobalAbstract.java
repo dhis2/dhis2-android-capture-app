@@ -10,11 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,13 +27,10 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
-import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.resources.LocaleSelector;
-import org.dhis2.data.server.OpenIdSession;
-import org.dhis2.data.location.LocationProvider;
+import org.dhis2.commons.locationprovider.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
-import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.login.accounts.AccountsActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -52,15 +47,11 @@ import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import javax.inject.Inject;
 
 import kotlin.Unit;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
-import timber.log.Timber;
 
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity

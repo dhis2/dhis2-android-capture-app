@@ -44,8 +44,8 @@ class TableHeaderTest {
     @Ignore
     @Test
     fun widthCellInHeaderRow() {
-        assertTrue(tableHeaderModel.cellWidth(0) == 200.dp)
-        assertTrue(tableHeaderModel.cellWidth(1) == 100.dp)
-        assertTrue(tableHeaderModel.cellWidth(2) == 50.dp)
+        assertTrue(tableHeaderModel.headerCellWidth(0) == 200.dp)
+        assertTrue(tableHeaderModel.headerCellWidth(1) == 100.dp)
+        assertTrue(tableHeaderModel.headerCellWidth(2) == 50.dp)
     }
 }

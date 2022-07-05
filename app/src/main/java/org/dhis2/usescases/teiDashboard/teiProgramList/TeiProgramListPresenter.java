@@ -90,4 +90,9 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
+
+    @Override
+    public void refreshData() {
+        interactor.refreshData();
+    }
 }

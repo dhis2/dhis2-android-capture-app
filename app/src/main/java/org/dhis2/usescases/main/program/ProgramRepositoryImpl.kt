@@ -9,6 +9,7 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
@@ -128,16 +129,17 @@ internal class ProgramRepositoryImpl(
         return map { programModel ->
             programModel.copy(
                 downloadState = when {
-                    syncStatusData.isProgramDownloading(
-                        programModel.uid,
-                        programModel.programType
-                    ) -> ProgramDownloadState.DOWNLOADING
-                    syncStatusData.wasProgramDownloading(
-                        lastSyncStatus,
-                        programModel.uid,
-                        programModel.programType
-                    ) -> ProgramDownloadState.DOWNLOADED
-                    else -> ProgramDownloadState.NONE
+                    syncStatusData.isProgramDownloading(programModel.uid) ->
+                        ProgramDownloadState.DOWNLOADING
+                    syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
+                        when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
+                            D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
+                            D2ProgressSyncStatus.ERROR,
+                            D2ProgressSyncStatus.PARTIAL_ERROR -> ProgramDownloadState.ERROR
+                            null -> ProgramDownloadState.DOWNLOADED
+                        }
+                    else ->
+                        ProgramDownloadState.NONE
                 }
             )
         }
