@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.DateUtils;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
@@ -82,9 +84,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @NonNull
     @Override
-    public Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
+    public Flowable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
         String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
-        return Observable.just(d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        return Flowable.just(d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
                     Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
                     List<String> captureOrgUnitUids = new ArrayList();
@@ -94,7 +96,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     }
                     return captureOrgUnitUids;
                 })
-                .flatMap(orgUnits -> Observable.fromCallable(() -> d2.programModule().programs()
+                .flatMap(orgUnits -> Flowable.fromCallable(() -> d2.programModule().programs()
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).blockingGet()))
                 .flatMapIterable(programs -> programs)
@@ -109,7 +111,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                         )
                 )
                 .toList()
-                .toObservable();
+                .toFlowable();
     }
 
     @NonNull
@@ -165,5 +167,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     public Program getProgram(String programUid) {
         Program program = d2.programModule().programs().byUid().eq(programUid).one().blockingGet();
         return program;
+    }
+
+    @Override
+    public ProgramViewModel updateProgramViewModel(ProgramViewModel programViewModel, ProgramDownloadState programDownloadState) {
+        return programViewModelMapper.map(programViewModel, programDownloadState);
     }
 }
