@@ -264,6 +264,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
 
             for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)) {
+                if (attributeValue != null) {}
                 if (attributeValue != null) {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
                     if (attribute.valueType() != ValueType.IMAGE) {
@@ -272,22 +273,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         );
                     }
                 }
-                if (attributeValue != null) {
-                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                    if (attribute.valueType() != ValueType.IMAGE) {
-                        attributeValues.add(
-                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
-                        );
-                    }
-                }
-                if (attributeValue != null) {
-                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                    if (attribute.valueType() != ValueType.IMAGE) {
-                        attributeValues.add(
-                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
-                        );
-                    }
-                }
+                if (attributeValue != null) {}
             }
 
             if (attributeValues.isEmpty()) {
