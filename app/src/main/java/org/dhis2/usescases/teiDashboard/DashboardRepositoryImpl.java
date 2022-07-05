@@ -272,6 +272,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         );
                     }
                 }
+                if (attributeValue != null) {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                    if (attribute.valueType() != ValueType.IMAGE) {
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
+                if (attributeValue != null) {
+                    TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                    if (attribute.valueType() != ValueType.IMAGE) {
+                        attributeValues.add(
+                                ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                        );
+                    }
+                }
             }
 
             if (attributeValues.isEmpty()) {
