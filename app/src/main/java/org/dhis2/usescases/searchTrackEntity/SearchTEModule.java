@@ -21,6 +21,7 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
+import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
@@ -107,11 +108,12 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       MatomoAnalyticsController matomoAnalyticsController) {
+                                                       MatomoAnalyticsController matomoAnalyticsController,
+                                                       SyncStatusController syncStatusController) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController);
+                matomoAnalyticsController, syncStatusController);
     }
 
     @Provides

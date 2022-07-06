@@ -13,6 +13,7 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
@@ -40,6 +41,7 @@ class SearchTEPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private val disableHomeFiltersFromSettingsApp: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val syncStatusController: SyncStatusController = mock()
 
     @Before
     fun setUp() {
@@ -71,7 +73,8 @@ class SearchTEPresenterTest {
             workingListMapper,
             filterRepository,
             disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            syncStatusController
         )
     }
 

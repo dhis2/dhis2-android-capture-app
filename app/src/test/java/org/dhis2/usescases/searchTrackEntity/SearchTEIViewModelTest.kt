@@ -591,8 +591,8 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return selected program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build(),
-            Program.builder().uid("program2").build()
+            ProgramSpinnerModel("program1", "program1", false),
+            ProgramSpinnerModel("program2", "program2", false)
         )
 
         viewModel.onProgramSelected(2, programs) {
@@ -604,7 +604,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return first program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build()
+            ProgramSpinnerModel("program1", "program1", false)
         )
 
         viewModel.onProgramSelected(2, programs) {

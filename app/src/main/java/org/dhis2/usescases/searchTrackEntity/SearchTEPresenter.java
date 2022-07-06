@@ -32,6 +32,8 @@ import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.service.SyncStatusController;
+import org.dhis2.data.service.SyncStatusData;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
@@ -51,6 +53,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import dispatch.core.DispatcherProvider;
 import io.reactivex.Observable;
@@ -81,6 +85,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final DisableHomeFiltersFromSettingsApp disableHomeFilters;
     private final MatomoAnalyticsController matomoAnalyticsController;
+    private SyncStatusController syncStatusController;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -93,7 +98,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              TeiFilterToWorkingListItemMapper workingListMapper,
                              FilterRepository filterRepository,
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
-                             MatomoAnalyticsController matomoAnalyticsController) {
+                             MatomoAnalyticsController matomoAnalyticsController,
+                             SyncStatusController syncStatusController) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -104,6 +110,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.filterRepository = filterRepository;
         this.disableHomeFilters = disableHomeFilters;
         this.matomoAnalyticsController = matomoAnalyticsController;
+        this.syncStatusController = syncStatusController;
         compositeDisposable = new CompositeDisposable();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
@@ -143,10 +150,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 searchRepository.programsWithRegistration(trackedEntityType)
+                        .map(this::applySyncStatus)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(programs -> {
-                                    Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
+                                    Collections.sort(programs, (program1, program2) -> program1.getDisplayName().compareToIgnoreCase(program2.getDisplayName()));
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
                                     } else {
@@ -588,5 +596,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    public List<ProgramSpinnerModel> applySyncStatus(List<Program> programs) {
+        return programs.stream().map(program -> new ProgramSpinnerModel(
+                program.uid(),
+                program.displayName(),
+                syncStatusController.observeDownloadProcess().getValue().isProgramDownloading(
+                        program.uid()
+                )
+        )).collect(Collectors.toList());
     }
 }
