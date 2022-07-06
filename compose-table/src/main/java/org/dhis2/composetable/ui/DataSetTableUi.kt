@@ -348,7 +348,11 @@ fun TableCell(
                 textAlign = TextAlign.End,
                 color = tableCellUiOptions.textColor()
             ),
-            value = value ?: "",
+            value = if (cellValue.isReadOnly) {
+                cellValue.value ?: ""
+            } else {
+                value ?: ""
+            },
             onValueChange = { newValue ->
                 value = newValue
             },
