@@ -339,7 +339,8 @@ fun TableCell(
                     focused = it.isFocused
                     selectionState.selectCell()
                 }
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 4.dp)
+                .fillMaxHeight(),
             enabled = tableCellUiOptions.enabled,
             interactionSource = source,
             readOnly = cellValue.isReadOnly,
