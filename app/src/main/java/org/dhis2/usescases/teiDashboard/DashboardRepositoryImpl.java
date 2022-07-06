@@ -273,7 +273,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         );
                     }
                 }
-                if (attributeValue != null) {}
             }
 
             if (attributeValues.isEmpty()) {
