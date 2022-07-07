@@ -16,7 +16,7 @@ buildscript {
         // without breaking incremental compilation
         classpath "hu.supercluster:paperwork-plugin:1.2.7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jacoco:org.jacoco.core:0.8.7"
+        classpath "org.jacoco:org.jacoco.core:0.8.8"
     }
 }
 
@@ -52,7 +52,7 @@ allprojects {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {
-                    details.useVersion "0.8.7"
+                    details.useVersion "0.8.8"
                 }
             }
         }
