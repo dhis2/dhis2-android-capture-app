@@ -266,6 +266,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)) {
                 if (attributeValue != null) {}
                 if (attributeValue != null) {}
+                if (attributeValue != null) {}
                 if (attributeValue != null) {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
                     if (attribute.valueType() != ValueType.IMAGE) {
