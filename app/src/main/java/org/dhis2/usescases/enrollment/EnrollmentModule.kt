@@ -22,6 +22,8 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.RulesRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
+import org.dhis2.form.data.metadata.OptionSetConfiguration
+import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
@@ -124,7 +126,10 @@ class EnrollmentModule(
             ),
             LayoutProviderImpl(),
             HintProviderImpl(context),
-            DisplayNameProviderImpl(d2),
+            DisplayNameProviderImpl(
+                OptionSetConfiguration(d2),
+                OrgUnitConfiguration(d2)
+            ),
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),
             LegendValueProviderImpl(d2, resourceManager)
@@ -241,7 +246,10 @@ class EnrollmentModule(
                 searchTEIRepository
             ),
             FieldErrorMessageProvider(activityContext),
-            DisplayNameProviderImpl(d2),
+            DisplayNameProviderImpl(
+                OptionSetConfiguration(d2),
+                OrgUnitConfiguration(d2)
+            ),
             dataEntryRepository,
             EnrollmentRuleEngineRepository(d2, enrollmentUid),
             RulesUtilsProviderImpl(d2),
