@@ -50,7 +50,8 @@ class TableDataToTableModelMapper(
                         editable = field.editable(),
                         mandatory = field.mandatory(),
                         error = field.error(),
-                        isReadOnly = isReadyOnly(dataElement)
+                        isReadOnly = isReadyOnly(dataElement),
+                        dropDownOptions = field.options()
                     )
                 }.toMap()
             )

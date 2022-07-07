@@ -653,24 +653,18 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
          * I have created a issue() to refactor OptionSetCellPopUp to compose in order to use it in both sides
          * After implement new menu, please, uncomment this code
          */
-//        if (dialog.showDialog()) {
-        dialog.listener = OptionSetOnClickListener {
-            presenterFragment.onCellValueChange(cell.copy(value = it.code()))
-        }
-        dialog.clearListener = View.OnClickListener {
-            presenterFragment.onCellValueChange(cell.copy(value = null))
-        }
-        dialog.show(parentFragmentManager, TAG)
-        /*} else {
-            dialog.dismiss()
-            OptionSetCellPopUp(
-                requireContext(),
-                requireView(),
-                spinnerViewModel
-            ) {
+        if (dialog.showDialog()) {
+            dialog.listener = OptionSetOnClickListener {
                 presenterFragment.onCellValueChange(cell.copy(value = it.code()))
             }
-        }*/
+            dialog.clearListener = View.OnClickListener {
+                presenterFragment.onCellValueChange(cell.copy(value = null))
+            }
+            dialog.show(parentFragmentManager, TAG)
+        } else {
+            dialog.dismiss()
+            presenterFragment.onCellValueChange(cell)
+        }
     }
 
     companion object {

@@ -57,7 +57,7 @@ public abstract class FieldViewModel {
     public abstract String dataElement();
 
    @NonNull
-    public abstract List<String> listCategoryOption();
+    public abstract List<String> options();
 
    @NonNull
     public abstract String storeBy();

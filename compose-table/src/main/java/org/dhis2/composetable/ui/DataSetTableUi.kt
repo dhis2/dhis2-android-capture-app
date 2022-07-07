@@ -26,6 +26,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -321,15 +323,19 @@ fun TableCell(
 ) {
     var value by remember { mutableStateOf(cellValue.value) }
     var focused by remember { mutableStateOf(false) }
-    val tableCellUiOptions = TableCellUiOptions(cellValue, value ?: "", focused, selectionState)
+    val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val tableCellUiOptions = TableCellUiOptions(cellValue, selectionState)
     val source = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
-            .border(1.dp, tableCellUiOptions.borderColor())
+            .border(1.dp, tableCellUiOptions.borderColor(focused))
             .background(tableCellUiOptions.backgroundColor())
     ) {
         if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
-            onClick(cellValue)
+            when {
+                cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                else -> onClick(cellValue)
+            }
         }
 
         BasicTextField(
@@ -367,6 +373,17 @@ fun TableCell(
                 }
             )
         )
+        if (cellValue.dropDownOptions?.isNotEmpty() == true) {
+            DropDownOptions(
+                expanded = dropDownExpanded,
+                options = cellValue.dropDownOptions,
+                onDismiss = { setExpanded(false) },
+                onSelected = {
+                    setExpanded(false)
+                    onClick(cellValue.copy(value = it))
+                }
+            )
+        }
 
         if (cellValue.mandatory == true) {
             Icon(
@@ -376,8 +393,8 @@ fun TableCell(
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment()),
-                tint = tableCellUiOptions.mandatoryColor()
+                    .align(tableCellUiOptions.mandatoryAlignment(value?.isNotEmpty())),
+                tint = tableCellUiOptions.mandatoryColor(value?.isNotEmpty())
             )
         }
         if (cellValue.error != null) {
@@ -387,6 +404,29 @@ fun TableCell(
                     .fillMaxWidth(),
                 color = TableTheme.colors.errorColor
             )
+        }
+    }
+}
+
+@Composable
+fun DropDownOptions(
+    expanded: Boolean,
+    options: List<String>,
+    onDismiss: () -> Unit,
+    onSelected: (String) -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss
+    ) {
+        options.forEach {
+            DropdownMenuItem(
+                onClick = {
+                    onSelected.invoke(it)
+                }
+            ) {
+                Text(text = it)
+            }
         }
     }
 }
@@ -455,7 +495,7 @@ fun TableListPreview() {
     )
 
     val tableRows = TableRowModel(
-        rowHeader = RowHeader("Data Element Element Element ", 0, true),
+        rowHeader = RowHeader("Data Element", 0, true),
         values = mapOf(
             Pair(0, TableCell(value = "12", mandatory = true)),
             Pair(1, TableCell(value = "12", editable = false)),
