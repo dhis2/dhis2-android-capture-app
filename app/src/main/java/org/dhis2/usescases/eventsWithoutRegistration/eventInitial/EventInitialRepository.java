@@ -16,6 +16,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -61,4 +62,16 @@ public interface EventInitialRepository {
     Flowable<Result<RuleEffect>> calculate();
 
     Flowable<EventEditableStatus> getEditableStatus();
+
+    Observable<String> permanentReferral(
+            String enrollmentUid,
+            @NonNull String teiUid,
+            @NonNull String programUid,
+            @NonNull String programStage,
+            @NonNull Date dueDate,
+            @NonNull String orgUnitUid,
+            @Nullable String categoryOptionsUid,
+            @Nullable String categoryOptionComboUid,
+            @NonNull Geometry geometry
+    );
 }
