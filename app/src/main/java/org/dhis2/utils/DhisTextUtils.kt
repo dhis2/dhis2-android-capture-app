@@ -13,9 +13,5 @@ class DhisTextUtils {
         fun isNullOrEmpty(str: CharSequence?): Boolean {
             return str.isNullOrEmpty()
         }
-
-        fun isNull(str: CharSequence?): Boolean {
-            return str.isNullOrBlank()
-        }
     }
 }
