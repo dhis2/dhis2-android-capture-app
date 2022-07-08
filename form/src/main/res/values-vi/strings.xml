@@ -50,5 +50,4 @@
     <string name="mandatory_field">Trường bắt buộc</string>
     <string name="form_latitude_prefix">Vĩ độ: </string>
     <string name="form_longitude_prefix">Kinh độ: </string>
-    <string name="discard_changes">Hủy bỏ các thay đổi</string>
-</resources>
+    </resources>

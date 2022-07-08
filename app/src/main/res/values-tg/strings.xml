@@ -17,7 +17,6 @@
     <!-- Input hints -->
     <string name="search">Ҷустуҷӯ</string>
     <string name="read_only">Танҳо барои хондан</string>
-    <string name="complete">Анҷом ёфт</string>
     <string name="completed">Анҷомёфта</string>
     <string name="state_error">Хатогӣ</string>
     <!--Event initial-->

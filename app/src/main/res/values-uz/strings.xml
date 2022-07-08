@@ -99,7 +99,6 @@
     <string name="event_approved">Тадбир тасдиқланди</string>
     <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
-    <string name="complete">Тўлдириш</string>
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
     <string name="cancelled">Бекор қилинди</string>

@@ -93,7 +93,6 @@
     <string name="event_approved">审核的事件</string>
     <string name="event_inactive">不活跃的事件</string>
     <string name="read_only">只读</string>
-    <string name="complete">完成</string>
     <string name="finish_and_complete">完成</string>
     <string name="completed">已完成</string>
     <string name="cancelled">已取消</string>
