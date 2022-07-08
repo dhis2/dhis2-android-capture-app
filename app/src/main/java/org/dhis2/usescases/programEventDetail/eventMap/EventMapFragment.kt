@@ -80,8 +80,12 @@ class EventMapFragment :
             }
 
             mapPositionButton.setOnClickListener {
-                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(requireActivity())
+                if(locationProvider.hasLocationEnabled()) {
+                    eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                        permissionManager?.requestLocationPermissions(requireActivity())
+                    }
+                }else {
+                    LocationSettingLauncher.requestEnableLocationSetting(requireContext())
                 }
             }
         }
