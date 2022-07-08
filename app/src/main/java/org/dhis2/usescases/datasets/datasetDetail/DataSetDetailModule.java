@@ -35,6 +35,7 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.D2;
 
@@ -86,5 +87,17 @@ public class DataSetDetailModule {
     @PerActivity
     NavigationPageConfigurator providePageConfigurator(DataSetDetailRepository dataSetDetailRepository) {
         return new DataSetPageConfigurator(dataSetDetailRepository);
+    }
+
+    @Provides
+    @PerActivity
+    DataSetDetailViewModelFactory providesViewModelFactory(
+            DispatcherProvider dispatcherProvider,
+            DataSetDetailRepository dataSetDetailRepository
+    ) {
+        return new DataSetDetailViewModelFactory(
+                dispatcherProvider,
+                new DataSetPageConfigurator(dataSetDetailRepository)
+        );
     }
 }

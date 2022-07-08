@@ -11,26 +11,25 @@ import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.databinding.ActivityDatasetDetailBinding;
-import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.granularsync.GranularSyncContracts;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
+import org.dhis2.databinding.ActivityDatasetDetailBinding;
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.category.CategoryDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
 
@@ -56,9 +55,11 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     FiltersAdapter filtersAdapter;
 
     @Inject
-    NavigationPageConfigurator pageConfigurator;
+    DataSetDetailViewModelFactory viewModelFactory;
 
     private boolean backDropActive;
+
+    private DataSetDetailViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +68,22 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         dataSetDetailComponent.inject(this);
         super.onCreate(savedInstanceState);
 
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(DataSetDetailViewModel.class);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_detail);
         binding.setName(getIntent().getStringExtra(Constants.DATA_SET_NAME));
-        boolean accessWriteData = Boolean.parseBoolean(getIntent().getStringExtra(Constants.ACCESS_DATA));
         binding.setPresenter(presenter);
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
-        binding.navigationBar.pageConfiguration(pageConfigurator);
+        configureBottomNavigation();
+    }
+
+    private void configureBottomNavigation() {
+        boolean accessWriteData = Boolean.parseBoolean(getIntent().getStringExtra(Constants.ACCESS_DATA));
+        viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
+            binding.navigationBar.pageConfiguration(pageConfigurator);
+        });
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment = null;
             switch (item.getItemId()) {
@@ -93,6 +102,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         });
         binding.navigationBar.selectItemAt(0);
         binding.fragmentContainer.setPadding(0, 0, 0, binding.navigationBar.isHidden() ? 0 : ExtensionsKt.getDp(56));
+
     }
 
     @Override

@@ -218,6 +218,7 @@ class FormView : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
+        viewModel = FormViewModel(formRepository, dispatchers)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 

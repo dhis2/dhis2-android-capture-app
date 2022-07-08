@@ -1,7 +1,8 @@
 This is a patch version that fixes:
-- ANDROAPP-4745 QR scanner appending wrong identifier
-- ANDROAPP-4743 Numeric option sets not being displayed
-- ANDROAPP-4719 Wrong screen being opened when having several users
+- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
+- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
+- [ANDROAPP-4814] Infinite login with wrong url/username/password
+- [ANDROAPP-4795] SMS Sync Unable to Send
 ....
 General system stability improvements to enhance the user's experience.
 You can find all the details on Jira and Github.
