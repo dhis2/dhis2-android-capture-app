@@ -1,6 +1,6 @@
-package org.dhis2.ui
+package org.dhis2.form.ui.dialog
 
-import org.dhis2.R
+import org.dhis2.form.R
 
 sealed class DialogButtonStyle(
     open val textResource: Int,

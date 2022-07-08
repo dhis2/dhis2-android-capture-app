@@ -21,9 +21,10 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.form.ui.dialog.DataEntryBottomDialog
+import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
+import org.dhis2.form.ui.dialog.DialogButtonStyle
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.ui.DataEntryDialogUiModel
-import org.dhis2.ui.DialogButtonStyle
 import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -34,7 +35,6 @@ import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus

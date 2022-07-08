@@ -1,4 +1,4 @@
-package org.dhis2.ui
+package org.dhis2.form.ui.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,9 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.R
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
+import org.dhis2.form.R
 
 @Composable
 fun DataEntryBottomDialogContent(

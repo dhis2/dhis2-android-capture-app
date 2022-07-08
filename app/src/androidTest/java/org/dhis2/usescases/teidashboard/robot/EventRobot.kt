@@ -1,9 +1,7 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -23,8 +21,8 @@ import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.form.ui.FormViewHolder
-import org.dhis2.ui.MAIN_BUTTON_TAG
-import org.dhis2.ui.SECONDARY_BUTTON_TAG
+import org.dhis2.form.ui.dialog.MAIN_BUTTON_TAG
+import org.dhis2.form.ui.dialog.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not

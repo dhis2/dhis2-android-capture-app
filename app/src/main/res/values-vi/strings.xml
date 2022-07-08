@@ -100,7 +100,6 @@
     <string name="event_approved">Sự kiện được được duyệt</string>
     <string name="event_inactive">Sự kiện không hoạt động</string>
     <string name="read_only">Chỉ Xem</string>
-    <string name="complete">Hoàn tất</string>
     <string name="finish_and_complete">Lưu và Hoàn Tất</string>
     <string name="completed">Hoàn tất</string>
     <string name="cancelled">Đã hủy</string>
@@ -454,7 +453,6 @@
     <string name="unable_to_save">Không thể lưu</string>
     <string name="warnings_in_form">Có cảnh báo trong biểu nhập.</string>
     <string name="what_to_do">Bạn muốn làm gì?</string>
-    <string name="review">Xem xét</string>
     <string name="field_errors">Một số trường dữ liệu có lỗi. Vui lòng kiểm tra chúng để có thể hoàn tất.</string>
     <string name="unselect_enrollment">Tất cả đăng ký</string>
     <string name="unselect_enrollment_description">Bảng hiển thị dữ liệu với tất cả chương trình đang hoạt động</string>
@@ -853,10 +851,6 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
-    <string name="discard_changes">Hủy bỏ các thay đổi</string>
-    <string name="keep_editing">Tiếp tục chỉnh sửa</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
-    <string name="not_now">Không phải bây giờ</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
     <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>

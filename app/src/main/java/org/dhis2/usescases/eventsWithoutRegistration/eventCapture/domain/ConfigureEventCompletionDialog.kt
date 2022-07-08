@@ -2,10 +2,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
-import org.dhis2.ui.DataEntryDialogUiModel
-import org.dhis2.ui.DialogButtonStyle.CompleteButton
-import org.dhis2.ui.DialogButtonStyle.MainButton
-import org.dhis2.ui.DialogButtonStyle.SecondaryButton
+import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
+import org.dhis2.form.ui.dialog.DialogButtonStyle.CompleteButton
+import org.dhis2.form.ui.dialog.DialogButtonStyle.MainButton
+import org.dhis2.form.ui.dialog.DialogButtonStyle.SecondaryButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.COMPLETE_ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.MANDATORY

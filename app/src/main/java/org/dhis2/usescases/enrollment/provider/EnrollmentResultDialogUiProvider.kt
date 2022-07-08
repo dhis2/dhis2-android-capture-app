@@ -9,8 +9,8 @@ import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
-import org.dhis2.ui.DataEntryDialogUiModel
-import org.dhis2.ui.DialogButtonStyle
+import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
+import org.dhis2.form.ui.dialog.DialogButtonStyle
 
 class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
 

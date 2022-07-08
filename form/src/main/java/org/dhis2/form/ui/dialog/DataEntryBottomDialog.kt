@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.form.ui.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,9 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.R
-import org.dhis2.ui.DataEntryBottomDialogContent
-import org.dhis2.ui.DataEntryDialogUiModel
+import org.dhis2.form.R
 
 class DataEntryBottomDialog(
     var dataEntryDialogUiModel: DataEntryDialogUiModel,

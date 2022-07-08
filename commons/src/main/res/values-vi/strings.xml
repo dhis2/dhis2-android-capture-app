@@ -206,4 +206,8 @@
     <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
     <string name="unsupported_field_description">Trường này không hiển thị để nhập dữ liệu bằng điện thoại</string>
     <string name="add_image">Thêm hình ảnh</string>
+    <string name="keep_editing">Tiếp tục chỉnh sửa</string>
+    <string name="not_now">Không phải bây giờ</string>
+    <string name="review">Xem xét</string>
+    <string name="complete">Hoàn tất</string>
     </resources>
