@@ -261,7 +261,6 @@
     <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
     <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
-    <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
     <string name="missing_mandatory_fields_events_2.0">Một số trường bắt buộc nhập bị thiếu:\n %s\n Bạn có thể quay trở lại bây giờ, nhưng sự kiện này sẽ không thể hoàn tất.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
     <string name="error_fields">Một vài trường dữ liệu có lỗi:\n %s\nVui lòng kiểm tra.</string>
@@ -868,10 +867,6 @@
     <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem xét không?</string>
-    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.\n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
-    <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
-    <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
-    <string name="fields_mandatory_missing_discard">Thiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập. \n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="changes_will_be_discarted">Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="re_opened">Đã Mở-lại</string>
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>

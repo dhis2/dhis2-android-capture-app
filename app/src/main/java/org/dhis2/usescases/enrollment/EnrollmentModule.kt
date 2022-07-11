@@ -37,7 +37,7 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
-import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.reporting.CrashReportController

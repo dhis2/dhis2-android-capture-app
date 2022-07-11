@@ -265,7 +265,6 @@
     <string name="missing_mandatory_fields_events">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
     <string name="delete_go_back">Si vuelve ahora la información registrada se perderá </string>
-    <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
     <string name="missing_mandatory_fields_events_2.0">Faltan campos obligatorios:+n%s\nPuede ir atrás, pero el evento no se puede completar.</string>
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
@@ -870,10 +869,6 @@
     <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
-    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
-    <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
-    <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
-    <string name="fields_mandatory_missing_discard">Algunos campos obligatorios faltan llenarse, el formulario no puede guardarse. \nSi sale, los cambios serán descartados.</string>
     <string name="changes_will_be_discarted">Si sales los cambios serán descartados.</string>
     <string name="re_opened">Reabrir</string>
     <string name="account_disable_title">Cuenta deshabilitada</string>

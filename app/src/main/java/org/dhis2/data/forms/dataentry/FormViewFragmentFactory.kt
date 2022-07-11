@@ -7,7 +7,7 @@ import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
-import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 
 class FormViewFragmentFactory(
     val formRepository: FormRepository,
