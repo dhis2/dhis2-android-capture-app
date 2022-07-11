@@ -129,6 +129,17 @@ dependencies {
     api "com.github.bumptech.glide:glide:${libraries.glide}"
     kapt "com.github.bumptech.glide:compiler:${libraries.glide}"
 
+    //region QR/Barcode scanner
+    api "com.google.zxing:core:${libraries.zxing}"
+
+    api ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
+        exclude group: "com.google.zxing", module: "core"
+    }
+
+    api ("com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"){
+        exclude group: "com.google.zxing", module: "core"
+    }
+
     testApi "junit:junit:${libraries.junit}"
 
     androidTestApi 'androidx.test.ext:junit:1.1.2'

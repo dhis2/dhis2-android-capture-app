@@ -1,4 +1,4 @@
-package org.dhis2.data.forms
+package org.dhis2.form.data.scan
 
 import android.app.Activity
 import android.content.Context
