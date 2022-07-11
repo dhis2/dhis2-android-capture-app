@@ -5,15 +5,15 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.ArrayList
-import java.util.HashMap
 import java.util.SortedMap
 import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
@@ -487,6 +487,11 @@ class DataValueRepository(
         return inputPeriodModel
     }
 
+    fun getDataTableModel(categoryComboUid: String): Observable<DataTableModel> {
+        val categoryCombo = d2.categoryModule().categoryCombos().uid(categoryComboUid).blockingGet()
+        return getDataTableModel(categoryCombo)
+    }
+
     fun getDataTableModel(categoryCombo: CategoryCombo): Observable<DataTableModel> {
         return Flowable.zip<List<DataElement>,
             Map<String, List<List<Pair<CategoryOption, Category>>>>,
@@ -580,14 +585,6 @@ class DataValueRepository(
             dataTableModel.catOptionOrder
         )
 
-        /*getCatOptionComboOrder(
-                getCatOptionComboFrom(
-                    dataTableModel.catCombo?.uid(),
-                    dataTableModel.catOptionOrder
-                ),
-                dataTableModel.catOptionOrder ?: mutableListOf()
-            )*/
-
         for (dataElement in dataTableModel.rows ?: emptyList()) {
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
@@ -612,49 +609,29 @@ class DataValueRepository(
                         compulsoryDataElement.dataElement()?.uid() == dataElement.uid()
                 }?.let { true } ?: false
 
-                val fieldViewModel = dataTableModel.dataValues?.find { dataSetTableModel ->
+                val fieldValue = dataTableModel.dataValues?.find { dataSetTableModel ->
                     dataSetTableModel.dataElement == dataElement.uid() &&
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
-                }?.let { dataSetTableModel ->
-                    fieldFactory.create(
-                        dataSetTableModel.id(),
-                        dataElement.displayFormName()!!,
-                        dataElement.valueType()!!,
-                        mandatory,
-                        dataElement.optionSetUid(),
-                        dataSetTableModel.value,
-                        sectionUid,
-                        true,
-                        isEditable,
-                        null,
-                        categoryOptionCombo.displayName(),
-                        dataElement.uid(),
-                        ArrayList(),
-                        "android",
-                        row,
-                        column,
-                        dataSetTableModel.categoryOptionCombo,
-                        dataSetTableModel.catCombo
-                    )
-                } ?: fieldFactory.create(
-                    "",
+                }?.value ?: ""
+                val fieldViewModel = fieldFactory.create(
+                    dataElement.uid() + "_" + categoryOptionCombo.uid(),
                     dataElement.displayFormName()!!,
                     dataElement.valueType()!!,
                     mandatory,
                     dataElement.optionSetUid(),
-                    "",
+                    fieldValue,
                     sectionUid,
                     true,
                     isEditable,
                     null,
-                    categoryOptionCombo.displayName(),
+                    dataElement.displayDescription(),
                     dataElement.uid(),
-                    ArrayList(),
+                    emptyList(),
                     "android",
                     row,
                     column,
                     categoryOptionCombo.uid(),
-                    dataTableModel.catCombo!!.uid()
+                    dataTableModel.catCombo?.uid()
                 )
 
                 fields.add(fieldViewModel)
@@ -668,17 +645,6 @@ class DataValueRepository(
 
                 column++
             }
-
-            /* for (fieldViewModel in fields) {
-                 for (compulsoryDataElement in dataTableModel.compulsoryCells ?: emptyList())
-                     if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
-                         fieldViewModel.categoryOptionCombo() &&
-                         compulsoryDataElement.dataElement()!!.uid() ==
-                         fieldViewModel.dataElement()
-                     ) {
-                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
-                     }
-             }*/
 
             if (showRowTotals() && fieldIsNumber) {
                 setTotalRow(totalRow, fields, values, row, column)
@@ -960,5 +926,47 @@ class DataValueRepository(
         }
 
         return editable
+    }
+
+    fun getDataElement(dataElementUid: String): DataElement {
+        return d2.dataElementModule()
+            .dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+    }
+
+    fun orgUnits(): List<OrganisationUnit> {
+        return d2.organisationUnitModule().organisationUnits()
+            .byDataSetUids(listOf(dataSetUid))
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .blockingGet()
+    }
+
+    fun getOrgUnitById(orgUnitUid: String): String? {
+        return d2.organisationUnitModule().organisationUnits()
+            .uid(orgUnitUid)
+            .blockingGet()
+            .displayName()
+    }
+
+    fun getOptionSetViewModel(dataElement: DataElement, cell: TableCell): SpinnerViewModel {
+        return SpinnerViewModel.create(
+            cell.id,
+            dataElement.displayFormName()!!,
+            "",
+            false,
+            dataElement.optionSetUid(),
+            cell.value,
+            sectionUid,
+            null,
+            dataElement.displayDescription(),
+            dataElement.uid(),
+            emptyList(),
+            "android",
+            0,
+            0,
+            cell.id!!.split("_")[1],
+            dataElement.categoryComboUid()
+        )
     }
 }

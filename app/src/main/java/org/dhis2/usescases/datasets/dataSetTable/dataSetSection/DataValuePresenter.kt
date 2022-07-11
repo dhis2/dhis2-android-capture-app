@@ -9,14 +9,19 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
 
 class DataValuePresenter(
@@ -25,9 +30,9 @@ class DataValuePresenter(
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
     private val updateProcessor: FlowableProcessor<Unit>,
-    private val featureConfigRepository: FeatureConfigRepository? = null
+    private val featureConfigRepository: FeatureConfigRepository? = null,
+    private val mapper: TableDataToTableModelMapper
 ) {
-    private val mapper = TableDataToTableModelMapper()
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
@@ -89,8 +94,15 @@ class DataValuePresenter(
                         }
 
                         dataSetTableModel?.let {
-                            view.updateData(rowAction, it.catCombo)
-                            valueStore.save(it)
+                            val result = valueStore.save(it)
+                            if (result.blockingFirst().valueStoreResult == VALUE_CHANGED &&
+                                featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
+                            ) {
+                                updateData(it)
+                            } else {
+                                view.updateData(rowAction, it.catCombo)
+                            }
+                            result
                         } ?: Flowable.just(
                             StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED)
                         )
@@ -99,7 +111,7 @@ class DataValuePresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        val valueChange = ValueStoreResult.VALUE_CHANGED
+                        val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
                             view.showSnackBar()
@@ -171,6 +183,22 @@ class DataValuePresenter(
         }
     }
 
+    private fun updateData(datasetTableModel: DataSetTableModel) {
+        val dataTableModel =
+            repository.getDataTableModel(datasetTableModel.catCombo!!)
+                .blockingFirst()
+        val tableData = repository.setTableData(dataTableModel)
+        val updatedTableModel = mapper.map(tableData)
+
+        allTableState.value = allTableState.value?.map { tableModel ->
+            if (tableModel.id == datasetTableModel.catCombo) {
+                updatedTableModel
+            } else {
+                tableModel
+            }
+        }
+    }
+
     private fun updateTableList() {
         allTableState.postValue(
             mutableListOf<TableModel>().apply {
@@ -210,6 +238,78 @@ class DataValuePresenter(
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
     fun isComposeTableEnable(): Boolean {
-        return featureConfigRepository?.isFeatureEnable(Feature.ANDROAPP_4754) == true
+        return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
+    }
+
+    fun onCellClick(cell: TableCell) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val dataElement = getDataElement(dataElementUid)
+        handleElementInteraction(dataElement, cell)
+    }
+
+    private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
+        if (dataElement.optionSetUid() != null) {
+            view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
+        } else when (dataElement.valueType()) {
+            ValueType.TEXT,
+            ValueType.LONG_TEXT,
+            ValueType.LETTER,
+            ValueType.PHONE_NUMBER,
+            ValueType.NUMBER,
+            ValueType.EMAIL,
+            ValueType.PERCENTAGE,
+            ValueType.INTEGER,
+            ValueType.INTEGER_POSITIVE,
+            ValueType.INTEGER_NEGATIVE,
+            ValueType.INTEGER_ZERO_OR_POSITIVE,
+            ValueType.USERNAME,
+            ValueType.UNIT_INTERVAL,
+            ValueType.URL -> {
+                // Create method to show component and then send to onCellValueChange(cell)
+            }
+            ValueType.BOOLEAN,
+            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
+            ValueType.DATE -> view.showCalendar(dataElement, cell, false)
+            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
+            ValueType.TIME -> view.showTimePicker(dataElement, cell)
+            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
+            ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
+                dataElement,
+                cell,
+                repository.orgUnits()
+            )
+            ValueType.AGE -> view.showAgeDialog(dataElement, cell)
+        }
+    }
+
+    private fun getSpinnerViewModel(dataElement: DataElement, cell: TableCell): SpinnerViewModel {
+        return repository.getOptionSetViewModel(dataElement, cell)
+    }
+
+    private fun getDataElement(dataElementUid: String): DataElement {
+        return repository.getDataElement(dataElementUid)
+    }
+
+    fun onCellValueChange(cell: TableCell) {
+        val ids = cell.id?.split("_")
+        val dataElementUid = ids!![0]
+        val catOptCombUid = ids[1]
+        val catComboUid = allTableState.value?.find { tableModel ->
+            tableModel.tableRows.find { tableRowModel ->
+                tableRowModel.values.values.find { it.id == cell.id } != null
+            } != null
+        }?.id
+
+        val row = RowAction.create(
+            cell.id!!,
+            cell.value,
+            dataElementUid,
+            catOptCombUid,
+            catComboUid,
+            cell.row!!,
+            cell.column!!
+        )
+        processor.onNext(row)
     }
 }

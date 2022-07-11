@@ -14,21 +14,21 @@ class TableHeaderTest {
         rows = listOf(
             TableHeaderRow(
                 cells = listOf(
-                    TableHeaderCell("<18"),
-                    TableHeaderCell(">18 <65"),
-                    TableHeaderCell(">65")
+                    TableHeaderCell(value = "<18"),
+                    TableHeaderCell(value = ">18 <65"),
+                    TableHeaderCell(value = ">65")
                 )
             ),
             TableHeaderRow(
                 cells = listOf(
-                    TableHeaderCell("Male"),
-                    TableHeaderCell("Female")
+                    TableHeaderCell(value = "Male"),
+                    TableHeaderCell(value = "Female")
                 )
             ),
             TableHeaderRow(
                 cells = listOf(
-                    TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach")
+                    TableHeaderCell(value = "Fixed"),
+                    TableHeaderCell(value = "Outreach")
                 )
             )
         )
@@ -41,7 +41,7 @@ class TableHeaderTest {
         assertTrue(tableHeaderModel.numberOfColumns(2) == 12)
     }
 
-    @Ignore
+    @Ignore("Indeterministic")
     @Test
     fun widthCellInHeaderRow() {
         assertTrue(tableHeaderModel.headerCellWidth(0) == 200.dp)

@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class TableModel(
+    val id: String? = null,
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>
 )
@@ -33,10 +34,11 @@ data class TableCell(
     val id: String? = null,
     val row: Int? = null,
     val column: Int? = null,
-    val value: String,
+    val value: String?,
     val editable: Boolean? = true,
     val mandatory: Boolean? = false,
-    val error: String? = null
+    val error: String? = null,
+    val isReadOnly: Boolean = false
 )
 
 data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableCell>)

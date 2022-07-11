@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -155,6 +157,7 @@ fun HeaderCell(
         )
     }
 }
+
 @Composable
 fun TableHeaderRow(
     tableModel: TableModel,
@@ -178,7 +181,8 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onClick: (TableCell) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -194,7 +198,8 @@ fun TableItemRow(
                 cellValues = dataElementValues,
                 defaultHeight = rowHeader.defaultCellHeight,
                 defaultWidth = tableModel.tableHeaderModel.defaultCellWidth,
-                selectionState = selectionState
+                selectionState = selectionState,
+                onClick = onClick
             )
         }
         Divider(modifier = Modifier.fillMaxWidth())
@@ -270,7 +275,8 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onClick: (TableCell) -> Unit
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -287,7 +293,7 @@ fun ItemValues(
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight),
-                    cellValue = cellValues[columnIndex]!!,
+                    cellValue = cellValues[columnIndex] ?: TableCell(value = ""),
                     focusRequester = focusRequester,
                     onNext = {
                         coroutineScope.launch {
@@ -296,7 +302,8 @@ fun ItemValues(
                             )
                         }
                     },
-                    selectionState = selectionState
+                    selectionState = selectionState,
+                    onClick = onClick
                 )
             }
         )
@@ -309,16 +316,22 @@ fun TableCell(
     cellValue: TableCell,
     focusRequester: FocusManager,
     onNext: () -> Unit,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    onClick: (TableCell) -> Unit
 ) {
     var value by remember { mutableStateOf(cellValue.value) }
     var focused by remember { mutableStateOf(false) }
-    val tableCellUiOptions = TableCellUiOptions(cellValue, value, focused, selectionState)
+    val tableCellUiOptions = TableCellUiOptions(cellValue, value ?: "", focused, selectionState)
+    val source = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .border(1.dp, tableCellUiOptions.borderColor())
             .background(tableCellUiOptions.backgroundColor())
     ) {
+        if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
+            onClick(cellValue)
+        }
+
         BasicTextField(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -326,15 +339,21 @@ fun TableCell(
                     focused = it.isFocused
                     selectionState.selectCell()
                 }
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 4.dp)
+                .fillMaxHeight(),
             enabled = tableCellUiOptions.enabled,
-            singleLine = true,
+            interactionSource = source,
+            readOnly = cellValue.isReadOnly,
             textStyle = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
                 color = tableCellUiOptions.textColor()
             ),
-            value = value,
+            value = if (cellValue.isReadOnly) {
+                cellValue.value ?: ""
+            } else {
+                value ?: ""
+            },
             onValueChange = { newValue ->
                 value = newValue
             },
@@ -348,6 +367,7 @@ fun TableCell(
                 }
             )
         )
+
         if (cellValue.mandatory == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_mandatory),
@@ -373,7 +393,11 @@ fun TableCell(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
+fun TableList(
+    tableList: List<TableModel>,
+    tableColors: TableColors? = null,
+    onClick: (TableCell) -> Unit
+) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val selectionStates = tableList.map { rememberSelectionState() }
@@ -392,7 +416,8 @@ fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
                         horizontalScrollState = horizontalScrollStates[index],
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
-                        selectionState = selectionStates[index]
+                        selectionState = selectionStates[index],
+                        onClick = onClick
                     )
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -401,7 +426,6 @@ fun TableList(tableList: List<TableModel>, tableColors: TableColors? = null) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun TableListPreview() {
@@ -449,9 +473,10 @@ fun TableListPreview() {
     )
 
     val tableModel = TableModel(
+        "",
         tableHeaderModel,
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList)
+    TableList(tableList = tableList) {}
 }

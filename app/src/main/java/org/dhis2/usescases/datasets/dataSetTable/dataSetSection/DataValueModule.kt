@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.DataEntryStore
@@ -40,7 +41,8 @@ class DataValueModule(
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
         updateProcessor: FlowableProcessor<Unit>,
-        featureConfigRepository: FeatureConfigRepository
+        featureConfigRepository: FeatureConfigRepository,
+        tableDataToTableModelMapper: TableDataToTableModelMapper
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
@@ -48,7 +50,8 @@ class DataValueModule(
             valueStore,
             schedulerProvider,
             updateProcessor,
-            featureConfigRepository
+            featureConfigRepository,
+            tableDataToTableModelMapper
         )
     }
 
@@ -92,5 +95,14 @@ class DataValueModule(
             networkUtils,
             searchRepository
         )
+    }
+
+    @Provides
+    @PerFragment
+    fun provideTableDataToTableModelMapper(
+        resourceManager: ResourceManager,
+        repository: DataValueRepository
+    ): TableDataToTableModelMapper {
+        return TableDataToTableModelMapper(resourceManager, repository)
     }
 }
