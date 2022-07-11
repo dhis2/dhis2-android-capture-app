@@ -80,7 +80,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadEvents();
         } catch (Exception e) {
-            if(new NetworkUtils(getApplicationContext()).isOnline()){
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);
@@ -95,7 +95,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {
-            if(new NetworkUtils(getApplicationContext()).isOnline()){
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);
@@ -110,7 +110,7 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadDataValues();
         } catch (Exception e) {
-            if(new NetworkUtils(getApplicationContext()).isOnline()){
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
                 presenter.setNetworkUnavailable();
             }
             Timber.e(e);
