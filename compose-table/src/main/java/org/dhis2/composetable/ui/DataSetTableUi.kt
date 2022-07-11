@@ -484,7 +484,8 @@ fun TableItem(tableModel: TableModel, tableColors: TableColors? = null) {
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
                     selectionState = selectionState
-                )
+                ) {
+                }
             }
         }
     }
