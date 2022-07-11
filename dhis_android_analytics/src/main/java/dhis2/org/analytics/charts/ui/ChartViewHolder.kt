@@ -1,10 +1,13 @@
 package dhis2.org.analytics.charts.ui
 
 import android.view.Gravity
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
+import com.google.android.material.composethemeadapter.MdcTheme
+import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.toChartBuilder
 import dhis2.org.databinding.ItemChartBinding
 import org.hisp.dhis.android.core.common.RelativePeriod
@@ -12,6 +15,12 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 class ChartViewHolder(
     val binding: ItemChartBinding
 ) : RecyclerView.ViewHolder(binding.root) {
+
+    init {
+        binding.composeChart.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     fun bind(chart: ChartModel, adapterCallback: ChartItemCallback) {
         chart.orgUnitCallback = {
@@ -34,7 +43,11 @@ class ChartViewHolder(
                 }
             }
         )
-        loadChart(chart)
+        if (chart.observableChartType.get() != ChartType.TABLE) {
+            loadChart(chart)
+        } else {
+            loadComposeChart(chart)
+        }
     }
 
     private fun loadChart(chart: ChartModel) {
@@ -46,6 +59,17 @@ class ChartViewHolder(
         TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
         binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(chartView)
+    }
+
+    private fun loadComposeChart(chart: ChartModel) {
+        binding.composeChart.setContent {
+            MdcTheme {
+                chart.graph.toChartBuilder()
+                    .withType(chart.observableChartType.get()!!)
+                    .withGraphData(chart.graph)
+                    .build().getComposeChart()
+            }
+        }
     }
 
     interface ChartItemCallback {

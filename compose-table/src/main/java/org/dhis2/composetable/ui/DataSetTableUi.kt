@@ -466,6 +466,30 @@ fun TableList(
     }
 }
 
+@Composable
+fun TableItem(tableModel: TableModel, tableColors: TableColors? = null) {
+    TableTheme(tableColors) {
+        Column(Modifier.padding(16.dp)) {
+            val horizontalScrollState = rememberScrollState()
+            val selectionState = rememberSelectionState()
+            TableHeaderRow(
+                tableModel = tableModel,
+                horizontalScrollState = horizontalScrollState,
+                selectionState = selectionState
+            )
+            tableModel.tableRows.forEach { tableRowModel ->
+                TableItemRow(
+                    tableModel = tableModel,
+                    horizontalScrollState = horizontalScrollState,
+                    rowHeader = tableRowModel.rowHeader,
+                    dataElementValues = tableRowModel.values,
+                    selectionState = selectionState
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TableListPreview() {

@@ -11,8 +11,9 @@ class TableCellUiOptions(
 ) {
 
     @Composable
-    fun backgroundColor() = when (cellValue.editable) {
-        false -> TableTheme.colors.disabledCellBackground
+    fun backgroundColor() = when {
+        cellValue.legendColor != null -> Color(cellValue.legendColor)
+        cellValue.editable == false -> TableTheme.colors.disabledCellBackground
         else -> selectionState.colorForCell(column = cellValue.column, row = cellValue.row)
     }
 
