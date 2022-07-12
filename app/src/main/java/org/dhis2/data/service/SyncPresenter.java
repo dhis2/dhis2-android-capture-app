@@ -74,4 +74,6 @@ interface SyncPresenter {
     void initSyncControllerMap();
 
     void finishSync();
+
+    void setNetworkUnavailable();
 }
