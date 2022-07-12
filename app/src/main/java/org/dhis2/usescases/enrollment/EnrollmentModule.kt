@@ -29,6 +29,7 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
@@ -37,7 +38,6 @@ import org.dhis2.form.ui.provider.UiStyleProviderImpl
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.reporting.CrashReportController
