@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model
 
-import DataEntryDialogUiModel
+import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
 import org.dhis2.utils.customviews.FormBottomDialog
 
 data class EventCompletionDialog(
