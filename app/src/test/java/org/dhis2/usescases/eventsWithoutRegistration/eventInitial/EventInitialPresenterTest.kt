@@ -229,9 +229,9 @@ class EventInitialPresenterTest {
         val date = Date()
         initMocks("uid", null, "stage")
         whenever(
-            eventInitialRepository.scheduleEvent(
+            eventInitialRepository.permanentReferral(
                 "enrollment",
-                null,
+                "teiUid",
                 "uid",
                 "stage",
                 date,
@@ -244,21 +244,22 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", null, "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
         )
 
         verify(view).onEventCreated("event")
     }
 
     @Test
-    fun `Should how error when there is an problem creating a scheduled event permanent`() {
+    fun `Should show error when there is an problem creating a scheduled event permanent`() {
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
         initMocks("uid", null, "stage")
+
         whenever(
-            eventInitialRepository.scheduleEvent(
+            eventInitialRepository.permanentReferral(
                 "enrollment",
-                null,
+                "teiUid",
                 "uid",
                 "stage",
                 date,
@@ -271,7 +272,7 @@ class EventInitialPresenterTest {
 
         presenter.init("uid", null, "orgUnit", "stage")
         presenter.scheduleEventPermanent(
-            "enrollment", null, "stage", date, "orgUnit", "catCombo", "catOption", geometry
+            "enrollment", "teiUid", "stage", date, "orgUnit", "catCombo", "catOption", geometry
         )
 
         verify(view).renderError("Error")
