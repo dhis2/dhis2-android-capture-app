@@ -31,7 +31,8 @@ data class FieldUiModelImpl(
     override val renderingType: UiRenderType? = null,
     override val options: List<Option>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
-    override val fieldMask: String? = null
+    override val fieldMask: String? = null,
+    override val isLoadingData: Boolean = false
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -96,7 +97,10 @@ data class FieldUiModelImpl(
     }
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
-        onItemClick()
+        callback?.intent(FormIntent.OnRequestCoordinates(uid))
+        if (!focused) {
+            onItemClick()
+        }
         uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
@@ -136,6 +140,8 @@ data class FieldUiModelImpl(
         }?.sortedBy { it.sortOrder() }
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 

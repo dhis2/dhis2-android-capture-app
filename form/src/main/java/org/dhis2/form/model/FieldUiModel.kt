@@ -73,6 +73,8 @@ interface FieldUiModel {
 
     val optionsToDisplay: List<Option>?
 
+    val isLoadingData: Boolean
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean
@@ -98,6 +100,8 @@ interface FieldUiModel {
     fun invokeIntent(intent: FormIntent)
 
     fun setValue(value: String?): FieldUiModel
+
+    fun setIsLoadingData(isLoadingData: Boolean): FieldUiModel
 
     fun setFocus(): FieldUiModel
 

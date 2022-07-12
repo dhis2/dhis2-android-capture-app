@@ -169,17 +169,30 @@ fun TextInputEditText.setOnGeometryLongitudeEditorActionListener(
 }
 
 @BindingAdapter(value = ["model", "loadingView"], requireAll = true)
-fun ImageButton.setOnLocationClick(model: FieldUiModel, progress: View) {
+fun ImageButton.setOnLocationClick(model: FieldUiModel?, progress: View) {
     setOnClickListener {
         this.visibility = View.GONE
         progress.visibility = View.VISIBLE
-        model.invokeUiEvent(UiEventType.REQUEST_CURRENT_LOCATION)
+        model?.invokeUiEvent(UiEventType.REQUEST_CURRENT_LOCATION)
     }
 }
 
 @BindingAdapter("progressVisibility")
-fun View.progressVisibility(model: FieldUiModel) {
-    visibility = View.GONE
+fun View.progressVisibility(model: FieldUiModel?) {
+    visibility = if (model?.isLoadingData == true) {
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
+}
+
+@BindingAdapter("currentLocationVisibility")
+fun View.currentLocationVisibility(model: FieldUiModel?) {
+    visibility = if (model?.renderingType == UiRenderType.POINT && !model.isLoadingData) {
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
 }
 
 private fun onFilledCoordinate(

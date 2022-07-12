@@ -40,7 +40,8 @@ data class SectionUiModelImpl(
     var errors: Int = 0,
     var warnings: Int = 0,
     var rendering: String? = null,
-    var selectedField: ObservableField<String?> = ObservableField(null)
+    var selectedField: ObservableField<String?> = ObservableField(null),
+    override val isLoadingData: Boolean = false
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -168,6 +169,8 @@ data class SectionUiModelImpl(
     override fun onSaveOption(option: Option) {}
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
