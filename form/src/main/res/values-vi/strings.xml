@@ -50,5 +50,15 @@
     <string name="mandatory_field">Trường bắt buộc</string>
     <string name="form_latitude_prefix">Vĩ độ: </string>
     <string name="form_longitude_prefix">Kinh độ: </string>
+    <string name="not_saved">Chưa lưu</string>
+    <string name="review">Xem xét</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="not_now">Không phải bây giờ</string>
+    <string name="keep_editing">Tiếp tục chỉnh sửa</string>
+    <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
+    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.\n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
+    <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
+    <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
+    <string name="fields_mandatory_missing_discard">Thiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập. \n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
 </resources>
