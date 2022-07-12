@@ -78,7 +78,6 @@
     <string name="event_approved">Händelse godkänd</string>
     <string name="event_inactive">Händelse inaktiv</string>
     <string name="read_only">read only</string>
-    <string name="complete">Färdigt</string>
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
     <string name="re_open">Öppna igen</string>

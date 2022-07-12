@@ -23,7 +23,6 @@
     <string name="search">Поиск</string>
     <string name="event_open">Открыть</string>
     <string name="read_only">Только читать</string>
-    <string name="complete">Завершенный</string>
     <string name="completed">Завершенный</string>
     <string name="cancelled">Отмененный</string>
     <string name="state_error">Ошибка</string>
