@@ -7,8 +7,6 @@ import org.dhis2.composetable.model.TableCell
 
 class TableCellUiOptions(
     private val cellValue: TableCell,
-    val value: String,
-    val focused: Boolean,
     val selectionState: SelectionState
 ) {
 
@@ -26,20 +24,20 @@ class TableCellUiOptions(
     }
 
     @Composable
-    fun mandatoryColor() = when {
-        value.isNotEmpty() -> Color.LightGray
+    fun mandatoryColor(hasValue: Boolean?) = when (hasValue) {
+        true -> Color.LightGray
         else -> TableTheme.colors.errorColor
     }
     @Composable
-    fun mandatoryAlignment() = when {
-        value.isNotEmpty() -> Alignment.TopStart
+    fun mandatoryAlignment(hasValue: Boolean?) = when (hasValue) {
+        true -> Alignment.TopStart
         else -> Alignment.CenterEnd
     }
 
     val enabled = cellValue.editable == true
 
     @Composable
-    fun borderColor() = when {
+    fun borderColor(focused: Boolean) = when {
         focused -> when {
             cellValue.error != null -> TableTheme.colors.errorColor
             else -> TableTheme.colors.primary
