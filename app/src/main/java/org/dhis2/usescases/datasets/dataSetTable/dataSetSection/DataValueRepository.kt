@@ -613,6 +613,15 @@ class DataValueRepository(
                     dataSetTableModel.dataElement == dataElement.uid() &&
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
                 }?.value
+
+                val options = dataElement.optionSetUid()?.let {
+                    d2.optionModule().options()
+                        .byOptionSetUid().eq(it)
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                        .blockingGet()
+                        .map { it.displayName() }
+                } ?: emptyList()
+
                 val fieldViewModel = fieldFactory.create(
                     dataElement.uid() + "_" + categoryOptionCombo.uid(),
                     dataElement.displayFormName()!!,
@@ -626,7 +635,7 @@ class DataValueRepository(
                     null,
                     dataElement.displayDescription(),
                     dataElement.uid(),
-                    emptyList(),
+                    options,
                     "android",
                     row,
                     column,
