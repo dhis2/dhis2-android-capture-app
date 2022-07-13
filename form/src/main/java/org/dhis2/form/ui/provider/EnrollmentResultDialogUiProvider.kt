@@ -1,9 +1,9 @@
-package org.dhis2.usescases.enrollment.provider
+package org.dhis2.form.ui.provider
 
-import org.dhis2.R
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult

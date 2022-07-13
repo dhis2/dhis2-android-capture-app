@@ -97,9 +97,9 @@ public class EventInitialPresenter {
             compositeDisposable
                     .add(
                             Flowable.zip(
-                                    eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
-                                    eventInitialRepository.programStageForEvent(eventId),
-                                    Pair::create)
+                                            eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                                            eventInitialRepository.programStageForEvent(eventId),
+                                            Pair::create)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(septet -> {
                                         this.program = septet.val0();
@@ -205,7 +205,16 @@ public class EventInitialPresenter {
         if (program != null) {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
             compositeDisposable.add(
-                    eventInitialRepository.scheduleEvent(enrollmentUid, null, program.uid(), programStageModel, dueDate, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, geometry)
+                    eventInitialRepository.permanentReferral(
+                                    enrollmentUid,
+                                    trackedEntityInstanceUid,
+                                    program.uid(),
+                                    programStageModel,
+                                    dueDate,
+                                    orgUnitUid,
+                                    categoryOptionComboUid,
+                                    categoryOptionsUid,
+                                    geometry)
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(

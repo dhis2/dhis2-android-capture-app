@@ -50,7 +50,8 @@ class TableDataToTableModelMapper(
                         editable = field.editable(),
                         mandatory = field.mandatory(),
                         error = field.error(),
-                        isReadOnly = isReadyOnly(dataElement)
+                        isReadOnly = isReadyOnly(dataElement),
+                        dropDownOptions = field.options()
                     )
                 }.toMap()
             )
@@ -117,6 +118,11 @@ class TableDataToTableModelMapper(
                     field.value()
                 }
             }
+            ValueType.IMAGE,
+            ValueType.FILE_RESOURCE,
+            ValueType.TRACKER_ASSOCIATE,
+            ValueType.REFERENCE,
+            ValueType.GEOJSON-> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }

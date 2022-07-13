@@ -69,6 +69,10 @@ class SyncPresenterImpl(
         syncStatusController.finishSync()
     }
 
+    override fun setNetworkUnavailable() {
+        syncStatusController.onNetworkUnavailable()
+    }
+
     override fun syncAndDownloadEvents() {
         val (eventLimit, limitByOU, limitByProgram) = getDownloadLimits()
 

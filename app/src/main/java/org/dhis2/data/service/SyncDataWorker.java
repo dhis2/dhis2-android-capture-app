@@ -15,6 +15,7 @@ import androidx.work.WorkerParameters;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -66,6 +67,8 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.uploadResources();
         } catch (Exception e) {
+            Timber.tag("DATA_SYNC").d("ERROR UPLOADING RESOURCES");
+            e.printStackTrace();
             Timber.e(e);
         }
 
@@ -77,6 +80,9 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadEvents();
         } catch (Exception e) {
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+                presenter.setNetworkUnavailable();
+            }
             Timber.e(e);
             isEventOk = false;
         }
@@ -89,6 +95,9 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+                presenter.setNetworkUnavailable();
+            }
             Timber.e(e);
             isTeiOk = false;
         }
@@ -101,6 +110,9 @@ public class SyncDataWorker extends Worker {
         try {
             presenter.syncAndDownloadDataValues();
         } catch (Exception e) {
+            if(!new NetworkUtils(getApplicationContext()).isOnline()){
+                presenter.setNetworkUnavailable();
+            }
             Timber.e(e);
             isDataValue = false;
         }

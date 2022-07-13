@@ -24,8 +24,8 @@ import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog
 import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
 import org.dhis2.form.ui.dialog.DialogButtonStyle
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -169,7 +169,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             FeatureType.valueOfFeatureType(
                                 data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
                             ),
-                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!,
+                            requestCode
                         )
                     }
                 }
