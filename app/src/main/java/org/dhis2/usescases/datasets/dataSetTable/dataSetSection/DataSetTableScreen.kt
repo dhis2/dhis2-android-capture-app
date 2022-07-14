@@ -59,7 +59,6 @@ fun DataSetTableScreen(
                 topEnd = 16.dp
             )
         ) {
-
             TableList(
                 tableList = tableData,
                 tableColors = TableColors(

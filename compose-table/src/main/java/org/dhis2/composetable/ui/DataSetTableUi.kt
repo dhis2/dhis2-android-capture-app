@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -62,7 +61,8 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState
+    cellStyle: @Composable (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
         Column {
@@ -79,21 +79,8 @@ fun TableHeader(
                                 headerCell = tableHeaderRow.cells[cellIndex],
                                 headerWidth = tableHeaderModel.headerCellWidth(rowIndex),
                                 headerHeight = tableHeaderModel.defaultHeaderHeight,
-                                cellStyle = selectionState.styleForColumnHeader(
-                                    columnIndex,
-                                    rowIndex
-                                ),
-                                onCellSelected = {
-                                    selectionState.sonsOfHeader = tableHeaderModel.rows
-                                        .filterIndexed { index, _ -> index > rowIndex }
-                                        .map { row -> row.cells.size }
-                                        .reduceOrNull { acc, i -> acc * i }
-
-                                    selectionState.selectCell(
-                                        column = it,
-                                        columnHeaderRow = rowIndex
-                                    )
-                                }
+                                cellStyle = cellStyle(columnIndex, rowIndex),
+                                onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
                         }
                     )
@@ -106,7 +93,7 @@ fun TableHeader(
                 headerCell = TableHeaderCell("Total"),
                 headerWidth = tableHeaderModel.defaultCellWidth,
                 headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size,
-                cellStyle = selectionState.styleForColumnHeader(
+                cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
                 ),
@@ -155,17 +142,26 @@ fun HeaderCell(
 
 @Composable
 fun TableHeaderRow(
+    modifier: Modifier = Modifier,
+    cornerModifier: Modifier = Modifier,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState
+    cellStyle: @Composable (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    onTableCornerClick: () -> Unit = {},
+    onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
-    Row(Modifier.background(Color.White)) {
-        TableCorner(tableModel, selectionState)
+    Row(modifier) {
+        TableCorner(
+            modifier = cornerModifier,
+            tableModel = tableModel,
+            onClick = onTableCornerClick
+        )
         TableHeader(
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
-            selectionState = selectionState
+            cellStyle = cellStyle,
+            onHeaderCellSelected = onHeaderCellClick
         )
     }
 }
@@ -177,7 +173,7 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
-    onClick: (TableCell, isSelected:Boolean) -> Unit
+    onClick: (TableCell, isSelected: Boolean) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -202,13 +198,16 @@ fun TableItemRow(
 }
 
 @Composable
-fun TableCorner(tableModel: TableModel, selectionState: SelectionState) {
+fun TableCorner(
+    modifier: Modifier = Modifier,
+    tableModel: TableModel,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
             .width(tableModel.tableRows.first().rowHeader.defaultWidth)
-            .background(selectionState.backgroundColorForCorner())
-            .clickable { selectionState.selectCell(all = true) },
+            .clickable { onClick() },
         contentAlignment = Alignment.CenterEnd
     ) {
         Divider(
@@ -271,7 +270,7 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     selectionState: SelectionState,
-    onClick: (TableCell, isSelected:Boolean) -> Unit
+    onClick: (TableCell, isSelected: Boolean) -> Unit
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -312,7 +311,7 @@ fun TableCell(
     focusRequester: FocusManager,
     onNext: () -> Unit,
     selectionState: SelectionState,
-    onClick: (TableCell, selected:Boolean) -> Unit
+    onClick: (TableCell, selected: Boolean) -> Unit
 ) {
     var value by remember { mutableStateOf(cellValue.value) } //TODO: Link with text input dialog
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -330,9 +329,9 @@ fun TableCell(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .clickable {
-                    if(cellValue.isSelected(selectionState)){
+                    if (cellValue.isSelected(selectionState)) {
                         selectionState.selectCell()
-                    }else {
+                    } else {
                         selectionState.selectCell(cellValue.column, cellValue.row, cellOnly = true)
                     }
                     if (tableCellUiOptions.enabled) {
@@ -437,7 +436,7 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
-    onClick: (TableCell, isSelected:Boolean) -> Unit
+    onClick: (TableCell, isSelected: Boolean) -> Unit
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
@@ -446,9 +445,29 @@ private fun TableList(
             tableList.forEachIndexed { index, currentTableModel ->
                 stickyHeader {
                     TableHeaderRow(
+                        modifier = Modifier
+                            .background(Color.White),
+                        cornerModifier = Modifier
+                            .background(selectionStates[index].backgroundColorForCorner()),
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        selectionState = selectionStates[index]
+                        cellStyle = { columnIndex, rowIndex ->
+                            selectionStates[index].styleForColumnHeader(
+                                columnIndex,
+                                rowIndex
+                            )
+                        },
+                        onTableCornerClick = {
+                            selectionStates[index].selectCell(all = true)
+                        },
+                        onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
+                            selectionStates[index].selectHeader(
+                                column = headerColumnIndex,
+                                columnHeaderRow = headerRowIndex,
+                                childrenOfSelectedHeader =
+                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                            )
+                        }
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
@@ -549,7 +568,7 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList){ _, _ ->
+    TableList(tableList = tableList) { _, _ ->
 
     }
 }

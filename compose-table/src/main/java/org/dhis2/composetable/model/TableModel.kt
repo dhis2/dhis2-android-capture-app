@@ -8,7 +8,14 @@ data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>
-)
+) {
+    fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
+        return tableHeaderModel.rows
+            .filterIndexed { index, _ -> index > headerRowIndex }
+            .map { row -> row.cells.size }
+            .reduceOrNull { acc, i -> acc * i }
+    }
+}
 
 data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = false) {
     val defaultCellWidth = 52.dp
@@ -42,8 +49,8 @@ data class TableCell(
     val isReadOnly: Boolean = false,
     val dropDownOptions: List<String>? = null,
     val legendColor: Int? = null
-){
-    fun isSelected(selectionState: SelectionState):Boolean{
+) {
+    fun isSelected(selectionState: SelectionState): Boolean {
         return selectionState.cellOnly &&
                 selectionState.row == row &&
                 selectionState.column == column

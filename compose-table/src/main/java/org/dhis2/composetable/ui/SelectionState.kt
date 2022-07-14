@@ -34,6 +34,25 @@ class SelectionState {
         this.rowHeader = rowHeader
         this.columnHeaderRow = columnHeaderRow
         this.cellOnly = cellOnly
+        this.sonsOfHeader = null
+    }
+
+    fun selectHeader(
+        column: Int? = null,
+        row: Int? = null,
+        childrenOfSelectedHeader:Int? = null,
+        all: Boolean = false,
+        rowHeader: Boolean = false,
+        columnHeaderRow: Int? = null,
+        cellOnly: Boolean = false
+    ){
+        this.column = column
+        this.row = row
+        this.all = all
+        this.rowHeader = rowHeader
+        this.columnHeaderRow = columnHeaderRow
+        this.cellOnly = cellOnly
+        this.sonsOfHeader = childrenOfSelectedHeader
     }
 
     @Composable
