@@ -173,16 +173,16 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
+    rowHeaderCellStyle: @Composable (rowHeaderIndex:Int?) -> CellStyle,
+    onRowHeaderClick: (rowHeaderIndex:Int?)->Unit,
     onClick: (TableCell, isSelected: Boolean) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
                 rowHeader = rowHeader,
-                cellStyle = selectionState.styleForRowHeader(rowHeader.row),
-                onCellSelected = {
-                    selectionState.selectCell(row = it, rowHeader = true)
-                }
+                cellStyle = rowHeaderCellStyle(rowHeader.row),
+                onCellSelected = onRowHeaderClick
             )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
@@ -477,6 +477,12 @@ private fun TableList(
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
+                        rowHeaderCellStyle = {rowHeaderIndex->
+                            selectionStates[index].styleForRowHeader(rowHeaderIndex)
+                        },
+                        onRowHeaderClick = {rowHeaderIndex->
+                            selectionStates[index].selectCell(row = rowHeaderIndex, rowHeader = true)
+                        },
                         onClick = onClick
                     )
                 }
