@@ -40,12 +40,12 @@ class SelectionState {
     fun selectHeader(
         column: Int? = null,
         row: Int? = null,
-        childrenOfSelectedHeader:Int? = null,
+        childrenOfSelectedHeader: Int? = null,
         all: Boolean = false,
         rowHeader: Boolean = false,
         columnHeaderRow: Int? = null,
         cellOnly: Boolean = false
-    ){
+    ) {
         this.column = column
         this.row = row
         this.all = all
@@ -62,7 +62,7 @@ class SelectionState {
             textColor = contentColorFor(TableTheme.colors.primary)
         )
         selectedHeaderIsParent(column) ||
-                headerRow == columnHeaderRow && column != this.column -> CellStyle(
+            headerRow == columnHeaderRow && column != this.column -> CellStyle(
             backgroundColor = TableTheme.colors.primaryLight,
             textColor = TableTheme.colors.headerText
         )
@@ -107,9 +107,9 @@ class SelectionState {
     fun colorForCell(column: Int?, row: Int?): Color = when {
         cellOnly -> TableTheme.colors.tableBackground
         column != null && row != null && (
-                all || column == this.column && sonsOfHeader == null ||
-                        row == this.row || selectedHeaderIsParent(column)
-                ) -> TableTheme.colors.primaryLight
+            all || column == this.column && sonsOfHeader == null ||
+                row == this.row || selectedHeaderIsParent(column)
+            ) -> TableTheme.colors.primaryLight
         else -> TableTheme.colors.tableBackground
     }
 }

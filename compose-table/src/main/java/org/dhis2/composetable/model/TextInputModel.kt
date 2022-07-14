@@ -1,9 +1,8 @@
 package org.dhis2.composetable.model
 
-
 data class TextInputModel(
-    val id:String = "",
-    val mainLabel: String ="",
+    val id: String = "",
+    val mainLabel: String = "",
     val secondaryLabels: List<String> = emptyList(),
     val currentValue: String? = null,
     val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput()

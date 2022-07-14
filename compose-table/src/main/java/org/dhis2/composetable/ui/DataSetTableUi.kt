@@ -28,10 +28,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +54,8 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    cellStyle: @Composable
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -141,7 +140,8 @@ fun TableHeaderRow(
     cornerModifier: Modifier = Modifier,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    cellStyle: @Composable
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -168,7 +168,8 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
-    rowHeaderCellStyle: @Composable (rowHeaderIndex: Int?) -> CellStyle,
+    rowHeaderCellStyle: @Composable
+    (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
@@ -322,7 +323,7 @@ fun TableCell(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
                 color = tableCellUiOptions.textColor()
-            ),
+            )
         )
         if (cellValue.dropDownOptions?.isNotEmpty() == true) {
             DropDownOptions(
@@ -437,7 +438,7 @@ private fun TableList(
                                 column = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
@@ -557,6 +558,5 @@ fun TableListPreview() {
     )
     val tableList = listOf(tableModel)
     TableList(tableList = tableList) {
-
     }
 }

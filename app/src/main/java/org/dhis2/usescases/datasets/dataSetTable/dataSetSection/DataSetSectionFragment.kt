@@ -137,11 +137,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 presenterFragment.onCellClick(cell = cell)
                             },
                             onCellValueChange = {
-
                             },
                             onSaveValue = { cell ->
                                 presenterFragment.onCellValueChange(cell)
-                            })
+                            }
+                        )
                     }
                 }
             }
@@ -228,7 +228,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             tableView.setRowHeaderWidth(rowHeaderWidth)
             if (columnHeaderHeight != 0) {
                 adapter.columnHeaderHeight = columnHeaderHeight +
-                        requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
+                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -244,10 +244,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-                                                   _: Int,
-                                                   scrollY: Int,
-                                                   _: Int,
-                                                   _: Int ->
+            _: Int,
+            scrollY: Int,
+            _: Int,
+            _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -321,7 +321,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                            binding.headerContainer.getChildAt(0).layoutParams.height
+                    binding.headerContainer.getChildAt(0).layoutParams.height
             }
 
             val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
