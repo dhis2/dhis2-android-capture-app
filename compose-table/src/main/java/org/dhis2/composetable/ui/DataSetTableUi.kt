@@ -31,14 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -46,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -173,9 +168,9 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
-    rowHeaderCellStyle: @Composable (rowHeaderIndex:Int?) -> CellStyle,
-    onRowHeaderClick: (rowHeaderIndex:Int?)->Unit,
-    onClick: (TableCell, isSelected: Boolean) -> Unit
+    rowHeaderCellStyle: @Composable (rowHeaderIndex: Int?) -> CellStyle,
+    onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
+    onClick: (TableCell) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -270,11 +265,8 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     selectionState: SelectionState,
-    onClick: (TableCell, isSelected: Boolean) -> Unit
+    onClick: (TableCell) -> Unit
 ) {
-    val focusRequester = LocalFocusManager.current
-    val coroutineScope = rememberCoroutineScope()
-    val defaultWidthPx = LocalDensity.current.run { defaultWidth.toPx() }
     Row(
         modifier = Modifier
             .horizontalScroll(state = horizontalScrollState)
@@ -282,21 +274,14 @@ fun ItemValues(
         repeat(
             times = cellValues.size,
             action = { columnIndex ->
+                val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight),
-                    cellValue = cellValues[columnIndex] ?: TableCell(value = ""),
-                    focusRequester = focusRequester,
-                    onNext = {
-                        coroutineScope.launch {
-                            horizontalScrollState.scrollTo(
-                                (columnIndex + 1) * defaultWidthPx.toInt()
-                            )
-                        }
-                    },
-                    selectionState = selectionState,
+                    cellValue = cellValue,
+                    tableCellUiOptions = TableCellUiOptions(cellValue, selectionState),
                     onClick = onClick
                 )
             }
@@ -308,14 +293,11 @@ fun ItemValues(
 fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
-    focusRequester: FocusManager,
-    onNext: () -> Unit,
-    selectionState: SelectionState,
-    onClick: (TableCell, selected: Boolean) -> Unit
+    tableCellUiOptions: TableCellUiOptions,
+    onClick: (TableCell) -> Unit
 ) {
     var value by remember { mutableStateOf(cellValue.value) } //TODO: Link with text input dialog
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    val tableCellUiOptions = TableCellUiOptions(cellValue, selectionState)
 
     Box(
         modifier = modifier
@@ -329,15 +311,10 @@ fun TableCell(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .clickable {
-                    if (cellValue.isSelected(selectionState)) {
-                        selectionState.selectCell()
-                    } else {
-                        selectionState.selectCell(cellValue.column, cellValue.row, cellOnly = true)
-                    }
-                    if (tableCellUiOptions.enabled) {
+                    if (cellValue.editable == true) {
                         when {
                             cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                            else -> onClick(cellValue, cellValue.isSelected(selectionState))
+                            else -> onClick(cellValue)
                         }
                     }
                 },
@@ -359,7 +336,7 @@ fun TableCell(
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
-                    onClick(cellValue.copy(value = it), cellValue.isSelected(selectionState))
+                    onClick(cellValue.copy(value = it))
                 }
             )
         }
@@ -436,7 +413,7 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
-    onClick: (TableCell, isSelected: Boolean) -> Unit
+    onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
@@ -477,13 +454,23 @@ private fun TableList(
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
-                        rowHeaderCellStyle = {rowHeaderIndex->
+                        rowHeaderCellStyle = { rowHeaderIndex ->
                             selectionStates[index].styleForRowHeader(rowHeaderIndex)
                         },
-                        onRowHeaderClick = {rowHeaderIndex->
-                            selectionStates[index].selectCell(row = rowHeaderIndex, rowHeader = true)
+                        onRowHeaderClick = { rowHeaderIndex ->
+                            selectionStates[index].selectCell(
+                                row = rowHeaderIndex,
+                                rowHeader = true
+                            )
                         },
-                        onClick = onClick
+                        onClick = { tableCell ->
+                            selectionStates[index].selectCell(
+                                tableCell.column,
+                                tableCell.row,
+                                cellOnly = true
+                            )
+                            onClick(tableCell)
+                        }
                     )
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -574,7 +561,7 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList) { _, _ ->
+    TableList(tableList = tableList) {
 
     }
 }

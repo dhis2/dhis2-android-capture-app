@@ -65,14 +65,12 @@ fun DataSetTableScreen(
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                 )
-            ) { cell, isSelected ->
+            ) { cell ->
                 onCellClick(cell)?.let { inputModel ->
                     currentInputType = inputModel
                     coroutineScope.launch {
                         if (bottomSheetState.bottomSheetState.isCollapsed) {
                             bottomSheetState.bottomSheetState.expand()
-                        } else if (!isSelected) {
-                            bottomSheetState.bottomSheetState.collapse()
                         }
                     }
                 }
