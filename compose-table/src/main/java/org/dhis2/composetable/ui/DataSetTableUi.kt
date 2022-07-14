@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -22,9 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -40,7 +35,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -48,7 +42,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -184,7 +177,7 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell, isSelected:Boolean) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
         Row(Modifier.height(IntrinsicSize.Min)) {
@@ -278,7 +271,7 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     selectionState: SelectionState,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell, isSelected:Boolean) -> Unit
 ) {
     val focusRequester = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -319,59 +312,46 @@ fun TableCell(
     focusRequester: FocusManager,
     onNext: () -> Unit,
     selectionState: SelectionState,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell, selected:Boolean) -> Unit
 ) {
-    var value by remember { mutableStateOf(cellValue.value) }
-    var focused by remember { mutableStateOf(false) }
+    var value by remember { mutableStateOf(cellValue.value) } //TODO: Link with text input dialog
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
     val tableCellUiOptions = TableCellUiOptions(cellValue, selectionState)
-    val source = remember { MutableInteractionSource() }
+
     Box(
         modifier = modifier
-            .border(1.dp, tableCellUiOptions.borderColor(focused))
+            .border(1.dp, tableCellUiOptions.borderColor())
             .background(tableCellUiOptions.backgroundColor())
     ) {
-        if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
-            when {
-                cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                else -> onClick(cellValue)
-            }
-        }
-
-        BasicTextField(
+        Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .onFocusChanged {
-                    focused = it.isFocused
-                    selectionState.selectCell()
-                }
                 .padding(horizontal = 4.dp)
-                .fillMaxHeight(),
-            enabled = tableCellUiOptions.enabled,
-            interactionSource = source,
-            readOnly = cellValue.isReadOnly,
-            textStyle = TextStyle.Default.copy(
-                fontSize = 10.sp,
-                textAlign = TextAlign.End,
-                color = tableCellUiOptions.textColor()
-            ),
-            value = if (cellValue.isReadOnly) {
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .clickable {
+                    if(cellValue.isSelected(selectionState)){
+                        selectionState.selectCell()
+                    }else {
+                        selectionState.selectCell(cellValue.column, cellValue.row, cellOnly = true)
+                    }
+                    if (tableCellUiOptions.enabled) {
+                        when {
+                            cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                            else -> onClick(cellValue, cellValue.isSelected(selectionState))
+                        }
+                    }
+                },
+            text = if (cellValue.isReadOnly) {
                 cellValue.value ?: ""
             } else {
                 value ?: ""
             },
-            onValueChange = { newValue ->
-                value = newValue
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    onNext()
-                    focusRequester.moveFocus(
-                        FocusDirection.Right
-                    )
-                }
-            )
+            style = TextStyle.Default.copy(
+                fontSize = 10.sp,
+                textAlign = TextAlign.End,
+                color = tableCellUiOptions.textColor()
+            ),
         )
         if (cellValue.dropDownOptions?.isNotEmpty() == true) {
             DropDownOptions(
@@ -380,7 +360,7 @@ fun TableCell(
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
-                    onClick(cellValue.copy(value = it))
+                    onClick(cellValue.copy(value = it), cellValue.isSelected(selectionState))
                 }
             )
         }
@@ -457,7 +437,7 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell, isSelected:Boolean) -> Unit
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
@@ -569,5 +549,7 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList) {}
+    TableList(tableList = tableList){ _, _ ->
+
+    }
 }

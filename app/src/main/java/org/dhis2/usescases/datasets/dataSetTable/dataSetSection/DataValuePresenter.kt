@@ -13,6 +13,7 @@ import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
@@ -66,7 +67,7 @@ class DataValuePresenter(
                         var dataSetTableModel: DataSetTableModel? = null
                         val dataValue = dataTableModel.dataValues?.firstOrNull {
                             it.dataElement == rowAction.dataElement() &&
-                                it.categoryOptionCombo == rowAction.catOptCombo()
+                                    it.categoryOptionCombo == rowAction.catOptCombo()
                         }
                         when (dataValue) {
                             null -> if (!rowAction.value().isNullOrEmpty()) {
@@ -241,14 +242,30 @@ class DataValuePresenter(
         return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
     }
 
-    fun onCellClick(cell: TableCell) {
+    fun onCellClick(cell: TableCell): TextInputModel? {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val dataElement = getDataElement(dataElementUid)
         handleElementInteraction(dataElement, cell)
+        return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->
+            TextInputModel(
+                dataElementName = dataElement.displayFormName() ?: "-",
+                dataElementUid = dataElementUid,
+                categoryOptionComboOptionNames = repository.getCatOptComboOptions(
+                    ids[1]
+                ).map {
+                    it.displayName() ?: "-"
+                },
+                categoryOptionComboUid = ids[1],
+                currentValue = cell.value,
+                keyboardInputType = inputType
+            )
+        }
     }
 
-    private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
+    private fun handleElementInteraction(
+        dataElement: DataElement, cell: TableCell
+    ) {
         if (dataElement.optionSetUid() != null) {
             view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
         } else when (dataElement.valueType()) {
@@ -266,7 +283,7 @@ class DataValuePresenter(
             ValueType.USERNAME,
             ValueType.UNIT_INTERVAL,
             ValueType.URL -> {
-                // Create method to show component and then send to onCellValueChange(cell)
+
             }
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
@@ -280,6 +297,7 @@ class DataValuePresenter(
                 repository.orgUnits()
             )
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
+            else -> {}
         }
     }
 

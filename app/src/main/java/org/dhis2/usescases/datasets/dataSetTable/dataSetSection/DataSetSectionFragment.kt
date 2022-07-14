@@ -14,6 +14,7 @@ import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,7 +24,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -39,7 +39,6 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
@@ -64,6 +63,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.dhis2.composetable.ui.DataTable
+import org.dhis2.composetable.ui.TableColors
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -113,6 +114,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         ).inject(this)
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -123,17 +125,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 binding = it
                 if (presenterFragment.isComposeTableEnable()) {
                     binding.tables.setContent {
-                        MdcTheme {
-                            val tableData by presenterFragment.tableData()
-                                .observeAsState(emptyList())
-                            DataTable(
-                                tableList = tableData,
-                                tableColors = TableColors(
-                                    primary = MaterialTheme.colors.primary,
-                                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                                )
-                            ) { cell -> presenterFragment.onCellClick(cell) }
-                        }
+                        val tableData by presenterFragment.tableData()
+                            .observeAsState(emptyList())
+                        DataSetTableScreen(
+                            tableData = tableData,
+                            tableColors = TableColors(
+                                primary = MaterialTheme.colors.primary,
+                                primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                            ),
+                            onCellClick = { cell ->
+                                presenterFragment.onCellClick(cell = cell)
+                            })
                     }
                 }
             }
@@ -220,7 +222,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             tableView.setRowHeaderWidth(rowHeaderWidth)
             if (columnHeaderHeight != 0) {
                 adapter.columnHeaderHeight = columnHeaderHeight +
-                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
+                        requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -236,10 +238,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
+                                                   _: Int,
+                                                   scrollY: Int,
+                                                   _: Int,
+                                                   _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -313,7 +315,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
+                            binding.headerContainer.getChildAt(0).layoutParams.height
             }
 
             val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
