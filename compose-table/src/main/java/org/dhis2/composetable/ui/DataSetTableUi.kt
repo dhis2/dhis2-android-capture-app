@@ -199,7 +199,7 @@ fun TableCorner(
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
             .width(tableModel.tableRows.first().rowHeader.defaultWidth)
             .clickable { onClick() },
@@ -296,7 +296,6 @@ fun TableCell(
     tableCellUiOptions: TableCellUiOptions,
     onClick: (TableCell) -> Unit
 ) {
-    var value by remember { mutableStateOf(cellValue.value) } //TODO: Link with text input dialog
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
 
     Box(
@@ -318,11 +317,7 @@ fun TableCell(
                         }
                     }
                 },
-            text = if (cellValue.isReadOnly) {
-                cellValue.value ?: ""
-            } else {
-                value ?: ""
-            },
+            text = cellValue.value ?: "",
             style = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
@@ -349,8 +344,8 @@ fun TableCell(
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment(value?.isNotEmpty())),
-                tint = tableCellUiOptions.mandatoryColor(value?.isNotEmpty())
+                    .align(tableCellUiOptions.mandatoryAlignment(cellValue.value?.isNotEmpty())),
+                tint = tableCellUiOptions.mandatoryColor(cellValue.value?.isNotEmpty())
             )
         }
         if (cellValue.error != null) {

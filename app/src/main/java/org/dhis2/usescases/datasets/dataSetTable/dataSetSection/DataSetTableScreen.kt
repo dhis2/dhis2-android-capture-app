@@ -27,12 +27,19 @@ import org.dhis2.composetable.ui.TextInput
 @Composable
 fun DataSetTableScreen(
     tableData: List<TableModel>,
-    onCellClick: (TableCell) -> TextInputModel?
+    onCellClick: (TableCell) -> TextInputModel?,
+    onCellValueChange: (TableCell) -> Unit,
+    onSaveValue: (TableCell) -> Unit
 ) {
     MdcTheme {
         val bottomSheetState = rememberBottomSheetScaffoldState(
             bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
         )
+        var currentCell by remember {
+            mutableStateOf<TableCell?>(
+                null
+            )
+        }
         var currentInputType by remember {
             mutableStateOf(
                 TextInputModel()
@@ -48,8 +55,10 @@ fun DataSetTableScreen(
                     onTextChanged = {
                         //TODO: UPDATE CELL VALUE IN TABLE
                     },
-                    onSave = {
-                        //TODO: SAVE VALUE
+                    onSave = { textInputModel ->
+                        currentCell?.copy(value = textInputModel.currentValue)?.let {
+                            onSaveValue(it)
+                        }
                     }
                 )
             },
@@ -67,6 +76,7 @@ fun DataSetTableScreen(
                 )
             ) { cell ->
                 onCellClick(cell)?.let { inputModel ->
+                    currentCell = cell
                     currentInputType = inputModel
                     coroutineScope.launch {
                         if (bottomSheetState.bottomSheetState.isCollapsed) {

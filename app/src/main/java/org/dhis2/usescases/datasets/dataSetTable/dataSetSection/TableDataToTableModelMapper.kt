@@ -50,7 +50,6 @@ class TableDataToTableModelMapper(
                         editable = field.editable(),
                         mandatory = field.mandatory(),
                         error = field.error(),
-                        isReadOnly = isReadyOnly(dataElement),
                         dropDownOptions = field.options()
                     )
                 }.toMap()
@@ -62,27 +61,6 @@ class TableDataToTableModelMapper(
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
-    }
-
-    private fun isReadyOnly(dataElement: DataElement): Boolean {
-        return if (dataElement.optionSetUid() != null) {
-            true
-        } else when (dataElement.valueType()) {
-            ValueType.BOOLEAN,
-            ValueType.TRUE_ONLY,
-            ValueType.DATE,
-            ValueType.DATETIME,
-            ValueType.TIME,
-            ValueType.COORDINATE,
-            ValueType.ORGANISATION_UNIT,
-            ValueType.AGE,
-            ValueType.IMAGE,
-            ValueType.FILE_RESOURCE,
-            ValueType.TRACKER_ASSOCIATE,
-            ValueType.REFERENCE,
-            ValueType.GEOJSON -> true
-            else -> false
-        }
     }
 
     private fun mapFieldValueToUser(field: FieldViewModel, dataElement: DataElement): String? {

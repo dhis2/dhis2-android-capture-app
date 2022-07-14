@@ -249,14 +249,13 @@ class DataValuePresenter(
         handleElementInteraction(dataElement, cell)
         return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->
             TextInputModel(
-                dataElementName = dataElement.displayFormName() ?: "-",
-                dataElementUid = dataElementUid,
-                categoryOptionComboOptionNames = repository.getCatOptComboOptions(
+                id = cell.id?:"",
+                mainLabel = dataElement.displayFormName() ?: "-",
+                secondaryLabels = repository.getCatOptComboOptions(
                     ids[1]
                 ).map {
                     it.displayName() ?: "-"
                 },
-                categoryOptionComboUid = ids[1],
                 currentValue = cell.value,
                 keyboardInputType = inputType
             )
@@ -269,22 +268,6 @@ class DataValuePresenter(
         if (dataElement.optionSetUid() != null) {
             view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
         } else when (dataElement.valueType()) {
-            ValueType.TEXT,
-            ValueType.LONG_TEXT,
-            ValueType.LETTER,
-            ValueType.PHONE_NUMBER,
-            ValueType.NUMBER,
-            ValueType.EMAIL,
-            ValueType.PERCENTAGE,
-            ValueType.INTEGER,
-            ValueType.INTEGER_POSITIVE,
-            ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE,
-            ValueType.USERNAME,
-            ValueType.UNIT_INTERVAL,
-            ValueType.URL -> {
-
-            }
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
             ValueType.DATE -> view.showCalendar(dataElement, cell, false)

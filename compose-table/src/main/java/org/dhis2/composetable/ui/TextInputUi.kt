@@ -13,20 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +37,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TextInputModel
@@ -55,7 +46,7 @@ import org.dhis2.composetable.model.TextInputModel
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
-    onTextChanged: (value: String) -> Unit,
+    onTextChanged: (TextInputModel) -> Unit,
     onSave: (TextInputModel) -> Unit
 ) {
     var value by remember(textInputModel.currentValue) {
@@ -80,8 +71,8 @@ fun TextInput(
         ) {
             Text(
                 text = displayName(
-                    textInputModel.dataElementName,
-                    textInputModel.categoryOptionComboOptionNames
+                    textInputModel.mainLabel,
+                    textInputModel.secondaryLabels
                 ),
                 fontSize = 10.sp,
                 maxLines = 1
@@ -106,7 +97,7 @@ fun TextInput(
                     value = value,
                     onValueChange = {
                         value = it
-                        onTextChanged(value)
+                        onTextChanged(textInputModel.copy(currentValue = value))
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
@@ -196,55 +187,6 @@ fun displayName(
                 )
             ) {
                 append(catOptionName)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
-@Composable
-fun Test() {
-    val bottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
-    )
-    val coroutineScope = rememberCoroutineScope()
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetState,
-        sheetContent = {
-            TextInput(
-                textInputModel = TextInputModel(
-                    dataElementName = "Row",
-                    dataElementUid = "Row",
-                    categoryOptionComboOptionNames = listOf("Parent Column", "Column"),
-                    categoryOptionComboUid = "CoUid",
-                    "12",
-                    keyboardInputType = KeyboardInputType.NumericInput()
-                ),
-                {},
-                {}
-            )
-        },
-        sheetPeekHeight = 0.dp,
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    ) {
-        Column {
-            Button(onClick = {
-                coroutineScope.launch {
-                    if (bottomSheetState.bottomSheetState.isCollapsed) {
-                        bottomSheetState.bottomSheetState.expand()
-                    } else {
-                        bottomSheetState.bottomSheetState.collapse()
-                    }
-                }
-            }) {
-                Text(
-                    text = if (bottomSheetState.bottomSheetState.isCollapsed) {
-                        "Show bottom sheet"
-                    } else {
-                        "Hide bottom sheet"
-                    }
-                )
             }
         }
     }
