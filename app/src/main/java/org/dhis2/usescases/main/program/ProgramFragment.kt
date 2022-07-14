@@ -1,6 +1,7 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -10,13 +11,13 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
@@ -40,6 +41,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
 
@@ -50,6 +52,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
 
     @Inject
     lateinit var animation: ProgramAnimation
+
+    private var hasToShowProgressLoading = true
+
+    private val getActivityContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            hasToShowProgressLoading = false
+        }
 
     // -------------------------------------------
     //region LIFECYCLE
@@ -122,10 +131,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun swapProgramModelData(programs: List<ProgramViewModel>) {
         binding.progressLayout.visibility = View.GONE
         binding.emptyView.visibility = if (programs.isEmpty()) View.VISIBLE else View.GONE
+        if (!hasToShowProgressLoading) hasToShowProgressLoading = true
     }
 
     override fun showFilterProgress() {
-        binding.progressLayout.visibility = View.VISIBLE
+        if (hasToShowProgressLoading) {
+            binding.progressLayout.visibility = View.VISIBLE
+        }
         Bindings.setViewVisibility(
             binding.clearFilter,
             FilterManager.getInstance().totalFilters > 0
@@ -222,15 +234,24 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         )
 
         when (program.programType) {
-            ProgramType.WITH_REGISTRATION.name ->
-                startActivity(SearchTEActivity::class.java, bundle, false, false, null)
-            ProgramType.WITHOUT_REGISTRATION.name ->
-                startActivity(
-                    ProgramEventDetailActivity::class.java,
-                    ProgramEventDetailActivity.getBundle(program.uid),
-                    false, false, null
-                )
-            else -> startActivity(DataSetDetailActivity::class.java, bundle, false, false, null)
+            ProgramType.WITH_REGISTRATION.name -> {
+                Intent(activity, SearchTEActivity::class.java).apply {
+                    putExtras(bundle)
+                    getActivityContent.launch(this)
+                }
+            }
+            ProgramType.WITHOUT_REGISTRATION.name -> {
+                Intent(activity, ProgramEventDetailActivity::class.java).apply {
+                    putExtras(ProgramEventDetailActivity.getBundle(program.uid))
+                    getActivityContent.launch(this)
+                }
+            }
+            else -> {
+                Intent(activity, DataSetDetailActivity::class.java).apply {
+                    putExtras(bundle)
+                    getActivityContent.launch(this)
+                }
+            }
         }
     }
 
