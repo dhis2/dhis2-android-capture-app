@@ -7,5 +7,6 @@ enum class ActionType {
     ON_TEXT_CHANGE,
     ON_SECTION_CHANGE,
     ON_CLEAR,
-    ON_FINISH
+    ON_FINISH,
+    ON_REQUEST_COORDINATES
 }

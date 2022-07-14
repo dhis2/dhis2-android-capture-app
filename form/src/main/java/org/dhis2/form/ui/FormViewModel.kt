@@ -140,6 +140,9 @@ class FormViewModel(
     private fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
             ActionType.ON_SAVE -> {
+                if (action.valueType == ValueType.COORDINATE) {
+                    repository.setFieldRequestingCoordinates(action.id, false)
+                }
                 repository.updateErrorList(action)
                 if (action.error != null) {
                     StoreResult(
@@ -187,6 +190,13 @@ class FormViewModel(
                 StoreResult(
                     "",
                     ValueStoreResult.FINISH
+                )
+            }
+            ActionType.ON_REQUEST_COORDINATES -> {
+                repository.setFieldRequestingCoordinates(action.id, true)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
             }
         }
@@ -321,6 +331,12 @@ class FormViewModel(
                 value = null,
                 actionType = ActionType.ON_FINISH
             )
+            is FormIntent.OnRequestCoordinates ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_REQUEST_COORDINATES
+                )
         }
     }
 
