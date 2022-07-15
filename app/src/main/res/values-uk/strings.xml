@@ -21,7 +21,6 @@
     <string name="search">Пошук</string>
     <string name="event_open">Відкрити</string>
     <string name="read_only">Тільки читати</string>
-    <string name="complete">Завершене</string>
     <string name="completed">Завершено</string>
     <string name="cancelled">Скасовано</string>
     <string name="state_error">Помилка</string>

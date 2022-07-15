@@ -852,6 +852,7 @@
     <string name="troubleshooting_pass_rule_validation">No se encontraron advertencias</string>
     <string name="troobleshooting_pass_rule_validation_title">¡Parece que todo está bien!</string>
     <string name="not_saved">No guardado</string>
+    <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="search_loading_more">Cargando más resultados</string>
     <string name="search_no_results_in_program">No hay más resultados para %s</string>
     <string name="search_outside_action">Búsqueda fuera del programa</string>
