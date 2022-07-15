@@ -53,13 +53,6 @@ fun TextInput(
     onTextChanged: (TextInputModel) -> Unit,
     onSave: (TextInputModel) -> Unit
 ) {
-    var value by remember(textInputModel.currentValue) {
-        mutableStateOf(
-            textInputModel.currentValue ?: ""
-        )
-    }
-    val focusManager = LocalFocusManager.current
-    var hasFocus by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .testTag(INPUT_TEST_TAG)
@@ -70,103 +63,137 @@ fun TextInput(
             )
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = displayName(
-                    textInputModel.mainLabel,
-                    textInputModel.secondaryLabels
-                ),
-                fontSize = 10.sp,
-                maxLines = 1
-            )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                BasicTextField(
-                    modifier = Modifier
-                        .testTag(INPUT_TEST_FIELD_TEST_TAG)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .onFocusChanged {
-                            hasFocus = it.isFocused
-                        },
-                    value = value,
-                    onValueChange = {
-                        value = it
-                        onTextChanged(textInputModel.copy(currentValue = value))
-                    },
-                    textStyle = TextStyle.Default.copy(
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Start
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
-                            KeyboardCapitalization.Characters
-                        } else {
-                            KeyboardCapitalization.None
-                        },
-                        imeAction = ImeAction.Next,
-                        keyboardType = when (textInputModel.keyboardInputType) {
-                            is KeyboardInputType.NumericInput -> KeyboardType.Number
-                            is KeyboardInputType.EmailInput -> KeyboardType.Email
-                            is KeyboardInputType.TextInput -> KeyboardType.Text
-                            is KeyboardInputType.PhoneInput -> KeyboardType.Phone
-                            is KeyboardInputType.URLInput -> KeyboardType.Uri
-                        }
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.clearFocus(force = true)
-                            onSave(textInputModel.copy(currentValue = value))
-                        }
-                    )
-                )
-                Spacer(modifier = Modifier.size(3.dp))
-                Divider(
-                    color = if (hasFocus) {
-                        LocalTableColors.current.primary
-                    } else {
-                        LocalTableColors.current.disabledCellText
-                    },
-                    thickness = 1.dp
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
-
-            val icon = if (hasFocus) {
-                R.drawable.ic_finish_edit_input
-            } else {
-                R.drawable.ic_edit_input
-            }
-
-            Icon(
-                modifier = Modifier
-                    .semantics {
-                        drawableId = icon
-                    }
-                    .clickable(
-                        role = Role.Button
-                    ) {
-                        if (hasFocus) {
-                            focusManager.clearFocus(force = true)
-                            onSave(textInputModel.copy(currentValue = value))
-                        }
-                    },
-                painter = painterResource(id = icon),
-                tint = LocalTableColors.current.primary,
-                contentDescription = ""
-            )
-        }
+        InputTitle(textInputModel)
+        TextInputContent(
+            textInputModel,
+            onTextChanged = onTextChanged,
+            onSave = onSave
+        )
     }
+}
+
+@Composable
+private fun InputTitle(textInputModel: TextInputModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = displayName(
+                textInputModel.mainLabel,
+                textInputModel.secondaryLabels
+            ),
+            fontSize = 10.sp,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun TextInputContent(
+    textInputModel: TextInputModel,
+    onTextChanged: (TextInputModel) -> Unit,
+    onSave: (TextInputModel) -> Unit
+) {
+    var value by remember(textInputModel.currentValue) {
+        mutableStateOf(
+            textInputModel.currentValue ?: ""
+        )
+    }
+
+    val focusManager = LocalFocusManager.current
+    var hasFocus by remember { mutableStateOf(false) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            BasicTextField(
+                modifier = Modifier
+                    .testTag(INPUT_TEST_FIELD_TEST_TAG)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .onFocusChanged {
+                        hasFocus = it.isFocused
+                    },
+                value = value,
+                onValueChange = {
+                    value = it
+                    onTextChanged(textInputModel.copy(currentValue = value))
+                },
+                textStyle = TextStyle.Default.copy(
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Start
+                ),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
+                        KeyboardCapitalization.Characters
+                    } else {
+                        KeyboardCapitalization.None
+                    },
+                    imeAction = ImeAction.Next,
+                    keyboardType = when (textInputModel.keyboardInputType) {
+                        is KeyboardInputType.NumericInput -> KeyboardType.Number
+                        is KeyboardInputType.EmailInput -> KeyboardType.Email
+                        is KeyboardInputType.TextInput -> KeyboardType.Text
+                        is KeyboardInputType.PhoneInput -> KeyboardType.Phone
+                        is KeyboardInputType.URLInput -> KeyboardType.Uri
+                    }
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.clearFocus(force = true)
+                        onSave(textInputModel.copy(currentValue = value))
+                    }
+                )
+            )
+            Spacer(modifier = Modifier.size(3.dp))
+            Divider(
+                color = if (hasFocus) {
+                    LocalTableColors.current.primary
+                } else {
+                    LocalTableColors.current.disabledCellText
+                },
+                thickness = 1.dp
+            )
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+        TextInputContentActionIcon(
+            modifier = Modifier
+                .clickable(role = Role.Button) {
+                    if (hasFocus) {
+                        focusManager.clearFocus(force = true)
+                        onSave(textInputModel.copy(currentValue = value))
+                    }
+                },
+            hasFocus = hasFocus
+        )
+    }
+}
+
+@Composable
+private fun TextInputContentActionIcon(
+    modifier: Modifier = Modifier,
+    hasFocus: Boolean
+) {
+    val icon = if (hasFocus) {
+        R.drawable.ic_finish_edit_input
+    } else {
+        R.drawable.ic_edit_input
+    }
+
+    Icon(
+        modifier = modifier
+            .semantics {
+                drawableId = icon
+            },
+        painter = painterResource(id = icon),
+        tint = LocalTableColors.current.primary,
+        contentDescription = ""
+    )
 }
 
 @Composable

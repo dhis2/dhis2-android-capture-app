@@ -11,20 +11,14 @@ fun ValueType.toKeyBoardInputType(): KeyboardInputType? {
         ValueType.PHONE_NUMBER -> KeyboardInputType.PhoneInput()
         ValueType.EMAIL -> KeyboardInputType.EmailInput()
         ValueType.NUMBER -> KeyboardInputType.NumericInput()
-        ValueType.UNIT_INTERVAL -> KeyboardInputType.NumericInput(allowSigned = false)
+        ValueType.UNIT_INTERVAL,
         ValueType.PERCENTAGE -> KeyboardInputType.NumericInput(allowSigned = false)
-        ValueType.INTEGER -> KeyboardInputType.NumericInput(
-            allowDecimal = false,
-            allowSigned = true
-        )
-        ValueType.INTEGER_POSITIVE -> KeyboardInputType.NumericInput(
-            allowDecimal = false,
-            allowSigned = false
-        )
+        ValueType.INTEGER,
         ValueType.INTEGER_NEGATIVE -> KeyboardInputType.NumericInput(
             allowDecimal = false,
             allowSigned = true
         )
+        ValueType.INTEGER_POSITIVE,
         ValueType.INTEGER_ZERO_OR_POSITIVE -> KeyboardInputType.NumericInput(
             allowDecimal = false,
             allowSigned = false
