@@ -284,15 +284,6 @@ dependencies {
     implementation "cat.ereza:customactivityoncrash:${libraries.crashactivity}"
     //endregion
 
-    //region QR/Barcode scanner
-    implementation "com.google.zxing:core:${libraries.zxing}"
-
-    implementation ("me.dm7.barcodescanner:zxing:${libraries.zxingbarcode}"){
-        exclude group: "com.google.zxing", module: "core"
-    }
-    implementation ("com.journeyapps:zxing-android-embedded:${libraries.zxingandroid}"){
-        exclude group: "com.google.zxing", module: "core"
-    }
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     //endregion
 

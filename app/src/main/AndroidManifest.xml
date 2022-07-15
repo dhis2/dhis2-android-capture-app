@@ -143,7 +143,6 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-        <activity android:name=".data.forms.ScanCaptureActivity"/>
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
         <activity
             android:exported="false"

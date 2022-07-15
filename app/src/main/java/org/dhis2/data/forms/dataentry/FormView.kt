@@ -42,13 +42,13 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
-import org.dhis2.data.forms.ScanContract
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
