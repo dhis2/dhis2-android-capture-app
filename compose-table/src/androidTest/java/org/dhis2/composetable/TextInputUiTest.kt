@@ -32,7 +32,7 @@ class TextInputUiTest {
     val composeTestRule = createAndroidComposeRule<TableTestActivity>()
 
     @Test
-    fun myTest() {
+    fun validateTextInputRequirements() {
         var cellToSave: TableCell? = null
         val expectedValue = "55"
 
