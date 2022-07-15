@@ -184,6 +184,7 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
+    isNotLastRow: Boolean,
     onClick: (TableCell) -> Unit
 ) {
     Column(Modifier.width(IntrinsicSize.Min)) {
@@ -204,7 +205,9 @@ fun TableItemRow(
                 onClick = onClick
             )
         }
-        Divider(modifier = Modifier.fillMaxWidth())
+        if (isNotLastRow) {
+            Divider(modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 
@@ -451,12 +454,15 @@ fun TableList(
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
+                    val isNotLastRow =
+                        tableRowModel.rowHeader.row != currentTableModel.tableRows.size - 1
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
+                        isNotLastRow,
                         onClick = onClick
                     )
                 }
