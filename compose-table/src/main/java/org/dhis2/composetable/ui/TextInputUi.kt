@@ -26,8 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -58,6 +62,7 @@ fun TextInput(
     var hasFocus by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
+            .testTag(INPUT_TEST_TAG)
             .fillMaxWidth()
             .background(
                 color = Color.White,
@@ -88,6 +93,7 @@ fun TextInput(
             ) {
                 BasicTextField(
                     modifier = Modifier
+                        .testTag(INPUT_TEST_FIELD_TEST_TAG)
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .onFocusChanged {
@@ -135,22 +141,27 @@ fun TextInput(
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
+
+            val icon = if (hasFocus) {
+                R.drawable.ic_finish_edit_input
+            } else {
+                R.drawable.ic_edit_input
+            }
+
             Icon(
-                modifier = Modifier.clickable(
-                    role = Role.Button
-                ) {
-                    if (hasFocus) {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
+                modifier = Modifier
+                    .semantics {
+                        drawableId = icon
                     }
-                },
-                painter = painterResource(
-                    id = if (hasFocus) {
-                        R.drawable.ic_finish_edit_input
-                    } else {
-                        R.drawable.ic_edit_input
-                    }
-                ),
+                    .clickable(
+                        role = Role.Button
+                    ) {
+                        if (hasFocus) {
+                            focusManager.clearFocus(force = true)
+                            onSave(textInputModel.copy(currentValue = value))
+                        }
+                    },
+                painter = painterResource(id = icon),
                 tint = LocalTableColors.current.primary,
                 contentDescription = ""
             )
@@ -190,3 +201,9 @@ fun displayName(
         }
     }
 }
+
+const val INPUT_TEST_TAG = "INPUT_TEST_TAG"
+const val INPUT_TEST_FIELD_TEST_TAG = "INPUT_TEST_FIELD_TEST_TAG"
+
+val DrawableId = SemanticsPropertyKey<Int>("DrawableResId")
+var SemanticsPropertyReceiver.drawableId by DrawableId

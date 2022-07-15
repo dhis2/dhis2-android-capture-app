@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -173,7 +174,11 @@ fun TableItemRow(
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
-    Column(Modifier.width(IntrinsicSize.Min)) {
+    Column(
+        Modifier
+            .testTag("$ROW_TEST_TAG${rowHeader.row}")
+            .width(IntrinsicSize.Min)
+    ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
                 rowHeader = rowHeader,
@@ -278,6 +283,7 @@ fun ItemValues(
                 val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
+                        .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight),
@@ -560,3 +566,6 @@ fun TableListPreview() {
     TableList(tableList = tableList) {
     }
 }
+
+const val ROW_TEST_TAG = "ROW_TEST_TAG_"
+const val CELL_TEST_TAG = "CELL_TEST_TAG_"

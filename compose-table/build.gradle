@@ -38,6 +38,19 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/rxjava.properties'
+        exclude "**/attach_hotspot_windows.dll"
+        exclude "META-INF/licenses/**"
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
+    }
+
     flavorDimensions "default"
 
     productFlavors {
@@ -84,4 +97,8 @@ dependencies {
     implementation "androidx.compose.ui:ui:${libraries.compose}"
     implementation "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
     debugImplementation "androidx.compose.ui:ui-tooling:${libraries.compose}"
+
+    //test
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.0.4")
 }
