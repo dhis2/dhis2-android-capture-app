@@ -431,9 +431,30 @@ fun DropDownOptions(
     }
 }
 
+@Composable
+fun DataTable(
+    tableList: List<TableModel>,
+    tableColors: TableColors? = null,
+    onClick: (TableCell) -> Unit = {}
+) {
+    if (tableList.size == 1) {
+        TableItem(
+            tableModel = tableList.first(),
+            tableColors = tableColors,
+            onClick = onClick
+        )
+    } else {
+        TableList(
+            tableList = tableList,
+            tableColors = tableColors,
+            onClick = onClick
+        )
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TableList(
+private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
     onClick: (TableCell) -> Unit
@@ -467,7 +488,11 @@ fun TableList(
 }
 
 @Composable
-fun TableItem(tableModel: TableModel, tableColors: TableColors? = null) {
+fun TableItem(
+    tableModel: TableModel,
+    tableColors: TableColors? = null,
+    onClick: (TableCell) -> Unit
+) {
     TableTheme(tableColors) {
         Column(Modifier.padding(16.dp)) {
             val horizontalScrollState = rememberScrollState()
@@ -485,6 +510,7 @@ fun TableItem(tableModel: TableModel, tableColors: TableColors? = null) {
                     dataElementValues = tableRowModel.values,
                     selectionState = selectionState
                 ) {
+                    onClick(it)
                 }
             }
         }

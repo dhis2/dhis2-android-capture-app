@@ -18,8 +18,8 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.LocalTableColors
-import org.dhis2.composetable.ui.TableItem
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
 class GraphToTable {
@@ -67,8 +67,8 @@ class GraphToTable {
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
-        return TableItem(
-            tableModel = tableModel,
+        return DataTable(
+            tableList = listOf(tableModel),
             tableColors = LocalTableColors.current.copy(
                 disabledCellText = LocalTableColors.current.cellText,
                 disabledCellBackground = LocalTableColors.current.tableBackground
