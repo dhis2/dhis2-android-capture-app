@@ -149,7 +149,7 @@ fun HeaderCell(
             color = cellStyle.textColor,
             text = headerCell.value,
             textAlign = TextAlign.Center,
-            fontSize = 10.sp
+            fontSize = 12.sp
         )
         Divider(
             color = TableTheme.colors.primary,
@@ -164,8 +164,12 @@ fun HeaderCell(
 fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState
+    selectionState: SelectionState,
+    isFirstTable: Boolean
 ) {
+    if (!isFirstTable){
+        Spacer(modifier = Modifier.height(16.dp))
+    }
     Row(Modifier.background(Color.White)) {
         TableCorner(tableModel, selectionState)
         TableHeader(
@@ -252,7 +256,7 @@ fun ItemHeader(
                 .weight(1f),
             text = rowHeader.title,
             color = cellStyle.textColor,
-            fontSize = 10.sp
+            fontSize = 12.sp
         )
         if (rowHeader.showDecoration) {
             Icon(
@@ -354,7 +358,7 @@ fun TableCell(
             interactionSource = source,
             readOnly = cellValue.isReadOnly,
             textStyle = TextStyle.Default.copy(
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 textAlign = TextAlign.End,
                 color = tableCellUiOptions.textColor()
             ),
@@ -450,7 +454,8 @@ fun TableList(
                     TableHeaderRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        selectionState = selectionStates[index]
+                        selectionState = selectionStates[index],
+                        index == 0
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
@@ -466,7 +471,6 @@ fun TableList(
                         onClick = onClick
                     )
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
         }
     }
