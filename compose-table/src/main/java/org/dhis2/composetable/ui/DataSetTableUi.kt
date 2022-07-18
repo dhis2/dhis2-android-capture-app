@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -167,7 +168,7 @@ fun TableHeaderRow(
     selectionState: SelectionState,
     isFirstTable: Boolean
 ) {
-    if (!isFirstTable){
+    if (!isFirstTable) {
         Spacer(modifier = Modifier.height(16.dp))
     }
     Row(Modifier.background(Color.White)) {
@@ -338,6 +339,16 @@ fun TableCell(
             .border(1.dp, tableCellUiOptions.borderColor(focused))
             .background(tableCellUiOptions.backgroundColor())
     ) {
+        val isNotEditable = cellValue.editable != null && !cellValue.editable
+        val hasToApplyLightPrimary =
+            selectionState.isParentSelection(cellValue.column, cellValue.row)
+        if (isNotEditable && hasToApplyLightPrimary) {
+            Box(
+                modifier = Modifier
+                    .background(TableTheme.colors.primaryLight.copy(alpha = 0.3f))
+                    .fillMaxSize()
+            )
+        }
         if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
             when {
                 cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)

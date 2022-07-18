@@ -84,11 +84,15 @@ class SelectionState {
 
     @Composable
     fun colorForCell(column: Int?, row: Int?): Color = when {
-        column != null && row != null && (
+        isParentSelection(column, row) -> TableTheme.colors.primaryLight
+        else -> TableTheme.colors.tableBackground
+    }
+
+    fun isParentSelection(column: Int?, row: Int?): Boolean {
+        return column != null && row != null && (
             all || column == this.column && sonsOfHeader == null ||
                 row == this.row || selectedHeaderIsParent(column)
-            ) -> TableTheme.colors.primaryLight
-        else -> TableTheme.colors.tableBackground
+            )
     }
 }
 
