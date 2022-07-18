@@ -38,14 +38,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
-import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.toKeyboardType
 
 @Composable
 fun TextInput(
@@ -135,13 +135,7 @@ private fun TextInputContent(
                         KeyboardCapitalization.None
                     },
                     imeAction = ImeAction.Next,
-                    keyboardType = when (textInputModel.keyboardInputType) {
-                        is KeyboardInputType.NumericInput -> KeyboardType.Number
-                        is KeyboardInputType.EmailInput -> KeyboardType.Email
-                        is KeyboardInputType.TextInput -> KeyboardType.Text
-                        is KeyboardInputType.PhoneInput -> KeyboardType.Phone
-                        is KeyboardInputType.URLInput -> KeyboardType.Uri
-                    }
+                    keyboardType = textInputModel.keyboardInputType.toKeyboardType()
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
@@ -227,6 +221,30 @@ fun displayName(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun DefaultTextInputStatusPreview() {
+    val previewTextInput = TextInputModel(
+        id = "",
+        mainLabel = "Row",
+        secondaryLabels = listOf("header 1", "header 2"),
+        currentValue = "Test"
+    )
+    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
+}
+
+@Preview
+@Composable
+fun ActiveEditionTextInputStatusPreview() {
+    val previewTextInput = TextInputModel(
+        id = "",
+        mainLabel = "Row",
+        secondaryLabels = listOf("header 1", "header 2"),
+        currentValue = "Test"
+    )
+    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
 }
 
 const val INPUT_TEST_TAG = "INPUT_TEST_TAG"

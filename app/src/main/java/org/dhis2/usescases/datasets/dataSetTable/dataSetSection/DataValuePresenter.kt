@@ -242,6 +242,10 @@ class DataValuePresenter(
         return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
     }
 
+    /**
+     * Returns an TextInputModel if the current cell requires text input, null otherwise.
+     * TODO: Refactor once we migrate all other value types inputs to compose.
+     * */
     fun onCellClick(cell: TableCell): TextInputModel? {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
