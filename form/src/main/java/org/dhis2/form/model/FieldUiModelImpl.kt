@@ -30,6 +30,8 @@ data class FieldUiModelImpl(
     override val displayName: String? = null,
     override val renderingType: UiRenderType? = null,
     override val options: List<Option>? = null,
+    override var optionsToHide: List<String>? = null,
+    override var optionsToShow: List<String>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
     override val isLoadingData: Boolean = false
@@ -115,10 +117,6 @@ data class FieldUiModelImpl(
 
     override val backGroundColor: Pair<Array<Int>, Int>?
         get() = style?.backgroundColor(valueType, error, warning)
-
-    override var optionsToHide: List<String>? = null
-
-    override var optionsToShow: List<String>? = null
 
     override val hasImage: Boolean
         get() = value?.let { File(it).exists() } ?: false
