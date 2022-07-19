@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -30,7 +31,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
 import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
-import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.isLandscape
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"

@@ -44,7 +44,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;

@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.commons.dialogs.imagedetail
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,11 +14,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.File
-import org.dhis2.Bindings.dp
-import org.dhis2.R
+import org.dhis2.commons.R
+import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.bindings.widthAndHeight
+import org.dhis2.commons.databinding.DetailImageBottomDialogBinding
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.databinding.DetailImageBottomDialogBinding
 
 class ImageDetailBottomDialog(
     val label: String?,

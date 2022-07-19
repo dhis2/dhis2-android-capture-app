@@ -38,6 +38,7 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
@@ -72,7 +73,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPr
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
-import org.dhis2.utils.customviews.ImageDetailBottomDialog
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.QRDetailBottomDialog
 import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
