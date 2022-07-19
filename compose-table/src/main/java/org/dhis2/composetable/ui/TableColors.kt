@@ -1,8 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -22,25 +19,3 @@ data class TableColors(
 )
 
 val LocalTableColors = staticCompositionLocalOf { TableColors() }
-
-@Composable
-fun TableTheme(
-    tableColors: TableColors?,
-    content:
-        @Composable
-        () -> Unit
-) {
-    CompositionLocalProvider(
-        LocalTableColors provides (tableColors ?: TableColors())
-    ) {
-        MaterialTheme(
-            content = content
-        )
-    }
-}
-
-object TableTheme {
-    val colors: TableColors
-        @Composable
-        get() = LocalTableColors.current
-}

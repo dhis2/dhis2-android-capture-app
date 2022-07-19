@@ -107,8 +107,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             }
         }
 
-        if (!getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        /*if (!getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);*/
 
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity || this instanceof AccountsActivity) {

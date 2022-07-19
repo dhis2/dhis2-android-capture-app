@@ -1,9 +1,5 @@
 package org.dhis2.composetable.model
 
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import org.dhis2.composetable.ui.SelectionState
-
 data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
@@ -19,8 +15,6 @@ data class TableModel(
 }
 
 data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = false) {
-    val defaultCellWidth = 52.dp
-    val defaultHeaderHeight = 24.dp
     fun numberOfColumns(rowIndex: Int): Int {
         var totalCells = 1
         for (index in 0 until rowIndex + 1) {
@@ -30,11 +24,6 @@ data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = 
     }
 
     fun tableMaxColumns() = numberOfColumns(rows.size - 1)
-
-    fun headerCellWidth(rowIndex: Int): Dp {
-        val fullWidth = defaultCellWidth * tableMaxColumns()
-        return fullWidth / numberOfColumns(rowIndex)
-    }
 }
 
 data class TableHeaderRow(val cells: List<TableHeaderCell>)
@@ -63,7 +52,4 @@ data class TableRowModel(
     val isLastRow: Boolean = false
 )
 
-data class RowHeader(val title: String, val row: Int? = null, val showDecoration: Boolean = false) {
-    val defaultCellHeight = 36.dp
-    val defaultWidth = 60.dp
-}
+data class RowHeader(val title: String, val row: Int? = null, val showDecoration: Boolean = false)
