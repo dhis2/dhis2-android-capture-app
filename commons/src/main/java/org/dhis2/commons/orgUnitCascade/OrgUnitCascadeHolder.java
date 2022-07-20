@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews.orgUnitCascade;
+package org.dhis2.commons.orgUnitCascade;
 
 import android.view.Gravity;
 import android.view.Menu;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.commons.data.tuples.Trio;
-import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
+import org.dhis2.commons.databinding.OrgUnitCascadeLevelItemBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;

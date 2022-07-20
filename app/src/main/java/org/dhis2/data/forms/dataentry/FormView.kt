@@ -75,8 +75,8 @@ import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.OptionSetOnClickListener
-import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
-import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.dhis2.commons.orgUnitCascade.OrgUnitCascadeDialog
+import org.dhis2.commons.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
 import org.dhis2.utils.optionset.OptionSetDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

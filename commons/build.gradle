@@ -140,6 +140,10 @@ dependencies {
         exclude group: "com.google.zxing", module: "core"
     }
 
+    //rxbinding
+    api "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    api "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+
     testApi "junit:junit:${libraries.junit}"
 
     androidTestApi 'androidx.test.ext:junit:1.1.2'

@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews.orgUnitCascade;
+package org.dhis2.commons.orgUnitCascade;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -18,10 +18,10 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.chip.Chip;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.App;
-import org.dhis2.R;
-import org.dhis2.databinding.DialogCascadeOrgunitBinding;
+import org.dhis2.commons.R;
+import org.dhis2.commons.databinding.DialogCascadeOrgunitBinding;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +77,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
+        d2 = D2Manager.getD2();
     }
 
     @NonNull

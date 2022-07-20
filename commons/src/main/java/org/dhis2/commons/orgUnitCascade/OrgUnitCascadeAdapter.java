@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews.orgUnitCascade;
+package org.dhis2.commons.orgUnitCascade;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,8 +9,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.R;
-import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
+import org.dhis2.commons.R;
+import org.dhis2.commons.databinding.OrgUnitCascadeLevelItemBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 
