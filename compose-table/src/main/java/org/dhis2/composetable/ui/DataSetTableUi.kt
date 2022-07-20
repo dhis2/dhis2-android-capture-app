@@ -165,8 +165,7 @@ fun HeaderCell(
 fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState,
-    isFirstTable: Boolean
+    selectionState: SelectionState
 ) {
     if (tableModel.upperPadding) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -472,8 +471,7 @@ fun TableList(
                     TableHeaderRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        selectionState = selectionStates[index],
-                        index == 0
+                        selectionState = selectionStates[index]
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
