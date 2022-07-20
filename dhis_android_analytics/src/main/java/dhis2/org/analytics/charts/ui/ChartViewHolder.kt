@@ -43,31 +43,33 @@ class ChartViewHolder(
                 }
             }
         )
-        if (chart.observableChartType.get() != ChartType.TABLE) {
-            loadChart(chart)
-        } else {
-            loadComposeChart(chart)
-        }
+        loadChart(chart)
     }
 
     private fun loadChart(chart: ChartModel) {
-        val chartView = chart.graph.toChartBuilder()
-            .withType(chart.observableChartType.get()!!)
-            .withGraphData(chart.graph)
-            .build().getChartView(binding.root.context)
+        loadComposeChart(chart, chart.observableChartType.get() == ChartType.TABLE)
+        if (chart.observableChartType.get() != ChartType.TABLE) {
+            val chartView = chart.graph.toChartBuilder()
+                .withType(chart.observableChartType.get()!!)
+                .withGraphData(chart.graph)
+                .build().getChartView(binding.root.context)
 
-        TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
-        binding.chartContainer.removeAllViews()
-        binding.chartContainer.addView(chartView)
+            TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
+            binding.chartContainer.removeAllViews()
+            binding.chartContainer.addView(chartView)
+        }
     }
 
-    private fun loadComposeChart(chart: ChartModel) {
+    private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {
         binding.composeChart.setContent {
             MdcTheme {
-                chart.graph.toChartBuilder()
-                    .withType(chart.observableChartType.get()!!)
-                    .withGraphData(chart.graph)
-                    .build().getComposeChart()
+                if (visible) {
+                    binding.chartContainer.removeAllViews()
+                    chart.graph.toChartBuilder()
+                        .withType(chart.observableChartType.get()!!)
+                        .withGraphData(chart.graph)
+                        .build().getComposeChart()
+                }
             }
         }
     }
