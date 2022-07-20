@@ -184,8 +184,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                        MainNavigator.MainScreen.valueOf(openScreen) ==
-                        MainNavigator.MainScreen.TROUBLESHOOTING
+                            MainNavigator.MainScreen.valueOf(openScreen) ==
+                            MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
@@ -195,13 +195,17 @@ class MainActivity :
         }
 
         presenter.observeDataSync().observe(this) {
-            if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED) {
+            if (it.firstOrNull()?.state == WorkInfo.State.RUNNING) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
+            } else if (
+                it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED ||
+                it.firstOrNull()?.state == WorkInfo.State.FAILED ||
+                it.firstOrNull()?.state == WorkInfo.State.CANCELLED
+            ) {
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
-            } else if (it.firstOrNull()?.state == WorkInfo.State.RUNNING) {
-                setFilterButtonVisibility(false)
-                setBottomNavigationVisibility(false)
             }
         }
 
