@@ -168,7 +168,7 @@ fun TableHeaderRow(
     selectionState: SelectionState,
     isFirstTable: Boolean
 ) {
-    if (!isFirstTable) {
+    if (tableModel.upperPadding) {
         Spacer(modifier = Modifier.height(16.dp))
     }
     Row(Modifier.background(Color.White)) {
@@ -339,16 +339,7 @@ fun TableCell(
             .border(1.dp, tableCellUiOptions.borderColor(focused))
             .background(tableCellUiOptions.backgroundColor())
     ) {
-        val isNotEditable = cellValue.editable != null && !cellValue.editable
-        val hasToApplyLightPrimary =
-            selectionState.isParentSelection(cellValue.column, cellValue.row)
-        if (isNotEditable && hasToApplyLightPrimary) {
-            Box(
-                modifier = Modifier
-                    .background(TableTheme.colors.primaryLight.copy(alpha = 0.3f))
-                    .fillMaxSize()
-            )
-        }
+        addBlueNonEditableCellLayer(selectionState, cellValue)
         if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
             when {
                 cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
@@ -427,6 +418,22 @@ fun TableCell(
 }
 
 @Composable
+fun addBlueNonEditableCellLayer(
+    selectionState: SelectionState,
+    cellValue: TableCell
+) {
+    val hasToApplyLightPrimary =
+        selectionState.isParentSelection(cellValue.column, cellValue.row)
+    if (!cellValue.editable && hasToApplyLightPrimary) {
+        Box(
+            modifier = Modifier
+                .background(TableTheme.colors.primaryLight.copy(alpha = 0.3f))
+                .fillMaxSize()
+        )
+    }
+}
+
+@Composable
 fun DropDownOptions(
     expanded: Boolean,
     options: List<String>,
@@ -470,15 +477,13 @@ fun TableList(
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
-                    val isNotLastRow =
-                        tableRowModel.rowHeader.row != currentTableModel.tableRows.size - 1
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
-                        isNotLastRow,
+                        isNotLastRow = !tableRowModel.isLastRow,
                         onClick = onClick
                     )
                 }

@@ -150,7 +150,7 @@ class DataValuePresenter(
                     .subscribe(
                         {
                             tableState.value = tableState.value?.toMutableList()?.apply {
-                                add(it)
+                                add(addUpperSpaceIfIsNotFirstTable(it))
                             }
                             updateTableList()
                         }
@@ -182,6 +182,10 @@ class DataValuePresenter(
             )
         }
     }
+
+    private fun MutableList<TableModel>.addUpperSpaceIfIsNotFirstTable(
+        it: TableModel
+    ) = it.copy(upperPadding = this.isNotEmpty())
 
     private fun updateData(datasetTableModel: DataSetTableModel) {
         val dataTableModel =
