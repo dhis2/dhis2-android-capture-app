@@ -39,8 +39,8 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableList
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
@@ -126,7 +126,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         MdcTheme {
                             val tableData by presenterFragment.tableData()
                                 .observeAsState(emptyList())
-                            TableList(
+                            DataTable(
                                 tableList = tableData,
                                 tableColors = TableColors(
                                     primary = MaterialTheme.colors.primary,

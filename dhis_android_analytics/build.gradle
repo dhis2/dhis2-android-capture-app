@@ -41,6 +41,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        compose true
     }
 
     productFlavors {
@@ -64,6 +65,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.1'
+    }
 }
 
 dependencies {
@@ -71,6 +76,7 @@ dependencies {
 
     implementation project(':tableview')
     implementation project(':commons')
+    implementation project(':compose-table')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 

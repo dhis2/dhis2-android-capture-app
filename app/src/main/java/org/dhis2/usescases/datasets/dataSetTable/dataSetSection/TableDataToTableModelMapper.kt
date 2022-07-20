@@ -122,7 +122,7 @@ class TableDataToTableModelMapper(
             ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.REFERENCE,
-            ValueType.GEOJSON-> resources.getString(R.string.unsupported_value_type)
+            ValueType.GEOJSON -> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }

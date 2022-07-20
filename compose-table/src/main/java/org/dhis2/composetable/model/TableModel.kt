@@ -39,7 +39,8 @@ data class TableCell(
     val mandatory: Boolean? = false,
     val error: String? = null,
     val isReadOnly: Boolean = false,
-    val dropDownOptions: List<String>? = null
+    val dropDownOptions: List<String>? = null,
+    val legendColor: Int? = null
 )
 
 data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableCell>)
