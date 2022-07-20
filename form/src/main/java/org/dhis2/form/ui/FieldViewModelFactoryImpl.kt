@@ -57,29 +57,29 @@ class FieldViewModelFactoryImpl(
         isNull(valueType, "type must be supplied")
         if (noMandatoryFields) isMandatory = false
         return FieldUiModelImpl(
-            id,
-            layoutProvider.getLayoutByType(
+            uid = id,
+            layoutId = layoutProvider.getLayoutByType(
                 valueType,
                 fieldRendering?.type(),
                 optionSet,
                 renderingType
             ),
-            value,
-            false,
-            null,
-            editable,
-            null,
-            isMandatory,
-            label,
-            programStageSection,
-            uiStyleProvider.provideStyle(valueType),
-            hintProvider.provideDateHint(valueType),
-            description,
-            valueType,
-            legendValueProvider.provideLegendValue(id, value),
-            optionSet,
-            allowFutureDates,
-            UiEventFactoryImpl(
+            value = value,
+            focused = false,
+            error = null,
+            editable = editable,
+            warning = null,
+            mandatory = isMandatory,
+            label = label,
+            programStageSection = programStageSection,
+            style = uiStyleProvider.provideStyle(valueType),
+            hint = hintProvider.provideDateHint(valueType),
+            description = description,
+            valueType = valueType,
+            legend = legendValueProvider.provideLegendValue(id, value),
+            optionSet = optionSet,
+            allowFutureDates = allowFutureDates,
+            uiEventFactory = UiEventFactoryImpl(
                 id,
                 label,
                 description,
@@ -87,15 +87,15 @@ class FieldViewModelFactoryImpl(
                 allowFutureDates,
                 optionSet
             ),
-            displayNameProvider.provideDisplayName(valueType, value, optionSet),
-            uiEventTypesProvider.provideUiRenderType(
+            displayName = displayNameProvider.provideDisplayName(valueType, value, optionSet),
+            renderingType = uiEventTypesProvider.provideUiRenderType(
                 featureType,
                 fieldRendering?.type(),
                 renderingType
             ),
-            options,
-            keyboardActionProvider.provideKeyboardAction(valueType),
-            fieldMask
+            options = options,
+            keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
+            fieldMask = fieldMask
         )
     }
 
