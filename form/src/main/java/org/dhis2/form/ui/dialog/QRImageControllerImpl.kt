@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews
+package org.dhis2.form.ui.dialog
 
 import android.graphics.Bitmap
 import android.graphics.Color

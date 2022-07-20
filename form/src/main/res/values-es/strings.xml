@@ -60,4 +60,5 @@
     <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
     <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
     <string name="fields_mandatory_missing_discard">Algunos campos obligatorios faltan llenarse, el formulario no puede guardarse. \nSi sale, los cambios serán descartados.</string>
+    <string name="share">Compartir</string>
 </resources>

@@ -61,4 +61,5 @@
     <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
     <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
     <string name="fields_mandatory_missing_discard">Thiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập. \n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
+    <string name="share">Chia sẻ</string>
 </resources>

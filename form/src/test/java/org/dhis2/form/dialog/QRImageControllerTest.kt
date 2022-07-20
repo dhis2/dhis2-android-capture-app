@@ -1,10 +1,11 @@
-package org.dhis2.utils.customviews
+package org.dhis2.form.dialog
 
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.datamatrix.DataMatrixWriter
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.QRCodeWriter
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.ui.dialog.QRImageControllerImpl
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
