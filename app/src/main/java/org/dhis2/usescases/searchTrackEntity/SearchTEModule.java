@@ -26,6 +26,7 @@ import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.DataEntryRepository;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.data.FormRepositoryImpl;
+import org.dhis2.form.data.OptionSetDialogRepository;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -251,7 +252,8 @@ public class SearchTEModule {
                 dataEntryRepository,
                 null,
                 null,
-                null
+                null,
+                new OptionSetDialogRepository(d2.optionModule().options())
         );
     }
 

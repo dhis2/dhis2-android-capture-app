@@ -62,6 +62,7 @@ import org.dhis2.form.ui.DataEntryAdapter
 import org.dhis2.form.ui.DataEntryHeaderHelper
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog
+import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -761,23 +762,22 @@ class FormView : Fragment() {
     }
 
     private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
-        OptionSetDialog().apply {
-            create(this@FormView.requireContext())
-            optionSet = uiEvent.field
-            listener = OptionSetOnClickListener {
-                intentHandler(
-                    FormIntent.OnSave(
-                        uiEvent.field.uid,
-                        it.code(),
-                        uiEvent.field.valueType
-                    )
-                )
-            }
-            clearListener = View.OnClickListener {
+        OptionSetDialog(
+            viewModel.optionService(),
+            uiEvent.field,
+            dispatchers,
+            onClearValue = {
                 intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
             }
-            show(this@FormView.childFragmentManager, OptionSetDialog.TAG)
-        }
+        ) { code ->
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.field.uid,
+                    code,
+                    uiEvent.field.valueType
+                )
+            )
+        }.show(this@FormView.childFragmentManager)
     }
 
     override fun onRequestPermissionsResult(
