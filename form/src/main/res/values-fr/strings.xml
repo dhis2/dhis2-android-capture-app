@@ -47,4 +47,5 @@
     <string name="due_date">Date d\'échéance</string>
     <string name="event_date">Date d\'événement</string>
     <string name="mandatory_field">Champ obligatoire</string>
-    </resources>
+    <string name="share">Partager</string>
+</resources>
