@@ -1,4 +1,4 @@
-package org.dhis2.commons.orgUnitCascade;
+package org.dhis2.commons.orgunitcascade;
 
 import android.view.Gravity;
 import android.view.Menu;
@@ -16,10 +16,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-
-/**
- * QUADRAM. Created by ppajuelo on 22/10/2018.
- */
 
 class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
     private final OrgUnitCascadeLevelItemBinding binding;
@@ -42,7 +38,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             ouItem.setName(null);
             ouItem.setUid(null);
             adapter.setSelectedLevel(
-                    getAdapterPosition() + 1,
+                    getBindingAdapterPosition() + 1,
                     selectedOrgUnit,
                     false);
         });
@@ -60,7 +56,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             ouItem.setName(item.getOrder() < 0 ? data.get(0).val1() : data.get(item.getOrder()).val1());
             ouItem.setUid(item.getOrder() < 0 ? data.get(0).val0() : data.get(item.getOrder()).val0());
             adapter.setSelectedLevel(
-                    getAdapterPosition() + 1,
+                    getBindingAdapterPosition() + 1,
                     selectedOrgUnit,
                     selectionType == OrgUnitCascadeDialog.OUSelectionType.SEARCH ?
                             ouRepository.uid(selectedOrgUnit).blockingExists():
@@ -87,9 +83,9 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             ouItem.setName(selectedOu.val1());
             ouItem.setUid(selectedOu.val0());
             adapter.setSelectedParent(
-                    getAdapterPosition() + 1,
-                    selectedOrgUnit,
-                    selectedOu.val2());
+                    getBindingAdapterPosition() + 1,
+                    selectedOrgUnit
+            );
             binding.levelText.setEnabled(false);
             binding.levelText.setClickable(false);
         } else {

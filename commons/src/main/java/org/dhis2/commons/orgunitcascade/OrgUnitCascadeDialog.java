@@ -1,4 +1,4 @@
-package org.dhis2.commons.orgUnitCascade;
+package org.dhis2.commons.orgunitcascade;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -142,7 +142,6 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                                 Timber::e
                         )
         );
-        setRetainInstance(true);
         return binding.getRoot();
     }
 

@@ -1,4 +1,4 @@
-package org.dhis2.commons.orgUnitCascade;
+package org.dhis2.commons.orgunitcascade;
 
 import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -41,7 +41,6 @@ public class OrgUnitItem {
         else
             hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).blockingGet().isEmpty();
 
-//        getLevelOrgUnits();
         return hasCaptureOrgUnits;
     }
 
