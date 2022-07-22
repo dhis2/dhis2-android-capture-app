@@ -195,17 +195,20 @@ class MainActivity :
         }
 
         presenter.observeDataSync().observe(this) {
-            if (it.firstOrNull()?.state == WorkInfo.State.RUNNING) {
+            val currentState = it.firstOrNull()?.state
+            if (currentState == WorkInfo.State.RUNNING) {
                 setFilterButtonVisibility(false)
                 setBottomNavigationVisibility(false)
             } else if (
-                it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED ||
-                it.firstOrNull()?.state == WorkInfo.State.FAILED ||
-                it.firstOrNull()?.state == WorkInfo.State.CANCELLED
+                currentState == WorkInfo.State.SUCCEEDED ||
+                currentState == WorkInfo.State.FAILED ||
+                currentState == WorkInfo.State.CANCELLED
             ) {
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
-                presenter.onDataSuccess()
+                if(currentState == WorkInfo.State.SUCCEEDED) {
+                    presenter.onDataSuccess()
+                }
             }
         }
 
