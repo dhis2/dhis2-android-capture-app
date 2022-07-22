@@ -34,9 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -63,7 +60,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+        (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -149,7 +146,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -178,7 +175,7 @@ fun TableItemRow(
     selectionState: SelectionState,
     isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
-    (rowHeaderIndex: Int?) -> CellStyle,
+        (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
@@ -299,6 +296,12 @@ fun ItemValues(
                         .defaultMinSize(minHeight = defaultHeight),
                     cellValue = cellValue,
                     tableCellUiOptions = TableCellUiOptions(cellValue, selectionState),
+                    nonEditableCellLayer = {
+                        addBlueNonEditableCellLayer(
+                            selectionState = selectionState,
+                            cellValue = cellValue
+                        )
+                    },
                     onClick = onClick
                 )
             }
@@ -311,10 +314,11 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     tableCellUiOptions: TableCellUiOptions,
+    nonEditableCellLayer: @Composable () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    addBlueNonEditableCellLayer(selectionState, cellValue)
+    nonEditableCellLayer()
 
     Box(
         modifier = modifier
@@ -471,7 +475,7 @@ private fun TableList(
                                 column = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
@@ -553,13 +557,14 @@ fun TableItem(
                     )
                 }
             )
-            tableModel.tableRows.forEach { tableRowModel ->
+            tableModel.tableRows.forEachIndexed { index, tableRowModel ->
                 TableItemRow(
                     tableModel = tableModel,
                     horizontalScrollState = horizontalScrollState,
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
                     selectionState = selectionState,
+                    isNotLastRow = index != tableModel.tableRows.size - 1,
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
                     },
