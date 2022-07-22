@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableList
 import org.dhis2.composetable.ui.TextInput
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -68,7 +68,7 @@ fun DataSetTableScreen(
                 topEnd = 16.dp
             )
         ) {
-            TableList(
+            DataTable(
                 tableList = tableData,
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,

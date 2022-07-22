@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
@@ -39,7 +38,6 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.ui.TableColors
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
@@ -63,8 +61,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.dhis2.composetable.ui.DataTable
-import org.dhis2.composetable.ui.TableColors
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -129,10 +125,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             .observeAsState(emptyList())
                         DataSetTableScreen(
                             tableData = tableData,
-                            tableColors = TableColors(
-                                primary = MaterialTheme.colors.primary,
-                                primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                            ),
                             onCellClick = { cell ->
                                 presenterFragment.onCellClick(cell = cell)
                             },

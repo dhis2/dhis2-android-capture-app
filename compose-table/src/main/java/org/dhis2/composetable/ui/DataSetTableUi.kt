@@ -494,7 +494,12 @@ fun TableItem(
             TableHeaderRow(
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollState,
-                selectionState = selectionState
+                cellStyle = { headerColumnIndex, headerRowIndex ->
+                    selectionState.styleForColumnHeader(
+                        column = headerColumnIndex,
+                        headerRow = headerRowIndex
+                    )
+                }
             )
             tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
@@ -502,7 +507,11 @@ fun TableItem(
                     horizontalScrollState = horizontalScrollState,
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
-                    selectionState = selectionState
+                    selectionState = selectionState,
+                    rowHeaderCellStyle = { rowHeaderIndex ->
+                        selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
+                    },
+                    onRowHeaderClick = {}
                 ) {
                     onClick(it)
                 }
