@@ -20,8 +20,8 @@ import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableList
 import org.dhis2.composetable.ui.TextInput
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +52,7 @@ class TextInputUiTest {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    private fun TextInputUiTestScreen(onSave:(TableCell)->Unit){
+    private fun TextInputUiTestScreen(onSave: (TableCell) -> Unit) {
         val bottomSheetState = rememberBottomSheetScaffoldState(
             bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
         )
@@ -89,7 +89,7 @@ class TextInputUiTest {
                 topEnd = 16.dp
             )
         ) {
-            TableList(
+            DataTable(
                 tableList = tableData,
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
