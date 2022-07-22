@@ -83,7 +83,6 @@
     <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
     <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
     <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
-    <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>

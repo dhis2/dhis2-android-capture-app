@@ -850,6 +850,7 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
     <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>

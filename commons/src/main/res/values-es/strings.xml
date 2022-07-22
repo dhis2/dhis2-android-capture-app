@@ -204,8 +204,4 @@
     <string name="error_min_attributes">No hay suficientes atributos para realizar la búsqueda. Por favor redefina la búsqueda añadiendo más atributos.</string>
     <string name="error_org_unit_scope">La búsqueda online solo está disponible para las unidades organizativas de búsqueda.</string>
     <string name="error_invalid_characters">El query contiene caracteres invalidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
-    <string name="keep_editing">Seguir editando</string>
-    <string name="not_now">Ahora no</string>
-    <string name="review">Revisar</string>
-    <string name="complete">Completo</string>
     </resources>
