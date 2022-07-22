@@ -41,9 +41,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -167,9 +170,6 @@ fun TableHeaderRow(
     horizontalScrollState: ScrollState,
     selectionState: SelectionState
 ) {
-    if (tableModel.upperPadding) {
-        Spacer(modifier = Modifier.height(16.dp))
-    }
     Row(Modifier.background(Color.White)) {
         TableCorner(tableModel, selectionState)
         TableHeader(
@@ -484,10 +484,35 @@ fun TableList(
                         isNotLastRow = !tableRowModel.isLastRow,
                         onClick = onClick
                     )
+                    if (tableRowModel.isLastRow) {
+                        ExtendDivider()
+                    }
+                }
+                stickyHeader {
+                    Spacer(
+                        modifier = Modifier
+                            .height(16.dp)
+                            .background(color = Color.White)
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+fun ExtendDivider() {
+    val background = TableTheme.colors.primary
+    Box(modifier = Modifier
+        .width(60.dp)
+        .height(8.dp)
+        .drawBehind {
+            drawRect(
+                color = background,
+                topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                size = Size(1.dp.toPx(), size.height)
+            )
+        })
 }
 
 @Preview(showBackground = true)
