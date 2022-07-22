@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -22,9 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -33,28 +28,19 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -69,7 +55,9 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState
+    cellStyle: @Composable
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
         Column {
@@ -86,21 +74,8 @@ fun TableHeader(
                                 headerCell = tableHeaderRow.cells[cellIndex],
                                 headerWidth = tableHeaderModel.headerCellWidth(rowIndex),
                                 headerHeight = tableHeaderModel.defaultHeaderHeight,
-                                cellStyle = selectionState.styleForColumnHeader(
-                                    columnIndex,
-                                    rowIndex
-                                ),
-                                onCellSelected = {
-                                    selectionState.sonsOfHeader = tableHeaderModel.rows
-                                        .filterIndexed { index, _ -> index > rowIndex }
-                                        .map { row -> row.cells.size }
-                                        .reduceOrNull { acc, i -> acc * i }
-
-                                    selectionState.selectCell(
-                                        column = it,
-                                        columnHeaderRow = rowIndex
-                                    )
-                                }
+                                cellStyle = cellStyle(columnIndex, rowIndex),
+                                onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
                         }
                     )
@@ -113,7 +88,7 @@ fun TableHeader(
                 headerCell = TableHeaderCell("Total"),
                 headerWidth = tableHeaderModel.defaultCellWidth,
                 headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size,
-                cellStyle = selectionState.styleForColumnHeader(
+                cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
                 ),
@@ -162,17 +137,27 @@ fun HeaderCell(
 
 @Composable
 fun TableHeaderRow(
+    modifier: Modifier = Modifier,
+    cornerModifier: Modifier = Modifier,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    selectionState: SelectionState
+    cellStyle: @Composable
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    onTableCornerClick: () -> Unit = {},
+    onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
-    Row(Modifier.background(Color.White)) {
-        TableCorner(tableModel, selectionState)
+    Row(modifier) {
+        TableCorner(
+            modifier = cornerModifier,
+            tableModel = tableModel,
+            onClick = onTableCornerClick
+        )
         TableHeader(
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
-            selectionState = selectionState
+            cellStyle = cellStyle,
+            onHeaderCellSelected = onHeaderCellClick
         )
     }
 }
@@ -184,16 +169,21 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
+    rowHeaderCellStyle: @Composable
+    (rowHeaderIndex: Int?) -> CellStyle,
+    onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
-    Column(Modifier.width(IntrinsicSize.Min)) {
+    Column(
+        Modifier
+            .testTag("$ROW_TEST_TAG${rowHeader.row}")
+            .width(IntrinsicSize.Min)
+    ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
                 rowHeader = rowHeader,
-                cellStyle = selectionState.styleForRowHeader(rowHeader.row),
-                onCellSelected = {
-                    selectionState.selectCell(row = it, rowHeader = true)
-                }
+                cellStyle = rowHeaderCellStyle(rowHeader.row),
+                onCellSelected = onRowHeaderClick
             )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
@@ -209,13 +199,16 @@ fun TableItemRow(
 }
 
 @Composable
-fun TableCorner(tableModel: TableModel, selectionState: SelectionState) {
+fun TableCorner(
+    modifier: Modifier = Modifier,
+    tableModel: TableModel,
+    onClick: () -> Unit
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
             .width(tableModel.tableRows.first().rowHeader.defaultWidth)
-            .background(selectionState.backgroundColorForCorner())
-            .clickable { selectionState.selectCell(all = true) },
+            .clickable { onClick() },
         contentAlignment = Alignment.CenterEnd
     ) {
         Divider(
@@ -280,9 +273,6 @@ fun ItemValues(
     selectionState: SelectionState,
     onClick: (TableCell) -> Unit
 ) {
-    val focusRequester = LocalFocusManager.current
-    val coroutineScope = rememberCoroutineScope()
-    val defaultWidthPx = LocalDensity.current.run { defaultWidth.toPx() }
     Row(
         modifier = Modifier
             .horizontalScroll(state = horizontalScrollState)
@@ -290,21 +280,15 @@ fun ItemValues(
         repeat(
             times = cellValues.size,
             action = { columnIndex ->
+                val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
+                        .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight),
-                    cellValue = cellValues[columnIndex] ?: TableCell(value = ""),
-                    focusRequester = focusRequester,
-                    onNext = {
-                        coroutineScope.launch {
-                            horizontalScrollState.scrollTo(
-                                (columnIndex + 1) * defaultWidthPx.toInt()
-                            )
-                        }
-                    },
-                    selectionState = selectionState,
+                    cellValue = cellValue,
+                    tableCellUiOptions = TableCellUiOptions(cellValue, selectionState),
                     onClick = onClick
                 )
             }
@@ -316,61 +300,35 @@ fun ItemValues(
 fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
-    focusRequester: FocusManager,
-    onNext: () -> Unit,
-    selectionState: SelectionState,
+    tableCellUiOptions: TableCellUiOptions,
     onClick: (TableCell) -> Unit
 ) {
-    var value by remember { mutableStateOf(cellValue.value) }
-    var focused by remember { mutableStateOf(false) }
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    val tableCellUiOptions = TableCellUiOptions(cellValue, selectionState)
-    val source = remember { MutableInteractionSource() }
+
     Box(
         modifier = modifier
-            .border(1.dp, tableCellUiOptions.borderColor(focused))
+            .border(1.dp, tableCellUiOptions.borderColor())
             .background(tableCellUiOptions.backgroundColor())
     ) {
-        if (source.collectIsPressedAsState().value && tableCellUiOptions.enabled) {
-            when {
-                cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                else -> onClick(cellValue)
-            }
-        }
-
-        BasicTextField(
+        Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .onFocusChanged {
-                    focused = it.isFocused
-                    selectionState.selectCell()
-                }
                 .padding(horizontal = 4.dp)
-                .fillMaxHeight(),
-            enabled = tableCellUiOptions.enabled,
-            interactionSource = source,
-            readOnly = cellValue.isReadOnly,
-            textStyle = TextStyle.Default.copy(
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .clickable {
+                    if (cellValue.editable == true) {
+                        when {
+                            cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                            else -> onClick(cellValue)
+                        }
+                    }
+                },
+            text = cellValue.value ?: "",
+            style = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
                 color = tableCellUiOptions.textColor()
-            ),
-            value = if (cellValue.isReadOnly) {
-                cellValue.value ?: ""
-            } else {
-                value ?: ""
-            },
-            onValueChange = { newValue ->
-                value = newValue
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    onNext()
-                    focusRequester.moveFocus(
-                        FocusDirection.Right
-                    )
-                }
             )
         )
         if (cellValue.dropDownOptions?.isNotEmpty() == true) {
@@ -393,8 +351,8 @@ fun TableCell(
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment(value?.isNotEmpty())),
-                tint = tableCellUiOptions.mandatoryColor(value?.isNotEmpty())
+                    .align(tableCellUiOptions.mandatoryAlignment(cellValue.value?.isNotEmpty())),
+                tint = tableCellUiOptions.mandatoryColor(cellValue.value?.isNotEmpty())
             )
         }
         if (cellValue.error != null) {
@@ -466,9 +424,29 @@ private fun TableList(
             tableList.forEachIndexed { index, currentTableModel ->
                 stickyHeader {
                     TableHeaderRow(
+                        modifier = Modifier
+                            .background(Color.White),
+                        cornerModifier = Modifier
+                            .background(selectionStates[index].backgroundColorForCorner()),
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        selectionState = selectionStates[index]
+                        cellStyle = { columnIndex, rowIndex ->
+                            selectionStates[index].styleForColumnHeader(
+                                columnIndex,
+                                rowIndex
+                            )
+                        },
+                        onTableCornerClick = {
+                            selectionStates[index].selectCell(all = true)
+                        },
+                        onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
+                            selectionStates[index].selectHeader(
+                                column = headerColumnIndex,
+                                columnHeaderRow = headerRowIndex,
+                                childrenOfSelectedHeader =
+                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                            )
+                        }
                     )
                 }
                 items(items = currentTableModel.tableRows) { tableRowModel ->
@@ -478,7 +456,23 @@ private fun TableList(
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
-                        onClick = onClick
+                        rowHeaderCellStyle = { rowHeaderIndex ->
+                            selectionStates[index].styleForRowHeader(rowHeaderIndex)
+                        },
+                        onRowHeaderClick = { rowHeaderIndex ->
+                            selectionStates[index].selectCell(
+                                row = rowHeaderIndex,
+                                rowHeader = true
+                            )
+                        },
+                        onClick = { tableCell ->
+                            selectionStates[index].selectCell(
+                                tableCell.column,
+                                tableCell.row,
+                                cellOnly = true
+                            )
+                            onClick(tableCell)
+                        }
                     )
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -500,7 +494,12 @@ fun TableItem(
             TableHeaderRow(
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollState,
-                selectionState = selectionState
+                cellStyle = { headerColumnIndex, headerRowIndex ->
+                    selectionState.styleForColumnHeader(
+                        column = headerColumnIndex,
+                        headerRow = headerRowIndex
+                    )
+                }
             )
             tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
@@ -508,7 +507,11 @@ fun TableItem(
                     horizontalScrollState = horizontalScrollState,
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
-                    selectionState = selectionState
+                    selectionState = selectionState,
+                    rowHeaderCellStyle = { rowHeaderIndex ->
+                        selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
+                    },
+                    onRowHeaderClick = {}
                 ) {
                     onClick(it)
                 }
@@ -569,5 +572,9 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList) {}
+    TableList(tableList = tableList) {
+    }
 }
+
+const val ROW_TEST_TAG = "ROW_TEST_TAG_"
+const val CELL_TEST_TAG = "CELL_TEST_TAG_"

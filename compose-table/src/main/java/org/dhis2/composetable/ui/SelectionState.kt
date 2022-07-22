@@ -18,19 +18,41 @@ class SelectionState {
     var rowHeader: Boolean by mutableStateOf(false)
     var columnHeaderRow: Int? by mutableStateOf(null)
     var sonsOfHeader: Int? by mutableStateOf(null)
+    var cellOnly: Boolean by mutableStateOf(false)
 
     fun selectCell(
         column: Int? = null,
         row: Int? = null,
         all: Boolean = false,
         rowHeader: Boolean = false,
-        columnHeaderRow: Int? = null
+        columnHeaderRow: Int? = null,
+        cellOnly: Boolean = false
     ) {
         this.column = column
         this.row = row
         this.all = all
         this.rowHeader = rowHeader
         this.columnHeaderRow = columnHeaderRow
+        this.cellOnly = cellOnly
+        this.sonsOfHeader = null
+    }
+
+    fun selectHeader(
+        column: Int? = null,
+        row: Int? = null,
+        childrenOfSelectedHeader: Int? = null,
+        all: Boolean = false,
+        rowHeader: Boolean = false,
+        columnHeaderRow: Int? = null,
+        cellOnly: Boolean = false
+    ) {
+        this.column = column
+        this.row = row
+        this.all = all
+        this.rowHeader = rowHeader
+        this.columnHeaderRow = columnHeaderRow
+        this.cellOnly = cellOnly
+        this.sonsOfHeader = childrenOfSelectedHeader
     }
 
     @Composable
@@ -38,7 +60,6 @@ class SelectionState {
         all || headerRow == columnHeaderRow && column == this.column -> CellStyle(
             backgroundColor = TableTheme.colors.primary,
             textColor = contentColorFor(TableTheme.colors.primary)
-
         )
         selectedHeaderIsParent(column) ||
             headerRow == columnHeaderRow && column != this.column -> CellStyle(
@@ -84,6 +105,7 @@ class SelectionState {
 
     @Composable
     fun colorForCell(column: Int?, row: Int?): Color = when {
+        cellOnly -> TableTheme.colors.tableBackground
         column != null && row != null && (
             all || column == this.column && sonsOfHeader == null ||
                 row == this.row || selectedHeaderIsParent(column)

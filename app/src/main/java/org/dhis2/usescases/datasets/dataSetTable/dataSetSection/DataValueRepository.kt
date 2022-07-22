@@ -978,4 +978,11 @@ class DataValueRepository(
             dataElement.categoryComboUid()
         )
     }
+
+    fun getCatOptComboOptions(catOptComboUid: String): List<CategoryOption> {
+        return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
+            .uid(catOptComboUid)
+            .blockingGet()
+            .categoryOptions() ?: emptyList()
+    }
 }

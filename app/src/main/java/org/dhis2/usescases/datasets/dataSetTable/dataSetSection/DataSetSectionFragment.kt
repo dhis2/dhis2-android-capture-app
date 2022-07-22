@@ -14,7 +14,7 @@ import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TimePicker
 import android.widget.Toast
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
@@ -23,7 +23,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -39,8 +38,6 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.ui.DataTable
-import org.dhis2.composetable.ui.TableColors
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
@@ -113,6 +110,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         ).inject(this)
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -123,17 +121,19 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 binding = it
                 if (presenterFragment.isComposeTableEnable()) {
                     binding.tables.setContent {
-                        MdcTheme {
-                            val tableData by presenterFragment.tableData()
-                                .observeAsState(emptyList())
-                            DataTable(
-                                tableList = tableData,
-                                tableColors = TableColors(
-                                    primary = MaterialTheme.colors.primary,
-                                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                                )
-                            ) { cell -> presenterFragment.onCellClick(cell) }
-                        }
+                        val tableData by presenterFragment.tableData()
+                            .observeAsState(emptyList())
+                        DataSetTableScreen(
+                            tableData = tableData,
+                            onCellClick = { cell ->
+                                presenterFragment.onCellClick(cell = cell)
+                            },
+                            onCellValueChange = {
+                            },
+                            onSaveValue = { cell ->
+                                presenterFragment.onCellValueChange(cell)
+                            }
+                        )
                     }
                 }
             }

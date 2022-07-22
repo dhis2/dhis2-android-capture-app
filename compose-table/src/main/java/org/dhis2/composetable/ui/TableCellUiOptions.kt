@@ -35,11 +35,9 @@ class TableCellUiOptions(
         else -> Alignment.CenterEnd
     }
 
-    val enabled = cellValue.editable == true
-
     @Composable
-    fun borderColor(focused: Boolean) = when {
-        focused -> when {
+    fun borderColor() = when {
+        cellValue.isSelected(selectionState) -> when {
             cellValue.error != null -> TableTheme.colors.errorColor
             else -> TableTheme.colors.primary
         }

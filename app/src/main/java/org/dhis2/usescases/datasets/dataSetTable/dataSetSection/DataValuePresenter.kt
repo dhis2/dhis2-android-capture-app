@@ -13,6 +13,7 @@ import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
@@ -241,33 +242,37 @@ class DataValuePresenter(
         return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
     }
 
-    fun onCellClick(cell: TableCell) {
+    /**
+     * Returns an TextInputModel if the current cell requires text input, null otherwise.
+     * TODO: Refactor once we migrate all other value types inputs to compose.
+     * */
+    fun onCellClick(cell: TableCell): TextInputModel? {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val dataElement = getDataElement(dataElementUid)
         handleElementInteraction(dataElement, cell)
+        return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->
+            TextInputModel(
+                id = cell.id ?: "",
+                mainLabel = dataElement.displayFormName() ?: "-",
+                secondaryLabels = repository.getCatOptComboOptions(
+                    ids[1]
+                ).map {
+                    it.displayName() ?: "-"
+                },
+                currentValue = cell.value,
+                keyboardInputType = inputType
+            )
+        }
     }
 
-    private fun handleElementInteraction(dataElement: DataElement, cell: TableCell) {
+    private fun handleElementInteraction(
+        dataElement: DataElement,
+        cell: TableCell
+    ) {
         if (dataElement.optionSetUid() != null) {
             view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
         } else when (dataElement.valueType()) {
-            ValueType.TEXT,
-            ValueType.LONG_TEXT,
-            ValueType.LETTER,
-            ValueType.PHONE_NUMBER,
-            ValueType.NUMBER,
-            ValueType.EMAIL,
-            ValueType.PERCENTAGE,
-            ValueType.INTEGER,
-            ValueType.INTEGER_POSITIVE,
-            ValueType.INTEGER_NEGATIVE,
-            ValueType.INTEGER_ZERO_OR_POSITIVE,
-            ValueType.USERNAME,
-            ValueType.UNIT_INTERVAL,
-            ValueType.URL -> {
-                // Create method to show component and then send to onCellValueChange(cell)
-            }
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
             ValueType.DATE -> view.showCalendar(dataElement, cell, false)
@@ -280,6 +285,7 @@ class DataValuePresenter(
                 repository.orgUnits()
             )
             ValueType.AGE -> view.showAgeDialog(dataElement, cell)
+            else -> {}
         }
     }
 
