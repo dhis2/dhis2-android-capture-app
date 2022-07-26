@@ -63,7 +63,12 @@ data class TableRowModel(
     val isLastRow: Boolean = false
 )
 
-data class RowHeader(val title: String, val row: Int? = null, val showDecoration: Boolean = false) {
+data class RowHeader(
+    val title: String,
+    val row: Int? = null,
+    val showDecoration: Boolean = false,
+    val description: String? = null
+) {
     val defaultCellHeight = 36.dp
     val defaultWidth = 60.dp
 }

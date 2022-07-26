@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -232,8 +234,8 @@ fun ItemHeader(
     rowHeader: RowHeader,
     cellStyle: CellStyle,
     onCellSelected: (Int?) -> Unit
-
 ) {
+    val displayDescription = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
@@ -256,10 +258,27 @@ fun ItemHeader(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = "info",
                 modifier = Modifier
+                    .clickable { displayDescription.value = true }
                     .padding(end = 4.dp)
                     .height(10.dp)
                     .width(10.dp),
                 tint = cellStyle.textColor
+            )
+        }
+        if (displayDescription.value && rowHeader.description != null) {
+            AlertDialog(
+                onDismissRequest = { displayDescription.value = false },
+                title = {
+                    Text(rowHeader.title)
+                },
+                text = {
+                    Text(rowHeader.description)
+                },
+                confirmButton = {
+                    Button(onClick = { displayDescription.value = false }) {
+                        Text("Accept")
+                    }
+                }
             )
         }
         Divider(
