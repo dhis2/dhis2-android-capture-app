@@ -9,6 +9,7 @@ import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -48,7 +49,8 @@ class LoginPresenter(
     private val schedulers: SchedulerProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
-    private val crashReportController: CrashReportController
+    private val crashReportController: CrashReportController,
+    private val network: NetworkUtils
 ) {
 
     private var userManager: UserManager? = null
@@ -410,8 +412,12 @@ class LoginPresenter(
     }
 
     fun onAccountRecovery() {
-        analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
-        view.openAccountRecovery()
+        if (network.isOnline()) {
+            analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
+            view.openAccountRecovery()
+        } else {
+            view.showNoConnectionDialog()
+        }
     }
 
     fun getAutocompleteData(

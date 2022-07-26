@@ -57,5 +57,6 @@ class LoginContracts {
         fun isNetworkAvailable(): Boolean
         fun openOpenIDActivity(it: IntentWithRequestCode?)
         fun openAccountsActivity()
+        fun showNoConnectionDialog()
     }
 }
