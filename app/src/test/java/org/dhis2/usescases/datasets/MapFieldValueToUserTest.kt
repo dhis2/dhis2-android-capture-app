@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
@@ -18,8 +19,8 @@ const val DATAELEMENT_UID = "dataElement_uid"
 
 class MapFieldValueToUserTest {
 
-    val resources: ResourceManager = mock()
-    val repository: DataValueRepository = mock()
+    private val resources: ResourceManager = mock()
+    private val repository: DataValueRepository = mock()
 
     private lateinit var mapFieldValueToUser: MapFieldValueToUser
 
@@ -55,6 +56,37 @@ class MapFieldValueToUserTest {
         whenever(resources.getString(any())) doReturn "Yes"
         val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
         assert(result == "Yes")
+    }
+
+    @Test
+    fun `Should Map Org unit`() {
+        val orgUnit = "Madrid"
+        val fieldViewModel = EditTextViewModel.create(
+            "",
+            "",
+            true,
+            orgUnit,
+            "",
+            1,
+            ValueType.ORGANISATION_UNIT,
+            "",
+            true,
+            "",
+            "none",
+            listOf(),
+            "",
+            0,
+            1,
+            "1",
+            ""
+        )
+        val dataElement =
+            DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.ORGANISATION_UNIT)
+                .build()
+
+        mapFieldValueToUser.map(fieldViewModel, dataElement)
+
+        verify(repository).getOrgUnitById(orgUnit)
     }
 
     @Test
@@ -138,7 +170,8 @@ class MapFieldValueToUserTest {
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
-            DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.TRACKER_ASSOCIATE).build()
+            DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.TRACKER_ASSOCIATE)
+                .build()
 
         val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
         assert(result == UNSUPPORTED_VALUES)
@@ -168,6 +201,35 @@ class MapFieldValueToUserTest {
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
             DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.REFERENCE).build()
+
+        val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
+        assert(result == UNSUPPORTED_VALUES)
+    }
+
+    @Test
+    fun `Should not map geojson`() {
+        val fieldViewModel = EditTextViewModel.create(
+            "",
+            "",
+            true,
+            "True",
+            "",
+            1,
+            ValueType.GEOJSON,
+            "",
+            true,
+            "",
+            "none",
+            listOf(),
+            "",
+            0,
+            1,
+            "1",
+            ""
+        )
+        whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
+        val dataElement =
+            DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.GEOJSON).build()
 
         val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
         assert(result == UNSUPPORTED_VALUES)
