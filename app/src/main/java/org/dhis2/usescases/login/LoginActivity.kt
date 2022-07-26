@@ -649,7 +649,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.no_network_to_recover_account),
             getString(R.string.action_ok),
             null,
-            -1,
+            CustomDialog.NO_RQ_CODE,
             null
         )
         dialog.show()
