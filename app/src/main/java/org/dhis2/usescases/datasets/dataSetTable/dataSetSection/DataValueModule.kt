@@ -103,6 +103,6 @@ class DataValueModule(
         resourceManager: ResourceManager,
         repository: DataValueRepository
     ): TableDataToTableModelMapper {
-        return TableDataToTableModelMapper(resourceManager, repository)
+        return TableDataToTableModelMapper(MapFieldValueToUser(resourceManager, repository))
     }
 }
