@@ -1,8 +1,15 @@
 package org.dhis2.usescases.datasets
 
 import com.nhaarman.mockitokotlin2.mock
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
+import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataTableModel
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.MapFieldValueToUser
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableData
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTableModelMapper
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableMeasure
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Before
 import org.junit.Test
 
@@ -36,5 +43,66 @@ class TableDataToTableModelMapperTest {
 
         assert(result.tableRows[2].rowHeader.title == "Indicator 1")
         assert(result.tableRows[2].values[0]!!.value == "2")
+    }
+
+    @Test
+    fun `Should Map Table Data`() {
+        val dataTableModel = DataTableModel(
+            "123",
+            "Madrid",
+            "none",
+            listOf(getDataElement(), getDataElement()).toMutableList(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val tableData = TableData(
+            dataTableModel,
+            listOf(listOf(getElements(), getElements()), listOf(getElements(), getElements())),
+            emptyList(),
+            true,
+            showRowTotals = false,
+            showColumnTotals = false,
+            overriddenMeasure = TableMeasure(0, 0),
+            hasDataElementDecoration = false
+        )
+
+        val result = tableDataToTableModelMapper.map(tableData)
+        result.tableRows
+        assert(result.tableRows[0].rowHeader.title == "random")
+        assert(result.tableRows[1].rowHeader.title == "random")
+        assert(result.tableRows[0].values.size == 2)
+        assert(result.tableRows[1].values.size == 2)
+    }
+
+    private fun getElements(): FieldViewModel {
+        return EditTextViewModel.create(
+            "",
+            "",
+            true,
+            "True",
+            "",
+            1,
+            ValueType.BOOLEAN,
+            "",
+            true,
+            "",
+            "none",
+            listOf(),
+            "",
+            0,
+            1,
+            "1",
+            ""
+        )
+    }
+
+    private fun getDataElement(): DataElement {
+        return DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.BOOLEAN)
+            .displayName("random").build()
     }
 }
