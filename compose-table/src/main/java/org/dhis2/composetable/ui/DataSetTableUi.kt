@@ -314,7 +314,8 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     tableCellUiOptions: TableCellUiOptions,
-    nonEditableCellLayer: @Composable () -> Unit,
+    nonEditableCellLayer: @Composable
+        () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
