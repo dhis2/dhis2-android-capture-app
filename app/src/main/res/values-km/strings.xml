@@ -80,7 +80,6 @@
     <string name="event_approved">ព្រឹត្តិការណ៏បានអនុម័ត</string>
     <string name="event_inactive">ព្រឹត្តិការណ៏មិនដំណើរការ</string>
     <string name="read_only">បានត្រឹមតែអាន</string>
-    <string name="complete">បញ្ចប់</string>
     <string name="completed">បានបញ្ចប់</string>
     <string name="cancelled">បានលុបចោល</string>
     <string name="re_open">បើកឡើងវិញ</string>

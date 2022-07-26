@@ -102,7 +102,6 @@
     <string name="event_approved">تمت الموافقة على الحدث</string>
     <string name="event_inactive">الحدث غير نشط</string>
     <string name="read_only">للقراءة فقط</string>
-    <string name="complete">مكتمل</string>
     <string name="finish_and_complete">انهاء ومكتمل</string>
     <string name="completed">مكتمل</string>
     <string name="cancelled">تم الإلغاء</string>

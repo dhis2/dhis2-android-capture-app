@@ -38,7 +38,6 @@
     <!-- Input hints -->
     <string name="search">Pencarian</string>
     <string name="event_open">Buka</string>
-    <string name="complete">Lengkap</string>
     <string name="completed">Selesai</string>
     <string name="state_error">Error</string>
     <!--Event initial-->

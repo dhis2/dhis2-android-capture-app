@@ -93,7 +93,6 @@
     <string name="event_approved">Evento Aprovado</string>
     <string name="event_inactive">Evento Inativo</string>
     <string name="read_only">Apenas leitura</string>
-    <string name="complete">Completo</string>
     <string name="finish_and_complete">Terminar e concluir</string>
     <string name="completed">Completo</string>
     <string name="cancelled">Cancelado</string>

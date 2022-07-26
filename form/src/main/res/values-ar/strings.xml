@@ -16,5 +16,4 @@
     <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
     <string name="select_time">إختر الوقت</string>
     <string name="choose_date">اختر التاريخ</string>
-    <string name="share">مشاركة</string>
-</resources>
+    </resources>

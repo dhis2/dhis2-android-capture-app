@@ -22,7 +22,6 @@
     <string name="search">جستجو</string>
     <string name="event_open">خلاص یې کړئ</string>
     <string name="read_only">یوازې یې ولولئ</string>
-    <string name="complete">بشپړ یې کړئ</string>
     <string name="completed">بشپړ شوی</string>
     <string name="cancelled">لغوه شوی</string>
     <string name="state_error">تېروته</string>

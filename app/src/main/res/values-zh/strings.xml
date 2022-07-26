@@ -13,7 +13,6 @@
     <string name="action_share_zero_items">分享</string>
     <!-- Input hints -->
     <string name="search">搜索</string>
-    <string name="complete">完成</string>
     <string name="state_error">错误</string>
     <!--Event initial-->
     <string name="create">创建</string>

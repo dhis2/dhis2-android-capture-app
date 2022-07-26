@@ -16,7 +16,6 @@
     <!-- Input hints -->
     <string name="search">Pesquisar</string>
     <string name="read_only">Apenas leitura</string>
-    <string name="complete">Completo</string>
     <string name="state_error">Erro</string>
     <!--Event initial-->
     <string name="create">Criar</string>
