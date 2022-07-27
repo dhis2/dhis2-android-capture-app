@@ -194,23 +194,7 @@ class MainActivity :
             }
         }
 
-        presenter.observeDataSync().observe(this) {
-            val currentState = it.firstOrNull()?.state
-            if (currentState == WorkInfo.State.RUNNING) {
-                setFilterButtonVisibility(false)
-                setBottomNavigationVisibility(false)
-            } else if (
-                currentState == WorkInfo.State.SUCCEEDED ||
-                currentState == WorkInfo.State.FAILED ||
-                currentState == WorkInfo.State.CANCELLED
-            ) {
-                setFilterButtonVisibility(true)
-                setBottomNavigationVisibility(true)
-                if(currentState == WorkInfo.State.SUCCEEDED) {
-                    presenter.onDataSuccess()
-                }
-            }
-        }
+        observeSyncState()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
@@ -235,6 +219,26 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    private fun observeSyncState(){
+        presenter.observeDataSync().observe(this) {
+            val currentState = it.firstOrNull()?.state
+            if (currentState == WorkInfo.State.RUNNING) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
+            } else if (
+                currentState == WorkInfo.State.SUCCEEDED ||
+                currentState == WorkInfo.State.FAILED ||
+                currentState == WorkInfo.State.CANCELLED
+            ) {
+                setFilterButtonVisibility(true)
+                setBottomNavigationVisibility(true)
+                if(currentState == WorkInfo.State.SUCCEEDED) {
+                    presenter.onDataSuccess()
+                }
+            }
+        }
     }
 
     override fun showGranularSync() {
