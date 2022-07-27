@@ -1,5 +1,7 @@
 package org.dhis2.composetable.model
 
+import org.dhis2.composetable.ui.SelectionState
+
 data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
