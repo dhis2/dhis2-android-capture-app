@@ -47,12 +47,13 @@ class TableDataToTableModelMapper(
                         row = rowIndex,
                         column = columnIndex,
                         value = mapFieldValueToUser(field, dataElement),
-                        editable = field.editable(),
+                        editable = field.editable()!!,
                         mandatory = field.mandatory(),
                         error = field.error(),
                         dropDownOptions = field.options()
                     )
-                }.toMap()
+                }.toMap(),
+                isLastRow = rowIndex == (tableData.rows()!!.size - 1)
             )
         } ?: emptyList()
 
