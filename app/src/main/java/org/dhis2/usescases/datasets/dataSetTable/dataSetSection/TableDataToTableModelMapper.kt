@@ -42,7 +42,8 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         error = field.error(),
                         dropDownOptions = field.options()
                     )
-                }.toMap()
+                }.toMap(),
+                isLastRow = rowIndex == (tableData.rows()!!.size - 1)
             )
         } ?: emptyList()
 

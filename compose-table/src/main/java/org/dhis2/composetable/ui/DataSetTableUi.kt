@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -56,7 +60,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+        (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -124,7 +128,7 @@ fun HeaderCell(
             color = cellStyle.textColor,
             text = headerCell.value,
             textAlign = TextAlign.Center,
-            fontSize = 10.sp
+            fontSize = 12.sp
         )
         Divider(
             color = TableTheme.colors.primary,
@@ -142,7 +146,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -169,8 +173,9 @@ fun TableItemRow(
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
     selectionState: SelectionState,
+    isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
-    (rowHeaderIndex: Int?) -> CellStyle,
+        (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
@@ -194,7 +199,9 @@ fun TableItemRow(
                 onClick = onClick
             )
         }
-        Divider(modifier = Modifier.fillMaxWidth())
+        if (isNotLastRow) {
+            Divider(modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 
@@ -242,7 +249,7 @@ fun ItemHeader(
                 .weight(1f),
             text = rowHeader.title,
             color = cellStyle.textColor,
-            fontSize = 10.sp
+            fontSize = 12.sp
         )
         if (rowHeader.showDecoration) {
             Icon(
@@ -289,6 +296,12 @@ fun ItemValues(
                         .defaultMinSize(minHeight = defaultHeight),
                     cellValue = cellValue,
                     tableCellUiOptions = TableCellUiOptions(cellValue, selectionState),
+                    nonEditableCellLayer = {
+                        addBlueNonEditableCellLayer(
+                            selectionState = selectionState,
+                            cellValue = cellValue
+                        )
+                    },
                     onClick = onClick
                 )
             }
@@ -301,9 +314,12 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     tableCellUiOptions: TableCellUiOptions,
+    nonEditableCellLayer: @Composable
+        () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    nonEditableCellLayer()
 
     Box(
         modifier = modifier
@@ -363,6 +379,22 @@ fun TableCell(
                 color = TableTheme.colors.errorColor
             )
         }
+    }
+}
+
+@Composable
+fun addBlueNonEditableCellLayer(
+    selectionState: SelectionState,
+    cellValue: TableCell
+) {
+    val hasToApplyLightPrimary =
+        selectionState.isParentSelection(cellValue.column, cellValue.row)
+    if (!cellValue.editable && hasToApplyLightPrimary) {
+        Box(
+            modifier = Modifier
+                .background(TableTheme.colors.primaryLight.copy(alpha = 0.3f))
+                .fillMaxSize()
+        )
     }
 }
 
@@ -444,7 +476,7 @@ private fun TableList(
                                 column = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
@@ -456,6 +488,7 @@ private fun TableList(
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
                         selectionState = selectionStates[index],
+                        isNotLastRow = !tableRowModel.isLastRow,
                         rowHeaderCellStyle = { rowHeaderIndex ->
                             selectionStates[index].styleForRowHeader(rowHeaderIndex)
                         },
@@ -474,11 +507,35 @@ private fun TableList(
                             onClick(tableCell)
                         }
                     )
+                    if (tableRowModel.isLastRow) {
+                        ExtendDivider()
+                    }
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
+                stickyHeader {
+                    Spacer(
+                        modifier = Modifier
+                            .height(16.dp)
+                            .background(color = Color.White)
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+fun ExtendDivider() {
+    val background = TableTheme.colors.primary
+    Box(modifier = Modifier
+        .width(60.dp)
+        .height(8.dp)
+        .drawBehind {
+            drawRect(
+                color = background,
+                topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                size = Size(1.dp.toPx(), size.height)
+            )
+        })
 }
 
 @Composable
@@ -501,13 +558,14 @@ fun TableItem(
                     )
                 }
             )
-            tableModel.tableRows.forEach { tableRowModel ->
+            tableModel.tableRows.forEachIndexed { index, tableRowModel ->
                 TableItemRow(
                     tableModel = tableModel,
                     horizontalScrollState = horizontalScrollState,
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
                     selectionState = selectionState,
+                    isNotLastRow = index != tableModel.tableRows.size - 1,
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
                     },

@@ -7,7 +7,8 @@ import org.dhis2.composetable.ui.SelectionState
 data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
-    val tableRows: List<TableRowModel>
+    val tableRows: List<TableRowModel>,
+    val upperPadding: Boolean = true
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
         return tableHeaderModel.rows
@@ -43,7 +44,7 @@ data class TableCell(
     val row: Int? = null,
     val column: Int? = null,
     val value: String?,
-    val editable: Boolean? = true,
+    val editable: Boolean = true,
     val mandatory: Boolean? = false,
     val error: String? = null,
     val dropDownOptions: List<String>? = null,
@@ -56,7 +57,12 @@ data class TableCell(
     }
 }
 
-data class TableRowModel(val rowHeader: RowHeader, val values: Map<Int, TableCell>)
+data class TableRowModel(
+    val rowHeader: RowHeader,
+    val values: Map<Int, TableCell>,
+    val isLastRow: Boolean = false
+)
+
 data class RowHeader(val title: String, val row: Int? = null, val showDecoration: Boolean = false) {
     val defaultCellHeight = 36.dp
     val defaultWidth = 60.dp
