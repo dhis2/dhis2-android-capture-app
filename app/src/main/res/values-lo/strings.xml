@@ -46,7 +46,6 @@
     <string name="configuration_sync_failed">ການຈັດວ່າງລະບົບຂອງທ່ານເພື່ອໃຫ້ທໍາງານຮ່ວມກັນຫຼົມເຫຼວ (ບໍ່ສໍາເລັດ)</string>
     <string name="data_sync_failed">ການເຊື່ອມຂໍ້ມູນເຂົ້າກັບລະບົບຫຼົມເຫຼວ (ບໍ່ສໍາເລັດ)</string>
     <string name="account_recovery">​ປັບ​ປຸງ​ຄືນ​ບັນ​ຊີ​ຂອງ​ທ່ານ</string>
-
     <!--PERIOD-->
     <string name="DAILY">ທຸກໆມື້</string>
     <string name="WEEKLY">ເປັນອາທິດ</string>

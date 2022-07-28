@@ -46,7 +46,6 @@
     <string name="configuration_sync_failed">ការបញ្ជូនការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នកបរាជ័យ</string>
     <string name="data_sync_failed">ការបញ្ជូនទិន្នន័យបរាជ័យ</string>
     <string name="account_recovery">ស្តារគណនីឡើងវិញ</string>
-
     <!--PERIOD-->
     <string name="DAILY">រាល់​ថ្ងៃ</string>
     <string name="WEEKLY">រាល់​សប្ដាហ៍</string>

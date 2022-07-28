@@ -10,7 +10,6 @@
     <string name="user_hint">Ім\'я користувача</string>
     <string name="password_hint">Пароль</string>
     <string name="account_recovery">Відновлення облікового запису</string>
-
     <!--PERIOD-->
     <string name="DAILY">Щодня</string>
     <string name="WEEKLY">Щотижня</string>
