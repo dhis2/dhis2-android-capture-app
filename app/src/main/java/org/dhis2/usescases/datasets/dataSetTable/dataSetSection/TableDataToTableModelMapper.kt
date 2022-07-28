@@ -37,7 +37,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         row = rowIndex,
                         column = columnIndex,
                         value = mapFieldValueToUser.map(field, dataElement),
-                        editable = field.editable(),
+                        editable = field.editable()!!,
                         mandatory = field.mandatory(),
                         error = field.error(),
                         dropDownOptions = field.options()
