@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.fingerprint.FingerPrintController
@@ -24,7 +25,8 @@ class LoginModule(private val view: LoginContracts.View) {
         schedulerProvider: SchedulerProvider,
         fingerPrintController: FingerPrintController,
         analyticsHelper: AnalyticsHelper,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils
     ): LoginPresenter {
         return LoginPresenter(
             view,
@@ -32,7 +34,8 @@ class LoginModule(private val view: LoginContracts.View) {
             schedulerProvider,
             fingerPrintController,
             analyticsHelper,
-            crashReportController
+            crashReportController,
+            networkUtils
         )
     }
 

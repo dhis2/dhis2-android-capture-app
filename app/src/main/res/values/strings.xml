@@ -65,6 +65,7 @@
     <string name="configuration_sync_failed">Configuration sync failed</string>
     <string name="data_sync_failed">Data sync failed</string>
     <string name="account_recovery">Account recovery</string>
+    <string name="no_network_to_recover_account">A network connection is needed to recover your account.</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>

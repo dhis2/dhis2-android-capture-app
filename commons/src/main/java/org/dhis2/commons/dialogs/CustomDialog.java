@@ -16,6 +16,7 @@ import org.dhis2.commons.databinding.CustomDialogBinding;
 public class CustomDialog extends AlertDialog implements View.OnClickListener {
 
     public static final int DESCRIPTION_DIALOG = 111;
+    public static final int NO_RQ_CODE = -1;
     private Context context;
     private AlertDialog dialog;
     private String title;
