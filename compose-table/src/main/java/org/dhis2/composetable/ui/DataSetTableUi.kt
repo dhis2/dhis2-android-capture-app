@@ -425,13 +425,17 @@ fun TableCell(
                     .width(6.dp)
                     .height(6.dp)
                     .align(
-                        alignment = mandatoryIconAlignment(
-                            cellValue.value?.isNotEmpty() == true
-                        )
+                        alignment = if (cellValue.value?.isNotEmpty() == true) {
+                            Alignment.TopStart
+                        } else {
+                            Alignment.CenterEnd
+                        }
                     ),
-                tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue.value?.isNotEmpty() == true
-                )
+                tint = if (cellValue.value?.isNotEmpty() == true) {
+                    Color.LightGray
+                } else {
+                    LocalTableColors.current.errorColor
+                }
             )
         }
         if (cellValue.error != null) {

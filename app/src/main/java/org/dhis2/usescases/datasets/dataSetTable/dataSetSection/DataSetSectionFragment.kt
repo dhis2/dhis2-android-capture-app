@@ -23,12 +23,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.SortedMap
-import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
@@ -61,6 +55,12 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.SortedMap
+import javax.inject.Inject
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -223,7 +223,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             tableView.setRowHeaderWidth(rowHeaderWidth)
             if (columnHeaderHeight != 0) {
                 adapter.columnHeaderHeight = columnHeaderHeight +
-                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
+                        requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -239,10 +239,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
+                                                   _: Int,
+                                                   scrollY: Int,
+                                                   _: Int,
+                                                   _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -316,7 +316,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
+                            binding.headerContainer.getChildAt(0).layoutParams.height
             }
 
             val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
