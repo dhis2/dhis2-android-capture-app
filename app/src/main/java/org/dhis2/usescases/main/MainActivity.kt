@@ -234,9 +234,7 @@ class MainActivity :
             ) {
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
-                if(currentState == WorkInfo.State.SUCCEEDED) {
-                    presenter.onDataSuccess()
-                }
+                presenter.onDataSuccess()
             }
         }
     }
