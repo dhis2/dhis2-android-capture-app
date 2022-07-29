@@ -64,7 +64,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+        (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -160,7 +160,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -188,11 +188,11 @@ fun TableItemRow(
     dataElementValues: Map<Int, TableCell>,
     isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
-    (rowHeaderIndex: Int?) -> CellStyle,
+        (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
-    (cellValue: TableCell) -> CellStyle,
+        (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -332,9 +332,9 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
-    (cellValue: TableCell) -> CellStyle,
+        (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(
@@ -375,7 +375,7 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     nonEditableCellLayer: @Composable
-    () -> Unit,
+        () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -574,7 +574,7 @@ private fun TableList(
                                 columnIndex = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
