@@ -1,4 +1,4 @@
-package org.dhis2.composetable
+package org.dhis2.composetable.ui
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -20,9 +20,7 @@ import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.ui.DataTable
-import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TextInput
+import org.dhis2.composetable.tableRobot
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,7 +1,9 @@
 package org.dhis2.composetable.model
 
+import kotlinx.serialization.Serializable
 import org.dhis2.composetable.ui.SelectionState
 
+@Serializable
 data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
@@ -16,6 +18,7 @@ data class TableModel(
     }
 }
 
+@Serializable
 data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = false) {
     fun numberOfColumns(rowIndex: Int): Int {
         var totalCells = 1
@@ -28,8 +31,13 @@ data class TableHeader(val rows: List<TableHeaderRow>, val hasTotals: Boolean = 
     fun tableMaxColumns() = numberOfColumns(rows.size - 1)
 }
 
+@Serializable
 data class TableHeaderRow(val cells: List<TableHeaderCell>)
+
+@Serializable
 data class TableHeaderCell(val value: String)
+
+@Serializable
 data class TableCell(
     val id: String? = null,
     val row: Int? = null,
@@ -48,12 +56,14 @@ data class TableCell(
     }
 }
 
+@Serializable
 data class TableRowModel(
     val rowHeader: RowHeader,
     val values: Map<Int, TableCell>,
     val isLastRow: Boolean = false
 )
 
+@Serializable
 data class RowHeader(
     val title: String,
     val row: Int? = null,
