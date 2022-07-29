@@ -63,7 +63,6 @@
     <string name="configuration_sync_failed">فشل مزامنة التكوين</string>
     <string name="data_sync_failed">فشل مزامنة البيانات</string>
     <string name="account_recovery">استرداد الحساب</string>
-
     <!--PERIOD-->
     <string name="DAILY">يومي</string>
     <string name="WEEKLY">أسبوعي</string>

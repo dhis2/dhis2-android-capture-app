@@ -54,7 +54,6 @@
     <string name="configuration_sync_failed">Falha na sincronização da configuração</string>
     <string name="data_sync_failed">Falha na sincronização de dados</string>
     <string name="account_recovery">Recuperar Conta</string>
-
     <!--PERIOD-->
     <string name="DAILY">Diário</string>
     <string name="WEEKLY">Semanal</string>

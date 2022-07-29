@@ -44,7 +44,6 @@
     <string name="configuration_sync_failed">Konfigurationssynkroniseringen misslyckades</string>
     <string name="data_sync_failed">Data synkronisering misslyckades</string>
     <string name="account_recovery">kontoåterställning</string>
-
     <!--PERIOD-->
     <string name="DAILY">Dagligen</string>
     <string name="WEEKLY">Varje vecka</string>

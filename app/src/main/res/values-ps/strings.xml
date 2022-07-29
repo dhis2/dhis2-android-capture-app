@@ -10,7 +10,6 @@
     <string name="user_hint">کارېدونکی نوم</string>
     <string name="password_hint">پټنوم</string>
     <string name="account_recovery">حساب بېرته ترلاسه کړئ</string>
-
     <!--PERIOD-->
     <string name="DAILY">ورځني [ د مودې ډول ]</string>
     <string name="WEEKLY">اوونیز</string>

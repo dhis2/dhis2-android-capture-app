@@ -60,7 +60,6 @@
     <string name="configuration_sync_failed">Конфигурацияни синхронлаш амалга ошмади</string>
     <string name="data_sync_failed">Маълумотларни синхронлаш амалга ошмади</string>
     <string name="account_recovery">Аккаунтни тиклаш</string>
-
     <!--PERIOD-->
     <string name="DAILY">Кунлик</string>
     <string name="WEEKLY">Ҳафталик</string>

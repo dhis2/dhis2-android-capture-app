@@ -6,7 +6,6 @@
     <string name="user_hint">Utilizador</string>
     <string name="password_hint">Password</string>
     <string name="account_recovery">Recuperar Conta</string>
-
     <!--PERIOD-->
     <string name="DAILY">Diário</string>
     <string name="WEEKLY">Semanal</string>
