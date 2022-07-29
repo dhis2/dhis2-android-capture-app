@@ -27,7 +27,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
                 rowHeader = RowHeader(
-                    dataElement.formName()!!,
+                    dataElement.displayFormName()?:dataElement.uid(),
                     rowIndex,
                     tableData.hasDataElementDecoration && dataElement.displayDescription() != null,
                     dataElement.displayDescription()

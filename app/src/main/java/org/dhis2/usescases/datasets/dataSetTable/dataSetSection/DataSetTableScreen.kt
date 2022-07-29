@@ -17,10 +17,12 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableDialog
 import org.dhis2.composetable.ui.TextInput
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -45,6 +47,7 @@ fun DataSetTableScreen(
                 TextInputModel()
             )
         }
+        var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
         val coroutineScope = rememberCoroutineScope()
 
         BottomSheetScaffold(
@@ -73,7 +76,10 @@ fun DataSetTableScreen(
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                )
+                ),
+                onDecorationClick = {
+                    displayDescription = it
+                }
             ) { cell ->
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
@@ -84,6 +90,16 @@ fun DataSetTableScreen(
                         }
                     }
                 }
+            }
+            if (displayDescription != null) {
+                TableDialog(
+                    dialogModel = displayDescription!!,
+                    onDismiss = {
+                        displayDescription = null
+                    },
+                    onPrimaryButtonClick = {
+                        displayDescription = null
+                    })
             }
         }
     }

@@ -17,12 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -50,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
@@ -179,6 +179,7 @@ fun TableItemRow(
     rowHeaderCellStyle: @Composable
         (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Column(
@@ -190,7 +191,8 @@ fun TableItemRow(
             ItemHeader(
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
-                onCellSelected = onRowHeaderClick
+                onCellSelected = onRowHeaderClick,
+                onDecorationClick = onDecorationClick
             )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
@@ -233,9 +235,9 @@ fun TableCorner(
 fun ItemHeader(
     rowHeader: RowHeader,
     cellStyle: CellStyle,
-    onCellSelected: (Int?) -> Unit
+    onCellSelected: (Int?) -> Unit,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
-    val displayDescription = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
@@ -245,41 +247,33 @@ fun ItemHeader(
             .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 3.dp)
-                .weight(1f),
-            text = rowHeader.title,
-            color = cellStyle.textColor,
-            fontSize = 12.sp
-        )
-        if (rowHeader.showDecoration) {
-            Icon(
-                imageVector = Icons.Outlined.Info,
-                contentDescription = "info",
+        Row(modifier = Modifier.weight(1f).padding(4.dp)) {
+            Text(
                 modifier = Modifier
-                    .clickable { displayDescription.value = true }
-                    .padding(end = 4.dp)
-                    .height(10.dp)
-                    .width(10.dp),
-                tint = cellStyle.textColor
+                    .weight(1f),
+                text = rowHeader.title,
+                color = cellStyle.textColor,
+                fontSize = 12.sp
             )
-        }
-        if (displayDescription.value && rowHeader.description != null) {
-            AlertDialog(
-                onDismissRequest = { displayDescription.value = false },
-                title = {
-                    Text(rowHeader.title)
-                },
-                text = {
-                    Text(rowHeader.description)
-                },
-                confirmButton = {
-                    Button(onClick = { displayDescription.value = false }) {
-                        Text("Accept")
-                    }
-                }
-            )
+            if (rowHeader.showDecoration) {
+                Spacer(modifier = Modifier.size(4.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "info",
+                    modifier = Modifier
+                        .clickable(rowHeader.description != null) {
+                            onDecorationClick(
+                                TableDialogModel(
+                                    rowHeader.title,
+                                    rowHeader.description ?: ""
+                                )
+                            )
+                        }
+                        .height(10.dp)
+                        .width(10.dp),
+                    tint = cellStyle.textColor
+                )
+            }
         }
         Divider(
             modifier = Modifier
@@ -444,18 +438,21 @@ fun DropDownOptions(
 fun DataTable(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
 ) {
     if (tableList.size == 1) {
         TableItem(
             tableModel = tableList.first(),
             tableColors = tableColors,
+            onDecorationClick = onDecorationClick,
             onClick = onClick
         )
     } else {
         TableList(
             tableList = tableList,
             tableColors = tableColors,
+            onDecorationClick = onDecorationClick,
             onClick = onClick
         )
     }
@@ -466,6 +463,7 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
@@ -517,6 +515,7 @@ private fun TableList(
                                 rowHeader = true
                             )
                         },
+                        onDecorationClick = onDecorationClick,
                         onClick = { tableCell ->
                             selectionStates[index].selectCell(
                                 tableCell.column,
@@ -561,6 +560,7 @@ fun ExtendDivider() {
 fun TableItem(
     tableModel: TableModel,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
@@ -588,7 +588,8 @@ fun TableItem(
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
                     },
-                    onRowHeaderClick = {}
+                    onRowHeaderClick = {},
+                    onDecorationClick = onDecorationClick
                 ) {
                     onClick(it)
                 }
@@ -649,7 +650,7 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList) {
+    TableList(tableList = tableList, onDecorationClick = {}) {
     }
 }
 
