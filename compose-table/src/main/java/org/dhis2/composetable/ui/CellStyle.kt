@@ -8,12 +8,12 @@ sealed class CellStyle {
     data class HeaderStyle(val backgroundColor: Color, val textColor: Color) : CellStyle()
     data class CellBorderStyle(val backgroundColor: Color, val borderColor: Color) : CellStyle()
 
-    fun backgroundColor() = when(this){
+    fun backgroundColor() = when (this) {
         is CellBorderStyle -> backgroundColor
         is HeaderStyle -> backgroundColor
     }
 
-    fun mainColor() = when(this){
+    fun mainColor() = when (this) {
         is CellBorderStyle -> borderColor
         is HeaderStyle -> textColor
     }
@@ -69,7 +69,7 @@ fun styleForCell(
     isParentSelected: Boolean,
     hasError: Boolean,
     isEditable: Boolean,
-    legendColor:Int?
+    legendColor: Int?
 ) = CellStyle.CellBorderStyle(
     borderColor = when {
         isSelected && hasError -> TableTheme.colors.errorColor
