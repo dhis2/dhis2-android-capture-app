@@ -184,8 +184,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                        MainNavigator.MainScreen.valueOf(openScreen) ==
-                        MainNavigator.MainScreen.TROUBLESHOOTING
+                            MainNavigator.MainScreen.valueOf(openScreen) ==
+                            MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
@@ -194,16 +194,7 @@ class MainActivity :
             }
         }
 
-        presenter.observeDataSync().observe(this) {
-            if (it.firstOrNull()?.state == WorkInfo.State.SUCCEEDED) {
-                setFilterButtonVisibility(true)
-                setBottomNavigationVisibility(true)
-                presenter.onDataSuccess()
-            } else if (it.firstOrNull()?.state == WorkInfo.State.RUNNING) {
-                setFilterButtonVisibility(false)
-                setBottomNavigationVisibility(false)
-            }
-        }
+        observeSyncState()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
@@ -228,6 +219,24 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    private fun observeSyncState(){
+        presenter.observeDataSync().observe(this) {
+            val currentState = it.firstOrNull()?.state
+            if (currentState == WorkInfo.State.RUNNING) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
+            } else if (
+                currentState == WorkInfo.State.SUCCEEDED ||
+                currentState == WorkInfo.State.FAILED ||
+                currentState == WorkInfo.State.CANCELLED
+            ) {
+                setFilterButtonVisibility(true)
+                setBottomNavigationVisibility(true)
+                presenter.onDataSuccess()
+            }
+        }
     }
 
     override fun showGranularSync() {
