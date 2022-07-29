@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -32,7 +31,7 @@ import org.dhis2.composetable.ui.TextInput
 fun DataSetTableScreen(
     tableData: List<TableModel>,
     onCellClick: (TableCell) -> TextInputModel?,
-    onEdition:(editing:Boolean)->Unit,
+    onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell) -> Unit
 ) {
@@ -100,8 +99,8 @@ fun DataSetTableScreen(
                             onEdition(true)
                         }
                     }
-                }?:coroutineScope.launch {
-                    if(bottomSheetState.bottomSheetState.isExpanded) {
+                } ?: coroutineScope.launch {
+                    if (bottomSheetState.bottomSheetState.isExpanded) {
                         bottomSheetState.bottomSheetState.collapse()
                         onEdition(false)
                     }
