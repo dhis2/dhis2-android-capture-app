@@ -1,7 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.R
 import java.util.SortedMap
+import org.dhis2.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -11,7 +11,7 @@ import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 
 class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) {
-    fun map(tableData: TableData): TableModel {
+    operator fun invoke(tableData: TableData): TableModel {
         val tableHeader = TableHeader(
             rows = tableData.columnHeaders()?.map { catOptions ->
                 TableHeaderRow(
@@ -28,7 +28,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
                 rowHeader = RowHeader(
-                    dataElement.displayFormName()?:dataElement.uid(),
+                    dataElement.displayFormName() ?: dataElement.uid(),
                     rowIndex,
                     tableData.hasDataElementDecoration && dataElement.displayDescription() != null,
                     dataElement.displayDescription()

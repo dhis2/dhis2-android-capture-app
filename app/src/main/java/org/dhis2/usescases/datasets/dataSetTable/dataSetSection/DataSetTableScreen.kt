@@ -99,7 +99,8 @@ fun DataSetTableScreen(
                     },
                     onPrimaryButtonClick = {
                         displayDescription = null
-                    })
+                    }
+                )
             }
         }
     }
