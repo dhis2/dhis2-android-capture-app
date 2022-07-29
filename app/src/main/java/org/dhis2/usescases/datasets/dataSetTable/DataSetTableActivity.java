@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
@@ -288,11 +286,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             back();
         }
     }
-
-    /*@Override
-    public void onBackPressed() {
-        back();
-    }*/
 
     public boolean isBackPressed() {
         return backPressed;
