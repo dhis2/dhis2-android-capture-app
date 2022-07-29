@@ -48,70 +48,202 @@ class TableSelectionTest {
 
     @Test
     fun `should return if header is selected`() {
-        assertTrue(cornerSelection.isHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(cornerSelection.isHeaderSelected(otherTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(unselected.isHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(rowSelection.isHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertTrue(columnSelection.isHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(columnSelection.isHeaderSelected(selectedTableId, otherSelectedColumn, selectedColumnHeaderRow))
-        assertFalse(columnSelection.isHeaderSelected(selectedTableId, selectedColumn, otherSelectedColumnHeaderRow))
-        assertFalse(cellSelection.isHeaderSelected(selectedTableId,selectedColumn, selectedColumnHeaderRow))
+        assertTrue(
+            cornerSelection.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            cornerSelection.isHeaderSelected(
+                otherTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            unselected.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            rowSelection.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertTrue(
+            columnSelection.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            columnSelection.isHeaderSelected(
+                selectedTableId,
+                otherSelectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            columnSelection.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                otherSelectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            cellSelection.isHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
     }
 
     @Test
     fun `should return if parent header is selected`() {
-        assertFalse(cornerSelection.isParentHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(unselected.isParentHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(rowSelection.isParentHeaderSelected(selectedTableId, selectedColumn, selectedColumnHeaderRow))
-        assertFalse(cellSelection.isParentHeaderSelected(selectedTableId,selectedColumn, selectedColumnHeaderRow))
+        assertFalse(
+            cornerSelection.isParentHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            unselected.isParentHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            rowSelection.isParentHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            cellSelection.isParentHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
 
-        assertTrue(columnSelection.isParentHeaderSelected(selectedTableId, otherSelectedColumn, selectedColumnHeaderRow))
-        assertTrue(columnSelection.isParentHeaderSelected(selectedTableId, selectedChildColumn, otherSelectedColumnHeaderRow))
-        assertFalse(columnSelection.isParentHeaderSelected(selectedTableId, selectedColumn, otherSelectedColumnHeaderRow))
-        assertFalse(columnSelection.isParentHeaderSelected(selectedTableId, otherSelectedRow, otherSelectedColumnHeaderRow))
+        assertTrue(
+            columnSelection.isParentHeaderSelected(
+                selectedTableId,
+                otherSelectedColumn,
+                selectedColumnHeaderRow
+            )
+        )
+        assertTrue(
+            columnSelection.isParentHeaderSelected(
+                selectedTableId,
+                selectedChildColumn,
+                otherSelectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            columnSelection.isParentHeaderSelected(
+                selectedTableId,
+                selectedColumn,
+                otherSelectedColumnHeaderRow
+            )
+        )
+        assertFalse(
+            columnSelection.isParentHeaderSelected(
+                selectedTableId,
+                otherSelectedRow,
+                otherSelectedColumnHeaderRow
+            )
+        )
     }
 
     @Test
     fun `should return if row is selected`() {
-        assertTrue(cornerSelection.isRowSelected(selectedTableId,selectedRow))
-        assertFalse(unselected.isRowSelected(selectedTableId,selectedRow))
-        assertFalse(columnSelection.isRowSelected(selectedTableId,selectedRow))
-        assertFalse(cellSelection.isRowSelected(selectedTableId,selectedRow))
+        assertTrue(cornerSelection.isRowSelected(selectedTableId, selectedRow))
+        assertFalse(unselected.isRowSelected(selectedTableId, selectedRow))
+        assertFalse(columnSelection.isRowSelected(selectedTableId, selectedRow))
+        assertFalse(cellSelection.isRowSelected(selectedTableId, selectedRow))
 
-        assertTrue(rowSelection.isRowSelected(selectedTableId,selectedRow))
-        assertFalse(rowSelection.isRowSelected(otherTableId,selectedRow))
-        assertFalse(rowSelection.isRowSelected(selectedTableId,otherSelectedRow))
-        assertTrue(rowSelection.isOtherRowSelected(selectedTableId,otherSelectedRow))
-        assertFalse(rowSelection.isOtherRowSelected(selectedTableId,selectedRow))
-        assertFalse(rowSelection.isOtherRowSelected(otherTableId,otherSelectedRow))
+        assertTrue(rowSelection.isRowSelected(selectedTableId, selectedRow))
+        assertFalse(rowSelection.isRowSelected(otherTableId, selectedRow))
+        assertFalse(rowSelection.isRowSelected(selectedTableId, otherSelectedRow))
+        assertTrue(rowSelection.isOtherRowSelected(selectedTableId, otherSelectedRow))
+        assertFalse(rowSelection.isOtherRowSelected(selectedTableId, selectedRow))
+        assertFalse(rowSelection.isOtherRowSelected(otherTableId, otherSelectedRow))
     }
 
     @Test
-    fun `should return if cell is selected`(){
-        assertFalse(cornerSelection.isCellSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(unselected.isCellSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(columnSelection.isCellSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(rowSelection.isCellSelected(selectedTableId,selectedColumn,selectedRow))
+    fun `should return if cell is selected`() {
+        assertFalse(cornerSelection.isCellSelected(selectedTableId, selectedColumn, selectedRow))
+        assertFalse(unselected.isCellSelected(selectedTableId, selectedColumn, selectedRow))
+        assertFalse(columnSelection.isCellSelected(selectedTableId, selectedColumn, selectedRow))
+        assertFalse(rowSelection.isCellSelected(selectedTableId, selectedColumn, selectedRow))
 
-        assertTrue(cellSelection.isCellSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(cellSelection.isCellSelected(otherTableId,selectedColumn,selectedRow))
-        assertFalse(cellSelection.isCellSelected(selectedTableId,otherSelectedColumn,selectedRow))
-        assertFalse(cellSelection.isCellSelected(selectedTableId,selectedColumn,otherSelectedRow))
+        assertTrue(cellSelection.isCellSelected(selectedTableId, selectedColumn, selectedRow))
+        assertFalse(cellSelection.isCellSelected(otherTableId, selectedColumn, selectedRow))
+        assertFalse(cellSelection.isCellSelected(selectedTableId, otherSelectedColumn, selectedRow))
+        assertFalse(cellSelection.isCellSelected(selectedTableId, selectedColumn, otherSelectedRow))
     }
 
     @Test
-    fun `should return if parent cell is selected`(){
-        assertTrue(cornerSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(unselected.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
+    fun `should return if parent cell is selected`() {
+        assertTrue(
+            cornerSelection.isCellParentSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedRow
+            )
+        )
+        assertFalse(unselected.isCellParentSelected(selectedTableId, selectedColumn, selectedRow))
 
-        assertFalse(columnSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(columnSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(columnSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
+        assertFalse(
+            columnSelection.isCellParentSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedRow
+            )
+        )
+        assertFalse(
+            columnSelection.isCellParentSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedRow
+            )
+        )
+        assertFalse(
+            columnSelection.isCellParentSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedRow
+            )
+        )
 
-        assertFalse(rowSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(rowSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
-        assertFalse(rowSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
+        assertFalse(
+            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
+        )
+        assertFalse(
+            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
+        )
+        assertFalse(
+            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
+        )
 
-        assertFalse(cellSelection.isCellParentSelected(selectedTableId,selectedColumn,selectedRow))
+        assertFalse(
+            cellSelection.isCellParentSelected(
+                selectedTableId,
+                selectedColumn,
+                selectedRow
+            )
+        )
     }
 }
