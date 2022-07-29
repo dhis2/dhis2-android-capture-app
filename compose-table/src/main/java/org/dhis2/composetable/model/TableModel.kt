@@ -59,7 +59,4 @@ data class RowHeader(
     val row: Int? = null,
     val showDecoration: Boolean = false,
     val description: String? = null
-) {
-    val defaultCellHeight = 36.dp
-    val defaultWidth = 60.dp
-}
+)
