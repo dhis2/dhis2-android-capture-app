@@ -15,6 +15,10 @@ public class DataSetTableContract {
 
     public interface View extends AbstractActivityContracts.View {
 
+        void startInputEdition();
+
+        void finishInputEdition();
+
         void setSections(List<DataSetSection> sections);
 
         Boolean accessDataWrite();
@@ -93,6 +97,8 @@ public class DataSetTableContract {
         void onClickSyncStatus();
 
         boolean dataSetHasDataElementDecoration();
+
+        void editingCellValue(boolean isEditing);
     }
 
 }

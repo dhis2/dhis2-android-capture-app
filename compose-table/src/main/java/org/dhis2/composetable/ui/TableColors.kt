@@ -16,6 +16,15 @@ data class TableColors(
     val disabledCellBackground: Color = Color(0x0A000000),
     val errorColor: Color = Color(0xFFE91E63),
     val tableBackground: Color = Color(0xFFFFFFFF)
-)
+){
+    fun cellTextColor(
+        hasError:Boolean,
+        isEditable:Boolean
+    ) = when{
+        hasError -> errorColor
+        !isEditable -> disabledCellText
+        else -> cellText
+    }
+}
 
 val LocalTableColors = staticCompositionLocalOf { TableColors() }

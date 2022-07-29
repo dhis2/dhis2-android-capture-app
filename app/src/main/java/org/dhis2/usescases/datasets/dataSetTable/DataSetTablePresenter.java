@@ -286,4 +286,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     public boolean dataSetHasDataElementDecoration() {
         return tableRepository.hasDataElementDecoration();
     }
+
+    @Override
+    public void editingCellValue(boolean isEditing) {
+        if(isEditing){
+            view.startInputEdition();
+        }else{
+            view.finishInputEdition();
+        }
+    }
 }

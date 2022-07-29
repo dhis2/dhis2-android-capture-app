@@ -251,8 +251,8 @@ class DataValuePresenter(
      * TODO: Refactor once we migrate all other value types inputs to compose.
      * */
     fun onCellClick(cell: TableCell): TextInputModel? {
-        val ids = cell.id?.split("_")
-        val dataElementUid = ids!![0]
+        val ids = cell.id?.split("_") ?: return null
+        val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
         handleElementInteraction(dataElement, cell)
         return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->

@@ -18,24 +18,6 @@ class TableCellUiOptions(
     }
 
     @Composable
-    fun textColor() = when {
-        cellValue.error != null -> TableTheme.colors.errorColor
-        cellValue.editable == false -> TableTheme.colors.disabledCellText
-        else -> TableTheme.colors.cellText
-    }
-
-    @Composable
-    fun mandatoryColor(hasValue: Boolean?) = when (hasValue) {
-        true -> Color.LightGray
-        else -> TableTheme.colors.errorColor
-    }
-    @Composable
-    fun mandatoryAlignment(hasValue: Boolean?) = when (hasValue) {
-        true -> Alignment.TopStart
-        else -> Alignment.CenterEnd
-    }
-
-    @Composable
     fun borderColor() = when {
         cellValue.isSelected(selectionState) -> when {
             cellValue.error != null -> TableTheme.colors.errorColor

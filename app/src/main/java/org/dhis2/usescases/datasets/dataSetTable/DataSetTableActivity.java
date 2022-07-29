@@ -163,39 +163,25 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         syncDialog.show(getSupportFragmentManager(), DATAVALUE_SYNC);
     }
 
-    private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
-            if (heightDiff > ExtensionsKt.getDp(200)) {
-                isKeyboardOpened = true;
-                binding.navigationView.setVisibility(View.GONE);
-                binding.saveButton.hide();
-                if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
-                    if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
-            } else if(isKeyboardOpened){
-                isKeyboardOpened = false;
-                new Handler().postDelayed(()->{
-                    binding.navigationView.setVisibility(View.VISIBLE);
-                    binding.saveButton.show();
-                },1000);
+    @Override
+    public void startInputEdition(){
+        isKeyboardOpened = true;
+        binding.navigationView.setVisibility(View.GONE);
+        binding.saveButton.hide();
+        if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
+            if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        binding.container.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        binding.container.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+    public void finishInputEdition(){
+        isKeyboardOpened = false;
+        new Handler().postDelayed(()->{
+            binding.navigationView.setVisibility(View.VISIBLE);
+            binding.saveButton.show();
+        },1000);
     }
 
     @Override
@@ -303,10 +289,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         }
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         back();
-    }
+    }*/
 
     public boolean isBackPressed() {
         return backPressed;
