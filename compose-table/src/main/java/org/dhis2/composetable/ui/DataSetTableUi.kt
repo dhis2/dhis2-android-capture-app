@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -78,8 +79,13 @@ fun TableHeader(
                             HeaderCell(
                                 columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
-                                headerWidth = tableHeaderModel.headerCellWidth(rowIndex),
-                                headerHeight = tableHeaderModel.defaultHeaderHeight,
+                                headerWidth = LocalTableDimensions.current.headerCellWidth(
+                                    tableHeaderModel.numberOfColumns(rowIndex),
+                                    LocalConfiguration.current,
+                                    tableHeaderModel.tableMaxColumns(),
+                                    tableHeaderModel.hasTotals
+                                ),
+                                headerHeight = LocalTableDimensions.current.defaultHeaderHeight,
                                 cellStyle = cellStyle(columnIndex, rowIndex),
                                 onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
@@ -92,8 +98,13 @@ fun TableHeader(
             HeaderCell(
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
-                headerWidth = tableHeaderModel.defaultCellWidth,
-                headerHeight = tableHeaderModel.defaultHeaderHeight * tableHeaderModel.rows.size,
+                headerWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                    LocalConfiguration.current,
+                    tableHeaderModel.tableMaxColumns(),
+                    tableHeaderModel.hasTotals
+                ),
+                headerHeight =
+                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size,
                 cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
@@ -191,14 +202,23 @@ fun TableItemRow(
             ItemHeader(
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
+                width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                    LocalConfiguration.current,
+                    tableModel.tableHeaderModel.tableMaxColumns(),
+                    tableModel.tableHeaderModel.hasTotals
+                ),
                 onCellSelected = onRowHeaderClick,
                 onDecorationClick = onDecorationClick
             )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
-                defaultHeight = rowHeader.defaultCellHeight,
-                defaultWidth = tableModel.tableHeaderModel.defaultCellWidth,
+                defaultHeight = LocalTableDimensions.current.defaultCellHeight,
+                defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                    LocalConfiguration.current,
+                    tableModel.tableHeaderModel.tableMaxColumns(),
+                    tableModel.tableHeaderModel.hasTotals
+                ),
                 selectionState = selectionState,
                 onClick = onClick
             )
@@ -217,8 +237,18 @@ fun TableCorner(
 ) {
     Box(
         modifier = modifier
-            .height(with(tableModel.tableHeaderModel) { defaultHeaderHeight * rows.size })
-            .width(tableModel.tableRows.first().rowHeader.defaultWidth)
+            .height(
+                with(tableModel.tableHeaderModel) {
+                    LocalTableDimensions.current.defaultHeaderHeight * rows.size
+                }
+            )
+            .width(
+                LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                    LocalConfiguration.current,
+                    tableModel.tableHeaderModel.tableMaxColumns(),
+                    tableModel.tableHeaderModel.hasTotals
+                )
+            )
             .clickable { onClick() },
         contentAlignment = Alignment.CenterEnd
     ) {
@@ -235,13 +265,14 @@ fun TableCorner(
 fun ItemHeader(
     rowHeader: RowHeader,
     cellStyle: CellStyle,
+    width: Dp,
     onCellSelected: (Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .defaultMinSize(minHeight = rowHeader.defaultCellHeight)
-            .width(rowHeader.defaultWidth)
+            .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
+            .width(width)
             .height(IntrinsicSize.Min)
             .background(cellStyle.backgroundColor)
             .clickable { onCellSelected(rowHeader.row) },
@@ -474,7 +505,12 @@ private fun TableList(
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val selectionStates = tableList.map { rememberSelectionState() }
-        LazyColumn(Modifier.padding(16.dp)) {
+        LazyColumn(
+            Modifier.padding(
+                horizontal = LocalTableDimensions.current.tableHorizontalPadding,
+                vertical = LocalTableDimensions.current.tableVerticalPadding
+            )
+        ) {
             tableList.forEachIndexed { index, currentTableModel ->
                 stickyHeader {
                     TableHeaderRow(
