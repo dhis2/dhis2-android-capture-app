@@ -1,7 +1,6 @@
 package org.dhis2.composetable.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import org.dhis2.composetable.model.TableCell
 

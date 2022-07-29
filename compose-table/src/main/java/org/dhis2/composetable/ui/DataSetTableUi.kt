@@ -190,9 +190,9 @@ fun TableItemRow(
     rowHeaderCellStyle: @Composable
     (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -332,9 +332,9 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(

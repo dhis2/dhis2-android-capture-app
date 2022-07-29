@@ -167,7 +167,7 @@ private fun TextInputContent(
                     if (hasFocus) {
                         focusManager.clearFocus(force = true)
                         onSave(textInputModel.copy(currentValue = value))
-                    }else{
+                    } else {
                         focusRequester.requestFocus()
                     }
                 },

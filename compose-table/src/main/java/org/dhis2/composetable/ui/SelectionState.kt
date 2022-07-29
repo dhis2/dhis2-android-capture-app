@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue

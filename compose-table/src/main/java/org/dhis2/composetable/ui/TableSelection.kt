@@ -35,40 +35,41 @@ sealed class TableSelection(open val tableId: String) {
         columnIndex: Int,
         columnHeaderRowIndex: Int
     ) = this.isCornerSelected(selectedTableId) ||
-            selectedTableId == tableId && (this is ColumnSelection) &&
-            this.columnIndex == columnIndex &&
-            this.columnHeaderRow == columnHeaderRowIndex
+        selectedTableId == tableId && (this is ColumnSelection) &&
+        this.columnIndex == columnIndex &&
+        this.columnHeaderRow == columnHeaderRowIndex
 
     fun isParentHeaderSelected(
         selectedTableId: String,
         columnIndex: Int,
         columnHeaderRowIndex: Int
     ) = selectedTableId == tableId && (this is ColumnSelection) &&
-            (this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false ||
-                    this.columnHeaderRow == columnHeaderRowIndex &&
-                    this.columnIndex != columnIndex
-                    )
+        (
+            this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false ||
+                this.columnHeaderRow == columnHeaderRowIndex &&
+                this.columnIndex != columnIndex
+            )
 
     fun isRowSelected(
         selectedTableId: String,
         rowHeaderIndex: Int
     ) = this.isCornerSelected(selectedTableId) ||
-            selectedTableId == tableId && (this is RowSelection) &&
-            this.rowIndex == rowHeaderIndex
+        selectedTableId == tableId && (this is RowSelection) &&
+        this.rowIndex == rowHeaderIndex
 
     fun isOtherRowSelected(
         selectedTableId: String,
         rowHeaderIndex: Int
     ) = selectedTableId == tableId && (this is RowSelection) &&
-            this.rowIndex != rowHeaderIndex
+        this.rowIndex != rowHeaderIndex
 
     fun isCellSelected(
         selectedTableId: String,
         columnIndex: Int,
         rowIndex: Int
     ) = this.tableId == selectedTableId && (this is CellSelection) &&
-            this.columnIndex == columnIndex &&
-            this.rowIndex == rowIndex
+        this.columnIndex == columnIndex &&
+        this.rowIndex == rowIndex
 
     fun isCellParentSelected(
         selectedTableId: String,
@@ -76,7 +77,8 @@ sealed class TableSelection(open val tableId: String) {
         rowIndex: Int
     ) = when (this) {
         is AllCellSelection -> isCornerSelected(selectedTableId)
-        is ColumnSelection -> this.columnIndex == columnIndex &&
+        is ColumnSelection ->
+            this.columnIndex == columnIndex &&
                 childrenOfSelectedHeader == null ||
                 this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false
         is RowSelection -> isRowSelected(selectedTableId, rowIndex)
