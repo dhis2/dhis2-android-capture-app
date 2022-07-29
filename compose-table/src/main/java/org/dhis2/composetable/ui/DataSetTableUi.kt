@@ -62,7 +62,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -148,7 +148,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -177,7 +177,7 @@ fun TableItemRow(
     selectionState: SelectionState,
     isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
-        (rowHeaderIndex: Int?) -> CellStyle,
+    (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -247,7 +247,12 @@ fun ItemHeader(
             .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(modifier = Modifier.weight(1f).padding(4.dp)) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 modifier = Modifier
                     .weight(1f),
@@ -328,7 +333,7 @@ fun TableCell(
     cellValue: TableCell,
     tableCellUiOptions: TableCellUiOptions,
     nonEditableCellLayer: @Composable
-        () -> Unit,
+    () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -493,7 +498,7 @@ private fun TableList(
                                 column = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
@@ -544,16 +549,18 @@ private fun TableList(
 @Composable
 fun ExtendDivider() {
     val background = TableTheme.colors.primary
-    Box(modifier = Modifier
-        .width(60.dp)
-        .height(8.dp)
-        .drawBehind {
-            drawRect(
-                color = background,
-                topLeft = Offset(size.width - 1.dp.toPx(), 0f),
-                size = Size(1.dp.toPx(), size.height)
-            )
-        })
+    Box(
+        modifier = Modifier
+            .width(60.dp)
+            .height(8.dp)
+            .drawBehind {
+                drawRect(
+                    color = background,
+                    topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                    size = Size(1.dp.toPx(), size.height)
+                )
+            }
+    )
 }
 
 @Composable

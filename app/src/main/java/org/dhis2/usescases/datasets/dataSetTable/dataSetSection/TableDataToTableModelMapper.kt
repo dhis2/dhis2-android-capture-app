@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import org.dhis2.R
 import java.util.SortedMap
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -31,7 +32,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                     rowIndex,
                     tableData.hasDataElementDecoration && dataElement.displayDescription() != null,
                     dataElement.displayDescription()
-                        ?: resources.getString(R.string.empty_description)
+                        ?: mapFieldValueToUser.resources.getString(R.string.empty_description)
                 ),
                 values = tableData.fieldViewModels[rowIndex].mapIndexed { columnIndex, field ->
                     columnIndex to TableCell(
