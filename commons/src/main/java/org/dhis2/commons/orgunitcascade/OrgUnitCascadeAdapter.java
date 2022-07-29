@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews.orgUnitCascade;
+package org.dhis2.commons.orgunitcascade;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,8 +9,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.R;
-import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
+import org.dhis2.commons.R;
+import org.dhis2.commons.databinding.OrgUnitCascadeLevelItemBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 
@@ -19,9 +19,6 @@ import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/10/2018.
- */
 
 public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHolder> {
 
@@ -86,7 +83,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         notifyDataSetChanged();
     }
 
-    public void setSelectedParent(int level, String selectedUid, Boolean canBeSelected) {
+    public void setSelectedParent(int level, String selectedUid) {
         selectedParent.put(level, selectedUid);//Set selected orgUnit for level
         this.level.set(level);
     }

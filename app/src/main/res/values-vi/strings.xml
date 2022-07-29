@@ -61,7 +61,6 @@
     <string name="configuration_sync_failed">Đồng bộ Cấu Hình thất bại</string>
     <string name="data_sync_failed">Đồng bộ Dữ Liệu thất bại</string>
     <string name="account_recovery">Phục hồi tài khoản</string>
-
     <!--PERIOD-->
     <string name="DAILY">Hàng Ngày</string>
     <string name="WEEKLY">Hàng Tuần</string>

@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
@@ -50,6 +51,7 @@ class LoginPresenterTest {
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsHelper: AnalyticsHelper = mock()
     private val crashReportController: CrashReportController = mock()
+    private val network: NetworkUtils = mock()
 
     @Before
     fun setup() {
@@ -60,7 +62,8 @@ class LoginPresenterTest {
                 schedulers,
                 goldfinger,
                 analyticsHelper,
-                crashReportController
+                crashReportController,
+                network
             )
     }
 
@@ -261,9 +264,18 @@ class LoginPresenterTest {
 
     @Test
     fun `Should open account recovery when user does not remember it`() {
+        whenever(network.isOnline()) doReturn true
         loginPresenter.onAccountRecovery()
 
         verify(view).openAccountRecovery()
+    }
+
+    @Test
+    fun `Should show message when no connection and user tries to recover account`() {
+        whenever(network.isOnline()) doReturn false
+        loginPresenter.onAccountRecovery()
+
+        verify(view).showNoConnectionDialog()
     }
 
     @Test

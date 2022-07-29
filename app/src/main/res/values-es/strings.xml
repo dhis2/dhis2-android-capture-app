@@ -63,7 +63,6 @@
     <string name="configuration_sync_failed">Error en la sincronizacion de configuracion</string>
     <string name="data_sync_failed">Error en la sincronizacion de datos</string>
     <string name="account_recovery">Recuperación de cuenta</string>
-
     <!--PERIOD-->
     <string name="DAILY">Diario</string>
     <string name="WEEKLY">Semanal</string>

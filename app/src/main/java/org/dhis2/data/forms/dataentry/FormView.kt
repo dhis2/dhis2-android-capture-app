@@ -43,6 +43,8 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog
+import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
 import org.dhis2.databinding.ViewFormBinding
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
@@ -75,8 +77,6 @@ import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.OptionSetOnClickListener
-import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
-import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
 import org.dhis2.utils.optionset.OptionSetDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

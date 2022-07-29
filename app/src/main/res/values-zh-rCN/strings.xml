@@ -54,7 +54,6 @@
     <string name="configuration_sync_failed">配置同步失败</string>
     <string name="data_sync_failed">数据同步失败</string>
     <string name="account_recovery">账号恢复</string>
-
     <!--PERIOD-->
     <string name="DAILY">每天</string>
     <string name="WEEKLY">每周</string>

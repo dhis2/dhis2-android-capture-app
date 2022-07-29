@@ -641,4 +641,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         sessionDialog.setCancelable(false)
         sessionDialog.show()
     }
+
+    override fun showNoConnectionDialog() {
+        val dialog = CustomDialog(
+            this,
+            getString(R.string.network_unavailable),
+            getString(R.string.no_network_to_recover_account),
+            getString(R.string.action_ok),
+            null,
+            CustomDialog.NO_RQ_CODE,
+            null
+        )
+        dialog.show()
+    }
 }
