@@ -22,8 +22,7 @@ class FormRepositoryImpl(
     private val dataEntryRepository: DataEntryRepository?,
     private val ruleEngineRepository: RuleEngineRepository?,
     private val rulesUtilsProvider: RulesUtilsProvider?,
-    private val legendValueProvider: LegendValueProvider?,
-    private val optionService: OptionSetDialogRepository
+    private val legendValueProvider: LegendValueProvider?
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -419,10 +418,6 @@ class FormRepositoryImpl(
 
     override fun updateSectionOpened(action: RowAction) {
         openedSectionUid = action.id
-    }
-
-    override fun optionService(): OptionSetDialogRepository {
-        return optionService
     }
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =

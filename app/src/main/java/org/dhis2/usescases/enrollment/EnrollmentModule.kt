@@ -20,7 +20,6 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
-import org.dhis2.form.data.OptionSetDialogRepository
 import org.dhis2.form.data.RulesRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.metadata.OptionSetConfiguration
@@ -254,8 +253,7 @@ class EnrollmentModule(
             dataEntryRepository,
             EnrollmentRuleEngineRepository(d2, enrollmentUid),
             RulesUtilsProviderImpl(d2),
-            LegendValueProviderImpl(d2, resourceManager),
-            OptionSetDialogRepository(d2.optionModule().options())
+            LegendValueProviderImpl(d2, resourceManager)
         )
     }
 

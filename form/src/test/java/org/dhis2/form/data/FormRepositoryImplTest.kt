@@ -38,7 +38,6 @@ class FormRepositoryImplTest {
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
-    private val optionSetDialogRepository: OptionSetDialogRepository = mock()
     private lateinit var repository: FormRepositoryImpl
 
     @Before
@@ -52,8 +51,7 @@ class FormRepositoryImplTest {
             dataEntryRepository,
             ruleEngineRepository,
             rulesUtilsProvider,
-            legendValueProvider,
-            optionSetDialogRepository
+            legendValueProvider
         )
         repository.fetchFormItems()
     }
@@ -237,8 +235,7 @@ class FormRepositoryImplTest {
             dataEntryRepository,
             ruleEngineRepository,
             rulesUtilsProvider,
-            legendValueProvider,
-            optionSetDialogRepository
+            legendValueProvider
         )
         repository.fetchFormItems()
     }

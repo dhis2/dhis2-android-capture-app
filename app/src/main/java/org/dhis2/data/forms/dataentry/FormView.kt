@@ -87,7 +87,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
 class FormView : Fragment() {
-
     private lateinit var formRepository: FormRepository
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
     private var locationProvider: LocationProvider? = null
@@ -219,7 +218,6 @@ class FormView : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
-        viewModel = FormViewModel(formRepository, dispatchers)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
@@ -763,7 +761,6 @@ class FormView : Fragment() {
 
     private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
         OptionSetDialog(
-            viewModel.optionService(),
             uiEvent.field,
             dispatchers,
             onClearValue = {

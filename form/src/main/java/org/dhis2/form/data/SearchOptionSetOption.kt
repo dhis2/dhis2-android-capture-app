@@ -4,10 +4,10 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionCollectionRepository
 
-class OptionSetDialogRepository(
+class SearchOptionSetOption(
     private val optionRepository: OptionCollectionRepository
 ) {
-    fun searchForOption(
+    operator fun invoke(
         optionSetUid: String?,
         textToSearch: String,
         optionsToShow: List<String>,

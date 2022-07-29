@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.form.data.OptionSetDialogRepository
+import org.dhis2.form.Injector
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetDialogViewModel
@@ -21,7 +21,6 @@ import org.dhis2.form.model.OptionSetDialogViewModelFactory
 const val TAG = "OptionSetDialog"
 
 class OptionSetDialog(
-    private val optionRepository: OptionSetDialogRepository,
     private val field: FieldUiModel,
     private val dispatchers: DispatcherProvider,
     private val onClearValue: () -> Unit,
@@ -29,7 +28,11 @@ class OptionSetDialog(
 ) : DialogFragment() {
 
     val viewModel by viewModels<OptionSetDialogViewModel> {
-        OptionSetDialogViewModelFactory(optionRepository, field, dispatchers)
+        OptionSetDialogViewModelFactory(
+            Injector.provideOptionSetDialog(),
+            field,
+            dispatchers
+        )
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

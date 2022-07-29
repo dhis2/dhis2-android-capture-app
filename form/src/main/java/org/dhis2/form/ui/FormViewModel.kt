@@ -17,7 +17,6 @@ import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.data.OptionSetDialogRepository
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
@@ -497,10 +496,6 @@ class FormViewModel(
                 _items.postValue(emptyList())
             }
         }
-    }
-
-    fun optionService(): OptionSetDialogRepository {
-        return repository.optionService()
     }
 
     companion object {

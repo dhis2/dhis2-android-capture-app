@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.form.data.OptionSetDialogRepository
+import org.dhis2.form.data.SearchOptionSetOption
 import org.hisp.dhis.android.core.option.Option
 
 class OptionSetDialogViewModel(
-    private val optionRepository: OptionSetDialogRepository,
+    private val searchOptionSetOption: SearchOptionSetOption,
     val field: FieldUiModel,
     private val dispatchers: DispatcherProvider
 ) : ViewModel() {
@@ -33,7 +33,7 @@ class OptionSetDialogViewModel(
 
     private suspend fun loadOptions(textToSearch: String = ""): List<Option> {
         return withContext(dispatchers.io()) {
-            optionRepository.searchForOption(
+            searchOptionSetOption(
                 field.optionSet,
                 textToSearch,
                 field.optionsToShow ?: emptyList(),
@@ -44,12 +44,12 @@ class OptionSetDialogViewModel(
 }
 
 class OptionSetDialogViewModelFactory(
-    private val optionRepository: OptionSetDialogRepository,
+    private val searchOptionSetOption: SearchOptionSetOption,
     private val field: FieldUiModel,
     private val dispatchers: DispatcherProvider
 
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return OptionSetDialogViewModel(optionRepository, field, dispatchers) as T
+        return OptionSetDialogViewModel(searchOptionSetOption, field, dispatchers) as T
     }
 }

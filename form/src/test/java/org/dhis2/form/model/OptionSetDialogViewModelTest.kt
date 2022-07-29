@@ -12,7 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import org.dhis2.form.data.OptionSetDialogRepository
+import org.dhis2.form.data.SearchOptionSetOption
 import org.hisp.dhis.android.core.option.Option
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -26,7 +26,7 @@ class OptionSetDialogViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val optionSetUid = "uid"
-    private val repository: OptionSetDialogRepository = mock()
+    private val searchOptionSetOption: SearchOptionSetOption = mock()
     private val field: FieldUiModel = mock {
         on { optionSet } doReturn optionSetUid
     }
@@ -52,7 +52,7 @@ class OptionSetDialogViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         whenever(
-            repository.searchForOption(
+            searchOptionSetOption(
                 optionSetUid,
                 "",
                 emptyList(),
@@ -60,7 +60,7 @@ class OptionSetDialogViewModelTest {
             )
         ) doReturn mockedOptions
         viewModel = OptionSetDialogViewModel(
-            repository,
+            searchOptionSetOption,
             field,
             dispatchers
         )
@@ -82,7 +82,7 @@ class OptionSetDialogViewModelTest {
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.searchValue.value == "test")
-        verify(repository, times(1)).searchForOption(
+        verify(searchOptionSetOption, times(1))(
             optionSetUid,
             "test",
             emptyList(),
@@ -97,7 +97,7 @@ class OptionSetDialogViewModelTest {
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.searchValue.value == "test")
-        verify(repository, times(1)).searchForOption(
+        verify(searchOptionSetOption, times(1))(
             optionSetUid,
             "test",
             emptyList(),
@@ -112,7 +112,7 @@ class OptionSetDialogViewModelTest {
         viewModel.onSearchingOption("test")
         assertTrue(viewModel.searchValue.value == "test")
         testingDispatcher.scheduler.advanceUntilIdle()
-        verify(repository, times(1)).searchForOption(
+        verify(searchOptionSetOption, times(1))(
             optionSetUid,
             "test",
             optionsToShow,
@@ -130,7 +130,7 @@ class OptionSetDialogViewModelTest {
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
         assertTrue(viewModel.searchValue.value == "test")
-        verify(repository, times(1)).searchForOption(
+        verify(searchOptionSetOption, times(1))(
             optionSetUid,
             "test",
             optionsToShow,
