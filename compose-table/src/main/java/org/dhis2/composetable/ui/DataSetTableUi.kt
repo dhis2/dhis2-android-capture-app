@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
@@ -60,7 +62,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
@@ -146,7 +148,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -175,8 +177,9 @@ fun TableItemRow(
     selectionState: SelectionState,
     isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
-        (rowHeaderIndex: Int?) -> CellStyle,
+    (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Column(
@@ -188,7 +191,8 @@ fun TableItemRow(
             ItemHeader(
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
-                onCellSelected = onRowHeaderClick
+                onCellSelected = onRowHeaderClick,
+                onDecorationClick = onDecorationClick
             )
             ItemValues(
                 horizontalScrollState = horizontalScrollState,
@@ -231,8 +235,8 @@ fun TableCorner(
 fun ItemHeader(
     rowHeader: RowHeader,
     cellStyle: CellStyle,
-    onCellSelected: (Int?) -> Unit
-
+    onCellSelected: (Int?) -> Unit,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -243,24 +247,38 @@ fun ItemHeader(
             .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
+        Row(
             modifier = Modifier
-                .padding(horizontal = 3.dp)
-                .weight(1f),
-            text = rowHeader.title,
-            color = cellStyle.textColor,
-            fontSize = 12.sp
-        )
-        if (rowHeader.showDecoration) {
-            Icon(
-                imageVector = Icons.Outlined.Info,
-                contentDescription = "info",
+                .weight(1f)
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
                 modifier = Modifier
-                    .padding(end = 4.dp)
-                    .height(10.dp)
-                    .width(10.dp),
-                tint = cellStyle.textColor
+                    .weight(1f),
+                text = rowHeader.title,
+                color = cellStyle.textColor,
+                fontSize = 12.sp
             )
+            if (rowHeader.showDecoration) {
+                Spacer(modifier = Modifier.size(4.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "info",
+                    modifier = Modifier
+                        .clickable(rowHeader.description != null) {
+                            onDecorationClick(
+                                TableDialogModel(
+                                    rowHeader.title,
+                                    rowHeader.description ?: ""
+                                )
+                            )
+                        }
+                        .height(10.dp)
+                        .width(10.dp),
+                    tint = cellStyle.textColor
+                )
+            }
         }
         Divider(
             modifier = Modifier
@@ -315,7 +333,7 @@ fun TableCell(
     cellValue: TableCell,
     tableCellUiOptions: TableCellUiOptions,
     nonEditableCellLayer: @Composable
-        () -> Unit,
+    () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -425,18 +443,21 @@ fun DropDownOptions(
 fun DataTable(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
 ) {
     if (tableList.size == 1) {
         TableItem(
             tableModel = tableList.first(),
             tableColors = tableColors,
+            onDecorationClick = onDecorationClick,
             onClick = onClick
         )
     } else {
         TableList(
             tableList = tableList,
             tableColors = tableColors,
+            onDecorationClick = onDecorationClick,
             onClick = onClick
         )
     }
@@ -447,6 +468,7 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
@@ -476,7 +498,7 @@ private fun TableList(
                                 column = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
                             )
                         }
                     )
@@ -498,6 +520,7 @@ private fun TableList(
                                 rowHeader = true
                             )
                         },
+                        onDecorationClick = onDecorationClick,
                         onClick = { tableCell ->
                             selectionStates[index].selectCell(
                                 tableCell.column,
@@ -526,22 +549,25 @@ private fun TableList(
 @Composable
 fun ExtendDivider() {
     val background = TableTheme.colors.primary
-    Box(modifier = Modifier
-        .width(60.dp)
-        .height(8.dp)
-        .drawBehind {
-            drawRect(
-                color = background,
-                topLeft = Offset(size.width - 1.dp.toPx(), 0f),
-                size = Size(1.dp.toPx(), size.height)
-            )
-        })
+    Box(
+        modifier = Modifier
+            .width(60.dp)
+            .height(8.dp)
+            .drawBehind {
+                drawRect(
+                    color = background,
+                    topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                    size = Size(1.dp.toPx(), size.height)
+                )
+            }
+    )
 }
 
 @Composable
 fun TableItem(
     tableModel: TableModel,
     tableColors: TableColors? = null,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
@@ -569,7 +595,8 @@ fun TableItem(
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
                     },
-                    onRowHeaderClick = {}
+                    onRowHeaderClick = {},
+                    onDecorationClick = onDecorationClick
                 ) {
                     onClick(it)
                 }
@@ -630,7 +657,7 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList) {
+    TableList(tableList = tableList, onDecorationClick = {}) {
     }
 }
 

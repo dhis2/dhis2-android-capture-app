@@ -10,7 +10,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 
 class MapFieldValueToUser(
     val resources: ResourceManager,
-    val repository: DataValueRepository) {
+    val repository: DataValueRepository
+) {
 
     fun map(field: FieldViewModel, dataElement: DataElement): String? {
         return when (dataElement.valueType()) {

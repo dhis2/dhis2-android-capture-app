@@ -144,7 +144,7 @@ class DataValuePresenter(
             disposable.add(
                 dataTableModelConnectable.map(repository::setTableData)
                     .map { tableData ->
-                        mapper.map(tableData)
+                        mapper(tableData)
                     }
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
@@ -193,7 +193,7 @@ class DataValuePresenter(
             repository.getDataTableModel(datasetTableModel.catCombo!!)
                 .blockingFirst()
         val tableData = repository.setTableData(dataTableModel)
-        val updatedTableModel = mapper.map(tableData)
+        val updatedTableModel = mapper(tableData)
 
         allTableState.value = allTableState.value?.map { tableModel ->
             if (tableModel.id == datasetTableModel.catCombo) {

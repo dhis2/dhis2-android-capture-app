@@ -13,6 +13,9 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Before
 import org.junit.Test
 
+const val DATAELEMENT_FORM_NAME = "dataElement_formName"
+const val DATAELEMENT_DESCRIPTION = "dataElement_description"
+
 class TableDataToTableModelMapperTest {
 
     private val mapFieldValueToUser: MapFieldValueToUser = mock()
@@ -71,10 +74,10 @@ class TableDataToTableModelMapperTest {
             hasDataElementDecoration = false
         )
 
-        val result = tableDataToTableModelMapper.map(tableData)
+        val result = tableDataToTableModelMapper(tableData)
         result.tableRows
-        assert(result.tableRows[0].rowHeader.title == "random")
-        assert(result.tableRows[1].rowHeader.title == "random")
+        assert(result.tableRows[0].rowHeader.title == DATAELEMENT_FORM_NAME)
+        assert(result.tableRows[1].rowHeader.title == DATAELEMENT_FORM_NAME)
         assert(result.tableRows[0].values.size == 2)
         assert(result.tableRows[1].values.size == 2)
     }
@@ -103,6 +106,7 @@ class TableDataToTableModelMapperTest {
 
     private fun getDataElement(): DataElement {
         return DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.BOOLEAN)
-            .displayName("random").build()
+            .displayFormName(DATAELEMENT_FORM_NAME)
+            .displayDescription(DATAELEMENT_DESCRIPTION).build()
     }
 }
