@@ -228,13 +228,7 @@ class TableSelectionTest {
             )
         )
 
-        assertFalse(
-            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
-        )
-        assertFalse(
-            rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
-        )
-        assertFalse(
+        assertTrue(
             rowSelection.isCellParentSelected(selectedTableId, selectedColumn, selectedRow)
         )
 
