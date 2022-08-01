@@ -28,15 +28,15 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.commons.locationprovider.LocationSettingLauncher;
-import org.dhis2.maps.geometry.LngLatValidatorKt;
-import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.extensions.DoubleExtensionsKt;
+import org.dhis2.commons.locationprovider.LocationSettingLauncher;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.DatasetFormCoordinatesAccentBinding;
 import org.dhis2.form.data.GeometryController;
 import org.dhis2.form.data.GeometryParserImpl;
+import org.dhis2.maps.geometry.LngLatValidatorKt;
+import org.dhis2.maps.views.MapSelectorActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ActivityResultObservable;
 import org.dhis2.utils.ActivityResultObserver;
@@ -307,7 +307,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     return Unit.INSTANCE;
                 },
                 () -> {
-                    LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(getContext());
+                    LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(getContext(), () -> {
+                        updateLocation(currentGeometry);
+                        return Unit.INSTANCE;
+                    });
                     return Unit.INSTANCE;
                 });
     }
@@ -381,9 +384,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void onMapPositionClick() {
         subscribe();
         ((FragmentActivity) getContext()).startActivityForResult(MapSelectorActivity.Companion.create(
-                (FragmentActivity) getContext(),
-                getFeatureType(),
-                currentCoordinates()),
+                        (FragmentActivity) getContext(),
+                        getFeatureType(),
+                        currentCoordinates()),
                 RQ_MAP_LOCATION_VIEW);
     }
 

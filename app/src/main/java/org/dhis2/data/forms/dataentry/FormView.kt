@@ -602,7 +602,9 @@ class FormView : Fragment() {
                 )
             },
             {
-                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+                LocationSettingLauncher.requestEnableLocationSetting(requireContext()) {
+                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
+                }
             }
         )
     }
