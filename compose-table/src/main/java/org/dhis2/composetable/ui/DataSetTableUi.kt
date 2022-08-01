@@ -44,10 +44,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -142,7 +142,7 @@ fun HeaderCell(
             color = cellStyle.mainColor(),
             text = headerCell.value,
             textAlign = TextAlign.Center,
-            fontSize = 12.sp
+            fontSize = LocalTableDimensions.current.defaultHeaderTextSize
         )
         Divider(
             color = TableTheme.colors.primary,
@@ -278,9 +278,19 @@ fun ItemHeader(
         modifier = Modifier
             .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
             .width(width)
-            .height(IntrinsicSize.Min)
+            .fillMaxHeight()
             .background(cellStyle.backgroundColor())
-            .clickable { onCellSelected(rowHeader.row) },
+            .clickable {
+                onCellSelected(rowHeader.row)
+                if (!rowHeader.description.isNullOrEmpty()) {
+                    onDecorationClick(
+                        TableDialogModel(
+                            rowHeader.title,
+                            rowHeader.description ?: ""
+                        )
+                    )
+                }
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -294,7 +304,7 @@ fun ItemHeader(
                     .weight(1f),
                 text = rowHeader.title,
                 color = cellStyle.mainColor(),
-                fontSize = 12.sp
+                fontSize = LocalTableDimensions.current.defaultRowHeaderTextSize
             )
             if (rowHeader.showDecoration) {
                 Spacer(modifier = Modifier.size(4.dp))
@@ -302,14 +312,6 @@ fun ItemHeader(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = "info",
                     modifier = Modifier
-                        .clickable(rowHeader.description != null) {
-                            onDecorationClick(
-                                TableDialogModel(
-                                    rowHeader.title,
-                                    rowHeader.description ?: ""
-                                )
-                            )
-                        }
                         .height(10.dp)
                         .width(10.dp),
                     tint = cellStyle.mainColor()
@@ -387,19 +389,14 @@ fun TableCell(
     ) {
         Text(
             modifier = Modifier
-                .align(Alignment.Center)
                 .padding(horizontal = 4.dp)
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .clickable(cellValue.editable) {
-                    when {
-                        cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                        else -> onClick(cellValue)
-                    }
-                },
+                .align(Alignment.Center),
             text = cellValue.value ?: "",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
-                fontSize = 10.sp,
+                fontSize = LocalTableDimensions.current.defaultCellTextSize,
                 textAlign = TextAlign.End,
                 color = LocalTableColors.current.cellTextColor(
                     hasError = cellValue.error != null,
@@ -493,11 +490,12 @@ fun DropDownOptions(
 @Composable
 fun DataTable(
     tableList: List<TableModel>,
+    editable: Boolean = true,
     tableColors: TableColors? = null,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
 ) {
-    if (tableList.size == 1) {
+    if (!editable) {
         TableItem(
             tableModel = tableList.first(),
             tableColors = tableColors,
@@ -641,7 +639,12 @@ private fun TableList(
                         }
                     )
                     if (tableRowModel.isLastRow) {
-                        ExtendDivider()
+                        ExtendDivider(
+                            tableModel = currentTableModel,
+                            selected = tableSelection.isCornerSelected(
+                                currentTableModel.id ?: ""
+                            )
+                        )
                     }
                 }
                 stickyHeader {
@@ -657,20 +660,50 @@ private fun TableList(
 }
 
 @Composable
-fun ExtendDivider() {
+fun ExtendDivider(
+    tableModel: TableModel,
+    selected: Boolean
+) {
     val background = TableTheme.colors.primary
-    Box(
-        modifier = Modifier
-            .width(60.dp)
-            .height(8.dp)
-            .drawBehind {
-                drawRect(
-                    color = background,
-                    topLeft = Offset(size.width - 1.dp.toPx(), 0f),
-                    size = Size(1.dp.toPx(), size.height)
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .width(
+                    LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                        LocalConfiguration.current,
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    )
                 )
-            }
-    )
+                .height(8.dp)
+                .background(
+                    color = if (selected) {
+                        TableTheme.colors.primary
+                    } else {
+                        Color.White
+                    }
+                )
+                .drawBehind {
+                    drawRect(
+                        color = background,
+                        topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                        size = Size(1.dp.toPx(), size.height)
+                    )
+                }
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(8.dp)
+                .background(
+                    color = if (selected) {
+                        TableTheme.colors.primaryLight
+                    } else {
+                        Color.White
+                    }
+                )
+        )
+    }
 }
 
 @Composable

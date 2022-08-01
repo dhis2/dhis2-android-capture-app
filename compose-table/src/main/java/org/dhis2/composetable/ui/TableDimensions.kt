@@ -5,7 +5,9 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Immutable
 data class TableDimensions(
@@ -16,7 +18,10 @@ data class TableDimensions(
     val defaultRowHeaderWidth: Dp = 60.dp,
     val defaultHeaderHeight: Dp = 24.dp,
     val defaultLegendCornerSize: Dp = 2.dp,
-    val defaultLegendBorderWidth: Dp = 4.dp
+    val defaultLegendBorderWidth: Dp = 4.dp,
+    val defaultHeaderTextSize: TextUnit = 12.sp,
+    val defaultRowHeaderTextSize: TextUnit = 12.sp,
+    val defaultCellTextSize: TextUnit = 12.sp
 ) {
 
     fun defaultCellWidthWithExtraSize(
