@@ -40,6 +40,7 @@ public abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
 
         if (selectionState == SelectionState.SELECTED) {
             itemView.setSelected(true);
+            itemView.requestFocus();
         } else if (selectionState == SelectionState.UNSELECTED) {
             itemView.setSelected(false);
         }

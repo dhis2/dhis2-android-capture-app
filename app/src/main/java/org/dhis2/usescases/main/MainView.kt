@@ -26,6 +26,7 @@
 package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
+import java.io.File
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -52,4 +53,14 @@ interface MainView : AbstractActivityContracts.View {
     fun setFilters(filters: List<FilterItem>)
 
     fun hideFilters()
+
+    fun showGranularSync()
+
+    fun goToLogin(accountsCount: Int, isDeletion: Boolean)
+
+    fun showProgressDeleteNotification()
+
+    fun obtainFileView(): File?
+
+    fun cancelNotifications()
 }

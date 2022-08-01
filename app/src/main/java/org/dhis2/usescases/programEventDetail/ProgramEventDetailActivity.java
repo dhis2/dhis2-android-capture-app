@@ -24,6 +24,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.bindings.BindingsKt;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -37,7 +38,7 @@ import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EventCreationType;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
@@ -111,9 +112,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     return false;
             }
         });
-        ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
+        ViewExtensionsKt.clipWithRoundedCorners(binding.fragmentContainer, ExtensionsKt.getDp(16));
         binding.filterLayout.setAdapter(filtersAdapter);
         presenter.init();
+        binding.syncButton.setOnClickListener(view-> showSyncDialogProgram());
     }
 
     private void initExtras() {
@@ -147,8 +149,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         programEventsViewModel.getEventClicked().observe(this, eventData -> {
-            if (eventData != null) {
+            if (eventData != null && !programEventsViewModel.getRecreationActivity()) {
+                programEventsViewModel.onRecreationActivity(false);
                 navigateToEvent(eventData.component1(), eventData.component2());
+            } else if (programEventsViewModel.getRecreationActivity()){
+                programEventsViewModel.onRecreationActivity(false);
             }
         });
 
@@ -176,6 +181,26 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         super.onResume();
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+    }
+
+    private void showSyncDialogProgram(){
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.PROGRAM)
+                .setUid(programUid)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged)
+                        FilterManager.getInstance().publishData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isChangingConfigurations()) {
+            programEventsViewModel.onRecreationActivity(true);
+        }
     }
 
     @Override
@@ -213,19 +238,48 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void showHideFilter() {
         Transition transition = new ChangeBounds();
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                if(!backDropActive){
+                    binding.clearFilters.hide();
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                programEventsViewModel.updateBackdrop(backDropActive);
+                if(backDropActive){
+                    binding.clearFilters.show();
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                /*No action needed*/
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+                /*No action needed*/
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+                /*No action needed*/
+            }
+        });
         transition.setDuration(200);
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
-        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
-        ViewCompat.setElevation(binding.eventsLayout, backDropActive ? 20 : 0);
 
         if (backDropActive) {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.fragmentContainer, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, ExtensionsKt.getDp(16));
             binding.navigationBar.hide();
         } else {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.fragmentContainer, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
             binding.navigationBar.show();
         }
 
@@ -324,7 +378,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showList() {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                new EventListFragment()
+                new EventListFragment(),
+                "EVENT_LIST"
         ).commitNow();
         binding.addEventButton.setVisibility(programEventsViewModel.getWritePermission().getValue() ? View.VISIBLE : GONE);
         binding.filter.setVisibility(View.VISIBLE);
@@ -333,7 +388,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showMap() {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragmentContainer,
-                new EventMapFragment()
+                new EventMapFragment(),
+                "EVENT_MAP"
         ).commitNow();
         binding.addEventButton.setVisibility(GONE);
         binding.filter.setVisibility(View.VISIBLE);

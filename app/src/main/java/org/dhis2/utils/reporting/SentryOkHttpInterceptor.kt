@@ -14,6 +14,15 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.USER
 
+/**
+ * Usage:
+ * In ServerModule.kt add
+ * interceptors.add(
+ *        SentryOkHttpInterceptor(
+ *           context.app().appComponent().preferenceProvider()
+ *        )
+ * )
+ */
 class SentryOkHttpInterceptor(
     val preferenceProvider: PreferenceProvider,
     private val hub: IHub = HubAdapter.getInstance()
@@ -28,7 +37,7 @@ class SentryOkHttpInterceptor(
 
         val transaction = Sentry.startTransaction(path, OPERATION)
         Sentry.configureScope { scope ->
-            scope.setTransaction(transaction)
+            scope.transaction = transaction
             scope.user = User().apply {
                 username = preferenceProvider.getString(USER)
             }

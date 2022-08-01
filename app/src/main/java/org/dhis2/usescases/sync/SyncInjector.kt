@@ -16,7 +16,6 @@ interface SyncComponent {
 }
 
 @Module
-@PerActivity
 class SyncModule(private val view: SyncView, serverComponent: ServerComponent?) {
 
     private val userManager = serverComponent?.userManager()

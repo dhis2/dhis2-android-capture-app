@@ -289,6 +289,19 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageAccounts"
+                style="@style/NoBackgroundButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/rubik_regular"
+                android:layout_marginTop="6dp"
+                android:text="@string/manage_accounts"
+                android:onClick="@{() -> presenter.onManageAccountClicked()}"
+                android:visibility="@{presenter.displayManageAccount() ? View.VISIBLE : View.GONE }"
+                app:layout_constraintTop_toBottomOf="@id/login"
+                tools:text="Manage Accounts" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/loginOpenId"
                 style="@style/OpenIdLoginButton"
                 android:layout_width="match_parent"

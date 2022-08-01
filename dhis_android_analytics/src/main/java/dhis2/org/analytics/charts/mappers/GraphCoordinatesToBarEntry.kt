@@ -15,8 +15,10 @@ class GraphCoordinatesToBarEntry {
         return coordinates.mapIndexed { index, graphPoint ->
             BarEntry(
                 when {
-                    seriesCount > 1 -> groupedBarIndex(index, serieIndex, seriesCount)
-                    else -> singleBarIndex(index, graphPoint, graph)
+                    seriesCount > 1 ->
+                        groupedBarIndex(graphPoint.position ?: 0f, serieIndex, seriesCount)
+                    else ->
+                        singleBarIndex(index, graphPoint, graph)
                 },
                 graphPoint.fieldValue,
                 serieLabel
@@ -24,8 +26,8 @@ class GraphCoordinatesToBarEntry {
         }
     }
 
-    private fun groupedBarIndex(index: Int, serieIndex: Int, seriesCount: Int): Float {
-        return index.toFloat() +
+    private fun groupedBarIndex(index: Float, serieIndex: Int, seriesCount: Int): Float {
+        return index +
             (
                 default_bar_group_space * serieIndex.toFloat() / seriesCount.toFloat() -
                     default_gap / 2f +

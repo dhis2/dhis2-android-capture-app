@@ -46,6 +46,8 @@ public class Constants {
 
     // LOGIN
     public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
+    public static final String ACCOUNT_USED = "ACCOUNT_USED";
+    public static final int MAX_ACCOUNTS = 3;
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";

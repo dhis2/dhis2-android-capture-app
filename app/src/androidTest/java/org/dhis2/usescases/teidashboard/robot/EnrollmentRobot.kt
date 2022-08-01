@@ -15,7 +15,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
+import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel

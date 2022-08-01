@@ -2,7 +2,6 @@ package org.dhis2.usescases.about
 
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import kotlinx.android.synthetic.main.activity_about_policy.view.menu
 import org.dhis2.R
 import org.dhis2.databinding.ActivityAboutPolicyBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract

@@ -15,4 +15,6 @@ interface ValueStore {
         optionGroupUid: String,
         isInGroup: Boolean
     ): StoreResult
+
+    fun overrideProgram(programUid: String?)
 }

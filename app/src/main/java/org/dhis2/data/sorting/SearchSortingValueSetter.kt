@@ -3,11 +3,11 @@ package org.dhis2.data.sorting
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventStatus

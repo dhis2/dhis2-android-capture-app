@@ -12,24 +12,17 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.evrencoskun.tableview.TableView
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED
-import io.reactivex.Flowable
-import io.reactivex.processors.FlowableProcessor
+import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
 import java.util.ArrayList
 import java.util.SortedMap
 import javax.inject.Inject
-import org.dhis2.Bindings.app
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
-import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
@@ -38,8 +31,10 @@ import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.isPortrait
-import org.hisp.dhis.android.core.dataset.DataSet
-import org.hisp.dhis.android.core.dataset.Section
+
+const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
+const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
+const val ARG_ATTR_OPT_COMB = "ARG_ATTR_OPT_COMB"
 
 class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View {
 
@@ -48,19 +43,19 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private lateinit var presenter: DataSetTableContract.Presenter
 
     private val adapters = ArrayList<DataSetTableAdapter>()
-    private lateinit var sectionName: String
-    private lateinit var dataSetUid: String
 
     @Inject
     lateinit var presenterFragment: DataValuePresenter
 
     private var heights = ArrayList<Int>()
     private val currentTablePosition = MutableLiveData<Int>()
-    private lateinit var dataSet: DataSet
-    private lateinit var section: Section
     private var tablesCount: Int = 0
     private var indicatorsTable: TableView? = null
-    private lateinit var saveToast: Toast
+    private val saveToast: Toast by lazy {
+        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT).apply {
+            setGravity(Gravity.TOP or Gravity.START, 16.dp, 110.dp)
+        }
+    }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -71,44 +66,34 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activity = context as DataSetTableActivity
-        arguments?.let {
-            dataSetUid = it.getString(DATA_SET_UID)
-                ?: throw NullPointerException(
-                    "dataSet should not be null. " +
-                        "Before initializing the fragment make sure to set the correct arguments"
-                )
-        }
-        app().userComponent()!!.plus(DataValueModule(dataSetUid, this)).inject(this)
+        presenter = activity.presenter
+
+        activity.dataSetTableComponent.plus(
+            DataValueModule(
+                arguments?.getString(DATA_SET_UID)!!,
+                arguments?.getString(DATA_SET_SECTION)!!,
+                arguments?.getString(ARG_ORG_UNIT)!!,
+                arguments?.getString(ARG_PERIOD_ID)!!,
+                arguments?.getString(ARG_ATTR_OPT_COMB)!!,
+                this
+            )
+        ).inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false)
-        currentTablePosition.observe(viewLifecycleOwner, Observer { loadHeader(it) })
-        binding.presenter = presenterFragment
-        presenter = activity.presenter
-        sectionName = requireArguments().getString(DATA_SET_SECTION) ?: ""
-        presenterFragment.init(
-            this,
-            presenter.orgUnitUid,
-            presenter.periodTypeName,
-            presenter.periodFinalDate,
-            presenter.catCombo,
-            sectionName,
-            presenter.periodId
-        )
-        saveToast = Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT)
-        saveToast.setGravity(
-            Gravity.TOP or Gravity.START,
-            16.dp,
-            110.dp
-        )
+    ): View {
+        return FragmentDatasetSectionBinding.inflate(inflater, container, false)
+            .also { binding = it }
+            .root
+    }
 
-        return binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        currentTablePosition.observe(viewLifecycleOwner, { loadHeader(it) })
+        presenterFragment.init()
     }
 
     override fun onDestroyView() {
@@ -119,6 +104,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun setTableData(tableData: TableData) {
         binding.programProgress.visibility = View.GONE
 
+        val tableView = TableView(requireContext()).apply {
+            isShowHorizontalSeparators = false
+            setHasFixedWidth(true)
+            shadowColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            unSelectedColor = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        }
+
         val adapter = DataSetTableAdapter(
             abstracContext,
             presenterFragment.getProcessor(),
@@ -128,59 +121,36 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             } else {
                 null
             }
-        )
-        adapters.add(adapter)
-
-        val hasNumericDataElement = tableData.dataTableModel.rows()
-            ?.any { it.valueType()?.isNumeric == true } ?: false
-
-        adapter.apply {
-            showColumnTotal = if (section.uid().isEmpty()) {
-                false
-            } else {
-                section.showColumnTotals()
-            }
-            showRowTotal = if (section.uid().isEmpty()) {
-                false
-            } else {
-                section.showRowTotals() == true && hasNumericDataElement
-            }
-        }
-
-        val tableView = TableView(requireContext())
-        tableView.isShowHorizontalSeparators = false
-        tableView.setHasFixedWidth(true)
-
-        val columnHeaders = tableData.columnHeaders()
-
-        adapter.apply {
+        ).apply {
+            showColumnTotal = tableData.showColumnTotals
+            showRowTotal = tableData.showRowTotals
             catCombo = tableData.catCombo()!!.uid()
             setTableView(tableView)
             initializeRows(tableData.accessDataWrite)
-            setDataElementDecoration(dataSet.dataElementDecoration())
+            setDataElementDecoration(presenter.dataSetHasDataElementDecoration())
         }
+
+        adapters.add(adapter)
+
+        val hasNumericDataElement = tableData.dataTableModel.rows
+            ?.any { it.valueType()?.isNumeric == true } ?: false
 
         binding.tableLayout.addView(tableView)
 
-        val view = View(context)
-        view.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15)
-        view.setBackgroundResource(R.color.white)
-        binding.tableLayout.addView(view)
+        addSeparatorView()
 
         tableView.adapter = adapter
-        tableView.headerCount = columnHeaders!!.size
-        tableView.shadowColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-        tableView.selectedColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-        tableView.unSelectedColor =
-            ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        tableView.headerCount = tableData.columnHeaders()!!.size
 
         adapter.swap(tableData.fieldViewModels)
 
-        val (first, second) = presenterFragment.getCurrentSectionMeasure()
-        if (first != 0) {
+        val overriddenWidth = tableData.overriddenMeasure.width
+        val overrideHeight = tableData.overriddenMeasure.height
+
+        if (overriddenWidth != 0) {
             adapter.setMaxLabel(tableData.maxLengthLabel())
-            tableView.setRowHeaderWidth(first)
-            adapter.columnHeaderHeight = second
+            tableView.setRowHeaderWidth(overriddenWidth)
+            adapter.columnHeaderHeight = overrideHeight
         } else {
             val widthFactor: Int = if (isPortrait()) {
                 2
@@ -192,15 +162,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 }
             }
 
-            val (first, second, third) = tableData.rows()!!.measureText(
+            val (maxLabel, rowHeaderWidth, columnHeaderHeight) = tableData.rows()!!.measureText(
                 requireContext(),
                 widthFactor
             )
-            adapter.setMaxLabel(first)
-            tableView.setRowHeaderWidth(second)
-            if (third != 0) {
-                adapter.columnHeaderHeight =
-                    third + requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
+            adapter.setMaxLabel(maxLabel)
+            tableView.setRowHeaderWidth(rowHeaderWidth)
+            if (columnHeaderHeight != 0) {
+                adapter.columnHeaderHeight = columnHeaderHeight +
+                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -209,13 +179,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
 
         adapter.setAllItems(
-            columnHeaders,
+            tableData.columnHeaders(),
             tableData.rows(),
             tableData.cells,
             adapter.showRowTotal && hasNumericDataElement
         )
-
-        presenterFragment.initializeProcessor(this)
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
             _: Int,
@@ -236,10 +204,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             }
         }
         currentTablePosition.value = 0
+
+        if (tablesCount == binding.tableLayout.childCount / 2) {
+            presenterFragment.getDataSetIndicators()
+        }
     }
 
-    override fun setDataSet(dataSet: DataSet) {
-        this.dataSet = dataSet
+    private fun addSeparatorView() {
+        val view = View(context)
+        view.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15)
+        view.setBackgroundResource(R.color.white)
+        binding.tableLayout.addView(view)
     }
 
     override fun renderIndicators(indicators: SortedMap<String, String>) {
@@ -263,13 +238,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         binding.programProgress.visibility = View.GONE
     }
 
-    override fun setSection(section: Section) {
-        this.section = section
-    }
-
     override fun updateTabLayout(count: Int) {
         this.tablesCount = count
-        activity.updateTabLayout(sectionName, count)
+        activity.updateTabLayout()
     }
 
     private fun loadHeader(position: Int) {
@@ -294,57 +265,44 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                     (binding.headerContainer.childCount - 2) *
                     binding.headerContainer.getChildAt(0).layoutParams.height
             }
-            cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener {
-                for (i in 0 until binding.tableLayout.childCount) {
-                    if (binding.tableLayout.getChildAt(i) is TableView) {
-                        val table = binding.tableLayout.getChildAt(i) as TableView
-                        if (table.adapter is DataSetTableAdapter) {
-                            val adapter = table.adapter as DataSetTableAdapter
-                            adapter.scaleRowWidth(true)
-                            val params = cornerView.layoutParams
-                            params.width = adapter.rowHeaderWidth
-                            cornerView.layoutParams = params
-                            if (i == 0) {
-                                presenterFragment.saveCurrentSectionMeasures(
-                                    adapter.rowHeaderWidth,
-                                    adapter.columnHeaderHeight
-                                )
-                                val scrollPos = table.scrollHandler.columnPosition
-                                table.scrollToColumnPosition(scrollPos)
-                                for (rv in rvs) {
-                                    rv.layoutManager!!.scrollToPosition(scrollPos)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            cornerView.findViewById<View>(R.id.buttonRowScaleMinus).setOnClickListener { view ->
-                for (i in 0 until binding.tableLayout.childCount) {
-                    if (binding.tableLayout.getChildAt(i) is TableView) {
-                        val table = binding.tableLayout.getChildAt(i) as TableView
-                        if (table.adapter is DataSetTableAdapter) {
-                            val adapter = table.adapter as DataSetTableAdapter
-                            adapter.scaleRowWidth(false)
-                            val params = cornerView.layoutParams
-                            params.width = adapter.rowHeaderWidth
-                            cornerView.layoutParams = params
-                            if (i == 0) {
-                                presenterFragment.saveCurrentSectionMeasures(
-                                    adapter.rowHeaderWidth,
-                                    adapter.columnHeaderHeight
-                                )
-                                val scrollPos = table.scrollHandler.columnPosition
-                                table.scrollToColumnPosition(scrollPos)
-                                for (rv in rvs) {
-                                    rv.layoutManager!!.scrollToPosition(scrollPos)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
+            val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
+            val buttonMinusWidth = cornerView.findViewById<View>(R.id.buttonRowScaleMinus)
+
+            buttonAddWidth.setOnClickListener { resizeHeaderRowWidth(true, cornerView, rvs) }
+            buttonMinusWidth.setOnClickListener { resizeHeaderRowWidth(false, cornerView, rvs) }
+
             binding.headerContainer.addView(cornerView)
+        }
+    }
+
+    private fun resizeHeaderRowWidth(
+        add: Boolean,
+        cornerView: View,
+        rvs: MutableList<CellRecyclerView>
+    ) {
+        for (i in 0 until binding.tableLayout.childCount) {
+            if (binding.tableLayout.getChildAt(i) is TableView) {
+                val table = binding.tableLayout.getChildAt(i) as TableView
+                if (table.adapter is DataSetTableAdapter) {
+                    val adapter = table.adapter as DataSetTableAdapter
+                    adapter.scaleRowWidth(add)
+                    val params = cornerView.layoutParams
+                    params.width = adapter.rowHeaderWidth
+                    cornerView.layoutParams = params
+                    if (i == 0) {
+                        presenterFragment.saveCurrentSectionMeasures(
+                            adapter.rowHeaderWidth,
+                            adapter.columnHeaderHeight
+                        )
+                        val scrollPos = table.scrollHandler.columnPosition
+                        table.scrollToColumnPosition(scrollPos)
+                        for (rv in rvs) {
+                            rv.layoutManager!!.scrollToPosition(scrollPos)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -381,57 +339,30 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         return heights.isNotEmpty()
     }
 
-    fun rowActions(): Flowable<RowAction> {
-        return adapters[0].asFlowable()
-    }
-
-    fun optionSetActions(): FlowableProcessor<Trio<String, String, Int>> {
-        return adapters[0].asFlowableOptionSet()
-    }
-
-    fun updateData(rowAction: RowAction, catCombo: String?) {
+    override fun updateData(rowAction: RowAction, catCombo: String?) {
         for (adapter in adapters)
             if (adapter.catCombo == catCombo) {
                 adapter.updateValue(rowAction)
+                adapter.tableView.selectionHandler.clearIfCellSelected(
+                    rowAction.rowPos(),
+                    rowAction.columnPos()
+                )
             }
+    }
+
+    override fun onValueProcessed() {
+        if (activity.isBackPressed) {
+            activity.abstractActivity.back()
+        }
+    }
+
+    override fun clearTables() {
+        binding.tableLayout.removeAllViews()
+        adapters.clear()
     }
 
     override fun showSnackBar() {
         saveToast.show()
-    }
-
-    override fun goToTable(numTable: Int) {
-        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable * 2).top)
-    }
-
-    fun currentNumTables(): Int {
-        return tablesCount
-    }
-
-    override fun showAlertDialog(title: String, message: String) {
-        super.showInfoDialog(title, message)
-    }
-
-    override fun highligthHeaderRow(table: Int, row: Int, mandatory: Boolean) {
-        val columnHeader = adapters[table].tableView.rowHeaderRecyclerView
-            .findViewHolderForAdapterPosition(row) as AbstractViewHolder?
-
-        if (columnHeader != null) {
-            columnHeader.setSelected(UNSELECTED)
-            columnHeader.setBackgroundColor(
-                if (mandatory) {
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.table_view_default_mandatory_background_color
-                    )
-                } else {
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.table_view_default_all_required_background_color
-                    )
-                }
-            )
-        }
     }
 
     override fun update(modified: Boolean) {
@@ -446,12 +377,18 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         fun create(
             sectionUid: String,
             accessDataWrite: Boolean,
-            dataSetUid: String
+            dataSetUid: String,
+            orgUnitUid: String,
+            periodId: String,
+            attributeOptionComboUid: String
         ): DataSetSectionFragment {
             val bundle = Bundle()
             bundle.putString(DATA_SET_SECTION, sectionUid)
             bundle.putBoolean(ACCESS_DATA, accessDataWrite)
             bundle.putString(DATA_SET_UID, dataSetUid)
+            bundle.putString(ARG_ORG_UNIT, orgUnitUid)
+            bundle.putString(ARG_PERIOD_ID, periodId)
+            bundle.putString(ARG_ATTR_OPT_COMB, attributeOptionComboUid)
             val dataSetSectionFragment = DataSetSectionFragment()
             dataSetSectionFragment.arguments = bundle
             return dataSetSectionFragment

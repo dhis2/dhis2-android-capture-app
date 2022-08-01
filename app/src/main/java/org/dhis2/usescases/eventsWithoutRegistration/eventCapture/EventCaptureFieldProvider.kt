@@ -5,11 +5,10 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -75,7 +74,7 @@ class EventCaptureFieldProvider(
                 val (rawValue, friendlyValue) = dataValue(
                     event.uid(),
                     fieldViewModel.uid,
-                    fieldViewModel is OrgUnitViewModel
+                    fieldViewModel.valueType == ValueType.ORGANISATION_UNIT
                 )
 
                 val error = checkConflicts(
@@ -167,7 +166,6 @@ class EventCaptureFieldProvider(
                 options.size,
                 de.style() ?: ObjectStyle.builder().build(),
                 de.fieldMask(),
-                getColorByLegend(rawValue, de),
                 options,
                 FeatureType.POINT,
                 de.url()

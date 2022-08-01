@@ -14,13 +14,13 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragme
 import org.dhis2.utils.isLandscape
 
 class DashboardPagerAdapter(
-    fa: FragmentActivity,
+    private val fragmentActivity: FragmentActivity,
     private val currentProgram: String?,
     private val teiUid: String,
     private val enrollmentUid: String?,
     private val displayAnalyticScreen: Boolean = true,
     private val displayRelationshipScreen: Boolean
-) : FragmentStateAdapter(fa) {
+) : FragmentStateAdapter(fragmentActivity) {
 
     enum class DashboardPageType {
         TEI_DETAIL, ANALYTICS, RELATIONSHIPS, NOTES
@@ -47,7 +47,7 @@ class DashboardPagerAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return createFragmentForPage(
-            if (isLandscape()) {
+            if (fragmentActivity.isLandscape()) {
                 landscapePages[position]
             } else {
                 portraitPages[position]
@@ -90,7 +90,7 @@ class DashboardPagerAdapter(
     }
 
     override fun getItemCount() =
-        if (isLandscape()) landscapePages.size else portraitPages.size
+        if (fragmentActivity.isLandscape()) landscapePages.size else portraitPages.size
 
     fun getNavigationPagePosition(navigationId: Int): Int {
         val pageType = when (navigationId) {
@@ -103,7 +103,7 @@ class DashboardPagerAdapter(
         }
 
         return pageType?.let {
-            if (isLandscape()) {
+            if (fragmentActivity.isLandscape()) {
                 landscapePages.indexOf(pageType)
             } else {
                 portraitPages.indexOf(pageType)
@@ -112,7 +112,7 @@ class DashboardPagerAdapter(
     }
 
     fun pageType(position: Int): DashboardPageType {
-        return if (isLandscape()) {
+        return if (fragmentActivity.isLandscape()) {
             landscapePages[position]
         } else {
             portraitPages[position]

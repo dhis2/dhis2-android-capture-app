@@ -170,9 +170,6 @@
     <string name="log_out">退出</string>
     <string name="block_session">阻止会话</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">选择位置</string>
-
     <!-- SYNC -->
     <string name="a_minute">1分钟</string>
     <string name="fifteen_minute">15分钟</string>
@@ -249,7 +246,6 @@
     <string name="missing_mandatory_fields_title">强制字段缺失</string>
     <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
     <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
-    <string name="missing_mandatory_fields_events">有些强制字段缺失，如果你后退，事件将不能被完成</string>
     <string name="title_delete_go_back">你的数据已经被保存</string>
     <string name="delete_go_back">如果退回，所有输入信息将被删除</string>
     <string name="missing_mandatory_fields_events_2.0">有些强制字段缺少值：%s。 你现在可以退回，但该事件不能被完成。</string>
@@ -438,7 +434,6 @@
     <string name="dashboard_indicators">指标</string>
     <string name="empty_indicators">该项目无指标</string>
     <string name="dashboard_notes">笔记</string>
-    <string name="unable_to_complete">不能完成</string>
     <string name="field_errors">有些字段有错误，请检查，才能完成项目</string>
     <string name="unselect_enrollment">所有的注册</string>
     <string name="unselect_enrollment_description">显示所有活动项目的仪表盘</string>
@@ -449,7 +444,6 @@
     <string name="sectionSelectorPrev">前一个</string>
     <string name="sectionSelectorNext">下一个</string>
     <string name="event_overview">详情</string>
-    <string name="event_event">事件</string>
     <string name="event_indicators">指标</string>
     <string name="event_notes">笔记</string>
     <string name="complete_add_new"><![CDATA[完成并新加]]></string>
@@ -515,10 +509,8 @@
     <string name="sync_setting">同步设置：%s</string>
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>
     <string name="formatting_error">格式化错误</string>
-    <string name="dashboard_menu_delete_tei">删除实体（TEI）</string>
     <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
-    <string name="record_marked_for_deletion">该记录被标记为删除。你不能访问。</string>
     <string name="validation_url">没有有效的URL</string>
     <string name="uncomplete_authority_error">你没有打开该事件的权限。</string>
     <string name="adjusting_form">调整表单。。。</string>
@@ -571,10 +563,8 @@
     <string name="value_required_but_not_provided">%s是强制的但是没有提供</string>
     <string name="polygon_captured">采集的多边形。</string>
     <string name="polygon">多边形</string>
-    <string name="map_layers">地图层</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">不正确的格式</string>
     <string name="fingerprint_title">指纹</string>
     <string name="fingerprint_message">请在指纹阅读器输入指纹</string>
     <string name="security_title">安全</string>
@@ -665,8 +655,4 @@
     <string name="syncing_period_not_editable">同步期间不能编辑</string>
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
-    <string name="dialog_layer_satellite">显示卫星视图</string>
-    <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
-    <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
-    <string name="dialog_layer_heatmap">显示热力图</string>
     </resources>

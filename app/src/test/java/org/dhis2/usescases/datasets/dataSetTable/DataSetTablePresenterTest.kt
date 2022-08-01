@@ -8,9 +8,12 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import java.util.Date
+import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.data.tuples.Pair
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.validationrules.ValidationRuleResult
 import org.dhis2.utils.validationrules.Violation
@@ -32,10 +35,17 @@ class DataSetTablePresenterTest {
     private val repository: DataSetTableRepositoryImpl = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val updateProcessor: FlowableProcessor<Unit> = PublishProcessor.create()
 
     @Before
     fun setUp() {
-        presenter = DataSetTablePresenter(view, repository, scheduler, analyticsHelper)
+        presenter = DataSetTablePresenter(
+            view,
+            repository,
+            scheduler,
+            analyticsHelper,
+            updateProcessor
+        )
     }
 
     @Test
@@ -46,7 +56,7 @@ class DataSetTablePresenterTest {
         val periodFinalDate = "12/05/2018"
         val periodId = "periodId"
 
-        val sections = listOf("section_1")
+        val sections = listOf(DataSetSection("section_1_uid", "section_1"))
         val dataSet = DataSet.builder().uid("datasetUid").build()
         val catComboName = "catComboName"
         val period = Period.builder().periodType(PeriodType.Daily)

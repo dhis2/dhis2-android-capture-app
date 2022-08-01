@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -76,6 +75,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    /*
     debugImplementation project(':core')
     debugImplementation project(':dhis2-rule-engine')
 
@@ -84,30 +84,21 @@ dependencies {
     releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
     }
+     */
 
     implementation project(':tableview')
     implementation project(':commons')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
     implementation "androidx.cardview:cardview:${libraries.cardview}"
     implementation "androidx.constraintlayout:constraintlayout:${libraries.constraintlayout}"
-    implementation "androidx.core:core-ktx:${libraries.corektx}"
-    implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
-    implementation "com.google.android.material:material:${libraries.material}"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycleviewmodel}"
+
     //Graphs
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    //region DAGGER
-    implementation "com.google.dagger:dagger:${libraries.dagger}"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
 
-    //region TEST
-    testImplementation "junit:junit:${libraries.junit}"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     testImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"

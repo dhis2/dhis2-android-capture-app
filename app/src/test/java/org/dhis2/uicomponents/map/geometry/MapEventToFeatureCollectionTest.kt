@@ -6,9 +6,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType

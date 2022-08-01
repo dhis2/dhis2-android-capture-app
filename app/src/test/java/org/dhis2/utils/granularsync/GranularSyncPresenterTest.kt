@@ -1,13 +1,15 @@
 package org.dhis2.utils.granularsync
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.time.Instant
-import java.util.Collections
 import java.util.Date
 import junit.framework.Assert.assertTrue
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -39,18 +41,22 @@ import org.mockito.Mockito.mock
 class GranularSyncPresenterTest {
 
     private val d2: D2 = mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val programUtils: DhisProgramUtils = mock()
     private val view = mock(GranularSyncContracts.View::class.java)
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
     private val errorMapper: ErrorModelMapper = ErrorModelMapper("%s %s %s %s")
     private val testProgram = getProgram()
+    private val preferenceProvider: PreferenceProvider = mock()
+    private val smsSyncProvider: SMSSyncProvider = mock()
 
     @Test
     fun simplePresenterTest() {
         // GIVEN
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -58,7 +64,9 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
         Mockito.`when`(d2.programModule().programs())
@@ -77,6 +85,7 @@ class GranularSyncPresenterTest {
     fun `should return tracker program error state`() {
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -84,39 +93,14 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
 
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programs()) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid")) doReturn mock()
-        whenever(d2.programModule().programs().uid("test_uid").get()) doReturn Single.just(
-            getProgram()
-        )
-
-        whenever(d2.trackedEntityModule()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            )
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR)
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                Collections.singletonList("test_uid")
-            ).byAggregatedSyncState().`in`(State.ERROR).blockingGet()
-        ) doReturn getListOfTEIsWithError()
+            programUtils.getProgramState("test_uid")
+        ) doReturn State.ERROR
         val testSubscriber = presenter.getState().test()
 
         testSubscriber.assertSubscribed()
@@ -144,6 +128,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -151,7 +136,9 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -179,6 +166,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -186,7 +174,9 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf())
@@ -214,6 +204,7 @@ class GranularSyncPresenterTest {
 
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.DATA_SET,
             "data_set_uid",
@@ -221,7 +212,9 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
 
         val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
@@ -233,6 +226,7 @@ class GranularSyncPresenterTest {
     fun `Should get list of sync errors order by date`() {
         val presenter = GranularSyncPresenterImpl(
             d2,
+            programUtils,
             trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
@@ -240,7 +234,9 @@ class GranularSyncPresenterTest {
             null,
             null,
             workManager,
-            errorMapper
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
         )
 
         whenever(
@@ -282,6 +278,36 @@ class GranularSyncPresenterTest {
         assertTrue(errors[0].errorCode == "500")
         assertTrue(errors[1].errorCode == "FK")
         assertTrue(errors[2].errorCode == "API")
+    }
+
+    @Test
+    fun `should block sms for some conflict types`() {
+        whenever(
+            smsSyncProvider.isSMSEnabled(any())
+        )doReturn true
+        val result = SyncStatusDialog.ConflictType.values().associate {
+            val enable = GranularSyncPresenterImpl(
+                d2,
+                programUtils,
+                trampolineSchedulerProvider,
+                it,
+                "test_uid",
+                null,
+                null,
+                null,
+                workManager,
+                errorMapper,
+                preferenceProvider,
+                smsSyncProvider
+            ).isSMSEnabled(true)
+            it to enable
+        }
+        assertTrue(result[SyncStatusDialog.ConflictType.PROGRAM] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.ALL] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.DATA_SET] == false)
+        assertTrue(result[SyncStatusDialog.ConflictType.TEI] == true)
+        assertTrue(result[SyncStatusDialog.ConflictType.EVENT] == true)
+        assertTrue(result[SyncStatusDialog.ConflictType.DATA_VALUES] == true)
     }
 
     private fun getMockedCompleteRegistrations(

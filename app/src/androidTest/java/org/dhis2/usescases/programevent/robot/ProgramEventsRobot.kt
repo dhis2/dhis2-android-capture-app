@@ -6,20 +6,13 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withTagValue
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.isOneOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.*
 
 fun programEventsRobot(programEventsRobot: ProgramEventsRobot.() -> Unit) {
     ProgramEventsRobot().apply {
@@ -55,23 +48,13 @@ class ProgramEventsRobot : BaseRobot() {
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
-        onView(withId(R.id.recycler))
-            .check(matches(allOf(
-                ViewMatchers.isDisplayed(), RecyclerviewMatchers.isNotEmpty(),
-                RecyclerviewMatchers.atPosition(
-                    position, allOf(
-                        hasDescendant(withText(eventName)),
-                        hasDescendant(
-                            withTagValue(
-                                isOneOf(
-                                    R.drawable.ic_event_status_complete,
-                                    R.drawable.ic_event_status_complete_read
-                                )
-                            )
-                        )
-                    )
-                )
-            )))
+        waitForView(
+            allOf(
+                withId(R.id.recycler),
+                hasDescendant(withText(eventName)),
+                hasDescendant(withTagValue(isOneOf(R.drawable.ic_event_status_complete,R.drawable.ic_event_status_complete_read)))
+            )
+        ).check(matches(isDisplayed()))
     }
 
     fun checkEventIsComplete(eventDate: String, eventOrgUnit: String) {

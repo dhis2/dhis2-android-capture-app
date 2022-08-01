@@ -4,7 +4,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertEquals
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
