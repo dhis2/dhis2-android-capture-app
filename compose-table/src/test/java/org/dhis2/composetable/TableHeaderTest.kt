@@ -1,11 +1,9 @@
 package org.dhis2.composetable
 
-import androidx.compose.ui.unit.dp
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Test
 
 class TableHeaderTest {
