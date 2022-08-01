@@ -1,8 +1,7 @@
 package org.dhis2.Bindings
 
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.utils.extension.invoke
-import org.dhis2.utils.reporting.CrashReportControllerImpl
+import org.dhis2.commons.extensions.invoke
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue

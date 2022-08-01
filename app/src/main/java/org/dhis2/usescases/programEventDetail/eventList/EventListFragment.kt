@@ -27,7 +27,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailLiveAdapter
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.utils.DataElementsAdapter
 import org.hisp.dhis.android.core.dataelement.DataElement
 

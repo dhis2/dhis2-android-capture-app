@@ -16,7 +16,6 @@ import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.ProgramEventViewModel;
 import org.dhis2.commons.filters.data.TextFilter;
-import org.dhis2.data.dhislogic.DhisMapUtils;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;

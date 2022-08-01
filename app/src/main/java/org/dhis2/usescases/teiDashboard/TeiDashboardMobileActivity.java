@@ -577,7 +577,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
                             break;
                         default :
-                            TeiDashboardMenuKt.customClick(item.getItemId(), this, programUid, enrollmentUid,  teiUid);
+                            TeiDashboardMenuKt.customClick(itemId, this, programUid, enrollmentUid,  teiUid);
                     }
                     return true;
                 })
