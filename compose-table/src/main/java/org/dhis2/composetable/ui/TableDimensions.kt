@@ -14,7 +14,9 @@ data class TableDimensions(
     val defaultCellWidth: Dp = 52.dp,
     val defaultCellHeight: Dp = 36.dp,
     val defaultRowHeaderWidth: Dp = 60.dp,
-    val defaultHeaderHeight: Dp = 24.dp
+    val defaultHeaderHeight: Dp = 24.dp,
+    val defaultLegendCornerSize: Dp = 2.dp,
+    val defaultLegendBorderWidth: Dp = 4.dp
 ) {
 
     fun defaultCellWidthWithExtraSize(

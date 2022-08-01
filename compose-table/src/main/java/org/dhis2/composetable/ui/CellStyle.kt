@@ -77,7 +77,7 @@ fun styleForCell(
         else -> Color.Transparent
     },
     backgroundColor = when {
-        legendColor != null -> Color(legendColor)
+        legendColor != null -> Color.Transparent
         !isEditable -> TableTheme.colors.disabledCellBackground
         else -> when {
             isSelected -> TableTheme.colors.tableBackground
