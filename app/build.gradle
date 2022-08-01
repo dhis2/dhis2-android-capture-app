@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
+apply plugin: "kotlinx-serialization"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -334,4 +335,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.0.4")
     //endregion
+
+    //Serialization library
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
 }
