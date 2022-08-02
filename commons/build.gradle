@@ -61,10 +61,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     debugApi project(':core')
-    releaseApi("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-        exclude group: "org.hisp.dhis", module: "core-rules"
-        exclude group: "com.facebook.flipper"
-    }
+    releaseApi project(':core')
 
     api ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"

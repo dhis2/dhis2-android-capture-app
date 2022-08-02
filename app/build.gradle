@@ -222,14 +222,6 @@ android {
 
 dependencies {
     implementation 'androidx.activity:activity-compose:1.3.1'
-    /*
-    debugImplementation project(':core')
-    releaseImplementation project(':core')
-
-    debugImplementation project(':dhis2-rule-engine')
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
-        exclude group: "junit", module: "junit"
-    }*/
 
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')

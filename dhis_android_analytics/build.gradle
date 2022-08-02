@@ -75,17 +75,6 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    /*
-    debugImplementation project(':core')
-    debugImplementation project(':dhis2-rule-engine')
-
-    releaseImplementation project(':core')
-
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
-        exclude group: "junit", module: "junit"
-    }
-     */
-
     implementation project(':tableview')
     implementation project(':commons')
 
