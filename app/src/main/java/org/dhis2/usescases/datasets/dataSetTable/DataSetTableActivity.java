@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.NO_SECTION;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
@@ -163,39 +161,25 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         syncDialog.show(getSupportFragmentManager(), DATAVALUE_SYNC);
     }
 
-    private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            int heightDiff = binding.getRoot().getRootView().getHeight() - binding.getRoot().getHeight();
-            if (heightDiff > ExtensionsKt.getDp(200)) {
-                isKeyboardOpened = true;
-                binding.navigationView.setVisibility(View.GONE);
-                binding.saveButton.hide();
-                if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
-                    if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
-            } else if(isKeyboardOpened){
-                isKeyboardOpened = false;
-                new Handler().postDelayed(()->{
-                    binding.navigationView.setVisibility(View.VISIBLE);
-                    binding.saveButton.show();
-                },1000);
+    @Override
+    public void startInputEdition(){
+        isKeyboardOpened = true;
+        binding.navigationView.setVisibility(View.GONE);
+        binding.saveButton.hide();
+        if (binding.BSLayout.bottomSheetLayout.getVisibility() == View.VISIBLE) {
+            if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        binding.container.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        binding.container.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+    public void finishInputEdition(){
+        isKeyboardOpened = false;
+        new Handler().postDelayed(()->{
+            binding.navigationView.setVisibility(View.VISIBLE);
+            binding.saveButton.show();
+        },1000);
     }
 
     @Override
@@ -301,11 +285,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             binding.getRoot().requestFocus();
             back();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        back();
     }
 
     public boolean isBackPressed() {

@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -55,52 +54,8 @@ class SelectionState {
         this.sonsOfHeader = childrenOfSelectedHeader
     }
 
-    @Composable
-    fun styleForColumnHeader(column: Int, headerRow: Int): CellStyle = when {
-        all || headerRow == columnHeaderRow && column == this.column -> CellStyle(
-            backgroundColor = TableTheme.colors.primary,
-            textColor = contentColorFor(TableTheme.colors.primary)
-        )
-        selectedHeaderIsParent(column) ||
-            headerRow == columnHeaderRow && column != this.column -> CellStyle(
-            backgroundColor = TableTheme.colors.primaryLight,
-            textColor = TableTheme.colors.headerText
-        )
-        column % 2 == 0 -> CellStyle(
-            backgroundColor = TableTheme.colors.headerBackground1,
-            textColor = TableTheme.colors.headerText
-        )
-        else ->
-            CellStyle(
-                backgroundColor = TableTheme.colors.headerBackground2,
-                textColor = TableTheme.colors.headerText
-            )
-    }
-
-    @Composable
-    fun styleForRowHeader(rowIndex: Int?): CellStyle = when {
-        rowIndex == row && rowHeader || all -> CellStyle(
-            TableTheme.colors.primary,
-            contentColorFor(TableTheme.colors.primary)
-        )
-        rowIndex != row && rowHeader -> CellStyle(
-            TableTheme.colors.primaryLight,
-            TableTheme.colors.primary
-        )
-        else -> CellStyle(
-            backgroundColor = TableTheme.colors.tableBackground,
-            textColor = TableTheme.colors.primary
-        )
-    }
-
     private fun selectedHeaderIsParent(columnIndex: Int): Boolean {
         return sonsOfHeader?.let { columnIndex / it == column } ?: false
-    }
-
-    @Composable
-    fun backgroundColorForCorner(): Color = when (all) {
-        true -> TableTheme.colors.primaryLight
-        else -> TableTheme.colors.tableBackground
     }
 
     @Composable

@@ -184,8 +184,8 @@ class MainActivity :
                 mainNavigator.restoreScreen(
                     screenToRestoreName = openScreen ?: restoreScreenName!!,
                     languageSelectorOpened = openScreen != null &&
-                            MainNavigator.MainScreen.valueOf(openScreen) ==
-                            MainNavigator.MainScreen.TROUBLESHOOTING
+                        MainNavigator.MainScreen.valueOf(openScreen) ==
+                        MainNavigator.MainScreen.TROUBLESHOOTING
                 )
             }
             else -> {
@@ -221,7 +221,7 @@ class MainActivity :
         super.onPause()
     }
 
-    private fun observeSyncState(){
+    private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
             val currentState = it.firstOrNull()?.state
             if (currentState == WorkInfo.State.RUNNING) {

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
@@ -30,6 +31,7 @@ import org.dhis2.composetable.ui.TextInput
 fun DataSetTableScreen(
     tableData: List<TableModel>,
     onCellClick: (TableCell) -> TextInputModel?,
+    onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell) -> Unit
 ) {
@@ -37,6 +39,7 @@ fun DataSetTableScreen(
         val bottomSheetState = rememberBottomSheetScaffoldState(
             bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
         )
+
         var currentCell by remember {
             mutableStateOf<TableCell?>(
                 null
@@ -50,6 +53,12 @@ fun DataSetTableScreen(
         var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
         val coroutineScope = rememberCoroutineScope()
 
+        BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
+            coroutineScope.launch {
+                bottomSheetState.bottomSheetState.collapse()
+                onEdition(false)
+            }
+        }
         BottomSheetScaffold(
             scaffoldState = bottomSheetState,
             sheetContent = {
@@ -87,7 +96,13 @@ fun DataSetTableScreen(
                     coroutineScope.launch {
                         if (bottomSheetState.bottomSheetState.isCollapsed) {
                             bottomSheetState.bottomSheetState.expand()
+                            onEdition(true)
                         }
+                    }
+                } ?: coroutineScope.launch {
+                    if (bottomSheetState.bottomSheetState.isExpanded) {
+                        bottomSheetState.bottomSheetState.collapse()
+                        onEdition(false)
                     }
                 }
             }

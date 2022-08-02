@@ -117,7 +117,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         savedInstanceState: Bundle?
     ): View {
         return FragmentDatasetSectionBinding.inflate(inflater, container, false)
-            .also {
+            .also { it ->
                 binding = it
                 if (presenterFragment.isComposeTableEnable()) {
                     binding.tables.setContent {
@@ -127,6 +127,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             tableData = tableData,
                             onCellClick = { cell ->
                                 presenterFragment.onCellClick(cell = cell)
+                            },
+                            onEdition = { isEditing ->
+                                presenter.editingCellValue(isEditing)
                             },
                             onCellValueChange = {
                             },

@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -101,6 +103,9 @@ private fun TextInputContent(
     }
 
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember {
+        FocusRequester()
+    }
     var hasFocus by remember { mutableStateOf(false) }
 
     Row(
@@ -114,6 +119,7 @@ private fun TextInputContent(
             BasicTextField(
                 modifier = Modifier
                     .testTag(INPUT_TEST_FIELD_TEST_TAG)
+                    .focusRequester(focusRequester)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .onFocusChanged {
@@ -161,6 +167,8 @@ private fun TextInputContent(
                     if (hasFocus) {
                         focusManager.clearFocus(force = true)
                         onSave(textInputModel.copy(currentValue = value))
+                    } else {
+                        focusRequester.requestFocus()
                     }
                 },
             hasFocus = hasFocus

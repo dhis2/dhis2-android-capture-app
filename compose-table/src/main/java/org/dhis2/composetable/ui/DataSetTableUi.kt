@@ -3,7 +3,6 @@ package org.dhis2.composetable.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -30,8 +29,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -128,7 +129,7 @@ fun HeaderCell(
         modifier = Modifier
             .width(IntrinsicSize.Min)
             .height(headerHeight)
-            .background(cellStyle.backgroundColor)
+            .background(cellStyle.backgroundColor())
             .clickable {
                 onCellSelected(columnIndex)
             }
@@ -138,7 +139,7 @@ fun HeaderCell(
                 .width(headerWidth)
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
-            color = cellStyle.textColor,
+            color = cellStyle.mainColor(),
             text = headerCell.value,
             textAlign = TextAlign.Center,
             fontSize = 12.sp
@@ -185,10 +186,13 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowHeader: RowHeader,
     dataElementValues: Map<Int, TableCell>,
-    selectionState: SelectionState,
     isNotLastRow: Boolean,
     rowHeaderCellStyle: @Composable
     (rowHeaderIndex: Int?) -> CellStyle,
+    cellStyle: @Composable
+    (cellValue: TableCell) -> CellStyle,
+    nonEditableCellLayer: @Composable
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -219,7 +223,8 @@ fun TableItemRow(
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 ),
-                selectionState = selectionState,
+                cellStyle = cellStyle,
+                nonEditableCellLayer = nonEditableCellLayer,
                 onClick = onClick
             )
         }
@@ -274,7 +279,7 @@ fun ItemHeader(
             .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
             .width(width)
             .height(IntrinsicSize.Min)
-            .background(cellStyle.backgroundColor)
+            .background(cellStyle.backgroundColor())
             .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -288,7 +293,7 @@ fun ItemHeader(
                 modifier = Modifier
                     .weight(1f),
                 text = rowHeader.title,
-                color = cellStyle.textColor,
+                color = cellStyle.mainColor(),
                 fontSize = 12.sp
             )
             if (rowHeader.showDecoration) {
@@ -307,7 +312,7 @@ fun ItemHeader(
                         }
                         .height(10.dp)
                         .width(10.dp),
-                    tint = cellStyle.textColor
+                    tint = cellStyle.mainColor()
                 )
             }
         }
@@ -326,7 +331,10 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
-    selectionState: SelectionState,
+    cellStyle: @Composable
+    (cellValue: TableCell) -> CellStyle,
+    nonEditableCellLayer: @Composable
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(
@@ -342,13 +350,17 @@ fun ItemValues(
                         .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
-                        .defaultMinSize(minHeight = defaultHeight),
+                        .defaultMinSize(minHeight = defaultHeight)
+                        .cellBorder(
+                            borderColor = cellStyle(cellValue).mainColor(),
+                            backgroundColor = cellStyle(cellValue).backgroundColor()
+                        ),
                     cellValue = cellValue,
-                    tableCellUiOptions = TableCellUiOptions(cellValue, selectionState),
                     nonEditableCellLayer = {
-                        addBlueNonEditableCellLayer(
-                            selectionState = selectionState,
-                            cellValue = cellValue
+                        nonEditableCellLayer(
+                            columnIndex = cellValue.column ?: -1,
+                            rowIndex = cellValue.row ?: -1,
+                            isCellEditable = cellValue.editable
                         )
                     },
                     onClick = onClick
@@ -362,7 +374,6 @@ fun ItemValues(
 fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
-    tableCellUiOptions: TableCellUiOptions,
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit
@@ -370,30 +381,27 @@ fun TableCell(
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
     nonEditableCellLayer()
 
-    Box(
-        modifier = modifier
-            .border(1.dp, tableCellUiOptions.borderColor())
-            .background(tableCellUiOptions.backgroundColor())
-    ) {
+    Box(modifier = modifier) {
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp)
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .clickable {
-                    if (cellValue.editable == true) {
-                        when {
-                            cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                            else -> onClick(cellValue)
-                        }
+                .clickable(cellValue.editable) {
+                    when {
+                        cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                        else -> onClick(cellValue)
                     }
                 },
             text = cellValue.value ?: "",
             style = TextStyle.Default.copy(
                 fontSize = 10.sp,
                 textAlign = TextAlign.End,
-                color = tableCellUiOptions.textColor()
+                color = LocalTableColors.current.cellTextColor(
+                    hasError = cellValue.error != null,
+                    isEditable = cellValue.editable
+                )
             )
         )
         if (cellValue.dropDownOptions?.isNotEmpty() == true) {
@@ -416,8 +424,14 @@ fun TableCell(
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
-                    .align(tableCellUiOptions.mandatoryAlignment(cellValue.value?.isNotEmpty())),
-                tint = tableCellUiOptions.mandatoryColor(cellValue.value?.isNotEmpty())
+                    .align(
+                        alignment = mandatoryIconAlignment(
+                            cellValue.value?.isNotEmpty() == true
+                        )
+                    ),
+                tint = LocalTableColors.current.cellMandatoryIconColor(
+                    cellValue.value?.isNotEmpty() == true
+                )
             )
         }
         if (cellValue.error != null) {
@@ -431,14 +445,17 @@ fun TableCell(
     }
 }
 
+private fun mandatoryIconAlignment(hasValue: Boolean) = when (hasValue) {
+    true -> Alignment.TopStart
+    false -> Alignment.CenterEnd
+}
+
 @Composable
 fun addBlueNonEditableCellLayer(
-    selectionState: SelectionState,
-    cellValue: TableCell
+    hasToApplyLightPrimary: Boolean,
+    cellIsEditable: Boolean
 ) {
-    val hasToApplyLightPrimary =
-        selectionState.isParentSelection(cellValue.column, cellValue.row)
-    if (!cellValue.editable && hasToApplyLightPrimary) {
+    if (!cellIsEditable && hasToApplyLightPrimary) {
         Box(
             modifier = Modifier
                 .background(TableTheme.colors.primaryLight.copy(alpha = 0.3f))
@@ -504,7 +521,9 @@ private fun TableList(
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
-        val selectionStates = tableList.map { rememberSelectionState() }
+        var tableSelection by remember {
+            mutableStateOf<TableSelection>(TableSelection.Unselected())
+        }
         LazyColumn(
             Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
@@ -517,21 +536,38 @@ private fun TableList(
                         modifier = Modifier
                             .background(Color.White),
                         cornerModifier = Modifier
-                            .background(selectionStates[index].backgroundColorForCorner()),
+                            .cornerBackground(
+                                isSelected = tableSelection.isCornerSelected(
+                                    currentTableModel.id ?: ""
+                                ),
+                                selectedColor = LocalTableColors.current.primaryLight,
+                                defaultColor = LocalTableColors.current.tableBackground
+                            ),
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
                         cellStyle = { columnIndex, rowIndex ->
-                            selectionStates[index].styleForColumnHeader(
-                                columnIndex,
-                                rowIndex
+                            return@TableHeaderRow styleForColumnHeader(
+                                isSelected = tableSelection.isHeaderSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    columnHeaderRowIndex = rowIndex
+                                ),
+                                isParentSelected = tableSelection.isParentHeaderSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    columnHeaderRowIndex = rowIndex
+                                ),
+                                columnIndex = columnIndex
                             )
                         },
                         onTableCornerClick = {
-                            selectionStates[index].selectCell(all = true)
+                            tableSelection =
+                                TableSelection.AllCellSelection(currentTableModel.id ?: "")
                         },
                         onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
-                            selectionStates[index].selectHeader(
-                                column = headerColumnIndex,
+                            tableSelection = TableSelection.ColumnSelection(
+                                tableId = currentTableModel.id ?: "",
+                                columnIndex = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
                                     currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
@@ -545,23 +581,58 @@ private fun TableList(
                         horizontalScrollState = horizontalScrollStates[index],
                         rowHeader = tableRowModel.rowHeader,
                         dataElementValues = tableRowModel.values,
-                        selectionState = selectionStates[index],
                         isNotLastRow = !tableRowModel.isLastRow,
+                        nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
+                            addBlueNonEditableCellLayer(
+                                hasToApplyLightPrimary = tableSelection.isParentHeaderSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    columnHeaderRowIndex = rowIndex
+                                ),
+                                cellIsEditable = isCellEditable
+                            )
+                        },
                         rowHeaderCellStyle = { rowHeaderIndex ->
-                            selectionStates[index].styleForRowHeader(rowHeaderIndex)
+                            styleForRowHeader(
+                                isSelected = tableSelection.isRowSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    rowHeaderIndex = rowHeaderIndex ?: -1
+                                ),
+                                isOtherRowSelected = tableSelection.isOtherRowSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    rowHeaderIndex = rowHeaderIndex ?: -1
+                                )
+                            )
+                        },
+                        cellStyle = { cellValue ->
+                            styleForCell(
+                                isSelected = tableSelection.isCellSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = cellValue.column ?: -1,
+                                    rowIndex = cellValue.row ?: -1
+                                ),
+                                isParentSelected = tableSelection.isCellParentSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = cellValue.column ?: -1,
+                                    rowIndex = cellValue.row ?: -1
+                                ),
+                                hasError = cellValue.error != null,
+                                isEditable = cellValue.editable,
+                                legendColor = cellValue.legendColor
+                            )
                         },
                         onRowHeaderClick = { rowHeaderIndex ->
-                            selectionStates[index].selectCell(
-                                row = rowHeaderIndex,
-                                rowHeader = true
+                            tableSelection = TableSelection.RowSelection(
+                                tableId = currentTableModel.id ?: "",
+                                rowIndex = rowHeaderIndex ?: -1
                             )
                         },
                         onDecorationClick = onDecorationClick,
                         onClick = { tableCell ->
-                            selectionStates[index].selectCell(
-                                tableCell.column,
-                                tableCell.row,
-                                cellOnly = true
+                            tableSelection = TableSelection.CellSelection(
+                                tableId = currentTableModel.id ?: "",
+                                columnIndex = tableCell.column ?: -1,
+                                rowIndex = tableCell.row ?: -1
                             )
                             onClick(tableCell)
                         }
@@ -610,13 +681,25 @@ fun TableItem(
         Column(Modifier.padding(16.dp)) {
             val horizontalScrollState = rememberScrollState()
             val selectionState = rememberSelectionState()
+            val tableSelection by remember {
+                mutableStateOf<TableSelection>(TableSelection.Unselected())
+            }
             TableHeaderRow(
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollState,
-                cellStyle = { headerColumnIndex, headerRowIndex ->
-                    selectionState.styleForColumnHeader(
-                        column = headerColumnIndex,
-                        headerRow = headerRowIndex
+                cellStyle = { columnIndex, rowIndex ->
+                    styleForColumnHeader(
+                        isSelected = tableSelection.isHeaderSelected(
+                            selectedTableId = tableModel.id ?: "",
+                            columnIndex = columnIndex,
+                            columnHeaderRowIndex = rowIndex
+                        ),
+                        isParentSelected = tableSelection.isParentHeaderSelected(
+                            selectedTableId = tableModel.id ?: "",
+                            columnIndex = columnIndex,
+                            columnHeaderRowIndex = rowIndex
+                        ),
+                        columnIndex = columnIndex
                     )
                 }
             )
@@ -626,10 +709,44 @@ fun TableItem(
                     horizontalScrollState = horizontalScrollState,
                     rowHeader = tableRowModel.rowHeader,
                     dataElementValues = tableRowModel.values,
-                    selectionState = selectionState,
                     isNotLastRow = index != tableModel.tableRows.size - 1,
                     rowHeaderCellStyle = { rowHeaderIndex ->
-                        selectionState.styleForRowHeader(rowIndex = rowHeaderIndex)
+                        styleForRowHeader(
+                            isSelected = tableSelection.isRowSelected(
+                                selectedTableId = tableModel.id ?: "",
+                                rowHeaderIndex = rowHeaderIndex ?: -1
+                            ),
+                            isOtherRowSelected = tableSelection.isOtherRowSelected(
+                                selectedTableId = tableModel.id ?: "",
+                                rowHeaderIndex = rowHeaderIndex ?: -1
+                            )
+                        )
+                    },
+                    cellStyle = { cellValue ->
+                        styleForCell(
+                            isSelected = tableSelection.isCellSelected(
+                                selectedTableId = tableModel.id ?: "",
+                                columnIndex = cellValue.column ?: -1,
+                                rowIndex = cellValue.row ?: -1
+                            ),
+                            isParentSelected = tableSelection.isCellParentSelected(
+                                selectedTableId = tableModel.id ?: "",
+                                columnIndex = cellValue.column ?: -1,
+                                rowIndex = cellValue.row ?: -1
+                            ),
+                            hasError = cellValue.error != null,
+                            isEditable = cellValue.editable,
+                            legendColor = cellValue.legendColor
+                        )
+                    },
+                    nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
+                        addBlueNonEditableCellLayer(
+                            hasToApplyLightPrimary = selectionState.isParentSelection(
+                                columnIndex,
+                                rowIndex
+                            ),
+                            cellIsEditable = isCellEditable
+                        )
                     },
                     onRowHeaderClick = {},
                     onDecorationClick = onDecorationClick
