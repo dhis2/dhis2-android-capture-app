@@ -59,7 +59,16 @@ android {
         dhisUITesting {
 
         }
+
+        widp {
+
+        }
+
+        psi {
+
+        }
     }
+
 
     kotlinOptions {
         jvmTarget = '1.8'
