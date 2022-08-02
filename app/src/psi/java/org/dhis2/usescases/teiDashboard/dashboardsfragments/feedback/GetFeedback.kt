@@ -1,11 +1,11 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.filter
 import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 
 sealed class FeedbackFailure {
     object NotFound : FeedbackFailure()
@@ -236,7 +236,7 @@ class GetFeedback(
         return enrolmentEvents.map {
             val values = valuesRepository.getByEvent(it.event!!.uid())
 
-            Event(it.event.uid(), it.stage?.displayName()!!, it.stage.uid(), values)
+            Event(it.event!!.uid(), it.stage?.displayName()!!, it.stage!!.uid(), values)
         }
     }
 
