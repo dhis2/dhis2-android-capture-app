@@ -3,6 +3,8 @@ package org.dhis2.composetable
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -13,7 +15,6 @@ import org.dhis2.composetable.ui.CELL_TEST_TAG
 import org.dhis2.composetable.ui.DrawableId
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
-import org.dhis2.composetable.ui.ROW_TEST_TAG
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -29,7 +30,7 @@ class TableRobot(
 ) {
 
     fun assertClickOnCellShouldOpenInputComponent(rowIndex: Int, columnIndex: Int) {
-        clickOnCell(rowIndex, columnIndex)
+        clickOnCell("table", rowIndex, columnIndex)
         assertInputComponentIsDisplayed()
     }
 
@@ -45,9 +46,20 @@ class TableRobot(
         clickOnAccept()
     }
 
-    private fun clickOnCell(rowIndex: Int, columnIndex: Int) {
-        composeTestRule.onNodeWithTag("${ROW_TEST_TAG}0", useUnmergedTree = true)
-        composeTestRule.onNodeWithTag("${CELL_TEST_TAG}$rowIndex$columnIndex", true).performClick()
+    fun clickOnCell(tableId:String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true).performClick()
+    }
+
+    fun clickOnRowHeader(tableId: String, rowIndex: Int){
+        composeTestRule.onNodeWithTag("$tableId$rowIndex").performClick()
+    }
+
+    fun assertRowHeaderText(tableId: String, text: String, rowIndex: Int){
+        composeTestRule.onNodeWithTag("$tableId$rowIndex").assertTextEquals(text)
+    }
+
+    fun assertRowHeaderIsClickable(tableId: String, text: String, rowIndex: Int){
+        composeTestRule.onNodeWithTag("$tableId$rowIndex").assertIsEnabled()
     }
 
     private fun clickOnEditValue() {

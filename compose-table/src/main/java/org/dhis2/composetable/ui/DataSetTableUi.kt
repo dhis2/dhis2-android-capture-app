@@ -204,6 +204,7 @@ fun TableItemRow(
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
+                tableId = tableModel.id!!,
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
                 width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
@@ -215,6 +216,7 @@ fun TableItemRow(
                 onDecorationClick = onDecorationClick
             )
             ItemValues(
+                tableId = tableModel.id!!,
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
@@ -268,6 +270,7 @@ fun TableCorner(
 
 @Composable
 fun ItemHeader(
+    tableId: String,
     rowHeader: RowHeader,
     cellStyle: CellStyle,
     width: Dp,
@@ -280,6 +283,7 @@ fun ItemHeader(
             .width(width)
             .height(IntrinsicSize.Min)
             .background(cellStyle.backgroundColor())
+            .testTag("$tableId${rowHeader.row}")
             .clickable { onCellSelected(rowHeader.row) },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -327,6 +331,7 @@ fun ItemHeader(
 
 @Composable
 fun ItemValues(
+    tableId: String,
     horizontalScrollState: ScrollState,
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
@@ -347,7 +352,7 @@ fun ItemValues(
                 val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
-                        .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
+                        .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
