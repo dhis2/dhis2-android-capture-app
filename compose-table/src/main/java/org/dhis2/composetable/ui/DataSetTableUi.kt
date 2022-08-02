@@ -381,7 +381,10 @@ fun TableCell(
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
     nonEditableCellLayer()
 
-    Box(modifier = modifier) {
+    CellLegendBox(
+        modifier = modifier,
+        legendColor = cellValue.legendColor?.let { Color(it) }
+    ) {
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
