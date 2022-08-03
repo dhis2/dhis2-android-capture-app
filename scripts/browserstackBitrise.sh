@@ -83,7 +83,6 @@ then
   exit 1
 else
   device_status=$(echo "$build_status_response" | jq -r '.device_statuses.error | to_entries[].value')
-
   if [[ $device_status = "Failed" ]]; # for this Failed Browserstack used bloq mayus
   then
 	  echo "Browserstack build failed, please check the execution of your tests $test_reports_url"
