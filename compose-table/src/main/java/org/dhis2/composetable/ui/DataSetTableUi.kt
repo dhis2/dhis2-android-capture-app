@@ -389,9 +389,16 @@ fun TableCell(
     ) {
         Text(
             modifier = Modifier
+                .align(Alignment.Center)
                 .padding(horizontal = 4.dp)
                 .fillMaxWidth()
-                .align(Alignment.Center),
+                .fillMaxHeight()
+                .clickable(cellValue.editable) {
+                    when {
+                        cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                        else -> onClick(cellValue)
+                    }
+                },
             text = cellValue.value ?: "",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
