@@ -4,14 +4,14 @@ import com.google.gson.GsonBuilder
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.leaf
 import org.dhis2.core.types.node
 import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert
