@@ -77,7 +77,7 @@ envman add --key BROWSERSTACK_TEST_REPORTS --value "$test_reports_url"
 # weird behavior from Browserstack api, you can have "done" status with failed tests
 # "devices" only show one device result which is inconsistance
 # then "device_status" is checked
-if [[ $build_status = "failed" ]];
+if [[ $build_status = "failed" || $build_status = "error" ]];
 then
 	echo "Browserstack build failed, please check the execution of your tests $test_reports_url"
   exit 1
