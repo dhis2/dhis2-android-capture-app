@@ -282,7 +282,7 @@ fun ItemHeader(
             .background(cellStyle.backgroundColor())
             .clickable {
                 onCellSelected(rowHeader.row)
-                if (!rowHeader.description.isNullOrEmpty()) {
+                if (rowHeader.showDecoration) {
                     onDecorationClick(
                         TableDialogModel(
                             rowHeader.title,
