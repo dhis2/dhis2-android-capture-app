@@ -6,5 +6,5 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 class TestSchedulerProvider(private val scheduler: TestScheduler) : SchedulerProvider {
     override fun computation() = scheduler
     override fun ui() = scheduler
-    override fun io() = scheduler
+    override fun io() = scheduler 
 }
