@@ -360,8 +360,8 @@ fun ItemValues(
                     cellValue = cellValue,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
-                            columnIndex = cellValue.column ?: -1,
-                            rowIndex = cellValue.row ?: -1,
+                            columnIndex = cellValue.column!!,
+                            rowIndex = cellValue.row!!,
                             isCellEditable = cellValue.editable
                         )
                     },
@@ -381,12 +381,12 @@ fun TableCell(
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    nonEditableCellLayer()
 
     CellLegendBox(
         modifier = modifier,
         legendColor = cellValue.legendColor?.let { Color(it) }
     ) {
+        nonEditableCellLayer()
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -458,7 +458,7 @@ private fun mandatoryIconAlignment(hasValue: Boolean) = when (hasValue) {
 }
 
 @Composable
-fun addBlueNonEditableCellLayer(
+fun addBackgroundNonEditableCellLayer(
     hasToApplyLightPrimary: Boolean,
     cellIsEditable: Boolean
 ) {
@@ -591,11 +591,11 @@ private fun TableList(
                         dataElementValues = tableRowModel.values,
                         isNotLastRow = !tableRowModel.isLastRow,
                         nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
-                            addBlueNonEditableCellLayer(
-                                hasToApplyLightPrimary = tableSelection.isParentHeaderSelected(
+                            addBackgroundNonEditableCellLayer(
+                                hasToApplyLightPrimary = tableSelection.isCellParentSelected(
                                     selectedTableId = currentTableModel.id ?: "",
                                     columnIndex = columnIndex,
-                                    columnHeaderRowIndex = rowIndex
+                                    rowIndex = rowIndex
                                 ),
                                 cellIsEditable = isCellEditable
                             )
@@ -783,7 +783,7 @@ fun TableItem(
                         )
                     },
                     nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
-                        addBlueNonEditableCellLayer(
+                        addBackgroundNonEditableCellLayer(
                             hasToApplyLightPrimary = selectionState.isParentSelection(
                                 columnIndex,
                                 rowIndex
