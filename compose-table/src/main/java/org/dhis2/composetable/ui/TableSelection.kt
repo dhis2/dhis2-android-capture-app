@@ -77,11 +77,11 @@ sealed class TableSelection(open val tableId: String) {
         rowIndex: Int
     ) = when (this) {
         is AllCellSelection -> isCornerSelected(selectedTableId)
-        is ColumnSelection ->
-            this.columnIndex == columnIndex &&
-                this.tableId == selectedTableId &&
-                childrenOfSelectedHeader == null ||
-                this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false
+        is ColumnSelection -> this.columnIndex == columnIndex
+            && this.tableId == selectedTableId
+            && childrenOfSelectedHeader == null
+            || (this.tableId == selectedTableId
+            && this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false)
         is RowSelection -> isRowSelected(selectedTableId, rowIndex)
         else -> false
     }
