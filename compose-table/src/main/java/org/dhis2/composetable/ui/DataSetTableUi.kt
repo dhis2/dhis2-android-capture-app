@@ -360,8 +360,8 @@ fun ItemValues(
                     cellValue = cellValue,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
-                            columnIndex = cellValue.column!!,
-                            rowIndex = cellValue.row!!,
+                            columnIndex = cellValue.column ?: -1,
+                            rowIndex = cellValue.row ?: -1,
                             isCellEditable = cellValue.editable
                         )
                     },
