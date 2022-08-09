@@ -82,6 +82,7 @@ fun DataSetTableScreen(
         ) {
             DataTable(
                 tableList = tableData,
+                editable = true,
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
