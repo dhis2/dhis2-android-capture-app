@@ -115,7 +115,6 @@ class DataValuePresenter(
                         val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
-                            view.showSnackBar()
                         }
                         view.onValueProcessed()
                     },

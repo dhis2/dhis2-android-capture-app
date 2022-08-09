@@ -23,12 +23,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.SortedMap
-import javax.inject.Inject
 import org.dhis2.Bindings.calculateWidth
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
@@ -61,6 +55,12 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.SortedMap
+import javax.inject.Inject
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -81,11 +81,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     private val currentTablePosition = MutableLiveData<Int>()
     private var tablesCount: Int = 0
     private var indicatorsTable: TableView? = null
-    private val saveToast: Toast by lazy {
-        Toast.makeText(requireContext(), R.string.datavalue_saved, Toast.LENGTH_SHORT).apply {
-            setGravity(Gravity.TOP or Gravity.START, 16.dp, 110.dp)
-        }
-    }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -131,7 +126,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onEdition = { isEditing ->
                                 presenter.editingCellValue(isEditing)
                             },
-                            onCellValueChange = {
+                            onCellValueChange = { cell ->
+                                presenterFragment.onCellValueChange(cell)
                             },
                             onSaveValue = { cell ->
                                 presenterFragment.onCellValueChange(cell)
@@ -223,7 +219,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             tableView.setRowHeaderWidth(rowHeaderWidth)
             if (columnHeaderHeight != 0) {
                 adapter.columnHeaderHeight = columnHeaderHeight +
-                    requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
+                        requireContext().resources.getDimensionPixelSize(R.dimen.padding_5)
             }
             presenterFragment.saveCurrentSectionMeasures(
                 adapter.rowHeaderWidth,
@@ -239,10 +235,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         )
 
         binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
-            _: Int,
-            scrollY: Int,
-            _: Int,
-            _: Int ->
+                                                   _: Int,
+                                                   scrollY: Int,
+                                                   _: Int,
+                                                   _: Int ->
             var position = -1
             if (checkTableHeights()) {
                 for (i in heights.indices) {
@@ -316,7 +312,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
                     (binding.headerContainer.childCount - 2) *
-                    binding.headerContainer.getChildAt(0).layoutParams.height
+                            binding.headerContainer.getChildAt(0).layoutParams.height
             }
 
             val buttonAddWidth = cornerView.findViewById<View>(R.id.buttonRowScaleAdd)
@@ -419,10 +415,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             View.GONE -> binding.programProgress.visibility = View.VISIBLE
             View.VISIBLE -> binding.programProgress.visibility = View.GONE
         }
-    }
-
-    override fun showSnackBar() {
-        saveToast.show()
     }
 
     override fun update(modified: Boolean) {
