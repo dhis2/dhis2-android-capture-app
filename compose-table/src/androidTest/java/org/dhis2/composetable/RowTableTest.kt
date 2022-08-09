@@ -37,6 +37,21 @@ class RowTableTest {
     }
 
     @Test
+    fun should_show_information_icon(){
+        val fakeModel = FakeTableModels(
+            context = composeTestRule.activity.applicationContext
+        ).getMultiHeaderTables()
+
+        initTable(fakeModel)
+
+        val firstTableId = fakeModel[0].id!!
+
+        tableRobot(composeTestRule) {
+            assertInfoIcon(firstTableId, 0)
+        }
+    }
+
+    @Test
     fun should_all_rows_build_properly() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
@@ -49,7 +64,6 @@ class RowTableTest {
         val firstTableId = fakeModel[0].id!!
         val secondTableId = fakeModel[1].id!!
 
-        // First Table
         tableRobot(composeTestRule) {
             assert(fakeModel[0].tableRows.size == 3)
 
@@ -62,7 +76,6 @@ class RowTableTest {
             assertRowHeaderIsClickable(firstTableId, "Text 3",2)
         }
 
-        // Second Table
         tableRobot(composeTestRule) {
             assert(fakeModel[1].tableRows.size == 5)
 

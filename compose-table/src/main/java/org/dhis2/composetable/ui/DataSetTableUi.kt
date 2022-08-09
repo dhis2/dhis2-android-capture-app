@@ -42,6 +42,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -204,6 +207,7 @@ fun TableItemRow(
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
+                tableModel.id ?: "",
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
                 width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
@@ -215,6 +219,7 @@ fun TableItemRow(
                 onDecorationClick = onDecorationClick
             )
             ItemValues(
+                tableId = tableModel.id ?: "",
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
@@ -268,6 +273,7 @@ fun TableCorner(
 
 @Composable
 fun ItemHeader(
+    tableId: String,
     rowHeader: RowHeader,
     cellStyle: CellStyle,
     width: Dp,
@@ -280,6 +286,12 @@ fun ItemHeader(
             .width(width)
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
+            .semantics {
+                tableIdSemantic = tableId
+                rowIndexSemantic = rowHeader.row!!
+                infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
+            }
+            .testTag("$tableId${rowHeader.row}")
             .clickable {
                 onCellSelected(rowHeader.row)
                 if (rowHeader.showDecoration) {
@@ -329,6 +341,7 @@ fun ItemHeader(
 
 @Composable
 fun ItemValues(
+    tableId: String,
     horizontalScrollState: ScrollState,
     cellValues: Map<Int, TableCell>,
     defaultHeight: Dp,
@@ -349,7 +362,7 @@ fun ItemValues(
                 val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
-                        .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
+                        .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
@@ -859,3 +872,14 @@ fun TableListPreview() {
 
 const val ROW_TEST_TAG = "ROW_TEST_TAG_"
 const val CELL_TEST_TAG = "CELL_TEST_TAG_"
+const val INFO_ICON = "infoIcon"
+
+val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
+var SemanticsPropertyReceiver.infoIconId by InfoIconId
+
+val TableId = SemanticsPropertyKey<String>("TableId")
+var SemanticsPropertyReceiver.tableIdSemantic by TableId
+
+val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
+var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
+

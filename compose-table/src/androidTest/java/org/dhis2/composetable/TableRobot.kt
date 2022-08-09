@@ -13,8 +13,13 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import org.dhis2.composetable.ui.CELL_TEST_TAG
 import org.dhis2.composetable.ui.DrawableId
+import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
+import org.dhis2.composetable.ui.InfoIconId
+import org.dhis2.composetable.ui.ROW_TEST_TAG
+import org.dhis2.composetable.ui.RowIndex
+import org.dhis2.composetable.ui.TableId
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -46,19 +51,28 @@ class TableRobot(
         clickOnAccept()
     }
 
-    fun clickOnCell(tableId:String, rowIndex: Int, columnIndex: Int) {
-        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true).performClick()
+    fun assertInfoIcon(tableId: String, rowIndex: Int) {
+        composeTestRule.onNode(
+            SemanticsMatcher.expectValue(TableId, tableId)
+                .and(SemanticsMatcher.expectValue(RowIndex, rowIndex))
+                .and(SemanticsMatcher.expectValue(InfoIconId, INFO_ICON))
+        ).assertExists()
     }
 
-    fun clickOnRowHeader(tableId: String, rowIndex: Int){
+    fun clickOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
+            .performClick()
+    }
+
+    fun clickOnRowHeader(tableId: String, rowIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId$rowIndex").performClick()
     }
 
-    fun assertRowHeaderText(tableId: String, text: String, rowIndex: Int){
-        composeTestRule.onNodeWithTag("$tableId$rowIndex").assertTextEquals(text)
+    fun assertRowHeaderText(tableId: String, text: String, rowIndex: Int) {
+        composeTestRule.onNodeWithTag("${tableId}${rowIndex}").assertTextEquals(text)
     }
 
-    fun assertRowHeaderIsClickable(tableId: String, text: String, rowIndex: Int){
+    fun assertRowHeaderIsClickable(tableId: String, text: String, rowIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId$rowIndex").assertIsEnabled()
     }
 

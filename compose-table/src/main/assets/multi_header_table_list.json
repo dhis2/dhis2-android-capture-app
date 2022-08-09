@@ -54,6 +54,7 @@
       {
         "rowHeader": {
           "title": "Text 1",
+          "showDecoration" : true,
           "row": 0,
           "description": "No hay información para este campo"
         },
