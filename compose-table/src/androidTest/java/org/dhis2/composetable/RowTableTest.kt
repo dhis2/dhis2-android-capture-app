@@ -53,30 +53,30 @@ class RowTableTest {
         tableRobot(composeTestRule) {
             assert(fakeModel[0].tableRows.size == 3)
 
-            assertRowHeaderText(firstTableId, "Tables 2 - DE1", 0)
-            assertRowHeaderText(firstTableId, "Tables 2 - DE2", 1)
-            assertRowHeaderText(firstTableId, "Tables 2 - DE3", 2)
+            assertRowHeaderText(firstTableId, "Text 1", 0)
+            assertRowHeaderText(firstTableId, "Text 2", 1)
+            assertRowHeaderText(firstTableId, "Text 3", 2)
 
-            assertRowHeaderIsClickable(firstTableId, "Tables 2- DE1",0)
-            assertRowHeaderIsClickable(firstTableId, "Tables 2- DE2",1)
-            assertRowHeaderIsClickable(firstTableId, "Tables 2- DE3",2)
+            assertRowHeaderIsClickable(firstTableId, "Text 1",0)
+            assertRowHeaderIsClickable(firstTableId, "Text 2",1)
+            assertRowHeaderIsClickable(firstTableId, "Text 3",2)
         }
 
         // Second Table
         tableRobot(composeTestRule) {
             assert(fakeModel[1].tableRows.size == 5)
 
-            assertRowHeaderText(secondTableId, "Tables 3 - DE1", 0)
-            assertRowHeaderText(secondTableId, "Tables 3 - DE2", 1)
-            assertRowHeaderText(secondTableId, "Tables 3 - DE3", 2)
-            assertRowHeaderText(secondTableId, "Tables 3 - DE4", 3)
-            assertRowHeaderText(secondTableId, "Tables 3 - DE5", 4)
+            assertRowHeaderText(secondTableId, "Number", 0)
+            assertRowHeaderText(secondTableId, "Text", 1)
+            assertRowHeaderText(secondTableId, "Long Text", 2)
+            assertRowHeaderText(secondTableId, "Integer", 3)
+            assertRowHeaderText(secondTableId, "Percentage", 4)
 
-            assertRowHeaderIsClickable(secondTableId, "Tables 3- DE1",0)
-            assertRowHeaderIsClickable(secondTableId, "Tables 3- DE2",1)
-            assertRowHeaderIsClickable(secondTableId, "Tables 3- DE3",2)
-            assertRowHeaderIsClickable(secondTableId, "Tables 3- DE4",3)
-            assertRowHeaderIsClickable(secondTableId, "Tables 3- DE5",4)
+            assertRowHeaderIsClickable(secondTableId, "Number",0)
+            assertRowHeaderIsClickable(secondTableId, "Text",1)
+            assertRowHeaderIsClickable(secondTableId, "Long Text",2)
+            assertRowHeaderIsClickable(secondTableId, "Integer",3)
+            assertRowHeaderIsClickable(secondTableId, "Percentage",4)
         }
     }
 
