@@ -66,6 +66,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    @Ignore ("ADD new Dataset Uid")
     @Test
     fun shouldOpenAndEditDataset(){
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST",ruleDataSetDetail)

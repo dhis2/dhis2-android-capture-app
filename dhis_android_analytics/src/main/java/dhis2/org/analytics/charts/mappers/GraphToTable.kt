@@ -69,6 +69,7 @@ class GraphToTable {
         )
         return DataTable(
             tableList = listOf(tableModel),
+            editable = false,
             tableColors = LocalTableColors.current.copy(
                 disabledCellText = LocalTableColors.current.cellText,
                 disabledCellBackground = LocalTableColors.current.tableBackground
