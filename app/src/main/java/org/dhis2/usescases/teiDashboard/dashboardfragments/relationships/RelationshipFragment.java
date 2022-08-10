@@ -45,6 +45,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -124,7 +125,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             if(locationProvider.hasLocationEnabled()) {
                 permissionManager.requestLocationPermissions(getActivity());
             }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext());
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
             }
             return Unit.INSTANCE;
         });
@@ -150,7 +151,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     return Unit.INSTANCE;
                 });
             }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext());
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
             }
         });
 

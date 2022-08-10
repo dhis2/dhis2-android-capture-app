@@ -199,6 +199,13 @@ class FormViewModel(
                     ValueStoreResult.VALUE_HAS_NOT_CHANGED
                 )
             }
+            ActionType.ON_CANCELL_REQUEST_COORDINATES -> {
+                repository.setFieldRequestingCoordinates(action.id, false)
+                StoreResult(
+                    action.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED
+                )
+            }
         }
     }
 
@@ -336,6 +343,12 @@ class FormViewModel(
                     uid = intent.uid,
                     value = null,
                     actionType = ActionType.ON_REQUEST_COORDINATES
+                )
+            is FormIntent.OnCancelRequestCoordinates ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = null,
+                    actionType = ActionType.ON_CANCELL_REQUEST_COORDINATES
                 )
         }
     }
