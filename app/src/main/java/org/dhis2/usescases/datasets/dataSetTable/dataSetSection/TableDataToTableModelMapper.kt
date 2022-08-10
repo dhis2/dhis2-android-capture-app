@@ -28,6 +28,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         val tableRows = tableData.rows()?.mapIndexed { rowIndex, dataElement ->
             TableRowModel(
                 rowHeader = RowHeader(
+                    dataElement.uid(),
                     dataElement.displayFormName() ?: dataElement.uid(),
                     rowIndex,
                     tableData.hasDataElementDecoration && dataElement.displayDescription() != null,
@@ -67,10 +68,9 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                 )
             )
         )
-
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = RowHeader(indicatorName!!),
+                rowHeader = RowHeader("", title = indicatorName!!),
                 values = mapOf(Pair(0, TableCell(value = indicatorValue)))
             )
         }

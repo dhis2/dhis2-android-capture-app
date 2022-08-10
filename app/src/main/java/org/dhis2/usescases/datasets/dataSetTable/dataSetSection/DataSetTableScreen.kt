@@ -64,8 +64,10 @@ fun DataSetTableScreen(
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {
-                        // TODO: UPDATE CELL VALUE IN TABLE
+                    onTextChanged = { textInputModel ->
+                        currentCell?.copy(value = textInputModel.currentValue)?.let { tableCell ->
+                            onCellValueChange(tableCell)
+                        }
                     },
                     onSave = { textInputModel ->
                         currentCell?.copy(value = textInputModel.currentValue)?.let {

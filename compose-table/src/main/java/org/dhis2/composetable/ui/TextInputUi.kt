@@ -108,71 +108,83 @@ private fun TextInputContent(
     }
     var hasFocus by remember { mutableStateOf(false) }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+    Column {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            BasicTextField(
+            Column(
                 modifier = Modifier
-                    .testTag(INPUT_TEST_FIELD_TEST_TAG)
-                    .focusRequester(focusRequester)
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .onFocusChanged {
-                        hasFocus = it.isFocused
+                    .weight(1f)
+            ) {
+                BasicTextField(
+                    modifier = Modifier
+                        .testTag(INPUT_TEST_FIELD_TEST_TAG)
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .onFocusChanged {
+                            hasFocus = it.isFocused
+                        },
+                    value = value,
+                    onValueChange = {
+                        value = it
+                        onTextChanged(textInputModel.copy(currentValue = value))
                     },
-                value = value,
-                onValueChange = {
-                    value = it
-                    onTextChanged(textInputModel.copy(currentValue = value))
-                },
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Start
-                ),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
-                        KeyboardCapitalization.Characters
-                    } else {
-                        KeyboardCapitalization.None
-                    },
-                    imeAction = ImeAction.Next,
-                    keyboardType = textInputModel.keyboardInputType.toKeyboardType()
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
-                    }
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Start
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
+                            KeyboardCapitalization.Characters
+                        } else {
+                            KeyboardCapitalization.None
+                        },
+                        imeAction = ImeAction.Next,
+                        keyboardType = textInputModel.keyboardInputType.toKeyboardType()
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.clearFocus(force = true)
+                            onSave(textInputModel.copy(currentValue = value))
+                        }
+                    )
                 )
-            )
-            Spacer(modifier = Modifier.size(3.dp))
-            Divider(
-                color = if (hasFocus) {
-                    LocalTableColors.current.primary
-                } else {
-                    LocalTableColors.current.disabledCellText
-                },
-                thickness = 1.dp
+                Spacer(modifier = Modifier.size(3.dp))
+                Divider(
+                    color = when {
+                        textInputModel.error != null -> LocalTableColors.current.errorColor
+                        hasFocus -> LocalTableColors.current.primary
+                        else -> LocalTableColors.current.disabledCellText
+                    },
+                    thickness = 1.dp
+                )
+            }
+            Spacer(modifier = Modifier.size(8.dp))
+            TextInputContentActionIcon(
+                modifier = Modifier
+                    .clickable(role = Role.Button) {
+                        if (hasFocus) {
+                            focusManager.clearFocus(force = true)
+                            onSave(textInputModel.copy(currentValue = value))
+                        } else {
+                            focusRequester.requestFocus()
+                        }
+                    },
+                hasFocus = hasFocus
             )
         }
-        Spacer(modifier = Modifier.size(8.dp))
-        TextInputContentActionIcon(
-            modifier = Modifier
-                .clickable(role = Role.Button) {
-                    if (hasFocus) {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
-                    } else {
-                        focusRequester.requestFocus()
-                    }
-                },
-            hasFocus = hasFocus
-        )
+        if (textInputModel.error != null) {
+            Text(
+                text = textInputModel.error,
+                style = TextStyle(
+                    color = LocalTableColors.current.errorColor,
+                    fontSize = 10.sp
+                )
+            )
+        }
     }
 }
 
