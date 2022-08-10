@@ -64,7 +64,7 @@ fun DataSetTableScreen(
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {textInputModel->
+                    onTextChanged = { textInputModel ->
                         currentCell?.copy(value = textInputModel.currentValue)?.let {
                             onCellValueChange(it)
                         }
