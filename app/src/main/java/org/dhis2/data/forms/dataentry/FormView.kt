@@ -62,6 +62,7 @@ import org.dhis2.form.ui.DataEntryAdapter
 import org.dhis2.form.ui.DataEntryHeaderHelper
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog
+import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -76,8 +77,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPr
 import org.dhis2.utils.ActivityResultObservable
 import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
-import org.dhis2.utils.customviews.OptionSetOnClickListener
-import org.dhis2.utils.optionset.OptionSetDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -86,7 +85,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
 class FormView : Fragment() {
-
     private lateinit var formRepository: FormRepository
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
     private var locationProvider: LocationProvider? = null
@@ -218,7 +216,6 @@ class FormView : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
-        viewModel = FormViewModel(formRepository, dispatchers)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
@@ -763,23 +760,21 @@ class FormView : Fragment() {
     }
 
     private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
-        OptionSetDialog().apply {
-            create(this@FormView.requireContext())
-            optionSet = uiEvent.field
-            listener = OptionSetOnClickListener {
-                intentHandler(
-                    FormIntent.OnSave(
-                        uiEvent.field.uid,
-                        it.code(),
-                        uiEvent.field.valueType
-                    )
-                )
-            }
-            clearListener = View.OnClickListener {
+        OptionSetDialog(
+            uiEvent.field,
+            dispatchers,
+            onClearValue = {
                 intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
             }
-            show(this@FormView.childFragmentManager, OptionSetDialog.TAG)
-        }
+        ) { code ->
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.field.uid,
+                    code,
+                    uiEvent.field.valueType
+                )
+            )
+        }.show(this@FormView.childFragmentManager)
     }
 
     override fun onRequestPermissionsResult(
