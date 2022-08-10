@@ -290,6 +290,7 @@ fun ItemHeader(
                 tableIdSemantic = tableId
                 rowIndexSemantic = rowHeader.row!!
                 infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
+                rowBackground = cellStyle.backgroundColor()
             }
             .testTag("$tableId${rowHeader.row}")
             .clickable {
@@ -360,12 +361,16 @@ fun ItemValues(
             times = cellValues.size,
             action = { columnIndex ->
                 val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
+                val background = cellStyle(cellValue).backgroundColor()
                 TableCell(
                     modifier = Modifier
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
+                        .semantics {
+                            rowBackground = background
+                        }
                         .cellBorder(
                             borderColor = cellStyle(cellValue).mainColor(),
                             backgroundColor = cellStyle(cellValue).backgroundColor()
@@ -883,3 +888,5 @@ var SemanticsPropertyReceiver.tableIdSemantic by TableId
 val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
 var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
 
+val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
+var SemanticsPropertyReceiver.rowBackground by RowBackground

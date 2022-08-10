@@ -17,8 +17,9 @@ import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
-import org.dhis2.composetable.ui.ROW_TEST_TAG
+import org.dhis2.composetable.ui.RowBackground
 import org.dhis2.composetable.ui.RowIndex
+import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableId
 
 fun tableRobot(
@@ -57,6 +58,12 @@ class TableRobot(
                 .and(SemanticsMatcher.expectValue(RowIndex, rowIndex))
                 .and(SemanticsMatcher.expectValue(InfoIconId, INFO_ICON))
         ).assertExists()
+    }
+
+    fun assertRowHeaderBackgroundChangeToPrimary(tableId: String, rowIndex: Int, tableColors: TableColors){
+        composeTestRule.onNode(SemanticsMatcher.expectValue(TableId, tableId)
+            .and(SemanticsMatcher.expectValue(RowIndex, rowIndex))
+            .and(SemanticsMatcher.expectValue(RowBackground, tableColors.primary))).assertExists()
     }
 
     fun clickOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {

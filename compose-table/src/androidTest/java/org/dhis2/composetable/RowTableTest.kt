@@ -1,6 +1,5 @@
 package org.dhis2.composetable
 
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
@@ -19,6 +18,7 @@ class RowTableTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TableTestActivity>()
+    private val tableColors = TableColors()
 
     @Test
     fun shouldClickOnFirstRowElementAndHighlightAllElements() {
@@ -33,6 +33,7 @@ class RowTableTest {
 
         tableRobot(composeTestRule) {
             clickOnRowHeader(firstTableId, 0)
+            assertRowHeaderBackgroundChangeToPrimary(firstTableId, 0, tableColors)
         }
     }
 
@@ -97,8 +98,7 @@ class RowTableTest {
         composeTestRule.setContent {
             DataTable(
                 tableList = fakeModel,
-                tableColors = TableColors(
-                ),
+                tableColors = tableColors,
                 onDecorationClick = {
 
                 },
