@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
-import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.withValueTypeCheck
@@ -17,11 +16,13 @@ import org.dhis2.utils.reporting.CrashReportController
 import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
+import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -80,14 +81,26 @@ class ValueStoreImpl(
             dataValue.attributeOptionCombo
         )
 
+        val validator = d2.dataElementModule().dataElements()
+            .uid(dataValue.dataElement).blockingGet().valueType()?.validator
+
         return if (!dataValue.value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
                 dataValueObject.blockingGet().value() == dataValue.value
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                dataValueObject.set(dataValue.value)
-                    .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+                when (validator?.validate(dataValue.value)) {
+                    is Result.Failure -> Flowable.just(
+                        StoreResult(
+                            "",
+                            ValueStoreResult.ERROR_UPDATING_VALUE
+                        )
+                    )
+                    is Result.Success -> dataValueObject.set(dataValue.value)
+                        .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+                    else -> Flowable.just(StoreResult("", ValueStoreResult.ERROR_UPDATING_VALUE))
+                }
             }
         } else {
             dataValueObject.deleteIfExist()
@@ -144,7 +157,7 @@ class ValueStoreImpl(
                     crashController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                            "" + " value: $_value"
+                                "" + " value: $_value"
                     )
                 }
             } else {

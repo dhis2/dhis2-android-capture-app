@@ -42,9 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.SemanticsPropertyReceiver
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.dhis2.composetable.R
-import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -64,7 +60,6 @@ import org.dhis2.composetable.model.TableRowModel
 
 @Composable
 fun TableHeader(
-    tableId: String?,
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
@@ -83,19 +78,15 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
-                                tableId = tableId,
-                                rowIndex = rowIndex,
                                 columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
-                                HeaderMeasures(
-                                    LocalTableDimensions.current.headerCellWidth(
-                                        tableHeaderModel.numberOfColumns(rowIndex),
-                                        LocalConfiguration.current,
-                                        tableHeaderModel.tableMaxColumns(),
-                                        tableHeaderModel.hasTotals
-                                    ),
-                                    LocalTableDimensions.current.defaultHeaderHeight
+                                headerWidth = LocalTableDimensions.current.headerCellWidth(
+                                    tableHeaderModel.numberOfColumns(rowIndex),
+                                    LocalConfiguration.current,
+                                    tableHeaderModel.tableMaxColumns(),
+                                    tableHeaderModel.hasTotals
                                 ),
+                                headerHeight = LocalTableDimensions.current.defaultHeaderHeight,
                                 cellStyle = cellStyle(columnIndex, rowIndex),
                                 onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
@@ -106,18 +97,15 @@ fun TableHeader(
         }
         if (tableHeaderModel.hasTotals) {
             HeaderCell(
-                tableId = tableId,
-                rowIndex = 0,
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
-                HeaderMeasures(
-                    LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                        LocalConfiguration.current,
-                        tableHeaderModel.tableMaxColumns(),
-                        tableHeaderModel.hasTotals
-                    ),
-                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size
+                headerWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                    LocalConfiguration.current,
+                    tableHeaderModel.tableMaxColumns(),
+                    tableHeaderModel.hasTotals
                 ),
+                headerHeight =
+                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size,
                 cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
@@ -130,33 +118,25 @@ fun TableHeader(
 
 @Composable
 fun HeaderCell(
-    tableId: String?,
-    rowIndex: Int,
     columnIndex: Int,
     headerCell: TableHeaderCell,
-    headerMeasures: HeaderMeasures,
+    headerWidth: Dp,
+    headerHeight: Dp,
     cellStyle: CellStyle,
     onCellSelected: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
             .width(IntrinsicSize.Min)
-            .height(headerMeasures.height)
+            .height(headerHeight)
             .background(cellStyle.backgroundColor())
-            .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
-            .semantics {
-                tableIdColumnHeader = tableId!!
-                columnIndexHeader = columnIndex
-                rowIndexHeader = rowIndex
-                columnBackground = cellStyle.backgroundColor()
-            }
             .clickable {
                 onCellSelected(columnIndex)
             }
     ) {
         Text(
             modifier = Modifier
-                .width(headerMeasures.width)
+                .width(headerWidth)
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
             color = cellStyle.mainColor(),
@@ -191,7 +171,6 @@ fun TableHeaderRow(
             onClick = onTableCornerClick
         )
         TableHeader(
-            tableId = tableModel.id,
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
@@ -225,7 +204,6 @@ fun TableItemRow(
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
-                tableModel.id ?: "",
                 rowHeader = rowHeader,
                 cellStyle = rowHeaderCellStyle(rowHeader.row),
                 width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
@@ -237,7 +215,6 @@ fun TableItemRow(
                 onDecorationClick = onDecorationClick
             )
             ItemValues(
-                tableId = tableModel.id ?: "",
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
                 overridenValues = tableModel.overwrittenValues,
@@ -292,7 +269,6 @@ fun TableCorner(
 
 @Composable
 fun ItemHeader(
-    tableId: String,
     rowHeader: RowHeader,
     cellStyle: CellStyle,
     width: Dp,
@@ -305,13 +281,6 @@ fun ItemHeader(
             .width(width)
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
-            .semantics {
-                tableIdSemantic = tableId
-                rowIndexSemantic = rowHeader.row!!
-                infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
-                rowBackground = cellStyle.backgroundColor()
-            }
-            .testTag("$tableId${rowHeader.row}")
             .clickable {
                 onCellSelected(rowHeader.row)
                 if (rowHeader.showDecoration) {
@@ -361,10 +330,9 @@ fun ItemHeader(
 
 @Composable
 fun ItemValues(
-    tableId: String,
     horizontalScrollState: ScrollState,
     cellValues: Map<Int, TableCell>,
-    overridenValues: List<TableCell>,
+    overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
@@ -380,19 +348,17 @@ fun ItemValues(
         repeat(
             times = cellValues.size,
             action = { columnIndex ->
-                val cellValue = overridenValues.find {
-                    it.id == cellValues[columnIndex]?.id
-                } ?: cellValues[columnIndex] ?: TableCell(value = "")
-                val background = cellStyle(cellValue).backgroundColor()
+                val cellValue = if(overridenValues[columnIndex]?.id == cellValues[columnIndex]?.id){
+                    overridenValues[columnIndex]
+                }else{
+                    cellValues[columnIndex]
+                }?: TableCell(value = "")
                 TableCell(
                     modifier = Modifier
-                        .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
+                        .testTag("$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
-                        .semantics {
-                            rowBackground = background
-                        }
                         .cellBorder(
                             borderColor = cellStyle(cellValue).mainColor(),
                             backgroundColor = cellStyle(cellValue).backgroundColor()
@@ -870,7 +836,7 @@ fun TableListPreview() {
     )
 
     val tableRows = TableRowModel(
-        rowHeader = RowHeader("uid", "Data Element", 0, true),
+        rowHeader = RowHeader("uid","Data Element", 0, true),
         values = mapOf(
             Pair(0, TableCell(value = "12", mandatory = true)),
             Pair(1, TableCell(value = "12", editable = false)),
@@ -899,25 +865,3 @@ fun TableListPreview() {
 
 const val ROW_TEST_TAG = "ROW_TEST_TAG_"
 const val CELL_TEST_TAG = "CELL_TEST_TAG_"
-const val INFO_ICON = "infoIcon"
-const val HEADER_CELL = "HEADER_CELL"
-
-/* Row Header Cell */
-val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
-var SemanticsPropertyReceiver.infoIconId by InfoIconId
-val TableId = SemanticsPropertyKey<String>("TableId")
-var SemanticsPropertyReceiver.tableIdSemantic by TableId
-val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
-var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
-val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
-var SemanticsPropertyReceiver.rowBackground by RowBackground
-
-/* Column Header Cell */
-val ColumnBackground = SemanticsPropertyKey<Color>("ColumnBackground")
-var SemanticsPropertyReceiver.columnBackground by ColumnBackground
-val ColumnIndexHeader = SemanticsPropertyKey<Int>("ColumnIndexHeader")
-var SemanticsPropertyReceiver.columnIndexHeader by ColumnIndexHeader
-val RowIndexHeader = SemanticsPropertyKey<Int>("RowIndexHeader")
-var SemanticsPropertyReceiver.rowIndexHeader by RowIndexHeader
-val TableIdColumnHeader = SemanticsPropertyKey<String>("TableIdColumnHeader")
-var SemanticsPropertyReceiver.tableIdColumnHeader by TableIdColumnHeader

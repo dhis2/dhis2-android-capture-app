@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.common.ValueType
@@ -39,6 +40,7 @@ class DataValuePresenter(
     private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val indicatorsState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
+    private val errors:MutableMap<String, String> =  mutableMapOf()
 
     private val processor: FlowableProcessor<RowAction> =
         PublishProcessor.create()
@@ -67,7 +69,7 @@ class DataValuePresenter(
                         var dataSetTableModel: DataSetTableModel? = null
                         val dataValue = dataTableModel.dataValues?.firstOrNull {
                             it.dataElement == rowAction.dataElement() &&
-                                it.categoryOptionCombo == rowAction.catOptCombo()
+                                    it.categoryOptionCombo == rowAction.catOptCombo()
                         }
                         when (dataValue) {
                             null -> if (!rowAction.value().isNullOrEmpty()) {
@@ -96,9 +98,15 @@ class DataValuePresenter(
 
                         dataSetTableModel?.let {
                             val result = valueStore.save(it)
-                            if (result.blockingFirst().valueStoreResult == VALUE_CHANGED &&
+                            val saveResult = result.blockingFirst().valueStoreResult
+                            if ((saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE) &&
                                 featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
                             ) {
+                                if(saveResult == ERROR_UPDATING_VALUE){
+                                    errors[it.dataElement+"_"+it.categoryOptionCombo] = "Value type error message"
+                                }else{
+                                    errors.remove(it.dataElement+"_"+it.categoryOptionCombo)
+                                }
                                 updateData(it)
                             } else {
                                 view.updateData(rowAction, it.catCombo)
@@ -115,6 +123,7 @@ class DataValuePresenter(
                         val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
+                            view.showSnackBar()
                         }
                         view.onValueProcessed()
                     },
@@ -141,7 +150,7 @@ class DataValuePresenter(
         if (isComposeTableEnable()) {
             view.updateProgressVisibility()
             disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
+                dataTableModelConnectable.map { repository.setTableData(it, errors) }
                     .map { tableData ->
                         mapper(tableData)
                     }
@@ -173,7 +182,7 @@ class DataValuePresenter(
             )
         } else {
             disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
+                dataTableModelConnectable.map { repository.setTableData(it, errors) }
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
@@ -191,7 +200,7 @@ class DataValuePresenter(
         val dataTableModel =
             repository.getDataTableModel(datasetTableModel.catCombo!!)
                 .blockingFirst()
-        val tableData = repository.setTableData(dataTableModel)
+        val tableData = repository.setTableData(dataTableModel, errors)
         val updatedTableModel = mapper(tableData)
 
         allTableState.value = allTableState.value?.map { tableModel ->
@@ -241,15 +250,16 @@ class DataValuePresenter(
     }
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
-    fun onCellValueChange(tableCell: TableCell) {
+
+    fun onCellValueChanged(tableCell: TableCell) {
         val updatedData = allTableState.value?.map { tableModel ->
             val hasRowWithDataElement =
-                tableModel.tableRows.find {
-                    tableCell.id?.contains(it.rowHeader.id.toString()) == true
-                }
+                tableModel.tableRows.find { tableCell.id?.contains(it.rowHeader.id.toString()) == true }
             if (hasRowWithDataElement != null) {
                 tableModel.copy(
-                    overwrittenValues = listOf(tableCell)
+                    overwrittenValues = mapOf(
+                        Pair(tableCell.column!!, tableCell)
+                    )
                 )
             } else {
                 tableModel
@@ -281,7 +291,8 @@ class DataValuePresenter(
                     it.displayName() ?: "-"
                 },
                 currentValue = cell.value,
-                keyboardInputType = inputType
+                keyboardInputType = inputType,
+                error = errors[cell.id]
             )
         }
     }
@@ -317,7 +328,7 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell) {
+    fun onCellValueChange(cell: TableCell) {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val catOptCombUid = ids[1]

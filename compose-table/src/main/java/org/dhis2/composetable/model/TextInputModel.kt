@@ -7,7 +7,8 @@ data class TextInputModel(
     val mainLabel: String = "",
     val secondaryLabels: List<String> = emptyList(),
     val currentValue: String? = null,
-    val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput()
+    val keyboardInputType: KeyboardInputType = KeyboardInputType.TextInput(),
+    val error: String? = null
 )
 
 sealed class KeyboardInputType(
