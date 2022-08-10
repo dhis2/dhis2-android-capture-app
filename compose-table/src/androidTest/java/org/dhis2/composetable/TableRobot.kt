@@ -66,6 +66,7 @@ class TableRobot(
 
     fun clickOnRowHeader(tableId: String, rowIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId$rowIndex").performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun assertRowHeaderText(tableId: String, text: String, rowIndex: Int) {

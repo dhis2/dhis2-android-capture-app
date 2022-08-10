@@ -98,8 +98,6 @@ class RowTableTest {
             DataTable(
                 tableList = fakeModel,
                 tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                 ),
                 onDecorationClick = {
 
