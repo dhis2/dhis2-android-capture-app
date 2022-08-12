@@ -95,7 +95,7 @@ fun DataSetTableScreen(
             ) { cell ->
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
-                    currentInputType = inputModel
+                    currentInputType = inputModel.copy(currentValue = currentCell?.value)
                     coroutineScope.launch {
                         if (bottomSheetState.bottomSheetState.isCollapsed) {
                             bottomSheetState.bottomSheetState.expand()
