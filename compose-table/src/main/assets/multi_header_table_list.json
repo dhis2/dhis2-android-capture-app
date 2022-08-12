@@ -53,8 +53,10 @@
     "tableRows": [
       {
         "rowHeader": {
-          "title": "Tables 2 - DE1",
-          "row": 0
+          "title": "Text 1",
+          "showDecoration" : true,
+          "row": 0,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -409,8 +411,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 2 - DE2",
-          "row": 1
+          "title": "Text 2",
+          "row": 1,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -765,8 +768,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 2 - DE3",
-          "row": 2
+          "title": "Text 3",
+          "row": 2,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -1177,8 +1181,9 @@
     "tableRows": [
       {
         "rowHeader": {
-          "title": "Tables 3 - DE1",
-          "row": 0
+          "title": "Number",
+          "row": 0,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -1533,8 +1538,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 3 - DE2",
-          "row": 1
+          "title": "Text",
+          "row": 1,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -1889,8 +1895,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 3 - DE3",
-          "row": 2
+          "title": "Long Text",
+          "row": 2,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -2245,8 +2252,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 3 - DE4",
-          "row": 3
+          "title": "Integer",
+          "row": 3,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
@@ -2601,8 +2609,9 @@
       },
       {
         "rowHeader": {
-          "title": "Tables 3 - DE5",
-          "row": 4
+          "title": "Percentage",
+          "row": 4,
+          "description": "No hay información para este campo"
         },
         "values": {
           "0": {
