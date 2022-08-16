@@ -241,7 +241,7 @@ class DataValuePresenter(
     }
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
-    fun onTypingInCell(tableCell: TableCell) {
+    fun onCellValueChange(tableCell: TableCell) {
         val updatedData = allTableState.value?.map { tableModel ->
             val hasRowWithDataElement =
                 tableModel.tableRows.find {
@@ -317,7 +317,7 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onCellValueChange(cell: TableCell) {
+    fun onSaveValueChange(cell: TableCell) {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val catOptCombUid = ids[1]

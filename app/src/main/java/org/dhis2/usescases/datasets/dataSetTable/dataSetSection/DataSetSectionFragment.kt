@@ -125,10 +125,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 presenter.editingCellValue(isEditing)
                             },
                             onCellValueChange = { cell ->
-                                presenterFragment.onTypingInCell(cell)
+                                presenterFragment.onCellValueChange(cell)
                             },
                             onSaveValue = { cell ->
-                                presenterFragment.onCellValueChange(cell)
+                                presenterFragment.onSaveValueChange(cell)
                             }
                         )
                     }
@@ -433,7 +433,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dialog.isFutureDatesAllowed(true)
         dialog.setListener(object : OnDatePickerListener {
             override fun onNegativeClick() {
-                presenterFragment.onCellValueChange(cell.copy(value = null))
+                presenterFragment.onSaveValueChange(cell.copy(value = null))
             }
 
             override fun onPositiveClick(datePicker: DatePicker) {
@@ -447,7 +447,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                     calendar.set(Calendar.MINUTE, 0)
                     val selectedDate: Date = calendar.time
                     val result = DateUtils.oldUiDateFormat().format(selectedDate)
-                    presenterFragment.onCellValueChange(cell.copy(value = result))
+                    presenterFragment.onSaveValueChange(cell.copy(value = result))
                 }
             }
         })
@@ -465,7 +465,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minutes)
                 val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
-                presenterFragment.onCellValueChange(cell.copy(value = result))
+                presenterFragment.onSaveValueChange(cell.copy(value = result))
             },
             hour,
             minute,
@@ -498,7 +498,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 } else {
                     twelveHourFormat.format(selectedDate)
                 }
-                presenterFragment.onCellValueChange(cell.copy(value = calendarTime))
+                presenterFragment.onSaveValueChange(cell.copy(value = calendarTime))
             },
             hour, minute, is24HourFormat
         )
@@ -507,7 +507,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dialog.setButton(
             DialogInterface.BUTTON_NEGATIVE, requireContext().getString(R.string.date_dialog_clear)
         ) { _: DialogInterface?, _: Int ->
-            presenterFragment.onCellValueChange(cell.copy(value = null))
+            presenterFragment.onSaveValueChange(cell.copy(value = null))
         }
         dialog.show()
     }
@@ -539,7 +539,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         R.id.no -> false.toString()
                         else -> null
                     }
-                    presenterFragment.onCellValueChange(cell.copy(value = newValue))
+                    presenterFragment.onSaveValueChange(cell.copy(value = newValue))
                 }
 
                 override fun onNegative() {}
@@ -568,7 +568,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         DateUtils.oldUiDateFormat().format(it)
                     } ?: ""
                     if (cell.value != date) {
-                        presenterFragment.onCellValueChange(cell.copy(value = date))
+                        presenterFragment.onSaveValueChange(cell.copy(value = date))
                     }
                 }
 
@@ -594,7 +594,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             object : DialogClickListener {
                 override fun onPositive() {
                     if (cell.value != coordinatesView.currentCoordinates()) {
-                        presenterFragment.onCellValueChange(
+                        presenterFragment.onSaveValueChange(
                             cell.copy(value = coordinatesView.currentCoordinates())
                         )
                     }
@@ -616,7 +616,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             .setMultiSelection(false)
             .setOrgUnits(orgUnits)
             .setPossitiveListener {
-                presenterFragment.onCellValueChange(
+                presenterFragment.onSaveValueChange(
                     cell.copy(value = orgUnitDialog.selectedOrgUnit)
                 )
                 orgUnitDialog.dismiss()
@@ -648,15 +648,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
          */
         if (dialog.showDialog()) {
             dialog.listener = OptionSetOnClickListener {
-                presenterFragment.onCellValueChange(cell.copy(value = it.code()))
+                presenterFragment.onSaveValueChange(cell.copy(value = it.code()))
             }
             dialog.clearListener = View.OnClickListener {
-                presenterFragment.onCellValueChange(cell.copy(value = null))
+                presenterFragment.onSaveValueChange(cell.copy(value = null))
             }
             dialog.show(parentFragmentManager, TAG)
         } else {
             dialog.dismiss()
-            presenterFragment.onCellValueChange(cell)
+            presenterFragment.onSaveValueChange(cell)
         }
     }
 
