@@ -8,7 +8,8 @@ data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
-    val upperPadding: Boolean = true
+    val upperPadding: Boolean = true,
+    val overwrittenValues: List<TableCell> = emptyList()
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
         return tableHeaderModel.rows
@@ -65,6 +66,7 @@ data class TableRowModel(
 
 @Serializable
 data class RowHeader(
+    val id: String?,
     val title: String,
     val row: Int? = null,
     val showDecoration: Boolean = false,

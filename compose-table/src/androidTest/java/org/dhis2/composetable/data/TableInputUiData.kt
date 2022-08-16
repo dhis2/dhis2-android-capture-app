@@ -31,6 +31,7 @@ val tableData = listOf(
         tableRows = listOf(
             TableRowModel(
                 rowHeader = RowHeader(
+                    id = "0",
                     title = "Row 1",
                     row = 0
                 ),
@@ -40,6 +41,7 @@ val tableData = listOf(
             ),
             TableRowModel(
                 rowHeader = RowHeader(
+                    id = "1",
                     title = "Row 2",
                     row = 1
                 ),
