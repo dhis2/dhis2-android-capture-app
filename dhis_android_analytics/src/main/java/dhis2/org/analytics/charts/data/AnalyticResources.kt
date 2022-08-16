@@ -49,6 +49,7 @@ class AnalyticResources(val context: Context) {
             is AnalyticsException.InvalidTrackedEntityAttribute ->
                 context.getString(R.string.error_invalid_attribute)
                     .format(analyticsException.uid)
+            else -> ""
         }
     }
 }

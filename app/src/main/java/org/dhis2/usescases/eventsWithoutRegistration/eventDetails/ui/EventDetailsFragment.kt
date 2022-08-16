@@ -162,7 +162,9 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
 
         viewModel.showEnableLocationMessage = {
-            LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+            LocationSettingLauncher.requestEnableLocationSetting(requireContext()) {
+                viewModel.cancelCoordinateRequest()
+            }
         }
 
         viewModel.onButtonClickCallback = {
