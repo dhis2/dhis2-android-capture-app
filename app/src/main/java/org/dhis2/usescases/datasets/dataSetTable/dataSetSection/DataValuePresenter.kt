@@ -67,7 +67,7 @@ class DataValuePresenter(
                         var dataSetTableModel: DataSetTableModel? = null
                         val dataValue = dataTableModel.dataValues?.firstOrNull {
                             it.dataElement == rowAction.dataElement() &&
-                                it.categoryOptionCombo == rowAction.catOptCombo()
+                                    it.categoryOptionCombo == rowAction.catOptCombo()
                         }
                         when (dataValue) {
                             null -> if (!rowAction.value().isNullOrEmpty()) {
@@ -115,7 +115,6 @@ class DataValuePresenter(
                         val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
-                            view.showSnackBar()
                         }
                         view.onValueProcessed()
                     },
@@ -242,6 +241,23 @@ class DataValuePresenter(
     }
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
+    fun onCellValueChange(tableCell: TableCell) {
+        val updatedData = allTableState.value?.map { tableModel ->
+            val hasRowWithDataElement =
+                tableModel.tableRows.find {
+                    tableCell.id?.contains(it.rowHeader.id.toString()) == true
+                }
+            if (hasRowWithDataElement != null) {
+                tableModel.copy(
+                    overwrittenValues = listOf(tableCell)
+                )
+            } else {
+                tableModel
+            }
+        }
+        allTableState.postValue(updatedData)
+    }
+
     fun isComposeTableEnable(): Boolean {
         return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
     }
@@ -301,7 +317,7 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onCellValueChange(cell: TableCell) {
+    fun onSaveValueChange(cell: TableCell) {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val catOptCombUid = ids[1]

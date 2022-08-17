@@ -222,6 +222,7 @@ fun TableItemRow(
                 tableId = tableModel.id ?: "",
                 horizontalScrollState = horizontalScrollState,
                 cellValues = dataElementValues,
+                overridenValues = tableModel.overwrittenValues,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
                 defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
                     LocalConfiguration.current,
@@ -345,6 +346,7 @@ fun ItemValues(
     tableId: String,
     horizontalScrollState: ScrollState,
     cellValues: Map<Int, TableCell>,
+    overridenValues: List<TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
@@ -360,7 +362,9 @@ fun ItemValues(
         repeat(
             times = cellValues.size,
             action = { columnIndex ->
-                val cellValue = cellValues[columnIndex] ?: TableCell(value = "")
+                val cellValue = overridenValues.find {
+                    it.id == cellValues[columnIndex]?.id
+                } ?: cellValues[columnIndex] ?: TableCell(value = "")
                 val background = cellStyle(cellValue).backgroundColor()
                 TableCell(
                     modifier = Modifier
@@ -848,7 +852,7 @@ fun TableListPreview() {
     )
 
     val tableRows = TableRowModel(
-        rowHeader = RowHeader("Data Element", 0, true),
+        rowHeader = RowHeader("uid", "Data Element", 0, true),
         values = mapOf(
             Pair(0, TableCell(value = "12", mandatory = true)),
             Pair(1, TableCell(value = "12", editable = false)),

@@ -64,8 +64,10 @@ fun DataSetTableScreen(
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {
-                        // TODO: UPDATE CELL VALUE IN TABLE
+                    onTextChanged = { textInputModel ->
+                        currentCell?.copy(value = textInputModel.currentValue)?.let {
+                            onCellValueChange(it)
+                        }
                     },
                     onSave = { textInputModel ->
                         currentCell?.copy(value = textInputModel.currentValue)?.let {
@@ -93,7 +95,7 @@ fun DataSetTableScreen(
             ) { cell ->
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
-                    currentInputType = inputModel
+                    currentInputType = inputModel.copy(currentValue = currentCell?.value)
                     coroutineScope.launch {
                         if (bottomSheetState.bottomSheetState.isCollapsed) {
                             bottomSheetState.bottomSheetState.expand()
