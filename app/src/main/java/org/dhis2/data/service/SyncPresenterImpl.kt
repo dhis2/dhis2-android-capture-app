@@ -482,8 +482,12 @@ class SyncPresenterImpl(
             .byUid().eq(uid)
             .byAggregatedSyncState().notIn(State.SYNCED, State.RELATIONSHIP)
             .blockingGet().isEmpty()
+        val teiEventsOk = d2.eventModule().events()
+            .byEnrollmentUid().eq(uid)
+            .byAggregatedSyncState().notIn(State.SYNCED)
+            .blockingGet().isEmpty()
 
-        if (teiOk) {
+        if (teiOk && teiEventsOk) {
             return SyncResult.SYNC
         }
 
@@ -548,6 +552,12 @@ class SyncPresenterImpl(
 
         trackerImportConflicts =
             d2.importModule().trackerImportConflicts().byEventUid().eq(uid).blockingGet()
+        if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
+            return trackerImportConflicts
+        }
+
+        trackerImportConflicts =
+            d2.importModule().trackerImportConflicts().byEnrollmentUid().eq(uid).blockingGet()
         return if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
             trackerImportConflicts
         } else {
