@@ -67,7 +67,7 @@ class ColumnTableTest {
 
         val sonColumnsHighlight = 12
         val grandsonColumnsHighlight = 12
-        val maxColumnGrandSon = 48
+        val maxColumnGrandSon = MAX_COLUMNS
 
         tableRobot(composeTestRule) {
             clickOnHeaderElement(firstTableId, 0, 0)
