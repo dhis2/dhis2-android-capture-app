@@ -66,7 +66,7 @@ data class TableRowModel(
 
 @Serializable
 data class RowHeader(
-    val id: String?,
+    val id: String? = null,
     val title: String,
     val row: Int? = null,
     val showDecoration: Boolean = false,

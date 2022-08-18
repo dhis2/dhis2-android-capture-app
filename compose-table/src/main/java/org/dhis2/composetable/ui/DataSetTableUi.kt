@@ -63,6 +63,7 @@ import org.dhis2.composetable.model.TableRowModel
 
 @Composable
 fun TableHeader(
+    tableId: String?,
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
@@ -81,6 +82,8 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
+                                tableId = tableId,
+                                rowIndex = rowIndex,
                                 columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
                                 headerWidth = LocalTableDimensions.current.headerCellWidth(
@@ -100,6 +103,8 @@ fun TableHeader(
         }
         if (tableHeaderModel.hasTotals) {
             HeaderCell(
+                tableId = tableId,
+                rowIndex = 0,
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
                 headerWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
@@ -121,6 +126,8 @@ fun TableHeader(
 
 @Composable
 fun HeaderCell(
+    tableId: String?,
+    rowIndex: Int,
     columnIndex: Int,
     headerCell: TableHeaderCell,
     headerWidth: Dp,
@@ -133,6 +140,13 @@ fun HeaderCell(
             .width(IntrinsicSize.Min)
             .height(headerHeight)
             .background(cellStyle.backgroundColor())
+            .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
+            .semantics {
+                tableIdColumnHeader = tableId!!
+                columnIndexHeader = columnIndex
+                rowIndexHeader = rowIndex
+                columnBackground = cellStyle.backgroundColor()
+            }
             .clickable {
                 onCellSelected(columnIndex)
             }
@@ -174,6 +188,7 @@ fun TableHeaderRow(
             onClick = onTableCornerClick
         )
         TableHeader(
+            tableId = tableModel.id,
             modifier = Modifier,
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
@@ -882,15 +897,24 @@ fun TableListPreview() {
 const val ROW_TEST_TAG = "ROW_TEST_TAG_"
 const val CELL_TEST_TAG = "CELL_TEST_TAG_"
 const val INFO_ICON = "infoIcon"
+const val HEADER_CELL = "HEADER_CELL"
 
+/* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
 var SemanticsPropertyReceiver.infoIconId by InfoIconId
-
 val TableId = SemanticsPropertyKey<String>("TableId")
 var SemanticsPropertyReceiver.tableIdSemantic by TableId
-
 val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
 var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
-
 val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
 var SemanticsPropertyReceiver.rowBackground by RowBackground
+
+/* Column Header Cell */
+val ColumnBackground = SemanticsPropertyKey<Color>("ColumnBackground")
+var SemanticsPropertyReceiver.columnBackground by ColumnBackground
+val ColumnIndexHeader = SemanticsPropertyKey<Int>("ColumnIndexHeader")
+var SemanticsPropertyReceiver.columnIndexHeader by ColumnIndexHeader
+val RowIndexHeader = SemanticsPropertyKey<Int>("RowIndexHeader")
+var SemanticsPropertyReceiver.rowIndexHeader by RowIndexHeader
+val TableIdColumnHeader = SemanticsPropertyKey<String>("TableIdColumnHeader")
+var SemanticsPropertyReceiver.tableIdColumnHeader by TableIdColumnHeader
