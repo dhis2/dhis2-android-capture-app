@@ -104,7 +104,7 @@ fun DataSetTableScreen(
                                 }
                             }
                         }
-                    },
+                    }
                 )
             },
             sheetPeekHeight = 0.dp,
