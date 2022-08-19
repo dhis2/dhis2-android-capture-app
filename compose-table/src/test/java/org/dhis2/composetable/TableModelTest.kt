@@ -36,7 +36,7 @@ class TableModelTest {
                     Pair(0, TableCell("00", 0, 0, "1")),
                     Pair(1, TableCell("01", 0, 1, "2")),
                     Pair(2, TableCell("02", 0, 2, "3"))
-                ),
+                )
             ),
             TableRowModel(
                 rowHeader = RowHeader(
