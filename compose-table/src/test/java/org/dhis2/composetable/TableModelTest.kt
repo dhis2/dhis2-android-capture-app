@@ -35,7 +35,7 @@ class TableModelTest {
                 values = mapOf(
                     Pair(0, TableCell("00", 0, 0, "1")),
                     Pair(1, TableCell("01", 0, 1, "2")),
-                    Pair(2, TableCell("02", 0, 2, "3")),
+                    Pair(2, TableCell("02", 0, 2, "3"))
                 ),
             ),
             TableRowModel(
@@ -47,7 +47,7 @@ class TableModelTest {
                 values = mapOf(
                     Pair(0, TableCell("10", 1, 0, "4")),
                     Pair(1, TableCell("11", 1, 1, "5", editable = false)),
-                    Pair(2, TableCell("12", 1, 2, "6")),
+                    Pair(2, TableCell("12", 1, 2, "6"))
                 )
             ),
         ),
