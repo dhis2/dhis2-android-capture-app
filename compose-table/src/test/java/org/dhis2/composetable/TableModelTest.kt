@@ -50,7 +50,7 @@ class TableModelTest {
                     Pair(2, TableCell("12", 1, 2, "6"))
                 )
             )
-        ),
+        )
     )
 
     @Test
