@@ -606,7 +606,9 @@ private fun TableList(
                                     columnIndex = headerColumnIndex,
                                     columnHeaderRow = headerRowIndex,
                                     childrenOfSelectedHeader =
-                                        currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                        currentTableModel.countChildrenOfSelectedHeader(
+                                            headerRowIndex
+                                        )
                                 )
                             )
                         }
