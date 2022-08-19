@@ -53,7 +53,8 @@ import org.dhis2.composetable.model.toKeyboardType
 fun TextInput(
     textInputModel: TextInputModel,
     onTextChanged: (TextInputModel) -> Unit,
-    onSave: (TextInputModel) -> Unit
+    onSave: () -> Unit,
+    onNextSelected: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -69,7 +70,8 @@ fun TextInput(
         TextInputContent(
             textInputModel,
             onTextChanged = onTextChanged,
-            onSave = onSave
+            onSave = onSave,
+            onNextSelected = onNextSelected
         )
     }
 }
@@ -94,14 +96,9 @@ private fun InputTitle(textInputModel: TextInputModel) {
 private fun TextInputContent(
     textInputModel: TextInputModel,
     onTextChanged: (TextInputModel) -> Unit,
-    onSave: (TextInputModel) -> Unit
+    onSave: () -> Unit,
+    onNextSelected: () -> Unit
 ) {
-    var value by remember(textInputModel.currentValue) {
-        mutableStateOf(
-            textInputModel.currentValue ?: ""
-        )
-    }
-
     val focusManager = LocalFocusManager.current
     val focusRequester = remember {
         FocusRequester()
@@ -125,10 +122,9 @@ private fun TextInputContent(
                     .onFocusChanged {
                         hasFocus = it.isFocused
                     },
-                value = value,
+                value = textInputModel.currentValue ?: "",
                 onValueChange = {
-                    value = it
-                    onTextChanged(textInputModel.copy(currentValue = value))
+                    onTextChanged(textInputModel.copy(currentValue = it))
                 },
                 textStyle = TextStyle.Default.copy(
                     fontSize = 12.sp,
@@ -145,8 +141,8 @@ private fun TextInputContent(
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
+                        onSave()
+                        onNextSelected()
                     }
                 )
             )
@@ -166,7 +162,7 @@ private fun TextInputContent(
                 .clickable(role = Role.Button) {
                     if (hasFocus) {
                         focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
+                        onSave()
                     } else {
                         focusRequester.requestFocus()
                     }
@@ -240,7 +236,12 @@ fun DefaultTextInputStatusPreview() {
         secondaryLabels = listOf("header 1", "header 2"),
         currentValue = "Test"
     )
-    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
+    TextInput(
+        textInputModel = previewTextInput,
+        onTextChanged = {},
+        onSave = {},
+        onNextSelected = {}
+    )
 }
 
 @Preview
@@ -252,7 +253,12 @@ fun ActiveEditionTextInputStatusPreview() {
         secondaryLabels = listOf("header 1", "header 2"),
         currentValue = "Test"
     )
-    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
+    TextInput(
+        textInputModel = previewTextInput,
+        onTextChanged = {},
+        onSave = {},
+        onNextSelected = {}
+    )
 }
 
 const val INPUT_TEST_TAG = "INPUT_TEST_TAG"

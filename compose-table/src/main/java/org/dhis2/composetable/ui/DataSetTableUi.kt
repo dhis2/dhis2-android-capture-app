@@ -521,6 +521,8 @@ fun DataTable(
     tableList: List<TableModel>,
     editable: Boolean = true,
     tableColors: TableColors? = null,
+    tableSelection: TableSelection = TableSelection.Unselected(),
+    onSelectionChange: (TableSelection) -> Unit = {},
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
 ) {
@@ -535,6 +537,8 @@ fun DataTable(
         TableList(
             tableList = tableList,
             tableColors = tableColors,
+            tableSelection = tableSelection,
+            onSelectionChange = onSelectionChange,
             onDecorationClick = onDecorationClick,
             onClick = onClick
         )
@@ -546,14 +550,14 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    tableSelection: TableSelection,
+    onSelectionChange: (TableSelection) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
-        var tableSelection by remember {
-            mutableStateOf<TableSelection>(TableSelection.Unselected())
-        }
+
         LazyColumn(
             Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
@@ -591,16 +595,19 @@ private fun TableList(
                             )
                         },
                         onTableCornerClick = {
-                            tableSelection =
+                            onSelectionChange(
                                 TableSelection.AllCellSelection(currentTableModel.id ?: "")
+                            )
                         },
                         onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
-                            tableSelection = TableSelection.ColumnSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = headerColumnIndex,
-                                columnHeaderRow = headerRowIndex,
-                                childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                            onSelectionChange(
+                                TableSelection.ColumnSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = headerColumnIndex,
+                                    columnHeaderRow = headerRowIndex,
+                                    childrenOfSelectedHeader =
+                                        currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                                )
                             )
                         }
                     )
@@ -652,17 +659,21 @@ private fun TableList(
                             )
                         },
                         onRowHeaderClick = { rowHeaderIndex ->
-                            tableSelection = TableSelection.RowSelection(
-                                tableId = currentTableModel.id ?: "",
-                                rowIndex = rowHeaderIndex ?: -1
+                            onSelectionChange(
+                                TableSelection.RowSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    rowIndex = rowHeaderIndex ?: -1
+                                )
                             )
                         },
                         onDecorationClick = onDecorationClick,
                         onClick = { tableCell ->
-                            tableSelection = TableSelection.CellSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = tableCell.column ?: -1,
-                                rowIndex = tableCell.row ?: -1
+                            onSelectionChange(
+                                TableSelection.CellSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = tableCell.column ?: -1,
+                                    rowIndex = tableCell.row ?: -1
+                                )
                             )
                             onClick(tableCell)
                         }
@@ -875,7 +886,12 @@ fun TableListPreview() {
         listOf(tableRows, tableRows, tableRows, tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList, onDecorationClick = {}) {
+    TableList(
+        tableList = tableList,
+        tableSelection = TableSelection.Unselected(),
+        onSelectionChange = {},
+        onDecorationClick = {}
+    ) {
     }
 }
 

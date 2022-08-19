@@ -71,14 +71,9 @@ class TextInputUiTest {
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {
-
-                    },
-                    onSave = { textInputModel ->
-                        currentCell?.copy(value = textInputModel.currentValue)?.let {
-                            onSave(it)
-                        }
-                    }
+                    onTextChanged = {},
+                    onSave = { currentCell?.let { onSave(it) } },
+                    onNextSelected = {}
                 )
             },
             sheetPeekHeight = 0.dp,
