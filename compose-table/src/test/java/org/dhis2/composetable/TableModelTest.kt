@@ -49,7 +49,7 @@ class TableModelTest {
                     Pair(1, TableCell("11", 1, 1, "5", editable = false)),
                     Pair(2, TableCell("12", 1, 2, "6"))
                 )
-            ),
+            )
         ),
     )
 
