@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.UUID
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -17,7 +18,6 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.METADATA_MESSAGE
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.utils.Constants
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito

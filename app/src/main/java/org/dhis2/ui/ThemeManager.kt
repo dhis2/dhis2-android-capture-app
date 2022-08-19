@@ -1,13 +1,13 @@
 package org.dhis2.ui
 
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.utils.Constants
 
 class ThemeManager(
     private val userManager: UserManager,

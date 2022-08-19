@@ -1,4 +1,4 @@
-package org.dhis2.utils;
+package org.dhis2.commons;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -134,6 +134,9 @@ public class Constants {
 
     //DATASET
     public static final String NO_SECTION = "NO_SECTION";
+
+    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
+
 
     private Constants() {
         // hide public constructor

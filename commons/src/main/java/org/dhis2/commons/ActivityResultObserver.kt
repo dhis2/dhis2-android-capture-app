@@ -1,4 +1,4 @@
-package org.dhis2.utils
+package org.dhis2.commons
 
 import android.content.Intent
 

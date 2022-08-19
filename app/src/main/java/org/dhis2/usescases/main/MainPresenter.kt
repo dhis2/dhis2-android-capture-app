@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.Preference
@@ -19,7 +20,6 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
-import org.dhis2.utils.Constants
 import org.dhis2.utils.TRUE
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME

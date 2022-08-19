@@ -40,7 +40,6 @@ import timber.log.Timber;
 
 public class EventInitialPresenter {
 
-    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
     private final PreferenceProvider preferences;
     private final AnalyticsHelper analyticsHelper;
 

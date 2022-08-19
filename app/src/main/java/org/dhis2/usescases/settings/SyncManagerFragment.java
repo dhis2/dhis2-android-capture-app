@@ -9,9 +9,9 @@ import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_MANUAL;
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
+import static org.dhis2.commons.Constants.TIME_MANUAL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
@@ -63,7 +63,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -74,7 +74,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import timber.log.Timber;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 

@@ -15,13 +15,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.FormView;
+import org.dhis2.form.ui.FormView;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.data.FormRepository;
 import org.dhis2.form.model.DispatcherProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
