@@ -285,6 +285,10 @@ class EventDetailsViewModel(
             onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
         )
     }
+
+    fun cancelCoordinateRequest() {
+        setUpCoordinates(value = eventCoordinates.value.model?.value)
+    }
 }
 
 inline fun <R, reified T> Result<T>.mockSafeFold(

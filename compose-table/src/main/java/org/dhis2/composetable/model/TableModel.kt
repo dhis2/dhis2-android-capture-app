@@ -9,7 +9,7 @@ data class TableModel(
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
     val upperPadding: Boolean = true,
-    val overwrittenValues:Map<Int, TableCell> = emptyMap()
+    val overwrittenValues: List<TableCell> = emptyList()
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
         return tableHeaderModel.rows
@@ -49,7 +49,13 @@ data class TableCell(
     val error: String? = null,
     val dropDownOptions: List<String>? = null,
     val legendColor: Int? = null
-)
+){
+    fun isSelected(selectionState: SelectionState): Boolean {
+        return selectionState.cellOnly &&
+            selectionState.row == row &&
+            selectionState.column == column
+    }
+}
 
 @Serializable
 data class TableRowModel(
@@ -60,7 +66,7 @@ data class TableRowModel(
 
 @Serializable
 data class RowHeader(
-    val id:String?,
+    val id: String?,
     val title: String,
     val row: Int? = null,
     val showDecoration: Boolean = false,

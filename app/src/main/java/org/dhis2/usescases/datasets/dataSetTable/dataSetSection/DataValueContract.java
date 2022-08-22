@@ -15,8 +15,6 @@ import java.util.SortedMap;
 public class DataValueContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void showSnackBar();
-
         void update(boolean modified);
 
         void setTableData(TableData tableData);
