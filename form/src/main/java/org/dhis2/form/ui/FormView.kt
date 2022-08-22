@@ -29,8 +29,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
-import java.io.File
-import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
@@ -59,6 +57,7 @@ import org.dhis2.form.data.toMessage
 import org.dhis2.form.databinding.ViewFormBinding
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.coroutine.FormDispatcher
@@ -80,6 +79,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
+import java.io.File
+import java.util.Calendar
 
 class FormView : Fragment() {
     private lateinit var formRepository: FormRepository
@@ -253,6 +254,11 @@ class FormView : Fragment() {
             }
         }
 
+        setObservers()
+    }
+
+    private fun setObservers() {
+
         viewModel.savedValue.observe(
             viewLifecycleOwner
         ) { rowAction ->
@@ -306,28 +312,13 @@ class FormView : Fragment() {
         viewModel.showInfo.observe(
             viewLifecycleOwner
         ) { infoUiModel ->
-            CustomDialog(
-                requireContext(),
-                requireContext().getString(infoUiModel.title),
-                requireContext().getString(infoUiModel.description),
-                requireContext().getString(R.string.action_close),
-                null,
-                Constants.DESCRIPTION_DIALOG,
-                null
-            ).show()
+            showInfoDialog(infoUiModel)
         }
 
         viewModel.dataIntegrityResult.observe(
             viewLifecycleOwner
         ) { result ->
-            if (onDataIntegrityCheck != null) {
-                onDataIntegrityCheck?.invoke(result)
-            } else {
-                when (result) {
-                    is SuccessfulResult -> onFinishDataEntry?.invoke()
-                    else -> showDataEntryResultDialog(result)
-                }
-            }
+            handleDataIntegrityResult(result)
         }
 
         viewModel.completionPercentage.observe(
@@ -343,6 +334,29 @@ class FormView : Fragment() {
                 showLoopWarning()
             }
         }
+    }
+
+    private fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+        if (onDataIntegrityCheck != null) {
+            onDataIntegrityCheck?.invoke(result)
+        } else {
+            when (result) {
+                is SuccessfulResult -> onFinishDataEntry?.invoke()
+                else -> showDataEntryResultDialog(result)
+            }
+        }
+    }
+
+    private fun showInfoDialog(infoUiModel: InfoUiModel) {
+        CustomDialog(
+            requireContext(),
+            requireContext().getString(infoUiModel.title),
+            requireContext().getString(infoUiModel.description),
+            requireContext().getString(R.string.action_close),
+            null,
+            Constants.DESCRIPTION_DIALOG,
+            null
+        ).show()
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
@@ -728,7 +742,9 @@ class FormView : Fragment() {
                     )
                 }
 
-                override fun onDialogCancelled() {}
+                override fun onDialogCancelled() {
+                    //We don't need to do anything when user cancels the dialog
+                }
 
                 override fun onClear() {
                     intentHandler(FormIntent.ClearValue(uiEvent.uid))
