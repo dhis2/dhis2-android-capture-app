@@ -126,7 +126,7 @@ private fun TextInputContent(
                         },
                     value = textInputModel.currentValue ?: "",
                     onValueChange = {
-                        onTextChanged(textInputModel.copy(currentValue = it))
+                        onTextChanged(textInputModel.copy(currentValue = it, error = null))
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
