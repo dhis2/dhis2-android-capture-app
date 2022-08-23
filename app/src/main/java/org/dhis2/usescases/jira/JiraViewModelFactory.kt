@@ -30,7 +30,7 @@ class JiraViewModelFactory(
         return retrofit.create<JiraIssueService>(JiraIssueService::class.java)
     }
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return JiraViewModel(
             JiraRepository(jiraService(), preferenceProvider),
             resourceManager,
