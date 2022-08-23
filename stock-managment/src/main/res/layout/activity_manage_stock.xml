@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewModel"
+            type="org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="org.dhis2.android.rtsm.ui.managestock.ManageStockActivity">
+
+        <include
+            android:id="@+id/toolbar_container"
+            layout="@layout/toolbar" />
+
+        <!-- Content Area -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content_area"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/content_area_lr_margin"
+            android:layout_marginEnd="@dimen/content_area_lr_margin"
+            app:layout_constraintBottom_toTopOf="@+id/stock_items_footer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_container">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/choices_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/choices_top_margin"
+                android:background="@color/light_grey"
+                android:paddingStart="@dimen/choices_padding_left"
+                android:paddingTop="@dimen/choices_padding_top"
+                android:paddingEnd="@dimen/choices_padding_right"
+                android:paddingBottom="@dimen/choices_padding_bottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/facility_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="@dimen/facility_icon_padding"
+                    android:text="@{viewModel.transaction.facility.displayName}"
+                    app:drawableStartCompat="@drawable/home"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="AFGOYE MHT1 Clinic OPD/MCH" />
+
+                <TextView
+                    android:id="@+id/distributed_to_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:drawablePadding="@dimen/distribution_icon_padding"
+                    app:distributedTo="@{viewModel.transaction.distributedTo.displayName}"
+                    app:drawableStartCompat="@drawable/destination"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/facility_text_view"
+                    tools:text="Diagnostic imaging (X-Ray)" />
+
+                <TextView
+                    android:id="@+id/transaction_date_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:drawablePadding="@dimen/trans_date_icon_padding"
+                    android:text="@{viewModel.transaction.transactionDate}"
+                    app:drawableStartCompat="@drawable/calendar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/distributed_to_text_view"
+                    tools:text="2021-08-09" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include android:id="@+id/search_field_layout" layout="@layout/search_field" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/scan_button"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:cornerRadius="@dimen/round_button_corner_radius"
+                app:icon="@drawable/barcode"
+                app:layout_constraintBottom_toBottomOf="@id/search_field_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="3"
+                app:layout_constraintStart_toEndOf="@id/search_field_layout"
+                app:layout_constraintTop_toBottomOf="@id/choices_container" />
+
+            <!-- quantity guide -->
+            <include
+                android:id="@+id/qty_guide"
+                layout="@layout/stock_quantities_guide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/qty_guide_tb_padding"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_field_layout" />
+
+            <TextView
+                android:id="@+id/total_count_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/qty_guide"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/available_count_top_margin"
+                app:totalCount="@{viewModel.getAvailableCount()}"
+                android:textAppearance="@android:style/TextAppearance.Material.Caption"
+                tools:text="17 items available" />
+
+            <!-- Table header -->
+            <include
+                android:id="@+id/stock_entries_table_header"
+                layout="@layout/stock_table_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/stock_table_top_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/total_count_label" />
+
+            <!-- Stock entries list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/stock_items_list"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/stock_entries_table_header"
+                tools:listitem="@layout/manage_stock_item_entry" />
+
+            <TextView
+                android:id="@+id/no_results_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintVertical_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/stock_items_list"
+                app:layout_constraintBottom_toBottomOf="@+id/stock_items_list"
+                android:drawablePadding="@dimen/dp_16"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Material.Body2"
+                android:visibility="gone"
+                android:text="@string/no_items_found"
+                tools:text="No items found"
+                app:drawableTopCompat="@drawable/ic_empty_list" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Footer -->
+        <include
+            android:id="@+id/stock_items_footer"
+            layout="@layout/footer"
+            app:lastSyncDate="@{viewModel.lastSyncDate}"
+            app:appVersion="@{viewModel.appVersion}" />
+
+        <!-- Floating Button -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_review_stock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fab_right_margin"
+            android:layout_marginBottom="@dimen/fab_bottom_margin"
+            android:paddingStart="@dimen/fab_lr_padding"
+            android:paddingEnd="@dimen/fab_lr_padding"
+            android:text="@string/review"
+            app:cornerRadius="@dimen/fab_corner_radius"
+            app:icon="@drawable/ic_review"
+            app:iconGravity="textStart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

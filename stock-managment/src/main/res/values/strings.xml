@@ -1,0 +1,270 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Pharmacy Stock Management</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_review">Review</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="distribution">Distribution</string>
+    <string name="discard">Discard</string>
+    <string name="correction">Correction</string>
+    <string name="select_transaction">Select transaction</string>
+    <string name="transaction_date">Date of Transaction</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="last_synced">Last synced:</string>
+    <string name="select_facility">Select Facility</string>
+    <string name="distributed_to">Distributed to</string>
+    <string name="select_one">Select one</string>
+
+    <!-- Sign in -->
+    <string name="server">Server:</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_in_to_your_account">Sign in to your account</string>
+    <string name="sign_in_to_with_oidc">Sign in with ICRC account</string>
+    <string name="non_icrc_staff_members">For non-ICRC staff members only</string>
+    <string name="icrc_staff_members">For ICRC staff members only</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password\?</string>
+
+    <string name="recent_activities_loading_message">Loading recent activities&#8230;</string>
+    <string name="recent_activities_empty_message">You are yet to perform any activity</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Syncing metadata&#8230;</string>
+    <string name="metadata_sync_error">Unable to complete metadata sync</string>
+    <string name="data_sync_in_progress">Syncing data&#8230;</string>
+    <string name="data_sync_error">Unable to complete data sync</string>
+    <string name="metadata_sync_completed">Metadata sync completed!</string>
+    <string name="sync_completed">Syncing completed!</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Proceed</string>
+    <string name="review">Review</string>
+
+    <string name="scan_barcode">Scan barcode</string>
+    <string name="scanning">Scanning&#8230;</string>
+    <string name="search">Search item</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirmation">Confirmation</string>
+
+    <!-- Languages -->
+    <string name="language_english">English</string>
+    <string name="language_french">French</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_russian">Russian</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Use microphone for data entry</string>
+    <string name="language">Language</string>
+    <string name="force_data_sync">Force data synchronization</string>
+    <string name="logout">Logout</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Item</string>
+    <string name="stock_on_hand">Stock on hand</string>
+    <string name="quantity">Quantity</string>
+    <string name="items_available">items available</string>
+    <string name="positive_value">
+        <b>Positive value</b>  = \"missing quantity\" (<i>physical stock less than the calculated value</i>)
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Negative value</span></b> = \"found in stock\"     (<i>physical stock is more than the calculated value</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+        A transaction type must be selected and all fields must be filled before you can proceed
+    </string>
+    <string name="mandatory_facility_selection">
+        The facility field must be filled before you can proceed
+    </string>
+    <string name="mandatory_distributed_to_selection">
+        The "Distributed to" field must be filled before you can proceed
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        The \"Distributed to\" field must be filled before you can proceed
+    </string>
+    <string name="previous_page_lose_data_warning">
+        Are you sure you want to go back to the previous screen\?
+        You will lose the data just entered if you decide to proceed.
+    </string>
+    <string name="transaction_completed">
+        The transaction was successfully completed!
+    </string>
+    <string name="transaction_cancelled">
+        The transaction was successfully cancelled!
+    </string>
+    <string name="force_sync_confirmation_message">
+        Are you sure you want to force synchronization\?
+    </string>
+    <string name="logout_confirmation_message">Are you sure you want to log out\?</string>
+
+    <string name="remove_correction_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the correction of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the distribution of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+        Are you sure you want to permanently delete the entry for the discard of \"%1$s\"\?
+        This action cannot be undone.
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="no_items_found">No items found</string>
+    <string name="loading_items_message">Loading stock items &#8230;</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">Welcome !</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">Login failed</string>
+    <string name="resync">Resync</string>
+
+    <!-- Errors -->
+    <string name="login_error">Unable to login</string>
+    <string name="config_file_error">Unable to load configuration file</string>
+    <string name="config_file_program_error">
+        Stock program id has not been set in the configuration file
+    </string>
+    <string name="recent_activities_load_error">Unable to load your recent activities</string>
+    <string name="facilities_load_error">Unable to load the list of available facilities</string>
+    <string name="destinations_load_error">
+        Unable to load the list of available destinations
+    </string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Sync information</string>
+    <string name="content_desc_search">Search</string>
+    <string name="content_desc_clear_text">Clear text</string>
+    <string name="content_desc_transaction_date">Show date picker</string>
+    <string name="content_desc_distributed_to">Distributed to</string>
+    <string name="content_desc_last_sync">Last Synced</string>
+    <string name="content_desc_quantity_info">More information on quantity</string>
+    <string name="content_desc_remove">Remove item</string>
+    <string name="content_desc_recent_activity">Directional arrow</string>
+    <string name="content_desc_recent_activity_status">Recent activity status</string>
+    <string name="content_desc_close_info_guide">Close information guide</string>
+
+    <string name="confirm_transaction_label">Confirm</string>
+    <string name="missing_configuration">
+        One or more required fields are missing in the configuration file
+    </string>
+    <string name="select_language">Select your desired language</string>
+
+    <!-- Preferences -->
+    <string name="username_pref_key" translatable="false">logged_in_user</string>
+    <string name="language_pref_key" translatable="false">language_preference</string>
+    <string name="logout_pref_key" translatable="false">logout</string>
+    <string name="force_sync_pref_key" translatable="false">force_sync</string>
+    <string name="use_mic_pref_key" translatable="false">use_mic</string>
+    <string name="language_pref_default" translatable="false">en</string>
+
+    <string name="restart_later">Restart Later</string>
+    <string name="confirm_app_restart_message">
+        The application needs to be restarted for the changes to be effected, however,
+        any unsaved changes will be lost.\n\nWill you like to proceed with the restart\?
+    </string>
+    <string name="language_change_dialog_title">Confirm Restart</string>
+    <string name="scan_canceled">Scan cancelled!</string>
+    <string name="logout_error_message">
+        An error occurred during logout. Please try again later.
+    </string>
+    <string name="logout_success_message">Successfully logged out</string>
+
+    <string name="invalid_quantity">Invalid</string>
+    <string name="stock_on_hand_exceeded_message">
+        Available stock on hand cannot be exceeded
+    </string>
+    <string name="reviewed_item_cannot_be_empty_message">
+        A stock under review cannot be empty. You can remove the item if not desired
+    </string>
+
+    <string name="permission_granted">Permission Granted</string>
+    <string name="permission_denied">Permission Denied</string>
+
+    <string name="default_language" translatable="false">en</string>
+    <string name="content_desc_splash" translatable="false">Splash screen image</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">
+        Insufficient permissions. Request android.permission.RECORD_AUDIO
+    </string>
+    <string name="speech_audio_error">Audio recording error</string>
+    <string name="speech_client_error">
+        Client side error. Please check your internet connection!
+    </string>
+    <string name="speech_network_error">Network error</string>
+    <string name="speech_network_timeout_error">Network operation timed out</string>
+    <string name="no_speech_match_error">No recognition result matched.</string>
+    <string name="speech_recognition_service_busy_error">Recognition service is busy</string>
+    <string name="speech_server_error">An error occurred on the speech server</string>
+    <string name="speech_timeout_error">No speech input detected</string>
+    <string name="unknown_speech_error">An unknown error occurred.</string>
+    <string name="non_numeric_speech_input_error">Non-numeric input is not allowed: \"%s\"</string>
+    <string name="negative_number_speech_input_error">
+        Negative number input is not allowed: \"%s\"
+    </string>
+
+    <string name="openid_config_load_error">Unable to load OpenID configuration</string>
+    <string name="unexpected_openid_authentication_error">
+        An unexpected error occurred while authenticating with OpenID
+    </string>
+    <string name="no_network_available">No network connection available</string>
+    <string name="unable_to_sync_data_no_network_available">
+        Unable to synchronize data because there is no network connection available
+    </string>
+    <string name="openid_authentication_not_successful">
+        Unable to authenticate with your ICRC account
+    </string>
+
+    <string name="contact_service_desk_message">
+        In case of problems, \nplease contact ICRC service desk
+    </string>
+
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
+    <string name="login_error_error_response">Oops! Something went wrong on the server side.</string>
+    <string name="login_error_no_dhis_instance">The provided URL is not a DHIS2 server.</string>
+    <string name="login_error_bad_credentials">The username and/or password are incorrect</string>
+    <string name="login_error_unknown_host">Unknown server</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="error_unexpected">Something unexpected went wrong.</string>
+    <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
+    <string name="error_already_authenticated">The user is already logged in.</string>
+    <string name="error_already_executed">The request has already been executed.</string>
+    <string name="error_api_invalid_query">Server request is invalid.</string>
+    <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
+    <string name="error_export_login">Please login to export the database.</string>
+    <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
+    <string name="error_import_exist">You are importing an already existing database.</string>
+    <string name="error_import_logout">Please logout to import a new database.</string>
+    <string name="error_import_version">The version of the imported database is higher than supported.</string>
+    <string name="error_user_no_authenticated">There is no user authenticated.</string>
+    <string name="error_user_no_authenticated_offline">There is no user authenticated offline.</string>
+    <string name="error_different_offline_user">You are trying to login offline with a different user.</string>
+    <string name="error_object_update">The object could not be updated.</string>
+    <string name="error_object_insert">The object could not be inserted.</string>
+    <string name="error_ownership_access">You do not have access.</string>
+    <string name="error_null_url">The server URL is missing. Please enter URL.</string>
+    <string name="error_server_malformed">The server URL is not well formed. Please check it.</string>
+    <string name="error_settings_app_not_supported">This version of the Settings Web App is not supported.</string>
+    <string name="error_settings_app_not_intalled">The Settings Web App is not installed in the server.</string>
+    <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
+    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
+    <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
+    <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
+    <string name="error_set_value">The value could not be set.</string>
+    <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+</resources>
