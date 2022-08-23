@@ -246,7 +246,7 @@ dependencies {
     implementation project(":compose-table")
     implementation project(":stock-managment")
 
-    
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2"
 
@@ -299,15 +299,7 @@ dependencies {
     //Hilt dependencie
     implementation "com.google.dagger:hilt-android:${libraries.hilt_version}"
     kapt "com.google.dagger:hilt-android-compiler:${libraries.hilt_version}"
-
-
-    // WorkManager
-//    def workmanager = "2.7.1"
-//    implementation "androidx.work:work-runtime:$workmanager"
-//    implementation "androidx.work:work-runtime-ktx:$workmanager"
-//    implementation "androidx.work:work-rxjava2:$workmanager"
-//    implementation "androidx.work:work-gcm:$workmanager"
-
+    
 
     // solve unsuported metadata imcompatible kotlin versions
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
