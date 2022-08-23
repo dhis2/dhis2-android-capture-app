@@ -21,6 +21,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
+import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -40,7 +41,7 @@ class DataValuePresenter(
     private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val indicatorsState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
-    private val errors:MutableMap<String, String> =  mutableMapOf()
+    private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val processor: FlowableProcessor<RowAction> =
         PublishProcessor.create()
@@ -99,13 +100,13 @@ class DataValuePresenter(
                         dataSetTableModel?.let {
                             val result = valueStore.save(it)
                             val saveResult = result.blockingFirst().valueStoreResult
-                            if ((saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE) &&
+                            if ((saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE || saveResult == VALUE_HAS_NOT_CHANGED) &&
                                 featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
                             ) {
-                                if(saveResult == ERROR_UPDATING_VALUE){
-                                    errors[it.dataElement+"_"+it.categoryOptionCombo] = "Value type error message"
-                                }else{
-                                    errors.remove(it.dataElement+"_"+it.categoryOptionCombo)
+                                if (saveResult == ERROR_UPDATING_VALUE) {
+                                    errors[it.dataElement + "_" + it.categoryOptionCombo] = "Value type error message"
+                                } else {
+                                    errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
                                 }
                                 updateData(it)
                             } else {

@@ -61,6 +61,39 @@ fun DataSetTableScreen(
 
         val focusManager = LocalFocusManager.current
 
+        var nextSelected by remember { mutableStateOf(false) }
+
+        if (tableData.isNotEmpty() && nextSelected) {
+            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+
+                val currentTable = tableData.first { it.id == cellSelected.tableId }
+                currentTable.getNextCell(cellSelected)?.let { (tableCell, nextCell) ->
+                    if (nextCell != cellSelected) {
+                        tableSelection = nextCell
+                        onCellClick(tableCell)?.let { inputModel ->
+                            currentCell = tableCell
+                            currentInputType = inputModel
+                        }
+                    } else {
+                        currentInputType = currentInputType.copy(error = tableCell.error)
+                        currentCell = currentCell?.copy(error = tableCell.error)?.also {
+                            onCellValueChange(it)
+                        }
+                    }
+                } ?: run {
+                    focusManager.clearFocus(true)
+                    tableSelection = TableSelection.Unselected()
+                    coroutineScope.launch {
+                        if (bottomSheetState.bottomSheetState.isExpanded) {
+                            bottomSheetState.bottomSheetState.collapse()
+                            onEdition(false)
+                        }
+                    }
+                }
+            }
+            nextSelected = false
+        }
+
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
             coroutineScope.launch {
                 bottomSheetState.bottomSheetState.collapse()
@@ -84,26 +117,7 @@ fun DataSetTableScreen(
                         }
                     },
                     onNextSelected = {
-                        (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-
-                            val currentTable = tableData.first { it.id == cellSelected.tableId }
-                            currentTable.getNextCell(cellSelected)?.let { (tableCell, nextCell) ->
-                                tableSelection = nextCell
-                                onCellClick(tableCell)?.let { inputModel ->
-                                    currentCell = tableCell
-                                    currentInputType = inputModel
-                                }
-                            } ?: run {
-                                focusManager.clearFocus(true)
-                                tableSelection = TableSelection.Unselected()
-                                coroutineScope.launch {
-                                    if (bottomSheetState.bottomSheetState.isExpanded) {
-                                        bottomSheetState.bottomSheetState.collapse()
-                                        onEdition(false)
-                                    }
-                                }
-                            }
-                        }
+                        nextSelected = true
                     }
                 )
             },

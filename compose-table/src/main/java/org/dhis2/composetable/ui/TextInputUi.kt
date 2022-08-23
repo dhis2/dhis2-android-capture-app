@@ -106,7 +106,6 @@ private fun TextInputContent(
     var hasFocus by remember { mutableStateOf(false) }
 
     Column {
-
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -162,7 +161,7 @@ private fun TextInputContent(
             TextInputContentActionIcon(
                 modifier = Modifier
                     .clickable(role = Role.Button) {
-                        if (hasFocus) {
+                        if (hasFocus && textInputModel.error == null) {
                             focusManager.clearFocus(force = true)
                             onSave()
                         } else {
