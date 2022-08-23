@@ -69,8 +69,13 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.1'
+        kotlinCompilerExtensionVersion = "1.3.0"
     }
+
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
+
 }
 
 dependencies {
@@ -119,7 +124,7 @@ dependencies {
 
     //Compose
     api "androidx.compose.material:material:${libraries.compose}"
-    api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
+    api "androidx.constraintlayout:constraintlayout-compose:1.0.1" // old
     api "com.google.android.material:compose-theme-adapter:${libraries.compose}"
     api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
     api "androidx.compose.ui:ui:${libraries.compose}"
