@@ -12,7 +12,7 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
-import com.squareup.leakcanary.LeakCanary
+import leakcanary.LeakCanary
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 
@@ -55,10 +55,10 @@ class AppInspector(private val context: Context) {
 
     private fun sharedPreferencesPlugin() = SharedPreferencesFlipperPlugin(context)
     private fun leakCanaryPlugin() = LeakCanaryFlipperPlugin().also {
-        LeakCanary.install(context.app())
-        LeakCanary.refWatcher(context)
-            .listenerServiceClass(RecordLeakService::class.java)
-            .buildAndInstall()
+//        LeakCanary.install(context.app())
+//        LeakCanary.refWatcher(context)
+//            .listenerServiceClass(RecordLeakService::class.java)
+//            .buildAndInstall()
     }
 
     private fun crashPlugin() = CrashReporterPlugin.getInstance()
