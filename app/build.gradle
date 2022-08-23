@@ -246,10 +246,8 @@ dependencies {
     implementation project(":compose-table")
     implementation project(":stock-managment")
 
-
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-//    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10'
+    
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2"
 
 
