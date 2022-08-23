@@ -86,7 +86,7 @@ class FormViewModel(
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
         when (result.second.valueStoreResult) {
             ValueStoreResult.VALUE_CHANGED -> {
-                _savedValue.value = result.first
+                _savedValue.value = result.first!!
                 processCalculatedItems()
             }
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
@@ -109,12 +109,13 @@ class FormViewModel(
             }
             ValueStoreResult.TEXT_CHANGING -> {
                 Timber.d("${result.first.id} is changing its value")
-                _queryData.value = result.first
+                _queryData.value = result.first!!
             }
             ValueStoreResult.FINISH -> {
                 processCalculatedItems()
                 runDataIntegrityCheck()
             }
+            else -> {}
         }
     }
 
