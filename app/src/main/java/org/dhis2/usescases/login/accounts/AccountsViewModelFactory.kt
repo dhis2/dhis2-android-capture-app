@@ -7,7 +7,7 @@ class AccountsViewModelFactory(
     val repository: AccountRepository
 ) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AccountsViewModel(repository) as T
     }
 }
