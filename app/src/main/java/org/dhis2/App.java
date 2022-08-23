@@ -70,6 +70,7 @@ import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
+//@HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
