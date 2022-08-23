@@ -43,6 +43,8 @@ ext {
             //Dependency injection
             dagger                    : "2.43.2", // default 2.39.1
 
+            hilt_version                    : "2.43.2", // default 2.39.1
+
             //RXJava
             rxjava                    : "2.1.0",
             rxandroid                 : "2.1.0",
