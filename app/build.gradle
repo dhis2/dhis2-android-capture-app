@@ -299,7 +299,7 @@ dependencies {
     //Hilt dependencie
     implementation "com.google.dagger:hilt-android:${libraries.hilt_version}"
     kapt "com.google.dagger:hilt-android-compiler:${libraries.hilt_version}"
-    
+
 
     // solve unsuported metadata imcompatible kotlin versions
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
