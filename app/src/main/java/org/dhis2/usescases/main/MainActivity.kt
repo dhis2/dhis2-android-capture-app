@@ -223,18 +223,16 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            val currentState = it.firstOrNull()?.state
-            if (currentState == WorkInfo.State.RUNNING) {
-                setFilterButtonVisibility(false)
-                setBottomNavigationVisibility(false)
-            } else if (
-                currentState == WorkInfo.State.SUCCEEDED ||
-                currentState == WorkInfo.State.FAILED ||
-                currentState == WorkInfo.State.CANCELLED
-            ) {
-                setFilterButtonVisibility(true)
-                setBottomNavigationVisibility(true)
-                presenter.onDataSuccess()
+            when(it.firstOrNull()?.state){
+                WorkInfo.State.RUNNING -> {
+                    setFilterButtonVisibility(false)
+                    setBottomNavigationVisibility(false)
+                }
+                else -> {
+                    setFilterButtonVisibility(true)
+                    setBottomNavigationVisibility(true)
+                    presenter.onDataSuccess()
+                }
             }
         }
     }
