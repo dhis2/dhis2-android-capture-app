@@ -103,6 +103,9 @@ ext {
             junit                     : "4.13.2",
 
             //serialization
-            kotlinxserialization      : "1.3.2"
+            kotlinxserialization      : "1.3.2",
+
+            //Kotlin metadata
+            kotlinmetadata             : "0.4.2"
     ]
 }
