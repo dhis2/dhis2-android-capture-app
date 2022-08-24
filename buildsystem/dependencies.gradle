@@ -2,7 +2,7 @@ ext {
     versions = [
             ndk   : "21.4.7075529",
             sdk   : 32,
-            tools : "30.0.3",
+            tools : "32.0.0",
             minSdk: 21,
             vCode : 115,
             vName : "2.7"
