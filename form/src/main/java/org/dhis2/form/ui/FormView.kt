@@ -32,7 +32,6 @@ import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
-import org.dhis2.commons.Constants.ACCESS_LOCATION_PERMISSION_REQUEST
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.AlertBottomDialog
@@ -176,6 +175,17 @@ class FormView : Fragment() {
             if (it.resultCode == RESULT_OK) {
                 getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
                     onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
+    private val requestLocationPermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { result ->
+            if (result.values.all { isGranted -> isGranted }) {
+                viewModel.getFocusedItemUid()?.let {
+                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
                 }
             }
         }
@@ -613,9 +623,8 @@ class FormView : Fragment() {
                 intentHandler(intent)
             },
             {
-                this@FormView.requestPermissions(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    ACCESS_LOCATION_PERMISSION_REQUEST
+                requestLocationPermissions.launch(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
                 )
             },
             {
@@ -797,20 +806,6 @@ class FormView : Fragment() {
                 )
             )
         }.show(this@FormView.childFragmentManager)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == ACCESS_LOCATION_PERMISSION_REQUEST &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            viewModel.getFocusedItemUid()?.let {
-                requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-            }
-        }
     }
 
     fun onEditionFinish() {
