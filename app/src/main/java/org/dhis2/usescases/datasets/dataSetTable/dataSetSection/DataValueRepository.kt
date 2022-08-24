@@ -571,7 +571,10 @@ class DataValueRepository(
         }
     }
 
-    fun setTableData(dataTableModel: DataTableModel, errors:MutableMap<String, String>): TableData {
+    fun setTableData(
+        dataTableModel: DataTableModel,
+        errors: MutableMap<String, String>
+    ): TableData {
         val cells = ArrayList<List<String>>()
         val listFields = mutableListOf<List<FieldViewModel>>()
         var row = 0
@@ -643,9 +646,9 @@ class DataValueRepository(
                     dataTableModel.catCombo?.uid()
                 )
 
-                errors[fieldViewModel.uid()]?.let {error->
+                errors[fieldViewModel.uid()]?.let { error ->
                     fields.add(fieldViewModel.withError(error))
-                }?:fields.add(fieldViewModel)
+                } ?: fields.add(fieldViewModel)
 
                 values.add(fieldViewModel.value().toString())
 

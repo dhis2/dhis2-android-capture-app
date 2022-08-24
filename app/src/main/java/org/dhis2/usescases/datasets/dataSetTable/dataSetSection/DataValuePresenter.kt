@@ -100,11 +100,15 @@ class DataValuePresenter(
                         dataSetTableModel?.let {
                             val result = valueStore.save(it)
                             val saveResult = result.blockingFirst().valueStoreResult
-                            if ((saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE || saveResult == VALUE_HAS_NOT_CHANGED) &&
+                            if ((
+                                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+                                    saveResult == VALUE_HAS_NOT_CHANGED
+                                ) &&
                                 featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
                             ) {
                                 if (saveResult == ERROR_UPDATING_VALUE) {
-                                    errors[it.dataElement + "_" + it.categoryOptionCombo] = "Value type error message"
+                                    errors[it.dataElement + "_" + it.categoryOptionCombo] =
+                                        "Value type error message"
                                 } else {
                                     errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
                                 }
@@ -254,8 +258,9 @@ class DataValuePresenter(
 
     fun onCellValueChanged(tableCell: TableCell) {
         val updatedData = allTableState.value?.map { tableModel ->
-            val hasRowWithDataElement =
-                tableModel.tableRows.find { tableCell.id?.contains(it.rowHeader.id.toString()) == true }
+            val hasRowWithDataElement = tableModel.tableRows.find {
+                tableCell.id?.contains(it.rowHeader.id.toString()) == true
+            }
             if (hasRowWithDataElement != null) {
                 tableModel.copy(
                     overwrittenValues = mapOf(
