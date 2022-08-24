@@ -53,6 +53,11 @@ android {
         versionCode versions.vCode
         versionName versions.vName
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+
+
+        setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
 
         def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
