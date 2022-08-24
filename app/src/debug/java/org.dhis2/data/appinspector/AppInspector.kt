@@ -54,12 +54,6 @@ class AppInspector(private val context: Context) {
     }
 
     private fun sharedPreferencesPlugin() = SharedPreferencesFlipperPlugin(context)
-    private fun leakCanaryPlugin() = LeakCanaryFlipperPlugin().also {
-//        LeakCanary.install(context.app())
-//        LeakCanary.refWatcher(context)
-//            .listenerServiceClass(RecordLeakService::class.java)
-//            .buildAndInstall()
-    }
 
     private fun crashPlugin() = CrashReporterPlugin.getInstance()
 }
