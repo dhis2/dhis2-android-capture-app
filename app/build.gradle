@@ -5,7 +5,6 @@ apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
-apply plugin: "dagger.hilt.android.plugin"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -60,15 +59,6 @@ android {
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += [
-                        "dagger.hilt.disableModulesHaveInstallInCheck": "true",
-                        "room.schemaLocation"                         : "$projectDir/schemas".toString(),
-                ]
-
-            }
-        }
 
         def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
 
@@ -295,11 +285,7 @@ dependencies {
     implementation "org.matomo.sdk:tracker:${libraries.matomo}"
     implementation "io.sentry:sentry-android:${libraries.sentry}"
     //endregion
-
-    //Hilt dependencie
-    implementation "com.google.dagger:hilt-android:${libraries.hilt_version}"
-    kapt "com.google.dagger:hilt-android-compiler:${libraries.hilt_version}"
-
+    
 
     // solve unsuported metadata imcompatible kotlin versions
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
