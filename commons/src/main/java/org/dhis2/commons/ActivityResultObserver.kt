@@ -8,5 +8,5 @@ interface ActivityResultObserver {
         requestCode: Int,
         permissions: Array<String?>,
         grantResults: IntArray
-    ) {}
+    )
 }

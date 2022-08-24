@@ -140,6 +140,16 @@ class FormView : Fragment() {
                             showAddImageOptions()
                         }
                     }
+
+                    override fun onRequestPermissionsResult(
+                        requestCode: Int,
+                        permissions: Array<String?>,
+                        grantResults: IntArray
+                    ) {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            showAddImageOptions()
+                        }
+                    }
                 })
             } else {
                 Toast.makeText(
@@ -258,7 +268,6 @@ class FormView : Fragment() {
     }
 
     private fun setObservers() {
-
         viewModel.savedValue.observe(
             viewLifecycleOwner
         ) { rowAction ->
@@ -743,7 +752,7 @@ class FormView : Fragment() {
                 }
 
                 override fun onDialogCancelled() {
-                    //We don't need to do anything when user cancels the dialog
+                    // We don't need to do anything when user cancels the dialog
                 }
 
                 override fun onClear() {
