@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.dhis2.composetable.R
+import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -86,13 +87,15 @@ fun TableHeader(
                                 rowIndex = rowIndex,
                                 columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
-                                headerWidth = LocalTableDimensions.current.headerCellWidth(
-                                    tableHeaderModel.numberOfColumns(rowIndex),
-                                    LocalConfiguration.current,
-                                    tableHeaderModel.tableMaxColumns(),
-                                    tableHeaderModel.hasTotals
+                                HeaderMeasures(
+                                    LocalTableDimensions.current.headerCellWidth(
+                                        tableHeaderModel.numberOfColumns(rowIndex),
+                                        LocalConfiguration.current,
+                                        tableHeaderModel.tableMaxColumns(),
+                                        tableHeaderModel.hasTotals
+                                    ),
+                                    LocalTableDimensions.current.defaultHeaderHeight
                                 ),
-                                headerHeight = LocalTableDimensions.current.defaultHeaderHeight,
                                 cellStyle = cellStyle(columnIndex, rowIndex),
                                 onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
@@ -107,13 +110,14 @@ fun TableHeader(
                 rowIndex = 0,
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
-                headerWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                    LocalConfiguration.current,
-                    tableHeaderModel.tableMaxColumns(),
-                    tableHeaderModel.hasTotals
+                HeaderMeasures(
+                    LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                        LocalConfiguration.current,
+                        tableHeaderModel.tableMaxColumns(),
+                        tableHeaderModel.hasTotals
+                    ),
+                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size
                 ),
-                headerHeight =
-                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size,
                 cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
@@ -130,15 +134,14 @@ fun HeaderCell(
     rowIndex: Int,
     columnIndex: Int,
     headerCell: TableHeaderCell,
-    headerWidth: Dp,
-    headerHeight: Dp,
+    headerMeasures: HeaderMeasures,
     cellStyle: CellStyle,
     onCellSelected: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
             .width(IntrinsicSize.Min)
-            .height(headerHeight)
+            .height(headerMeasures.height)
             .background(cellStyle.backgroundColor())
             .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
             .semantics {
@@ -153,7 +156,7 @@ fun HeaderCell(
     ) {
         Text(
             modifier = Modifier
-                .width(headerWidth)
+                .width(headerMeasures.width)
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
             color = cellStyle.mainColor(),

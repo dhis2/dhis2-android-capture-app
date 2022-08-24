@@ -1,5 +1,6 @@
 package org.dhis2.composetable.model
 
+import androidx.compose.ui.unit.Dp
 import kotlinx.serialization.Serializable
 import org.dhis2.composetable.ui.SelectionState
 
@@ -72,3 +73,5 @@ data class RowHeader(
     val showDecoration: Boolean = false,
     val description: String? = null
 )
+
+data class HeaderMeasures(val width: Dp, val height: Dp)
