@@ -197,9 +197,6 @@ android {
         exclude("META-INF/*.kotlin_module")
 
     }
-    packagingOptions {
-        resources.excludes.add("META-INF/*")
-    }
 
     dexOptions {
         javaMaxHeapSize "4g"
