@@ -352,7 +352,3 @@ dependencies {
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
 }
-
-kapt {
-    correctErrorTypes true
-}
