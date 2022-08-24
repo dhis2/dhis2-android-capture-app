@@ -49,6 +49,9 @@ class AnalyticResources(val context: Context) {
             is AnalyticsException.InvalidTrackedEntityAttribute ->
                 context.getString(R.string.error_invalid_attribute)
                     .format(analyticsException.uid)
+            is AnalyticsException.UnsupportedAggregationType ->
+                context.getString(R.string.error_unsupported_aggregation_type)
+                    .format(analyticsException.aggregationType.name)
             else -> ""
         }
     }
