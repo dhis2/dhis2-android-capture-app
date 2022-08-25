@@ -38,9 +38,6 @@ class AnalyticResources(val context: Context) {
                     .format(analyticsException.uid)
             is AnalyticsException.ParserException ->
                 context.getString(R.string.error_parsing_visualization)
-            is AnalyticsException.ProgramIndicatorCustomBoundaries ->
-                context.getString(R.string.error_invalid_custom_boundaries)
-                    .format(analyticsException.programIndicator.displayName())
             is AnalyticsException.SQLException ->
                 context.getString(R.string.error_database)
             is AnalyticsException.InvalidProgram ->
