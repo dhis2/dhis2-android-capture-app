@@ -51,6 +51,13 @@ class EnrollmentRobot : BaseRobot() {
                 hasDescendant(withText(containsString(attribute))), click()))
     }
 
+    fun clickOnPersonAttributesUsingButton(attribute: String){
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
+                hasDescendant(withText(containsString(attribute))), clickChildViewWithId(R.id.sectionButton)
+            ))
+    }
+
     fun typeOnRequiredTextField(text: String, position: Int) {
         onView(withId(R.id.recyclerView))
             .perform(
