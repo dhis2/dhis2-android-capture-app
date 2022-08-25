@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:baselineAligned="false">
+
+    <FrameLayout
+        android:id="@+id/col_review_item_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="16"
+        android:background="@color/light_grey">
+
+        <TextView
+            android:id="@+id/review_stock_item_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="@dimen/stock_item_entry_left_margin"
+            android:layout_marginEnd="@dimen/stock_item_entry_left_margin"
+            android:textColor="@color/table_text_color"
+            tools:text="DORAPARA5T - PARACETAMOL (acetaminophen), 500 mg, tab." />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/col_stock_on_hand"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:background="@color/gray_200">
+
+        <TextView
+            android:id="@+id/review_stock_on_hand_value_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="@dimen/stock_item_margin"
+            tools:ignore="RtlCompat"
+            android:textColor="@color/table_text_color"
+            tools:text="537" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/colReviewItemQty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/review_item_qty_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/stock_item_margin"
+            android:layout_marginBottom="@dimen/stock_item_margin_bottom"
+            app:boxCornerRadiusBottomEnd="@dimen/text_input_corner_radius"
+            app:boxCornerRadiusBottomStart="@dimen/text_input_corner_radius"
+            app:boxCornerRadiusTopEnd="@dimen/text_input_corner_radius"
+            app:boxCornerRadiusTopStart="@dimen/text_input_corner_radius"
+            android:minWidth="@dimen/text_input_width"
+            android:maxWidth="@dimen/text_input_width"
+            app:errorEnabled="true"
+            tools:text="20">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="number"
+                android:maxLines="1"
+                android:maxLength="19"
+                android:textAlignment="textEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="20" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/remove_stock_item_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_clear_24"
+            android:contentDescription="@string/content_desc_remove"
+            android:background="?android:selectableItemBackground" />
+    </FrameLayout>
+</LinearLayout>

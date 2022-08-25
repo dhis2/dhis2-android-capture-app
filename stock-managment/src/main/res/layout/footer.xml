@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="lastSyncDate" type="String" />
+        <variable name="appVersion" type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/last_sync_icon_image_view"
+            android:contentDescription="@string/content_desc_last_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/content_area_lr_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/last_sync" />
+
+        <TextView
+            android:id="@+id/last_sync_desc_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/last_sync_label_lr_margin"
+            android:layout_marginTop="@dimen/last_sync_label_top_margin"
+            android:layout_marginBottom="@dimen/last_sync_label_bottom_margin"
+            android:text="@string/last_synced"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/last_sync_icon_image_view"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/last_synced" />
+
+        <TextView
+            android:id="@+id/last_sync_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_8"
+            android:text="@{lastSyncDate}"
+            android:textColor="@color/normal_text_color"
+            app:layout_constraintBaseline_toBaselineOf="@id/last_sync_desc_text_view"
+            app:layout_constraintStart_toEndOf="@id/last_sync_desc_text_view"
+            tools:text="2021-06-30 14:32:33" />
+
+        <TextView
+            android:id="@+id/app_version_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/content_area_lr_margin"
+            android:text="@{appVersion}"
+            android:textColor="@color/normal_text_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/last_sync_desc_text_view"
+            tools:text="v1.8.9" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

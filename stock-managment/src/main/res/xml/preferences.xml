@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        app:key="@string/username_pref_key"
+        app:persistent="false"
+        android:selectable="false"
+        android:icon="@drawable/ic_user_profile"
+        tools:title="district" />
+
+    <SwitchPreferenceCompat
+        app:defaultValue="false"
+        app:key="@string/use_mic_pref_key"
+        app:title="@string/use_microphone_for_data_entry" />
+
+    <Preference
+        app:title="@string/language"
+        app:fragment="org.dhis2.android.rtsm.ui.settings.SettingsActivity$LanguagePreferencesFragment"/>
+
+    <Preference
+        app:key="@string/force_sync_pref_key"
+        app:title="@string/force_data_sync"
+        app:persistent="false" />
+
+    <Preference
+        app:title="@string/logout"
+        app:key="@string/logout_pref_key"
+        app:persistent="false" />
+</PreferenceScreen>
