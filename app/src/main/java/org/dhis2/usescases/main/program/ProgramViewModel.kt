@@ -17,7 +17,8 @@ data class ProgramViewModel(
     val state: State,
     val hasOverdueEvent: Boolean,
     val filtersAreActive: Boolean,
-    val downloadState: ProgramDownloadState
+    val downloadState: ProgramDownloadState,
+    val downloadActive: Boolean = false
 ) {
     private var hasShownCompleteSyncAnimation = false
 
@@ -33,7 +34,7 @@ data class ProgramViewModel(
 
     fun countDescription() = "%s %s".format(count, typeName)
 
-    fun isDownloading() = downloadState == ProgramDownloadState.DOWNLOADING
+    fun isDownloading() = downloadActive || downloadState == ProgramDownloadState.DOWNLOADING
 
     fun getAlphaValue() = if (isDownloading()) {
         0.5f
