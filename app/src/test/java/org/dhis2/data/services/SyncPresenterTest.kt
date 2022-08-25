@@ -12,15 +12,20 @@ import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
+import org.dhis2.data.service.SyncRepository
+import org.dhis2.data.service.SyncResult
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.BaseD2Progress
+import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -34,6 +39,7 @@ class SyncPresenterTest {
     private val workManagerController: WorkManagerController = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val syncRepository: SyncRepository = mock()
 
     @Before
     fun setUp() {
@@ -42,7 +48,8 @@ class SyncPresenterTest {
             preferences,
             workManagerController,
             analyticsHelper,
-            syncStatusController
+            syncStatusController,
+            syncRepository
         )
     }
 
@@ -187,6 +194,63 @@ class SyncPresenterTest {
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
         verify(analyticsHelper).clearMatomoSecondaryTracker()
+    }
+
+    @Test
+    fun `Should return successfully SYNC if tei enrollment and events are ok`() {
+        whenever(
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+        ) doReturn emptyList()
+        whenever(
+            syncRepository.getEventsFromEnrollmentByNotInSyncState(
+                "uid",
+                listOf(State.SYNCED)
+            )
+        ) doReturn emptyList()
+
+        val syncResult = presenter.checkSyncTEIStatus("uid")
+
+        assert(syncResult == SyncResult.SYNC)
+    }
+
+    @Test
+    fun `Should return an incomplete sync if there are tei with TO_POST or TO_UPDATE syncState`() {
+        whenever(
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+        ) doReturn listOf(TrackedEntityInstance.builder().uid("uid").build())
+        whenever(
+            syncRepository.getEventsFromEnrollmentByNotInSyncState(
+                "uid",
+                listOf(State.SYNCED)
+            )
+        ) doReturn emptyList()
+        whenever(
+            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE))
+        ) doReturn listOf(TrackedEntityInstance.builder().uid("uid").build())
+
+        val syncResult = presenter.checkSyncTEIStatus("uid")
+
+        assert(syncResult == SyncResult.INCOMPLETE)
+    }
+
+    @Test
+    fun `Should return an ERROR sync if there are events of a tei without the SYNC syncState`() {
+        whenever(
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+        ) doReturn emptyList()
+        whenever(
+            syncRepository.getEventsFromEnrollmentByNotInSyncState(
+                "uid",
+                listOf(State.SYNCED)
+            )
+        ) doReturn listOf(Event.builder().uid("event").enrollment("uid").build())
+        whenever(
+            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE))
+        ) doReturn emptyList()
+
+        val syncResult = presenter.checkSyncTEIStatus("uid")
+
+        assert(syncResult == SyncResult.ERROR)
     }
 
     private fun mockedProgramSettings(
