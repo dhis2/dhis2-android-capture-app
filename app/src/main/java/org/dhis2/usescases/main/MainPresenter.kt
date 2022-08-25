@@ -2,7 +2,6 @@ package org.dhis2.usescases.main
 
 import android.view.Gravity
 import androidx.lifecycle.LiveData
-import androidx.work.WorkInfo
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.Constants
@@ -14,6 +13,8 @@ import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMB
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -45,7 +46,8 @@ class MainPresenter(
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
     private val deleteUserData: DeleteUserData,
-    private val syncIsPerformedInteractor: SyncIsPerformedInteractor
+    private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
+    private val syncStatusController: SyncStatusController
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -258,12 +260,8 @@ class MainPresenter(
         workManagerController.syncDataForWorker(workerItem)
     }
 
-    fun observeDataSync(): LiveData<List<WorkInfo>> {
-        return workManagerController.getWorkInfosForTags(
-            Constants.INITIAL_SYNC,
-            Constants.DATA_NOW,
-            Constants.DATA
-        )
+    fun observeDataSync(): LiveData<SyncStatusData> {
+        return syncStatusController.observeDownloadProcess()
     }
 
     fun wasSyncAlreadyDone(): Boolean {

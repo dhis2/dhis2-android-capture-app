@@ -44,4 +44,43 @@ class SyncStatusController {
             SyncStatusData(progressStatusMap)
         )
     }
+
+    fun finishDownloadingEvents(eventProgramUids: List<String>) {
+        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
+            if (!eventProgramUids.contains(entry.key) || entry.value.isComplete) {
+                entry.value
+            } else {
+                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+            }
+        }
+        downloadStatus.postValue(
+            SyncStatusData(progressStatusMap)
+        )
+    }
+
+    fun finishDownloadingTracker(trackerProgramUids: List<String>) {
+        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
+            if (!trackerProgramUids.contains(entry.key) || entry.value.isComplete) {
+                entry.value
+            } else {
+                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+            }
+        }
+        downloadStatus.postValue(
+            SyncStatusData(progressStatusMap)
+        )
+    }
+
+    fun updateSingleProgramToSuccess(programUid: String) {
+        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
+            if (programUid != entry.key) {
+                entry.value
+            } else {
+                entry.value.copy(isComplete = true, D2ProgressSyncStatus.SUCCESS)
+            }
+        }
+        downloadStatus.postValue(
+            SyncStatusData(progressStatusMap)
+        )
+    }
 }

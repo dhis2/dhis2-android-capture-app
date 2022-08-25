@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.work.WorkInfo
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
@@ -223,16 +222,13 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            when(it.firstOrNull()?.state){
-                WorkInfo.State.RUNNING -> {
-                    setFilterButtonVisibility(false)
-                    setBottomNavigationVisibility(false)
-                }
-                else -> {
-                    setFilterButtonVisibility(true)
-                    setBottomNavigationVisibility(true)
-                    presenter.onDataSuccess()
-                }
+            if (it.isDownloading()) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
+            } else {
+                setFilterButtonVisibility(true)
+                setBottomNavigationVisibility(true)
+                presenter.onDataSuccess()
             }
         }
     }
