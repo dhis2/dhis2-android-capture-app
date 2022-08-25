@@ -7,15 +7,19 @@ plugins {
 }
 
 apply from: "$rootDir/stock-managment/dependencies.gradle"
+apply plugin: "kotlinx-serialization"
+
+def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
 
 android {
-    compileSdk versions.compileSdk
+    compileSdk versions.sdk
 
     defaultConfig {
         minSdk versions.minSdk
-        targetSdk versions.targetSdk
-        versionCode versions.versionCode
-        versionName versions.versionName
+        targetSdk versions.sdk
+        versionCode versions.vCode
+        versionName versions.vName
         applicationId versions.applicationId
         multiDexEnabled true
 
@@ -93,78 +97,79 @@ dependencies {
 
     // DHIS2 Android SDK
     // remove the no-op version of Flipper added by DHIS2 Android SDK  to avoid duplicates
-    implementation ("org.hisp.dhis:android-core:$versions.dhis_core") {
+    implementation ("org.hisp.dhis:android-core:$libraries.dhis2sdk") {
         exclude group: 'com.facebook.flipper'
     }
 
-    implementation "org.hisp.dhis.rules:rule-engine:$versions.dhis_rules_engine"
+    implementation "org.hisp.dhis.rules:rule-engine:$libraries.ruleEngine"
 
-    implementation "androidx.annotation:annotation:$versions.annotation"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+    implementation "androidx.annotation:annotation:$libraries.annotation"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$libraries.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$libraries.lifecycle"
 
     // Room
-    implementation "androidx.room:room-runtime:$versions.room"
-    kapt("androidx.room:room-compiler:$versions.room")
-    kapt("androidx.room:room-ktx:$versions.room")
-    implementation "androidx.room:room-rxjava2:$versions.room"
+    implementation "androidx.room:room-runtime:$libraries.room"
+    kapt("androidx.room:room-compiler:$libraries.room")
+    kapt("androidx.room:room-ktx:$libraries.room")
+    implementation "androidx.room:room-rxjava2:$libraries.room"
 
-    implementation "androidx.legacy:legacy-support-v4:$versions.legacy_support_v4"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$versions.desugar_jdk_libs"
+    implementation "androidx.legacy:legacy-support-v4:$libraries.legacysupport"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$libraries.desugar_jdk_libs"
 
-    implementation "androidx.appcompat:appcompat:$versions.appcompat"
-    implementation "com.google.android.material:material:$versions.material"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
+    implementation "androidx.appcompat:appcompat:$libraries.appcompat"
+    implementation "com.google.android.material:material:$libraries.material"
+    implementation "androidx.constraintlayout:constraintlayout:$libraries.constraintlayout"
 
-    implementation "io.reactivex.rxjava2:rxjava:$versions.rxjava"
-    implementation "com.jakewharton.rxrelay2:rxrelay:$versions.rxrelay"
+    implementation "io.reactivex.rxjava2:rxjava:$libraries.rxjava"
+    implementation "com.jakewharton.rxrelay2:rxrelay:$libraries.rxrelay"
 
     // Security
-    implementation "net.openid:appauth:$versions.openid"
+    implementation "net.openid:appauth:$libraries.openid"
 
     // Preferences
-    implementation "androidx.preference:preference-ktx:$versions.preference_ktx"
+    implementation "androidx.preference:preference-ktx:$libraries.preference_ktx"
 
     // WorkManager
-    implementation "androidx.work:work-runtime:$versions.workmanager"
-    implementation "androidx.work:work-runtime-ktx:$versions.workmanager"
-    implementation "androidx.work:work-rxjava2:$versions.workmanager"
-    implementation "androidx.work:work-gcm:$versions.workmanager"
-
-    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
+    implementation "androidx.work:work-runtime:$libraries.work"
+    implementation "androidx.work:work-runtime-ktx:$libraries.work"
+    implementation "androidx.work:work-rxjava2:$libraries.work"
+    implementation "androidx.work:work-gcm:$libraries.work"
 
     // DI
-    implementation "com.google.dagger:hilt-android:$versions.hilt"
-    kapt "com.google.dagger:hilt-compiler:$versions.hilt"
+    implementation "com.google.dagger:hilt-android:$libraries.hilt"
+    kapt "com.google.dagger:hilt-compiler:$libraries.hilt"
 
-    implementation "androidx.hilt:hilt-compiler:$versions.hilt_work"
-    implementation "androidx.hilt:hilt-work:$versions.hilt_work"
-    kapt "androidx.hilt:hilt-compiler:$versions.hilt_work"
+    implementation "androidx.hilt:hilt-compiler:$libraries.hilt_work"
+    implementation "androidx.hilt:hilt-work:$libraries.hilt_work"
+    kapt "androidx.hilt:hilt-compiler:$libraries.hilt_work"
 
     // Barcode scanner
-    implementation "com.journeyapps:zxing-android-embedded:$versions.zxing_android_embedded"
+    implementation "com.journeyapps:zxing-android-embedded:$libraries.zxingandroid"
 
     // Logging
-    implementation "com.jakewharton.timber:timber:$versions.timber"
-    implementation "cat.ereza:customactivityoncrash:$versions.customactivityoncrash"
+    implementation "com.jakewharton.timber:timber:$libraries.timber"
+    implementation "cat.ereza:customactivityoncrash:$libraries.crashactivity"
 
-    debugImplementation "com.facebook.flipper:flipper:$versions.flipper"
-    debugImplementation "com.facebook.soloader:soloader:$versions.soloader"
-    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$versions.flipper") {
+    debugImplementation "com.facebook.flipper:flipper:$libraries.flipper"
+    debugImplementation "com.facebook.soloader:soloader:$libraries.soloader"
+    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$libraries.flipper") {
         exclude group: 'com.squareup.okhttp3'
     }
 
-    releaseImplementation "com.facebook.flipper:flipper-noop:$versions.flipper"
+    releaseImplementation "com.facebook.flipper:flipper-noop:$libraries.flipper"
 
-    testImplementation "junit:junit:$versions.junit"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$versions.mockito_kotlin"
-    testImplementation "org.mockito:mockito-inline:$versions.mockito_inline"
-    testImplementation "androidx.arch.core:core-testing:$versions.android_core_testing"
-    testImplementation "com.github.javafaker:javafaker:$versions.javafaker"
+    testImplementation "junit:junit:$libraries.junit"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$libraries.mockito_kotlin"
+    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
+    testImplementation "androidx.arch.core:core-testing:$libraries.android_core_testing"
+    testImplementation "com.github.javafaker:javafaker:$libraries.javafaker"
 
-    androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso_core"
+    androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
 
     // For App Authentication API testing
-    androidTestImplementation "androidx.room:room-testing:$versions.room"
+    androidTestImplementation "androidx.room:room-testing:$libraries.room"
+
+    //Serialization library
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
 }

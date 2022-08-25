@@ -127,6 +127,10 @@ ext {
             kotlinxcoroutines         : "1.6.1",
 
             //Kotlin metadata
-            kotlinmetadata             : "0.5.0"
+            kotlinmetadata             : "0.5.0",
+
+            // DI
+            hilt                        : '2.43',
+            hilt_work                   : '1.0.0'
     ]
 }
