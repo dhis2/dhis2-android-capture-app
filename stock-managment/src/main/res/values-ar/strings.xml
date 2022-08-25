@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">إدارة مخزون الصيدلة</string>
+    <string name="title_activity_home">الصفحة الرئيسية</string>
+    <string name="title_activity_review">إعادة النظر</string>
+    <string name="action_settings">إعدادات</string>
+
+    <string name="distribution">توزيع</string>
+    <string name="discard">تجاهل</string>
+    <string name="correction">تصحيح</string>
+    <string name="select_transaction">حدد الصفقة</string>
+    <string name="transaction_date">تاريخ الصفقة</string>
+    <string name="recent_activity">النشاط الأخير</string>
+    <string name="last_synced">آخر مزامنة:</string>
+    <string name="select_facility">حدد منشأة</string>
+    <string name="distributed_to">وزعت على</string>
+    <string name="select_one">اختر واحدة</string>
+
+    <!-- Sign in -->
+    <string name="server">الخادم:</string>
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="sign_in_to_your_account">تسجيل الدخول إلى حسابك</string>
+    <string name="sign_in_to_with_oidc">سجّل الدخول باستخدام حساب اللجنة الدولية للصليب الأحمر</string>
+    <string name="non_icrc_staff_members">لغير موظفي اللجنة الدولية للصليب الأحمر فقط</string>
+    <string name="icrc_staff_members">لموظفي اللجنة الدولية فقط</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="password">كلمه السر</string>
+    <string name="forgot_password">هل نسيت كلمة السر؟</string>
+
+    <string name="recent_activities_loading_message">&#8230;تحميل الأنشطة الأخيرة</string>
+    <string name="recent_activities_empty_message">أنت لم تقم بأي نشاط بعد</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">&#8230;مزامنة البيانات الوصفية</string>
+    <string name="metadata_sync_error">تعذر إكمال مزامنة البيانات الوصفية</string>
+    <string name="data_sync_in_progress">&#8230;مزامنة البيانات</string>
+    <string name="data_sync_error">تعذر إكمال مزامنة البيانات</string>
+    <string name="metadata_sync_completed">اكتملت مزامنة البيانات الوصفية!</string>
+    <string name="sync_completed">اكتملت المزامنة!</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">تقدم</string>
+    <string name="review">إعادة النظر</string>
+
+    <string name="scan_barcode">مسح الرمز الشريطى</string>
+    <string name="scanning">&#8230;يتم المسح</string>
+    <string name="search">عنصر البحث</string>
+    <string name="delete">حذف</string>
+    <string name="ok">نعم</string>
+    <string name="cancel">يلغي</string>
+    <string name="confirmation">تأكيد</string>
+
+    <!-- Languages -->
+    <string name="language_english">إنجليزي</string>
+    <string name="language_french">فرنسي</string>
+    <string name="language_spanish">الأسبانية</string>
+    <string name="language_arabic">عربي</string>
+    <string name="language_russian">الروسية</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">استخدم الميكروفون لإدخال البيانات</string>
+    <string name="language">لغة</string>
+    <string name="force_data_sync">فرض مزامنة البيانات</string>
+    <string name="logout">تسجيل خروج</string>
+
+    <!-- Stock table -->
+    <string name="item">غرض</string>
+    <string name="stock_on_hand">مخزون على يد</string>
+    <string name="quantity">كمية</string>
+    <string name="items_available">العناصر المتاحة</string>
+    <string name="positive_value">
+        (<i>المخزون المادي أقل من القيمة المحسوبة</i>) \"الكمية المفقودة\" = <b>القيمة الموجبة</b>
+    </string>
+    <string name="negative_value">
+        (<i>المخزون المادي أكبر من القيمة المحسوبة</i>)    \"الموجود في المخزون\" = <b><span style="color: #C81818">القيمة السالبة</span></b>
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+        يجب تحديد نوع المعاملة وملء جميع الحقول قبل أن تتمكن من المتابعة
+    </string>
+    <string name="mandatory_facility_selection">
+        يجب ملء حقل المنشأة قبل المتابعة
+    </string>
+    <string name="mandatory_distributed_to_selection">
+        يجب ملء الحقل "موزع على" قبل أن تتمكن من المتابعة
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        يجب ملء حقل تاريخ المعاملة قبل أن تتمكن من المتابعة
+    </string>
+
+
+
+    <string name="previous_page_lose_data_warning">هل أنت متأكد أنك تريد العودة إلى الشاشة السابقة؟ ستفقد البيانات التي تم إدخالها للتو إذا قررت المتابعة.</string>
+    <string name="transaction_completed">تمت المعاملة بنجاح!</string>
+    <string name="transaction_cancelled">تم إلغاء الصفقة بنجاح!</string>
+    <string name="force_sync_confirmation_message">هل أنت متأكد أنك تريد فرض التزامن ؟</string>
+    <string name="logout_confirmation_message">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+
+    <string name="remove_correction_item_confirmation_message">
+        هل تريد بالتأكيد حذف الإدخال نهائيًا لتصحيح <xliff:g id="item_name_to_remove">\"%1$s\"</xliff:g>؟
+         لا يمكن التراجع عن هذا الإجراء.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+        هل تريد بالتأكيد حذف الإدخال نهائيًا لتوزيع <xliff:g id="item_name_to_remove">\"%1$s\"</xliff:g>؟
+         لا يمكن التراجع عن هذا الإجراء.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+        هل تريد بالتأكيد حذف الإدخال نهائيًا لتجاهل <xliff:g id="item_name_to_remove">\"%1$s\"</xliff:g>؟
+         لا يمكن التراجع عن هذا الإجراء.
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="zero"> العناصر<xliff:g id="zero_item">%d</xliff:g></item>
+        <item quantity="one"> غرض<xliff:g id="one_item">%d</xliff:g></item>
+        <item quantity="two"> العناصر<xliff:g id="two_items">%d</xliff:g></item>
+        <item quantity="few"> العناصر<xliff:g id="few_items">%d</xliff:g></item>
+        <item quantity="many"> العناصر<xliff:g id="many_items">%d</xliff:g></item>
+    </plurals>
+
+    <string name="no_items_found">لم يتم العثور على العناصر</string>
+    <string name="loading_items_message">
+        <xliff:g id="ellipsis">&#8230;</xliff:g> تحميل عناصر المخزون
+    </string>
+    <string name="prompt_email">بريد الالكتروني</string>
+    <string name="prompt_password">كلمه السر</string>
+    <string name="action_sign_in">تسجيل الدخول أو التسجيل</string>
+    <string name="action_sign_in_short">تسجيل الدخول</string>
+    <string name="welcome">"أهلا بك !"</string>
+    <string name="invalid_username">اسم مستخدم غير صالح</string>
+    <string name="invalid_password">يجب أن تكون كلمة المرور> 5 أحرف</string>
+    <string name="login_failed">"فشل عملية الدخول"</string>
+    <string name="resync">ريسينك</string>
+
+    <!-- Errors -->
+    <string name="login_error">غير قادر على تسجيل الدخول</string>
+    <string name="config_file_error">تعذر تحميل ملف التكوين</string>
+    <string name="config_file_program_error">لم يتم تعيين معرف برنامج المخزون في ملف التكوين</string>
+    <string name="recent_activities_load_error">غير قادر على تحميل أنشطتك الأخيرة</string>
+    <string name="facilities_load_error">تعذر تحميل قائمة المرافق المتاحة</string>
+    <string name="destinations_load_error">تعذر تحميل قائمة الوجهات المتاحة</string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">معلومات المزامنة</string>
+    <string name="content_desc_search">بحث</string>
+    <string name="content_desc_clear_text">نص واضح</string>
+    <string name="content_desc_transaction_date">إظهار منتقي التاريخ</string>
+    <string name="content_desc_distributed_to">وزعت على</string>
+    <string name="content_desc_last_sync">آخر مزامنة</string>
+    <string name="content_desc_quantity_info">مزيد من المعلومات حول الكمية</string>
+    <string name="content_desc_remove">إزالة بند</string>
+    <string name="content_desc_recent_activity">سهم اتجاهي</string>
+    <string name="content_desc_recent_activity_status">حالة النشاط الأخيرة</string>
+    <string name="content_desc_close_info_guide">إغلاق دليل المعلومات</string>
+
+    <string name="confirm_transaction_label">يتأكد</string>
+    <string name="missing_configuration">واحد أو أكثر من الحقول المطلوبة مفقود في ملف التكوين</string>
+    <string name="select_language">حدد اللغة التي تريدها</string>
+
+    <string name="restart_later">إعادة التشغيل لاحقا</string>
+    <string name="language_change_dialog_title">قم بتأكيد إعادة التشغيل</string>
+    <string name="confirm_app_restart_message">يحتاج التطبيق إلى إعادة التشغيل حتى يتم تنفيذ التغييرات ، ومع ذلك ، سيتم فقد أي تغييرات غير محفوظة.هل ترغب في متابعة إعادة التشغيل؟</string>
+    <string name="scan_canceled">تم إلغاء المسح!</string>
+    <string name="logout_error_message">حدث خطأ أثناء تسجيل الخروج. الرجاء معاودة المحاولة في وقت لاحق.</string>
+    <string name="logout_success_message">تم تسجيل الخروج بنجاح</string>
+
+    <string name="invalid_quantity">غير صالح</string>
+    <string name="stock_on_hand_exceeded_message">لا يمكن تجاوز المخزون المتاح في متناول اليد</string>
+    <string name="reviewed_item_cannot_be_empty_message">لا يمكن أن يكون المخزون قيد المراجعة فارغًا. يمكنك إزالة العنصر إذا لم ترغب في ذلك</string>
+
+    <string name="permission_granted">تم تأمين التصريح</string>
+    <string name="permission_denied">طلب الاذن مرفوض</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">أذونات غير كافية. اطلب android.permission.RECORD_AUDIO</string>
+    <string name="speech_audio_error">خطأ في تسجيل الصوت</string>
+    <string name="speech_client_error">خطأ من جانب العميل. الرجاء التحقق من اتصال الانترنت الخاص بك!</string>
+    <string name="speech_network_error">خطأ في الشبكة</string>
+    <string name="speech_network_timeout_error">انتهت مهلة تشغيل الشبكة</string>
+    <string name="no_speech_match_error">لا توجد نتيجة التعرف المتطابقة.</string>
+    <string name="speech_recognition_service_busy_error">خدمة التعرف مشغولة</string>
+    <string name="speech_server_error">حدث خطأ في خادم الكلام</string>
+    <string name="speech_timeout_error">لم يتم الكشف عن إدخال كلام</string>
+    <string name="unknown_speech_error">حدث خطأ غير معروف</string>
+    <string name="non_numeric_speech_input_error">
+        <xliff:g id="recognized speech">\"%1$s\"</xliff:g>غير مسموح بالإدخال غير الرقمي:
+    </string>
+    <string name="negative_number_speech_input_error">
+        <xliff:g id="recognized speech">\"%1$s\"</xliff:g>غير مسموح بإدخال الرقم السالب:
+    </string>
+
+    <string name="openid_config_load_error">تعذر تحميل تكوين OpenID</string>
+    <string name="unexpected_openid_authentication_error">
+        حدث خطأ غير متوقع أثناء المصادقة باستخدام OpenID
+    </string>
+    <string name="no_network_available">لا يوجد اتصال شبكة متاح</string>
+    <string name="unable_to_sync_data_no_network_available">
+        غير قادر على مزامنة البيانات بسبب عدم توفر اتصال بالشبكة
+    </string>
+    <string name="openid_authentication_not_successful">
+        غير قادر على المصادقة مع حساب ICRC الخاص بك
+    </string>
+
+    <string name="contact_service_desk_message">
+        في حالة وجود مشاكل ،n\يرجى الاتصال بـ  مكتب خدمات اللجنة الدولية للصليب الأحمر
+    </string>
+
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">هناك خطأ ما. يرجى التحقق من صحة عنوان URL الخاص بالخادم واسم المستخدم وكلمة المرور وحاول مرة أخرى.</string>
+    <string name="login_error_error_response">وجه الفتاة! حدث خطأ ما من جانب الخادم.</string>
+    <string name="login_error_no_dhis_instance">عنوان URL المقدم ليس خادم DHIS2.</string>
+    <string name="login_error_bad_credentials">اسم المستخدم و / أو كلمة المرور غير صحيحة</string>
+    <string name="login_error_unknown_host">خادم غير معروف</string>
+    <string name="online_search_parsing_error">خطأ أثناء تحليل النتائج</string>
+    <string name="error_unexpected">حدث خطأ غير متوقع.</string>
+    <string name="error_many_requests">الخادم مشغول بعض الشيء في هذه اللحظة. من فضلك حاول قليلا في وقت لاحق.</string>
+    <string name="error_already_authenticated">تم تسجيل دخول المستخدم بالفعل.</string>
+    <string name="error_already_executed">تم تنفيذ الطلب بالفعل.</string>
+    <string name="error_api_invalid_query">طلب الخادم غير صالح.</string>
+    <string name="error_create_existing_error">إحباط الخلق. الكائن موجود بالفعل.</string>
+    <string name="error_export_login">الرجاء تسجيل الدخول لتصدير قاعدة البيانات.</string>
+    <string name="error_export_encrypted">تصدير قاعدة بيانات مشفرة غير مدعوم.</string>
+    <string name="error_import_exist">أنت تستورد قاعدة بيانات موجودة بالفعل.</string>
+    <string name="error_import_logout">الرجاء تسجيل الخروج لاستيراد قاعدة بيانات جديدة.</string>
+    <string name="error_import_version">إصدار قاعدة البيانات المستوردة أعلى من الإصدار المدعوم.</string>
+    <string name="error_user_no_authenticated">لا يوجد مستخدم مصدق عليه.</string>
+    <string name="error_user_no_authenticated_offline">لا يوجد مستخدم تمت مصادقته في وضع عدم الاتصال.</string>
+    <string name="error_different_offline_user">أنت تحاول تسجيل الدخول دون اتصال مع مستخدم مختلف.</string>
+    <string name="error_object_update">لا يمكن تحديث الكائن.</string>
+    <string name="error_object_insert">لا يمكن إدراج الكائن.</string>
+    <string name="error_ownership_access">ليس لديك حق الوصول.</string>
+    <string name="error_null_url">عنوان URL للخادم مفقود. الرجاء إدخال URL.</string>
+    <string name="error_server_malformed">عنوان URL للخادم غير منسق بشكل جيد. رجاءا تأكد.</string>
+    <string name="error_settings_app_not_supported">هذا الإصدار من Settings Web App غير مدعوم.</string>
+    <string name="error_settings_app_not_intalled">لم يتم تثبيت تطبيق ويب الإعدادات في الخادم.</string>
+    <string name="error_socket_timeout">تم إلغاء الطلب. استغرق الخادم وقتًا طويلاً للاستجابة.</string>
+    <string name="error_url_not_found">تعذر العثور على URL. الرجاء التحقق من ذلك.</string>
+    <string name="error_account_disabled">تم تعطيل حساب المستخدم الخاص بك. يرجى الاتصال بالمسؤول إذا كان هذا خطأ.</string>
+    <string name="error_account_locked">تم قفل حساب المستخدم الخاص بك. يرجى الاتصال بالمسؤول إذا كان هذا خطأ.</string>
+    <string name="error_set_value">لا يمكن تعيين القيمة.</string>
+    <string name="error_ssl">هناك مشكلة في شهادات الخادم. من فضلك ، اتصل بالمسؤول الخاص بك.</string>
+</resources>

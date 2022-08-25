@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.dhis2.android.rtsm">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:theme="@style/Theme.App" />
+        <activity android:name=".ui.home.HomeActivity" />
+        <activity
+            android:name=".ui.managestock.ManageStockActivity"
+            android:parentActivityName=".ui.home.HomeActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ui.reviewstock.ReviewStockActivity"
+            android:parentActivityName=".ui.managestock.ManageStockActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ui.scanner.ScannerActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.BarcodeCapture"
+            android:stateNotNeeded="true"
+            android:exported="false" />
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:host="org.icrc.dhis2.psmadvanced_test"
+                android:path="/J4CFTTod1TjeYgl9zsMgdcEaXnY="
+                android:scheme="msauth" />
+        </intent>
+
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
+</manifest>

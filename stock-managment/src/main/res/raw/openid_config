@@ -1,0 +1,9 @@
+{
+ "serverUrl": "",
+ "loginLabel": "Sign in with *** Account",
+ "clientId": "",
+ "redirectUri": "msauth://replace_by_appID/replace_by_Hash",
+ "discoveryUri": "https://login.microsoftonline.com/replace_by_Tenant/v2.0/.well-known/openid-configuration",
+ "authorizationUrl": null,
+ "tokenUrl": null
+ }

@@ -125,8 +125,9 @@ ext {
 
             google_truth              : "1.1.2",
 
-            kotlinxcoroutines         : "1.6.1"
+            kotlinxcoroutines         : "1.6.1",
 
-
+            //Kotlin metadata
+            kotlinmetadata             : "0.5.0"
     ]
 }

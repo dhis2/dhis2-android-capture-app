@@ -1,0 +1,26 @@
+<resources>
+    <dimen name="choices_top_margin">24dp</dimen>
+
+    <!-- Sign in -->
+    <dimen name="server_url_lr_margin">100dp</dimen>
+    <dimen name="sign_in_lr_margin">100dp</dimen>
+
+    <!-- Transaction buttons -->
+    <dimen name="transaction_button_text_size">18sp</dimen>
+    <dimen name="transaction_button_lr_padding">32dp</dimen>
+    <dimen name="transaction_button_tb_padding">64dp</dimen>
+    <dimen name="transaction_center_button_margin">16dp</dimen>
+    <dimen name="transaction_button_corner_radius">8dp</dimen>
+
+    <dimen name="content_area_lr_margin">16dp</dimen>
+    <dimen name="content_area_top_margin">30dp</dimen>
+
+    <dimen name="available_count_top_margin">32dp</dimen>
+
+    <dimen name="recent_activity_top_margin">32dp</dimen>
+    <dimen name="recent_activity_margin">16dp</dimen>
+    <dimen name="recent_activity_list_top_margin">8dp</dimen>
+
+    <!-- Stock entry table  -->
+    <dimen name="text_input_width">130dp</dimen>
+</resources>
