@@ -6,27 +6,31 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <application
-        android:supportsRtl="true">
+    <application android:supportsRtl="true">
         <activity
             android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
             android:theme="@style/Theme.App" />
-        <activity android:name=".ui.home.HomeActivity" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.managestock.ManageStockActivity"
+            android:exported="false"
             android:parentActivityName=".ui.home.HomeActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.reviewstock.ReviewStockActivity"
+            android:exported="false"
             android:parentActivityName=".ui.managestock.ManageStockActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.scanner.ScannerActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported="false"
             android:screenOrientation="fullSensor"
-            android:theme="@style/Theme.BarcodeCapture"
             android:stateNotNeeded="true"
-            android:exported="false" />
+            android:theme="@style/Theme.BarcodeCapture"
+            android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 
     <queries>

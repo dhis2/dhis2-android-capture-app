@@ -86,8 +86,11 @@ dependencies {
     api "com.google.android.material:material:${libraries.material}"
     api "com.google.code.gson:gson:${libraries.gson}"
     api "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+
     api "com.google.dagger:dagger:${libraries.dagger}"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:${libraries.kotlinxmetadata}"
+
     api "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
     api "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
