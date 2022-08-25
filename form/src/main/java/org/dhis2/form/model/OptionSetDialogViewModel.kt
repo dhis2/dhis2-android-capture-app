@@ -49,7 +49,7 @@ class OptionSetDialogViewModelFactory(
     private val dispatchers: DispatcherProvider
 
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return OptionSetDialogViewModel(searchOptionSetOption, field, dispatchers) as T
     }
 }

@@ -9,7 +9,7 @@ class TroubleshootingViewModelFactory(
     private val troubleshootingRepository: TroubleshootingRepository,
     private val openLanguageSection: Boolean
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TroubleshootingViewModel(
             localeSelector,
             troubleshootingRepository,

@@ -1,8 +1,8 @@
 ext {
     versions = [
             ndk   : "21.4.7075529",
-            sdk   : 30,
-            tools : "30.0.3",
+            sdk   : 32,
+            tools : "32.0.0",
             minSdk: 21,
             vCode : 115,
             vName : "2.7"
@@ -13,7 +13,7 @@ ext {
             ruleEngine                : "2.0.34",
 
             //androidX
-            appcompat                 : "1.3.0",
+            appcompat                 : "1.5.0",
             annotation                : "1.2.0",
             cardview                  : "1.0.0",
             legacysupport             : "1.0.0", //can be removed?
@@ -22,8 +22,8 @@ ext {
             lifecycle                 : "2.2.0",
             work                      : "2.5.0",
             exif                      : "1.3.2",
-            corektx                   : "1.5.0",
-            fragmentktx               : "1.3.4",
+            corektx                   : "1.7.0",
+            fragmentktx               : "1.5.2",
             lifecycleviewmodel        : "2.3.1",
             dynamicanimation          : "1.0.0",
             viewpager2                : "1.0.0",
@@ -31,7 +31,7 @@ ext {
             compose                   : "1.0.4",
 
             //Google
-            material                  : "1.3.0",
+            material                  : "1.6.1",
             flexbox                   : "3.0.0",
 
             //UI
@@ -41,7 +41,7 @@ ext {
             lottie                    : "3.4.0",
 
             //Dependency injection
-            dagger                    : "2.39.1",
+            dagger                    : "2.43.2",
 
             //RXJava
             rxjava                    : "2.1.0",
@@ -70,8 +70,8 @@ ext {
             soloader                  : "0.9.0",
             flippernetwork            : "0.75.1",
             flipperleak               : "0.75.1",
-            leakcannary               : "1.6.1",
-            leakcannarynoop           : "1.6.1",
+            leakcannary               : "2.7",
+            leakcannarynoop           : "2.7",
             rxlint                    : "1.6",
             paperwork                 : "1.2.7",
             crashactivity             : "2.3.0",
@@ -101,6 +101,9 @@ ext {
             junit                     : "4.13.2",
 
             //serialization
-            kotlinxserialization      : "1.3.2"
+            kotlinxserialization      : "1.3.2",
+
+            //Kotlin metadata
+            kotlinmetadata             : "0.5.0"
     ]
 }

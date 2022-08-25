@@ -10,7 +10,7 @@ class GroupAnalyticsViewModelFactory(
     private val uid: String?,
     private val charts: Charts
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return GroupAnalyticsViewModel(
             mode,
             uid,
