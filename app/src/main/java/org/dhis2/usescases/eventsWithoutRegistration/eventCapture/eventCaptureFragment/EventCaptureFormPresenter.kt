@@ -4,6 +4,7 @@ import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.hisp.dhis.android.core.D2
@@ -46,7 +47,7 @@ class EventCaptureFormPresenter(
                 emptyMap(),
                 emptyList()
             )
-            else -> {}
+            NotSavedResult -> {}
         }
     }
 

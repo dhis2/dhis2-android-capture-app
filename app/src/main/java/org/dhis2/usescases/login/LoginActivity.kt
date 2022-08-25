@@ -117,7 +117,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true
                     )
-                    else -> {}
+                    null -> {
+                        //Nothing to do in this case
+                    }
                 }
             }
         }
@@ -479,30 +481,30 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         // binding.biometricButton.visibility = View.VISIBLE
     }
 
-//    private val requestQRScanner = registerForActivityResult(
-//        ActivityResultContracts.StartActivityForResult()
-//    ) {
-//        if (it.resultCode == RESULT_OK) {
-//            qrUrl = it.data?.getStringExtra(EXTRA_DATA)
-//            qrUrl?.let { setUrl(it) }
-//        }
-//    }
-//
-//    private val requestAccount = registerForActivityResult(
-//        ActivityResultContracts.StartActivityForResult()
-//    ) { result: ActivityResult ->
-//        if (result.resultCode == RESULT_OK) {
-//            val wasAccountClicked = result.data?.extras?.getBoolean(ACCOUNT_USED) ?: false
-//            setAccount(
-//                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
-//                result.data?.extras?.getString(USER),
-//                wasAccountClicked
-//            )
-//        }
-//        if (result.resultCode == RESULT_CANCELED) {
-//            resetLoginInfo()
-//        }
-//    }
+    private val requestQRScanner = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == RESULT_OK) {
+            qrUrl = it.data?.getStringExtra(EXTRA_DATA)
+            qrUrl?.let { setUrl(it) }
+        }
+    }
+
+    private val requestAccount = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val wasAccountClicked = result.data?.extras?.getBoolean(ACCOUNT_USED) ?: false
+            setAccount(
+                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
+                result.data?.extras?.getString(USER),
+                wasAccountClicked
+            )
+        }
+        if (result.resultCode == RESULT_CANCELED) {
+            resetLoginInfo()
+        }
+    }
 
     private fun resetLoginInfo() {
         binding.serverUrlEdit.alpha = 1f
@@ -563,7 +565,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun navigateToQRActivity() {
-        //requestQRScanner.launch(Intent(context, ScanActivity::class.java))
+        requestQRScanner.launch(Intent(context, ScanActivity::class.java))
     }
 
     private fun setUpLoginInfo() {
@@ -604,7 +606,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun openAccountsActivity() {
-        //requestAccount.launch(Intent(this, AccountsActivity::class.java))
+        requestAccount.launch(Intent(this, AccountsActivity::class.java))
     }
 
     private fun checkMessage() {

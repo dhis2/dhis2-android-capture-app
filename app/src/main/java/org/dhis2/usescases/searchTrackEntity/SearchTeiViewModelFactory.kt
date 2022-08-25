@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.form.model.DispatcherProvider
 
+@Suppress("UNCHECKED_CAST")
 class SearchTeiViewModelFactory(
     val presenter: SearchTEContractsModule.Presenter,
     val searchRepository: SearchRepository,

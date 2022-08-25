@@ -48,8 +48,8 @@
 
         <activity
             android:name=".usescases.splash.SplashActivity"
-            android:theme="@style/SplashTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -68,43 +68,66 @@
         </activity>
         <activity
             android:name=".usescases.login.LoginActivity"
-            android:windowSoftInputMode="adjustPan"  android:exported="true"/>
-        <activity android:name=".usescases.main.MainActivity"  android:exported="false"/>
-        <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" android:exported="false" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".usescases.main.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.programEventDetail.ProgramEventDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:configChanges="keyboardHidden|screenSize" android:exported="true" />
-        <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity"  android:exported="false"/>
-        <activity android:name=".usescases.qrScanner.ScanActivity" android:exported="false" />
-        <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" android:exported="false" />
-        <activity android:name="org.dhis2.maps.views.MapSelectorActivity" android:exported="false" />
-        <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity"
-            android:exported="false"/>
-        <activity android:name=".utils.WebViewActivity"
-            android:exported="false"/>
+            android:configChanges="keyboardHidden|screenSize"
+            android:exported="true" />
+        <activity
+            android:name=".usescases.teiDashboard.TeiDashboardMobileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.qrScanner.ScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity"
+            android:exported="false" />
+        <activity
+            android:name="org.dhis2.maps.views.MapSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.programStageSelection.ProgramStageSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".utils.WebViewActivity"
+            android:exported="false" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:exported="false"/>
-        <!--<activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />-->
-        <activity android:name=".usescases.qrCodes.QrActivity"
-            android:exported="false"/>
-        <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".usescases.qrCodes.QrActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk" />
 
-        <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" android:exported="false" />
-        <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" android:exported="false" />
+        <activity
+            android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity"
+            android:exported="false" />
         <activity
             android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true"/>
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
 
-        <receiver android:name=".widgets.DhisCustomLauncher" android:exported="true">
+        <receiver
+            android:name=".widgets.DhisCustomLauncher"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -114,38 +137,49 @@
                 android:resource="@xml/dhis_custom_launcher_info" />
         </receiver>
 
-        <activity android:name=".usescases.reservedValue.ReservedValueActivity" android:exported="false" />
+        <activity
+            android:name=".usescases.reservedValue.ReservedValueActivity"
+            android:exported="false" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:exported="true"/>
-        <activity android:name=".usescases.sync.SyncActivity"
-            android:exported="false"/>
-        <activity android:name=".usescases.development.DevelopmentActivity"
-            android:exported="false"/>
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".usescases.sync.SyncActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.development.DevelopmentActivity"
+            android:exported="false" />
 
-        <service android:name=".usescases.sms.SmsSendingService"
-            android:exported="false"/>
-
-        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity"
-            android:exported="false"/>
-        <activity android:name=".usescases.about.PolicyView"
-            android:exported="false"/>
+        <service
+            android:name=".usescases.sms.SmsSendingService"
+            android:exported="true"
+            android:permission="" />
 
         <activity
-            android:exported="true"
+            android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".usescases.about.PolicyView"
+            android:exported="false" />
+
+        <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".usescases.events.ScheduledEventActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".usescases.events.ScheduledEventActivity"
+            android:exported="false" />
 
         <activity
-            android:exported="true"
             android:name=".usescases.notes.noteDetail.NoteDetailActivity"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" android:exported="true" />
+        <activity
+            android:name=".usescases.settingsprogram.SettingsProgramActivity"
+            android:exported="true" />
 
         <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
@@ -160,10 +194,12 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-        <activity android:name=".usescases.login.accounts.AccountsActivity"   android:exported="false" />
         <activity
-            android:exported="false"
+            android:name=".usescases.login.accounts.AccountsActivity"
+            android:exported="false" />
+        <activity
             android:name=".usescases.crash.CrashActivity"
+            android:exported="true"
             android:process=":error_activity">
             <intent-filter>
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
