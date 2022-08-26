@@ -38,11 +38,14 @@
 
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
+    <string name="sync_incomplete_error_text">انتهت المزامنة ولكن لم نتلق تأكيدًا من الخادم لجميع السجلات. هذه السجلات لا تزال تحمل علامة \"غير مزامن\" في التطبيق. نوصي بإعادة محاولة المزامنة.</string>
     <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
     <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و $ على TEI والأحداث التي فيها تعارض\".</string>
     <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة $ على الأحداث و TEI التي تحوي على تعارضات\".</string>
+    <string name="server_sync_error">حدث خطأ ولم يستجب الخادم. تواصل مع مديرك.</string>
+
     <string name="search_result_text">تم العثور على %s نتيجة</string>
     <string name="add_new">إضافة جديد</string>
     <string name="add">إضافة</string>
@@ -264,6 +267,7 @@
     <string name="missing_mandatory_fields_title">بعض الحقول الإلزامية مفقودة</string>
     <string name="missing_mandatory_fields_text">بعض الحقول الإلزامية مفقودة. إذا كنت تريد الرجوع الآن ، فسيتم حذف جميع المعلومات المحفوظة.</string>
     <string name="missing_mandatory_fields_text_not_delete">بعض الحقول الإلزامية مفقودة. إذا كنت تريد العودة ، يرجى ملؤها.</string>
+    <string name="missing_mandatory_fields_events">تحتاج بعض الحقول إلى إطلاعك.\n هل تريد مراجعة النموذج؟</string>
     <string name="title_delete_go_back">لم يتم حفظ بياناتك</string>
     <string name="delete_go_back">إذا رجعت الآن سيتم حذف جميع المعلومات التي تم إدخالها.</string>
     <string name="missing_mandatory_fields_events_2.0">بعض الحقول الإلزامية مفقودة:\n%s\n يمكنك الرجوع الآن ، ولكن لن تتمكن من إكمال هذا الحدث.</string>
@@ -453,6 +457,10 @@
     <string name="dashboard_analytics">التحليلات</string>
     <string name="empty_indicators">لا توجد مؤشرات لهذا البرنامج.</string>
     <string name="dashboard_notes">الملاحظات</string>
+    <string name="unable_to_complete">غير قادر على الإكمال</string>
+    <string name="unable_to_save">لا يمكن حفظه</string>
+    <string name="warnings_in_form">هناك تحذيرات في النموذج</string>
+    <string name="what_to_do">ماذا تريد ان تفعل؟</string>
     <string name="field_errors">تحتوي بعض الحقول على أخطاء. من فضلك، تحقق منها حتى تتمكن من الإكمال</string>
     <string name="unselect_enrollment">كل التسجيلات</string>
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
@@ -497,9 +505,11 @@
     <string name="org_unit_selection_warning">يجب تحديد وحدة تنظيمية واحدة على الأقل</string>
     <string name="send_user_name_title">إرسال البيانات</string>
     <string name="send_user_name_mesage">ساعد DHIS2 في تحسين هذا التطبيق من خلال مشاركة سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك.</string>
+    <string name="send_user_privacy_policy">لمزيد من المعلومات تحقق من سياسة الخصوصية الخاصة بنا</string>
     <string name="check_mandatory_field">تحقق من الحقول</string>
     <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة التكوين. يرجى معاودة المحاولة في وقت لاحق</string>
     <string name="action_agree">قبول</string>
+    <string name="action_continue">متابعة</string>
     <string name="login_server_info_title">رابط الخادم</string>
     <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان URL لخادمك</string>
     <string name="forgot_your_code">نسيت الرمز الخاص بك؟</string>
@@ -796,4 +806,27 @@
     <string name="take_photo">التقط صورة</string>
     <string name="from_gallery">اختر من استوديو الصور</string>
     <string name="data_set_quality_check_done">تم الإنتهاء!</string>
+    <string name="break_glass_hint">صف السبب هنا</string>
+    <string name="login_error_bad_credentials">خطأ في الإعتمادات</string>
+    <string name="login_error_unknown_host">خادم غير معروف</string>
+    <string name="invalid_integer">يجب أن تكون القيمة عدداً صحيحاً</string>
+    <string name="openid_session_expired">انتهت الجلسة</string>
+    <string name="openid_session_expired_message">لقد انتهت جلستك الحالية. لأسباب أمنية ، ستحتاج إلى تقديم بيانات الاعتماد الخاصة بك مرة أخرى</string>
+    <string name="dataset_column_default">القيم</string>
+    <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
+    <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
+    <string name="available">متوفر</string>
+    <string name="blocked_by_completion">هذه البيانات غير قابلة للتحرير لأنه تم تعليمها على أنها مكتملة</string>
+    <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
+    <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
+    <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
+    <string name="reload_list">إعادة البحث</string>
+    <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>
+    <string name="unknown_date">غير معروف</string>
+    <string name="troubleshooting_language_title">اللغة</string>
+    <string name="not_saved">لم يتم حفظه</string>
+    <string name="review_message">تحتاج بعض الحقول إلى إطلاعك.\n هل تريد مراجعة النموذج؟</string>
+    <string name="search_too_many_results">نتائج كثيرة جدًا</string>
+    <string name="search_create_new">إنشاء جديد</string>
+    <string name="action_ok">موافق\!</string>
     </resources>

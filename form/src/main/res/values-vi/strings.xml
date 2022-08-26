@@ -50,13 +50,4 @@
     <string name="mandatory_field">Trường bắt buộc</string>
     <string name="form_latitude_prefix">Vĩ độ: </string>
     <string name="form_longitude_prefix">Kinh độ: </string>
-    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
-    <string name="action_close">Đóng</string>
-    <string name="program_rules_loop_warning_title">Cảnh báo quy tắc chương trình</string>
-    <string name="program_rules_loop_warning_message">Có một vấn đề cấu hình gây ra một vòng lặp trong các quy tắc chương trình. Hãy liên lạc với quản lý của bạn.</string>
-    <string name="copied_text">Đã sao chép</string>
-    <string name="take_photo">Chụp ảnh</string>
-    <string name="from_gallery">Chọn từ thư viện ảnh</string>
-    <string name="warning_error_on_complete_title">Kiểm tra cái này!</string>
-    <string name="action_do_not_show_again">Không hiển thị lại</string>
-</resources>
+    </resources>
