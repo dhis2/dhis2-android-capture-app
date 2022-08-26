@@ -8,11 +8,11 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
+import java.util.Locale
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 import org.dhis2.android.rtsm.utils.Utils
 import timber.log.Timber
-import java.util.Locale
 
 class SpeechRecognitionManagerImpl(
     private val context: Context

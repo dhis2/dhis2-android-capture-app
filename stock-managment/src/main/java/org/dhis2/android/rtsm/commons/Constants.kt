@@ -4,7 +4,7 @@ object Constants {
     const val DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
     const val DATE_FORMAT = "yyyy-MM-dd"
 
-    //Preferences
+    // Preferences
     const val SHARED_PREFS = "icrc_psm_shared_prefs"
 
     const val SERVER_URL = "SERVER_URL"

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.Completable
+import javax.inject.Inject
 import org.dhis2.android.rtsm.commons.Constants.INITIAL_SYNC
 import org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC
 import org.dhis2.android.rtsm.commons.Constants.INSTANT_METADATA_SYNC
@@ -21,13 +22,12 @@ import org.dhis2.android.rtsm.utils.toSeconds
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.SynchronizationSettings
-import javax.inject.Inject
 
 class SyncManagerImpl @Inject constructor(
     private val d2: D2,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController
-): SyncManager {
+) : SyncManager {
 
     /**
      * Sync data and metadata
@@ -121,8 +121,8 @@ class SyncManagerImpl @Inject constructor(
 
         val outstandingTEIsToPostOrUpdate = d2.trackedEntityModule()
             .trackedEntityInstances()
-            .byAggregatedSyncState().
-            `in`(State.TO_POST, State.TO_UPDATE)
+            .byAggregatedSyncState()
+            .`in`(State.TO_POST, State.TO_UPDATE)
             .blockingGet().isNotEmpty()
 
         if (outstandingTEIsToPostOrUpdate)
@@ -136,8 +136,10 @@ class SyncManagerImpl @Inject constructor(
     }
 
     override fun dataSync() {
-        val workerItem = WorkItem(INSTANT_DATA_SYNC, WorkType.DATA, null, null,
-            ExistingWorkPolicy.KEEP, null)
+        val workerItem = WorkItem(
+            INSTANT_DATA_SYNC, WorkType.DATA, null, null,
+            ExistingWorkPolicy.KEEP, null
+        )
         workManagerController.sync(workerItem)
     }
 }

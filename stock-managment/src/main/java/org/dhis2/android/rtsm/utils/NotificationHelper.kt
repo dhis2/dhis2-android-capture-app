@@ -26,7 +26,8 @@ class NotificationHelper {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val mChannel = NotificationChannel(
-                    channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+                    channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+                )
                 notificationManager.createNotificationChannel(mChannel)
             }
 

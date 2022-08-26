@@ -83,9 +83,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    testImplementation 'org.mockito:mockito-core:4.0.0'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito:mockito-core:${libraries.mockito}"
+    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${libraries.mockito_kotlin}"
     testImplementation 'app.cash.turbine:turbine:0.3.0'
     testImplementation "androidx.test:core:1.4.0"
     testImplementation 'androidx.test:rules:1.4.0'

@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import org.dhis2.data.forms.FormRepository
 import org.hisp.dhis.android.core.D2
 import org.junit.Test
@@ -14,6 +14,6 @@ class EnrollmentRuleEngineRepositoryTest {
     @Test
     fun `Should not init data if enrollmentUid is empty`() {
         EnrollmentRuleEngineRepository(formRepository, "", d2)
-        verifyZeroInteractions(d2)
+        verifyNoMoreInteractions(d2)
     }
 }

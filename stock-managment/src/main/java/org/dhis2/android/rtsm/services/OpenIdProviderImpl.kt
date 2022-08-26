@@ -2,16 +2,16 @@ package org.dhis2.android.rtsm.services
 
 import android.content.Context
 import com.google.gson.Gson
-import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.models.OpenIDAuthConfigModel
-import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
+import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.data.models.OpenIDAuthConfigModel
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 
 class OpenIdProviderImpl @Inject constructor(
     private val context: Context
-): OpenIdProvider {
+) : OpenIdProvider {
 
     /**
      * Loads the OpenID configuration from 'res/raw/openid_config' file

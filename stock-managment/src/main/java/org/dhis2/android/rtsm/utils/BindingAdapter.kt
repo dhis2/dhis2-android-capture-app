@@ -5,8 +5,8 @@ import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.button.MaterialButton
-import org.dhis2.android.rtsm.R
 import java.time.LocalDateTime
+import org.dhis2.android.rtsm.R
 
 @BindingAdapter("date")
 fun setDate(view: AutoCompleteTextView, date: LocalDateTime) =

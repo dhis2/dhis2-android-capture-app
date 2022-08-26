@@ -1,4 +1,4 @@
-package org.dhis2.android.rtsm.ui.reviewstock;
+package org.dhis2.android.rtsm.ui.reviewstock
 
 import android.content.Context
 import android.content.res.Resources
@@ -33,14 +33,14 @@ class ReviewStockAdapter(
     val appConfig: @NotNull AppConfig,
     private val transaction: Transaction,
     private var voiceInputEnabled: Boolean
-): ListAdapter<StockEntry, ReviewStockAdapter.StockEntryViewHolder>(DIFF_CALLBACK) {
+) : ListAdapter<StockEntry, ReviewStockAdapter.StockEntryViewHolder>(DIFF_CALLBACK) {
     private lateinit var context: Context
     private lateinit var resources: Resources
     private val textInputDelegate: TextInputDelegate = TextInputDelegate()
 
     companion object {
         // TODO: Find a way to use a type-aware DIFF_CALLBACK for different adapters for reusability
-        private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<StockEntry> () {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<StockEntry> () {
             override fun areItemsTheSame(oldItem: StockEntry, newItem: StockEntry) =
                 oldItem.item.id == newItem.item.id
 
@@ -52,7 +52,7 @@ class ReviewStockAdapter(
     inner class StockEntryViewHolder(
         itemView: View,
         private val watcher: ItemWatcher<StockEntry, String, String>
-    ): RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(itemView) {
         private val tvItemName: TextView = itemView.findViewById(R.id.review_stock_item_name_text_view)
         private val tvStockOnHand: TextView = itemView.findViewById(R.id.review_stock_on_hand_value_text_view)
         private val tvItemQtyLayout: TextInputLayout = itemView.findViewById(R.id.review_item_qty_layout)
@@ -111,7 +111,7 @@ class ReviewStockAdapter(
         }
 
         private fun addTextListener() {
-            tvItemQtyLayout.editText?.addTextChangedListener(object: TextWatcher {
+            tvItemQtyLayout.editText?.addTextChangedListener(object : TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if (adapterPosition == RecyclerView.NO_POSITION) return
 
@@ -129,7 +129,8 @@ class ReviewStockAdapter(
         private fun addFocusListener() {
             tvItemQtyLayout.editText?.setOnFocusChangeListener { _, hasFocus ->
                 textInputDelegate.focusChanged(
-                    speechController, tvItemQtyLayout, hasFocus, voiceInputEnabled, adapterPosition)
+                    speechController, tvItemQtyLayout, hasFocus, voiceInputEnabled, adapterPosition
+                )
             }
         }
     }

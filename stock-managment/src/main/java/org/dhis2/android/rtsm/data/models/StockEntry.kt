@@ -9,4 +9,4 @@ data class StockEntry(
     var qty: String? = null,
     var stockOnHand: String? = null,
     var hasError: Boolean = false
-): Parcelable
+) : Parcelable

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC
 import org.dhis2.android.rtsm.data.OperationState
@@ -13,7 +14,6 @@ import org.dhis2.android.rtsm.services.UserManager
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
-import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -22,7 +22,7 @@ class SettingsViewModel @Inject constructor(
     private val preferenceProvider: PreferenceProvider,
     private val userManager: UserManager,
     private val syncManager: SyncManager
-): BaseViewModel(preferenceProvider, schedulerProvider) {
+) : BaseViewModel(preferenceProvider, schedulerProvider) {
     private val _logoutStatus: MutableLiveData<OperationState<Boolean>> = MutableLiveData()
     val logoutStatus: LiveData<OperationState<Boolean>>
         get() = _logoutStatus
@@ -37,7 +37,7 @@ class SettingsViewModel @Inject constructor(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    {   username -> username?.let { _loggedInUser.value = it } },
+                    { username -> username?.let { _loggedInUser.value = it } },
                     { it.printStackTrace() }
                 )
         )

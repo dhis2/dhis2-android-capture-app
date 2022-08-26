@@ -7,6 +7,10 @@ import androidx.lifecycle.Transformations
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
+import java.time.LocalDateTime
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_STOCK_ENTRIES
 import org.dhis2.android.rtsm.data.AppConfig
@@ -28,10 +32,6 @@ import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import timber.log.Timber
-import java.time.LocalDateTime
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @HiltViewModel
 class ReviewStockViewModel @Inject constructor(
@@ -94,7 +94,8 @@ class ReviewStockViewModel @Inject constructor(
                     { query -> _reviewedItems.postValue(performSearch(query)) },
                     {
                         it.printStackTrace()
-                    })
+                    }
+                )
         )
 
         disposable.add(
@@ -134,7 +135,9 @@ class ReviewStockViewModel @Inject constructor(
     }
 
     fun updateItem(
-        entry: StockEntry, qty: String?, stockOnHand: String?,
+        entry: StockEntry,
+        qty: String?,
+        stockOnHand: String?,
         hasError: Boolean = false
     ) {
         _reviewedItems.value?.let { items ->
@@ -185,13 +188,16 @@ class ReviewStockViewModel @Inject constructor(
             stockManager.saveTransaction(reviewedItems.value!!, transaction, config)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe({
-                    _commitStatus.postValue(true)
-                    logAudit(transaction)
-                }, {
-                    // TODO: Report error to observer
-                    it.printStackTrace()
-                })
+                .subscribe(
+                    {
+                        _commitStatus.postValue(true)
+                        logAudit(transaction)
+                    },
+                    {
+                        // TODO: Report error to observer
+                        it.printStackTrace()
+                    }
+                )
         )
     }
 

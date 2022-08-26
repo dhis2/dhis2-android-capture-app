@@ -5,9 +5,10 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceDataStore
 import org.dhis2.android.rtsm.commons.Constants
 
-class PreferenceProviderImpl(context: Context): PreferenceProvider {
+class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-        Constants.SHARED_PREFS, Context.MODE_PRIVATE)
+        Constants.SHARED_PREFS, Context.MODE_PRIVATE
+    )
 
     companion object {
         private var INSTANCE: PreferenceProvider? = null
@@ -37,7 +38,7 @@ class PreferenceProviderImpl(context: Context): PreferenceProvider {
 
     override fun setValue(key: String, value: Any?) {
         value?.let {
-            when(it) {
+            when (it) {
                 is String -> {
                     sharedPreferences.edit().putString(key, it).apply()
                 }
@@ -92,7 +93,7 @@ class PreferenceProviderImpl(context: Context): PreferenceProvider {
         sharedPreferences.getFloat(key, default)
 
     override fun preferenceDataStore(context: Context) =
-        object: PreferenceDataStore() {
+        object : PreferenceDataStore() {
             override fun putString(key: String, value: String?) {
                 getInstance(context).setValue(key, value)
             }

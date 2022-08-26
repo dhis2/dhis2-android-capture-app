@@ -118,7 +118,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         true
                     )
                     null -> {
-                        //Nothing to do in this case
+                        // Nothing to do in this case
                     }
                 }
             }

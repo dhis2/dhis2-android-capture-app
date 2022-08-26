@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
@@ -134,14 +134,14 @@ class ProgramPresenterTest {
     fun `Should do nothing when program description is null`() {
         presenter.showDescription(null)
 
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `Should do nothing when program description is empty`() {
         presenter.showDescription("")
 
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test

@@ -1,12 +1,12 @@
 package org.dhis2.android.rtsm.utils
 
 import org.hisp.dhis.rules.models.Rule
-import org.hisp.dhis.rules.models.RuleVariable
-import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleActionAssign
-import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
-import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleDataValue
+import org.hisp.dhis.rules.models.RuleEffect
+import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.RuleVariable
+import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import timber.log.Timber
 
 const val MAX_LEN = 120
@@ -52,13 +52,17 @@ fun debugRuleEngine(
     printRuleEngineData(buffer, "Events:")
     printSeparator(buffer)
     events.forEach {
-        printRuleEngineData(buffer,
-            "   Event uid = ${it.event()}, status = ${it.status()}, eventDate = ${it.eventDate()}")
+        printRuleEngineData(
+            buffer,
+            "   Event uid = ${it.event()}, status = ${it.status()}, eventDate = ${it.eventDate()}"
+        )
 
         printRuleEngineData(buffer, "   Data values:")
         it.dataValues().forEach { dv ->
-            printRuleEngineData(buffer,
-                "      DE = ${dv.dataElement()}, value = ${dv.value()}")
+            printRuleEngineData(
+                buffer,
+                "      DE = ${dv.dataElement()}, value = ${dv.value()}"
+            )
         }
 
         printEmpty(buffer)
@@ -68,15 +72,18 @@ fun debugRuleEngine(
     Timber.d(buffer.toString())
 }
 
-fun printRuleEffects(label: String, ruleEffects: List<RuleEffect>,
-                     dataValues: List<RuleDataValue>?) {
+fun printRuleEffects(
+    label: String,
+    ruleEffects: List<RuleEffect>,
+    dataValues: List<RuleDataValue>?
+) {
     val buffer = StringBuilder()
     buffer.append("\n")
     printSeparator(buffer)
     printRuleEngineData(buffer, "$label:")
     printSeparator(buffer)
     ruleEffects.forEach { ruleEffect ->
-        when(ruleEffect.ruleAction()) {
+        when (ruleEffect.ruleAction()) {
             is RuleActionAssign -> {
                 val ruleAction = ruleEffect.ruleAction() as RuleActionAssign
                 printRuleEngineData(buffer, "field = ${ruleAction.field()}, data = ${ruleEffect.data()}, rule = ${ruleAction.data()}")

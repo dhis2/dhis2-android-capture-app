@@ -9,7 +9,7 @@ import org.dhis2.android.rtsm.utils.LocalDateTimeConverter
 
 @Database(entities = [UserActivity::class], version = 1)
 @TypeConverters(LocalDateTimeConverter::class)
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun userActivityDao(): UserActivityDao
 
     companion object {

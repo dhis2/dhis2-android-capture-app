@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -273,7 +273,7 @@ class MainPresenterTest {
 
         presenter.trackDhis2Server()
 
-        verifyZeroInteractions(matomoAnalyticsController)
+        verifyNoMoreInteractions(matomoAnalyticsController)
     }
 
     private fun presenterMocks() {

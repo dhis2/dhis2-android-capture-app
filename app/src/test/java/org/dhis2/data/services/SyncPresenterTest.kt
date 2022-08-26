@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -155,7 +155,7 @@ class SyncPresenterTest {
             .build()
         presenter.syncMetadata { }
 
-        verifyZeroInteractions(analyticsHelper)
+        verifyNoMoreInteractions(analyticsHelper)
     }
 
     @Test
