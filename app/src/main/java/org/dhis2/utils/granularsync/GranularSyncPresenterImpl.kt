@@ -34,6 +34,13 @@ import androidx.work.WorkInfo
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
+import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
+import org.dhis2.commons.Constants.CONFLICT_TYPE
+import org.dhis2.commons.Constants.ORG_UNIT
+import org.dhis2.commons.Constants.PERIOD_ID
+import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
@@ -44,13 +51,6 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.sms.SmsSendingService
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO
-import org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO
-import org.dhis2.utils.Constants.CONFLICT_TYPE
-import org.dhis2.utils.Constants.ORG_UNIT
-import org.dhis2.utils.Constants.PERIOD_ID
-import org.dhis2.utils.Constants.UID
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.ALL
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_SET
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_VALUES

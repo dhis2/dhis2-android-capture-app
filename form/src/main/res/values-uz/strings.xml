@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
+    <string name="action_close">Ёпмоқ</string>
+    <string name="copied_text">Нусха олинди</string>
+    <string name="take_photo">Суратга олиш</string>
+    <string name="from_gallery">Галереядан танлаш</string>
+    <string name="warning_error_on_complete_title">Буни текширинг!</string>
+</resources>

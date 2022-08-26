@@ -1,4 +1,4 @@
-package org.dhis2.utils
+package org.dhis2.commons
 
 import android.content.Intent
 
@@ -8,5 +8,5 @@ interface ActivityResultObserver {
         requestCode: Int,
         permissions: Array<String?>,
         grantResults: IntArray
-    ) {}
+    )
 }

@@ -32,6 +32,9 @@ import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
+import org.dhis2.commons.Constants.ACCESS_DATA
+import org.dhis2.commons.Constants.DATA_SET_SECTION
+import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -45,9 +48,6 @@ import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.Constants.ACCESS_DATA
-import org.dhis2.utils.Constants.DATA_SET_SECTION
-import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.OrgUnitDialog

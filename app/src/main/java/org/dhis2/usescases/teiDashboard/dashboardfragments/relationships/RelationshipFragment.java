@@ -30,7 +30,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -45,7 +45,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 import static android.app.Activity.RESULT_OK;
 

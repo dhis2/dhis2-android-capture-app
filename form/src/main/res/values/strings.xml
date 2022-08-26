@@ -65,5 +65,15 @@
     <string name="fields_mandatory_missing">Some mandatory fields are missing and the form cannot be saved.</string>
     <string name="fields_mandatory_missing_discard">Some mandatory fields are missing and the form cannot be saved. \nIf you exit now the changes will be discarded.</string>
     <string name="share">Share</string>
+    <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
+    <string name="action_close">Close</string>
+    <string name="program_rules_loop_warning_title">Program rules warning</string>
+    <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
+    <string name="copied_text">Copied</string>
+    <string name="empty_description">No info for this field</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="from_gallery">Choose from gallery</string>
+    <string name="warning_error_on_complete_title">Check this!</string>
+    <string name="action_do_not_show_again">Do not show again</string>
 
 </resources>
