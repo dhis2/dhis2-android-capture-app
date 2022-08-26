@@ -8,14 +8,13 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-
+import java.util.concurrent.TimeUnit
 import org.dhis2.android.rtsm.data.WorkItem
 import org.dhis2.android.rtsm.data.WorkType
 import org.dhis2.android.rtsm.services.workers.SyncDataWorker
 import org.dhis2.android.rtsm.services.workers.SyncMetadataWorker
-import java.util.concurrent.TimeUnit
 
-class WorkManagerControllerImpl(private val workManager: WorkManager): WorkManagerController {
+class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkManagerController {
     override fun sync(workName: String, metadataTag: String, dataTag: String) {
         val syncMetadataBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
         syncMetadataBuilder.addTag(metadataTag)

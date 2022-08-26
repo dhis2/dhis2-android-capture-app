@@ -15,12 +15,14 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.android.rtsm.R
 
-
 class ActivityManager {
     companion object {
         @JvmStatic
-        fun startActivity(activity: Activity, intent: Intent,
-                          closeCurrentActivity: Boolean) {
+        fun startActivity(
+            activity: Activity,
+            intent: Intent,
+            closeCurrentActivity: Boolean
+        ) {
             activity.startActivity(intent)
 
             if (closeCurrentActivity)
@@ -40,7 +42,8 @@ class ActivityManager {
                     ContextCompat.getColor(view.context, color)
                 ).apply {
                     this.view.findViewById<TextView>(
-                        com.google.android.material.R.id.snackbar_text)?.maxLines = 2
+                        com.google.android.material.R.id.snackbar_text
+                    )?.maxLines = 2
                 }.show()
         }
 
@@ -76,8 +79,12 @@ class ActivityManager {
         }
 
         @JvmStatic
-        fun showDialog(context: Context, titleRes: Int, messageRes: String,
-                       confirmationCallback: () -> Unit) {
+        fun showDialog(
+            context: Context,
+            titleRes: Int,
+            messageRes: String,
+            confirmationCallback: () -> Unit
+        ) {
             AlertDialog.Builder(context)
                 .setMessage(messageRes)
                 .setTitle(titleRes)
@@ -89,15 +96,20 @@ class ActivityManager {
 
         @JvmStatic
         fun showBackButtonWarning(context: Context, confirmationCallback: () -> Unit) {
-            showDialog(context, R.string.confirmation,
+            showDialog(
+                context, R.string.confirmation,
                 context.resources.getString(R.string.previous_page_lose_data_warning),
-                confirmationCallback)
+                confirmationCallback
+            )
         }
 
         @JvmStatic
         fun checkPermission(activity: Activity, requestCode: Int) {
-            if (ContextCompat.checkSelfPermission(activity.applicationContext,
-                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                activity.applicationContext,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(Manifest.permission.RECORD_AUDIO),

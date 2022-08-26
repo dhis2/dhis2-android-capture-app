@@ -37,7 +37,8 @@ class IdentifiableModel(
             other !is IdentifiableModel ||
             uid != other.uid ||
             name != other.name ||
-            displayName != displayName) return false
+            displayName != displayName
+        ) return false
 
         return true
     }

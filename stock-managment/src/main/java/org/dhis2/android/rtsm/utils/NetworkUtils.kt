@@ -8,7 +8,7 @@ class NetworkUtils {
     companion object {
         @JvmStatic
         fun isOnline(context: Context): Boolean {
-            var isOnline =  false
+            var isOnline = false
 
             try {
                 val manager = context.getSystemService(ConnectivityManager::class.java)

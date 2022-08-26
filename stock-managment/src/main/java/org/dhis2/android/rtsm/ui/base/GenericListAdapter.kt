@@ -9,15 +9,16 @@ import android.widget.Filter
 import android.widget.TextView
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 
-class GenericListAdapter<T: BaseIdentifiableObject>(context: Context,
-                                                    private val layoutResource: Int,
-                                                    options: MutableList<T>
+class GenericListAdapter<T : BaseIdentifiableObject>(
+    context: Context,
+    private val layoutResource: Int,
+    options: MutableList<T>
 ) : ArrayAdapter<T>(context, layoutResource, options) {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView.let { convertView } ?:
-        inflater.inflate(layoutResource, parent, false)
+        val view = convertView.let { convertView }
+            ?: inflater.inflate(layoutResource, parent, false)
 
         val textView: TextView = view as TextView
         val objModel: T? = getItem(position)
@@ -57,8 +58,8 @@ class GenericListAdapter<T: BaseIdentifiableObject>(context: Context,
         override fun convertResultToString(resultValue: Any): CharSequence {
             @Suppress("UNCHECKED_CAST")
             val objName = (resultValue as T).displayName()
-            return objName?.subSequence(0, objName.length) ?:
-            super.convertResultToString(resultValue)
+            return objName?.subSequence(0, objName.length)
+                ?: super.convertResultToString(resultValue)
         }
     }
 

@@ -1,14 +1,13 @@
 package org.dhis2.android.rtsm.utils
 
 import android.content.res.Resources
+import java.io.IOException
+import java.util.Properties
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.exceptions.InitializationException
-
-import java.io.IOException
-import java.util.Properties
 
 object ConfigUtils {
     private val CONFIG_RESOURCE = R.raw.config

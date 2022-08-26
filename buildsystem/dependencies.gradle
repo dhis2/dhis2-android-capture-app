@@ -129,8 +129,14 @@ ext {
             //Kotlin metadata
             kotlinmetadata             : "0.5.0",
 
+            rxrelay                     : '2.1.1',
+            preference_ktx              : '1.2.0',
+
             // DI
             hilt                        : '2.43',
-            hilt_work                   : '1.0.0'
+            hilt_work                   : '1.0.0',
+
+            //Kotlin metadata
+            kotlinmetadata             : "0.5.0"
     ]
 }

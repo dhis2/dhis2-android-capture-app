@@ -25,12 +25,18 @@ class TextInputDelegate {
                     override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                         itemWatcher.updateFields(it, qty, position, ruleEffects)
                     }
-                })
+                }
+            )
         }
     }
 
-    fun focusChanged(speechController: SpeechController?, textInputLayout: TextInputLayout, hasFocus: Boolean,
-                     voiceInputEnabled: Boolean, position: Int) {
+    fun focusChanged(
+        speechController: SpeechController?,
+        textInputLayout: TextInputLayout,
+        hasFocus: Boolean,
+        voiceInputEnabled: Boolean,
+        position: Int
+    ) {
         // Prevent duplicate voice trigger
         val autoStart = position != focusPosition
 
@@ -80,14 +86,15 @@ class TextInputDelegate {
                     )
                 else ->
                     textInputLayout.setEndIconTintList(
-                        textInputLayout.context.getColorStateList(R.color.mic_selector))
+                        textInputLayout.context.getColorStateList(R.color.mic_selector)
+                    )
             }
         }
     }
 
     fun clearFieldAfterDelay(editText: EditText?, delay: Long) {
         editText?.let {
-            object: CountDownTimer(delay, delay) {
+            object : CountDownTimer(delay, delay) {
                 override fun onTick(millisUntilFinished: Long) {}
 
                 override fun onFinish() {

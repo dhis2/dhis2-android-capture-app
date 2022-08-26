@@ -4,11 +4,11 @@ import android.content.Intent
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.User
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import javax.inject.Inject
 
 class UserManagerImpl @Inject constructor(val d2: D2) : UserManager {
 
@@ -42,7 +42,7 @@ class UserManagerImpl @Inject constructor(val d2: D2) : UserManager {
     }
 
     override fun userName(): Single<String?> {
-        return Single.defer{
+        return Single.defer {
             d2.userModule().userCredentials().get().map { it.username() }
         }
     }

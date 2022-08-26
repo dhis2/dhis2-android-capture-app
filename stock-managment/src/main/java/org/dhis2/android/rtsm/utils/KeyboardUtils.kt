@@ -23,7 +23,7 @@ class KeyboardUtils {
 
         @JvmStatic
         fun configureInputTypeForTransaction(transaction: Transaction, editText: EditText?) {
-            editText?.inputType  = if (transaction.transactionType == TransactionType.CORRECTION) {
+            editText?.inputType = if (transaction.transactionType == TransactionType.CORRECTION) {
                 InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
             } else {
                 InputType.TYPE_CLASS_NUMBER
