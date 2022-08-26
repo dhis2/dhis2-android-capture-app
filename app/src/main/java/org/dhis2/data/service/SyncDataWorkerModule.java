@@ -16,6 +16,12 @@ public class SyncDataWorkerModule {
 
     @Provides
     @PerService
+    SyncRepository syncRepository(@NonNull D2 d2) {
+        return new SyncRepositoryImpl(d2);
+    }
+
+    @Provides
+    @PerService
     SyncPresenter syncPresenter(
             @NonNull D2 d2,
             @NonNull PreferenceProvider preferences,
@@ -25,11 +31,5 @@ public class SyncDataWorkerModule {
             @NonNull SyncRepository syncRepository
     ) {
         return new SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper, syncStatusController, syncRepository);
-    }
-
-    @Provides
-    @PerService
-    SyncRepository syncRepository(@NonNull D2 d2) {
-        return new SyncRepositoryImpl(d2);
     }
 }
