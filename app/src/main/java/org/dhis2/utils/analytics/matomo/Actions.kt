@@ -11,5 +11,6 @@ class Actions {
         const val CREATE_TEI = "create_tei_save"
         const val CREATE_EVENT = "create_event_next"
         const val SETTINGS = "settings_nav_drawer"
+        const val OPEN_ANALYTICS = "analytics"
     }
 }

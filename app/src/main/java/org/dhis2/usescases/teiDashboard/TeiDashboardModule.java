@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.resources.ResourceManager;
@@ -52,7 +53,8 @@ public class TeiDashboardModule {
                                                      SchedulerProvider schedulerProvider,
                                                      AnalyticsHelper analyticsHelper,
                                                      PreferenceProvider preferenceProvider,
-                                                     FilterManager filterManager) {
+                                                     FilterManager filterManager,
+                                                     MatomoAnalyticsController matomoAnalyticsController) {
         return new TeiDashboardPresenter(view,
                 teiUid,
                 programUid,
@@ -61,7 +63,8 @@ public class TeiDashboardModule {
                 schedulerProvider,
                 analyticsHelper,
                 preferenceProvider,
-                filterManager);
+                filterManager,
+                matomoAnalyticsController);
     }
 
     @Provides

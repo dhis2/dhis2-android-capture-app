@@ -156,6 +156,7 @@ class MainActivity :
                     mainNavigator.openPrograms()
                 }
                 R.id.navigation_analytics -> {
+                    presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
                 }
             }

@@ -91,6 +91,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     fragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
                     break;
                 case R.id.navigation_analytics:
+                    presenter.trackDataSetAnalytics();
                     fragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
                     break;
             }

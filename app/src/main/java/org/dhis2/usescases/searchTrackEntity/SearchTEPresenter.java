@@ -5,7 +5,9 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
+import static org.dhis2.utils.analytics.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
+import static org.dhis2.utils.analytics.matomo.Categories.SEARCH;
 import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
 import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
 
@@ -591,6 +593,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    @Override
+    public void trackSearchAnalytics() {
+        matomoAnalyticsController.trackEvent(SEARCH, OPEN_ANALYTICS, CLICK);
     }
 
     @Override

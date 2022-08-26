@@ -21,9 +21,11 @@ import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.TRUE
+import org.dhis2.utils.analytics.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
+import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
@@ -276,5 +278,9 @@ class MainPresenter(
     fun onDataSuccess() {
         userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
             .blockingSet(TRUE)
+    }
+
+    fun trackHomeAnalytics() {
+        matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
     }
 }
