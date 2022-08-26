@@ -358,6 +358,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showSearchAndFilterButtons();
                     break;
                 case R.id.navigation_map_view:
+                    presenter.trackSearchMapVisualization();
                     viewModel.setMapScreen();
                     showMap();
                     showSearchAndFilterButtons();

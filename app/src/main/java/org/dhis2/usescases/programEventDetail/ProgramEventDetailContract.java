@@ -73,5 +73,7 @@ public class ProgramEventDetailContract {
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
 
         void trackEventProgramAnalytics();
+
+        void trackEventProgramMap();
     }
 }

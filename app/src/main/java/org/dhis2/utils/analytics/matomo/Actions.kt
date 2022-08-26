@@ -14,5 +14,6 @@ class Actions {
         const val OPEN_ANALYTICS = "analytics"
         const val BLOCK_SESSION_PIN = "block_session_pin"
         const val QR_SCANNER = "qr_scanner"
+        const val MAP_VISUALIZATION = "map_visualization"
     }
 }
