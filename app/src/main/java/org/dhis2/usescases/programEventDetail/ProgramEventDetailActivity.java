@@ -102,6 +102,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     programEventsViewModel.showMap();
                     return true;
                 case R.id.navigation_analytics:
+                    presenter.trackEventProgramAnalytics();
                     programEventsViewModel.showAnalytics();
                     return true;
                 default:

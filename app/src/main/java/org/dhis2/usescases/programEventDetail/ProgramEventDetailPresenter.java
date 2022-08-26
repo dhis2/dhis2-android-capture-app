@@ -25,6 +25,7 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.utils.analytics.matomo.Actions.SYNC_EVENT;
 import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
 import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
@@ -223,5 +224,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    @Override
+    public void trackEventProgramAnalytics() {
+        matomoAnalyticsController.trackEvent(EVENT_LIST, OPEN_ANALYTICS, CLICK);
     }
 }
