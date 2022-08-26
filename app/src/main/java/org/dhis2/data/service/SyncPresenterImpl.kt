@@ -75,7 +75,9 @@ class SyncPresenterImpl(
 
     override fun syncAndDownloadEvents() {
         val (eventLimit, limitByOU, limitByProgram) = getDownloadLimits()
-
+        val programEventUids = d2.programModule().programs()
+            .byProgramType().eq(ProgramType.WITHOUT_REGISTRATION)
+            .blockingGetUids()
         Completable.fromObservable(d2.eventModule().events().upload())
             .andThen(
                 Completable.fromObservable(
@@ -84,10 +86,24 @@ class SyncPresenterImpl(
                         .limit(eventLimit)
                         .limitByOrgunit(limitByOU)
                         .limitByProgram(limitByProgram)
-                        .download().doOnNext { d2Progress ->
-                            syncStatusController.updateDownloadProcess(d2Progress.programs())
+                        .download()
+                        .doOnNext { d2Progress ->
+                            syncStatusController.updateDownloadProcess(
+                                d2Progress.programs().filter { entry ->
+                                    programEventUids.contains(entry.key)
+                                }
+                            )
                         }
                 )
+                    .doOnError {
+                        Timber.d("error while downloading Events")
+                    }
+                    .onErrorComplete()
+                    .doOnComplete {
+                        syncStatusController.finishDownloadingEvents(
+                            programEventUids
+                        )
+                    }
             ).blockingAwait()
     }
 
@@ -126,6 +142,10 @@ class SyncPresenterImpl(
             it == LimitScope.PER_PROGRAM || it == LimitScope.PER_OU_AND_PROGRAM
         } ?: preferences.getBoolean(LIMIT_BY_PROGRAM, false)
 
+        val trackerProgramUids = d2.programModule().programs()
+            .byProgramType().eq(ProgramType.WITH_REGISTRATION)
+            .blockingGetUids()
+
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload())
             .andThen(
                 Completable.fromObservable(
@@ -140,11 +160,20 @@ class SyncPresenterImpl(
                             val callsDone = data.doneCalls().size
                             val totalCalls = data.totalCalls()
                             Timber.d("$percentage% $callsDone/$totalCalls")
-                            syncStatusController.updateDownloadProcess(data.programs())
+                            syncStatusController.updateDownloadProcess(
+                                data.programs().filter { entry ->
+                                    trackerProgramUids.contains(entry.key)
+                                }
+                            )
                         }
                 )
                     .doOnError { Timber.d("error while downloading TEIs") }
                     .onErrorComplete()
+                    .doOnComplete {
+                        syncStatusController.finishDownloadingTracker(
+                            trackerProgramUids
+                        )
+                    }
             )
             .blockingAwait()
     }
@@ -261,6 +290,7 @@ class SyncPresenterImpl(
         return if (!checkSyncProgramStatus(programUid)) {
             ListenableWorker.Result.failure()
         } else {
+            syncStatusController.updateSingleProgramToSuccess(programUid)
             ListenableWorker.Result.success()
         }
     }

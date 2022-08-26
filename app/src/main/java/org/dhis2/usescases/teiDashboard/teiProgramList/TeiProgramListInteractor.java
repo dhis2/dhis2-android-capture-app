@@ -222,6 +222,8 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 programViewModel.getUid())
         ) {
             programDownloadState = ProgramDownloadState.DOWNLOADED;
+        }else if(programViewModel.getDownloadState() == ProgramDownloadState.ERROR){
+            programDownloadState = ProgramDownloadState.ERROR;
         } else {
             programDownloadState = ProgramDownloadState.NONE;
         }
