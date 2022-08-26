@@ -428,7 +428,7 @@ class MainActivity :
                 mainNavigator.openAbout()
             }
             R.id.block_button -> {
-                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
+                presenter.trackPinDialog()
                 onLockClick()
             }
             R.id.logout_button -> {

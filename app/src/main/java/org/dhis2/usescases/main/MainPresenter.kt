@@ -21,6 +21,7 @@ import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.TRUE
+import org.dhis2.utils.analytics.matomo.Actions.Companion.BLOCK_SESSION_PIN
 import org.dhis2.utils.analytics.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
@@ -282,5 +283,9 @@ class MainPresenter(
 
     fun trackHomeAnalytics() {
         matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
+    }
+
+    fun trackPinDialog() {
+        matomoAnalyticsController.trackEvent(HOME, BLOCK_SESSION_PIN, CLICK)
     }
 }

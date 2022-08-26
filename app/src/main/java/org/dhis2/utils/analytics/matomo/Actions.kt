@@ -12,5 +12,6 @@ class Actions {
         const val CREATE_EVENT = "create_event_next"
         const val SETTINGS = "settings_nav_drawer"
         const val OPEN_ANALYTICS = "analytics"
+        const val BLOCK_SESSION_PIN = "block_session_pin"
     }
 }
