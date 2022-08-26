@@ -419,6 +419,7 @@ class MainActivity :
                 mainNavigator.openSettings()
             }
             R.id.qr_scan -> {
+                presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
             R.id.menu_jira -> {

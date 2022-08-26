@@ -13,5 +13,6 @@ class Actions {
         const val SETTINGS = "settings_nav_drawer"
         const val OPEN_ANALYTICS = "analytics"
         const val BLOCK_SESSION_PIN = "block_session_pin"
+        const val QR_SCANNER = "qr_scanner"
     }
 }
