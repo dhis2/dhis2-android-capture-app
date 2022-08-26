@@ -7,6 +7,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import java.time.LocalDateTime
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.commons.Constants.SYNC_DATA_CHANNEL_NAME
@@ -19,7 +20,6 @@ import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.utils.DateUtils
 import org.dhis2.android.rtsm.utils.NotificationHelper
 import org.dhis2.android.rtsm.utils.Sdk
-import java.time.LocalDateTime
 
 @HiltWorker
 class SyncDataWorker @AssistedInject constructor(

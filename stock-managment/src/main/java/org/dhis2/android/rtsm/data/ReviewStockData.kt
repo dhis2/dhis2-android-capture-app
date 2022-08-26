@@ -9,4 +9,4 @@ import org.dhis2.android.rtsm.data.models.Transaction
 data class ReviewStockData(
     val transaction: Transaction,
     val items: List<StockEntry>
-): Parcelable
+) : Parcelable

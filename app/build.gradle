@@ -5,6 +5,7 @@ apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
+apply plugin: 'dagger.hilt.android.plugin'
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -73,6 +74,7 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
+        javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
     }
 
     testOptions {
@@ -347,4 +349,7 @@ dependencies {
 
     //Conscrypt
     implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"
+
+    implementation "com.google.dagger:hilt-android:$libraries.hilt"
+    kapt "com.google.dagger:hilt-compiler:$libraries.hilt"
 }

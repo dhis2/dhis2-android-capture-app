@@ -1,5 +1,9 @@
 package org.dhis2.android.rtsm.utils
 
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Date
+import java.util.Locale
 import org.dhis2.android.rtsm.commons.Constants.PERIOD_12H
 import org.dhis2.android.rtsm.commons.Constants.PERIOD_1H
 import org.dhis2.android.rtsm.commons.Constants.PERIOD_30M
@@ -10,10 +14,6 @@ import org.dhis2.android.rtsm.commons.Constants.PERIOD_WEEKLY
 import org.hisp.dhis.android.core.settings.DataSyncPeriod
 import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.util.Date
-import java.util.Locale
 
 fun LocalDateTime.humanReadableDateTime(): String = this.format(DateUtils.getDateTimePattern())
 
@@ -46,4 +46,4 @@ fun DataSyncPeriod.toSeconds(): Int {
 }
 
 fun OpenIDConnectConfig.isConfigComplete(): Boolean =
-    discoveryUri !=  null || (authorizationUri != null && tokenUrl != null)
+    discoveryUri != null || (authorizationUri != null && tokenUrl != null)

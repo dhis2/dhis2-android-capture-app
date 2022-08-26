@@ -7,24 +7,24 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import org.apache.commons.jexl2.JexlEngine
 import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.services.OpenIdProvider
+import org.dhis2.android.rtsm.services.OpenIdProviderImpl
+import org.dhis2.android.rtsm.services.SpeechRecognitionManager
+import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
+import org.dhis2.android.rtsm.services.SyncManager
+import org.dhis2.android.rtsm.services.SyncManagerImpl
+import org.dhis2.android.rtsm.services.WorkManagerController
+import org.dhis2.android.rtsm.services.WorkManagerControllerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.preferences.PreferenceProviderImpl
 import org.dhis2.android.rtsm.services.rules.ExpressionEvaluatorImpl
-import org.dhis2.android.rtsm.services.WorkManagerController
-import org.dhis2.android.rtsm.services.WorkManagerControllerImpl
-import org.dhis2.android.rtsm.services.SyncManager
-import org.dhis2.android.rtsm.services.SyncManagerImpl
-import org.dhis2.android.rtsm.services.SpeechRecognitionManager
-import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
-import org.dhis2.android.rtsm.services.OpenIdProvider
-import org.dhis2.android.rtsm.services.OpenIdProviderImpl
 import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.Sdk
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.rules.RuleExpressionEvaluator
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -84,9 +84,9 @@ class AppModule {
     @Provides
     @Singleton
     fun providesSpeechRecognitionManager(@ApplicationContext appContext: Context):
-            SpeechRecognitionManager {
-        return SpeechRecognitionManagerImpl(appContext)
-    }
+        SpeechRecognitionManager {
+            return SpeechRecognitionManagerImpl(appContext)
+        }
 
     @Provides
     @Singleton

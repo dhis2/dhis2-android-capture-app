@@ -8,8 +8,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 
 class RecentActivityItemDividerDecoration(
-    context: Context, resId: Int
-): RecyclerView.ItemDecoration() {
+    context: Context,
+    resId: Int
+) : RecyclerView.ItemDecoration() {
     private val mDivider = AppCompatResources.getDrawable(context, resId)!!
     companion object {
         const val LEFT = 100

@@ -8,4 +8,4 @@ data class StockItem(
     val id: String,
     val name: String,
     var stockOnHand: String?
-): Parcelable
+) : Parcelable

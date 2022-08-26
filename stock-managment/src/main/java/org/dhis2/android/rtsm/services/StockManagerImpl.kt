@@ -4,6 +4,9 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import java.util.Collections
+import java.util.Date
+import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
@@ -24,9 +27,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.util.Date
-import java.util.Collections
-import javax.inject.Inject
 
 class StockManagerImpl @Inject constructor(
     val d2: D2,
@@ -80,7 +80,8 @@ class StockManagerImpl @Inject constructor(
                 override fun create(): DataSource<TrackedEntityInstance, StockItem> {
                     return dataSource
                 }
-            }, Constants.ITEM_PAGE_SIZE
+            },
+            Constants.ITEM_PAGE_SIZE
         )
             .build()
 
@@ -122,15 +123,14 @@ class StockManagerImpl @Inject constructor(
 
     private fun filterDeleted(list: MutableList<TrackedEntityInstance>):
         List<TrackedEntityInstance> {
+            val iterator = list.iterator()
+            while (iterator.hasNext()) {
+                val tei = iterator.next()
+                if (tei.deleted() != null && tei.deleted()!!) iterator.remove()
+            }
 
-        val iterator = list.iterator()
-        while (iterator.hasNext()) {
-            val tei = iterator.next()
-            if (tei.deleted() != null && tei.deleted()!!) iterator.remove()
+            return list
         }
-
-        return list
-    }
 
     private fun createEventProjection(
         facility: IdentifiableModel,
@@ -154,21 +154,21 @@ class StockManagerImpl @Inject constructor(
         appConfig: AppConfig
     ):
         Single<Unit> {
-        return Single.defer {
-            d2.programModule()
-                .programStages()
-                .byProgramUid()
-                .eq(appConfig.program)
-                .one()
-                .get()
-                .map { programStage ->
-                    items.forEach { entry ->
-                        val enrollment = getEnrollment(entry.item.id)
-                        createEvent(entry, programStage, enrollment, transaction, appConfig)
+            return Single.defer {
+                d2.programModule()
+                    .programStages()
+                    .byProgramUid()
+                    .eq(appConfig.program)
+                    .one()
+                    .get()
+                    .map { programStage ->
+                        items.forEach { entry ->
+                            val enrollment = getEnrollment(entry.item.id)
+                            createEvent(entry, programStage, enrollment, transaction, appConfig)
+                        }
                     }
-                }
+            }
         }
-    }
 
     private fun createEvent(
         item: StockEntry,
@@ -242,7 +242,7 @@ class StockManagerImpl @Inject constructor(
                 val value = ruleEffect.data()
                 if (!de.isEmpty() && !value.isNullOrEmpty()) {
                     Timber.d("++++      Assigning rule actions:")
-                    println("Event uid: ${eventUid}, dvUid: ${de}, value: $value")
+                    println("Event uid: $eventUid, dvUid: $de, value: $value")
 
                     if (NumberUtils.isCreatable(value)) {
                         try {

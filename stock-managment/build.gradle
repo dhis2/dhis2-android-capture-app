@@ -12,6 +12,10 @@ apply plugin: "kotlinx-serialization"
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
 android {
     compileSdk versions.sdk
 
@@ -159,7 +163,7 @@ dependencies {
     releaseImplementation "com.facebook.flipper:flipper-noop:$libraries.flipper"
 
     testImplementation "junit:junit:$libraries.junit"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$libraries.mockito_kotlin"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$libraries.mockito"
     testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
     testImplementation "androidx.arch.core:core-testing:$libraries.android_core_testing"
     testImplementation "com.github.javafaker:javafaker:$libraries.javafaker"

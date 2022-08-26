@@ -75,7 +75,8 @@ abstract class BaseActivity : AppCompatActivity() {
             speechController = SpeechControllerImpl(speechAwareViewModel)
 
             registerSpeechRecognitionStatusObserver(
-                speechAwareViewModel.getSpeechStatus(), speechController)
+                speechAwareViewModel.getSpeechStatus(), speechController
+            )
         }
 
         // Set the custom theme, if any,
@@ -180,7 +181,7 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun showMoreOptions(): Boolean = false
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.action_settings -> {
                 startActivity(SettingsActivity.getSettingsActivityIntent(this))
                 return true
@@ -226,7 +227,8 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String?>,
+        requestCode: Int,
+        permissions: Array<String?>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -236,9 +238,9 @@ abstract class BaseActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 messageRes = R.string.permission_granted
             else if (grantResults[0] == PackageManager.PERMISSION_DENIED)
-                // Permission denial may occur for different reasons.
-                // For more information, see
-                // https://developer.android.com/training/permissions/requesting#handle-denial
+            // Permission denial may occur for different reasons.
+            // For more information, see
+            // https://developer.android.com/training/permissions/requesting#handle-denial
                 messageRes = R.string.permission_denied
 
             showToast(this, messageRes)
@@ -276,7 +278,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
         val message =
             if (code == Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ||
-                code == Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR)
+                code == Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR
+            )
                 getString(resId, data ?: "")
             else
                 getString(resId)
@@ -290,7 +293,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun setTitle(transactionType: TransactionType) {
-        when(transactionType) {
+        when (transactionType) {
             TransactionType.CORRECTION -> setTitle(R.string.correction)
             TransactionType.DISTRIBUTION -> setTitle(R.string.distribution)
             TransactionType.DISCARD -> setTitle(R.string.discard)
@@ -305,8 +308,11 @@ abstract class BaseActivity : AppCompatActivity() {
         return networkIsAvailable
     }
 
-    open fun onScanCompleted(result: ScanIntentResult, textInput: EditText,
-                             stockItemList: RecyclerView) {
+    open fun onScanCompleted(
+        result: ScanIntentResult,
+        textInput: EditText,
+        stockItemList: RecyclerView
+    ) {
         val data = result.contents
         textInput.setText(data)
 

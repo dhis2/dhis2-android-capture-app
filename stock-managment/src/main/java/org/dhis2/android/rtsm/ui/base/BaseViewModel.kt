@@ -1,11 +1,12 @@
 package org.dhis2.android.rtsm.ui.base
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.android.rtsm.BuildConfig
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
@@ -14,8 +15,6 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
-import java.util.Date
-import javax.inject.Inject
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor(
@@ -45,7 +44,6 @@ open class BaseViewModel @Inject constructor(
         date: Date,
         appConfig: AppConfig
     ): Disposable {
-
         return ruleValidationHelper.evaluate(
             entry = action.entry,
             eventDate = date,
@@ -72,6 +70,4 @@ open class BaseViewModel @Inject constructor(
     fun isVoiceInputEnabled(prefKey: String) = preferenceProvider.getBoolean(prefKey, false)
 
     private fun getAppVersion() = "v" + BuildConfig.VERSION_NAME
-
-
 }

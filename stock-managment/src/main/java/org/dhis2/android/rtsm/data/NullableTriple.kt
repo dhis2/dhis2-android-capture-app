@@ -6,6 +6,6 @@ data class NullableTriple<A, B, C>(
     var first: A?,
     var second: B?,
     var third: C?
-): Serializable {
+) : Serializable {
     override fun toString() = "($first, $second, $third)"
 }

@@ -2,7 +2,7 @@ package org.dhis2.android.rtsm.ui.base
 
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 
-class SpeechControllerImpl(private val viewModel: SpeechRecognitionAwareViewModel):
+class SpeechControllerImpl(private val viewModel: SpeechRecognitionAwareViewModel) :
     SpeechController {
     private var callback: Function1<SpeechRecognitionState, Unit>? = null
 
