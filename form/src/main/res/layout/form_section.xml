@@ -31,7 +31,7 @@
             android:textAllCaps="false"
             android:textColor="?whiteBgTextColor"
             android:textSize="14sp"
-            android:visibility="@{ item.showBottomShadow() ? View.VISIBLE : View.GONE }"
+            android:visibility="@{ item.showNextButton() ? View.VISIBLE : View.GONE }"
             app:backgroundTint="@color/white"
             app:cornerRadius="24dp"
             app:layout_constraintEnd_toEndOf="parent"

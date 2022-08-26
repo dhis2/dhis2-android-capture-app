@@ -93,6 +93,10 @@ data class SectionUiModelImpl(
         return showBottomShadow
     }
 
+    fun showNextButton():Boolean {
+        return showBottomShadow && !isClosingSection()
+    }
+
     fun setLastSectionHeight(lastPositionShouldChangeHeight: Boolean) {
         this.lastPositionShouldChangeHeight = lastPositionShouldChangeHeight
     }
