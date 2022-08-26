@@ -1,6 +1,5 @@
 package org.dhis2.android.rtsm.data
 
-
 import com.github.javafaker.Faker
 import org.hisp.dhis.android.core.arch.helpers.UidGenerator
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl

@@ -1,14 +1,25 @@
 package org.dhis2.android.rtsm.services
 
 import com.google.common.collect.Lists
+import java.util.Arrays
+import java.util.Date
 import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
-import org.hisp.dhis.rules.models.*
+import org.hisp.dhis.rules.models.Rule
+import org.hisp.dhis.rules.models.RuleAction
+import org.hisp.dhis.rules.models.RuleActionAssign
+import org.hisp.dhis.rules.models.RuleDataValue
+import org.hisp.dhis.rules.models.RuleEnrollment
+import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.RuleValueType
+import org.hisp.dhis.rules.models.RuleVariable
+import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
+import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
+import org.hisp.dhis.rules.models.TriggerEnvironment
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.util.*
 
 @RunWith(JUnit4::class)
 class ProgramRuleTests {
@@ -16,7 +27,7 @@ class ProgramRuleTests {
      * Gets the rule engine with all the rule variables configured in the server
      */
     private fun getRuleEngine(rules: List<Rule>): RuleEngine.Builder {
-        //Variable used by the program rules in the program rule expressions and actions
+        // Variable used by the program rules in the program rule expressions and actions
         val rulesVariables = listOf<RuleVariable>(
             RuleVariablePreviousEvent
                 .create(
@@ -75,18 +86,23 @@ class ProgramRuleTests {
      */
     private fun createRules(): List<Rule> {
         val rules = Lists.newArrayList<Rule>()
-        //Rule 1: PSM- Assign Stock on Hand
+        // Rule 1: PSM- Assign Stock on Hand
         val assignAction: RuleAction =
             RuleActionAssign.create(
                 null,
-                "#{PSM- Previous stock balance} + #{PSM- Stock received} - #{PSM- Stock consumed distributed} - #{PSM- Stock discarded} - #{PSM- Stock corrected}",
+                "#{PSM- Previous stock balance} + " +
+                    "#{PSM- Stock received} - #{PSM- Stock consumed distributed} -" +
+                    " #{PSM- Stock discarded} - #{PSM- Stock corrected}",
                 "ypCQAFr1a5l"
             )
         val rule1 = Rule
-            .create(null, 1, "true", listOf(assignAction), "PSM- Assign Stock on Hand", "rule1Uid")
+            .create(
+                null, 1, "true",
+                listOf(assignAction), "PSM- Assign Stock on Hand", "rule1Uid"
+            )
         rules.add(rule1)
 
-        //TODO Add the two remaining program rules
+        // TODO Add the two remaining program rules
 
         return rules
     }
@@ -116,23 +132,23 @@ class ProgramRuleTests {
             .organisationUnitCode("")
             .dataValues(
                 listOf(
-                    //PRevious Stock Balance
+                    // PRevious Stock Balance
                     RuleDataValue.create(
                         Date(), "", "oc8tn8CewiP", "3"
                     ),
-                    //PSM Stock received
+                    // PSM Stock received
                     RuleDataValue.create(
                         Date(), "", "j3ydinp6Qp8", "4"
                     ),
-                    //PSM- Stock consumed distributed
+                    // PSM- Stock consumed distributed
                     RuleDataValue.create(
                         Date(), "", "lpGYJoVUudr", "2"
                     ),
-                    //PSM- Stock discarded
+                    // PSM- Stock discarded
                     RuleDataValue.create(
                         Date(), "", "I7cmT3iXT0y", "1"
                     ),
-                    //PSM- Stock corrected
+                    // PSM- Stock corrected
                     RuleDataValue.create(
                         Date(), "", "ej1YwWaYGmm", "3"
                     )

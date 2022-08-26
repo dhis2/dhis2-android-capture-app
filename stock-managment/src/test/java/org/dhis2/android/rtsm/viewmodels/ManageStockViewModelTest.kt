@@ -27,7 +27,9 @@ import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.hisp.dhis.android.core.attribute.AttributeValue
 import org.hisp.dhis.rules.models.RuleEffect
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -187,7 +189,6 @@ class ManageStockViewModelTest {
             assertEquals(it.facility.displayName, facility.displayName)
             assertEquals(it.transactionDate, transactionDate)
         }
-
     }
 
     @Test
@@ -203,13 +204,14 @@ class ManageStockViewModelTest {
         val qty = 319L
         val item = createStockEntry("someUid", viewModel, qty.toString())
 
-        viewModel.setQuantity(item, 200, qty.toString(),
+        viewModel.setQuantity(
+            item, 200, qty.toString(),
             object : ItemWatcher.OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     Timber.tag("ruleEffects2").d("$ruleEffects")
                 }
-
-            })
+            }
+        )
 
         assertEquals(viewModel.getItemQuantity(item)?.toLong(), qty)
     }
@@ -229,12 +231,14 @@ class ManageStockViewModelTest {
 
         val qty = 49
 
-        viewModel.setQuantity(item, 0, qty.toString(),
+        viewModel.setQuantity(
+            item, 0, qty.toString(),
             object : ItemWatcher.OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     println("$ruleEffects")
                 }
-            })
+            }
+        )
 
         assertEquals(viewModel.getItemQuantity(item), qty2.toString())
     }

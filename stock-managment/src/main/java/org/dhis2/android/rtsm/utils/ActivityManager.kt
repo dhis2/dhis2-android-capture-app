@@ -25,8 +25,9 @@ class ActivityManager {
         ) {
             activity.startActivity(intent)
 
-            if (closeCurrentActivity)
+            if (closeCurrentActivity) {
                 activity.finish()
+            }
         }
 
         @JvmStatic
@@ -37,7 +38,7 @@ class ActivityManager {
                 R.color.primary_color
             }
 
-            if (message.isNotEmpty())
+            if (message.isNotEmpty()) {
                 Snackbar.make(view, message, LENGTH_LONG).setBackgroundTint(
                     ContextCompat.getColor(view.context, color)
                 ).apply {
@@ -45,6 +46,7 @@ class ActivityManager {
                         com.google.android.material.R.id.snackbar_text
                     )?.maxLines = 2
                 }.show()
+            }
         }
 
         @JvmStatic

@@ -25,8 +25,9 @@ class PreferenceProviderImpl(context: Context) : PreferenceProvider {
             putString(Constants.SERVER_URL, serverUrl)
             putString(Constants.USERNAME, userName)
 
-            if (password.isNotEmpty())
+            if (password.isNotEmpty()) {
                 putString(Constants.PASSWORD, password)
+            }
 
             apply()
         }

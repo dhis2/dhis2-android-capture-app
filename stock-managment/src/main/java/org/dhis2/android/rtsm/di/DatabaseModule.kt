@@ -16,7 +16,8 @@ import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 class DatabaseModule {
     @Provides
     @Singleton
-    fun providesAppDatabase(@ApplicationContext appContext: Context) = AppDatabase.getInstance(appContext)
+    fun providesAppDatabase(@ApplicationContext appContext: Context) =
+        AppDatabase.getInstance(appContext)
 
     @Provides
     fun providesUserActivityDao(appDatabase: AppDatabase): UserActivityDao {

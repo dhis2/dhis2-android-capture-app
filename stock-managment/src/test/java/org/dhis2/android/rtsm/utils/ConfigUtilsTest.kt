@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.utils
 
+import java.util.Properties
 import junit.framework.TestCase.assertNotNull
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.junit.Before
@@ -9,7 +10,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.whenever
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class ConfigUtilsTest {

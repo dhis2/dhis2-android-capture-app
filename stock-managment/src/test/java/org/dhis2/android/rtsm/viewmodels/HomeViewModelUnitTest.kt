@@ -10,9 +10,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
+import java.time.LocalDateTime
+import java.time.ZoneId
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
-import org.dhis2.android.rtsm.data.*
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.data.DestinationFactory
+import org.dhis2.android.rtsm.data.FacilityFactory
+import org.dhis2.android.rtsm.data.OperationState
+import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.persistence.UserActivity
 import org.dhis2.android.rtsm.data.persistence.UserActivityDao
 import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
@@ -45,9 +51,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
-import java.time.ZoneId
-
 
 @RunWith(MockitoJUnitRunner::class)
 class HomeViewModelUnitTest {
@@ -90,7 +93,8 @@ class HomeViewModelUnitTest {
     private lateinit var preferenceProvider: PreferenceProvider
 
     @Captor
-    private lateinit var facilitiesArgumentCaptor: ArgumentCaptor<OperationState<List<OrganisationUnit>>>
+    private lateinit var facilitiesArgumentCaptor:
+        ArgumentCaptor<OperationState<List<OrganisationUnit>>>
 
     @Captor
     private lateinit var destinationsArgumentCaptor: ArgumentCaptor<OperationState<List<Option>>>
@@ -139,7 +143,6 @@ class HomeViewModelUnitTest {
 
         viewModel.facilities.observeForever(facilitiesObserver)
         viewModel.destinationsList.observeForever(destinationsObserver)
-
     }
 
     private fun getStateHandle(): SavedStateHandle {
@@ -161,7 +164,6 @@ class HomeViewModelUnitTest {
 
     private fun getTime(dateTime: LocalDateTime) =
         dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-
 
     @Test
     fun init_shouldLoadFacilities() {
@@ -198,7 +200,7 @@ class HomeViewModelUnitTest {
         val types = listOf<TransactionType>(
             TransactionType.DISTRIBUTION,
             TransactionType.DISCARD,
-            TransactionType.CORRECTION,
+            TransactionType.CORRECTION
         )
 
         types.forEach {
@@ -432,7 +434,6 @@ class HomeViewModelUnitTest {
             ParcelUtils.facilityToIdentifiableModelParcel(facility)
         )
         assertEquals(data.transactionDate, now.humanReadableDate())
-
     }
 
     @Test

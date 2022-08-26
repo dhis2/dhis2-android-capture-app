@@ -30,8 +30,8 @@ class ManageStockAdapter(
     val appConfig: @NotNull AppConfig,
     private val transaction: Transaction,
     private var voiceInputEnabled: Boolean
-): PagedListAdapter<
-        StockItem, ManageStockAdapter.StockItemHolder>(DIFF_CALLBACK) {
+) : PagedListAdapter<
+    StockItem, ManageStockAdapter.StockItemHolder>(DIFF_CALLBACK) {
     lateinit var resources: Resources
     private val textInputDelegate: TextInputDelegate = TextInputDelegate()
 
@@ -65,12 +65,13 @@ class ManageStockAdapter(
 
     inner class StockItemHolder(
         itemView: View,
-        private val watcher: ItemWatcher<StockItem, String, String>,
-    ):
+        private val watcher: ItemWatcher<StockItem, String, String>
+    ) :
         RecyclerView.ViewHolder(itemView) {
 
         private val tvItemName: TextView = itemView.findViewById(R.id.item_name_text_view)
-        private val tvStockOnHand: TextView = itemView.findViewById(R.id.stock_on_hand_value_text_view)
+        private val tvStockOnHand: TextView =
+            itemView.findViewById(R.id.stock_on_hand_value_text_view)
         private val etQty: TextInputLayout = itemView.findViewById(R.id.item_qty_text_field)
 
         init {
@@ -83,7 +84,8 @@ class ManageStockAdapter(
         private fun addFocusListener() {
             etQty.editText?.setOnFocusChangeListener { _, hasFocus ->
                 textInputDelegate.focusChanged(
-                    speechController, etQty, hasFocus, voiceInputEnabled, adapterPosition)
+                    speechController, etQty, hasFocus, voiceInputEnabled, adapterPosition
+                )
             }
         }
 
@@ -98,7 +100,14 @@ class ManageStockAdapter(
                     }
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun afterTextChanged(s: Editable?) {}
             })
         }
@@ -117,9 +126,11 @@ class ManageStockAdapter(
 
                 // Clear the erroneous field after some time to prepare for next entry,
                 // if input is via voice
-                if (voiceInputEnabled)
-                        textInputDelegate.clearFieldAfterDelay(
-                            etQty.editText, CLEAR_FIELD_DELAY)
+                if (voiceInputEnabled) {
+                    textInputDelegate.clearFieldAfterDelay(
+                        etQty.editText, CLEAR_FIELD_DELAY
+                    )
+                }
             } else {
                 // set the cursor at the end
                 etQty.editText?.setSelection(etQty.editText!!.text.length)
