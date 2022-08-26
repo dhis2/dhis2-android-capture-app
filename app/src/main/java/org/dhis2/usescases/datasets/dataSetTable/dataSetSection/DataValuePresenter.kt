@@ -128,7 +128,6 @@ class DataValuePresenter(
                         val valueChange = VALUE_CHANGED
                         if (storeResult.valueStoreResult == valueChange) {
                             getDataSetIndicators()
-                            view.showSnackBar()
                         }
                         view.onValueProcessed()
                     },
@@ -334,7 +333,7 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onCellValueChange(cell: TableCell) {
+    fun onSaveValueChange(cell: TableCell) {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val catOptCombUid = ids[1]

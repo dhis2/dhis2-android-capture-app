@@ -10,7 +10,7 @@ data class TableModel(
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
     val upperPadding: Boolean = true,
-    val overwrittenValues: List<TableCell> = emptyList()
+    val overwrittenValues: Map<Int, TableCell> = emptyMap()
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
         return tableHeaderModel.rows

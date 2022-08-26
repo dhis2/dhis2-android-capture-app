@@ -45,7 +45,7 @@ class GraphToTable {
         val tableRows = headers.mapIndexed { rowIndex, rowHeaderCell ->
             TableRowModel(
                 rowHeader = RowHeader(
-                    id = rowHeaderCell?.text?:rowIndex.toString(),
+                    id = rowHeaderCell?.text ?: rowIndex.toString(),
                     title = rowHeaderCell?.text ?: "-",
                     row = rowIndex
                 ),
