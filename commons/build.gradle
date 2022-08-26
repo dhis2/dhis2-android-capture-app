@@ -149,10 +149,10 @@ dependencies {
 
     testApi "junit:junit:${libraries.junit}"
 
-    androidTestApi 'androidx.test.ext:junit:1.1.2'
-    androidTestApi 'androidx.test.espresso:espresso-core:3.3.0'
-    androidTestApi 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    api 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    api 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
+    androidTestApi "androidx.test.ext:junit:$libraries.junit_ext"
+    androidTestApi "androidx.test.espresso:espresso-core:$libraries.espresso_core"
+    androidTestApi "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    api "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    api "androidx.test.espresso.idling:idling-concurrent:$libraries.espresso_core"
 
 }

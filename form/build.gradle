@@ -94,5 +94,5 @@ dependencies {
 
     //endregion
 
-    androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
 }

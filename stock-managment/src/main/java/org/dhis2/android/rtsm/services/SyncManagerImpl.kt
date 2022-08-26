@@ -116,8 +116,9 @@ class SyncManagerImpl @Inject constructor(
             .blockingGet()
             .isEmpty()
 
-        if (teisSynced)
+        if (teisSynced) {
             return SyncResult.SYNCED
+        }
 
         val outstandingTEIsToPostOrUpdate = d2.trackedEntityModule()
             .trackedEntityInstances()
@@ -125,8 +126,9 @@ class SyncManagerImpl @Inject constructor(
             .`in`(State.TO_POST, State.TO_UPDATE)
             .blockingGet().isNotEmpty()
 
-        if (outstandingTEIsToPostOrUpdate)
+        if (outstandingTEIsToPostOrUpdate) {
             return SyncResult.INCOMPLETE
+        }
 
         return SyncResult.ERRORED
     }

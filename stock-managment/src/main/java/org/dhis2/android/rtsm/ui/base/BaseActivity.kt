@@ -117,7 +117,8 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun onVoiceInputStateChanged() {}
 
     private fun isVoiceInputEnabled(viewModel: ViewModel) =
-        (viewModel as BaseViewModel).isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
+        (viewModel as BaseViewModel)
+            .isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
 
     override fun onDestroy() {
         disposable.clear()
@@ -158,7 +159,9 @@ abstract class BaseActivity : AppCompatActivity() {
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             supportActionBar!!.setDisplayShowTitleEnabled(true)
-        } else Timber.w("Support action bar is null")
+        } else {
+            Timber.w("Support action bar is null")
+        }
     }
 
     /**
@@ -235,13 +238,14 @@ abstract class BaseActivity : AppCompatActivity() {
         if (requestCode == AUDIO_RECORDING_REQUEST_CODE && grantResults.isNotEmpty()) {
             var messageRes: Int = R.string.permission_denied
 
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 messageRes = R.string.permission_granted
-            else if (grantResults[0] == PackageManager.PERMISSION_DENIED)
-            // Permission denial may occur for different reasons.
-            // For more information, see
-            // https://developer.android.com/training/permissions/requesting#handle-denial
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                // Permission denial may occur for different reasons.
+                // For more information, see
+                // https://developer.android.com/training/permissions/requesting#handle-denial
                 messageRes = R.string.permission_denied
+            }
 
             showToast(this, messageRes)
         }
@@ -262,27 +266,40 @@ abstract class BaseActivity : AppCompatActivity() {
 
     open fun handleSpeechError(code: Int, data: String?) {
         val resId: Int = when (code) {
-            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> R.string.insufficient_speech_permissions_error
-            SpeechRecognizer.ERROR_AUDIO -> R.string.speech_audio_error
-            SpeechRecognizer.ERROR_CLIENT -> R.string.speech_client_error
-            SpeechRecognizer.ERROR_NETWORK -> R.string.speech_network_error
-            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> R.string.speech_network_timeout_error
-            SpeechRecognizer.ERROR_NO_MATCH -> R.string.no_speech_match_error
-            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> R.string.speech_recognition_service_busy_error
-            SpeechRecognizer.ERROR_SERVER -> R.string.speech_server_error
-            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> R.string.speech_timeout_error
-            Constants.NON_NUMERIC_SPEECH_INPUT_ERROR -> R.string.non_numeric_speech_input_error
-            Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR -> R.string.negative_number_speech_input_error
-            else -> R.string.unknown_speech_error
+            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ->
+                R.string.insufficient_speech_permissions_error
+            SpeechRecognizer.ERROR_AUDIO ->
+                R.string.speech_audio_error
+            SpeechRecognizer.ERROR_CLIENT ->
+                R.string.speech_client_error
+            SpeechRecognizer.ERROR_NETWORK ->
+                R.string.speech_network_error
+            SpeechRecognizer.ERROR_NETWORK_TIMEOUT ->
+                R.string.speech_network_timeout_error
+            SpeechRecognizer.ERROR_NO_MATCH ->
+                R.string.no_speech_match_error
+            SpeechRecognizer.ERROR_RECOGNIZER_BUSY ->
+                R.string.speech_recognition_service_busy_error
+            SpeechRecognizer.ERROR_SERVER ->
+                R.string.speech_server_error
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT ->
+                R.string.speech_timeout_error
+            Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ->
+                R.string.non_numeric_speech_input_error
+            Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR ->
+                R.string.negative_number_speech_input_error
+            else ->
+                R.string.unknown_speech_error
         }
 
         val message =
             if (code == Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ||
                 code == Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR
-            )
+            ) {
                 getString(resId, data ?: "")
-            else
+            } else {
                 getString(resId)
+            }
 
         Timber.d("Speech status error: code = %d, message = %s", code, message)
         showErrorMessage(binding.root, message)
@@ -294,9 +311,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun setTitle(transactionType: TransactionType) {
         when (transactionType) {
-            TransactionType.CORRECTION -> setTitle(R.string.correction)
-            TransactionType.DISTRIBUTION -> setTitle(R.string.distribution)
-            TransactionType.DISCARD -> setTitle(R.string.discard)
+            TransactionType.CORRECTION ->
+                setTitle(R.string.correction)
+            TransactionType.DISTRIBUTION ->
+                setTitle(R.string.distribution)
+            TransactionType.DISCARD ->
+                setTitle(R.string.discard)
         }
     }
 

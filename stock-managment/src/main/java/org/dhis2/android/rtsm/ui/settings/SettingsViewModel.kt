@@ -54,7 +54,9 @@ class SettingsViewModel @Inject constructor(
                         { _logoutStatus.postValue(OperationState.Success<Boolean>(true)) },
                         { error ->
                             error.printStackTrace()
-                            _logoutStatus.postValue(OperationState.Error(R.string.logout_error_message))
+                            _logoutStatus.postValue(
+                                OperationState.Error(R.string.logout_error_message)
+                            )
                         }
                     )
             )
