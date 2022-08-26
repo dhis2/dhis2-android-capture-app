@@ -27,7 +27,6 @@ import org.dhis2.utils.analytics.matomo.Actions.Companion.QR_SCANNER
 import org.dhis2.utils.analytics.matomo.Actions.Companion.SETTINGS
 import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
 import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
