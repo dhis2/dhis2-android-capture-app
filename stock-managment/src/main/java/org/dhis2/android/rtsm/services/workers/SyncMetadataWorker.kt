@@ -47,8 +47,16 @@ class SyncMetadataWorker @AssistedInject constructor(
 
         triggerNotification(
             R.string.app_name,
-            if (metadataSynced) R.string.metadata_sync_completed else R.string.metadata_sync_error,
-            if (metadataSynced) R.drawable.ic_end_sync_notification else R.drawable.ic_sync_canceled_notification
+            if (metadataSynced) {
+                R.string.metadata_sync_completed
+            } else {
+                R.string.metadata_sync_error
+            },
+            if (metadataSynced) {
+                R.drawable.ic_end_sync_notification
+            } else {
+                R.drawable.ic_sync_canceled_notification
+            }
         )
 
         val syncDate = LocalDateTime.now().format(DateUtils.getDateTimePattern())

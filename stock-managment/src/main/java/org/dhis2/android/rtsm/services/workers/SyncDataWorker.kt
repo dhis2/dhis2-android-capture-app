@@ -53,8 +53,16 @@ class SyncDataWorker @AssistedInject constructor(
 
         triggerNotification(
             R.string.app_name,
-            if (teiSynced) R.string.sync_completed else R.string.data_sync_error,
-            if (teiSynced) R.drawable.ic_end_sync_notification else R.drawable.ic_sync_canceled_notification
+            if (teiSynced) {
+                R.string.sync_completed
+            } else {
+                R.string.data_sync_error
+            },
+            if (teiSynced) {
+                R.drawable.ic_end_sync_notification
+            } else {
+                R.drawable.ic_sync_canceled_notification
+            }
         )
 
         val syncDate = LocalDateTime.now().format(DateUtils.getDateTimePattern())
@@ -63,7 +71,9 @@ class SyncDataWorker @AssistedInject constructor(
 
         val syncStatus: SyncResult = if (teiSynced) {
             syncManager.checkSyncStatus()
-        } else { SyncResult.ERRORED }
+        } else {
+            SyncResult.ERRORED
+        }
 
         preferenceProvider.setValue(Constants.LAST_DATA_SYNC_RESULT, syncStatus.name)
 

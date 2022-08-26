@@ -10,7 +10,12 @@ import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.data.models.*
+import org.dhis2.android.rtsm.data.models.IdentifiableModel
+import org.dhis2.android.rtsm.data.models.SearchParametersModel
+import org.dhis2.android.rtsm.data.models.SearchResult
+import org.dhis2.android.rtsm.data.models.StockEntry
+import org.dhis2.android.rtsm.data.models.StockItem
+import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.utils.AttributeHelper
@@ -42,12 +47,13 @@ class StockManagerImpl @Inject constructor(
     ): SearchResult {
         var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
-        if (!ou.isNullOrEmpty())
+        if (!ou.isNullOrEmpty()) {
             teiRepository.byOrgUnits()
                 .eq(ou)
                 .byOrgUnitMode()
                 .eq(OrganisationUnitMode.SELECTED)
                 .also { teiRepository = it }
+        }
 
         teiRepository.byProgram()
             .eq(config.program)

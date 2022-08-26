@@ -93,7 +93,9 @@ class HomeViewModel @Inject constructor(
                     { _destinations.postValue(OperationState.Success<List<Option>>(it)) },
                     {
                         it.printStackTrace()
-                        _destinations.postValue(OperationState.Error(R.string.destinations_load_error))
+                        _destinations.postValue(
+                            OperationState.Error(R.string.destinations_load_error)
+                        )
                     }
                 )
         )
@@ -155,44 +157,49 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setDestination(destination: Option?) {
-        if (isDistribution.value == false)
+        if (isDistribution.value == false) {
             throw UnsupportedOperationException(
                 "Cannot set 'distributed to' for non-distribution transactions"
             )
+        }
 
         _destination.value = destination
     }
 
     fun checkForFieldErrors(): Int? {
-        return if (_transactionType.value == null)
+        return if (_transactionType.value == null) {
             R.string.mandatory_transaction_selection
-        else if (_facility.value == null)
+        } else if (_facility.value == null) {
             R.string.mandatory_facility_selection
-        else if (_transactionDate.value == null)
+        } else if (_transactionDate.value == null) {
             R.string.mandatory_transaction_date_selection
-        else if (_transactionType.value == TransactionType.DISTRIBUTION &&
+        } else if (_transactionType.value == TransactionType.DISTRIBUTION &&
             _destination.value == null
-        )
+        ) {
             R.string.mandatory_distributed_to_selection
-        else
+        } else {
             null
+        }
     }
 
     fun getData(): Transaction {
-        if (transactionType.value == null)
+        if (transactionType.value == null) {
             throw UserIntentParcelCreationException(
                 "Unable to create parcel with empty transaction type"
             )
+        }
 
-        if (facility.value == null)
+        if (facility.value == null) {
             throw UserIntentParcelCreationException(
                 "Unable to create parcel with empty facility"
             )
+        }
 
-        if (transactionDate.value == null)
+        if (transactionDate.value == null) {
             throw UserIntentParcelCreationException(
                 "Unable to create parcel with empty transaction date"
             )
+        }
 
         return Transaction(
             transactionType.value!!,

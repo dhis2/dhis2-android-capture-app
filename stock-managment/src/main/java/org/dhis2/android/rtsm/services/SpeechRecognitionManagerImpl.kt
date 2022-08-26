@@ -96,8 +96,9 @@ class SpeechRecognitionManagerImpl(
 
     override fun onError(errorCode: Int) {
         // handle buggy situation where onError(5) is always called before onReadyForSpeech()
-        if (!readyForSpeech && errorCode == SpeechRecognizer.ERROR_CLIENT)
+        if (!readyForSpeech && errorCode == SpeechRecognizer.ERROR_CLIENT) {
             return
+        }
 
         _speechRecognitionStatus.postValue(SpeechRecognitionState.Errored(errorCode))
     }
@@ -122,16 +123,24 @@ class SpeechRecognitionManagerImpl(
         val cleanInputStr = Utils.cleanUpSignedNumber(inputStr)
         return when {
             isCorrection -> {
-                if (Utils.isSignedNumeric(cleanInputStr))
+                if (Utils.isSignedNumeric(cleanInputStr)) {
                     SpeechRecognitionState.Completed(cleanInputStr)
-                else
-                    SpeechRecognitionState.Errored(Constants.NON_NUMERIC_SPEECH_INPUT_ERROR, cleanInputStr)
+                } else {
+                    SpeechRecognitionState.Errored(
+                        Constants.NON_NUMERIC_SPEECH_INPUT_ERROR,
+                        cleanInputStr
+                    )
+                }
             }
             else -> {
-                if (TextUtils.isDigitsOnly(cleanInputStr))
+                if (TextUtils.isDigitsOnly(cleanInputStr)) {
                     SpeechRecognitionState.Completed(cleanInputStr)
-                else
-                    SpeechRecognitionState.Errored(Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR, cleanInputStr)
+                } else {
+                    SpeechRecognitionState.Errored(
+                        Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR,
+                        cleanInputStr
+                    )
+                }
             }
         }
     }

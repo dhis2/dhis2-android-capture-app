@@ -86,7 +86,12 @@ fun printRuleEffects(
         when (ruleEffect.ruleAction()) {
             is RuleActionAssign -> {
                 val ruleAction = ruleEffect.ruleAction() as RuleActionAssign
-                printRuleEngineData(buffer, "field = ${ruleAction.field()}, data = ${ruleEffect.data()}, rule = ${ruleAction.data()}")
+                printRuleEngineData(
+                    buffer,
+                    "field = ${ruleAction.field()}, " +
+                        "data = ${ruleEffect.data()}, " +
+                        "rule = ${ruleAction.data()}"
+                )
             }
         }
     }
@@ -94,7 +99,10 @@ fun printRuleEffects(
     dataValues?.let { printSeparator(buffer) }
     dataValues?.let { printRuleEngineData(buffer, "   Rule Data values:") }
     dataValues?.forEach {
-        printRuleEngineData(buffer, "      DE = ${it.dataElement()}, value = ${it.value()}, eventDate= ${it.eventDate()}")
+        printRuleEngineData(
+            buffer,
+            "      DE = ${it.dataElement()}, value = ${it.value()}, eventDate= ${it.eventDate()}"
+        )
     }
     printSeparator(buffer)
     Timber.d(buffer.toString())

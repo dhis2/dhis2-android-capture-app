@@ -16,7 +16,11 @@ import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_TRANSACTION
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
-import org.dhis2.android.rtsm.data.*
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.data.OperationState
+import org.dhis2.android.rtsm.data.ReviewStockData
+import org.dhis2.android.rtsm.data.RowAction
+import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.StockItem
@@ -74,15 +78,17 @@ class ManageStockViewModel @Inject constructor(
     init {
         if (transaction.transactionType != TransactionType.DISTRIBUTION &&
             transaction.distributedTo != null
-        )
+        ) {
             throw UnsupportedOperationException(
                 "Cannot set 'distributedTo' for non-distribution transactions"
             )
+        }
 
         if (transaction.transactionType == TransactionType.DISTRIBUTION &&
             transaction.distributedTo == null
-        )
+        ) {
             throw UnsupportedOperationException("'distributedTo' is mandatory for model creation")
+        }
 
         speechRecognitionManager.supportNegativeNumberInput(
             transaction.transactionType == TransactionType.CORRECTION

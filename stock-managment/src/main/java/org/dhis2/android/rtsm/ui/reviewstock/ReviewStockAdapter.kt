@@ -40,7 +40,7 @@ class ReviewStockAdapter(
 
     companion object {
         // TODO: Find a way to use a type-aware DIFF_CALLBACK for different adapters for reusability
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<StockEntry> () {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<StockEntry>() {
             override fun areItemsTheSame(oldItem: StockEntry, newItem: StockEntry) =
                 oldItem.item.id == newItem.item.id
 
@@ -53,19 +53,26 @@ class ReviewStockAdapter(
         itemView: View,
         private val watcher: ItemWatcher<StockEntry, String, String>
     ) : RecyclerView.ViewHolder(itemView) {
-        private val tvItemName: TextView = itemView.findViewById(R.id.review_stock_item_name_text_view)
-        private val tvStockOnHand: TextView = itemView.findViewById(R.id.review_stock_on_hand_value_text_view)
-        private val tvItemQtyLayout: TextInputLayout = itemView.findViewById(R.id.review_item_qty_layout)
-        private val btnRemoveItem: ImageButton = itemView.findViewById(R.id.remove_stock_item_image_button)
+        private val tvItemName: TextView =
+            itemView.findViewById(R.id.review_stock_item_name_text_view)
+        private val tvStockOnHand: TextView =
+            itemView.findViewById(R.id.review_stock_on_hand_value_text_view)
+        private val tvItemQtyLayout: TextInputLayout =
+            itemView.findViewById(R.id.review_item_qty_layout)
+        private val btnRemoveItem: ImageButton =
+            itemView.findViewById(R.id.remove_stock_item_image_button)
 
         init {
             KeyboardUtils.configureInputTypeForTransaction(transaction, tvItemQtyLayout.editText)
 
             btnRemoveItem.setOnClickListener {
                 val messageResId = when (transaction.transactionType) {
-                    TransactionType.DISTRIBUTION -> R.string.remove_distribution_item_confirmation_message
-                    TransactionType.DISCARD -> R.string.remove_discard_item_confirmation_message
-                    TransactionType.CORRECTION -> R.string.remove_correction_item_confirmation_message
+                    TransactionType.DISTRIBUTION ->
+                        R.string.remove_distribution_item_confirmation_message
+                    TransactionType.DISCARD ->
+                        R.string.remove_discard_item_confirmation_message
+                    TransactionType.CORRECTION ->
+                        R.string.remove_correction_item_confirmation_message
                 }
 
                 ActivityManager.showDialog(
@@ -94,15 +101,17 @@ class ReviewStockAdapter(
                 error = resources.getString(R.string.invalid_quantity)
 
                 // Highlight the erroneous text for easy correction
-                if (!qty.isNullOrEmpty())
+                if (!qty.isNullOrEmpty()) {
                     tvItemQtyLayout.editText?.selectAll()
+                }
 
                 // Clear the erroneous field after some time to prepare for next entry,
                 // if input is via voice
-                if (voiceInputEnabled)
+                if (voiceInputEnabled) {
                     textInputDelegate.clearFieldAfterDelay(
                         tvItemQtyLayout.editText, Constants.CLEAR_FIELD_DELAY
                     )
+                }
             } else {
                 // set the cursor at the end
                 tvItemQtyLayout.editText?.setSelection(tvItemQtyLayout.editText!!.text.length)
@@ -113,7 +122,9 @@ class ReviewStockAdapter(
         private fun addTextListener() {
             tvItemQtyLayout.editText?.addTextChangedListener(object : TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if (adapterPosition == RecyclerView.NO_POSITION) return
+                    if (adapterPosition == RecyclerView.NO_POSITION) {
+                        return
+                    }
 
                     val qty = s?.toString()
                     getItem(adapterPosition)?.let {
@@ -121,7 +132,14 @@ class ReviewStockAdapter(
                     }
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun afterTextChanged(p0: Editable?) {}
             })
         }

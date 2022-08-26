@@ -34,12 +34,13 @@ class GenericListAdapter<T : BaseIdentifiableObject>(
             val results = FilterResults()
 
             val queryString = constraint?.toString()?.lowercase()?.trim()
-            val suggestions = if (queryString == null || queryString.isEmpty())
+            val suggestions = if (queryString == null || queryString.isEmpty()) {
                 options
-            else
+            } else {
                 options.filter {
                     it.displayName()?.lowercase()?.contains(queryString) ?: false
                 }
+            }
 
             results.values = suggestions
             results.count = suggestions.size

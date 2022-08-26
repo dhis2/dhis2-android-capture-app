@@ -172,10 +172,11 @@ class ReviewStockViewModel @Inject constructor(
     fun onSearchQueryChanged(query: String) = searchRelay.accept(query)
 
     private fun performSearch(q: String?): List<StockEntry> {
-        return if (q == null || q.isEmpty())
+        return if (q == null || q.isEmpty()) {
             data.items
-        else
+        } else {
             data.items.filter { it.item.name.contains(q, true) }
+        }
     }
 
     fun commitTransaction() {

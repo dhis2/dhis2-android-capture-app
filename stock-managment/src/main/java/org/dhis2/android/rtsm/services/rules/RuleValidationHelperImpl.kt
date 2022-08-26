@@ -2,17 +2,21 @@ package org.dhis2.android.rtsm.services.rules
 
 import io.reactivex.Flowable
 import io.reactivex.Single
+import java.util.Date
+import java.util.Objects
+import java.util.UUID
+import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
-import org.dhis2.android.rtsm.utils.RuleEngineHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils
+import org.dhis2.android.rtsm.utils.RuleEngineHelper
 import org.dhis2.android.rtsm.utils.printRuleEffects
 import org.dhis2.android.rtsm.utils.toRuleDataValue
-import org.dhis2.android.rtsm.utils.toRuleVariableList
 import org.dhis2.android.rtsm.utils.toRuleList
+import org.dhis2.android.rtsm.utils.toRuleVariableList
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -26,13 +30,9 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
 import timber.log.Timber
-import java.util.Date
-import java.util.Objects
-import java.util.UUID
-import javax.inject.Inject
 
 class RuleValidationHelperImpl @Inject constructor(
-    private val d2: D2,
+    private val d2: D2
 ) : RuleValidationHelper {
 
     override fun evaluate(
@@ -193,8 +193,9 @@ class RuleValidationHelperImpl @Inject constructor(
             }
         }
 
-        if (mostRecentEnrollment == null && enrollments.isNotEmpty())
+        if (mostRecentEnrollment == null && enrollments.isNotEmpty()) {
             mostRecentEnrollment = enrollments[0]
+        }
 
         Timber.d("Enrollment: %s", mostRecentEnrollment)
 
@@ -285,15 +286,15 @@ class RuleValidationHelperImpl @Inject constructor(
                         .uid(distributedTo.uid)
                         .blockingGet()
                         .code()?.let { code ->
-                            values.add(
-                                RuleDataValue.create(
-                                    eventDate,
-                                    programStage,
-                                    appConfig.distributedTo,
-                                    code
-                                )
+                        values.add(
+                            RuleDataValue.create(
+                                eventDate,
+                                programStage,
+                                appConfig.distributedTo,
+                                code
                             )
-                        }
+                        )
+                    }
                 }
             }
         }
