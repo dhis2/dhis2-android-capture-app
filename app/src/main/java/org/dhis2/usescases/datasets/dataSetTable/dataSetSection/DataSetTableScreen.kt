@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -83,22 +85,14 @@ fun DataSetTableScreen(
                 } ?: run {
                     focusManager.clearFocus(true)
                     tableSelection = TableSelection.Unselected()
-                    coroutineScope.launch {
-                        if (bottomSheetState.bottomSheetState.isExpanded) {
-                            bottomSheetState.bottomSheetState.collapse()
-                            onEdition(false)
-                        }
-                    }
+                    finishEdition(coroutineScope, bottomSheetState, onEdition)
                 }
             }
             nextSelected = false
         }
 
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-            coroutineScope.launch {
-                bottomSheetState.bottomSheetState.collapse()
-                onEdition(false)
-            }
+            finishEdition(coroutineScope, bottomSheetState, onEdition)
         }
         BottomSheetScaffold(
             scaffoldState = bottomSheetState,
@@ -146,18 +140,8 @@ fun DataSetTableScreen(
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
                     currentInputType = inputModel.copy(currentValue = currentCell?.value)
-                    coroutineScope.launch {
-                        if (bottomSheetState.bottomSheetState.isCollapsed) {
-                            bottomSheetState.bottomSheetState.expand()
-                            onEdition(true)
-                        }
-                    }
-                } ?: coroutineScope.launch {
-                    if (bottomSheetState.bottomSheetState.isExpanded) {
-                        bottomSheetState.bottomSheetState.collapse()
-                        onEdition(false)
-                    }
-                }
+                    startEdition(coroutineScope, bottomSheetState, onEdition)
+                } ?: finishEdition(coroutineScope, bottomSheetState, onEdition)
             }
             if (displayDescription != null) {
                 TableDialog(
@@ -170,6 +154,34 @@ fun DataSetTableScreen(
                     }
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private fun finishEdition(
+    coroutineScope: CoroutineScope,
+    bottomSheetState: BottomSheetScaffoldState,
+    onEdition: (editing: Boolean) -> Unit
+) {
+    coroutineScope.launch {
+        if (bottomSheetState.bottomSheetState.isExpanded) {
+            bottomSheetState.bottomSheetState.collapse()
+            onEdition(false)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private fun startEdition(
+    coroutineScope: CoroutineScope,
+    bottomSheetState: BottomSheetScaffoldState,
+    onEdition: (editing: Boolean) -> Unit
+) {
+    coroutineScope.launch {
+        if (bottomSheetState.bottomSheetState.isCollapsed) {
+            bottomSheetState.bottomSheetState.expand()
+            onEdition(true)
         }
     }
 }

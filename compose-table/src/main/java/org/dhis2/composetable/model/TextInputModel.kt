@@ -1,5 +1,6 @@
 package org.dhis2.composetable.model
 
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 
 data class TextInputModel(
@@ -49,4 +50,9 @@ fun KeyboardInputType.toKeyboardType(): KeyboardType = when (this) {
     is KeyboardInputType.TextInput -> KeyboardType.Text
     is KeyboardInputType.PhoneInput -> KeyboardType.Phone
     is KeyboardInputType.URLInput -> KeyboardType.Uri
+}
+
+fun KeyboardInputType.keyboardCapitalization() = when {
+    forceCapitalize -> KeyboardCapitalization.Characters
+    else -> KeyboardCapitalization.None
 }

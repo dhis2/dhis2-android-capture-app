@@ -39,7 +39,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.keyboardCapitalization
 import org.dhis2.composetable.model.toKeyboardType
 
 @Composable
@@ -105,6 +105,12 @@ private fun TextInputContent(
     }
     var hasFocus by remember { mutableStateOf(false) }
 
+    val dividerColor = when {
+        textInputModel.error != null -> LocalTableColors.current.errorColor
+        hasFocus -> LocalTableColors.current.primary
+        else -> LocalTableColors.current.disabledCellText
+    }
+
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -132,11 +138,7 @@ private fun TextInputContent(
                         textAlign = TextAlign.Start
                     ),
                     keyboardOptions = KeyboardOptions(
-                        capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
-                            KeyboardCapitalization.Characters
-                        } else {
-                            KeyboardCapitalization.None
-                        },
+                        capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
                         imeAction = ImeAction.Next,
                         keyboardType = textInputModel.keyboardInputType.toKeyboardType()
                     ),
@@ -149,11 +151,7 @@ private fun TextInputContent(
                 )
                 Spacer(modifier = Modifier.size(3.dp))
                 Divider(
-                    color = when {
-                        textInputModel.error != null -> LocalTableColors.current.errorColor
-                        hasFocus -> LocalTableColors.current.primary
-                        else -> LocalTableColors.current.disabledCellText
-                    },
+                    color = dividerColor,
                     thickness = 1.dp
                 )
             }
@@ -241,23 +239,6 @@ fun displayName(
 @Preview
 @Composable
 fun DefaultTextInputStatusPreview() {
-    val previewTextInput = TextInputModel(
-        id = "",
-        mainLabel = "Row",
-        secondaryLabels = listOf("header 1", "header 2"),
-        currentValue = "Test"
-    )
-    TextInput(
-        textInputModel = previewTextInput,
-        onTextChanged = {},
-        onSave = {},
-        onNextSelected = {}
-    )
-}
-
-@Preview
-@Composable
-fun ActiveEditionTextInputStatusPreview() {
     val previewTextInput = TextInputModel(
         id = "",
         mainLabel = "Row",
