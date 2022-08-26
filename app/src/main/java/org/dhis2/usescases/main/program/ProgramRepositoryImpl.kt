@@ -129,6 +129,8 @@ internal class ProgramRepositoryImpl(
         return map { programModel ->
             programModel.copy(
                 downloadState = when {
+                    syncStatusData.hasDownloadError(programModel.uid) ->
+                        ProgramDownloadState.ERROR
                     syncStatusData.isProgramDownloading(programModel.uid) ->
                         ProgramDownloadState.DOWNLOADING
                     syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
@@ -140,7 +142,8 @@ internal class ProgramRepositoryImpl(
                         }
                     else ->
                         ProgramDownloadState.NONE
-                }
+                },
+                downloadActive = syncStatusData.isDownloading()
             )
         }
     }
