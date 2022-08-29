@@ -1,4 +1,4 @@
-package org.dhis2.utils.analytics.matomo
+package org.dhis2.commons.matomo
 
 class Actions {
     companion object {
@@ -15,5 +15,7 @@ class Actions {
         const val BLOCK_SESSION_PIN = "block_session_pin"
         const val QR_SCANNER = "qr_scanner"
         const val MAP_VISUALIZATION = "map_visualization"
+        const val VISUALIZATION_CHANGE = "visualization_change"
+        const val ANALYTICS_FILTERS = "analytics_filters"
     }
 }

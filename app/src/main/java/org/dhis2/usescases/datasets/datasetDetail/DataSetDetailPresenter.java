@@ -1,8 +1,8 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import static org.dhis2.utils.analytics.matomo.Actions.OPEN_ANALYTICS;
-import static org.dhis2.utils.analytics.matomo.Categories.DATASET_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Categories.DATASET_LIST;
+import static org.dhis2.commons.matomo.Labels.CLICK;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -11,7 +11,7 @@ import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;

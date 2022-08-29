@@ -1,4 +1,4 @@
-package org.dhis2.utils.analytics.matomo
+package org.dhis2.commons.matomo
 
 class Categories {
     companion object {

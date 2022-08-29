@@ -39,7 +39,7 @@ import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl

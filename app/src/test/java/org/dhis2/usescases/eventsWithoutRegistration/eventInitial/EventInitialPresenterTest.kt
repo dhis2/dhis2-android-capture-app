@@ -16,7 +16,7 @@ import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event

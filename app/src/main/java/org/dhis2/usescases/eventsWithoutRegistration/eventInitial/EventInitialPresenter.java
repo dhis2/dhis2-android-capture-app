@@ -1,9 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
-import static org.dhis2.utils.analytics.matomo.Actions.CREATE_EVENT;
-import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+import static org.dhis2.commons.matomo.Actions.CREATE_EVENT;
+import static org.dhis2.commons.matomo.Categories.EVENT_LIST;
+import static org.dhis2.commons.matomo.Labels.CLICK;
 
 import android.util.ArrayMap;
 
@@ -21,7 +21,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapp
 import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.program.Program;

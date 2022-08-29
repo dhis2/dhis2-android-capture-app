@@ -24,7 +24,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.junit.Before

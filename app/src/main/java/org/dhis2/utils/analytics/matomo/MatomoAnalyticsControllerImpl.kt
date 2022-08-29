@@ -1,5 +1,6 @@
 package org.dhis2.utils.analytics.matomo
 
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker

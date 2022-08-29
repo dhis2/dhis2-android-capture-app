@@ -11,7 +11,7 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 
 @Module

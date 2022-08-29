@@ -9,7 +9,7 @@ import org.dhis2.utils.AuthorityException;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -25,8 +25,8 @@ import timber.log.Timber;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
-import static org.dhis2.utils.analytics.matomo.Actions.OPEN_ANALYTICS;
-import static org.dhis2.utils.analytics.matomo.Categories.DASHBOARD;
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Categories.DASHBOARD;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 

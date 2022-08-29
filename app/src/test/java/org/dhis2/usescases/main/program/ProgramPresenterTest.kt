@@ -17,7 +17,7 @@ import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.ThemeManager
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.State
 import org.junit.Assert.assertTrue
 import org.junit.Before

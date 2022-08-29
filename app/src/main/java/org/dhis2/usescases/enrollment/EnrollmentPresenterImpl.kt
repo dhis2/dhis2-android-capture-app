@@ -12,10 +12,10 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.form.model.RowAction
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
-import org.dhis2.utils.analytics.matomo.Actions.Companion.CREATE_TEI
-import org.dhis2.utils.analytics.matomo.Categories.Companion.TRACKER_LIST
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
+import org.dhis2.commons.matomo.Categories.Companion.TRACKER_LIST
+import org.dhis2.commons.matomo.Labels.Companion.CLICK
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType

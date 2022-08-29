@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 
 class DataSetListViewModelFactory(
     val dataSetDetailRepository: DataSetDetailRepository,

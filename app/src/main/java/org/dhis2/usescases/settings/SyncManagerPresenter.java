@@ -18,7 +18,7 @@ import org.dhis2.usescases.settings.models.SettingsViewModel;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -38,9 +38,9 @@ import static org.dhis2.commons.Constants.META_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_CONFIG;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATA;
-import static org.dhis2.utils.analytics.matomo.Categories.SETTINGS;
+import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
+import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
+import static org.dhis2.commons.matomo.Categories.SETTINGS;
 
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {

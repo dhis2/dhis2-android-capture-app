@@ -12,7 +12,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailPresenter
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailView
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstance
