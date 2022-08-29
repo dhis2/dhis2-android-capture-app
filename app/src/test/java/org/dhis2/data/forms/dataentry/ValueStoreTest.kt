@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -25,6 +26,7 @@ class ValueStoreTest {
     private lateinit var dvValueStore: ValueStore
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val crashReportController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
     private val searchTEIRepository: SearchTEIRepository = mock()
@@ -38,7 +40,7 @@ class ValueStoreTest {
                 DataEntryStore.EntryMode.ATTR,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils, searchTEIRepository, fieldErrorMessageProvider
             )
         deValueStore =
             ValueStoreImpl(
@@ -47,7 +49,7 @@ class ValueStoreTest {
                 DataEntryStore.EntryMode.DE,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils, searchTEIRepository, fieldErrorMessageProvider
             )
         dvValueStore =
             ValueStoreImpl(
@@ -56,7 +58,7 @@ class ValueStoreTest {
                 DataEntryStore.EntryMode.DV,
                 dhisEnrollmentUtils,
                 crashReportController,
-                networkUtils, searchTEIRepository
+                networkUtils, searchTEIRepository, fieldErrorMessageProvider
             )
     }
 
@@ -207,11 +209,11 @@ class ValueStoreTest {
     @Test
     fun `Should not delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
-                .name("optionName")
-                .uid("optionUid")
-                .code("optionCode")
-                .build()
+                Option.builder()
+                    .name("optionName")
+                    .uid("optionUid")
+                    .code("optionCode")
+                    .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                 "recordUid",
@@ -239,10 +241,10 @@ class ValueStoreTest {
             d2.dataElementModule().dataElements()
                 .uid("fieldUid").blockingGet()
         ) doReturn
-            DataElement.builder()
-                .uid("fieldUid")
-                .valueType(ValueType.TEXT)
-                .build()
+                DataElement.builder()
+                    .uid("fieldUid")
+                    .valueType(ValueType.TEXT)
+                    .build()
         val storeResult = deValueStore.deleteOptionValueIfSelected(
             "fieldUid",
             "optionUid"
@@ -253,11 +255,11 @@ class ValueStoreTest {
     @Test
     fun `Should delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
-                .name("optionName")
-                .uid("optionUid")
-                .code("optionCode")
-                .build()
+                Option.builder()
+                    .name("optionName")
+                    .uid("optionUid")
+                    .code("optionCode")
+                    .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
