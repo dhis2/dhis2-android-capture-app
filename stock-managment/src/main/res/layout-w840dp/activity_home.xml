@@ -247,42 +247,6 @@
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/recent_activity_label"
-                android:text="@string/recent_activity"
-                style="@style/TextLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/recent_activity_top_margin"
-                app:layout_constraintTop_toBottomOf="@id/choices_container"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recent_activity_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/recent_activity_list_top_margin"
-                android:visibility="invisible"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recent_activity_label"
-                tools:itemCount="8"
-                tools:listitem="@layout/list_item_recent_activity" />
-
-            <TextView
-                android:id="@+id/recent_activity_message_textview"
-                style="?attr/textAppearanceCaption"
-                android:textAlignment="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_16"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recent_activity_label"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:drawableTop="@drawable/ic_empty_list"
-                tools:text="@string/recent_activities_loading_message" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Floating Button -->
