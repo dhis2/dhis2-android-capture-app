@@ -38,7 +38,6 @@ class ReviewStockViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val stockManager: StockManager,
-    private val userActivityRepository: UserActivityRepository,
     private val ruleValidationHelper: RuleValidationHelper,
     speechRecognitionManager: SpeechRecognitionManager
 ) : SpeechRecognitionAwareViewModel(
@@ -190,7 +189,6 @@ class ReviewStockViewModel @Inject constructor(
                 .subscribe(
                     {
                         _commitStatus.postValue(true)
-                        logAudit(transaction)
                     },
                     {
                         // TODO: Report error to observer
@@ -200,19 +198,6 @@ class ReviewStockViewModel @Inject constructor(
         )
     }
 
-    private fun logAudit(transaction: Transaction) {
-        disposable.add(
-            userActivityRepository.addActivity(
-                UserActivity(
-                    transaction.transactionType,
-                    LocalDateTime.now(),
-                    transaction.distributedTo?.displayName
-                )
-            ).subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe()
-        )
-    }
 
     /**
      * Stock entries can be committed if there are items in the list,
