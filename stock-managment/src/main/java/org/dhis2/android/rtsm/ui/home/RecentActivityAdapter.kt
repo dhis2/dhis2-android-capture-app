@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.data.persistence.UserActivity
 import org.dhis2.android.rtsm.databinding.ListItemRecentActivityBinding
 import org.dhis2.android.rtsm.utils.DateUtils
 
