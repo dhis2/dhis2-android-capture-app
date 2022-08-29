@@ -55,7 +55,6 @@ public class HomeActivity extends BaseActivity {
     private RecyclerView recentActivitiesRecyclerView;
 
     private HomeViewModel viewModel;
-    private RecentActivityAdapter recentActivityAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
