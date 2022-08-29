@@ -147,9 +147,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             if (adapter == null) return true;
-            if(item.getItemId() == R.id.navigation_analytics){
-                presenter.trackDashboardAnalytics();
+            switch (item.getItemId()){
+                case R.id.navigation_analytics:
+                    presenter.trackDashboardAnalytics();
+                    break;
+                case R.id.navigation_relationships:
+                    presenter.trackDashboardRelationships();
+                    break;
+                case R.id.navigation_notes:
+                    presenter.trackDashboardNotes();
+                    break;
             }
+
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
                 if (OrientationUtilsKt.isLandscape(this)) {

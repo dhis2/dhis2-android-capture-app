@@ -12,6 +12,8 @@ class Actions {
         const val CREATE_EVENT = "create_event_next"
         const val SETTINGS = "settings_nav_drawer"
         const val OPEN_ANALYTICS = "analytics"
+        const val OPEN_RELATIONSHIPS = "relationships"
+        const val OPEN_NOTES ="notes"
         const val BLOCK_SESSION_PIN = "block_session_pin"
         const val QR_SCANNER = "qr_scanner"
         const val MAP_VISUALIZATION = "map_visualization"

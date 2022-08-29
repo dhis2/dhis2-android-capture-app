@@ -78,5 +78,9 @@ public class TeiDashboardContracts {
         String getTEType();
 
         void trackDashboardAnalytics();
+
+        void trackDashboardRelationships();
+
+        void trackDashboardNotes();
     }
 }

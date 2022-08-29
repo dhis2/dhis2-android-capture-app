@@ -22,6 +22,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
+import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
+import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
@@ -137,6 +139,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void trackDashboardAnalytics() {
         matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_ANALYTICS, CLICK);
+    }
+
+    @Override
+    public void trackDashboardRelationships() {
+        matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_RELATIONSHIPS, CLICK);
+    }
+
+    @Override
+    public void trackDashboardNotes() {
+        matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_NOTES, CLICK);
     }
 
     @Override
