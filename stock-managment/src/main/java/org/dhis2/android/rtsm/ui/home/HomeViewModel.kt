@@ -71,15 +71,9 @@ class HomeViewModel @Inject constructor(
     val destinationsList: LiveData<OperationState<List<Option>>>
         get() = _destinations
 
-    private val _recentActivities: MutableLiveData<OperationState<List<UserActivity>>> =
-        MutableLiveData()
-    val recentActivities: LiveData<OperationState<List<UserActivity>>>
-        get() = _recentActivities
-
     init {
         loadFacilities()
         loadDestinations()
-        loadRecentActivities()
     }
 
     private fun loadDestinations() {
@@ -122,24 +116,6 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private fun loadRecentActivities() {
-        _recentActivities.postValue(OperationState.Loading)
-
-        disposable.add(
-            userActivityRepository.getRecentActivities(USER_ACTIVITY_COUNT)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { _recentActivities.postValue(OperationState.Success(it)) },
-                    {
-                        it.printStackTrace()
-                        _recentActivities.postValue(
-                            OperationState.Error(R.string.recent_activities_load_error)
-                        )
-                    }
-                )
-        )
-    }
 
     fun selectTransaction(type: TransactionType) {
         _transactionType.value = type
