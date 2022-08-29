@@ -89,11 +89,11 @@ fun TableHeader(
                                 headerCell = tableHeaderRow.cells[cellIndex],
                                 HeaderMeasures(
                                     LocalTableDimensions.current.headerCellWidth(
-                                    tableHeaderModel.numberOfColumns(rowIndex),
-                                    LocalConfiguration.current,
-                                    tableHeaderModel.tableMaxColumns(),
-                                    tableHeaderModel.hasTotals
-                                ),
+                                        tableHeaderModel.numberOfColumns(rowIndex),
+                                        LocalConfiguration.current,
+                                        tableHeaderModel.tableMaxColumns(),
+                                        tableHeaderModel.hasTotals
+                                    ),
                                     LocalTableDimensions.current.defaultHeaderHeight
                                 ),
                                 cellStyle = cellStyle(columnIndex, rowIndex),
@@ -112,10 +112,10 @@ fun TableHeader(
                 headerCell = TableHeaderCell("Total"),
                 HeaderMeasures(
                     LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                    LocalConfiguration.current,
-                    tableHeaderModel.tableMaxColumns(),
-                    tableHeaderModel.hasTotals
-                ),
+                        LocalConfiguration.current,
+                        tableHeaderModel.tableMaxColumns(),
+                        tableHeaderModel.hasTotals
+                    ),
                     LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size
                 ),
                 cellStyle = cellStyle(

@@ -171,7 +171,7 @@ class ValueStoreImpl(
                     crashController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                                "" + " value: $_value"
+                            "" + " value: $_value"
                     )
                 }
             } else {

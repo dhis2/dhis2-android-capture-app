@@ -109,7 +109,7 @@ class DataValuePresenter(
                             ) {
                                 if (saveResult == ERROR_UPDATING_VALUE) {
                                     errors[it.dataElement + "_" + it.categoryOptionCombo] =
-                                        storeResult.valueStoreResultMessage?:"-"
+                                        storeResult.valueStoreResultMessage ?: "-"
                                 } else {
                                     errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
                                 }
