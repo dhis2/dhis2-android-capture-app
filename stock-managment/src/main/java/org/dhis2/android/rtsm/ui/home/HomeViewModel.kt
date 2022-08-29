@@ -11,13 +11,10 @@ import java.time.ZoneId
 import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
-import org.dhis2.android.rtsm.commons.Constants.USER_ACTIVITY_COUNT
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.Transaction
-import org.dhis2.android.rtsm.data.persistence.UserActivity
-import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
@@ -35,7 +32,6 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
-    private val userActivityRepository: UserActivityRepository,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
