@@ -24,6 +24,9 @@ import org.dhis2.Bindings.clipWithRoundedCorners
 import org.dhis2.Bindings.dp
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
@@ -217,10 +220,22 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             program.accessDataWrite.toString()
         )
 
+        val appConfig = AppConfig(
+            "F5ijs28K4s8",
+            "wBr4wccNBj1",
+            "MBczRWvfM46",
+            "ypCQAFr1a5l",
+            "yfsEseIcEXr",
+            "lpGYJoVUudr",
+            "ej1YwWaYGmm",
+            "I7cmT3iXT0y"
+        )
+
         when (program.programType) {
             ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, SearchTEActivity::class.java).apply {
+                Intent(activity, HomeActivity::class.java).apply {
                     putExtras(bundle)
+                    putExtra(INTENT_EXTRA_APP_CONFIG, appConfig)
                     getActivityContent.launch(this)
                 }
             }

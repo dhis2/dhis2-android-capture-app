@@ -5,7 +5,7 @@ apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
 apply plugin: "kotlinx-serialization"
-apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: "dagger.hilt.android.plugin"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -56,6 +56,16 @@ android {
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "dagger.hilt.disableModulesHaveInstallInCheck": "true",
+                        "room.schemaLocation"                         : "$projectDir/schemas".toString(),
+                ]
+
+            }
+        }
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
@@ -255,6 +265,11 @@ dependencies {
 
     //region DEPENDENCY INJECTION
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
+    //Hilt dependency INJECTION
+    implementation "com.google.dagger:hilt-android:${libraries.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${libraries.hilt}"
+
 
     //region RXJAVA
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
