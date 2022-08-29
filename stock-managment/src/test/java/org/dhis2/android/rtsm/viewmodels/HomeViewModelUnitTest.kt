@@ -19,9 +19,6 @@ import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.data.persistence.UserActivity
-import org.dhis2.android.rtsm.data.persistence.UserActivityDao
-import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
 import org.dhis2.android.rtsm.services.UserManager
@@ -63,10 +60,7 @@ class HomeViewModelUnitTest {
     @Mock
     private lateinit var metadataManager: MetadataManager
 
-    @Mock
-    private lateinit var userActivityDao: UserActivityDao
 
-    private lateinit var userActivityRepository: UserActivityRepository
     private lateinit var viewModel: HomeViewModel
     private lateinit var userManager: UserManager
     private lateinit var schedulerProvider: BaseSchedulerProvider
@@ -75,7 +69,6 @@ class HomeViewModelUnitTest {
     private lateinit var testSchedulerProvider: TestSchedulerProvider
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
-    private lateinit var recentActivities: List<UserActivity>
     private lateinit var appConfig: AppConfig
 
     private val disposable = CompositeDisposable()
@@ -115,7 +108,6 @@ class HomeViewModelUnitTest {
 
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
-        recentActivities = emptyList()
 
         schedulerProvider = TrampolineSchedulerProvider()
         testSchedulerProvider = TestSchedulerProvider(TestScheduler())
@@ -127,17 +119,14 @@ class HomeViewModelUnitTest {
         `when`(metadataManager.destinations(appConfig.distributedTo))
             .thenReturn(Single.just(destinations))
 
-        `when`(userActivityDao.getRecentActivities(Constants.USER_ACTIVITY_COUNT))
-            .thenReturn(Single.just(recentActivities))
 
-        userActivityRepository = UserActivityRepository(userActivityDao)
+
         userManager = UserManagerImpl(d2)
         viewModel = HomeViewModel(
             disposable,
             schedulerProvider,
             preferenceProvider,
             metadataManager,
-            userActivityRepository,
             getStateHandle()
         )
 
