@@ -19,8 +19,6 @@ import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
-import org.dhis2.android.rtsm.data.persistence.UserActivity
-import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
