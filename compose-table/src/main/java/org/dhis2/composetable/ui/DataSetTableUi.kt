@@ -145,7 +145,7 @@ fun HeaderCell(
             .background(cellStyle.backgroundColor())
             .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
             .semantics {
-                tableIdColumnHeader = tableId!!
+                tableId?.let { tableIdColumnHeader = it }
                 columnIndexHeader = columnIndex
                 rowIndexHeader = rowIndex
                 columnBackground = cellStyle.backgroundColor()

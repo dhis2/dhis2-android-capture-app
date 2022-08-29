@@ -99,7 +99,8 @@ class DataValuePresenter(
 
                         dataSetTableModel?.let {
                             val result = valueStore.save(it)
-                            val saveResult = result.blockingFirst().valueStoreResult
+                            val storeResult = result.blockingFirst()
+                            val saveResult = storeResult.valueStoreResult
                             if ((
                                 saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
                                     saveResult == VALUE_HAS_NOT_CHANGED
@@ -108,7 +109,7 @@ class DataValuePresenter(
                             ) {
                                 if (saveResult == ERROR_UPDATING_VALUE) {
                                     errors[it.dataElement + "_" + it.categoryOptionCombo] =
-                                        "Value type error message"
+                                        storeResult.valueStoreResultMessage?:"-"
                                 } else {
                                     errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
                                 }

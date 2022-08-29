@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.form.data.FormValueStore;
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
@@ -109,7 +110,8 @@ public class TEIDataModule {
                 new DhisEnrollmentUtils(d2),
                 crashReportController,
                 networkUtils,
-                searchTEIRepository
+                searchTEIRepository,
+                new FieldErrorMessageProvider(view.getContext())
         );
     }
 }

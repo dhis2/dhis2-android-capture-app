@@ -12,6 +12,7 @@ import androidx.paging.PagedList;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.data.RelationshipDirection;
@@ -34,12 +35,12 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.model.StoreResult;
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.reporting.CrashReportController;
@@ -284,7 +285,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
-                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR, new DhisEnrollmentUtils(d2), crashReportController, networkUtils, searchTEIRepository);
+                        ValueStore valueStore = new ValueStoreImpl(d2,
+                                uid,
+                                DataEntryStore.EntryMode.ATTR,
+                                new DhisEnrollmentUtils(d2),
+                                crashReportController,
+                                networkUtils,
+                                searchTEIRepository,
+                                new FieldErrorMessageProvider(resources.getContext())
+                        );
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);
@@ -305,11 +314,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
         ).flatMap(uid ->
                 d2.enrollmentModule().enrollments().add(
-                        EnrollmentCreateProjection.builder()
-                                .trackedEntityInstance(uid)
-                                .program(programUid)
-                                .organisationUnit(orgUnit)
-                                .build())
+                                EnrollmentCreateProjection.builder()
+                                        .trackedEntityInstance(uid)
+                                        .program(programUid)
+                                        .organisationUnit(orgUnit)
+                                        .build())
                         .map(enrollmentUid -> {
                             boolean displayIncidentDate = d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate();
                             Date enrollmentDateNoTime = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, enrollmentDate, 0);
@@ -596,8 +605,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public boolean filtersApplyOnGlobalSearch() {
         return FilterManager.getInstance().getTotalFilters() == 0 ||
-        !FilterManager.getInstance().getOrgUnitFilters().isEmpty() ||
-        !FilterManager.getInstance().getStateFilters().isEmpty();
+                !FilterManager.getInstance().getOrgUnitFilters().isEmpty() ||
+                !FilterManager.getInstance().getStateFilters().isEmpty();
     }
 
     @Override

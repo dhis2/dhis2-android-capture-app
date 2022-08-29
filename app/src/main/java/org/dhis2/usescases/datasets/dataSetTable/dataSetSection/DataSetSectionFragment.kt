@@ -98,7 +98,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 arguments?.getString(ARG_ORG_UNIT)!!,
                 arguments?.getString(ARG_PERIOD_ID)!!,
                 arguments?.getString(ARG_ATTR_OPT_COMB)!!,
-                this
+                this,
+                activity
             )
         ).inject(this)
     }

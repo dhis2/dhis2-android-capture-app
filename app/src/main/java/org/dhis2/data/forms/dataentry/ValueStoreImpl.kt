@@ -11,6 +11,7 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.reporting.CrashReportController
@@ -31,7 +32,8 @@ class ValueStoreImpl(
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
-    private val searchTEIRepository: SearchTEIRepository
+    private val searchTEIRepository: SearchTEIRepository,
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
@@ -44,7 +46,8 @@ class ValueStoreImpl(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository
+        searchTEIRepository: SearchTEIRepository,
+        fieldErrorMessageProvider: FieldErrorMessageProvider
     ) : this(
         d2,
         recordUid,
@@ -52,7 +55,8 @@ class ValueStoreImpl(
         dhisEnrollmentUtils,
         crashReportController,
         networkUtils,
-        searchTEIRepository
+        searchTEIRepository,
+        fieldErrorMessageProvider
     ) {
         this.enrollmentRepository = enrollmentRepository
     }
@@ -90,17 +94,26 @@ class ValueStoreImpl(
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                when (validator?.validate(dataValue.value)) {
+                when (val validation = validator?.validate(dataValue.value)) {
                     is Result.Failure -> Flowable.just(
                         StoreResult(
-                            "",
-                            ValueStoreResult.ERROR_UPDATING_VALUE
+                            uid = "",
+                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                            valueStoreResultMessage = fieldErrorMessageProvider
+                                .getFriendlyErrorMessage(validation.failure)
                         )
                     )
                     is Result.Success ->
                         dataValueObject.set(dataValue.value)
                             .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
-                    else -> Flowable.just(StoreResult("", ValueStoreResult.ERROR_UPDATING_VALUE))
+                    else -> Flowable.just(
+                        StoreResult(
+                            uid = "",
+                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                            valueStoreResultMessage = fieldErrorMessageProvider
+                                .defaultValidationErrorMessage()
+                        )
+                    )
                 }
             }
         } else {
@@ -158,7 +171,7 @@ class ValueStoreImpl(
                     crashController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
-                            "" + " value: $_value"
+                                "" + " value: $_value"
                     )
                 }
             } else {
