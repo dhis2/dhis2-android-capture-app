@@ -60,7 +60,6 @@ class HomeViewModelUnitTest {
     @Mock
     private lateinit var metadataManager: MetadataManager
 
-
     private lateinit var viewModel: HomeViewModel
     private lateinit var userManager: UserManager
     private lateinit var schedulerProvider: BaseSchedulerProvider
@@ -118,8 +117,6 @@ class HomeViewModelUnitTest {
 
         `when`(metadataManager.destinations(appConfig.distributedTo))
             .thenReturn(Single.just(destinations))
-
-
 
         userManager = UserManagerImpl(d2)
         viewModel = HomeViewModel(

@@ -1,16 +1,9 @@
 package org.dhis2.commons.animations
 
-import android.animation.Animator
-import android.animation.ValueAnimator
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.view.animation.Transformation
-import androidx.core.animation.addListener
-import androidx.core.view.animation.PathInterpolatorCompat
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.decrement
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.increment
 
