@@ -7,9 +7,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import org.dhis2.android.rtsm.data.persistence.AppDatabase
-import org.dhis2.android.rtsm.data.persistence.UserActivityDao
-import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
