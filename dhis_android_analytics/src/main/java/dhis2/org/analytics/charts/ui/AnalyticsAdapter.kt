@@ -1,6 +1,5 @@
 package dhis2.org.analytics.charts.ui
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -38,7 +37,7 @@ class AnalyticsAdapter :
     var onRelativePeriodCallback: ((ChartModel, RelativePeriod?, RelativePeriod?) -> Unit)? = null
     var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
     var onResetFilterCallback: ((ChartModel, ChartFilter) -> Unit)? = null
-    var onChartTypeChanged: ()->Unit = {}
+    var onChartTypeChanged: () -> Unit = {}
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -53,11 +52,12 @@ class AnalyticsAdapter :
             AnalyticType.INDICATOR -> IndicatorViewHolder(
                 ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-            AnalyticType.CHART -> ChartViewHolder(
-                ItemChartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            ){
-                onChartTypeChanged.invoke()
-            }
+            AnalyticType.CHART ->
+                ChartViewHolder(
+                    ItemChartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ) {
+                    onChartTypeChanged.invoke()
+                }
             AnalyticType.SECTION_TITLE -> SectionTitleViewHolder(
                 ItemSectionTittleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )

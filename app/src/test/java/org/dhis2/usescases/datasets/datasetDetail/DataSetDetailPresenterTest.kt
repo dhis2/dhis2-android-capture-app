@@ -44,8 +44,8 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.junit.Before

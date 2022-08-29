@@ -4,9 +4,9 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
-import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber

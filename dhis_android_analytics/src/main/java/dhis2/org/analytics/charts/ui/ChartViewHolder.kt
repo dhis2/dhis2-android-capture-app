@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 
 class ChartViewHolder(
     val binding: ItemChartBinding,
-    val onChartTypeChanged: ()->Unit,
+    val onChartTypeChanged: () -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {

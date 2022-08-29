@@ -123,7 +123,6 @@ class GroupAnalyticsViewModel(
     }
 
     fun trackAnalyticsPeriodFilter(mode: AnalyticMode) {
-
         matomoAnalyticsController.trackEvent(
             analyticsCategory(mode),
             Actions.ANALYTICS_FILTERS,
