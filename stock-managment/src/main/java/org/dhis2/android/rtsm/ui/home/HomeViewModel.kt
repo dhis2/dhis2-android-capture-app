@@ -112,7 +112,6 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-
     fun selectTransaction(type: TransactionType) {
         _transactionType.value = type
         _isDistribution.value = type == TransactionType.DISTRIBUTION

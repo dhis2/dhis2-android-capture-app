@@ -7,7 +7,6 @@ import androidx.lifecycle.Transformations
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.time.LocalDateTime
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -18,7 +17,6 @@ import org.dhis2.android.rtsm.data.ReviewStockData
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
-import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
@@ -197,7 +195,6 @@ class ReviewStockViewModel @Inject constructor(
                 )
         )
     }
-
 
     /**
      * Stock entries can be committed if there are items in the list,
