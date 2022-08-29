@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import static org.dhis2.commons.matomo.Actions.GRANULAR_SYNC;
 import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Categories.DATASET_LIST;
 import static org.dhis2.commons.matomo.Labels.CLICK;
@@ -155,5 +156,9 @@ public class DataSetDetailPresenter {
 
     public void trackDataSetAnalytics() {
         matomoAnalyticsController.trackEvent(DATASET_LIST, OPEN_ANALYTICS, CLICK);
+    }
+
+    public void trackDataSetGranularSync() {
+        matomoAnalyticsController.trackEvent(DATASET_LIST,GRANULAR_SYNC, CLICK );
     }
 }

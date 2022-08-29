@@ -17,5 +17,6 @@ class Actions {
         const val MAP_VISUALIZATION = "map_visualization"
         const val VISUALIZATION_CHANGE = "visualization_change"
         const val ANALYTICS_FILTERS = "analytics_filters"
+        const val GRANULAR_SYNC = "granular_sync"
     }
 }

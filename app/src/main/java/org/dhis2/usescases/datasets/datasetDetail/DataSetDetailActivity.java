@@ -214,6 +214,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void showGranularSync() {
+        presenter.trackDataSetGranularSync();
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.DATA_SET)
                 .setUid(dataSetUid)
