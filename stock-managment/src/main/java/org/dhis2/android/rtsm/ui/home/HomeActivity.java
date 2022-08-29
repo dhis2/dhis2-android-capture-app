@@ -31,7 +31,6 @@ import org.dhis2.android.rtsm.R;
 import org.dhis2.android.rtsm.data.AppConfig;
 import org.dhis2.android.rtsm.data.OperationState;
 import org.dhis2.android.rtsm.data.TransactionType;
-import org.dhis2.android.rtsm.data.persistence.UserActivity;
 import org.dhis2.android.rtsm.databinding.ActivityHomeBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.GenericListAdapter;
