@@ -11,13 +11,10 @@ import java.time.ZoneId
 import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
-import org.dhis2.android.rtsm.commons.Constants.USER_ACTIVITY_COUNT
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.Transaction
-import org.dhis2.android.rtsm.data.persistence.UserActivity
-import org.dhis2.android.rtsm.data.persistence.UserActivityRepository
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
@@ -35,7 +32,6 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
-    private val userActivityRepository: UserActivityRepository,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
@@ -71,15 +67,9 @@ class HomeViewModel @Inject constructor(
     val destinationsList: LiveData<OperationState<List<Option>>>
         get() = _destinations
 
-    private val _recentActivities: MutableLiveData<OperationState<List<UserActivity>>> =
-        MutableLiveData()
-    val recentActivities: LiveData<OperationState<List<UserActivity>>>
-        get() = _recentActivities
-
     init {
         loadFacilities()
         loadDestinations()
-        loadRecentActivities()
     }
 
     private fun loadDestinations() {
@@ -122,24 +112,6 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private fun loadRecentActivities() {
-        _recentActivities.postValue(OperationState.Loading)
-
-        disposable.add(
-            userActivityRepository.getRecentActivities(USER_ACTIVITY_COUNT)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { _recentActivities.postValue(OperationState.Success(it)) },
-                    {
-                        it.printStackTrace()
-                        _recentActivities.postValue(
-                            OperationState.Error(R.string.recent_activities_load_error)
-                        )
-                    }
-                )
-        )
-    }
 
     fun selectTransaction(type: TransactionType) {
         _transactionType.value = type

@@ -32,9 +32,6 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += [
-                        "room.schemaLocation": "$projectDir/schemas".toString(),
-                        "room.incremental": "true",
-                        "room.expandProjection": "true",
                         "dagger.hilt.disableCrossCompilationRootValidation": "true"
                 ]
             }
@@ -111,11 +108,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$libraries.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$libraries.lifecycle"
 
-    // Room
-    implementation "androidx.room:room-runtime:$libraries.room"
-    kapt("androidx.room:room-compiler:$libraries.room")
-    kapt("androidx.room:room-ktx:$libraries.room")
-    implementation "androidx.room:room-rxjava2:$libraries.room"
 
     implementation "androidx.legacy:legacy-support-v4:$libraries.legacysupport"
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$libraries.desugar_jdk_libs"
@@ -171,9 +163,11 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
     androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
 
-    // For App Authentication API testing
-    androidTestImplementation "androidx.room:room-testing:$libraries.room"
 
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+}
+
+kapt {
+    correctErrorTypes true
 }

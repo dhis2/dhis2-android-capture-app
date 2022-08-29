@@ -31,7 +31,6 @@ import org.dhis2.android.rtsm.R;
 import org.dhis2.android.rtsm.data.AppConfig;
 import org.dhis2.android.rtsm.data.OperationState;
 import org.dhis2.android.rtsm.data.TransactionType;
-import org.dhis2.android.rtsm.data.persistence.UserActivity;
 import org.dhis2.android.rtsm.databinding.ActivityHomeBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.GenericListAdapter;
@@ -56,7 +55,6 @@ public class HomeActivity extends BaseActivity {
     private RecyclerView recentActivitiesRecyclerView;
 
     private HomeViewModel viewModel;
-    private RecentActivityAdapter recentActivityAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +68,6 @@ public class HomeActivity extends BaseActivity {
 
         facilityTextView = (AutoCompleteTextView) binding.selectedFacilityTextView.getEditText();
         distributedToTextView = (AutoCompleteTextView) binding.distributedToTextView.getEditText();
-        recentActivitiesRecyclerView = binding.recentActivityList;
 
         attachObservers();
         setupComponents();
@@ -146,7 +143,6 @@ public class HomeActivity extends BaseActivity {
                 )
         );
         setupTransactionDateField();
-        setupRecentActivities();
     }
 
     private void setupButtons() {
@@ -214,88 +210,6 @@ public class HomeActivity extends BaseActivity {
         });
     }
 
-    private void setupRecentActivities() {
-        recentActivityAdapter = new RecentActivityAdapter();
-        recentActivitiesRecyclerView.setAdapter(recentActivityAdapter);
-        viewModel.getRecentActivities().observe(this, operationState -> {
-            // Loading
-            if (operationState == OperationState.Loading.INSTANCE) {
-                showLoadingRecentActivities();
-                return;
-            }
-
-            // Error
-            if (operationState.getClass() == OperationState.Error.class) {
-                showRecentActivitiesError(operationState);
-                return;
-            }
-
-            // Success
-            if (operationState.getClass() == OperationState.Success.class) {
-                showRecentActivities(operationState);
-            }
-        });
-
-        recentActivitiesRecyclerView.addItemDecoration(
-                new RecentActivityItemDividerDecoration(
-                        getApplicationContext(), R.drawable.vertical_line_divider));
-    }
-
-    private void resetRecentActivitiesState() {
-        binding.recentActivityList.setVisibility(View.INVISIBLE);
-        binding.recentActivityMessageTextview.setCompoundDrawablesWithIntrinsicBounds(
-                null, null, null, null);
-        binding.recentActivityMessageTextview.setText("");
-        binding.recentActivityMessageTextview.setTextAppearance(R.style.ListNormal);
-    }
-
-    private void showRecentActivitiesError(OperationState<List<UserActivity>> operationState) {
-        resetRecentActivitiesState();
-
-        binding.recentActivityMessageTextview.setCompoundDrawablesWithIntrinsicBounds(
-                null,
-                AppCompatResources.getDrawable(this, R.drawable.ic_error),
-                null,
-                null
-        );
-
-        int errorRes = ((OperationState.Error) operationState).getErrorStringRes();
-        binding.recentActivityMessageTextview.setText(errorRes);
-        binding.recentActivityMessageTextview.setTextAppearance(R.style.ListError);
-    }
-
-    private void showRecentActivities(OperationState<List<UserActivity>> operationState) {
-        resetRecentActivitiesState();
-
-        List<UserActivity> activities =
-                ((OperationState.Success<List<UserActivity>>) operationState).getResult();
-
-        if (!activities.isEmpty()) {
-            binding.recentActivityList.setVisibility(View.VISIBLE);
-            recentActivityAdapter.submitList(activities);
-        } else {
-            binding.recentActivityMessageTextview.setText(R.string.recent_activities_empty_message);
-            binding.recentActivityMessageTextview.setCompoundDrawablesWithIntrinsicBounds(
-                    null,
-                    AppCompatResources.getDrawable(this, R.drawable.ic_empty_list),
-                    null,
-                    null
-            );
-        }
-    }
-
-    private void showLoadingRecentActivities() {
-        resetRecentActivitiesState();
-
-        binding.recentActivityMessageTextview.setCompoundDrawablesWithIntrinsicBounds(
-                null,
-                AppCompatResources.getDrawable(this, R.drawable.ic_loading_items),
-                null,
-                null
-        );
-        binding.recentActivityMessageTextview.setCompoundDrawablePadding(32);
-        binding.recentActivityMessageTextview.setText(R.string.recent_activities_loading_message);
-    }
 
     private void navigateToManageStock(AppConfig appConfig) {
         Integer fieldError = viewModel.checkForFieldErrors();
