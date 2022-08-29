@@ -17,7 +17,7 @@
 
         <include
             android:id="@+id/toolbar_container"
-            layout="@layout/toolbar" />
+            layout="@layout/toolbar_rtsm" />
 
         <!-- Content Area -->
         <androidx.constraintlayout.widget.ConstraintLayout

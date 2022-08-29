@@ -134,7 +134,7 @@ ext {
             preference_ktx              : '1.2.0',
 
             // DI
-            hilt                        : '2.43',
+            hilt                        : '2.43.2',
             hilt_work                   : '1.0.0',
 
             //Kotlin metadata
