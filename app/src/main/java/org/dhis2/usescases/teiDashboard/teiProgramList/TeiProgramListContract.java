@@ -25,7 +25,7 @@ public class TeiProgramListContract {
 
         void changeCurrentProgram(String program, String uid);
 
-        void displayBreakGlassError();
+        void displayBreakGlassError(String trackedEntityTypeName);
 
         void displayAccessError();
     }

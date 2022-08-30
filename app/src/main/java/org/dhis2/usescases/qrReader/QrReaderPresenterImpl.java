@@ -3,8 +3,8 @@ package org.dhis2.usescases.qrReader;
 import android.util.Log;
 
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;

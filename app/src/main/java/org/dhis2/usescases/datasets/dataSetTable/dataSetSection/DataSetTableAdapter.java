@@ -17,6 +17,7 @@ import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.MeasureExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
@@ -42,11 +43,11 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -137,7 +138,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         if (add) {
             rowWidth += 50;
         } else {
-            rowWidth -= 50;
+            int minRowHeaderWidth = (int) context.getResources().getDimension(R.dimen.row_header_min_width);
+            if (rowWidth - 50 > minRowHeaderWidth) {
+                rowWidth -= 50;
+            }
         }
 
         Triple<String, Integer, Integer> measures =
@@ -177,8 +181,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, accessDataWrite, currentTableScale));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
-        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, SectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, SectionRenderingType.LISTING.name()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
 
@@ -380,25 +384,25 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
-            int oldValue = 0;
-            int newValue = 0;
+            double oldValue = 0;
+            double newValue = 0;
             try {
                 if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
-                    oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
+                    oldValue = Double.parseDouble(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
             } catch (Exception e) {
                 Timber.d("Data element is not numeric");
             }
             try {
-                newValue = isEmpty(rowAction.value()) ? 0 : Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0");
+                newValue = isEmpty(rowAction.value()) ? 0 : Double.parseDouble(rowAction.value() != null ? rowAction.value() : "0");
             } catch (Exception e) {
                 Timber.d("Data element is not numeric");
             }
             try {
                 if (showRowTotal) {
-                    int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
+                    double totalRow = Double.parseDouble(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
                             "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
                             + (newValue - oldValue);
-                    changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
+                    changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), ExtensionsKt.getDecimalFormat(totalRow), showRowTotal);
                 }
             } catch (Exception e) {
                 Timber.d("Data element is not numeric");
@@ -406,10 +410,11 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
             try {
                 if (showColumnTotal) {
-                    int totalColumn = Integer.parseInt(isEmpty(getCellItem(rowAction.columnPos(), viewModels.size() - 1)) ?
+                    double totalColumn = Double.parseDouble(isEmpty(getCellItem(rowAction.columnPos(), viewModels.size() - 1)) ?
                             "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
                             + (newValue - oldValue);
-                    changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
+
+                    changeCellItem(rowAction.columnPos(), viewModels.size() - 1, ExtensionsKt.getDecimalFormat(totalColumn), showColumnTotal);
                 }
             } catch (Exception e) {
                 Timber.d("Data element is not numeric");
@@ -417,10 +422,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
             try {
                 if (showRowTotal && showColumnTotal) {
-                    int total = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1)) ?
+                    double total = Double.parseDouble(isEmpty(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1)) ?
                             "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
                             + (newValue - oldValue);
-                    changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
+                    changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, ExtensionsKt.getDecimalFormat(total), true);
                 }
             } catch (Exception e) {
                 Timber.d("Data element is not numeric");

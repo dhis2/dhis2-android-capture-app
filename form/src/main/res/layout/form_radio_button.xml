@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.common.ValueType" />
+        <import type="org.dhis2.form.model.UiRenderType"/>
+        <import type="android.widget.LinearLayout" />
+
+        <variable
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/fieldSelected"
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:background="?colorPrimary"
+            android:visibility="@{item.focused ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/customYesNo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingBottom="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/renderImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@drawable/sierra_leone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/FieldLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                android:text="@{item.formattedLabel}"
+                android:visibility="@{item.label != null ? View.VISIBLE : View.GONE}"
+                app:label_text_color="@{item.style}"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/renderImage"
+                tools:text="@string/lorem" />
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                style="@style/ActionIconUnwrap"
+                android:layout_width="12dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{v -> item.onDescriptionClick()}"
+                android:visibility="@{(item.description != null) ? View.VISIBLE : View.GONE}"
+                app:description_icon_tint="@{item.style}"
+                app:layout_constraintBottom_toBottomOf="@+id/label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/label"
+                app:layout_constraintTop_toTopOf="@+id/label"
+                app:srcCompat="@drawable/ic_info_outline" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/label">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/checkLayouts"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <RadioGroup
+                        android:id="@+id/radiogroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                        android:enabled="@{item.editable}"
+                        android:gravity="center_vertical"
+                        android:orientation="@{item.renderingType == UiRenderType.VERTICAL_RADIOBUTTONS ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL}"
+                        app:checkListener="@{item}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/clearSelection"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <RadioButton
+                            android:id="@+id/yes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                            android:enabled="@{item.editable}"
+                            android:text='@{item.valueType != ValueType.TRUE_ONLY ? @string/yes : ""}'
+                            android:textSize="@dimen/form_edit_text_size"
+                            app:optionTint="@{item.style}"
+                            tools:checked="true" />
+
+                        <RadioButton
+                            android:id="@+id/no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="25dp"
+                            android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                            android:enabled="@{item.editable}"
+                            android:text="@string/no"
+                            android:textSize="@dimen/form_edit_text_size"
+                            android:visibility="@{item.valueType == ValueType.TRUE_ONLY ? View.GONE : View.VISIBLE}"
+                            app:optionTint="@{item.style}" />
+                    </RadioGroup>
+
+                    <ImageView
+                        android:id="@+id/clearSelection"
+                        style="@style/ActionIcon"
+                        android:alpha="@{item.editable ? 1.0f : 0.5f}"
+                        android:clickable="true"
+                        android:enabled="@{item.editable}"
+                        android:focusable="true"
+                        android:onClick="@{v -> item.onClear()}"
+                        android:padding="10dp"
+                        android:visibility="@{item.editable &amp; item.value != null ? View.VISIBLE : View.GONE}"
+                        app:icon_color="@{item.style}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_close" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/warningError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="@{item.error!= null || item.warning != null ? View.VISIBLE : View.GONE}"
+            app:error="@{item.error}"
+            app:warning="@{item.warning}"
+            app:input_style="@{item}"
+            android:textSize="@dimen/textSize_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/customYesNo"
+            tools:text="This is a error message" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

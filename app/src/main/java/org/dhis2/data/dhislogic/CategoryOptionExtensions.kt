@@ -12,9 +12,11 @@ fun CategoryOption.inDateRange(date: Date?): Boolean {
 }
 
 fun CategoryOption.inOrgUnit(orgUnitUid: String?): Boolean {
-    return orgUnitUid?.let {
-        organisationUnits()?.takeIf { it.isNotEmpty() }?.let {
-            orgUnitUid in UidsHelper.getUidsList(it)
-        } ?: true
+    return organisationUnits()?.let {
+        it.takeIf { it.isNotEmpty() }?.let { organisationUnits ->
+            orgUnitUid?.let { orgUnitUid ->
+                orgUnitUid in UidsHelper.getUidsList(organisationUnits)
+            } ?: true
+        } ?: false
     } ?: true
 }

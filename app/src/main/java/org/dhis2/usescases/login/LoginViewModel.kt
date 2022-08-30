@@ -4,7 +4,7 @@ import android.text.TextUtils.isEmpty
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import org.dhis2.data.tuples.Trio
+import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.utils.TestingCredential
 
 class LoginViewModel : ViewModel() {
@@ -73,5 +73,10 @@ class LoginViewModel : ViewModel() {
         for (testingCredential in testingCredentials) {
             this.testingCredentials!![testingCredential.server_url] = testingCredential
         }
+    }
+
+    fun setAccountInfo(serverUrl: String?, userName: String?) {
+        this.serverUrl.value = serverUrl
+        this.userName.value = userName
     }
 }

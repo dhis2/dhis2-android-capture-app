@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.RulesRepository
+import org.dhis2.form.data.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.Enrollment

@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <me.dm7.barcodescanner.zxing.ZXingScannerView
-            android:id="@+id/scannerView"
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:id="@id/scannerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <RelativeLayout
             android:id="@+id/progress"

@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.CustomCellViewBinding;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 

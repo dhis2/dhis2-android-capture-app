@@ -6,13 +6,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
+import org.dhis2.maps.geometry.point.MapPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.model.EventUiComponentModel
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
-import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -30,11 +30,12 @@ class MapTeiEventsToFeatureCollectionTest {
 
     @Before
     fun setUp() {
-        mapTeiEventsToFeatureCollection = MapTeiEventsToFeatureCollection(
-            mapPointToFeature,
-            mapPolygonToFeature,
-            bounds
-        )
+        mapTeiEventsToFeatureCollection =
+            MapTeiEventsToFeatureCollection(
+                mapPointToFeature,
+                mapPolygonToFeature,
+                bounds
+            )
     }
 
     @Test

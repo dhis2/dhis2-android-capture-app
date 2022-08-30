@@ -32,7 +32,6 @@ class TeiFlowTest: BaseTest() {
     private val currentDate = getCurrentDate()
 
     @Test
-    @Ignore
     fun shouldEnrollToSameProgramAfterClosedIt() {
         val totalEventsPerEnrollment = 3
         val pastProgramPosition = 4

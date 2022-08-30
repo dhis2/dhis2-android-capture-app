@@ -1,5 +1,9 @@
 package org.dhis2.usescases.general;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -23,10 +27,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.resources.LocaleSelector;
+import org.dhis2.data.server.OpenIdSession;
+import org.dhis2.data.location.LocationProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -40,7 +47,6 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.commons.resources.LocaleSelector;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,12 +60,6 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.CAMERA_REQUEST;
-import static org.dhis2.utils.Constants.GALLERY_REQUEST;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
-
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, ActivityResultObservable {
@@ -72,6 +72,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     @Inject
     public CrashReportController crashReportController;
+    @Inject
+    public LocationProvider locationProvider;
+
     private PinDialog pinDialog;
     private boolean comesFromImageSource = false;
 
@@ -106,8 +109,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ServerComponent serverComponent = ((App) getApplicationContext()).getServerComponent();
         if (serverComponent != null) {
-            serverComponent.openIdSession().setSessionCallback(this, () -> {
-                showSessionExpired();
+            serverComponent.openIdSession().setSessionCallback(this, logOutReason -> {
+                startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true, -1, false, logOutReason), true, true, null);
                 return Unit.INSTANCE;
             });
             if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
@@ -172,6 +175,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
+        if (locationProvider != null) {
+            locationProvider.stopLocationUpdates();
+        }
     }
 
     @Override
@@ -221,29 +227,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showMoreOptions(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
-        try {
-            Field[] fields = popupMenu.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popupMenu);
-                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                    setForceIcons.invoke(menuPopupHelper, true);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-            showTutorial(false);
-            return false;
-        });
-        popupMenu.show();
+        new AppMenuHelper.Builder()
+                .menu(this, R.menu.home_menu)
+                .anchor(view)
+                .onMenuInflated(popupMenu -> {
+                    return Unit.INSTANCE;
+                })
+                .onMenuItemClicked(item -> {
+                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                    showTutorial(false);
+                    return false;
+                })
+                .build()
+                .show();
     }
 
     public Context getContext() {
@@ -363,14 +359,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case GALLERY_REQUEST:
-            case CAMERA_REQUEST:
-                comesFromImageSource = true;
-                break;
-        }
-
         if (activityResultObserver != null) {
+            comesFromImageSource = true;
             activityResultObserver.onActivityResult(requestCode, resultCode, data);
             activityResultObserver = null;
         }
@@ -399,29 +389,5 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public AnalyticsHelper analyticsHelper() {
         return analyticsHelper;
-    }
-
-    private void showSessionExpired() {
-        CustomDialog sessionDialog = new CustomDialog(
-                this,
-                getString(R.string.openid_session_expired),
-                getString(R.string.openid_session_expired_message),
-                getString(R.string.action_accept),
-                null,
-                Constants.SESSION_DIALOG_RQ,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        startActivity(LoginActivity.class, LoginActivity.Companion.bundle(true), true, true, null);
-                    }
-
-                    @Override
-                    public void onNegative() {
-
-                    }
-                }
-        );
-        sessionDialog.setCancelable(false);
-        sessionDialog.show();
     }
 }

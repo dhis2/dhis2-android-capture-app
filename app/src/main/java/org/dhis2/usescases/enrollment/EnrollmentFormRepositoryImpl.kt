@@ -4,10 +4,9 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.Bindings.blockingGetCheck
 import org.dhis2.Bindings.profilePicturePath
-import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.RulesRepository
-import org.dhis2.utils.Result as DhisResult
+import org.dhis2.form.bindings.toRuleAttributeValue
+import org.dhis2.form.data.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -92,7 +91,7 @@ class EnrollmentFormRepositoryImpl(
         return Single.fromCallable { enrollmentService.generateEnrollmentEvents(enrollmentUid) }
     }
 
-    override fun calculate(): Flowable<DhisResult<RuleEffect>> {
+    override fun calculate(): Flowable<Result<List<RuleEffect>>> {
         return queryAttributes()
             .map { ruleEnrollmentBuilder.attributeValues(it).build() }
             .switchMap { ruleEnrollment ->
@@ -100,10 +99,10 @@ class EnrollmentFormRepositoryImpl(
                     Flowable.fromCallable(ruleEngine.evaluate(ruleEnrollment))
                 }
                     .map {
-                        DhisResult.success(it)
+                        Result.success(it)
                     }
                     .onErrorReturn {
-                        DhisResult.failure(Exception(it)) as DhisResult<RuleEffect>
+                        Result.failure(Exception(it))
                     }
             }
     }

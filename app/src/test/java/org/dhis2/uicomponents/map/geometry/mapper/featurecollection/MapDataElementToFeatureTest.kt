@@ -7,9 +7,10 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doReturnConsecutively
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.data.dhislogic.CoordinateDataElementInfo
+import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
+import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.dhis2.uicomponents.map.geometry.MapEventToFeatureCollectionTest
-import org.dhis2.uicomponents.map.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -26,7 +27,10 @@ class MapDataElementToFeatureTest {
 
     @Before
     fun setUp() {
-        dataElementMapper = MapDataElementToFeature(mapCoordinateFieldToFeature)
+        dataElementMapper =
+            MapDataElementToFeature(
+                mapCoordinateFieldToFeature
+            )
     }
 
     @Test

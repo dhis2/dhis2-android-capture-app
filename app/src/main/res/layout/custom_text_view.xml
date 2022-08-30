@@ -113,7 +113,6 @@
                     android:textAlignment="textStart"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:requestFocus="@{focus}"
                     app:setImeOption="@{keyboardActionType}"
                     tools:text="hello" />
 

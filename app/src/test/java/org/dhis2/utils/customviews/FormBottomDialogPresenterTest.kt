@@ -1,10 +1,5 @@
 package org.dhis2.utils.customviews
 
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.visualOptionSet.MatrixOptionSetModel
-import org.dhis2.form.model.FieldUiModel
-import org.hisp.dhis.android.core.common.ObjectStyle
-import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -27,51 +22,10 @@ class FormBottomDialogPresenterTest {
         )
     }
 
-    private fun mandatoryFields(): Map<String, FieldUiModel> {
+    private fun mandatoryFields(): Map<String, String> {
         return mapOf(
-            Pair(
-                "uid1",
-                EditTextViewModel.create(
-                    "uid1",
-                    1,
-                    "label1",
-                    true,
-                    null,
-                    "hint",
-                    1,
-                    ValueType.TEXT,
-                    "section",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null,
-                    "any",
-                    false,
-                    false,
-                    null,
-                    null
-                )
-            ),
-            Pair(
-                "uid2",
-                MatrixOptionSetModel.create(
-                    "uid2",
-                    1,
-                    "label2",
-                    true,
-                    null,
-                    "section2",
-                    true,
-                    "optionSetUid",
-                    null,
-                    ObjectStyle.builder().build(),
-                    emptyList(),
-                    2,
-                    ValueType.TEXT,
-                    null
-                )
-            )
+            Pair("label1", "section"),
+            Pair("label2", "section2")
         )
     }
 }

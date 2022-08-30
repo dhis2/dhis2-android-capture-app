@@ -6,28 +6,26 @@ import android.view.View
 import android.widget.PopupMenu
 import java.util.Date
 import org.dhis2.data.dhislogic.inDateRange
+import org.dhis2.data.dhislogic.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
 
 class CatOptionPopUp(
     val context: Context,
     anchor: View,
-    private val categoryName: String,
     val options: List<CategoryOption>,
-    private val showOnlyWithAccess: Boolean,
     val date: Date?,
+    private val orgUnitUid: String?,
     private val onOptionSelected: (CategoryOption?) -> Unit
-) :
-    PopupMenu(context, anchor) {
+) : PopupMenu(context, anchor) {
 
-    private val selectableOptions = options.filter { option ->
-        if (showOnlyWithAccess) {
+    private val selectableOptions = options
+        .filter { option ->
             option.access().data().write()
-        } else {
-            true
+        }.filter { option ->
+            option.inDateRange(date)
+        }.filter { option ->
+            option.inOrgUnit(orgUnitUid)
         }
-    }.filter { option ->
-        option.inDateRange(date)
-    }
 
     override fun show() {
         setOnMenuItemClickListener {

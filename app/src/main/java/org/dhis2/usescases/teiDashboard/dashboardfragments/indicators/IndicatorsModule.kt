@@ -9,7 +9,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.hisp.dhis.android.core.D2
 
-@PerFragment
 @Module
 class IndicatorsModule(
     val programUid: String,

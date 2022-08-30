@@ -56,5 +56,6 @@ class LoginContracts {
         fun getPromptParams(): Goldfinger.PromptParams
         fun isNetworkAvailable(): Boolean
         fun openOpenIDActivity(it: IntentWithRequestCode?)
+        fun openAccountsActivity()
     }
 }

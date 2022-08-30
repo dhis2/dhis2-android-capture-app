@@ -2,8 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import org.dhis2.core.functional.Either
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.attribute.Attribute
-import org.hisp.dhis.android.core.attribute.AttributeValue
 
 class DataElementD2Repository(private val d2: D2) : DataElementRepository {
 

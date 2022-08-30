@@ -22,6 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -34,12 +35,11 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
+import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.commons.data.EventCreationType;
+import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -58,7 +58,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 

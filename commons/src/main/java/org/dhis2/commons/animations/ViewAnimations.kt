@@ -113,3 +113,38 @@ fun View.hide() {
             .start()
     }
 }
+
+fun View.showWithTranslation(
+    verticalTranslation: Boolean = false,
+    horizontalTranslation: Boolean = false
+) {
+    if (visibility != View.VISIBLE) {
+        animate()
+            .translationX(0f)
+            .translationY(0f)
+            .setDuration(500)
+            .setInterpolator(OvershootInterpolator())
+            .withStartAction {
+                x = if (horizontalTranslation) 500f else 0f
+                y = if (verticalTranslation) -500f else 0f
+                visibility = View.VISIBLE
+            }
+            .start()
+    }
+}
+
+fun View.hideWithTranslation(
+    verticalTranslation: Boolean = false,
+    horizontalTranslation: Boolean = false
+) {
+    if (visibility != View.GONE) {
+        animate()
+            .translationX(if (horizontalTranslation) 500f else 0f)
+            .translationY(if (verticalTranslation) -500f else 0f)
+            .setDuration(500)
+            .withEndAction { visibility = View.GONE }
+            .start()
+    }
+}
+
+
