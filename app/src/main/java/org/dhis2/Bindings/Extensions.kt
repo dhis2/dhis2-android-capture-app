@@ -39,23 +39,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
         .blockingGet().map { it.trackedEntityAttribute()?.uid() }
 
     if (attributes.isEmpty() && programUid != null) {
-        val sections = d2.programModule().programSections().withAttributes().byProgramUid()
-            .eq(programUid).blockingGet()
-        attributes = if (sections.isEmpty()) {
-            d2.programModule().programTrackedEntityAttributes()
-                .byDisplayInList().isTrue
-                .byProgram().eq(programUid)
-                .byTrackedEntityAttribute().`in`(imageAttributes)
-                .blockingGet().filter { it.trackedEntityAttribute() != null }
-                .map { it.trackedEntityAttribute()!!.uid() }
-        } else {
-            d2.programModule().programSections().withAttributes().byProgramUid().eq(programUid)
-                .blockingGet()
-                .mapNotNull { section ->
-                    section.attributes()?.filter { imageAttributes.contains(it.uid()) }
-                        ?.map { it.uid() }
-                }.flatten()
-        }
+        attributes = TrackedEntityInstanceExtensionHelper.getProfilePictureAttributes(d2, programUid, imageAttributes)
     } else if (attributes.isEmpty() && programUid == null) {
         val enrollmentProgramUids = d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq(uid())
