@@ -93,7 +93,7 @@ data class SectionUiModelImpl(
         return showBottomShadow
     }
 
-    fun showNextButton():Boolean {
+    fun showNextButton(): Boolean {
         return showBottomShadow && !isClosingSection()
     }
 

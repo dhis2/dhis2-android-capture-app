@@ -142,7 +142,8 @@ public class EventCaptureModule {
                 new DhisEnrollmentUtils(d2),
                 crashReportController,
                 networkUtils,
-                searchTEIRepository
+                searchTEIRepository,
+                new FieldErrorMessageProvider(view.getContext())
         );
     }
 
@@ -168,6 +169,7 @@ public class EventCaptureModule {
             SearchTEIRepository searchTEIRepository,
             ResourceManager resourceManager
     ) {
+        FieldErrorMessageProvider fieldErrorMessageProvider = new FieldErrorMessageProvider(activityContext);
         return new FormRepositoryImpl(
                 new ValueStoreImpl(
                         d2,
@@ -176,9 +178,10 @@ public class EventCaptureModule {
                         new DhisEnrollmentUtils(d2),
                         crashReportController,
                         networkUtils,
-                        searchTEIRepository
+                        searchTEIRepository,
+                        fieldErrorMessageProvider
                 ),
-                new FieldErrorMessageProvider(activityContext),
+                fieldErrorMessageProvider,
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2)

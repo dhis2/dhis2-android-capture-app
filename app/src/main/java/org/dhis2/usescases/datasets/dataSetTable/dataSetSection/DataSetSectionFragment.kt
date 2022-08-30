@@ -98,7 +98,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 arguments?.getString(ARG_ORG_UNIT)!!,
                 arguments?.getString(ARG_PERIOD_ID)!!,
                 arguments?.getString(ARG_ATTR_OPT_COMB)!!,
-                this
+                this,
+                activity
             )
         ).inject(this)
     }
@@ -125,7 +126,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 presenter.editingCellValue(isEditing)
                             },
                             onCellValueChange = { cell ->
-                                presenterFragment.onCellValueChange(cell)
+                                presenterFragment.onCellValueChanged(cell)
                             },
                             onSaveValue = { cell ->
                                 presenterFragment.onSaveValueChange(cell)
@@ -500,12 +501,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 }
                 presenterFragment.onSaveValueChange(cell.copy(value = calendarTime))
             },
-            hour, minute, is24HourFormat
+            hour,
+            minute,
+            is24HourFormat
         )
         dialog.setTitle(dataElement.displayFormName())
 
         dialog.setButton(
-            DialogInterface.BUTTON_NEGATIVE, requireContext().getString(R.string.date_dialog_clear)
+            DialogInterface.BUTTON_NEGATIVE,
+            requireContext().getString(R.string.date_dialog_clear)
         ) { _: DialogInterface?, _: Int ->
             presenterFragment.onSaveValueChange(cell.copy(value = null))
         }

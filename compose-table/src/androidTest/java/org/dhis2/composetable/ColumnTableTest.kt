@@ -1,5 +1,9 @@
 package org.dhis2.composetable
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
@@ -8,6 +12,7 @@ import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableSelection
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,7 +25,7 @@ class ColumnTableTest {
     private val tableColors = TableColors()
 
     @Test
-    fun shouldAllColumnsBuildProperly(){
+    fun shouldAllColumnsBuildProperly() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
         ).getMultiHeaderTables()
@@ -40,7 +45,7 @@ class ColumnTableTest {
     }
 
     @Test
-    fun shouldHighlightColumnHeaderWhenClickingOnHeader(){
+    fun shouldHighlightColumnHeaderWhenClickingOnHeader() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
         ).getMultiHeaderTables()
@@ -56,7 +61,7 @@ class ColumnTableTest {
     }
 
     @Test
-    fun shouldHighlightChildrenColumnWhenSelectingParent(){
+    fun shouldHighlightChildrenColumnWhenSelectingParent() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
         ).getMultiHeaderTables()
@@ -79,17 +84,27 @@ class ColumnTableTest {
             }
             val firstNonHighlightColumn = grandsonColumnsHighlight + 1
             for (i in firstNonHighlightColumn until maxColumnGrandSon) {
-                if (i % 2 == 0){
-                    assertColumnHeaderBackgroundColor(firstTableId, 2, i, tableColors.headerBackground1)
+                if (i % 2 == 0) {
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        2,
+                        i,
+                        tableColors.headerBackground1
+                    )
                 } else {
-                    assertColumnHeaderBackgroundColor(firstTableId, 2, i, tableColors.headerBackground2)
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        2,
+                        i,
+                        tableColors.headerBackground2
+                    )
                 }
             }
         }
     }
 
     @Test
-    fun shouldAssertHeaderColumnColorsEvenOdd(){
+    fun shouldAssertHeaderColumnColorsEvenOdd() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
         ).getMultiHeaderTables()
@@ -109,19 +124,39 @@ class ColumnTableTest {
 
             //Assert second column rows
             for (i in 0 until secondRowHeaderChildren) {
-                if (i % 2 == 0){
-                    assertColumnHeaderBackgroundColor(firstTableId, 1, i, tableColors.headerBackground1)
+                if (i % 2 == 0) {
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        1,
+                        i,
+                        tableColors.headerBackground1
+                    )
                 } else {
-                    assertColumnHeaderBackgroundColor(firstTableId, 1, i, tableColors.headerBackground2)
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        1,
+                        i,
+                        tableColors.headerBackground2
+                    )
                 }
             }
 
             //Assert third column rows
             for (i in 0 until thirdRowHeaderChildren) {
-                if (i % 2 == 0){
-                    assertColumnHeaderBackgroundColor(firstTableId, 2, i, tableColors.headerBackground1)
+                if (i % 2 == 0) {
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        2,
+                        i,
+                        tableColors.headerBackground1
+                    )
                 } else {
-                    assertColumnHeaderBackgroundColor(firstTableId, 2, i, tableColors.headerBackground2)
+                    assertColumnHeaderBackgroundColor(
+                        firstTableId,
+                        2,
+                        i,
+                        tableColors.headerBackground2
+                    )
                 }
             }
         }
@@ -129,14 +164,19 @@ class ColumnTableTest {
 
     private fun initTable(fakeModel: List<TableModel>) {
         composeTestRule.setContent {
+
+            var tableSelection by remember {
+                mutableStateOf<TableSelection>(TableSelection.Unselected())
+            }
+
             DataTable(
                 tableList = fakeModel,
+                editable = true,
                 tableColors = tableColors,
-                onDecorationClick = {
-
-                },
+                tableSelection = tableSelection,
+                onSelectionChange = { tableSelection = it },
+                onDecorationClick = {},
                 onClick = {
-
                 }
             )
         }

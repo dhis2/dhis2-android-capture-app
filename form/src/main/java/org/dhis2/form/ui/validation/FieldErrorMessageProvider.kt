@@ -115,4 +115,8 @@ class FieldErrorMessageProvider(private val context: Context) {
     fun mandatoryWarning(): String {
         return context.getString(R.string.field_is_mandatory)
     }
+
+    fun defaultValidationErrorMessage(): String {
+        return context.getString(R.string.validation_error_message)
+    }
 }

@@ -53,7 +53,7 @@ class EnrollmentModule(
     val enrollmentUid: String,
     val programUid: String,
     private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
-    val activityContext: Context
+    private val activityContext: Context
 ) {
 
     @Provides
@@ -180,6 +180,7 @@ class EnrollmentModule(
         networkUtils: NetworkUtils,
         searchTEIRepository: SearchTEIRepository
     ): ValueStore {
+        val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet().trackedEntityInstance()!!,
@@ -187,7 +188,8 @@ class EnrollmentModule(
             DhisEnrollmentUtils(d2),
             crashReportController,
             networkUtils,
-            searchTEIRepository
+            searchTEIRepository,
+            fieldErrorMessageProvider
         )
     }
 
@@ -234,6 +236,7 @@ class EnrollmentModule(
         searchTEIRepository: SearchTEIRepository,
         resourceManager: ResourceManager
     ): FormRepository {
+        val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return FormRepositoryImpl(
             ValueStoreImpl(
                 d2,
@@ -243,9 +246,10 @@ class EnrollmentModule(
                 enrollmentRepository,
                 crashReportController,
                 networkUtils,
-                searchTEIRepository
+                searchTEIRepository,
+                fieldErrorMessageProvider
             ),
-            FieldErrorMessageProvider(activityContext),
+            fieldErrorMessageProvider,
             DisplayNameProviderImpl(
                 OptionSetConfiguration(d2),
                 OrgUnitConfiguration(d2)

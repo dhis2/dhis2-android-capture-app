@@ -68,7 +68,6 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                 )
             )
         )
-
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
                 rowHeader = RowHeader("", title = indicatorName!!),

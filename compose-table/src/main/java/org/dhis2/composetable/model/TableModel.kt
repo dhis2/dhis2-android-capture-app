@@ -3,6 +3,7 @@ package org.dhis2.composetable.model
 import androidx.compose.ui.unit.Dp
 import kotlinx.serialization.Serializable
 import org.dhis2.composetable.ui.SelectionState
+import org.dhis2.composetable.ui.TableSelection
 
 @Serializable
 data class TableModel(
@@ -10,13 +11,31 @@ data class TableModel(
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
     val upperPadding: Boolean = true,
-    val overwrittenValues: List<TableCell> = emptyList()
+    val overwrittenValues: Map<Int, TableCell> = emptyMap()
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
         return tableHeaderModel.rows
             .filterIndexed { index, _ -> index > headerRowIndex }
             .map { row -> row.cells.size }
             .reduceOrNull { acc, i -> acc * i }
+    }
+
+    fun getNextCell(
+        cellSelection: TableSelection.CellSelection
+    ): Pair<TableCell, TableSelection.CellSelection>? = when {
+        tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
+            cellSelection
+        cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
+            cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
+        cellSelection.rowIndex < tableRows.size - 1 ->
+            cellSelection.copy(columnIndex = 0, rowIndex = cellSelection.rowIndex + 1)
+        else -> null
+    }?.let { nextCell ->
+        val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
+        when (tableCell?.editable) {
+            true -> Pair(tableCell, nextCell)
+            else -> null
+        }
     }
 }
 

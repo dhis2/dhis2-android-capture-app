@@ -64,6 +64,11 @@ class TextInputUiTest {
                 TextInputModel()
             )
         }
+
+        var tableSelection by remember {
+            mutableStateOf<TableSelection>(TableSelection.Unselected())
+        }
+
         val coroutineScope = rememberCoroutineScope()
 
         BottomSheetScaffold(
@@ -71,14 +76,15 @@ class TextInputUiTest {
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {
-
+                    onTextChanged = { textInputModel ->
+                        currentInputType = textInputModel
+                        currentCell = currentCell?.copy(
+                            value = textInputModel.currentValue,
+                            error = null
+                        )
                     },
-                    onSave = { textInputModel ->
-                        currentCell?.copy(value = textInputModel.currentValue)?.let {
-                            onSave(it)
-                        }
-                    }
+                    onSave = { currentCell?.let { onSave(it) } },
+                    onNextSelected = {}
                 )
             },
             sheetPeekHeight = 0.dp,
@@ -92,7 +98,12 @@ class TextInputUiTest {
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                )
+                ),
+                tableSelection = tableSelection,
+                onSelectionChange = { tableSelection = it },
+                onDecorationClick = {
+
+                }
             ) { cell ->
                 currentCell = cell
                 currentInputType = TextInputModel(
