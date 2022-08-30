@@ -128,6 +128,9 @@ private fun TextInputContent(
                         .wrapContentHeight()
                         .onFocusChanged {
                             hasFocus = it.isFocused
+                            if (!it.isFocused) {
+                                onSave()
+                            }
                         },
                     value = textInputModel.currentValue ?: "",
                     onValueChange = {
