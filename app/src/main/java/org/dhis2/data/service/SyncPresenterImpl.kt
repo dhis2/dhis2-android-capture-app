@@ -45,7 +45,8 @@ class SyncPresenterImpl(
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
-    private val syncStatusController: SyncStatusController
+    private val syncStatusController: SyncStatusController,
+    private val syncRepository: SyncRepository
 ) : SyncPresenter {
 
     override fun initSyncControllerMap() {
@@ -478,21 +479,19 @@ class SyncPresenterImpl(
     }
 
     override fun checkSyncTEIStatus(uid: String): SyncResult {
-        val teiOk = d2.trackedEntityModule().trackedEntityInstances()
-            .byUid().eq(uid)
-            .byAggregatedSyncState().notIn(State.SYNCED, State.RELATIONSHIP)
-            .blockingGet().isEmpty()
+        val teiOk =
+            syncRepository.getTeiByNotInStates(uid, listOf(State.SYNCED, State.RELATIONSHIP))
+        val teiEventsOk =
+            syncRepository.getEventsFromEnrollmentByNotInSyncState(uid, listOf(State.SYNCED))
 
-        if (teiOk) {
+        if (teiOk.isEmpty() && teiEventsOk.isEmpty()) {
             return SyncResult.SYNC
         }
 
-        val anyTeiToPostOrToUpdate = d2.trackedEntityModule().trackedEntityInstances()
-            .byUid().eq(uid)
-            .byAggregatedSyncState().`in`(State.TO_POST, State.TO_UPDATE)
-            .blockingGet().isNotEmpty()
+        val anyTeiToPostOrToUpdate =
+            syncRepository.getTeiByInStates(uid, listOf(State.TO_POST, State.TO_UPDATE))
 
-        if (anyTeiToPostOrToUpdate) {
+        if (anyTeiToPostOrToUpdate.isNotEmpty()) {
             return SyncResult.INCOMPLETE
         }
 
@@ -548,6 +547,12 @@ class SyncPresenterImpl(
 
         trackerImportConflicts =
             d2.importModule().trackerImportConflicts().byEventUid().eq(uid).blockingGet()
+        if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
+            return trackerImportConflicts
+        }
+
+        trackerImportConflicts =
+            d2.importModule().trackerImportConflicts().byEnrollmentUid().eq(uid).blockingGet()
         return if (trackerImportConflicts != null && trackerImportConflicts.isNotEmpty()) {
             trackerImportConflicts
         } else {
