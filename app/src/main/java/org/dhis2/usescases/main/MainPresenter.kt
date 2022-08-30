@@ -2,6 +2,7 @@ package org.dhis2.usescases.main
 
 import android.view.Gravity
 import androidx.lifecycle.LiveData
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.Constants
@@ -168,15 +169,18 @@ class MainPresenter(
 
     fun logOut() {
         disposable.add(
-            repository.logOut()
+            Completable.fromCallable {
+                workManagerController.cancelAllWork()
+                FilterManager.getInstance().clearAllFilters()
+                preferences.setValue(Preference.SESSION_LOCKED, false)
+                preferences.setValue(Preference.PIN, null)
+            }.andThen(
+                repository.logOut()
+            )
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        workManagerController.cancelAllWork()
-                        FilterManager.getInstance().clearAllFilters()
-                        preferences.setValue(Preference.SESSION_LOCKED, false)
-                        preferences.setValue(Preference.PIN, null)
                         view.goToLogin(repository.accountsCount(), isDeletion = false)
                     },
                     { Timber.e(it) }
