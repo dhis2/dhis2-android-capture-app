@@ -363,13 +363,16 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private void setAttributesInfo(SearchTeiModel searchTei, Program selectedProgram) {
+        List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(searchTei.uid())
+                .blockingGet();
         if (selectedProgram == null) {
             List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
                     .byTrackedEntityTypeUid().eq(searchTei.getTei().trackedEntityType())
                     .byDisplayInList().isTrue()
                     .blockingGet();
             for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
-                setAttributeValue(searchTei, typeAttribute.trackedEntityAttribute().uid());
+                setAttributeValue(searchTei, typeAttribute.trackedEntityAttribute().uid(), attributeValues);
             }
         } else {
             List<ProgramTrackedEntityAttribute> programAttributes = d2.programModule().programTrackedEntityAttributes()
@@ -378,14 +381,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet();
             for (ProgramTrackedEntityAttribute programAttribute : programAttributes) {
-                setAttributeValue(searchTei, programAttribute.trackedEntityAttribute().uid());
+                setAttributeValue(searchTei, programAttribute.trackedEntityAttribute().uid(), attributeValues);
             }
         }
     }
 
-    private void setAttributeValue(SearchTeiModel searchTei, String attributeUid) {
+    private void setAttributeValue(SearchTeiModel searchTei, String attributeUid, List<TrackedEntityAttributeValue> attributeValues) {
         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeUid).blockingGet();
-        TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingGet();
+        TrackedEntityAttributeValue attributeValue = findAttributeValue(attributeUid, attributeValues);
         if (attributeValue != null) {
             attributeValue = ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null);
         } else {
@@ -395,6 +398,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (attribute.valueType() == ValueType.TEXT || attribute.valueType() == ValueType.LONG_TEXT) {
             searchTei.addTextAttribute(attribute.displayName(), attributeValue);
         }
+    }
+
+    private TrackedEntityAttributeValue findAttributeValue(String attributeUid, List<TrackedEntityAttributeValue> attributeValues) {
+        for (TrackedEntityAttributeValue atV : attributeValues) {
+            if (attributeUid.equals(atV.trackedEntityAttribute())) {
+                return atV;
+            }
+        }
+        return null;
     }
 
     private TrackedEntityAttributeValue emptyValue(String attrUid, String teiUid) {
@@ -473,8 +485,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
                 String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
 
-                TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
-                TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
+                TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().uid(fromTeiUid).blockingGet();
+                TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().uid(toTeiUid).blockingGet();
 
                 List<kotlin.Pair<String, String>> fromValues = new ArrayList<>();
                 List<TrackedEntityAttributeValue> fromAttr = getTrackedEntityAttributesForRelationship(fromTei, selectedProgram);
