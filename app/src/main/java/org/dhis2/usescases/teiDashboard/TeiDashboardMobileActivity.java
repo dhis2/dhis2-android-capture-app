@@ -157,6 +157,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.navigation_notes:
                     presenter.trackDashboardNotes();
                     break;
+                default:
+                    break;
             }
 
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
