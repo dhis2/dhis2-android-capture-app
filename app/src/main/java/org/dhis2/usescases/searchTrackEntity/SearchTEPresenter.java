@@ -5,9 +5,12 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_TEI;
-import static org.dhis2.utils.analytics.matomo.Categories.TRACKER_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+import static org.dhis2.commons.matomo.Actions.MAP_VISUALIZATION;
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Actions.SYNC_TEI;
+import static org.dhis2.commons.matomo.Categories.SEARCH;
+import static org.dhis2.commons.matomo.Categories.TRACKER_LIST;
+import static org.dhis2.commons.matomo.Labels.CLICK;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -33,10 +36,9 @@ import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncStatusController;
-import org.dhis2.data.service.SyncStatusData;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -53,10 +55,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-import dispatch.core.DispatcherProvider;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -591,6 +591,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    @Override
+    public void trackSearchAnalytics() {
+        matomoAnalyticsController.trackEvent(SEARCH, OPEN_ANALYTICS, CLICK);
+    }
+
+    @Override
+    public void trackSearchMapVisualization() {
+        matomoAnalyticsController.trackEvent(SEARCH, MAP_VISUALIZATION, CLICK);
     }
 
     @Override

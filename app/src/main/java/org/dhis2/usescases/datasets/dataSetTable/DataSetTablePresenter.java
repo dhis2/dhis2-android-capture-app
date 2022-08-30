@@ -7,9 +7,9 @@ import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.analytics.matomo.Actions;
-import org.dhis2.utils.analytics.matomo.Categories;
-import org.dhis2.utils.analytics.matomo.Labels;
+import org.dhis2.commons.matomo.Actions;
+import org.dhis2.commons.matomo.Categories;
+import org.dhis2.commons.matomo.Labels;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 

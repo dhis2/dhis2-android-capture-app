@@ -29,8 +29,8 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.event.Event

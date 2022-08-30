@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
@@ -14,7 +15,6 @@ import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 

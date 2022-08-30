@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
+import org.dhis2.commons.matomo.Categories.Companion.HOME
+import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.ui.ThemeManager
-import org.dhis2.utils.analytics.matomo.Actions.Companion.SYNC_BTN
-import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK_ON
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
 

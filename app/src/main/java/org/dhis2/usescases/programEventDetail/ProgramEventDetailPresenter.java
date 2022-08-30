@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -25,9 +25,11 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_EVENT;
-import static org.dhis2.utils.analytics.matomo.Categories.EVENT_LIST;
-import static org.dhis2.utils.analytics.matomo.Labels.CLICK;
+import static org.dhis2.commons.matomo.Actions.MAP_VISUALIZATION;
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Actions.SYNC_EVENT;
+import static org.dhis2.commons.matomo.Categories.EVENT_LIST;
+import static org.dhis2.commons.matomo.Labels.CLICK;
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
@@ -223,5 +225,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
         FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
+    }
+
+    @Override
+    public void trackEventProgramAnalytics() {
+        matomoAnalyticsController.trackEvent(EVENT_LIST, OPEN_ANALYTICS, CLICK);
+    }
+
+    @Override
+    public void trackEventProgramMap() {
+        matomoAnalyticsController.trackEvent(EVENT_LIST, MAP_VISUALIZATION, CLICK);
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.utils.analytics.matomo
+package org.dhis2.commons.matomo
 
 class Categories {
     companion object {
@@ -8,5 +8,7 @@ class Categories {
         const val EVENT_LIST = "event_program_list"
         const val HOME = "home"
         const val SETTINGS = "settings"
+        const val SEARCH = "search"
+        const val DASHBOARD = "tracker_dashboard"
     }
 }

@@ -33,7 +33,6 @@ import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -155,6 +154,7 @@ class MainActivity :
                     mainNavigator.openPrograms()
                 }
                 R.id.navigation_analytics -> {
+                    presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
                 }
             }
@@ -412,6 +412,7 @@ class MainActivity :
                 mainNavigator.openSettings()
             }
             R.id.qr_scan -> {
+                presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
             R.id.menu_jira -> {
@@ -421,7 +422,7 @@ class MainActivity :
                 mainNavigator.openAbout()
             }
             R.id.block_button -> {
-                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
+                presenter.trackPinDialog()
                 onLockClick()
             }
             R.id.logout_button -> {

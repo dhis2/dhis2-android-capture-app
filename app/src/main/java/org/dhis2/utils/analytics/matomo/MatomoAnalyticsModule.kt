@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.extra.DownloadTracker
 

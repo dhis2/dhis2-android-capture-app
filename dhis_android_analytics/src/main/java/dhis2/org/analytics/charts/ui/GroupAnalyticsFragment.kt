@@ -54,7 +54,13 @@ class GroupAnalyticsFragment : Fragment() {
 
         fun forProgram(programUid: String): GroupAnalyticsFragment {
             return GroupAnalyticsFragment().apply {
-                arguments = bundleArguments(AnalyticMode.PROGRAM, programUid)
+                arguments = bundleArguments(AnalyticMode.TRACKER_PROGRAM, programUid)
+            }
+        }
+
+        fun forTrackerProgram(programUid: String): GroupAnalyticsFragment {
+            return GroupAnalyticsFragment().apply {
+                arguments = bundleArguments(AnalyticMode.EVENT_PROGRAM, programUid)
             }
         }
 
@@ -98,6 +104,7 @@ class GroupAnalyticsFragment : Fragment() {
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
             { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
+                groupViewModel.trackAnalyticsPeriodFilter(mode)
                 relativePeriod?.let {
                     if (it.isNotCurrent()) {
                         showAlertDialogCurrentPeriod(chartModel, relativePeriod, current)
@@ -109,6 +116,7 @@ class GroupAnalyticsFragment : Fragment() {
 
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
+                groupViewModel.trackAnalyticsOrgUnitFilter(mode)
                 when (orgUnitFilterType) {
                     OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
                     else -> groupViewModel.filterByOrgUnit(
@@ -119,8 +127,14 @@ class GroupAnalyticsFragment : Fragment() {
                 }
             }
         adapter.onResetFilterCallback = { chartModel, filterType ->
+            groupViewModel.trackAnalyticsFilterReset(mode)
             groupViewModel.resetFilter(chartModel, filterType)
         }
+
+        adapter.onChartTypeChanged = {
+            groupViewModel.trackChartTypeChanged(mode)
+        }
+
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
     }

@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
+import java.io.File
+import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
@@ -78,8 +80,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
-import java.io.File
-import java.util.Calendar
 
 class FormView : Fragment() {
     private lateinit var formRepository: FormRepository

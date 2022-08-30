@@ -17,7 +17,7 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;

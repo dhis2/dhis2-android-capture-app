@@ -13,7 +13,8 @@ import dhis2.org.databinding.ItemChartBinding
 import org.hisp.dhis.android.core.common.RelativePeriod
 
 class ChartViewHolder(
-    val binding: ItemChartBinding
+    val binding: ItemChartBinding,
+    val onChartTypeChanged: () -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
@@ -39,6 +40,7 @@ class ChartViewHolder(
                     sender: Observable,
                     propertyId: Int
                 ) {
+                    onChartTypeChanged()
                     loadChart(chart)
                 }
             }
