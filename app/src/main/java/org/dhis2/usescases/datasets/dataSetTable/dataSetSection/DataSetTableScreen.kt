@@ -137,6 +137,9 @@ fun DataSetTableScreen(
                     displayDescription = it
                 }
             ) { cell ->
+                currentCell?.let {
+                    onSaveValue(it)
+                }
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
                     currentInputType = inputModel.copy(currentValue = currentCell?.value)
