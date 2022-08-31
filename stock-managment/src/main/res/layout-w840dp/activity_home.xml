@@ -6,6 +6,7 @@
     <data>
         <import type="android.view.View" />
         <import type="org.dhis2.android.rtsm.data.TransactionType" />
+
         <variable
             name="viewModel"
             type="org.dhis2.android.rtsm.ui.home.HomeViewModel" />
