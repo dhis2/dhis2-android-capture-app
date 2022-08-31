@@ -338,4 +338,7 @@ dependencies {
 
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+
+    //Conscrypt
+    implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"
 }
