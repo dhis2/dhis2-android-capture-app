@@ -52,27 +52,30 @@ import org.dhis2.composetable.model.toKeyboardType
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
+    tableColors: TableColors? = null,
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .testTag(INPUT_TEST_TAG)
-            .fillMaxWidth()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    TableTheme(tableColors) {
+        Column(
+            modifier = Modifier
+                .testTag(INPUT_TEST_TAG)
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                )
+                .padding(16.dp)
+        ) {
+            InputTitle(textInputModel)
+            TextInputContent(
+                textInputModel,
+                onTextChanged = onTextChanged,
+                onSave = onSave,
+                onNextSelected = onNextSelected
             )
-            .padding(16.dp)
-    ) {
-        InputTitle(textInputModel)
-        TextInputContent(
-            textInputModel,
-            onTextChanged = onTextChanged,
-            onSave = onSave,
-            onNextSelected = onNextSelected
-        )
+        }
     }
 }
 

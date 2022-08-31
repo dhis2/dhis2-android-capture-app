@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -18,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -61,6 +59,48 @@ fun DataSetTableScreen(
             mutableStateOf<TableSelection>(TableSelection.Unselected())
         }
 
+        val tableColors = TableColors(
+            primary = MaterialTheme.colors.primary,
+            primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+        )
+
+        val finishEdition = {
+            coroutineScope.launch {
+                if (bottomSheetState.bottomSheetState.isExpanded) {
+                    tableSelection = TableSelection.Unselected()
+                    onEdition(false)
+                    bottomSheetState.bottomSheetState.collapse()
+                }
+            }
+        }
+
+        val startEdition = {
+            coroutineScope.launch {
+                if (bottomSheetState.bottomSheetState.isCollapsed) {
+                    bottomSheetState.bottomSheetState.expand()
+                    onEdition(true)
+                }
+            }
+        }
+
+        val selectNextCell: (
+            Pair<TableCell, TableSelection.CellSelection>,
+            TableSelection.CellSelection
+        ) -> Unit = { (tableCell, nextCell), cellSelected ->
+            if (nextCell != cellSelected) {
+                tableSelection = nextCell
+                onCellClick(tableCell)?.let { inputModel ->
+                    currentCell = tableCell
+                    currentInputType = inputModel
+                }
+            } else {
+                currentInputType = currentInputType.copy(error = tableCell.error)
+                currentCell = currentCell?.copy(error = tableCell.error)?.also {
+                    onCellValueChange(it)
+                }
+            }
+        }
+
         val focusManager = LocalFocusManager.current
 
         var nextSelected by remember { mutableStateOf(false) }
@@ -69,36 +109,25 @@ fun DataSetTableScreen(
             (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
 
                 val currentTable = tableData.first { it.id == cellSelected.tableId }
-                currentTable.getNextCell(cellSelected)?.let { (tableCell, nextCell) ->
-                    if (nextCell != cellSelected) {
-                        tableSelection = nextCell
-                        onCellClick(tableCell)?.let { inputModel ->
-                            currentCell = tableCell
-                            currentInputType = inputModel
-                        }
-                    } else {
-                        currentInputType = currentInputType.copy(error = tableCell.error)
-                        currentCell = currentCell?.copy(error = tableCell.error)?.also {
-                            onCellValueChange(it)
-                        }
-                    }
+                currentTable.getNextCell(cellSelected)?.let {
+                    selectNextCell(it, cellSelected)
                 } ?: run {
                     focusManager.clearFocus(true)
-                    tableSelection = TableSelection.Unselected()
-                    finishEdition(coroutineScope, bottomSheetState, onEdition)
+                    finishEdition()
                 }
             }
             nextSelected = false
         }
 
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-            finishEdition(coroutineScope, bottomSheetState, onEdition)
+            finishEdition()
         }
         BottomSheetScaffold(
             scaffoldState = bottomSheetState,
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
+                    tableColors = tableColors,
                     onTextChanged = { textInputModel ->
                         currentInputType = textInputModel
                         currentCell = currentCell?.copy(
@@ -127,10 +156,7 @@ fun DataSetTableScreen(
             DataTable(
                 tableList = tableData,
                 editable = true,
-                tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                ),
+                tableColors = tableColors,
                 tableSelection = tableSelection,
                 onSelectionChange = { tableSelection = it },
                 onDecorationClick = {
@@ -143,12 +169,12 @@ fun DataSetTableScreen(
                 onCellClick(cell)?.let { inputModel ->
                     currentCell = cell
                     currentInputType = inputModel.copy(currentValue = currentCell?.value)
-                    startEdition(coroutineScope, bottomSheetState, onEdition)
-                } ?: finishEdition(coroutineScope, bottomSheetState, onEdition)
+                    startEdition()
+                } ?: finishEdition()
             }
-            if (displayDescription != null) {
+            displayDescription?.let {
                 TableDialog(
-                    dialogModel = displayDescription!!,
+                    dialogModel = it,
                     onDismiss = {
                         displayDescription = null
                     },
@@ -157,34 +183,6 @@ fun DataSetTableScreen(
                     }
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private fun finishEdition(
-    coroutineScope: CoroutineScope,
-    bottomSheetState: BottomSheetScaffoldState,
-    onEdition: (editing: Boolean) -> Unit
-) {
-    coroutineScope.launch {
-        if (bottomSheetState.bottomSheetState.isExpanded) {
-            bottomSheetState.bottomSheetState.collapse()
-            onEdition(false)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private fun startEdition(
-    coroutineScope: CoroutineScope,
-    bottomSheetState: BottomSheetScaffoldState,
-    onEdition: (editing: Boolean) -> Unit
-) {
-    coroutineScope.launch {
-        if (bottomSheetState.bottomSheetState.isCollapsed) {
-            bottomSheetState.bottomSheetState.expand()
-            onEdition(true)
         }
     }
 }

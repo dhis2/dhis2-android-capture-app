@@ -984,7 +984,7 @@ val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
 var SemanticsPropertyReceiver.infoIconId by InfoIconId
 val TableId = SemanticsPropertyKey<String>("TableId")
 var SemanticsPropertyReceiver.tableIdSemantic by TableId
-val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
+val RowIndex = SemanticsPropertyKey<Int?>("RowIndex")
 var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
 val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
 var SemanticsPropertyReceiver.rowBackground by RowBackground
