@@ -31,23 +31,63 @@
         android:layout_height="match_parent"
         tools:context="org.dhis2.android.rtsm.ui.home.HomeActivity">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/toolbar_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:elevation="0dp"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:title="@string/app_name"
-                app:titleCentered="true"
-                style="@style/Widget.App.Default.Toolbar" />
-        </com.google.android.material.appbar.AppBarLayout>
+            <ImageView
+                android:id="@+id/menu"
+                style="@style/ActionIcon"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="@string/done_task"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/filterActionButton"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/syncActionButton"
+                style="@style/ActionIcon"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/filterActionButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/filterActionButton"
+                style="@style/ActionIcon"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_filter"
+                tools:ignore="ContentDescription" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Content Area -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,7 +100,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/home_footer"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <TextView
                 android:id="@+id/selectTransactionTextView"
