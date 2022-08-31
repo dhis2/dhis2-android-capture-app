@@ -27,7 +27,8 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     val imageAttributes = if (programUid != null) {
         attrRepository.byValueType().eq(ValueType.IMAGE).blockingGetUids()
     } else {
-        attrRepository.byDisplayInListNoProgram().isTrue.byValueType().eq(ValueType.IMAGE).blockingGetUids()
+        attrRepository.byDisplayInListNoProgram().isTrue.byValueType().eq(ValueType.IMAGE)
+            .blockingGetUids()
     }
 
     val imageAttributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
