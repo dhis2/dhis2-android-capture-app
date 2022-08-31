@@ -187,12 +187,15 @@ public class HomeActivity extends BaseActivity {
         switch (type) {
             case DISTRIBUTION:
                 color = R.color.distribution_color;
+                setTitleAndSubtitle(type);
                 break;
             case DISCARD:
                 color = R.color.discard_color;
+                setTitleAndSubtitle(type);
                 break;
             case CORRECTION:
                 color = R.color.correction_color;
+                setTitleAndSubtitle(type);
                 break;
             default:
                 color = -1;
@@ -207,6 +210,11 @@ public class HomeActivity extends BaseActivity {
             binding.fabManageStock.setBackgroundTintList(colorStateList);
             binding.toolbar.setBackgroundTintList(colorStateList);
         }
+    }
+
+    private void setTitleAndSubtitle(TransactionType type) {
+
+        binding.title.setText(type.toString());
     }
 
     private void setupTransactionDateField() {
