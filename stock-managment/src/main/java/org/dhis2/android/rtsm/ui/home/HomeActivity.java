@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ import org.dhis2.android.rtsm.databinding.ActivityHomeBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.GenericListAdapter;
 import org.dhis2.android.rtsm.ui.managestock.ManageStockActivity;
+import org.dhis2.android.rtsm.ui.settings.SettingsActivity;
 import org.dhis2.android.rtsm.utils.DateUtils;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -71,11 +73,24 @@ public class HomeActivity extends BaseActivity {
 
         attachObservers();
         setupComponents();
+        
+        synchronizeData();
 
         // Cannot go up the stack
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+    }
+
+    private void synchronizeData() {
+
+        binding.syncActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
