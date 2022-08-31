@@ -248,9 +248,9 @@ public class HomeActivity extends BaseActivity {
         return DataBindingUtil.setContentView(this, R.layout.activity_home);
     }
 
-    @Nullable
-    @Override
-    public Toolbar getToolBar() {
-        return ((ActivityHomeBinding) getViewBinding()).toolbar;
-    }
+//    @Nullable
+//    @Override
+//    public Toolbar getToolBar() {
+//        return ((ActivityHomeBinding) getViewBinding()).toolbar;
+//    }
 }
