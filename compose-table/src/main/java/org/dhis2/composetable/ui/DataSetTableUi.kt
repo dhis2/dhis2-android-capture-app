@@ -32,14 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -52,6 +50,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.RowHeader
@@ -196,36 +196,38 @@ fun TableHeaderRow(
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
-    Layout(
-        modifier = modifier,
-        content = {
-            TableCorner(
-                modifier = cornerModifier,
-                tableModel = tableModel,
-                onClick = onTableCornerClick
-            )
-            TableHeader(
-                tableId = tableModel.id,
-                modifier = Modifier,
-                tableHeaderModel = tableModel.tableHeaderModel,
-                horizontalScrollState = horizontalScrollState,
-                cellStyle = cellStyle,
-                onHeaderCellSelected = onHeaderCellClick
-            )
-        }
-    ) { measurables, constraints ->
-        val tableHeaderPlaceable = measurables.last().measure(constraints)
-        val height = tableHeaderPlaceable.height
-        val cornerPlaceable =
-            measurables.first().measure(constraints.copy(minHeight = height, maxHeight = height))
+    ConstraintLayout(
+        modifier = modifier.fillMaxSize()
+    ) {
+        val (tableCorner, header) = createRefs()
 
-        layout(constraints.maxWidth, height) {
-            var xPosition = 0
-            listOf(cornerPlaceable, tableHeaderPlaceable).forEach { placeable ->
-                placeable.placeRelative(x = xPosition, y = 0)
-                xPosition += placeable.width
-            }
-        }
+        TableCorner(
+            modifier = cornerModifier
+                .constrainAs(tableCorner) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(header.start)
+                    bottom.linkTo(header.bottom)
+                    height = Dimension.fillToConstraints
+                },
+            tableModel = tableModel,
+            onClick = onTableCornerClick
+        )
+
+        TableHeader(
+            tableId = tableModel.id,
+            modifier = Modifier
+                .constrainAs(header) {
+                    top.linkTo(parent.top)
+                    start.linkTo(tableCorner.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            tableHeaderModel = tableModel.tableHeaderModel,
+            horizontalScrollState = horizontalScrollState,
+            cellStyle = cellStyle,
+            onHeaderCellSelected = onHeaderCellClick
+        )
     }
 }
 
@@ -294,11 +296,6 @@ fun TableCorner(
 ) {
     Box(
         modifier = modifier
-            /*.height(
-                with(tableModel.tableHeaderModel) {
-                    LocalTableDimensions.current.defaultHeaderHeight * rows.size
-                }
-            )*/
             .width(
                 LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
                     LocalConfiguration.current,
