@@ -1,11 +1,9 @@
 package org.dhis2.usescases.settings
 
-import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
 import org.junit.Ignore
@@ -115,32 +113,6 @@ class SettingsTest : BaseTest() {
             clickOnAcceptDelete()
             clickOnAcceptDialog()
             checkSnackBarIsShown()
-        }
-        cleanLocalDatabase()
-    }
-
-    @Test
-    @Ignore
-    fun shouldRedirectToLoginWhenResetAppSucceed() {
-        setupCredentials()
-        enableIntents()
-        startActivity()
-
-        homeRobot {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
-        settingsRobot {
-            clickOnResetApp()
-            Thread.sleep(1000)
-            checkOnAcceptReset()
-            clickOnAcceptDialog()
-        }
-
-        loginRobot {
-            checkUsernameFieldIsClear()
-            checkPasswordFieldIsClear()
         }
         cleanLocalDatabase()
     }
