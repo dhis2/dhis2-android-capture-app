@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -42,7 +40,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -216,43 +213,18 @@ fun TableHeaderRow(
     }) { measurables, constraints ->
         val tableHeaderPlaceable = measurables.last().measure(constraints)
         val height = tableHeaderPlaceable.height
-        val cornerPlaceable = measurables.first().measure(constraints.copy(minHeight = height, maxHeight = height))
+        val cornerPlaceable =
+            measurables.first().measure(constraints.copy(minHeight = height, maxHeight = height))
 
         layout(constraints.maxWidth, height) {
             var xPosition = 0
-            listOf(cornerPlaceable,tableHeaderPlaceable).forEach{placeable ->
+            listOf(cornerPlaceable, tableHeaderPlaceable).forEach { placeable ->
                 placeable.placeRelative(x = xPosition, y = 0)
                 xPosition += placeable.width
             }
 
         }
     }
-
-    /*var height by remember {
-        mutableStateOf(0)
-    }
-    Row(
-        modifier
-            .background(Color.Green)
-            .wrapContentHeight()
-    ) {
-        TableCorner(
-            modifier = cornerModifier.height(height.dp),
-            tableModel = tableModel,
-            onClick = onTableCornerClick
-        )
-        TableHeader(
-            tableId = tableModel.id,
-            modifier = Modifier.onSizeChanged {
-                Log.d("COMPOSE", "Height: ${it.height}")
-                height = it.height
-            },
-            tableHeaderModel = tableModel.tableHeaderModel,
-            horizontalScrollState = horizontalScrollState,
-            cellStyle = cellStyle,
-            onHeaderCellSelected = onHeaderCellClick
-        )
-    }*/
 }
 
 @Composable
@@ -277,7 +249,7 @@ fun TableItemRow(
             .testTag("$ROW_TEST_TAG${rowHeader.row}")
             .width(IntrinsicSize.Min)
     ) {
-        Row(Modifier.height(IntrinsicSize.Min)) {
+        Row(Modifier.fillMaxHeight()) {
             ItemHeader(
                 tableModel.id ?: "",
                 rowHeader = rowHeader,
@@ -480,22 +452,24 @@ fun TableCell(
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
 
     CellLegendBox(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .clickable(cellValue.editable) {
+                when {
+                    cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                    else -> onClick(cellValue)
+                }
+            },
         legendColor = cellValue.legendColor?.let { Color(it) }
     ) {
         nonEditableCellLayer()
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 4.dp)
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .clickable(cellValue.editable) {
-                    when {
-                        cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                        else -> onClick(cellValue)
-                    }
-                },
+                .padding(horizontal = 4.dp),
             text = cellValue.value ?: "",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -932,7 +906,7 @@ fun TableListPreview() {
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreachedasfafgadgafdgagf")
+                    TableHeaderCell("Outreach")
                 )
             )
         ),
@@ -942,29 +916,49 @@ fun TableListPreview() {
     val tableRows = TableRowModel(
         rowHeader = RowHeader("uid", "Data Element", 0, true),
         values = mapOf(
-            Pair(0, TableCell(value = "12", mandatory = true)),
-            Pair(1, TableCell(value = "12", editable = false)),
-            Pair(2, TableCell(value = "", mandatory = true)),
-            Pair(3, TableCell(value = "12", mandatory = true, error = "Error")),
-            Pair(4, TableCell(value = "1", error = "Error")),
-            Pair(5, TableCell(value = "12")),
-            Pair(6, TableCell(value = "55")),
-            Pair(7, TableCell(value = "12")),
-            Pair(8, TableCell(value = "12")),
-            Pair(9, TableCell(value = "12")),
-            Pair(10, TableCell(value = "12")),
-            Pair(11, TableCell(value = "12"))
+            Pair(
+                0,
+                TableCell(
+                    id = "0",
+                    value = "12.123523452341232131312",
+                    mandatory = true,
+                    row = 0,
+                    column = 0
+                )
+            ),
+            Pair(1, TableCell(id = "1", value = "This is a long testing value whats going on ggfg", editable = false, row = 0, column = 1)),
+            Pair(2, TableCell(id = "2", value = "", mandatory = true, row = 0, column = 2)),
+            Pair(
+                3,
+                TableCell(
+                    id = "3",
+                    value = "12",
+                    mandatory = true,
+                    error = "Error",
+                    row = 0,
+                    column = 3
+                )
+            ),
+            Pair(4, TableCell(id = "4", value = "1", error = "Error", row = 0, column = 4)),
+            Pair(5, TableCell(id = "5", value = "12", row = 0, column = 5)),
+            Pair(6, TableCell(id = "6", value = "55", row = 0, column = 6)),
+            Pair(7, TableCell(id = "7", value = "12", row = 0, column = 7)),
+            Pair(8, TableCell(id = "8", value = "12", row = 0, column = 8)),
+            Pair(9, TableCell(id = "9", value = "12", row = 0, column = 9)),
+            Pair(10, TableCell(id = "10", value = "12", row = 0, column = 10)),
+            Pair(11, TableCell(id = "11", value = "12", row = 0, column = 11))
         )
     )
 
     val tableModel = TableModel(
-        "",
+        "tableId",
         tableHeaderModel,
-        listOf(tableRows, tableRows, tableRows, tableRows)
+        listOf(tableRows)
     )
     val tableList = listOf(tableModel)
     TableList(
         tableList = tableList,
+        tableColors = TableColors(),
         tableSelection = TableSelection.Unselected(),
         onSelectionChange = {},
         onDecorationClick = {}
