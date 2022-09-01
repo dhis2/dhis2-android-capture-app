@@ -196,21 +196,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void wipeDatabase() {
-        new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setTitle(getString(R.string.wipe_data))
-                .setMessage(getString(R.string.wipe_data_meesage))
-                .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    presenter.resetFilters();
-                    analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
-                    showDeleteProgress();
-                })
-                .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-    @Override
     public void deleteLocalData() {
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.delete_local_data))
@@ -338,12 +323,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     break;
-                case RESET_APP:
-                    ViewAnimationsKt.expand(binding.resetButton, true, () -> {
-                        binding.resetButton.setVisibility(View.VISIBLE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
                 case SMS:
                     ViewAnimationsKt.expand(binding.smsContent, true, () -> {
                         binding.smsContent.setVisibility(View.VISIBLE);
@@ -403,12 +382,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 case DELETE_LOCAL_DATA:
                     ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
                         binding.deleteDataButton.setVisibility(View.GONE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case RESET_APP:
-                    ViewAnimationsKt.collapse(binding.resetButton, () -> {
-                        binding.resetButton.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
