@@ -58,6 +58,10 @@ public class HomeActivity extends BaseActivity {
 
     private HomeViewModel viewModel;
 
+    private String from = "";
+    private String to = "";
+    private TransactionType transactionType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +77,7 @@ public class HomeActivity extends BaseActivity {
 
         attachObservers();
         setupComponents();
-        
+
         synchronizeData();
 
         // Cannot go up the stack
@@ -143,13 +147,30 @@ public class HomeActivity extends BaseActivity {
 
         viewModel.getFacility().observe(this, ou -> facilityTextView.setText(ou.displayName()));
 
-        facilityTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
-                viewModel.setFacility((OrganisationUnit) facilityTextView.getAdapter().getItem(position))
-        );
 
+        facilityTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
+                {
+                    viewModel.setFacility((OrganisationUnit) facilityTextView.getAdapter().getItem(position));
+
+                    OrganisationUnit organisationUnit = (OrganisationUnit) facilityTextView.getAdapter().getItem(position);
+
+                    from = organisationUnit.displayName();
+
+                    setSubtitle(from, to);
+                }
+        );
         distributedToTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
                 viewModel.setDestination(
                         (Option) distributedToTextView.getAdapter().getItem(position))
+        );
+
+        distributedToTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
+                {
+                    viewModel.setDestination((Option) distributedToTextView.getAdapter().getItem(position));
+                    Option option = (Option) distributedToTextView.getAdapter().getItem(position);
+                    to = option.displayName();
+                    setSubtitle(from, to);
+                }
         );
 
         binding.fabManageStock.setOnClickListener(view ->
@@ -158,6 +179,33 @@ public class HomeActivity extends BaseActivity {
                 )
         );
         setupTransactionDateField();
+    }
+
+    private void setSubtitle(String from, String to) {
+
+        if (transactionType != null) {
+            switch (transactionType) {
+                case DISTRIBUTION:
+                    if (!to.equalsIgnoreCase(""))
+                        binding.subTitle.setText(getString(R.string.from) + " " + from + " -> " + " " + getString(R.string.to) +" "+ to);
+                    else if(!from.equalsIgnoreCase(""))
+                        binding.subTitle.setText(getString(R.string.from) + " " + from);
+                    break;
+                case DISCARD:
+                    binding.subTitle.setText(getString(R.string.from) + " " + from);
+                    break;
+                case CORRECTION:
+                    binding.subTitle.setText(getString(R.string.from) + " " + from);
+                    break;
+                default:
+                    transactionType = null;
+            }
+        } else {
+            if (from.equalsIgnoreCase(""))
+                binding.subTitle.setVisibility(View.GONE);
+            else
+                binding.subTitle.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupButtons() {
@@ -187,15 +235,24 @@ public class HomeActivity extends BaseActivity {
         switch (type) {
             case DISTRIBUTION:
                 color = R.color.distribution_color;
+                transactionType = type;
+                to = "";
+                setSubtitle(from, to);
                 setTitleAndSubtitle(type);
                 break;
             case DISCARD:
                 color = R.color.discard_color;
                 setTitleAndSubtitle(type);
+                to = "";
+                setSubtitle(from, to);
+                transactionType = type;
                 break;
             case CORRECTION:
                 color = R.color.correction_color;
                 setTitleAndSubtitle(type);
+                to = "";
+                setSubtitle(from, to);
+                transactionType = type;
                 break;
             default:
                 color = -1;
