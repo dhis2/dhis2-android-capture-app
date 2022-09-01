@@ -16,12 +16,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -235,10 +231,12 @@ public class HomeActivity extends BaseActivity {
 
     private void updateTheme(TransactionType type) {
         int color;
+        int theme;
 
         switch (type) {
             case DISTRIBUTION:
-                color = R.color.distribution_color;
+                color = R.color.colorPrimary;
+                theme = R.style.AppTheme;
                 transactionType = type;
                 to = "";
                 setSubtitle(from, to);
@@ -246,6 +244,7 @@ public class HomeActivity extends BaseActivity {
                 break;
             case DISCARD:
                 color = R.color.discard_color;
+                theme = R.style.RedTheme;
                 setTitleAndSubtitle(type);
                 to = "";
                 setSubtitle(from, to);
@@ -253,12 +252,14 @@ public class HomeActivity extends BaseActivity {
                 break;
             case CORRECTION:
                 color = R.color.correction_color;
+                theme = R.style.colorPrimary_757;
                 setTitleAndSubtitle(type);
                 to = "";
                 setSubtitle(from, to);
                 transactionType = type;
                 break;
             default:
+                theme = R.style.AppTheme;
                 color = -1;
         }
 
@@ -270,6 +271,16 @@ public class HomeActivity extends BaseActivity {
             binding.toolbar.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
             binding.fabManageStock.setBackgroundTintList(colorStateList);
             binding.toolbar.setBackgroundTintList(colorStateList);
+
+            getTheme().applyStyle(theme, true);
+
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+            int colorToReturn = a.getColor(0, 0);
+            a.recycle();
+            window.setStatusBarColor(colorToReturn);
         }
     }
 
