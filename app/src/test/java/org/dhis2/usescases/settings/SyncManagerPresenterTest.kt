@@ -310,12 +310,6 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should show message on wipe`() {
-        presenter.onWipeData()
-        verify(view, times(1)).wipeDatabase()
-    }
-
-    @Test
     fun `Should open clicked item`() {
         presenter.onItemClick(SettingItem.DATA_SYNC)
         verify(view).openItem(SettingItem.DATA_SYNC)
