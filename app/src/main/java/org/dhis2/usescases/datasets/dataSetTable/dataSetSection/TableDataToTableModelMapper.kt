@@ -18,9 +18,9 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                     cells = catOptions.distinctBy { it.uid() }
                         .filter { it.uid() != null && it.uid().isNotEmpty() }
                         .map { categoryOption ->
-                            val headerLabel = if(tableData.catCombo()?.isDefault == true){
+                            val headerLabel = if (tableData.catCombo()?.isDefault == true) {
                                 mapFieldValueToUser.getDefaultHeaderLabel()
-                            }else{
+                            } else {
                                 categoryOption.displayName()!!
                             }
                             TableHeaderCell(value = headerLabel)

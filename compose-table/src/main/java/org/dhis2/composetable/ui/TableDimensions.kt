@@ -37,7 +37,7 @@ data class TableDimensions(
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Dp {
-        return defaultRowHeaderWidth/*.withExtraSize(configuration, totalColumns, hasExtra)*/
+        return defaultRowHeaderWidth
     }
 
     fun headerCellWidth(
