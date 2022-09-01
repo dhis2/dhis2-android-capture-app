@@ -251,7 +251,7 @@ fun TableItemRow(
             .testTag("$ROW_TEST_TAG${rowHeader.row}")
             .width(IntrinsicSize.Min)
     ) {
-        Row(Modifier.fillMaxHeight()) {
+        Row(Modifier.height(IntrinsicSize.Min)) {
             ItemHeader(
                 tableModel.id ?: "",
                 rowHeader = rowHeader,
@@ -331,7 +331,7 @@ fun ItemHeader(
         modifier = Modifier
             .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
             .width(width)
-            .fillMaxHeight()
+            .height(IntrinsicSize.Min)
             .background(cellStyle.backgroundColor())
             .semantics {
                 tableIdSemantic = tableId
@@ -470,7 +470,6 @@ fun TableCell(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .fillMaxHeight()
                 .padding(horizontal = 4.dp),
             text = cellValue.value ?: "",
             maxLines = 1,
