@@ -54,4 +54,8 @@ class MapFieldValueToUser(
             else -> field.value()
         }
     }
+
+    fun getDefaultHeaderLabel(): String {
+        return resources.defaultTableLabel()
+    }
 }

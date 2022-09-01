@@ -74,4 +74,6 @@ class ResourceManager(val context: Context) {
     } catch (exception: Exception) {
         context
     }
+
+    fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
 }
