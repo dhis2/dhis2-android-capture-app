@@ -209,11 +209,11 @@ class ValueStoreTest {
     @Test
     fun `Should not delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-                Option.builder()
-                    .name("optionName")
-                    .uid("optionUid")
-                    .code("optionCode")
-                    .build()
+            Option.builder()
+                .name("optionName")
+                .uid("optionUid")
+                .code("optionCode")
+                .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                 "recordUid",
@@ -241,10 +241,10 @@ class ValueStoreTest {
             d2.dataElementModule().dataElements()
                 .uid("fieldUid").blockingGet()
         ) doReturn
-                DataElement.builder()
-                    .uid("fieldUid")
-                    .valueType(ValueType.TEXT)
-                    .build()
+            DataElement.builder()
+                .uid("fieldUid")
+                .valueType(ValueType.TEXT)
+                .build()
         val storeResult = deValueStore.deleteOptionValueIfSelected(
             "fieldUid",
             "optionUid"
@@ -255,11 +255,11 @@ class ValueStoreTest {
     @Test
     fun `Should delete data element value if field is option set`() {
         whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-                Option.builder()
-                    .name("optionName")
-                    .uid("optionUid")
-                    .code("optionCode")
-                    .build()
+            Option.builder()
+                .name("optionName")
+                .uid("optionUid")
+                .code("optionCode")
+                .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
