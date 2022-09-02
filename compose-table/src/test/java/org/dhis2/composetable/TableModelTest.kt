@@ -55,7 +55,7 @@ class TableModelTest {
 
     @Test
     fun moveToCellOnTheRight() {
-        val currentSelection = TableSelection.CellSelection("table", 0, 0)
+        val currentSelection = TableSelection.CellSelection("table", 0, 0, 0)
         tableModel.getNextCell(currentSelection)?.let { (tableCell, nextSelection) ->
             assert(tableCell.id == "01")
             assert(nextSelection.rowIndex == 0)
@@ -65,7 +65,7 @@ class TableModelTest {
 
     @Test
     fun moveToCellOnTheNextRow() {
-        val currentSelection = TableSelection.CellSelection("table", 3, 0)
+        val currentSelection = TableSelection.CellSelection("table", 3, 0, 0)
         tableModel.getNextCell(currentSelection)?.let { (tableCell, nextSelection) ->
             assert(tableCell.id == "10")
             assert(nextSelection.rowIndex == 1)
@@ -75,13 +75,13 @@ class TableModelTest {
 
     @Test
     fun returnNullWhenSelectionIsLastCell() {
-        val currentSelection = TableSelection.CellSelection("table", 3, 1)
+        val currentSelection = TableSelection.CellSelection("table", 3, 1, 1)
         assert(tableModel.getNextCell(currentSelection) == null)
     }
 
     @Test
     fun returnNullWhenNextCellIsNotEditable() {
-        val currentSelection = TableSelection.CellSelection("table", 0, 1)
+        val currentSelection = TableSelection.CellSelection("table", 0, 1, 1)
         assert(tableModel.getNextCell(currentSelection) == null)
     }
 }
