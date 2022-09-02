@@ -85,6 +85,8 @@ public class HomeActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+
+        backToHome();
     }
 
     private void synchronizeData() {
@@ -323,6 +325,15 @@ public class HomeActivity extends BaseActivity {
     @Override
     public ViewDataBinding createViewBinding() {
         return DataBindingUtil.setContentView(this, R.layout.activity_home);
+    }
+
+    private void backToHome() {
+        binding.menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
 }
