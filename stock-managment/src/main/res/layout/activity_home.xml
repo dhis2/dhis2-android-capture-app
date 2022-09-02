@@ -52,7 +52,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="@string/done_task"
+                android:text="@{viewModel.toolbarTitle.toString().substring(0,1)+viewModel.toolbarTitle.toString().toLowerCase().substring(1)}"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@id/sub_title"
