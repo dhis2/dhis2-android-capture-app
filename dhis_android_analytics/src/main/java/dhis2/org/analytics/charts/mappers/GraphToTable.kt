@@ -60,7 +60,13 @@ class GraphToTable {
                         error = null,
                         legendColor = cellModel.color
                     )
-                }.toMap()
+                }.toMap(),
+                isLastRow = headers.lastIndex == rowIndex,
+                maxLines = if(cells[rowIndex].any { it.text.toDoubleOrNull() != null }){
+                    1
+                }else{
+                    3
+                }
             )
         }
 

@@ -81,7 +81,8 @@ data class TableCell(
 data class TableRowModel(
     val rowHeader: RowHeader,
     val values: Map<Int, TableCell>,
-    val isLastRow: Boolean = false
+    val isLastRow: Boolean = false,
+    val maxLines: Int = 3
 )
 
 @Serializable

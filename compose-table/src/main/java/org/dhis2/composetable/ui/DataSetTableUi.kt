@@ -235,9 +235,7 @@ fun TableHeaderRow(
 fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    rowHeader: RowHeader,
-    dataElementValues: Map<Int, TableCell>,
-    isNotLastRow: Boolean,
+    rowModel:TableRowModel,
     rowHeaderCellStyle: @Composable
     (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
@@ -250,27 +248,30 @@ fun TableItemRow(
 ) {
     Column(
         Modifier
-            .testTag("$ROW_TEST_TAG${rowHeader.row}")
+            .testTag("$ROW_TEST_TAG${rowModel.rowHeader.row}")
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            ItemHeader(
-                tableModel.id ?: "",
-                rowHeader = rowHeader,
-                cellStyle = rowHeaderCellStyle(rowHeader.row),
-                width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                    LocalConfiguration.current,
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                ),
-                onCellSelected = onRowHeaderClick,
-                onDecorationClick = onDecorationClick
-            )
+            Box(modifier = Modifier.fillMaxHeight().background(Color.Red)){
+                ItemHeader(
+                    tableModel.id ?: "",
+                    rowHeader = rowModel.rowHeader,
+                    cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
+                    width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                        LocalConfiguration.current,
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    ),
+                    onCellSelected = onRowHeaderClick,
+                    onDecorationClick = onDecorationClick
+                )
+            }
             ItemValues(
                 tableId = tableModel.id ?: "",
                 horizontalScrollState = horizontalScrollState,
-                cellValues = dataElementValues,
+                cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
+                maxLines = rowModel.maxLines,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
                 defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
                     LocalConfiguration.current,
@@ -282,7 +283,7 @@ fun TableItemRow(
                 onClick = onClick
             )
         }
-        if (isNotLastRow) {
+        if (!rowModel.isLastRow) {
             Divider(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -328,7 +329,7 @@ fun ItemHeader(
         modifier = Modifier
             .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
             .width(width)
-            .height(IntrinsicSize.Min)
+            .fillMaxHeight()
             .background(cellStyle.backgroundColor())
             .semantics {
                 tableIdSemantic = tableId
@@ -388,6 +389,7 @@ fun ItemHeader(
 fun ItemValues(
     tableId: String,
     horizontalScrollState: ScrollState,
+    maxLines:Int,
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,
@@ -426,6 +428,7 @@ fun ItemValues(
                             backgroundColor = cellStyle(cellValue).backgroundColor()
                         ),
                     cellValue = cellValue,
+                    maxLines = maxLines,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
                             columnIndex = cellValue.column ?: -1,
@@ -444,6 +447,7 @@ fun ItemValues(
 fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
+    maxLines: Int,
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit
@@ -469,7 +473,7 @@ fun TableCell(
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp),
             text = cellValue.value ?: "",
-            maxLines = 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
                 fontSize = LocalTableDimensions.current.defaultCellTextSize,
@@ -665,9 +669,7 @@ private fun TableList(
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        rowHeader = tableRowModel.rowHeader,
-                        dataElementValues = tableRowModel.values,
-                        isNotLastRow = !tableRowModel.isLastRow,
+                        rowModel = tableRowModel,
                         nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
                             addBackgroundNonEditableCellLayer(
                                 hasToApplyLightPrimary = tableSelection.isCellParentSelected(
@@ -832,9 +834,7 @@ fun TableItem(
                 TableItemRow(
                     tableModel = tableModel,
                     horizontalScrollState = horizontalScrollState,
-                    rowHeader = tableRowModel.rowHeader,
-                    dataElementValues = tableRowModel.values,
-                    isNotLastRow = index != tableModel.tableRows.size - 1,
+                    rowModel = tableRowModel,
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         styleForRowHeader(
                             isSelected = tableSelection.isRowSelected(
@@ -928,7 +928,7 @@ fun TableListPreview() {
                 1,
                 TableCell(
                     id = "1",
-                    value = "This is a long testing value whats going on ggfg",
+                    value = "1",
                     editable = false,
                     row = 0,
                     column = 1
@@ -954,13 +954,62 @@ fun TableListPreview() {
             Pair(9, TableCell(id = "9", value = "12", row = 0, column = 9)),
             Pair(10, TableCell(id = "10", value = "12", row = 0, column = 10)),
             Pair(11, TableCell(id = "11", value = "12", row = 0, column = 11))
-        )
+        ),
+        maxLines = 1
+    )
+
+    val tableRows2 = TableRowModel(
+        rowHeader = RowHeader("uid", "Data Element", 0, true),
+        values = mapOf(
+            Pair(
+                0,
+                TableCell(
+                    id = "0",
+                    value = "text",
+                    mandatory = true,
+                    row = 0,
+                    column = 0
+                )
+            ),
+            Pair(
+                1,
+                TableCell(
+                    id = "1",
+                    value = "This is a long testing value whats going on ggfg",
+                    editable = false,
+                    row = 0,
+                    column = 1
+                )
+            ),
+            Pair(2, TableCell(id = "2", value = "", mandatory = true, row = 0, column = 2)),
+            Pair(
+                3,
+                TableCell(
+                    id = "3",
+                    value = "",
+                    mandatory = true,
+                    error = "Error",
+                    row = 0,
+                    column = 3
+                )
+            ),
+            Pair(4, TableCell(id = "4", value = "", error = "Error", row = 0, column = 4)),
+            Pair(5, TableCell(id = "5", value = "", row = 0, column = 5)),
+            Pair(6, TableCell(id = "6", value = "", row = 0, column = 6)),
+            Pair(7, TableCell(id = "7", value = "", row = 0, column = 7)),
+            Pair(8, TableCell(id = "8", value = "", row = 0, column = 8)),
+            Pair(9, TableCell(id = "9", value = "", row = 0, column = 9)),
+            Pair(10, TableCell(id = "10", value = "", row = 0, column = 10)),
+            Pair(11, TableCell(id = "11", value = "", row = 0, column = 11))
+        ),
+        isLastRow = true,
+        maxLines = 3
     )
 
     val tableModel = TableModel(
         "tableId",
         tableHeaderModel,
-        listOf(tableRows)
+        listOf(tableRows, tableRows2)
     )
     val tableList = listOf(tableModel)
     TableList(

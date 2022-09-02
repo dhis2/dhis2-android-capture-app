@@ -52,7 +52,12 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         dropDownOptions = field.options()
                     )
                 }.toMap(),
-                isLastRow = rowIndex == (tableData.rows()!!.size - 1)
+                isLastRow = rowIndex == (tableData.rows()!!.size - 1),
+                maxLines = if(dataElement.valueType()?.isNumeric == true){
+                    1
+                }else{
+                    3
+                }
             )
         } ?: emptyList()
 
