@@ -12,10 +12,6 @@
             type="org.dhis2.android.rtsm.ui.home.HomeViewModel" />
 
         <variable
-            name="theme"
-            type="android.content.res.Resources.Theme" />
-
-        <variable
             name="title"
             type="java.lang.String" />
 
