@@ -19,7 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -72,7 +75,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(
@@ -194,7 +197,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -239,11 +242,11 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
-        (rowHeaderIndex: Int?) -> CellStyle,
+    (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -397,9 +400,9 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(
@@ -451,7 +454,7 @@ fun TableCell(
     cellValue: TableCell,
     maxLines: Int,
     nonEditableCellLayer: @Composable
-        () -> Unit,
+    () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -610,21 +613,24 @@ private fun TableList(
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
+        val verticalScrollState = rememberLazyListState()
 
         tableList.indexOfFirst { it.id == tableSelection.tableId }
             .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
-                SelectionScrollEffect(
-                    tableSelection,
-                    tableList[selectedTableIndex],
-                    horizontalScrollStates[selectedTableIndex]
-                )
-            }
+            SelectionScrollEffect(
+                tableSelection,
+                tableList[selectedTableIndex],
+                horizontalScrollStates[selectedTableIndex],
+                verticalScrollState
+            )
+        }
 
         LazyColumn(
-            Modifier.padding(
+            modifier = Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
                 vertical = LocalTableDimensions.current.tableVerticalPadding
-            )
+            ),
+            state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->
                 stickyHeader {
@@ -668,15 +674,15 @@ private fun TableList(
                                     columnIndex = headerColumnIndex,
                                     columnHeaderRow = headerRowIndex,
                                     childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(
-                                        headerRowIndex
-                                    )
+                                        currentTableModel.countChildrenOfSelectedHeader(
+                                            headerRowIndex
+                                        )
                                 )
                             )
                         }
                     )
                 }
-                items(items = currentTableModel.tableRows) { tableRowModel ->
+                itemsIndexed(items = currentTableModel.tableRows) { globalIndex, tableRowModel ->
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
@@ -734,7 +740,8 @@ private fun TableList(
                                 TableSelection.CellSelection(
                                     tableId = currentTableModel.id ?: "",
                                     columnIndex = tableCell.column ?: -1,
-                                    rowIndex = tableCell.row ?: -1
+                                    rowIndex = tableCell.row ?: -1,
+                                    globalIndex = globalIndex
                                 )
                             )
                             onClick(tableCell)
@@ -898,7 +905,8 @@ fun TableItem(
 fun SelectionScrollEffect(
     tableSelection: TableSelection,
     selectedTable: TableModel,
-    selectedScrollState: ScrollState
+    selectedScrollState: ScrollState,
+    verticalScrollState: LazyListState
 ) {
     val localDimensions = LocalTableDimensions.current
     val localConf = LocalConfiguration.current
@@ -915,6 +923,9 @@ fun SelectionScrollEffect(
             }
             selectedScrollState.animateScrollTo(
                 cellWidth.toInt() * tableSelection.columnIndex
+            )
+            verticalScrollState.animateScrollToItem(
+                tableSelection.globalIndex
             )
         }
     }
