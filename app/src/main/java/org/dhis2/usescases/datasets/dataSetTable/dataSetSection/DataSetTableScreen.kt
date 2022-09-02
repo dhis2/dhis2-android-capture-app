@@ -131,9 +131,8 @@ fun DataSetTableScreen(
         }
 
         LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
-            when (bottomSheetState.bottomSheetState.currentValue) {
-                BottomSheetValue.Collapsed -> finishEdition()
-                BottomSheetValue.Expanded -> {}
+            if (bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed) {
+                finishEdition()
             }
         }
         BottomSheetScaffold(
