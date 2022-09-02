@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.ui.home
 
+import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -66,6 +67,10 @@ class HomeViewModel @Inject constructor(
     private val _destinations = MutableLiveData<OperationState<List<Option>>>()
     val destinationsList: LiveData<OperationState<List<Option>>>
         get() = _destinations
+
+    // Toolbar section variables
+    private val _toolbarTitle = MutableLiveData<TransactionType>()
+    val toolbarTitle: LiveData<TransactionType> get() = _toolbarTitle
 
     init {
         loadFacilities()
@@ -184,5 +189,13 @@ class HomeViewModel @Inject constructor(
         _transactionDate.value = Instant.ofEpochMilli(epoch)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
+    }
+
+    @JvmName("getToolbarTitle1")
+    fun getToolbarTitle(): LiveData<TransactionType> {
+        return toolbarTitle
+    }
+    fun setToolbarTitle(transactionType: TransactionType) {
+        _toolbarTitle.value = transactionType
     }
 }
