@@ -294,14 +294,6 @@ public class HelpManager {
                 .closeOnTouch(true)
                 .build();
 
-        FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsReset))
-                .title(activity.getString(R.string.tuto_settings_4))
-                .enableAutoTextPosition()
-                .closeOnTouch(true)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .build();
-
 
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
@@ -310,7 +302,6 @@ public class HelpManager {
         steps.add(tuto4);
         steps.add(tuto5);
         steps.add(tuto6);
-        steps.add(tuto7);
 
         return steps;
     }

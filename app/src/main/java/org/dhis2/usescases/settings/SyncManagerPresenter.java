@@ -334,11 +334,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void onWipeData() {
-        view.wipeDatabase();
-    }
-
-    @Override
     public void wipeDb() {
         try {
             workManagerController.cancelAllWork();
