@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -72,18 +73,13 @@ fun DataSetTableScreen(
 
         fun collapseBottomSheet() {
             coroutineScope.launch {
-                if (bottomSheetState.bottomSheetState.isExpanded) {
-                    bottomSheetState.bottomSheetState.collapse()
-                }
+                bottomSheetState.bottomSheetState.collapseIfExpanded()
             }
         }
 
         fun startEdition() {
             coroutineScope.launch {
-                if (bottomSheetState.bottomSheetState.isCollapsed) {
-                    bottomSheetState.bottomSheetState.expand()
-                    onEdition(true)
-                }
+                bottomSheetState.bottomSheetState.expandIfCollapsed { onEdition(true) }
             }
         }
 
@@ -197,5 +193,20 @@ fun DataSetTableScreen(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private suspend fun BottomSheetState.collapseIfExpanded() {
+    if (isExpanded) {
+        collapse()
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
+    if (isCollapsed) {
+        expand()
+        onExpand()
     }
 }
