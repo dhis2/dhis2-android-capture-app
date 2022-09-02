@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.sp
 data class TableDimensions(
     val tableHorizontalPadding: Dp = 16.dp,
     val tableVerticalPadding: Dp = 16.dp,
-    val defaultCellWidth: Dp = 52.dp,
+    val defaultCellWidth: Dp = 58.dp,
     val defaultCellHeight: Dp = 36.dp,
-    val defaultRowHeaderWidth: Dp = 60.dp,
+    val defaultRowHeaderWidth: Dp = 140.dp,
     val defaultHeaderHeight: Dp = 30.dp,
     val defaultLegendCornerSize: Dp = 2.dp,
-    val defaultLegendBorderWidth: Dp = 4.dp,
+    val defaultLegendBorderWidth: Dp = 8.dp,
     val defaultHeaderTextSize: TextUnit = 12.sp,
     val defaultRowHeaderTextSize: TextUnit = 12.sp,
     val defaultCellTextSize: TextUnit = 12.sp
@@ -37,7 +37,7 @@ data class TableDimensions(
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Dp {
-        return defaultRowHeaderWidth.withExtraSize(configuration, totalColumns, hasExtra)
+        return defaultRowHeaderWidth
     }
 
     fun headerCellWidth(
@@ -80,7 +80,7 @@ data class TableDimensions(
 
         return if (tableWidth < screenWidth.dp) {
             val totalColumnCount = 1.takeIf { hasTotal } ?: 0
-            val columnsCount = 1 + totalColumns + totalColumnCount
+            val columnsCount = totalColumns + totalColumnCount
             (screenWidth.dp - tableWidth) / columnsCount
         } else {
             0.dp

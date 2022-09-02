@@ -14,16 +14,16 @@ class TableDimensionsTest {
     @Test
     fun `Should calculate default cell width for different tables`() {
         val expectedExtraWidth = listOf(
-            100.dp / 2,
-            210.dp / 3,
-            50.dp / 4,
-            50.dp / 5
+            100.dp,
+            210.dp / 2,
+            60.dp / 3,
+            60.dp / 4
         )
         listOf(
             TestScenario(extraSpacing = 100.dp, totalColumns = 1, hasTotal = false),
             TestScenario(extraSpacing = 210.dp, totalColumns = 1, hasTotal = true),
-            TestScenario(extraSpacing = 50.dp, totalColumns = 3, hasTotal = false),
-            TestScenario(extraSpacing = 50.dp, totalColumns = 3, hasTotal = true)
+            TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = false),
+            TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = true)
         ).forEachIndexed { index, testScenario ->
             val tableWidth = tableDimensions.tableWidth(
                 totalColumns = testScenario.totalColumns,
@@ -58,7 +58,7 @@ class TableDimensionsTest {
             headerRowColumns = headerRowColumns
         ).let { result ->
             assertTrue(result.cellWidth > tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth > tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
                 assertTrue(calculatedHeaderCellWidth > tableDimensions.defaultCellWidth)
             }
@@ -81,7 +81,7 @@ class TableDimensionsTest {
             headerRowColumns = headerRowColumns
         ).let { result ->
             assertTrue(result.cellWidth > tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth > tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
                 assertTrue(calculatedHeaderCellWidth > tableDimensions.defaultCellWidth)
             }
