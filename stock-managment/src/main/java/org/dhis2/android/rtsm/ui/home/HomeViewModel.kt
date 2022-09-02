@@ -1,15 +1,11 @@
 package org.dhis2.android.rtsm.ui.home
 
-import androidx.compose.ui.text.capitalize
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -26,6 +22,10 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -40,8 +40,7 @@ class HomeViewModel @Inject constructor(
         ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _transactionType = MutableLiveData<TransactionType>()
-    val transactionType: LiveData<TransactionType>
-        get() = _transactionType
+    val transactionType: LiveData<TransactionType> get() = _transactionType
 
     private val _isDistribution: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDistribution: LiveData<Boolean>
@@ -71,6 +70,10 @@ class HomeViewModel @Inject constructor(
     // Toolbar section variables
     private val _toolbarTitle = MutableLiveData<TransactionType>()
     val toolbarTitle: LiveData<TransactionType> get() = _toolbarTitle
+
+    private val _toolbarSubtitle = MutableLiveData<String>()
+    val toolbarSubtitle: LiveData<String> get() = _toolbarSubtitle
+
 
     init {
         loadFacilities()
@@ -195,7 +198,25 @@ class HomeViewModel @Inject constructor(
     fun getToolbarTitle(): LiveData<TransactionType> {
         return toolbarTitle
     }
+
     fun setToolbarTitle(transactionType: TransactionType) {
         _toolbarTitle.value = transactionType
+    }
+
+
+    fun setSubtitle(from: String, to: String, type: TransactionType) {
+        when (type) {
+            TransactionType.DISTRIBUTION -> if (!to.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = ""+R.string.from  +" ${from} -> " +R.string.to +" "+ to
+            else if (!from.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = ""+R.string.from+ " ${from}"
+            TransactionType.DISCARD -> if (!from.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = ""+R.string.from+ " ${from}"
+            TransactionType.CORRECTION -> if (!from.equals(
+                    "",
+                    ignoreCase = true
+                )
+            ) _toolbarSubtitle.value =""+R.string.from+ " ${from}"
+        }
     }
 }
