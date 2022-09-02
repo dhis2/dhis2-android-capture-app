@@ -830,7 +830,7 @@ fun TableItem(
                     )
                 }
             )
-            tableModel.tableRows.forEachIndexed { index, tableRowModel ->
+            tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
                     tableModel = tableModel,
                     horizontalScrollState = horizontalScrollState,
@@ -958,58 +958,10 @@ fun TableListPreview() {
         maxLines = 1
     )
 
-    val tableRows2 = TableRowModel(
-        rowHeader = RowHeader("uid", "Data Element", 0, true),
-        values = mapOf(
-            Pair(
-                0,
-                TableCell(
-                    id = "0",
-                    value = "text",
-                    mandatory = true,
-                    row = 0,
-                    column = 0
-                )
-            ),
-            Pair(
-                1,
-                TableCell(
-                    id = "1",
-                    value = "This is a long testing value whats going on ggfg",
-                    editable = false,
-                    row = 0,
-                    column = 1
-                )
-            ),
-            Pair(2, TableCell(id = "2", value = "", mandatory = true, row = 0, column = 2)),
-            Pair(
-                3,
-                TableCell(
-                    id = "3",
-                    value = "",
-                    mandatory = true,
-                    error = "Error",
-                    row = 0,
-                    column = 3
-                )
-            ),
-            Pair(4, TableCell(id = "4", value = "", error = "Error", row = 0, column = 4)),
-            Pair(5, TableCell(id = "5", value = "", row = 0, column = 5)),
-            Pair(6, TableCell(id = "6", value = "", row = 0, column = 6)),
-            Pair(7, TableCell(id = "7", value = "", row = 0, column = 7)),
-            Pair(8, TableCell(id = "8", value = "", row = 0, column = 8)),
-            Pair(9, TableCell(id = "9", value = "", row = 0, column = 9)),
-            Pair(10, TableCell(id = "10", value = "", row = 0, column = 10)),
-            Pair(11, TableCell(id = "11", value = "", row = 0, column = 11))
-        ),
-        isLastRow = true,
-        maxLines = 3
-    )
-
     val tableModel = TableModel(
         "tableId",
         tableHeaderModel,
-        listOf(tableRows, tableRows2)
+        listOf(tableRows)
     )
     val tableList = listOf(tableModel)
     TableList(
