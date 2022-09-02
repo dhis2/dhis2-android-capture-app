@@ -16,13 +16,13 @@
             type="android.content.res.Resources.Theme" />
 
         <variable
-            name="userName"
+            name="title"
             type="java.lang.String" />
 
-
         <variable
-            name="totalFilters"
-            type="Integer" />
+            name="subTitle"
+            type="java.lang.String" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -97,27 +97,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
-
-            <!--                <androidx.constraintlayout.widget.ConstraintLayout-->
-            <!--                    android:id="@+id/filterCounter"-->
-            <!--                    android:layout_width="24dp"-->
-            <!--                    android:layout_height="24dp"-->
-            <!--                    android:layout_marginStart="24dp"-->
-            <!--                    android:layout_marginTop="24dp"-->
-            <!--                    android:padding="2dp"-->
-            <!--                    app:layout_constraintTop_toTopOf="@id/filterActionButton"-->
-            <!--                    app:layout_constraintStart_toStartOf="@id/filterActionButton">-->
-
-            <!--                    <TextView-->
-            <!--                        android:layout_width="match_parent"-->
-            <!--                        android:layout_height="match_parent"-->
-            <!--                        android:background="@drawable/ic_oval_shape_white"-->
-            <!--                        android:gravity="center"-->
-            <!--                        android:includeFontPadding="false"-->
-            <!--                        android:textColor="?colorPrimary"-->
-            <!--                        android:textSize="10sp"-->
-            <!--                        tools:text="1" />-->
-            <!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
