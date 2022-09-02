@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,17 +65,20 @@ fun DataSetTableScreen(
             primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
         )
 
-        val finishEdition = {
+        fun finishEdition() {
+            tableSelection = TableSelection.Unselected()
+            onEdition(false)
+        }
+
+        fun collapseBottomSheet() {
             coroutineScope.launch {
                 if (bottomSheetState.bottomSheetState.isExpanded) {
-                    tableSelection = TableSelection.Unselected()
-                    onEdition(false)
                     bottomSheetState.bottomSheetState.collapse()
                 }
             }
         }
 
-        val startEdition = {
+        fun startEdition() {
             coroutineScope.launch {
                 if (bottomSheetState.bottomSheetState.isCollapsed) {
                     bottomSheetState.bottomSheetState.expand()
@@ -114,13 +118,23 @@ fun DataSetTableScreen(
                 } ?: run {
                     focusManager.clearFocus(true)
                     finishEdition()
+                    collapseBottomSheet()
                 }
             }
             nextSelected = false
         }
 
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-            finishEdition()
+            coroutineScope.launch {
+                bottomSheetState.bottomSheetState.collapse()
+            }
+        }
+
+        LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
+            when (bottomSheetState.bottomSheetState.currentValue) {
+                BottomSheetValue.Collapsed -> finishEdition()
+                BottomSheetValue.Expanded -> {}
+            }
         }
         BottomSheetScaffold(
             scaffoldState = bottomSheetState,
@@ -170,7 +184,7 @@ fun DataSetTableScreen(
                     currentCell = cell
                     currentInputType = inputModel.copy(currentValue = currentCell?.value)
                     startEdition()
-                } ?: finishEdition()
+                } ?: finishEdition().also { collapseBottomSheet() }
             }
             displayDescription?.let {
                 TableDialog(
