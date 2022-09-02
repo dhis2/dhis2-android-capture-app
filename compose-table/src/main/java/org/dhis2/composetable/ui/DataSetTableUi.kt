@@ -252,7 +252,7 @@ fun TableItemRow(
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight().background(Color.Red)) {
+            Box(modifier = Modifier.fillMaxHeight()) {
                 ItemHeader(
                     tableModel.id ?: "",
                     rowHeader = rowModel.rowHeader,
