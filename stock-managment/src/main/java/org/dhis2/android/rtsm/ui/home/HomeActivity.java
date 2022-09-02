@@ -133,9 +133,6 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
-//        viewModel.getToolbarTitle().observe(this, title -> {
-//            binding.title.setText(title.toString().toLowerCase());
-//        });
     }
 
     private <T> boolean reportNetworkError(OperationState<T> operationState) {
@@ -188,25 +185,10 @@ public class HomeActivity extends BaseActivity {
 
     private void setSubtitle(String from, String to) {
 
+
+
         if (transactionType != null) {
-            switch (transactionType) {
-                case DISTRIBUTION:
-                    if (!to.equalsIgnoreCase(""))
-                        binding.subTitle.setText(getString(R.string.from) + " " + from + " -> " + " " + getString(R.string.to) +" "+ to);
-                    else if(!from.equalsIgnoreCase(""))
-                        binding.subTitle.setText(getString(R.string.from) + " " + from);
-                    break;
-                case DISCARD:
-                    if (!from.equalsIgnoreCase(""))
-                        binding.subTitle.setText(getString(R.string.from) + " " + from);
-                    break;
-                case CORRECTION:
-                    if(!from.equalsIgnoreCase(""))
-                        binding.subTitle.setText(getString(R.string.from) + " " + from);
-                    break;
-                default:
-                    transactionType = null;
-            }
+            viewModel.setSubtitle(from, to, transactionType);
         } else {
             if (from.equalsIgnoreCase(""))
                 binding.subTitle.setVisibility(View.GONE);
