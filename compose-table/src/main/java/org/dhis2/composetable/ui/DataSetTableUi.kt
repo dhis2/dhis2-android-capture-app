@@ -235,7 +235,7 @@ fun TableHeaderRow(
 fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    rowModel:TableRowModel,
+    rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
     (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
@@ -252,7 +252,7 @@ fun TableItemRow(
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight().background(Color.Red)){
+            Box(modifier = Modifier.fillMaxHeight().background(Color.Red)) {
                 ItemHeader(
                     tableModel.id ?: "",
                     rowHeader = rowModel.rowHeader,
@@ -389,7 +389,7 @@ fun ItemHeader(
 fun ItemValues(
     tableId: String,
     horizontalScrollState: ScrollState,
-    maxLines:Int,
+    maxLines: Int,
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,

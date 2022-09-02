@@ -53,9 +53,9 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
-                maxLines = if(dataElement.valueType()?.isNumeric == true){
+                maxLines = if (dataElement.valueType()?.isNumeric == true) {
                     1
-                }else{
+                } else {
                     3
                 }
             )

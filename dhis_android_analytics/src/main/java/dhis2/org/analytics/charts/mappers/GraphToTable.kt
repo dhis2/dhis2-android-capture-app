@@ -62,9 +62,9 @@ class GraphToTable {
                     )
                 }.toMap(),
                 isLastRow = headers.lastIndex == rowIndex,
-                maxLines = if(cells[rowIndex].any { it.text.toDoubleOrNull() != null }){
+                maxLines = if (cells[rowIndex].any { it.text.toDoubleOrNull() != null }) {
                     1
-                }else{
+                } else {
                     3
                 }
             )
