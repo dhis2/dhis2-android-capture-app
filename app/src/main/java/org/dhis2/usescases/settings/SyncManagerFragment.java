@@ -14,15 +14,12 @@ import static org.dhis2.commons.Constants.META_NOW;
 import static org.dhis2.commons.Constants.TIME_MANUAL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -37,7 +34,6 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
@@ -207,25 +203,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
-    }
-
-    private void showDeleteProgress() {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel("wipe_notification", "Restart", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context, "wipe_notification")
-                        .setSmallIcon(R.drawable.ic_sync)
-                        .setContentTitle(getString(R.string.wipe_data))
-                        .setContentText(getString(R.string.please_wait))
-                        .setOngoing(true)
-                        .setAutoCancel(false)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        notificationManager.notify(123456, notificationBuilder.build());
-        presenter.wipeDb();
     }
 
     @Override
@@ -772,18 +749,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
 
         binding.eventsEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.eventsEditText.getText().toString().isEmpty()) {
-                    presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.eventsEditText.getText().toString().isEmpty()) {
+                presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
             }
         });
 
         binding.teiEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.teiEditText.getText().toString().isEmpty()) {
-                    presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.teiEditText.getText().toString().isEmpty()) {
+                presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
             }
         });
     }
