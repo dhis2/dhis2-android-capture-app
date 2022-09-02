@@ -1,6 +1,7 @@
 package org.dhis2.android.rtsm.ui.home
 
 import android.view.View
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -19,6 +20,7 @@ import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
+import org.dhis2.android.rtsm.utils.UiText
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -203,20 +205,20 @@ class HomeViewModel @Inject constructor(
         _toolbarTitle.value = transactionType
     }
 
-
     fun setSubtitle(from: String, to: String, type: TransactionType) {
+
         when (type) {
             TransactionType.DISTRIBUTION -> if (!to.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = ""+R.string.from  +" ${from} -> " +R.string.to +" "+ to
+            ) _toolbarSubtitle.value =   "From ${from} -> " + "To" + " " + to
             else if (!from.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = ""+R.string.from+ " ${from}"
+            ) _toolbarSubtitle.value = "From"+  " ${from}"
             TransactionType.DISCARD -> if (!from.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = ""+R.string.from+ " ${from}"
+            ) _toolbarSubtitle.value = "From" + " ${from}"
             TransactionType.CORRECTION -> if (!from.equals(
                     "",
                     ignoreCase = true
                 )
-            ) _toolbarSubtitle.value =""+R.string.from+ " ${from}"
+            ) _toolbarSubtitle.value = R.string.from.toString() + " ${from}"
         }
     }
 }
