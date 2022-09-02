@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -131,6 +132,10 @@ public class HomeActivity extends BaseActivity {
                 distributedToTextView.getEditableText().clear();
             }
         });
+
+//        viewModel.getToolbarTitle().observe(this, title -> {
+//            binding.title.setText(title.toString().toLowerCase());
+//        });
     }
 
     private <T> boolean reportNetworkError(OperationState<T> operationState) {
@@ -192,10 +197,12 @@ public class HomeActivity extends BaseActivity {
                         binding.subTitle.setText(getString(R.string.from) + " " + from);
                     break;
                 case DISCARD:
-                    binding.subTitle.setText(getString(R.string.from) + " " + from);
+                    if (!from.equalsIgnoreCase(""))
+                        binding.subTitle.setText(getString(R.string.from) + " " + from);
                     break;
                 case CORRECTION:
-                    binding.subTitle.setText(getString(R.string.from) + " " + from);
+                    if(!from.equalsIgnoreCase(""))
+                        binding.subTitle.setText(getString(R.string.from) + " " + from);
                     break;
                 default:
                     transactionType = null;
@@ -233,19 +240,18 @@ public class HomeActivity extends BaseActivity {
         int color;
         int theme;
 
+        viewModel.setToolbarTitle(type);
         switch (type) {
             case DISTRIBUTION:
                 color = R.color.colorPrimary;
                 theme = R.style.AppTheme;
                 transactionType = type;
                 to = "";
-                setSubtitle(from, to);
-                setTitleAndSubtitle(type);
+//                setSubtitle(from, to);
                 break;
             case DISCARD:
                 color = R.color.discard_color;
                 theme = R.style.RedTheme;
-                setTitleAndSubtitle(type);
                 to = "";
                 setSubtitle(from, to);
                 transactionType = type;
@@ -253,7 +259,6 @@ public class HomeActivity extends BaseActivity {
             case CORRECTION:
                 color = R.color.correction_color;
                 theme = R.style.colorPrimary_757;
-                setTitleAndSubtitle(type);
                 to = "";
                 setSubtitle(from, to);
                 transactionType = type;
@@ -282,11 +287,6 @@ public class HomeActivity extends BaseActivity {
             a.recycle();
             window.setStatusBarColor(colorToReturn);
         }
-    }
-
-    private void setTitleAndSubtitle(TransactionType type) {
-
-        binding.title.setText(type.toString());
     }
 
     private void setupTransactionDateField() {
