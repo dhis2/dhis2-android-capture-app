@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -234,8 +233,8 @@ public class HomeActivity extends BaseActivity {
 //                setSubtitle(from, to);
                 break;
             case DISCARD:
-                color = R.color.discard_color;
-                theme = R.style.RedTheme;
+                color = R.color.colorPrimary_fbc;
+                theme = R.style.colorPrimary_fbc;
                 to = "";
                 setSubtitle(from, to);
                 transactionType = type;
@@ -252,12 +251,16 @@ public class HomeActivity extends BaseActivity {
                 color = -1;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && color != -1) {
+        if (color != -1) {
             ColorStateList colorStateList = ColorStateList.valueOf(
                     ContextCompat.getColor(this, color)
             );
-            binding.fabManageStock.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
-            binding.toolbar.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                binding.fabManageStock.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+                binding.toolbar.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+            }
+
             binding.fabManageStock.setBackgroundTintList(colorStateList);
             binding.toolbar.setBackgroundTintList(colorStateList);
 
