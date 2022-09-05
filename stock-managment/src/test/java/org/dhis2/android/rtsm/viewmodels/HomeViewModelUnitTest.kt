@@ -34,8 +34,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -462,5 +461,63 @@ class HomeViewModelUnitTest {
 
         val title = viewModel.toolbarTitle.value?.name
         assertEquals(TransactionType.CORRECTION.name, title)
+    }
+
+    @Test
+    fun shouldChangeToolbarSubtitle_forDistribution() {
+        val destination = destinations[2]
+        val facility = facilities[1]
+        val now = LocalDateTime.now()
+
+        viewModel.selectTransaction(TransactionType.DISTRIBUTION)
+        viewModel.setDestination(destination)
+        viewModel.setFacility(facility)
+        viewModel.setTransactionDate(getTime(now))
+
+
+        val facilityName = viewModel.getData().facility.name
+        val distributedTo = viewModel.getData().distributedTo?.name
+        val transactionType = viewModel.getData().transactionType
+
+        if (distributedTo != null) {
+            viewModel.setSubtitle(facilityName, distributedTo, transactionType)
+            println("${viewModel.toolbarSubtitle.value}")
+        }
+
+        assertNotNull(viewModel.toolbarSubtitle.value)
+    }
+
+    @Test
+    fun shouldChangeToolbarSubtitle_forDiscard() {
+        val facility = facilities[1]
+        val now = LocalDateTime.now()
+
+        viewModel.selectTransaction(TransactionType.DISCARD)
+        viewModel.setFacility(facility)
+        viewModel.setTransactionDate(getTime(now))
+
+        val facilityName = viewModel.getData().facility.name
+        val transactionType = viewModel.getData().transactionType
+
+        viewModel.setSubtitle(facilityName, "", transactionType)
+
+        assertNotNull(viewModel.toolbarSubtitle.value)
+    }
+
+    @Test
+    fun shouldChangeToolbarSubtitle_forCorrection() {
+        val facility = facilities[1]
+        val now = LocalDateTime.now()
+
+        viewModel.selectTransaction(TransactionType.CORRECTION)
+        viewModel.setFacility(facility)
+        viewModel.setTransactionDate(getTime(now))
+
+        val facilityName = viewModel.getData().facility.name
+        val transactionType = viewModel.getData().transactionType
+
+        viewModel.setSubtitle(facilityName, "", transactionType)
+
+        assertNotNull(viewModel.toolbarSubtitle.value)
     }
 }
