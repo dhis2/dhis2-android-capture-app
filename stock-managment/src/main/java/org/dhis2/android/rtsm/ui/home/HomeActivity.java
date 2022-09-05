@@ -186,8 +186,6 @@ public class HomeActivity extends BaseActivity {
 
     private void setSubtitle(String from, String to) {
 
-
-
         if (transactionType != null) {
             viewModel.setSubtitle(from, to, transactionType);
         } else {
@@ -236,15 +234,15 @@ public class HomeActivity extends BaseActivity {
                 color = R.color.colorPrimary_fbc;
                 theme = R.style.colorPrimary_fbc;
                 to = "";
-                setSubtitle(from, to);
                 transactionType = type;
+                setSubtitle(from, to);
                 break;
             case CORRECTION:
                 color = R.color.correction_color;
                 theme = R.style.colorPrimary_757;
                 to = "";
-                setSubtitle(from, to);
                 transactionType = type;
+                setSubtitle(from, to);
                 break;
             default:
                 theme = R.style.AppTheme;
