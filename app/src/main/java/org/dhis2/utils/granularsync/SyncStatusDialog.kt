@@ -1,10 +1,10 @@
 package org.dhis2.utils.granularsync
 
-import android.Manifest
 import android.content.Context
 import android.content.DialogInterface
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -13,20 +13,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
@@ -35,18 +34,14 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
-import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SYNC_GRANULAR
 import org.dhis2.utils.analytics.SYNC_GRANULAR_ONLINE
 import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
-import org.dhis2.utils.customviews.MessageAmountDialog
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-
-private const val SMS_PERMISSIONS_REQ_ID = 102
 
 class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
@@ -69,6 +64,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
     private var syncing: Boolean = false
+    private var syncingBySms = false
 
     private val config: SyncStatusDialogUiConfig by lazy {
         SyncStatusDialogUiConfig(resources, presenter, getInputArguments())
@@ -203,6 +199,13 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         return binding!!.root
     }
 
+    override fun onResume() {
+        if (syncingBySms) {
+            Snackbar.make(binding!!.root, "Test", BaseTransientBottomBar.LENGTH_LONG).show()
+        }
+        super.onResume()
+    }
+
     private fun showErrorLog() {
         ErrorDialog()
             .setData(presenter.syncErrors())
@@ -252,6 +255,17 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         dismiss()
     }
 
+    override fun openSmsApp(message: String) {
+        val uri = Uri.parse("smsto:${presenter.getGatewayNumber()}")
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = uri
+            putExtra("sms_body", message)
+        }
+        val chooser = Intent.createChooser(intent, "Send Sms with")
+        syncingBySms = true
+        startActivity(chooser)
+    }
+
     private fun setNetworkMessage() {
         if (!networkUtils.isOnline()) {
             if (presenter.isSMSEnabled(context?.showSMS() == true)) {
@@ -263,9 +277,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     binding!!.syncButton.setText(R.string.action_sync_sms)
                     binding!!.syncButton.visibility = View.VISIBLE
                     binding!!.syncButton.setOnClickListener {
-                        if (checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID)) {
-                            syncSMS()
-                        }
+                        binding!!.noConflictMessage.visibility = View.GONE
+                        binding!!.synsStatusRecycler.visibility = View.VISIBLE
+
+                        presenter.initSMSSync()
                     }
                 } else {
                     binding!!.syncButton.visibility = View.GONE
@@ -387,7 +402,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         super.onDismiss(dialog)
     }
 
-    private fun syncSMS() {
+    /*private fun syncSMS() {
         binding!!.noConflictMessage.visibility = View.GONE
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
 
@@ -396,9 +411,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         } else {
             closeDialog()
         }
-    }
+    }*/
 
-    private fun checkPermissions(): Boolean {
+    /*private fun checkPermissions(): Boolean {
         // check permissions
         val smsPermissions = arrayOf(
             Manifest.permission.ACCESS_NETWORK_STATE,
@@ -415,9 +430,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return false
         }
         return true
-    }
+    }*/
 
-    private fun hasPermissions(permissions: Array<String>): Boolean {
+    /*private fun hasPermissions(permissions: Array<String>): Boolean {
         for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(requireContext(), permission) !=
                 PackageManager.PERMISSION_GRANTED
@@ -426,7 +441,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             }
         }
         return true
-    }
+    }*/
 
     private fun getInputArguments(): InputArguments {
         val bundle = Bundle()
@@ -446,7 +461,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         return InputArguments(bundle)
     }
 
-    private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
+    /*private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
         if (states.isNullOrEmpty()) return
 
         states.forEach { status ->
@@ -473,9 +488,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.COMPLETED -> {
             }
         }
-    }
+    }*/
 
-    private fun askForMessagesAmount(amount: Int) {
+    /*private fun askForMessagesAmount(amount: Int) {
         val args = Bundle()
         args.putInt(MessageAmountDialog.ARG_AMOUNT, amount)
         val dialog = MessageAmountDialog { accepted ->
@@ -487,7 +502,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
         dialog.arguments = args
         dialog.show(requireActivity().supportFragmentManager, null)
-    }
+    }*/
 
     private fun syncGranular() {
         syncing = true
@@ -601,7 +616,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         } ?: getString(R.string.unknown_date)
     }
 
-    override fun onRequestPermissionsResult(
+    /*override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
@@ -611,5 +626,5 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         ) {
             syncSMS()
         }
-    }
+    }*/
 }
