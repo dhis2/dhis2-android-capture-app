@@ -96,6 +96,9 @@ android {
 
 dependencies {
 
+    implementation project(":form")
+    implementation project(":commons")
+
     // DHIS2 Android SDK
     // remove the no-op version of Flipper added by DHIS2 Android SDK  to avoid duplicates
     implementation ("org.hisp.dhis:android-core:$libraries.dhis2sdk") {

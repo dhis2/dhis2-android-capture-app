@@ -7,16 +7,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.BlendMode;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -35,6 +36,7 @@ import org.dhis2.android.rtsm.databinding.ActivityHomeBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.GenericListAdapter;
 import org.dhis2.android.rtsm.ui.managestock.ManageStockActivity;
+import org.dhis2.android.rtsm.ui.settings.SettingsActivity;
 import org.dhis2.android.rtsm.utils.DateUtils;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -56,6 +58,10 @@ public class HomeActivity extends BaseActivity {
 
     private HomeViewModel viewModel;
 
+    private String from = "";
+    private String to = "";
+    private TransactionType transactionType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +78,25 @@ public class HomeActivity extends BaseActivity {
         attachObservers();
         setupComponents();
 
+        synchronizeData();
+
         // Cannot go up the stack
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+
+        backToHome();
+    }
+
+    private void synchronizeData() {
+
+        binding.syncActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -112,6 +133,7 @@ public class HomeActivity extends BaseActivity {
                 distributedToTextView.getEditableText().clear();
             }
         });
+
     }
 
     private <T> boolean reportNetworkError(OperationState<T> operationState) {
@@ -128,13 +150,30 @@ public class HomeActivity extends BaseActivity {
 
         viewModel.getFacility().observe(this, ou -> facilityTextView.setText(ou.displayName()));
 
-        facilityTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
-                viewModel.setFacility((OrganisationUnit) facilityTextView.getAdapter().getItem(position))
-        );
 
+        facilityTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
+                {
+                    viewModel.setFacility((OrganisationUnit) facilityTextView.getAdapter().getItem(position));
+
+                    OrganisationUnit organisationUnit = (OrganisationUnit) facilityTextView.getAdapter().getItem(position);
+
+                    from = organisationUnit.displayName();
+
+                    setSubtitle(from, to);
+                }
+        );
         distributedToTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
                 viewModel.setDestination(
                         (Option) distributedToTextView.getAdapter().getItem(position))
+        );
+
+        distributedToTextView.setOnItemClickListener((adapterView, view, position, rowId) ->
+                {
+                    viewModel.setDestination((Option) distributedToTextView.getAdapter().getItem(position));
+                    Option option = (Option) distributedToTextView.getAdapter().getItem(position);
+                    to = option.displayName();
+                    setSubtitle(from, to);
+                }
         );
 
         binding.fabManageStock.setOnClickListener(view ->
@@ -143,6 +182,18 @@ public class HomeActivity extends BaseActivity {
                 )
         );
         setupTransactionDateField();
+    }
+
+    private void setSubtitle(String from, String to) {
+
+        if (transactionType != null) {
+            viewModel.setSubtitle(from, to, transactionType);
+        } else {
+            if (from.equalsIgnoreCase(""))
+                binding.subTitle.setVisibility(View.GONE);
+            else
+                binding.subTitle.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupButtons() {
@@ -168,29 +219,57 @@ public class HomeActivity extends BaseActivity {
 
     private void updateTheme(TransactionType type) {
         int color;
+        int theme;
 
+        viewModel.setToolbarTitle(type);
         switch (type) {
             case DISTRIBUTION:
-                color = R.color.distribution_color;
+                color = R.color.colorPrimary;
+                theme = R.style.AppTheme;
+                transactionType = type;
+                to = "";
                 break;
             case DISCARD:
                 color = R.color.discard_color;
+                theme = R.style.RedTheme;
+                to = "";
+                transactionType = type;
+                setSubtitle(from, to);
                 break;
             case CORRECTION:
-                color = R.color.correction_color;
+                color = R.color.colorPrimary_fbc;
+                theme = R.style.colorPrimary_fbc;
+                to = "";
+                transactionType = type;
+                setSubtitle(from, to);
                 break;
             default:
+                theme = R.style.AppTheme;
                 color = -1;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && color != -1) {
+        if (color != -1) {
             ColorStateList colorStateList = ColorStateList.valueOf(
                     ContextCompat.getColor(this, color)
             );
-            binding.fabManageStock.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
-            binding.toolbar.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                binding.fabManageStock.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+                binding.toolbar.setBackgroundTintBlendMode(BlendMode.SRC_OVER);
+            }
+
             binding.fabManageStock.setBackgroundTintList(colorStateList);
             binding.toolbar.setBackgroundTintList(colorStateList);
+
+            getTheme().applyStyle(theme, true);
+
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+            int colorToReturn = a.getColor(0, 0);
+            a.recycle();
+            window.setStatusBarColor(colorToReturn);
         }
     }
 
@@ -248,9 +327,13 @@ public class HomeActivity extends BaseActivity {
         return DataBindingUtil.setContentView(this, R.layout.activity_home);
     }
 
-    @Nullable
-    @Override
-    public Toolbar getToolBar() {
-        return ((ActivityHomeBinding) getViewBinding()).toolbar;
+    private void backToHome() {
+        binding.menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
+
 }

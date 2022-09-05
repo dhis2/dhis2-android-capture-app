@@ -5,10 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -25,6 +21,10 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -39,8 +39,7 @@ class HomeViewModel @Inject constructor(
         ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _transactionType = MutableLiveData<TransactionType>()
-    val transactionType: LiveData<TransactionType>
-        get() = _transactionType
+    val transactionType: LiveData<TransactionType> get() = _transactionType
 
     private val _isDistribution: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDistribution: LiveData<Boolean>
@@ -66,6 +65,14 @@ class HomeViewModel @Inject constructor(
     private val _destinations = MutableLiveData<OperationState<List<Option>>>()
     val destinationsList: LiveData<OperationState<List<Option>>>
         get() = _destinations
+
+    // Toolbar section variables
+    private val _toolbarTitle = MutableLiveData<TransactionType>()
+    val toolbarTitle: LiveData<TransactionType> get() = _toolbarTitle
+
+    private val _toolbarSubtitle = MutableLiveData<String>()
+    val toolbarSubtitle: LiveData<String> get() = _toolbarSubtitle
+
 
     init {
         loadFacilities()
@@ -184,5 +191,31 @@ class HomeViewModel @Inject constructor(
         _transactionDate.value = Instant.ofEpochMilli(epoch)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
+    }
+
+    @JvmName("getToolbarTitle1")
+    fun getToolbarTitle(): LiveData<TransactionType> {
+        return toolbarTitle
+    }
+
+    fun setToolbarTitle(transactionType: TransactionType) {
+        _toolbarTitle.value = transactionType
+    }
+
+    fun setSubtitle(from: String, to: String, type: TransactionType) {
+
+        when (type) {
+            TransactionType.DISTRIBUTION -> if (!to.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = "From $from -> To $to"
+            else if (!from.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = "From $from"
+            TransactionType.DISCARD -> if (!from.equals("", ignoreCase = true)
+            ) _toolbarSubtitle.value = "From $from"
+            TransactionType.CORRECTION -> if (!from.equals(
+                    "",
+                    ignoreCase = true
+                )
+            ) _toolbarSubtitle.value = "${R.string.from} $from"
+        }
     }
 }

@@ -48,6 +48,9 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="confirmation">Confirmation</string>
+    
+    <string name="from">From</string>
+    <string name="to">To</string>
 
     <!-- Languages -->
     <string name="language_english">English</string>
@@ -267,4 +270,5 @@
     <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
     <string name="error_set_value">The value could not be set.</string>
     <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+    <string name="done_task">Home</string>
 </resources>
