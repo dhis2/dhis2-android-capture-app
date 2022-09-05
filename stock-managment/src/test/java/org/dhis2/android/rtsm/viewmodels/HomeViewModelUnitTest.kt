@@ -412,7 +412,7 @@ class HomeViewModelUnitTest {
         viewModel.selectTransaction(TransactionType.DISCARD)
         viewModel.setFacility(facility)
         viewModel.setTransactionDate(getTime(now))
-        println("A ${getTime(now)}")
+
         val data = viewModel.getData()
         assertEquals(data.transactionType, TransactionType.DISCARD)
         assertEquals(
@@ -438,5 +438,29 @@ class HomeViewModelUnitTest {
             ParcelUtils.facilityToIdentifiableModelParcel(facility)
         )
         assertEquals(data.transactionDate, now.humanReadableDate())
+    }
+
+    @Test
+    fun shouldChangeToolbarTitle_forDistribution() {
+        viewModel.setToolbarTitle(TransactionType.DISTRIBUTION)
+
+        val title = viewModel.toolbarTitle.value?.name
+        assertEquals(TransactionType.DISTRIBUTION.name, title)
+    }
+
+    @Test
+    fun shouldChangeToolbarTitle_forDiscard() {
+        viewModel.setToolbarTitle(TransactionType.DISCARD)
+
+        val title = viewModel.toolbarTitle.value?.name
+        assertEquals(TransactionType.DISCARD.name, title)
+    }
+
+    @Test
+    fun shouldChangeToolbarTitle_forCorrection() {
+        viewModel.setToolbarTitle(TransactionType.CORRECTION)
+
+        val title = viewModel.toolbarTitle.value?.name
+        assertEquals(TransactionType.CORRECTION.name, title)
     }
 }

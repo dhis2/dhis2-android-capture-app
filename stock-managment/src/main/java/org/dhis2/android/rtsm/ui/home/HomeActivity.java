@@ -228,18 +228,17 @@ public class HomeActivity extends BaseActivity {
                 theme = R.style.AppTheme;
                 transactionType = type;
                 to = "";
-//                setSubtitle(from, to);
                 break;
             case DISCARD:
-                color = R.color.colorPrimary_fbc;
-                theme = R.style.colorPrimary_fbc;
+                color = R.color.discard_color;
+                theme = R.style.RedTheme;
                 to = "";
                 transactionType = type;
                 setSubtitle(from, to);
                 break;
             case CORRECTION:
-                color = R.color.correction_color;
-                theme = R.style.colorPrimary_757;
+                color = R.color.colorPrimary_fbc;
+                theme = R.style.colorPrimary_fbc;
                 to = "";
                 transactionType = type;
                 setSubtitle(from, to);
