@@ -1,7 +1,5 @@
 package org.dhis2.android.rtsm.ui.home
 
-import android.view.View
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
