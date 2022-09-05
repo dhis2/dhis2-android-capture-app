@@ -215,7 +215,7 @@ class HomeViewModel @Inject constructor(
                     "",
                     ignoreCase = true
                 )
-            ) _toolbarSubtitle.value = R.string.from.toString() + " ${from}"
+            ) _toolbarSubtitle.value = "From ${from}"
         }
     }
 }
