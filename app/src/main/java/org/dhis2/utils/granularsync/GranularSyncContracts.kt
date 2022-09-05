@@ -29,7 +29,6 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.dhis2.usescases.settings.models.ErrorViewModel
-import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 
@@ -42,17 +41,17 @@ class GranularSyncContracts {
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
         fun setLastUpdated(result: SyncDate)
         fun showRefreshTitle()
+        fun openSmsApp(message: String)
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
         fun isSMSEnabled(showSms: Boolean): Boolean
         fun configure(view: View)
         fun initGranularSync(): LiveData<List<WorkInfo>>
-        fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>>
-        fun sendSMS()
+        fun initSMSSync()
         fun syncErrors(): List<ErrorViewModel>
         fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String?
-        fun onSmsNotAccepted()
+        fun getGatewayNumber(): String
     }
 
     interface OnDismissListener {
