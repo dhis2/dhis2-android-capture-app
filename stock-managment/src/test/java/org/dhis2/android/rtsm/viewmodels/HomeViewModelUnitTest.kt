@@ -34,7 +34,9 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -473,7 +475,6 @@ class HomeViewModelUnitTest {
         viewModel.setDestination(destination)
         viewModel.setFacility(facility)
         viewModel.setTransactionDate(getTime(now))
-
 
         val facilityName = viewModel.getData().facility.name
         val distributedTo = viewModel.getData().distributedTo?.name
