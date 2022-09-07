@@ -34,7 +34,7 @@ data class TableModel(
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
         when (tableCell?.editable) {
             true -> Pair(tableCell, nextCell)
-            else -> null
+            else -> getNextCell(nextCell)
         }
     }
 }
