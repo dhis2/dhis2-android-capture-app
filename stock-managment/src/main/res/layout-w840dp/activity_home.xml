@@ -98,7 +98,7 @@
             android:layout_marginRight="@dimen/content_area_lr_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/home_footer"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <TextView
@@ -316,14 +316,8 @@
             android:text="@string/proceed"
             app:icon="@drawable/arrow_forward"
             app:iconGravity="textEnd"
-            app:layout_constraintBottom_toTopOf="@id/home_footer"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Footer -->
-        <include
-            android:id="@+id/home_footer"
-            layout="@layout/footer"
-            app:lastSyncDate="@{viewModel.lastSyncDate}"
-            app:appVersion="@{viewModel.appVersion}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
