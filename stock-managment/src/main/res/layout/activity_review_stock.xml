@@ -151,12 +151,7 @@
                 tools:listitem="@layout/review_stock_item_entry" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Footer -->
-        <include
-            android:id="@+id/stock_items_footer"
-            layout="@layout/footer"
-            app:lastSyncDate="@{viewModel.lastSyncDate}"
-            app:appVersion="@{viewModel.appVersion}" />
+
 
         <!-- Floating Button -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

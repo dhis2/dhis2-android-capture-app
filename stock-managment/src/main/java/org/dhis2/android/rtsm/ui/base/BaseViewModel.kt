@@ -7,8 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
 import java.util.Date
 import javax.inject.Inject
-import org.dhis2.android.rtsm.BuildConfig
-import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.models.Transaction
@@ -21,14 +19,9 @@ open class BaseViewModel @Inject constructor(
     private val preferenceProvider: PreferenceProvider,
     private val schedulerProvider: BaseSchedulerProvider
 ) : ViewModel() {
-    val lastSyncDate: LiveData<String> = MutableLiveData(
-        preferenceProvider.getString(Constants.LAST_DATA_SYNC_DATE)
-    )
     private val _showGuide: MutableLiveData<Boolean> = MutableLiveData(false)
     val showGuide: LiveData<Boolean>
         get() = _showGuide
-
-    val appVersion: LiveData<String> = MutableLiveData(getAppVersion())
 
     /**
      * Evaluates the quantity assigned to the StockItem
@@ -68,6 +61,4 @@ open class BaseViewModel @Inject constructor(
     }
 
     fun isVoiceInputEnabled(prefKey: String) = preferenceProvider.getBoolean(prefKey, false)
-
-    private fun getAppVersion() = "v" + BuildConfig.VERSION_NAME
 }
