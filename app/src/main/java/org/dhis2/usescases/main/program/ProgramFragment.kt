@@ -248,7 +248,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
 
         when (program.programType) {
             ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, HomeActivity::class.java).apply {
+                Intent(activity, org.dhis2.android.rtsm.ui.main.MainActivity::class.java).apply {
                     putExtras(bundle)
                     putExtra(INTENT_EXTRA_APP_CONFIG, appConfig)
                     getActivityContent.launch(this)

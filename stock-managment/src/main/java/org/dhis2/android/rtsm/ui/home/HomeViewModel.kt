@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -19,8 +20,10 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
+import org.dhis2.commons.filters.FilterManager
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -31,12 +34,15 @@ class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
+    //private val filterManager: FilterManager,
     private val metadataManager: MetadataManager,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
+
+    private val refreshData = PublishProcessor.create<Unit>()
 
     private val _transactionType = MutableLiveData<TransactionType>()
     val transactionType: LiveData<TransactionType> get() = _transactionType
@@ -78,6 +84,55 @@ class HomeViewModel @Inject constructor(
         loadFacilities()
         loadDestinations()
     }
+
+    /*fun init() {
+        val applyFiler = PublishProcessor.create<FilterManager>()
+
+        disposable.add(
+            applyFiler
+                .switchMap {
+                    refreshData.startWith(Unit).flatMap {
+                        programRepository.homeItems(
+                            syncStatusController.observeDownloadProcess().value!!
+                        )
+                    }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { programs ->
+                        this.programs.postValue(programs)
+                        view.swapProgramModelData(programs)
+                    },
+                    { throwable -> Timber.d(throwable) },
+                    { Timber.tag("INIT DATA").d("LOADING ENDED") }
+                )
+        )
+
+        disposable.add(
+            filterManager.asFlowable()
+                .startWith(filterManager)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        view.showFilterProgress()
+                        applyFiler.onNext(filterManager)
+                    },
+                    { Timber.e(it) }
+                )
+        )
+
+        disposable.add(
+            filterManager.ouTreeFlowable()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { *//*view.openOrgUnitTreeSelector()*//* },
+                    { Timber.e(it) }
+                )
+        )
+    }*/
 
     private fun loadDestinations() {
         _destinations.postValue(OperationState.Loading)
