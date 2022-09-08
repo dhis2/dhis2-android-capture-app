@@ -94,6 +94,13 @@ fun DataSetTableScreen(
             }
         }
 
+        fun updateError(tableCell: TableCell) {
+            currentInputType = currentInputType.copy(error = tableCell.error)
+            currentCell = currentCell?.copy(error = tableCell.error)?.also {
+                onCellValueChange(it)
+            }
+        }
+
         val selectNextCell: (
             Pair<TableCell, TableSelection.CellSelection>,
             TableSelection.CellSelection
@@ -105,14 +112,13 @@ fun DataSetTableScreen(
                     currentInputType = inputModel
                 } ?: collapseBottomSheet()
             } else {
-                currentInputType = currentInputType.copy(error = tableCell.error)
-                currentCell = currentCell?.copy(error = tableCell.error)?.also {
-                    onCellValueChange(it)
-                }
+                updateError(tableCell)
             }
         }
 
         var nextSelected by remember { mutableStateOf(false) }
+
+        var saveClicked by remember { mutableStateOf(false) }
 
         if (tableData.isNotEmpty() && nextSelected) {
             (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
@@ -123,6 +129,16 @@ fun DataSetTableScreen(
                 } ?: collapseBottomSheetAndFinishEdition()
             }
             nextSelected = false
+        }
+
+        if (saveClicked) {
+            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+                val currentTable = tableData.first { it.id == cellSelected.tableId }
+                currentTable.tableErrorCell()?.let {
+                    updateError(it)
+                    saveClicked = false
+                }
+            }
         }
 
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
@@ -156,6 +172,7 @@ fun DataSetTableScreen(
                         currentCell?.let {
                             onSaveValue(it)
                         }
+                        saveClicked = true
                     },
                     onNextSelected = {
                         nextSelected = true
