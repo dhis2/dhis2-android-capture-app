@@ -26,7 +26,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/content_area_lr_margin"
             android:layout_marginEnd="@dimen/content_area_lr_margin"
-            app:layout_constraintBottom_toTopOf="@+id/stock_items_footer"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar_container">
