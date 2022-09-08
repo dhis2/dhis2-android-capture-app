@@ -31,12 +31,12 @@ import androidx.work.WorkerParameters
 import java.util.Objects
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO
-import org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO
-import org.dhis2.utils.Constants.CONFLICT_TYPE
-import org.dhis2.utils.Constants.ORG_UNIT
-import org.dhis2.utils.Constants.PERIOD_ID
-import org.dhis2.utils.Constants.UID
+import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
+import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
+import org.dhis2.commons.Constants.CONFLICT_TYPE
+import org.dhis2.commons.Constants.ORG_UNIT
+import org.dhis2.commons.Constants.PERIOD_ID
+import org.dhis2.commons.Constants.UID
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType
 import timber.log.Timber
 

@@ -9,6 +9,12 @@ import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
+import org.dhis2.commons.Constants.PREFS_URLS
+import org.dhis2.commons.Constants.PREFS_USERS
+import org.dhis2.commons.Constants.SERVER
+import org.dhis2.commons.Constants.USER
+import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
+import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -21,12 +27,6 @@ import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.Constants.PREFS_URLS
-import org.dhis2.utils.Constants.PREFS_USERS
-import org.dhis2.utils.Constants.SERVER
-import org.dhis2.utils.Constants.USER
-import org.dhis2.utils.Constants.USER_ASKED_CRASHLYTICS
-import org.dhis2.utils.Constants.USER_TEST_ANDROID
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.AnalyticsHelper

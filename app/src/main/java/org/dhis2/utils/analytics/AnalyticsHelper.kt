@@ -3,7 +3,7 @@ package org.dhis2.utils.analytics
 import android.annotation.SuppressLint
 import android.os.Bundle
 import javax.inject.Inject
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 
 class AnalyticsHelper @Inject constructor(
     private val matomoAnalyticsController: MatomoAnalyticsController

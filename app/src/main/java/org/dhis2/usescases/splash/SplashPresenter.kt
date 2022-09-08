@@ -2,13 +2,13 @@ package org.dhis2.usescases.splash
 
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
+import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.SERVER
+import org.dhis2.commons.Constants.USER
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.SERVER
-import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.reporting.CrashReportController
 import timber.log.Timber
 

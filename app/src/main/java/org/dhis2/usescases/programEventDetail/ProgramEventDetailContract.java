@@ -71,5 +71,9 @@ public class ProgramEventDetailContract {
         String getStageUid();
 
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
+
+        void trackEventProgramAnalytics();
+
+        void trackEventProgramMap();
     }
 }

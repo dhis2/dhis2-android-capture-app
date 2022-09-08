@@ -319,6 +319,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(personAttribute)
+            waitToDebounce(5000)
             clickOnCalendarItem()
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()

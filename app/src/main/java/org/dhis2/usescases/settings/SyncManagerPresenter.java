@@ -15,15 +15,14 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.SettingsViewModel;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,18 +31,16 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_CONFIG;
-import static org.dhis2.utils.analytics.matomo.Actions.SYNC_DATA;
-import static org.dhis2.utils.analytics.matomo.Categories.SETTINGS;
+import static org.dhis2.commons.matomo.Actions.SYNC_CONFIG;
+import static org.dhis2.commons.matomo.Actions.SYNC_DATA;
+import static org.dhis2.commons.matomo.Categories.SETTINGS;
 
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
@@ -334,11 +331,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false);
 
         checkData.onNext(true);
-    }
-
-    @Override
-    public void onWipeData() {
-        view.wipeDatabase();
     }
 
     @Override

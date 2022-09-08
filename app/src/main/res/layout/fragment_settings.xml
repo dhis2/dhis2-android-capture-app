@@ -602,46 +602,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/settingsReset"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(SettingItem.RESET_APP)}">
-
-                <include
-                    android:id="@+id/resetLayout"
-                    layout="@layout/fragment_settings_item"
-                    app:icon="@{R.drawable.ic_reset}"
-                    app:message="@{@string/settingsReset_descr}"
-                    app:title="@{@string/settingsReset}" />
-
-                <Button
-                    android:id="@+id/resetButton"
-                    style="@style/TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:fontFamily="@font/rubik_medium"
-                    android:onClick="@{()->presenter.onWipeData()}"
-                    android:text="@string/action_accept"
-                    android:textAllCaps="true"
-                    android:textColor="#EB5757"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/resetLayout"
-                    tools:visibility="visible" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="72dp"
-                    android:background="@color/gray_afa"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/resetButton" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/smsSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -18,12 +18,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.work.WorkInfo
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
@@ -32,9 +32,7 @@ import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -156,6 +154,7 @@ class MainActivity :
                     mainNavigator.openPrograms()
                 }
                 R.id.navigation_analytics -> {
+                    presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
                 }
             }
@@ -223,15 +222,10 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            val currentState = it.firstOrNull()?.state
-            if (currentState == WorkInfo.State.RUNNING) {
+            if (it.isDownloading()) {
                 setFilterButtonVisibility(false)
                 setBottomNavigationVisibility(false)
-            } else if (
-                currentState == WorkInfo.State.SUCCEEDED ||
-                currentState == WorkInfo.State.FAILED ||
-                currentState == WorkInfo.State.CANCELLED
-            ) {
+            } else {
                 setFilterButtonVisibility(true)
                 setBottomNavigationVisibility(true)
                 presenter.onDataSuccess()
@@ -418,6 +412,7 @@ class MainActivity :
                 mainNavigator.openSettings()
             }
             R.id.qr_scan -> {
+                presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
             R.id.menu_jira -> {
@@ -427,7 +422,7 @@ class MainActivity :
                 mainNavigator.openAbout()
             }
             R.id.block_button -> {
-                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
+                presenter.trackPinDialog()
                 onLockClick()
             }
             R.id.logout_button -> {

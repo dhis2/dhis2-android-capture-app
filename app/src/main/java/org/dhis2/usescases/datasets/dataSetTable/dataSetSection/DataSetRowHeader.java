@@ -14,7 +14,7 @@ import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.ItemDatasetRowBinding;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 
 /**

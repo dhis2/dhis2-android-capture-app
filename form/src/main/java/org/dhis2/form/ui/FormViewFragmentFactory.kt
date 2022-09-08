@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.ui
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory

@@ -20,12 +20,12 @@ import javax.inject.Inject;
 import io.reactivex.Single;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO;
-import static org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO;
-import static org.dhis2.utils.Constants.CONFLICT_TYPE;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PERIOD_ID;
-import static org.dhis2.utils.Constants.UID;
+import static org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO;
+import static org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO;
+import static org.dhis2.commons.Constants.CONFLICT_TYPE;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PERIOD_ID;
+import static org.dhis2.commons.Constants.UID;
 import static org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType;
 
 public class SyncGranularRxWorker extends RxWorker {

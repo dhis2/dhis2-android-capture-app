@@ -177,11 +177,6 @@
         <item name="colorAccent">?colorAccent</item>
     </style>
 
-    <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="colorAccent">@color/text_black_333</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-    </style>
-
     <style name="radioPrimary">
         <item name="colorAccent">?colorPrimaryLight</item>
     </style>
