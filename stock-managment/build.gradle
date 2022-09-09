@@ -70,6 +70,7 @@ android {
     }
 
     buildFeatures {
+        compose     true
         viewBinding true
         dataBinding true
     }
@@ -104,6 +105,8 @@ dependencies {
     implementation ("org.hisp.dhis:android-core:$libraries.dhis2sdk") {
         exclude group: 'com.facebook.flipper'
     }
+
+    implementation "androidx.activity:activity-compose:$libraries.compose"
 
     implementation "org.hisp.dhis.rules:rule-engine:$libraries.ruleEngine"
 
