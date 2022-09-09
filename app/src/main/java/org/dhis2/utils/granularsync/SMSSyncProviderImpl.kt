@@ -1,5 +1,7 @@
 package org.dhis2.utils.granularsync
 
+import android.content.Context
+import com.google.android.gms.tasks.Task
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -19,6 +21,7 @@ class SMSSyncProviderImpl(
     }
 
     override fun isPlayServicesEnabled() = false
+    override fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>? = null
 
     /*
     fun sendSms(

@@ -1,5 +1,7 @@
 package org.dhis2.utils.granularsync
 
+import android.content.Context
+import com.google.android.gms.tasks.Task
 import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -18,8 +20,13 @@ interface SMSSyncProvider {
     val resourceManager: ResourceManager
     val smsSender: SmsSubmitCase
 
-    fun waitForSMSResponse() {}
     fun isPlayServicesEnabled(): Boolean
+    fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>?
+
+    fun expectsResponseSMS(): Boolean {
+        return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult
+    }
+
     fun getGatewayNumber(): String {
         return d2.smsModule().configCase().smsModuleConfig.blockingGet().gateway
     }

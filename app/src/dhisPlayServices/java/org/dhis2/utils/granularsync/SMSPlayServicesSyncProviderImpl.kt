@@ -1,5 +1,8 @@
 package org.dhis2.utils.granularsync
 
+import android.content.Context
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.tasks.Task
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -19,4 +22,8 @@ class SMSPlayServicesSyncProviderImpl(
     }
 
     override fun isPlayServicesEnabled() = true
+
+    override fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>? {
+        return SmsRetriever.getClient(context).startSmsUserConsent(senderNumber)
+    }
 }
