@@ -167,6 +167,7 @@ fun DataSetTableScreen(
                 editable = true,
                 tableColors = tableColors,
                 tableSelection = tableSelection,
+                inputIsOpen = bottomSheetState.bottomSheetState.isExpanded,
                 onSelectionChange = { tableSelection = it },
                 onDecorationClick = {
                     displayDescription = it

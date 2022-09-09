@@ -4,10 +4,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -74,7 +76,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+        (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(
@@ -196,7 +198,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -241,11 +243,11 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
-    (rowHeaderIndex: Int?) -> CellStyle,
+        (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
-    (cellValue: TableCell) -> CellStyle,
+        (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -399,9 +401,9 @@ fun ItemValues(
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
-    (cellValue: TableCell) -> CellStyle,
+        (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(
@@ -430,7 +432,8 @@ fun ItemValues(
                         .cellBorder(
                             borderColor = cellStyle(cellValue).mainColor(),
                             backgroundColor = cellStyle(cellValue).backgroundColor()
-                        ),
+                        )
+                        .focusable(),
                     cellValue = cellValue,
                     maxLines = maxLines,
                     nonEditableCellLayer = {
@@ -453,7 +456,7 @@ fun TableCell(
     cellValue: TableCell,
     maxLines: Int,
     nonEditableCellLayer: @Composable
-    () -> Unit,
+        () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -577,6 +580,7 @@ fun DataTable(
     editable: Boolean = true,
     tableColors: TableColors? = null,
     tableSelection: TableSelection = TableSelection.Unselected(),
+    inputIsOpen: Boolean = false,
     onSelectionChange: (TableSelection) -> Unit = {},
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
@@ -593,6 +597,7 @@ fun DataTable(
             tableList = tableList,
             tableColors = tableColors,
             tableSelection = tableSelection,
+            inputIsOpen = inputIsOpen,
             onSelectionChange = onSelectionChange,
             onDecorationClick = onDecorationClick,
             onClick = onClick
@@ -606,6 +611,7 @@ private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
     tableSelection: TableSelection,
+    inputIsOpen:Boolean,
     onSelectionChange: (TableSelection) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -616,19 +622,21 @@ private fun TableList(
 
         tableList.indexOfFirst { it.id == tableSelection.tableId }
             .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
-            SelectionScrollEffect(
-                tableSelection,
-                tableList[selectedTableIndex],
-                horizontalScrollStates[selectedTableIndex],
-                verticalScrollState
-            )
-        }
+                SelectionScrollEffect(
+                    tableSelection,
+                    tableList[selectedTableIndex],
+                    horizontalScrollStates[selectedTableIndex],
+                    verticalScrollState,
+                    inputIsOpen
+                )
+            }
 
         LazyColumn(
             modifier = Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
                 vertical = LocalTableDimensions.current.tableVerticalPadding
             ),
+            contentPadding = PaddingValues(bottom = 200.dp),
             state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->
@@ -673,9 +681,9 @@ private fun TableList(
                                     columnIndex = headerColumnIndex,
                                     columnHeaderRow = headerRowIndex,
                                     childrenOfSelectedHeader =
-                                        currentTableModel.countChildrenOfSelectedHeader(
-                                            headerRowIndex
-                                        )
+                                    currentTableModel.countChildrenOfSelectedHeader(
+                                        headerRowIndex
+                                    )
                                 )
                             )
                         }
@@ -755,13 +763,13 @@ private fun TableList(
                         )
                     }
                 }
-                stickyHeader {
+                /*stickyHeader {
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
                             .background(color = Color.White)
                     )
-                }
+                }*/
             }
         }
     }
@@ -905,7 +913,8 @@ fun SelectionScrollEffect(
     tableSelection: TableSelection,
     selectedTable: TableModel,
     selectedScrollState: ScrollState,
-    verticalScrollState: LazyListState
+    verticalScrollState: LazyListState,
+    inputIsOpen: Boolean
 ) {
     val localDimensions = LocalTableDimensions.current
     val localConf = LocalConfiguration.current
@@ -920,12 +929,15 @@ fun SelectionScrollEffect(
                     selectedTable.tableHeaderModel.hasTotals
                 ).toPx()
             }
+
             selectedScrollState.animateScrollTo(
                 cellWidth.toInt() * tableSelection.columnIndex
             )
-            verticalScrollState.animateScrollToItem(
-                tableSelection.globalIndex
-            )
+            if(inputIsOpen) {
+                verticalScrollState.animateScrollToItem(
+                    (tableSelection.globalIndex - 1).takeIf { it >= 0 } ?: 0
+                )
+            }
         }
     }
 }
@@ -1015,6 +1027,7 @@ fun TableListPreview() {
         tableList = tableList,
         tableColors = TableColors(),
         tableSelection = TableSelection.Unselected(),
+        inputIsOpen = false,
         onSelectionChange = {},
         onDecorationClick = {}
     ) {
