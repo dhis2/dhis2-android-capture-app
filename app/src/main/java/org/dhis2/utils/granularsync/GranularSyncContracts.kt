@@ -51,7 +51,7 @@ class GranularSyncContracts {
         fun initSMSSync()
         fun syncErrors(): List<ErrorViewModel>
         fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String?
-        fun getGatewayNumber(): String
+        fun getSmsProvider(): SMSSyncProvider
     }
 
     interface OnDismissListener {

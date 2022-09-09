@@ -210,9 +210,10 @@ class GranularSyncPresenterImpl(
         )
     }
 
-    override fun getGatewayNumber(): String {
-        return smsSyncProvider.getGatewayNumber()
+    override fun getSmsProvider(): SMSSyncProvider {
+        return smsSyncProvider
     }
+
 /*
     /*override fun sendSMS() {
         disposable.add(
