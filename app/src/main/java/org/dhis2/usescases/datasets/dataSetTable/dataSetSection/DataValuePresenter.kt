@@ -287,7 +287,8 @@ class DataValuePresenter(
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
         handleElementInteraction(dataElement, cell)
-        return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->
+        return dataElement.takeIf { it.optionSetUid() == null }
+            ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
             TextInputModel(
                 id = cell.id ?: "",
                 mainLabel = dataElement.displayFormName() ?: "-",
