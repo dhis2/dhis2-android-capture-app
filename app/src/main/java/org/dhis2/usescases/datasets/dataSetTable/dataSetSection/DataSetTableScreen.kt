@@ -66,15 +66,25 @@ fun DataSetTableScreen(
             primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
         )
 
+        val focusManager = LocalFocusManager.current
+
+        var finishEdition by remember { mutableStateOf(false) }
+
         fun finishEdition() {
             tableSelection = TableSelection.Unselected()
             onEdition(false)
         }
 
         fun collapseBottomSheet() {
+            focusManager.clearFocus(true)
             coroutineScope.launch {
                 bottomSheetState.bottomSheetState.collapseIfExpanded()
             }
+        }
+
+        fun collapseBottomSheetAndFinishEdition() {
+            collapseBottomSheet()
+            finishEdition = true
         }
 
         fun startEdition() {
@@ -92,7 +102,7 @@ fun DataSetTableScreen(
                 onCellClick(tableCell)?.let { inputModel ->
                     currentCell = tableCell
                     currentInputType = inputModel
-                }
+                } ?: collapseBottomSheet()
             } else {
                 currentInputType = currentInputType.copy(error = tableCell.error)
                 currentCell = currentCell?.copy(error = tableCell.error)?.also {
@@ -100,8 +110,6 @@ fun DataSetTableScreen(
                 }
             }
         }
-
-        val focusManager = LocalFocusManager.current
 
         var nextSelected by remember { mutableStateOf(false) }
 
@@ -111,23 +119,20 @@ fun DataSetTableScreen(
                 val currentTable = tableData.first { it.id == cellSelected.tableId }
                 currentTable.getNextCell(cellSelected)?.let {
                     selectNextCell(it, cellSelected)
-                } ?: run {
-                    focusManager.clearFocus(true)
-                    finishEdition()
-                    collapseBottomSheet()
-                }
+                } ?: collapseBottomSheetAndFinishEdition()
             }
             nextSelected = false
         }
 
         BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-            coroutineScope.launch {
-                bottomSheetState.bottomSheetState.collapse()
-            }
+            collapseBottomSheetAndFinishEdition()
         }
 
         LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
-            if (bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed) {
+            if (
+                bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
+                finishEdition
+            ) {
                 finishEdition()
             }
         }
@@ -180,7 +185,7 @@ fun DataSetTableScreen(
                     currentCell = cell
                     currentInputType = inputModel.copy(currentValue = currentCell?.value)
                     startEdition()
-                } ?: finishEdition().also { collapseBottomSheet() }
+                } ?: collapseBottomSheet()
             }
             displayDescription?.let {
                 TableDialog(
