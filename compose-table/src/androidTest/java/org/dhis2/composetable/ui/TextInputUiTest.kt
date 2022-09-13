@@ -16,9 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
 import org.junit.Rule
@@ -100,24 +102,27 @@ class TextInputUiTest {
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
                 ),
                 tableSelection = tableSelection,
-                onSelectionChange = { tableSelection = it },
-                onDecorationClick = {
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
 
-                }
-            ) { cell ->
-                currentCell = cell
-                currentInputType = TextInputModel(
-                    id = cell.id!!,
-                    mainLabel = "Main Label",
-                    secondaryLabels = listOf("Second Label 1", "Second Label 2"),
-                    cell.value
-                )
-                coroutineScope.launch {
-                    if (bottomSheetState.bottomSheetState.isCollapsed) {
-                        bottomSheetState.bottomSheetState.expand()
+                    override fun onClick(tableCell: TableCell) {
+                        currentCell = tableCell
+                        currentInputType = TextInputModel(
+                            id = tableCell.id!!,
+                            mainLabel = "Main Label",
+                            secondaryLabels = listOf("Second Label 1", "Second Label 2"),
+                            tableCell.value
+                        )
+                        coroutineScope.launch {
+                            if (bottomSheetState.bottomSheetState.isCollapsed) {
+                                bottomSheetState.bottomSheetState.expand()
+                            }
+                        }
                     }
                 }
-            }
+            )
         }
     }
 }

@@ -28,7 +28,11 @@ data class TableModel(
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
         cellSelection.rowIndex < tableRows.size - 1 ->
-            cellSelection.copy(columnIndex = 0, rowIndex = cellSelection.rowIndex + 1)
+            cellSelection.copy(
+                columnIndex = 0,
+                rowIndex = cellSelection.rowIndex + 1,
+                globalIndex = cellSelection.globalIndex + 1
+            )
         else -> null
     }?.let { nextCell ->
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]

@@ -4,10 +4,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -19,7 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -29,6 +33,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +44,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -53,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import org.dhis2.composetable.R
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -426,7 +433,8 @@ fun ItemValues(
                         .cellBorder(
                             borderColor = cellStyle(cellValue).mainColor(),
                             backgroundColor = cellStyle(cellValue).backgroundColor()
-                        ),
+                        )
+                        .focusable(),
                     cellValue = cellValue,
                     maxLines = maxLines,
                     nonEditableCellLayer = {
@@ -573,25 +581,22 @@ fun DataTable(
     editable: Boolean = true,
     tableColors: TableColors? = null,
     tableSelection: TableSelection = TableSelection.Unselected(),
-    onSelectionChange: (TableSelection) -> Unit = {},
-    onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
-    onClick: (TableCell) -> Unit = {}
+    inputIsOpen: Boolean = false,
+    tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
     if (!editable) {
         TableItem(
             tableModel = tableList.first(),
             tableColors = tableColors,
-            onDecorationClick = onDecorationClick,
-            onClick = onClick
+            tableInteractions = tableInteractions
         )
     } else {
         TableList(
             tableList = tableList,
             tableColors = tableColors,
             tableSelection = tableSelection,
-            onSelectionChange = onSelectionChange,
-            onDecorationClick = onDecorationClick,
-            onClick = onClick
+            inputIsOpen = inputIsOpen,
+            tableInteractions = tableInteractions
         )
     }
 }
@@ -602,18 +607,31 @@ private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
     tableSelection: TableSelection,
-    onSelectionChange: (TableSelection) -> Unit,
-    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onClick: (TableCell) -> Unit
+    inputIsOpen: Boolean,
+    tableInteractions: TableInteractions
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
+        val verticalScrollState = rememberLazyListState()
+
+        tableList.indexOfFirst { it.id == tableSelection.tableId }
+            .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
+            SelectionScrollEffect(
+                tableSelection,
+                tableList[selectedTableIndex],
+                horizontalScrollStates[selectedTableIndex],
+                verticalScrollState,
+                inputIsOpen
+            )
+        }
 
         LazyColumn(
-            Modifier.padding(
+            modifier = Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
                 vertical = LocalTableDimensions.current.tableVerticalPadding
-            )
+            ),
+            contentPadding = PaddingValues(bottom = 200.dp),
+            state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->
                 stickyHeader {
@@ -646,12 +664,12 @@ private fun TableList(
                             )
                         },
                         onTableCornerClick = {
-                            onSelectionChange(
+                            tableInteractions.onSelectionChange(
                                 TableSelection.AllCellSelection(currentTableModel.id ?: "")
                             )
                         },
                         onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
-                            onSelectionChange(
+                            tableInteractions.onSelectionChange(
                                 TableSelection.ColumnSelection(
                                     tableId = currentTableModel.id ?: "",
                                     columnIndex = headerColumnIndex,
@@ -665,7 +683,7 @@ private fun TableList(
                         }
                     )
                 }
-                items(items = currentTableModel.tableRows) { tableRowModel ->
+                itemsIndexed(items = currentTableModel.tableRows) { globalIndex, tableRowModel ->
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
@@ -710,23 +728,24 @@ private fun TableList(
                             )
                         },
                         onRowHeaderClick = { rowHeaderIndex ->
-                            onSelectionChange(
+                            tableInteractions.onSelectionChange(
                                 TableSelection.RowSelection(
                                     tableId = currentTableModel.id ?: "",
                                     rowIndex = rowHeaderIndex ?: -1
                                 )
                             )
                         },
-                        onDecorationClick = onDecorationClick,
+                        onDecorationClick = tableInteractions::onDecorationClick,
                         onClick = { tableCell ->
-                            onSelectionChange(
+                            tableInteractions.onSelectionChange(
                                 TableSelection.CellSelection(
                                     tableId = currentTableModel.id ?: "",
                                     columnIndex = tableCell.column ?: -1,
-                                    rowIndex = tableCell.row ?: -1
+                                    rowIndex = tableCell.row ?: -1,
+                                    globalIndex = globalIndex
                                 )
                             )
-                            onClick(tableCell)
+                            tableInteractions.onClick(tableCell)
                         }
                     )
                     if (tableRowModel.isLastRow) {
@@ -738,13 +757,13 @@ private fun TableList(
                         )
                     }
                 }
-                stickyHeader {
+                /*stickyHeader {
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
                             .background(color = Color.White)
                     )
-                }
+                }*/
             }
         }
     }
@@ -801,8 +820,7 @@ fun ExtendDivider(
 fun TableItem(
     tableModel: TableModel,
     tableColors: TableColors? = null,
-    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onClick: (TableCell) -> Unit
+    tableInteractions: TableInteractions
 ) {
     TableTheme(tableColors) {
         Column(Modifier.padding(16.dp)) {
@@ -874,10 +892,44 @@ fun TableItem(
                         )
                     },
                     onRowHeaderClick = {},
-                    onDecorationClick = onDecorationClick
+                    onDecorationClick = { tableInteractions.onDecorationClick(it) }
                 ) {
-                    onClick(it)
+                    tableInteractions.onClick(it)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectionScrollEffect(
+    tableSelection: TableSelection,
+    selectedTable: TableModel,
+    selectedScrollState: ScrollState,
+    verticalScrollState: LazyListState,
+    inputIsOpen: Boolean
+) {
+    val localDimensions = LocalTableDimensions.current
+    val localConf = LocalConfiguration.current
+    val localDensity = LocalDensity.current
+
+    LaunchedEffect(tableSelection) {
+        if (tableSelection is TableSelection.CellSelection) {
+            val cellWidth = with(localDensity) {
+                localDimensions.defaultCellWidthWithExtraSize(
+                    localConf,
+                    selectedTable.tableHeaderModel.tableMaxColumns(),
+                    selectedTable.tableHeaderModel.hasTotals
+                ).toPx()
+            }
+
+            selectedScrollState.animateScrollTo(
+                cellWidth.toInt() * tableSelection.columnIndex
+            )
+            if (inputIsOpen) {
+                verticalScrollState.animateScrollToItem(
+                    (tableSelection.globalIndex - 1).takeIf { it >= 0 } ?: 0
+                )
             }
         }
     }
@@ -968,10 +1020,9 @@ fun TableListPreview() {
         tableList = tableList,
         tableColors = TableColors(),
         tableSelection = TableSelection.Unselected(),
-        onSelectionChange = {},
-        onDecorationClick = {}
-    ) {
-    }
+        inputIsOpen = false,
+        tableInteractions = object : TableInteractions {}
+    )
 }
 
 const val ROW_TEST_TAG = "ROW_TEST_TAG_"

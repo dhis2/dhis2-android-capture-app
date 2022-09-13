@@ -24,7 +24,8 @@ sealed class TableSelection(open val tableId: String) {
     data class CellSelection(
         override val tableId: String,
         val columnIndex: Int,
-        val rowIndex: Int
+        val rowIndex: Int,
+        val globalIndex: Int
     ) : TableSelection(tableId)
 
     fun isCornerSelected(selectedTableId: String) =
