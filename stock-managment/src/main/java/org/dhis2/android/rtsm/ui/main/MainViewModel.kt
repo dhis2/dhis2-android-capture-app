@@ -23,8 +23,6 @@ class MainViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
-    //private val filterManager: FilterManager,
-    //private val filterRepository: FilterRepository,
     private val metadataManager: MetadataManager,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
