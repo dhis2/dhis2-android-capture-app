@@ -201,7 +201,7 @@ fun DataSetTableScreen(
                     }
 
                     override fun onClick(tableCell: TableCell) {
-                        currentCell?.let {
+                        currentCell?.takeIf { it != tableCell }?.let {
                             onSaveValue(it)
                         }
                         onCellClick(tableCell)?.let { inputModel ->
