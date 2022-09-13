@@ -4,15 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginStart="16dp">
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginStart="10dp">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="20dp"
-        app:elevation="2dp">
+        android:layout_margin="6dp">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/filter_dropdown"
@@ -23,7 +23,11 @@
             app:boxBackgroundColor="@color/white"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+            app:hintEnabled="false"
+            app:expandedHintEnabled="false"
+            app:boxStrokeColor="@color/white"
+            app:boxStrokeWidth="0dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
             <AutoCompleteTextView
                 android:id="@+id/filter"
