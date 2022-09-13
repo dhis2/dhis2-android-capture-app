@@ -4,7 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.commons.data.DataEntryStore
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
@@ -92,7 +92,7 @@ class DataValueModule(
         return ValueStoreImpl(
             d2,
             dataSetUid,
-            DataEntryStore.EntryMode.DV,
+            EntryMode.DV,
             DhisEnrollmentUtils(d2),
             crashReportController,
             networkUtils,

@@ -5,14 +5,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
-import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -22,7 +19,6 @@ import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -46,9 +42,7 @@ class EnrollmentPresenterImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
-    private val valueStore: ValueStore = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val sectionProcessor: FlowableProcessor<String> = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
     @Before
@@ -62,7 +56,6 @@ class EnrollmentPresenterImplTest {
             programRepository,
             schedulers,
             enrollmentFormRepository,
-            valueStore,
             analyticsHelper,
             matomoAnalyticsController
         )
@@ -232,53 +225,5 @@ class EnrollmentPresenterImplTest {
             .isDefault(catCombo)
             .uid("")
             .build()
-    }
-
-    private fun dummyEditTextViewModel(
-        uid: String,
-        label: String,
-        value: String? = null,
-        mandatory: Boolean = false
-    ) =
-        FieldUiModelImpl(
-            uid = uid,
-            layoutId = 1,
-            value = value,
-            mandatory = mandatory,
-            label = label,
-            programStageSection = "testSection",
-            valueType = ValueType.TEXT
-        )
-
-    private fun mockTrackedEntityAttributes() {
-        whenever(d2.trackedEntityModule()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("uid1")) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet()
-        ) doReturn mock()
-    }
-
-    private fun mockTrackedEntityAttributeValues() {
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityAttribute()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid1")
-                .byValue().eq("value")
-        ) doReturn mock()
     }
 }

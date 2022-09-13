@@ -6,7 +6,7 @@ import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.DataEntryStore
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
@@ -183,7 +183,7 @@ class EnrollmentModule(
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet().trackedEntityInstance()!!,
-            DataEntryStore.EntryMode.ATTR,
+            EntryMode.ATTR,
             DhisEnrollmentUtils(d2),
             crashReportController,
             networkUtils,
@@ -239,7 +239,7 @@ class EnrollmentModule(
             FormValueStore(
                 d2,
                 enrollmentRepository.blockingGet().trackedEntityInstance()!!,
-                DataEntryStore.EntryMode.ATTR,
+                EntryMode.ATTR,
                 enrollmentRepository,
                 crashReportController,
                 networkUtils

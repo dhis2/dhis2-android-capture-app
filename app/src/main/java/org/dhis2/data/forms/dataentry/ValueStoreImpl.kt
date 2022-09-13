@@ -4,7 +4,7 @@ import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
-import org.dhis2.commons.data.DataEntryStore
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
-    private val entryMode: DataEntryStore.EntryMode,
+    private val entryMode: EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
@@ -32,38 +32,15 @@ class ValueStoreImpl(
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
 
-    constructor(
-        d2: D2,
-        recordUid: String,
-        entryMode: DataEntryStore.EntryMode,
-        dhisEnrollmentUtils: DhisEnrollmentUtils,
-        enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController,
-        networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository,
-        fieldErrorMessageProvider: FieldErrorMessageProvider
-    ) : this(
-        d2,
-        recordUid,
-        entryMode,
-        dhisEnrollmentUtils,
-        crashReportController,
-        networkUtils,
-        searchTEIRepository,
-        fieldErrorMessageProvider
-    ) {
-        this.enrollmentRepository = enrollmentRepository
-    }
-
     override fun overrideProgram(programUid: String?) {
         overrideProgramUid = programUid
     }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE -> saveDataElement(uid, value)
-            DataEntryStore.EntryMode.ATTR -> saveAttribute(uid, value)
-            DataEntryStore.EntryMode.DV ->
+            EntryMode.DE -> saveDataElement(uid, value)
+            EntryMode.ATTR -> saveAttribute(uid, value)
+            EntryMode.DV ->
                 throw IllegalArgumentException(
                     "DataValues can't be saved using these arguments. Use the other one."
                 )
@@ -129,14 +106,14 @@ class ValueStoreImpl(
     private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
         val teiUid =
             when (entryMode) {
-                DataEntryStore.EntryMode.DE -> {
+                EntryMode.DE -> {
                     val event = d2.eventModule().events().uid(recordUid).blockingGet()
                     val enrollment = d2.enrollmentModule().enrollments()
                         .uid(event.enrollment()).blockingGet()
                     enrollment.trackedEntityInstance()
                 }
-                DataEntryStore.EntryMode.ATTR -> recordUid
-                DataEntryStore.EntryMode.DV -> null
+                EntryMode.ATTR -> recordUid
+                EntryMode.DV -> null
             }
                 ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
 
@@ -223,9 +200,9 @@ class ValueStoreImpl(
 
     override fun deleteOptionValueIfSelected(field: String, optionUid: String): StoreResult {
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteDataElementValue(field, optionUid)
-            DataEntryStore.EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
-            DataEntryStore.EntryMode.DV
+            EntryMode.DE -> deleteDataElementValue(field, optionUid)
+            EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )
@@ -246,17 +223,17 @@ class ValueStoreImpl(
                 ?.map { d2.optionModule().options().uid(it.uid()).blockingGet().code()!! }
                 ?: arrayListOf()
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteDataElementValueIfNotInGroup(
+            EntryMode.DE -> deleteDataElementValueIfNotInGroup(
                 field,
                 optionsInGroup,
                 isInGroup
             )
-            DataEntryStore.EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
+            EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
                 field,
                 optionsInGroup,
                 isInGroup
             )
-            DataEntryStore.EntryMode.DV
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )
@@ -325,11 +302,11 @@ class ValueStoreImpl(
 
     override fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
         when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
-            DataEntryStore.EntryMode.ATTR -> deleteOptionValuesForEnrollment(
+            EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
+            EntryMode.ATTR -> deleteOptionValuesForEnrollment(
                 optionCodeValuesToDelete
             )
-            DataEntryStore.EntryMode.DV
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )

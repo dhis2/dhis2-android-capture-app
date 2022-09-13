@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.commons.data.DataEntryStore
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -38,7 +38,7 @@ class ValueStoreTest {
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.ATTR,
+                EntryMode.ATTR,
                 dhisEnrollmentUtils,
                 crashReportController,
                 networkUtils, searchTEIRepository, fieldErrorMessageProvider
@@ -47,7 +47,7 @@ class ValueStoreTest {
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.DE,
+                EntryMode.DE,
                 dhisEnrollmentUtils,
                 crashReportController,
                 networkUtils, searchTEIRepository, fieldErrorMessageProvider
@@ -56,7 +56,7 @@ class ValueStoreTest {
             ValueStoreImpl(
                 d2,
                 "recordUid",
-                DataEntryStore.EntryMode.DV,
+                EntryMode.DV,
                 dhisEnrollmentUtils,
                 crashReportController,
                 networkUtils, searchTEIRepository, fieldErrorMessageProvider

@@ -13,6 +13,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.data.RelationshipDirection;
@@ -25,10 +26,10 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.commons.data.DataEntryStore;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
@@ -43,7 +44,6 @@ import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
-import org.dhis2.commons.reporting.CrashReportController;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.arch.helpers.Result;
@@ -287,7 +287,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         }
                         ValueStore valueStore = new ValueStoreImpl(d2,
                                 uid,
-                                DataEntryStore.EntryMode.ATTR,
+                                EntryMode.ATTR,
                                 new DhisEnrollmentUtils(d2),
                                 crashReportController,
                                 networkUtils,

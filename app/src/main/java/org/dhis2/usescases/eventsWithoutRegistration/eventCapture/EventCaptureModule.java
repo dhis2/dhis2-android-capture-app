@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.DataEntryStore;
+import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
@@ -140,7 +140,7 @@ public class EventCaptureModule {
         return new FormValueStore(
                 d2,
                 eventUid,
-                DataEntryStore.EntryMode.DE,
+                EntryMode.DE,
                 null,
                 crashReportController,
                 networkUtils
@@ -173,7 +173,7 @@ public class EventCaptureModule {
                 new FormValueStore(
                         d2,
                         eventUid,
-                        DataEntryStore.EntryMode.DE,
+                        EntryMode.DE,
                         null,
                         crashReportController,
                         networkUtils

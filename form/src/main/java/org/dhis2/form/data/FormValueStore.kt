@@ -4,7 +4,7 @@ import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.withValueTypeCheck
-import org.dhis2.commons.data.DataEntryStore
+import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
@@ -25,7 +25,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 class FormValueStore(
     private val d2: D2,
     private val recordUid: String,
-    private val entryMode: DataEntryStore.EntryMode,
+    private val entryMode: EntryMode,
     private val enrollmentRepository: EnrollmentObjectRepository?,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils
@@ -33,11 +33,11 @@ class FormValueStore(
 
     fun save(uid: String, value: String?, extraData: String?): StoreResult {
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE ->
+            EntryMode.DE ->
                 saveDataElement(uid, value).blockingSingle()
-            DataEntryStore.EntryMode.ATTR ->
+            EntryMode.ATTR ->
                 checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
-            DataEntryStore.EntryMode.DV ->
+            EntryMode.DV ->
                 throw IllegalArgumentException(
                     "DataValues can't be saved using these arguments. Use the other one."
                 )
@@ -144,14 +144,14 @@ class FormValueStore(
     private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
         val teiUid =
             when (entryMode) {
-                DataEntryStore.EntryMode.DE -> {
+                EntryMode.DE -> {
                     val event = d2.eventModule().events().uid(recordUid).blockingGet()
                     val enrollment = d2.enrollmentModule().enrollments()
                         .uid(event.enrollment()).blockingGet()
                     enrollment.trackedEntityInstance()
                 }
-                DataEntryStore.EntryMode.ATTR -> recordUid
-                DataEntryStore.EntryMode.DV -> null
+                EntryMode.ATTR -> recordUid
+                EntryMode.DV -> null
             }
                 ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
 
@@ -378,11 +378,11 @@ class FormValueStore(
 
     fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
         when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
-            DataEntryStore.EntryMode.ATTR -> deleteOptionValuesForEnrollment(
+            EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
+            EntryMode.ATTR -> deleteOptionValuesForEnrollment(
                 optionCodeValuesToDelete
             )
-            DataEntryStore.EntryMode.DV
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )
@@ -417,9 +417,9 @@ class FormValueStore(
 
     fun deleteOptionValueIfSelected(field: String, optionUid: String): StoreResult {
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteDataElementValue(field, optionUid)
-            DataEntryStore.EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
-            DataEntryStore.EntryMode.DV
+            EntryMode.DE -> deleteDataElementValue(field, optionUid)
+            EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )
@@ -468,17 +468,17 @@ class FormValueStore(
                 ?.map { d2.optionModule().options().uid(it.uid()).blockingGet().code()!! }
                 ?: arrayListOf()
         return when (entryMode) {
-            DataEntryStore.EntryMode.DE -> deleteDataElementValueIfNotInGroup(
+            EntryMode.DE -> deleteDataElementValueIfNotInGroup(
                 field,
                 optionsInGroup,
                 isInGroup
             )
-            DataEntryStore.EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
+            EntryMode.ATTR -> deleteAttributeValueIfNotInGroup(
                 field,
                 optionsInGroup,
                 isInGroup
             )
-            DataEntryStore.EntryMode.DV
+            EntryMode.DV
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one."
             )
