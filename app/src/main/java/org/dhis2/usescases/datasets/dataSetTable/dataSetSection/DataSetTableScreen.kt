@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TableModel
@@ -173,20 +174,27 @@ fun DataSetTableScreen(
                 tableColors = tableColors,
                 tableSelection = tableSelection,
                 inputIsOpen = bottomSheetState.bottomSheetState.isExpanded,
-                onSelectionChange = { tableSelection = it },
-                onDecorationClick = {
-                    displayDescription = it
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
+
+                    override fun onDecorationClick(dialogModel: TableDialogModel) {
+                        displayDescription = dialogModel
+                    }
+
+                    override fun onClick(tableCell: TableCell) {
+                        currentCell?.let {
+                            onSaveValue(it)
+                        }
+                        onCellClick(tableCell)?.let { inputModel ->
+                            currentCell = tableCell
+                            currentInputType = inputModel.copy(currentValue = currentCell?.value)
+                            startEdition()
+                        } ?: collapseBottomSheet()
+                    }
                 }
-            ) { cell ->
-                currentCell?.let {
-                    onSaveValue(it)
-                }
-                onCellClick(cell)?.let { inputModel ->
-                    currentCell = cell
-                    currentInputType = inputModel.copy(currentValue = currentCell?.value)
-                    startEdition()
-                } ?: collapseBottomSheet()
-            }
+            )
             displayDescription?.let {
                 TableDialog(
                     dialogModel = it,

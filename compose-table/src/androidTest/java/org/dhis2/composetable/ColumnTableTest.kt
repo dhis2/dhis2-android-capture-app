@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.TableModel
@@ -174,9 +175,10 @@ class ColumnTableTest {
                 editable = true,
                 tableColors = tableColors,
                 tableSelection = tableSelection,
-                onSelectionChange = { tableSelection = it },
-                onDecorationClick = {},
-                onClick = {
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
                 }
             )
         }
