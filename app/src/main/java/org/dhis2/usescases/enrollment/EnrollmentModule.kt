@@ -6,13 +6,14 @@ import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
+import org.dhis2.commons.data.DataEntryStore
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
@@ -21,6 +22,7 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
+import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.RulesRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.metadata.OptionSetConfiguration
@@ -40,7 +42,6 @@ import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -146,7 +147,6 @@ class EnrollmentModule(
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
         enrollmentFormRepository: EnrollmentFormRepository,
-        valueStore: ValueStore,
         analyticsHelper: AnalyticsHelper,
         matomoAnalyticsController: MatomoAnalyticsController
     ): EnrollmentPresenterImpl {
@@ -159,7 +159,6 @@ class EnrollmentModule(
             programRepository,
             schedulerProvider,
             enrollmentFormRepository,
-            valueStore,
             analyticsHelper,
             matomoAnalyticsController
         )
@@ -233,21 +232,17 @@ class EnrollmentModule(
         crashReportController: CrashReportController,
         dataEntryRepository: EnrollmentRepository,
         networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository,
         resourceManager: ResourceManager
     ): FormRepository {
         val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return FormRepositoryImpl(
-            ValueStoreImpl(
+            FormValueStore(
                 d2,
                 enrollmentRepository.blockingGet().trackedEntityInstance()!!,
                 DataEntryStore.EntryMode.ATTR,
-                DhisEnrollmentUtils(d2),
                 enrollmentRepository,
                 crashReportController,
-                networkUtils,
-                searchTEIRepository,
-                fieldErrorMessageProvider
+                networkUtils
             ),
             fieldErrorMessageProvider,
             DisplayNameProviderImpl(

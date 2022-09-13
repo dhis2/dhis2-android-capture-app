@@ -3,27 +3,21 @@ package org.dhis2.data.forms.dataentry
 import io.reactivex.Flowable
 import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
-import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.commons.data.DataEntryStore
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.form.data.FormValueStore
-import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
-import org.dhis2.utils.reporting.CrashReportController
-import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
-import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
-import org.hisp.dhis.android.core.maintenance.D2Error
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -34,7 +28,7 @@ class ValueStoreImpl(
     private val networkUtils: NetworkUtils,
     private val searchTEIRepository: SearchTEIRepository,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider
-) : ValueStore, FormValueStore {
+) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
 
@@ -167,8 +161,7 @@ class ValueStoreImpl(
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue) { _attrUid, _value ->
-                    val crashController = CrashReportControllerImpl()
-                    crashController.addBreadCrumb(
+                    crashReportController.addBreadCrumb(
                         "blockingSetCheck Crash",
                         "Attribute: $_attrUid," +
                             "" + " value: $_value"
@@ -367,114 +360,5 @@ class ValueStoreImpl(
             }.forEach {
                 saveAttribute(it.trackedEntityAttribute()!!, null)
             }
-    }
-
-    override fun save(uid: String, value: String?, extraData: String?): StoreResult {
-        return when (entryMode) {
-            DataEntryStore.EntryMode.ATTR ->
-                checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
-            else -> save(uid, value).blockingSingle()
-        }
-    }
-
-    private fun checkStoreEnrollmentDetail(
-        uid: String,
-        value: String?,
-        extraData: String?
-    ): Flowable<StoreResult> {
-        return enrollmentRepository?.let { enrollmentRepository ->
-            when (uid) {
-                EnrollmentDetail.ENROLLMENT_DATE_UID.name -> {
-                    enrollmentRepository.setEnrollmentDate(
-                        value?.toDate()
-                    )
-
-                    Flowable.just(
-                        StoreResult(
-                            EnrollmentDetail.ENROLLMENT_DATE_UID.name,
-                            ValueStoreResult.VALUE_CHANGED
-                        )
-                    )
-                }
-                EnrollmentDetail.INCIDENT_DATE_UID.name -> {
-                    enrollmentRepository.setIncidentDate(
-                        value?.toDate()
-                    )
-
-                    Flowable.just(
-                        StoreResult(
-                            EnrollmentDetail.INCIDENT_DATE_UID.name,
-                            ValueStoreResult.VALUE_CHANGED
-                        )
-                    )
-                }
-                EnrollmentDetail.ORG_UNIT_UID.name -> {
-                    Flowable.just(
-                        StoreResult(
-                            "",
-                            ValueStoreResult.VALUE_CHANGED
-                        )
-                    )
-                }
-                EnrollmentDetail.TEI_COORDINATES_UID.name -> {
-                    val geometry = value?.let {
-                        extraData?.let {
-                            Geometry.builder()
-                                .coordinates(value)
-                                .type(FeatureType.valueOf(it))
-                                .build()
-                        }
-                    }
-                    saveTeiGeometry(geometry)
-                    Flowable.just(
-                        StoreResult(
-                            "",
-                            ValueStoreResult.VALUE_CHANGED
-                        )
-                    )
-                }
-                EnrollmentDetail.ENROLLMENT_COORDINATES_UID.name -> {
-                    val geometry = value?.let {
-                        extraData?.let {
-                            Geometry.builder()
-                                .coordinates(value)
-                                .type(FeatureType.valueOf(it))
-                                .build()
-                        }
-                    }
-                    try {
-                        saveEnrollmentGeometry(geometry)
-                        return Flowable.just(
-                            StoreResult(
-                                "",
-                                ValueStoreResult.VALUE_CHANGED
-                            )
-                        )
-                    } catch (d2Error: D2Error) {
-                        val errorMessage = d2Error.errorDescription() + ": $geometry"
-                        crashReportController.trackError(d2Error, errorMessage)
-                        Flowable.just(
-                            StoreResult(
-                                "",
-                                ValueStoreResult.ERROR_UPDATING_VALUE
-                            )
-                        )
-                    }
-                }
-                else -> save(uid, value)
-            }
-        } ?: save(uid, value)
-    }
-
-    private fun saveTeiGeometry(geometry: Geometry?) {
-        enrollmentRepository?.let { enrollmentRepository ->
-            val teiRepository = d2.trackedEntityModule().trackedEntityInstances()
-                .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
-            teiRepository.setGeometry(geometry)
-        }
-    }
-
-    private fun saveEnrollmentGeometry(geometry: Geometry?) {
-        enrollmentRepository?.setGeometry(geometry)
     }
 }

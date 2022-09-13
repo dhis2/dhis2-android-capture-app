@@ -1,25 +1,22 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
+import org.dhis2.commons.data.DataEntryStore;
 import org.dhis2.commons.di.dagger.PerFragment;
-import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
-import org.dhis2.commons.filters.data.FilterRepository;
-import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.forms.dataentry.SearchTEIRepository;
-import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.data.forms.dataentry.ValueStore;
-import org.dhis2.data.forms.dataentry.ValueStoreImpl;
-import org.dhis2.form.data.FormValueStore;
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
-import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepository;
+import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
+import org.dhis2.form.data.FormValueStore;
+import org.dhis2.usescases.teiDashboard.DashboardRepository;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
@@ -75,7 +72,7 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
-    SearchTEIRepository searchTEIRepository(D2 d2){
+    SearchTEIRepository searchTEIRepository(D2 d2) {
         return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
     }
 
@@ -100,18 +97,15 @@ public class TEIDataModule {
     FormValueStore valueStore(
             D2 d2,
             CrashReportController crashReportController,
-            NetworkUtils networkUtils,
-            SearchTEIRepository searchTEIRepository
-    ){
-        return new ValueStoreImpl(
+            NetworkUtils networkUtils
+    ) {
+        return new FormValueStore(
                 d2,
                 teiUid,
                 DataEntryStore.EntryMode.ATTR,
-                new DhisEnrollmentUtils(d2),
+                null,
                 crashReportController,
-                networkUtils,
-                searchTEIRepository,
-                new FieldErrorMessageProvider(view.getContext())
+                networkUtils
         );
     }
 }

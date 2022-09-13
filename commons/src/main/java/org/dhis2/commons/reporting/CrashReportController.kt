@@ -1,4 +1,4 @@
-package org.dhis2.utils.reporting
+package org.dhis2.commons.reporting
 
 interface CrashReportController {
 

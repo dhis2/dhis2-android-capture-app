@@ -3,10 +3,8 @@ package org.dhis2.usescases.enrollment
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
@@ -15,8 +13,6 @@ import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.model.FieldUiModelImpl
-import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -124,18 +120,6 @@ class EnrollmentPresenterImplTest {
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
         verify(enrollmentView).displayMessage(null)
-    }
-
-    @Test
-    fun `Save file should use valueStore`() {
-        whenever(valueStore.save("uid", "fileValue")) doReturn Flowable.just(
-            StoreResult(
-                "uid",
-                ValueStoreResult.VALUE_CHANGED
-            )
-        )
-        presenter.saveFile("uid", "fileValue")
-        verify(valueStore, times(1)).save("uid", "fileValue")
     }
 
     @Test

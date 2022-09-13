@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import android.util.Log;
 
-import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.jetbrains.annotations.Nullable;
 
 import timber.log.Timber;
