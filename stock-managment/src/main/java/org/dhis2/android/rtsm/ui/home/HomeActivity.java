@@ -58,11 +58,6 @@ public class HomeActivity extends BaseActivity {
 
     private HomeViewModel viewModel;
 
-    //@Inject FiltersAdapter newAdapter;
-
-    private Boolean backDropActive = false;
-    private Float elevation = 0f;
-
     private String from = "";
     private String to = "";
     private TransactionType transactionType;
