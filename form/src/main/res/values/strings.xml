@@ -89,5 +89,6 @@
     <string name="error_true_only_malformed">Value is neither true or false</string>
     <string name="error_true_only_false_not_valid">This field can only be true</string>
     <string name="error_true_only_one_is_not_true">Invalid character 1</string>
+    <string name="data_values_save_error">DataValues can\'t be saved using these arguments. Use the other one.</string>
 
 </resources>

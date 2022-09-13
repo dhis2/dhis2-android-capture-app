@@ -177,7 +177,8 @@ class EnrollmentModule(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository
+        searchTEIRepository: SearchTEIRepository,
+        resourceManager: ResourceManager
     ): ValueStore {
         val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return ValueStoreImpl(
@@ -188,7 +189,8 @@ class EnrollmentModule(
             crashReportController,
             networkUtils,
             searchTEIRepository,
-            fieldErrorMessageProvider
+            fieldErrorMessageProvider,
+            resourceManager
         )
     }
 
@@ -242,7 +244,8 @@ class EnrollmentModule(
                 EntryMode.ATTR,
                 enrollmentRepository,
                 crashReportController,
-                networkUtils
+                networkUtils,
+                resourceManager
             ),
             fieldErrorMessageProvider,
             DisplayNameProviderImpl(

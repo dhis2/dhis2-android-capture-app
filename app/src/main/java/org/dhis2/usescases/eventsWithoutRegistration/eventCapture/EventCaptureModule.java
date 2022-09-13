@@ -136,14 +136,17 @@ public class EventCaptureModule {
     FormValueStore valueStore(
             @NonNull D2 d2,
             CrashReportController crashReportController,
-            NetworkUtils networkUtils) {
+            NetworkUtils networkUtils,
+            ResourceManager resourceManager
+    ) {
         return new FormValueStore(
                 d2,
                 eventUid,
                 EntryMode.DE,
                 null,
                 crashReportController,
-                networkUtils
+                networkUtils,
+                resourceManager
         );
     }
 
@@ -176,7 +179,8 @@ public class EventCaptureModule {
                         EntryMode.DE,
                         null,
                         crashReportController,
-                        networkUtils
+                        networkUtils,
+                        resourceManager
                 ),
                 fieldErrorMessageProvider,
                 new DisplayNameProviderImpl(

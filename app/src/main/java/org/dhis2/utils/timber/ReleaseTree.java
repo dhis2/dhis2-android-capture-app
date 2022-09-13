@@ -29,7 +29,9 @@ public class ReleaseTree extends Timber.Tree {
 
     @Override
     protected void log(int priority, String tag, @NonNull final String message, final Throwable t) {
-        if (isLoggable(tag, priority))
-            crashReportController.logException(new Exception(t));
+        if (isLoggable(tag, priority)) {
+            Exception e = new Exception(t);
+            crashReportController.trackError(e, e.getMessage());
+        }
     }
 }

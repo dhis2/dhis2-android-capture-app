@@ -7,7 +7,9 @@ import org.dhis2.Bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
@@ -27,7 +29,8 @@ class ValueStoreImpl(
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val searchTEIRepository: SearchTEIRepository,
-    private val fieldErrorMessageProvider: FieldErrorMessageProvider
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider,
+    private val resourceManager: ResourceManager
 ) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
@@ -42,7 +45,7 @@ class ValueStoreImpl(
             EntryMode.ATTR -> saveAttribute(uid, value)
             EntryMode.DV ->
                 throw IllegalArgumentException(
-                    "DataValues can't be saved using these arguments. Use the other one."
+                    resourceManager.getString(R.string.data_values_save_error)
                 )
         }
     }
@@ -204,7 +207,7 @@ class ValueStoreImpl(
             EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
             EntryMode.DV
             -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
+                resourceManager.getString(R.string.data_values_save_error)
             )
         }
     }

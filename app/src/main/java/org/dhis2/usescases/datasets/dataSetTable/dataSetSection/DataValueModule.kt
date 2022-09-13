@@ -87,7 +87,8 @@ class DataValueModule(
         d2: D2,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        searchRepository: SearchTEIRepository
+        searchRepository: SearchTEIRepository,
+        resourceManager: ResourceManager
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -97,7 +98,8 @@ class DataValueModule(
             crashReportController,
             networkUtils,
             searchRepository,
-            FieldErrorMessageProvider(activityContext)
+            FieldErrorMessageProvider(activityContext),
+            resourceManager
         )
     }
 

@@ -292,7 +292,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 crashReportController,
                                 networkUtils,
                                 searchTEIRepository,
-                                new FieldErrorMessageProvider(resources.getContext())
+                                new FieldErrorMessageProvider(resources.getContext()),
+                                resources
                         );
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))

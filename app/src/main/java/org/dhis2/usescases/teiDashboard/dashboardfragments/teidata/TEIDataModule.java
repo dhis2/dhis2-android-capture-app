@@ -8,6 +8,7 @@ import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
@@ -97,7 +98,8 @@ public class TEIDataModule {
     FormValueStore valueStore(
             D2 d2,
             CrashReportController crashReportController,
-            NetworkUtils networkUtils
+            NetworkUtils networkUtils,
+            ResourceManager resourceManager
     ) {
         return new FormValueStore(
                 d2,
@@ -105,7 +107,8 @@ public class TEIDataModule {
                 EntryMode.ATTR,
                 null,
                 crashReportController,
-                networkUtils
+                networkUtils,
+                resourceManager
         );
     }
 }

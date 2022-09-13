@@ -8,6 +8,8 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
@@ -28,7 +30,8 @@ class FormValueStore(
     private val entryMode: EntryMode,
     private val enrollmentRepository: EnrollmentObjectRepository?,
     private val crashReportController: CrashReportController,
-    private val networkUtils: NetworkUtils
+    private val networkUtils: NetworkUtils,
+    private val resourceManager: ResourceManager
 ) {
 
     fun save(uid: String, value: String?, extraData: String?): StoreResult {
@@ -39,7 +42,7 @@ class FormValueStore(
                 checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
             EntryMode.DV ->
                 throw IllegalArgumentException(
-                    "DataValues can't be saved using these arguments. Use the other one."
+                    resourceManager.getString(R.string.data_values_save_error)
                 )
         }
     }
@@ -376,52 +379,13 @@ class FormValueStore(
         }
     }
 
-    fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
-        when (entryMode) {
-            EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
-            EntryMode.ATTR -> deleteOptionValuesForEnrollment(
-                optionCodeValuesToDelete
-            )
-            EntryMode.DV
-            -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
-            )
-        }
-    }
-
-    private fun deleteOptionValuesForEvents(optionCodeValuesToDelete: List<String>) {
-        d2.trackedEntityModule().trackedEntityDataValues()
-            .byEvent().eq(recordUid)
-            .byValue().`in`(optionCodeValuesToDelete)
-            .blockingGet().filter {
-                d2.dataElementModule().dataElements()
-                    .uid(it.dataElement())
-                    .blockingGet()
-                    .optionSetUid() != null
-            }.forEach {
-                saveDataElement(it.dataElement()!!, null)
-            }
-    }
-
-    private fun deleteOptionValuesForEnrollment(optionCodeValuesToDelete: List<String>) {
-        d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(recordUid)
-            .byValue().`in`(optionCodeValuesToDelete)
-            .blockingGet().filter {
-                d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(it.trackedEntityAttribute()).blockingGet().optionSet()?.uid() != null
-            }.forEach {
-                saveAttribute(it.trackedEntityAttribute()!!, null)
-            }
-    }
-
     fun deleteOptionValueIfSelected(field: String, optionUid: String): StoreResult {
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValue(field, optionUid)
             EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
             EntryMode.DV
             -> throw IllegalArgumentException(
-                "DataValues can't be saved using these arguments. Use the other one."
+                resourceManager.getString(R.string.data_values_save_error)
             )
         }
     }

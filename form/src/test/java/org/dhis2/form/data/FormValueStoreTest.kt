@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.data
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -7,9 +7,9 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
+import org.dhis2.form.model.ValueStoreResult.VALUE_NOT_UNIQUE
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -17,59 +17,50 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
-class ValueStoreTest {
-
-    private lateinit var attrValueStore: ValueStore
-    private lateinit var deValueStore: ValueStore
-    private lateinit var dvValueStore: ValueStore
+class FormValueStoreTest {
+    private lateinit var attrValueStore: FormValueStore
+    private lateinit var deValueStore: FormValueStore
+    private lateinit var dvValueStore: FormValueStore
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
-    private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val crashReportController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
-    private val searchTEIRepository: SearchTEIRepository = mock()
     private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
         attrValueStore =
-            ValueStoreImpl(
+            FormValueStore(
                 d2,
                 "recordUid",
                 EntryMode.ATTR,
-                dhisEnrollmentUtils,
+                null,
                 crashReportController,
                 networkUtils,
-                searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager
             )
         deValueStore =
-            ValueStoreImpl(
+            FormValueStore(
                 d2,
                 "recordUid",
                 EntryMode.DE,
-                dhisEnrollmentUtils,
+                null,
                 crashReportController,
                 networkUtils,
-                searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager
             )
         dvValueStore =
-            ValueStoreImpl(
+            FormValueStore(
                 d2,
                 "recordUid",
                 EntryMode.DV,
-                dhisEnrollmentUtils,
+                null,
                 crashReportController,
                 networkUtils,
-                searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager
             )
     }
@@ -78,12 +69,9 @@ class ValueStoreTest {
     fun `Trying to save an unique attribute should return a valid response`() {
         mockCheckUniqueFilter()
 
-        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
+        val result = attrValueStore.save("uid", "uniqueValue", null)
 
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreResult.VALUE_NOT_UNIQUE
-        }
+        assertEquals(result.valueStoreResult, VALUE_NOT_UNIQUE)
     }
 
     private fun mockCheckUniqueFilter() {
@@ -147,12 +135,8 @@ class ValueStoreTest {
                 .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet()
         ) doReturn mockedAttributeValueList()
 
-        val testSubscriber = attrValueStore.save("uid", "uniqueValue").test()
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
-        }
+        val result = attrValueStore.save("uid", "uniqueValue", null)
+        assertEquals(result.valueStoreResult, VALUE_CHANGED)
     }
 
     @Test
@@ -161,12 +145,9 @@ class ValueStoreTest {
             d2.dataElementModule().dataElements().uid("uid").blockingGet()
         ) doReturn mockedDataElement()
 
-        val testSubscriber = deValueStore.save("uid", "value").test()
+        val result = deValueStore.save("uid", "value", null)
 
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
-        }
+        assertEquals(result.valueStoreResult, VALUE_CHANGED)
     }
 
     @Test
@@ -193,12 +174,9 @@ class ValueStoreTest {
             ).blockingGet()
         ) doReturn mockedDataElementValue()
 
-        val testSubscriber = deValueStore.save("uid", null).test()
+        val result = deValueStore.save("uid", null, null)
 
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue {
-            it.valueStoreResult == ValueStoreResult.VALUE_CHANGED
-        }
+        assertEquals(result.valueStoreResult, VALUE_CHANGED)
     }
 
     @Test
@@ -261,7 +239,7 @@ class ValueStoreTest {
             "fieldUid",
             "optionUid"
         )
-        assert(storeResult.valueStoreResult == ValueStoreResult.VALUE_CHANGED)
+        assert(storeResult.valueStoreResult == VALUE_CHANGED)
     }
 
     @Test
@@ -385,7 +363,7 @@ class ValueStoreTest {
             .build()
     }
 
-    fun mockedAttributeValueList(): List<TrackedEntityAttributeValue> {
+    private fun mockedAttributeValueList(): List<TrackedEntityAttributeValue> {
         return arrayListOf(
             TrackedEntityAttributeValue.builder()
                 .trackedEntityAttribute("uid")
