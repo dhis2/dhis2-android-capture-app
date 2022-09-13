@@ -34,15 +34,12 @@ class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
-    //private val filterManager: FilterManager,
     private val metadataManager: MetadataManager,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
-
-    private val refreshData = PublishProcessor.create<Unit>()
 
     private val _transactionType = MutableLiveData<TransactionType>()
     val transactionType: LiveData<TransactionType> get() = _transactionType
@@ -84,55 +81,6 @@ class HomeViewModel @Inject constructor(
         loadFacilities()
         loadDestinations()
     }
-
-    /*fun init() {
-        val applyFiler = PublishProcessor.create<FilterManager>()
-
-        disposable.add(
-            applyFiler
-                .switchMap {
-                    refreshData.startWith(Unit).flatMap {
-                        programRepository.homeItems(
-                            syncStatusController.observeDownloadProcess().value!!
-                        )
-                    }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { programs ->
-                        this.programs.postValue(programs)
-                        view.swapProgramModelData(programs)
-                    },
-                    { throwable -> Timber.d(throwable) },
-                    { Timber.tag("INIT DATA").d("LOADING ENDED") }
-                )
-        )
-
-        disposable.add(
-            filterManager.asFlowable()
-                .startWith(filterManager)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.showFilterProgress()
-                        applyFiler.onNext(filterManager)
-                    },
-                    { Timber.e(it) }
-                )
-        )
-
-        disposable.add(
-            filterManager.ouTreeFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { *//*view.openOrgUnitTreeSelector()*//* },
-                    { Timber.e(it) }
-                )
-        )
-    }*/
 
     private fun loadDestinations() {
         _destinations.postValue(OperationState.Loading)
