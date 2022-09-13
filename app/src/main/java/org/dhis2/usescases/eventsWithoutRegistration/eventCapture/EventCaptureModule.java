@@ -5,19 +5,19 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
@@ -40,7 +40,6 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.reporting.CrashReportController;
 import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
@@ -134,16 +133,20 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormValueStore valueStore(@NonNull D2 d2, CrashReportController crashReportController, NetworkUtils networkUtils, SearchTEIRepository searchTEIRepository) {
-        return new ValueStoreImpl(
+    FormValueStore valueStore(
+            @NonNull D2 d2,
+            CrashReportController crashReportController,
+            NetworkUtils networkUtils,
+            ResourceManager resourceManager
+    ) {
+        return new FormValueStore(
                 d2,
                 eventUid,
-                DataEntryStore.EntryMode.DE,
-                new DhisEnrollmentUtils(d2),
+                EntryMode.DE,
+                null,
                 crashReportController,
                 networkUtils,
-                searchTEIRepository,
-                new FieldErrorMessageProvider(view.getContext())
+                resourceManager
         );
     }
 
@@ -166,20 +169,18 @@ public class EventCaptureModule {
             org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
             CrashReportController crashReportController,
             NetworkUtils networkUtils,
-            SearchTEIRepository searchTEIRepository,
             ResourceManager resourceManager
     ) {
         FieldErrorMessageProvider fieldErrorMessageProvider = new FieldErrorMessageProvider(activityContext);
         return new FormRepositoryImpl(
-                new ValueStoreImpl(
+                new FormValueStore(
                         d2,
                         eventUid,
-                        DataEntryStore.EntryMode.DE,
-                        new DhisEnrollmentUtils(d2),
+                        EntryMode.DE,
+                        null,
                         crashReportController,
                         networkUtils,
-                        searchTEIRepository,
-                        fieldErrorMessageProvider
+                        resourceManager
                 ),
                 fieldErrorMessageProvider,
                 new DisplayNameProviderImpl(
