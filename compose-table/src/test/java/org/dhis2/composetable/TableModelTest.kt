@@ -80,14 +80,15 @@ class TableModelTest {
     }
 
     @Test
-    fun returnNullWhenNextCellIsNotEditable() {
-        val currentSelection = TableSelection.CellSelection("table", 0, 1, 1)
-        assert(tableModel.getNextCell(currentSelection) == null)
+    fun returnNextEditableCellNullWhenNextCellIsNotEditable() {
+        val currentSelection = TableSelection.CellSelection("table", 0, 1, 0)
+        val nextEditableCell = tableModel.getNextCell(currentSelection)
+        assert(nextEditableCell?.first?.column == 2)
     }
-    
+
     @Test
     fun moveToNextEditableCellWhenNextCellIsNotEditable() {
-        val currentSelection = TableSelection.CellSelection("table", 0, 1)
+        val currentSelection = TableSelection.CellSelection("table", 0, 1, 1)
         tableModel.getNextCell(currentSelection)?.let { (tableCell, nextSelection) ->
             assert(tableCell.id == "12")
             assert(nextSelection.rowIndex == 1)
