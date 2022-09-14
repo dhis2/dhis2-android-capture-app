@@ -41,6 +41,12 @@ data class TableModel(
             else -> getNextCell(nextCell)
         }
     }
+
+    fun tableErrorCell(): TableCell? =
+        tableRows.map { row ->
+            row.values.filter { it.value.error != null }
+                .values.firstOrNull()
+        }.firstOrNull()
 }
 
 @Serializable
