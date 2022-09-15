@@ -16,8 +16,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="org.dhis2.android.rtsm.ui.home.HomeActivity">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
@@ -45,7 +44,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="@{viewModel.toolbarTitle.toString().substring(0,1)+viewModel.toolbarTitle.toString().toLowerCase().substring(1)}"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@id/sub_title"
@@ -58,7 +56,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="@{viewModel.toolbarSubtitle}"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -128,7 +125,6 @@
                 android:textAllCaps="false"
                 android:textSize="@dimen/transaction_button_text_size"
                 app:cornerRadius="@dimen/transaction_button_corner_radius"
-                app:selected="@{viewModel.transactionType == TransactionType.DISTRIBUTION}"
                 app:layout_constraintEnd_toStartOf="@+id/discard_button"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -153,7 +149,6 @@
                 android:textSize="@dimen/transaction_button_text_size"
                 app:backgroundTint="@color/discard_color"
                 app:cornerRadius="@dimen/transaction_button_corner_radius"
-                app:selected="@{viewModel.transactionType == TransactionType.DISCARD}"
                 app:layout_constraintEnd_toStartOf="@+id/correction_button"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/distribution_button"
@@ -175,7 +170,6 @@
                 android:textSize="@dimen/transaction_button_text_size"
                 app:backgroundTint="@color/correction_color"
                 app:cornerRadius="@dimen/transaction_button_corner_radius"
-                app:selected="@{viewModel.transactionType == TransactionType.CORRECTION}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/discard_button"
@@ -259,7 +253,6 @@
                         <AutoCompleteTextView
                             android:id="@+id/transaction_date_autocomplete"
                             android:inputType="none"
-                            app:date="@{viewModel.transactionDate}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -274,8 +267,7 @@
                     app:layout_constraintTop_toTopOf="@id/transaction_date_container"
                     app:layout_constraintStart_toEndOf="@id/transaction_date_container"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:orientation="vertical"
-                    android:visibility="@{viewModel.distribution ? View.VISIBLE : View.GONE}">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/distributed_to_label"
