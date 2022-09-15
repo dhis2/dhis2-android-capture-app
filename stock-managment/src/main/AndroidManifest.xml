@@ -16,10 +16,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".ui.managestock.ManageStockActivity"
             android:exported="false"
             android:parentActivityName=".ui.home.HomeActivity"
