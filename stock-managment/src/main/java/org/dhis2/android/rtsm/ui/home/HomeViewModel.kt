@@ -1,14 +1,10 @@
 package org.dhis2.android.rtsm.ui.home
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -25,6 +21,10 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -38,40 +38,40 @@ class HomeViewModel @Inject constructor(
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
 
-    private val _transactionType = mutableStateOf(TransactionType.DISTRIBUTION)
-    val transactionType: State<TransactionType> get() = _transactionType
+    private val _transactionType = MutableStateFlow<TransactionType?>(null)
+    val transactionType: StateFlow<TransactionType?> get() = _transactionType
 
-    private val _isDistribution = mutableStateOf(false)
-    val isDistribution: State<Boolean>
+    private val _isDistribution = MutableStateFlow(false)
+    val isDistribution: StateFlow<Boolean>
         get() = _isDistribution
 
-    private val _facility = mutableStateOf<OrganisationUnit?>(null)
-    val facility: State<OrganisationUnit?>
+    private val _facility = MutableStateFlow<OrganisationUnit?>(null)
+    val facility: StateFlow<OrganisationUnit?>
         get() = _facility
 
-    private val _transactionDate = mutableStateOf(LocalDateTime.now())
-    val transactionDate: State<LocalDateTime>
+    private val _transactionDate = MutableStateFlow(LocalDateTime.now())
+    val transactionDate: StateFlow<LocalDateTime>
         get() = _transactionDate
 
-    private val _destination = mutableStateOf<Option?>(null)
-    val destination: State<Option?>
+    private val _destination = MutableStateFlow<Option?>(null)
+    val destination: StateFlow<Option?>
         get() = _destination
 
     private val _facilities =
-        mutableStateOf<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
-    val facilities: State<OperationState<List<OrganisationUnit>>>
+        MutableStateFlow<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
+    val facilities: StateFlow<OperationState<List<OrganisationUnit>>>
         get() = _facilities
 
-    private val _destinations = mutableStateOf<OperationState<List<Option>>>(OperationState.Loading)
-    val destinationsList: State<OperationState<List<Option>>>
+    private val _destinations = MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
+    val destinationsList: StateFlow<OperationState<List<Option>>>
         get() = _destinations
 
     // Toolbar section variables
-    private val _toolbarTitle = mutableStateOf(TransactionType.DISTRIBUTION)
-    val toolbarTitle: State<TransactionType> get() = _toolbarTitle
+    private val _toolbarTitle = MutableStateFlow(TransactionType.DISTRIBUTION)
+    val toolbarTitle: StateFlow<TransactionType> get() = _toolbarTitle
 
-    private val _toolbarSubtitle = mutableStateOf("")
-    val toolbarSubtitle: State<String> get() = _toolbarSubtitle
+    private val _toolbarSubtitle = MutableStateFlow("")
+    val toolbarSubtitle: StateFlow<String> get() = _toolbarSubtitle
 
     init {
         loadFacilities()
@@ -175,7 +175,7 @@ class HomeViewModel @Inject constructor(
         }
 
         return Transaction(
-            transactionType.value,
+            transactionType.value!!,
             ParcelUtils.facilityToIdentifiableModelParcel(facility.value!!),
             transactionDate.value.humanReadableDate(),
             destination.value?.let { ParcelUtils.distributedTo_ToIdentifiableModelParcel(it) }
@@ -189,7 +189,7 @@ class HomeViewModel @Inject constructor(
     }
 
     @JvmName("getToolbarTitle1")
-    fun getToolbarTitle(): State<TransactionType> {
+    fun getToolbarTitle(): StateFlow<TransactionType> {
         return toolbarTitle
     }
 
@@ -202,6 +202,7 @@ class HomeViewModel @Inject constructor(
             TransactionType.DISTRIBUTION -> _toolbarSubtitle.value = from
             TransactionType.DISCARD -> _toolbarSubtitle.value = from
             TransactionType.CORRECTION -> _toolbarSubtitle.value = from
+            else -> {}
         }
     }
 
