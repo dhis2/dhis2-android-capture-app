@@ -17,10 +17,6 @@
             type="java.lang.String" />
 
         <variable
-            name="viewModel"
-            type="org.dhis2.android.rtsm.ui.main.MainViewModel" />
-
-        <variable
             name="totalFilters"
             type="Integer" />
     </data>
@@ -100,7 +96,6 @@
                 <ImageView
                     android:id="@+id/syncActionButton"
                     style="@style/ActionIcon"
-                    android:onClick="@{()->viewModel.onSyncAllClick()}"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/filterActionButton"

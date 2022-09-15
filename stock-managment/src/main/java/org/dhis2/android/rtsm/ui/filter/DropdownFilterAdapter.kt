@@ -14,7 +14,7 @@ class DropdownFilterAdapter<T>(
     context: Context,
     @LayoutRes layout: Int,
     filterItems: MutableList<T>
-): ArrayAdapter<T>(
+) : ArrayAdapter<T>(
     context,
     layout
 ) {
@@ -46,7 +46,7 @@ class DropdownFilterAdapter<T>(
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         return (super.getDropDownView(position, convertView, parent) as TextView).apply {
-            when(val item = items[position]) {
+            when (val item = items[position]) {
                 is OrganisationUnit -> text = item.displayName().toString()
                 is ProgramStage -> text = item.displayName().toString()
                 is Option -> text = item.displayName().toString()
@@ -62,7 +62,7 @@ class DropdownFilterAdapter<T>(
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return (super.getDropDownView(position, convertView, parent) as TextView).apply {
-            when(val item = items[position]) {
+            when (val item = items[position]) {
                 is OrganisationUnit -> text = item.displayName().toString()
                 is ProgramStage -> text = item.displayName().toString()
                 is Option -> text = item.displayName().toString()

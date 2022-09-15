@@ -5,6 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import javax.inject.Inject
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -21,10 +25,6 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -57,7 +57,8 @@ class HomeViewModel @Inject constructor(
     val destination: State<Option?>
         get() = _destination
 
-    private val _facilities = mutableStateOf<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
+    private val _facilities =
+        mutableStateOf<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
     val facilities: State<OperationState<List<OrganisationUnit>>>
         get() = _facilities
 
@@ -78,7 +79,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadDestinations() {
-
         disposable.add(
             metadataManager.destinations(config.distributedTo)
                 .subscribeOn(schedulerProvider.io())
@@ -89,7 +89,7 @@ class HomeViewModel @Inject constructor(
                         it.printStackTrace()
                         _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
-                        )
+                            )
                     }
                 )
         )
@@ -198,7 +198,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fromFacilitiesLabel(from: String) {
-        when(transactionType.value) {
+        when (transactionType.value) {
             TransactionType.DISTRIBUTION -> _toolbarSubtitle.value = from
             TransactionType.DISCARD -> _toolbarSubtitle.value = from
             TransactionType.CORRECTION -> _toolbarSubtitle.value = from
@@ -206,7 +206,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun deliveryToLabel(to: String) {
-        if (transactionType.value == TransactionType.DISTRIBUTION)
+        if (transactionType.value == TransactionType.DISTRIBUTION) {
             _toolbarSubtitle.value = "${toolbarSubtitle.value} -> $to"
+        }
     }
 }

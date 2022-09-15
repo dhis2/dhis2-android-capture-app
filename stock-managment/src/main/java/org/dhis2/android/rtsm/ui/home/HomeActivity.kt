@@ -18,10 +18,10 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.Backdrop
 
 @AndroidEntryPoint
-class HomeActivity: ComponentActivity() {
+class HomeActivity : ComponentActivity() {
 
     private val viewModel: HomeViewModel by viewModels()
-    private var themeColor =  R.color.colorPrimary
+    private var themeColor = R.color.colorPrimary
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +31,8 @@ class HomeActivity: ComponentActivity() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 updateTheme(viewModel.transactionType.value)
-                Backdrop(
-                    viewModel,
-                    Color(colorResource(themeColor).toArgb()),
-                ) { finish() }
+                val color = Color(colorResource(themeColor).toArgb())
+                Backdrop(this, viewModel, color)
             }
         }
     }

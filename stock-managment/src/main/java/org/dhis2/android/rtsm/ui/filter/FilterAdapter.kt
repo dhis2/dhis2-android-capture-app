@@ -9,9 +9,9 @@ import org.dhis2.android.rtsm.databinding.ItemDropdownBinding
 class FilterAdapter
 constructor(
     private val data: MutableList<StockItem>
-): RecyclerView.Adapter<FilterViewHolder>() {
+) : RecyclerView.Adapter<FilterViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        FilterViewHolder (
+        FilterViewHolder(
             ItemDropdownBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
 
