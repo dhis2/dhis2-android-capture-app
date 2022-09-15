@@ -1,32 +1,57 @@
 package org.dhis2.composetable
 
+import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.data.TableAppScreenOptions
+import org.dhis2.composetable.model.FakeModelType
+import org.dhis2.composetable.model.FakeTableModels
+import org.dhis2.composetable.model.KeyboardInputType
+import org.dhis2.composetable.model.TableModel
+import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.ui.CELL_TEST_TAG
+import org.dhis2.composetable.ui.CELL_VALUE_TEST_TAG
+import org.dhis2.composetable.ui.CellSelected
 import org.dhis2.composetable.ui.ColumnBackground
 import org.dhis2.composetable.ui.ColumnIndexHeader
+import org.dhis2.composetable.ui.DataSetTableScreen
+import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
 import org.dhis2.composetable.ui.HEADER_CELL
 import org.dhis2.composetable.ui.INFO_ICON
+import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
+import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
+import org.dhis2.composetable.ui.MainLabel
 import org.dhis2.composetable.ui.RowBackground
 import org.dhis2.composetable.ui.RowIndex
 import org.dhis2.composetable.ui.RowIndexHeader
+import org.dhis2.composetable.ui.SecondaryLabels
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
+import org.dhis2.composetable.ui.TableSelection
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -40,6 +65,87 @@ fun tableRobot(
 class TableRobot(
     private val composeTestRule: ComposeContentTestRule,
 ) {
+
+    fun initTable(
+        context: Context,
+        fakeModelType: FakeModelType,
+        tableColors: TableColors = TableColors()
+    ): List<TableModel> {
+        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        composeTestRule.setContent {
+            var tableSelection by remember {
+                mutableStateOf<TableSelection>(TableSelection.Unselected())
+            }
+
+            DataTable(
+                tableList = fakeModel,
+                tableColors = tableColors,
+                tableSelection = tableSelection,
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
+                }
+            )
+        }
+        return fakeModel
+    }
+
+    fun initTableAppScreen(
+        context: Context,
+        fakeModelType: FakeModelType,
+        tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
+    ): List<TableModel> {
+        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        composeTestRule.setContent {
+            var model by remember { mutableStateOf(fakeModel) }
+            DataSetTableScreen(
+                tableData = model,
+                onCellClick = { tableId, cell ->
+                    if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
+                        TextInputModel(
+                            id = cell.id ?: "",
+                            mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
+                                cell.id?.contains(
+                                    it.rowHeader.id!!
+                                ) == true
+                            }?.rowHeader?.title ?: "",
+                            secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
+                                it.cells[cell.column!! % it.cells.size].value
+                            } ?: emptyList(),
+                            currentValue = cell.value,
+                            keyboardInputType = KeyboardInputType.TextInput(),
+                            error = null
+                        )
+                    } else {
+                        null
+                    }
+                },
+                onEdition = {},
+                onCellValueChange = { tableCell ->
+                    val updatedData = fakeModel.map { tableModel ->
+                        val hasRowWithDataElement = tableModel.tableRows.find {
+                            tableCell.id?.contains(it.rowHeader.id.toString()) == true
+                        }
+                        if (hasRowWithDataElement != null) {
+                            tableModel.copy(
+                                overwrittenValues = mapOf(
+                                    Pair(tableCell.column!!, tableCell)
+                                )
+                            )
+                        } else {
+                            tableModel
+                        }
+                    }
+                    model = updatedData
+                },
+                onSaveValue = { tableCell ->
+
+                }
+            )
+        }
+        return fakeModel
+    }
 
     fun assertClickOnCellShouldOpenInputComponent(rowIndex: Int, columnIndex: Int) {
         clickOnCell("table", rowIndex, columnIndex)
@@ -93,6 +199,8 @@ class TableRobot(
 
     fun clickOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
+            .performScrollTo()
+        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
             .performClick()
     }
 
@@ -127,15 +235,86 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
     }
 
-    private fun clickOnAccept() {
+    fun clickOnAccept() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
     }
 
-    private fun assertInputComponentIsDisplayed() {
+    fun assertInputComponentIsDisplayed() {
         composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsDisplayed()
     }
 
     private fun assertInputIcon(@DrawableRes id: Int) {
         composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertExists()
+    }
+
+    private fun assertInputComponentErrorMessageIsDisplayed(expectedErrorMessage: String) {
+        composeTestRule.onNodeWithTag(INPUT_ERROR_MESSAGE_TEST_TAG)
+            .assertIsDisplayed()
+            .assertTextEquals(expectedErrorMessage)
+    }
+
+    fun assertCellWithErrorSetsErrorMessage(
+        rowIndex: Int,
+        columnIndex: Int,
+        expectedErrorMessage: String
+    ) {
+        clickOnCell("table", rowIndex, columnIndex)
+        assertInputComponentIsDisplayed()
+        assertInputComponentIsDisplayed()
+        assertInputComponentErrorMessageIsDisplayed(expectedErrorMessage)
+    }
+
+    fun assertCellHasMandatoryIcon(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNode(
+            hasParent(hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"))
+                    and
+                    hasTestTag(MANDATORY_ICON_TEST_TAG), true
+        )
+            .assertIsDisplayed()
+    }
+
+    fun typeOnInputComponent(valueToType: String) {
+        clickOnEditValue()
+        typeInput(valueToType)
+    }
+
+    fun assertCellHasText(tableId: String, rowIndex: Int, columnIndex: Int, expectedValue: String) {
+        composeTestRule.onNode(
+            hasParent(hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"))
+                    and
+                    hasTestTag(CELL_VALUE_TEST_TAG), true
+        )
+            .assertTextEquals(expectedValue)
+    }
+
+    fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"), true
+        ).assertIsDisplayed()
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(CellSelected, true), true
+        ).assertIsDisplayed()
+    }
+
+    fun assertNoCellSelected() {
+        composeTestRule.onNode(SemanticsMatcher.expectValue(CellSelected, true))
+            .assertDoesNotExist()
+    }
+
+    fun assertInputComponentInfo(expectedMainLabel: String, expectedSecondaryLabels: String) {
+        composeTestRule.onNode(
+            hasParent(hasTestTag(INPUT_TEST_TAG))
+                    and
+                    SemanticsMatcher.expectValue(MainLabel, expectedMainLabel)
+                    and
+                    SemanticsMatcher.expectValue(SecondaryLabels, expectedSecondaryLabels),
+            true
+        ).assertExists()
+    }
+
+    fun assertInputComponentIsHidden() {
+        composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsNotDisplayed()
     }
 }

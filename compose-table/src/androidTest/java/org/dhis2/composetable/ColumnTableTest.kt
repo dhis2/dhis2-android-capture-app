@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.model.FakeTableModels
@@ -33,11 +31,8 @@ class ColumnTableTest {
 
         initTable(fakeModel)
 
-        composeTestRule.onRoot().printToLog(COMPOSE_TREE)
-
         val columnsFirstTable = fakeModel[0].tableHeaderModel.tableMaxColumns()
         val columnsSecondTable = fakeModel[1].tableHeaderModel.tableMaxColumns()
-
 
         tableRobot(composeTestRule) {
             assert(columnsFirstTable == MAX_COLUMNS)
