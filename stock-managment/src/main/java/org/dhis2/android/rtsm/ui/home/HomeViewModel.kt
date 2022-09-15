@@ -1,11 +1,10 @@
 package org.dhis2.android.rtsm.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.PublishProcessor
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -20,10 +19,8 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
-import org.dhis2.commons.filters.FilterManager
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -41,41 +38,39 @@ class HomeViewModel @Inject constructor(
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
 
-    private val _transactionType = MutableLiveData<TransactionType>()
-    val transactionType: LiveData<TransactionType> get() = _transactionType
+    private val _transactionType = mutableStateOf(TransactionType.DISTRIBUTION)
+    val transactionType: State<TransactionType> get() = _transactionType
 
-    private val _isDistribution: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDistribution: LiveData<Boolean>
+    private val _isDistribution = mutableStateOf(false)
+    val isDistribution: State<Boolean>
         get() = _isDistribution
 
-    private val _facility: MutableLiveData<OrganisationUnit> = MutableLiveData()
-    val facility: LiveData<OrganisationUnit>
+    private val _facility = mutableStateOf<OrganisationUnit?>(null)
+    val facility: State<OrganisationUnit?>
         get() = _facility
 
-    private val _transactionDate: MutableLiveData<LocalDateTime> =
-        MutableLiveData(LocalDateTime.now())
-    val transactionDate: LiveData<LocalDateTime>
+    private val _transactionDate = mutableStateOf(LocalDateTime.now())
+    val transactionDate: State<LocalDateTime>
         get() = _transactionDate
 
-    private val _destination: MutableLiveData<Option?> = MutableLiveData(null)
-    val destination: LiveData<Option?>
+    private val _destination = mutableStateOf<Option?>(null)
+    val destination: State<Option?>
         get() = _destination
 
-    private val _facilities = MutableLiveData<OperationState<List<OrganisationUnit>>>()
-    val facilities: LiveData<OperationState<List<OrganisationUnit>>>
+    private val _facilities = mutableStateOf<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
+    val facilities: State<OperationState<List<OrganisationUnit>>>
         get() = _facilities
 
-    private val _destinations = MutableLiveData<OperationState<List<Option>>>()
-    val destinationsList: LiveData<OperationState<List<Option>>>
+    private val _destinations = mutableStateOf<OperationState<List<Option>>>(OperationState.Loading)
+    val destinationsList: State<OperationState<List<Option>>>
         get() = _destinations
 
     // Toolbar section variables
-    private val _toolbarTitle = MutableLiveData<TransactionType>()
-    val toolbarTitle: LiveData<TransactionType> get() = _toolbarTitle
+    private val _toolbarTitle = mutableStateOf(TransactionType.DISTRIBUTION)
+    val toolbarTitle: State<TransactionType> get() = _toolbarTitle
 
-    private val _toolbarSubtitle = MutableLiveData<String>()
-    val toolbarSubtitle: LiveData<String> get() = _toolbarSubtitle
-
+    private val _toolbarSubtitle = mutableStateOf("")
+    val toolbarSubtitle: State<String> get() = _toolbarSubtitle
 
     init {
         loadFacilities()
@@ -83,17 +78,16 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadDestinations() {
-        _destinations.postValue(OperationState.Loading)
 
         disposable.add(
             metadataManager.destinations(config.distributedTo)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { _destinations.postValue(OperationState.Success<List<Option>>(it)) },
+                    { _destinations.value = (OperationState.Success<List<Option>>(it)) },
                     {
                         it.printStackTrace()
-                        _destinations.postValue(
+                        _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
                         )
                     }
@@ -102,21 +96,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadFacilities() {
-        _facilities.postValue(OperationState.Loading)
-
         disposable.add(
             metadataManager.facilities(config.program)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        _facilities.postValue(OperationState.Success(it))
+                        _facilities.value = (OperationState.Success(it))
 
-                        if (it.size == 1) _facility.postValue(it[0])
+                        if (it.size == 1) _facility.value = (it[0])
                     },
                     {
                         it.printStackTrace()
-                        _facilities.postValue(OperationState.Error(R.string.facilities_load_error))
+                        _facilities.value = (OperationState.Error(R.string.facilities_load_error))
                     }
                 )
         )
@@ -138,7 +130,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setDestination(destination: Option?) {
-        if (isDistribution.value == false) {
+        if (!isDistribution.value) {
             throw UnsupportedOperationException(
                 "Cannot set 'distributed to' for non-distribution transactions"
             )
@@ -183,9 +175,9 @@ class HomeViewModel @Inject constructor(
         }
 
         return Transaction(
-            transactionType.value!!,
+            transactionType.value,
             ParcelUtils.facilityToIdentifiableModelParcel(facility.value!!),
-            transactionDate.value!!.humanReadableDate(),
+            transactionDate.value.humanReadableDate(),
             destination.value?.let { ParcelUtils.distributedTo_ToIdentifiableModelParcel(it) }
         )
     }
@@ -197,7 +189,7 @@ class HomeViewModel @Inject constructor(
     }
 
     @JvmName("getToolbarTitle1")
-    fun getToolbarTitle(): LiveData<TransactionType> {
+    fun getToolbarTitle(): State<TransactionType> {
         return toolbarTitle
     }
 
@@ -205,20 +197,16 @@ class HomeViewModel @Inject constructor(
         _toolbarTitle.value = transactionType
     }
 
-    fun setSubtitle(from: String, to: String, type: TransactionType) {
-
-        when (type) {
-            TransactionType.DISTRIBUTION -> if (!to.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = "From $from -> To $to"
-            else if (!from.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = "From $from"
-            TransactionType.DISCARD -> if (!from.equals("", ignoreCase = true)
-            ) _toolbarSubtitle.value = "From $from"
-            TransactionType.CORRECTION -> if (!from.equals(
-                    "",
-                    ignoreCase = true
-                )
-            ) _toolbarSubtitle.value = "${R.string.from} $from"
+    fun fromFacilitiesLabel(from: String) {
+        when(transactionType.value) {
+            TransactionType.DISTRIBUTION -> _toolbarSubtitle.value = from
+            TransactionType.DISCARD -> _toolbarSubtitle.value = from
+            TransactionType.CORRECTION -> _toolbarSubtitle.value = from
         }
+    }
+
+    fun deliveryToLabel(to: String) {
+        if (transactionType.value == TransactionType.DISTRIBUTION)
+            _toolbarSubtitle.value = "${toolbarSubtitle.value} -> $to"
     }
 }
