@@ -62,7 +62,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.reporting.CrashReportController;
-import org.dhis2.utils.reporting.CrashReportControllerImpl;
+import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import java.util.Map;
