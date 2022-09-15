@@ -1,4 +1,4 @@
-package org.dhis2.utils;
+package org.dhis2.commons;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public class Constants {
 
     //RQ CODES
     public static final int RQ_QR_SCANNER = 101;
-    public static int SESSION_DIALOG_RQ = 201;
+    public static final int SESSION_DIALOG_RQ = 201;
 
     // MAP SELECTION
     public static final int RQ_MAP_LOCATION = 102;
@@ -109,10 +109,10 @@ public class Constants {
     public static final String ACCESS_DATA = "access_data";
 
     //Granular sync
-    public final static String UID = "UID";
-    public final static String CONFLICT_TYPE = "CONFLICT_TYPE";
-    public final static String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
-    public final static String CATEGORY_OPTION_COMBO = "category_option_combo";
+    public static final String UID = "UID";
+    public static final String CONFLICT_TYPE = "CONFLICT_TYPE";
+    public static final String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
+    public static final String CATEGORY_OPTION_COMBO = "category_option_combo";
     public static final String INIT_META = "SYNC_INIT_META";
     public static final String INIT_DATA = "SYNC_INIT_DATA";
 
@@ -134,6 +134,9 @@ public class Constants {
 
     //DATASET
     public static final String NO_SECTION = "NO_SECTION";
+
+    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
+
 
     private Constants() {
         // hide public constructor

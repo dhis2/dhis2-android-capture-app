@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="action_close">关闭</string>
+    <string name="copied_text">副本</string>
+    <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
+    <string name="warning_error_on_complete_title">检查</string>
+</resources>

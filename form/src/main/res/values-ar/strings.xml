@@ -16,4 +16,10 @@
     <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
     <string name="select_time">إختر الوقت</string>
     <string name="choose_date">اختر التاريخ</string>
-    </resources>
+    <string name="camera_permission_denied">تم رفض إذن الكاميرا.\n تحتاج إلى تمكينها لاستخدام هذه الميزة.</string>
+    <string name="action_close">إغلاق</string>
+    <string name="copied_text">تم النسخ</string>
+    <string name="take_photo">التقط صورة</string>
+    <string name="from_gallery">اختر من استوديو الصور</string>
+    <string name="warning_error_on_complete_title">تحقق من هذا!</string>
+</resources>

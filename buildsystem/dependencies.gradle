@@ -90,6 +90,7 @@ ext {
             goldfinger                : "2.0.1",
             root                      : "0.0.7",
             openid                    : "0.8.1",
+            conscrypt                 : "2.5.2",
 
             //Other
             gson                      : "2.8.9",

@@ -1,5 +1,9 @@
 package org.dhis2.composetable
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
@@ -8,6 +12,7 @@ import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableSelection
 import org.junit.Rule
 import org.junit.Test
 
@@ -96,9 +101,15 @@ class RowTableTest {
 
     private fun initTable(fakeModel: List<TableModel>) {
         composeTestRule.setContent {
+            var tableSelection by remember {
+                mutableStateOf<TableSelection>(TableSelection.Unselected())
+            }
+
             DataTable(
                 tableList = fakeModel,
                 tableColors = tableColors,
+                tableSelection = tableSelection,
+                onSelectionChange = { tableSelection = it },
                 onDecorationClick = {
 
                 },

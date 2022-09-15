@@ -26,7 +26,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/content_area_lr_margin"
             android:layout_marginEnd="@dimen/content_area_lr_margin"
-            app:layout_constraintBottom_toTopOf="@+id/stock_items_footer"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar_container">
@@ -172,12 +172,6 @@
                 app:drawableTopCompat="@drawable/ic_empty_list" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Footer -->
-        <include
-            android:id="@+id/stock_items_footer"
-            layout="@layout/footer"
-            app:lastSyncDate="@{viewModel.lastSyncDate}"
-            app:appVersion="@{viewModel.appVersion}" />
 
         <!-- Floating Button -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

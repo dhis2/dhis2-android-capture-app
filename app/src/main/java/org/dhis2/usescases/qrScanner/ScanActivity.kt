@@ -10,9 +10,9 @@ import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
 class ScanActivity : ActivityGlobalAbstract() {

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,30 +46,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.model.keyboardCapitalization
 import org.dhis2.composetable.model.toKeyboardType
 
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
+    tableColors: TableColors? = null,
     onTextChanged: (TextInputModel) -> Unit,
-    onSave: (TextInputModel) -> Unit
+    onSave: () -> Unit,
+    onNextSelected: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .testTag(INPUT_TEST_TAG)
-            .fillMaxWidth()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    TableTheme(tableColors) {
+        Column(
+            modifier = Modifier
+                .testTag(INPUT_TEST_TAG)
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                )
+                .padding(16.dp)
+        ) {
+            InputTitle(textInputModel)
+            TextInputContent(
+                textInputModel,
+                onTextChanged = onTextChanged,
+                onSave = onSave,
+                onNextSelected = onNextSelected
             )
-            .padding(16.dp)
-    ) {
-        InputTitle(textInputModel)
-        TextInputContent(
-            textInputModel,
-            onTextChanged = onTextChanged,
-            onSave = onSave
-        )
+        }
     }
 }
 
@@ -94,85 +99,91 @@ private fun InputTitle(textInputModel: TextInputModel) {
 private fun TextInputContent(
     textInputModel: TextInputModel,
     onTextChanged: (TextInputModel) -> Unit,
-    onSave: (TextInputModel) -> Unit
+    onSave: () -> Unit,
+    onNextSelected: () -> Unit
 ) {
-    var value by remember(textInputModel.currentValue) {
-        mutableStateOf(
-            textInputModel.currentValue ?: ""
-        )
-    }
-
     val focusManager = LocalFocusManager.current
     val focusRequester = remember {
         FocusRequester()
     }
     var hasFocus by remember { mutableStateOf(false) }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+    val dividerColor = when {
+        textInputModel.error != null -> LocalTableColors.current.errorColor
+        hasFocus -> LocalTableColors.current.primary
+        else -> LocalTableColors.current.disabledCellText
+    }
+
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            BasicTextField(
+            Column(
                 modifier = Modifier
-                    .testTag(INPUT_TEST_FIELD_TEST_TAG)
-                    .focusRequester(focusRequester)
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .onFocusChanged {
-                        hasFocus = it.isFocused
+                    .weight(1f)
+            ) {
+                BasicTextField(
+                    modifier = Modifier
+                        .testTag(INPUT_TEST_FIELD_TEST_TAG)
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .onFocusChanged {
+                            hasFocus = it.isFocused
+                            if (!it.isFocused) {
+                                onSave()
+                            }
+                        },
+                    value = textInputModel.currentValue ?: "",
+                    onValueChange = {
+                        onTextChanged(textInputModel.copy(currentValue = it, error = null))
                     },
-                value = value,
-                onValueChange = {
-                    value = it
-                    onTextChanged(textInputModel.copy(currentValue = value))
-                },
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Start
-                ),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = if (textInputModel.keyboardInputType.forceCapitalize) {
-                        KeyboardCapitalization.Characters
-                    } else {
-                        KeyboardCapitalization.None
-                    },
-                    imeAction = ImeAction.Next,
-                    keyboardType = textInputModel.keyboardInputType.toKeyboardType()
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
-                    }
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Start
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = textInputModel.keyboardInputType.keyboardCapitalization(),
+                        imeAction = ImeAction.Next,
+                        keyboardType = textInputModel.keyboardInputType.toKeyboardType()
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            onSave()
+                            onNextSelected()
+                        }
+                    )
                 )
-            )
-            Spacer(modifier = Modifier.size(3.dp))
-            Divider(
-                color = if (hasFocus) {
-                    LocalTableColors.current.primary
-                } else {
-                    LocalTableColors.current.disabledCellText
-                },
-                thickness = 1.dp
+                Spacer(modifier = Modifier.size(3.dp))
+                Divider(
+                    color = dividerColor,
+                    thickness = 1.dp
+                )
+            }
+            Spacer(modifier = Modifier.size(8.dp))
+            TextInputContentActionIcon(
+                modifier = Modifier
+                    .clickable(role = Role.Button) {
+                        if (hasFocus && textInputModel.error == null) {
+                            focusManager.clearFocus(force = true)
+                            onSave()
+                        } else {
+                            focusRequester.requestFocus()
+                        }
+                    },
+                hasFocus = hasFocus
             )
         }
-        Spacer(modifier = Modifier.size(8.dp))
-        TextInputContentActionIcon(
-            modifier = Modifier
-                .clickable(role = Role.Button) {
-                    if (hasFocus) {
-                        focusManager.clearFocus(force = true)
-                        onSave(textInputModel.copy(currentValue = value))
-                    } else {
-                        focusRequester.requestFocus()
-                    }
-                },
-            hasFocus = hasFocus
-        )
+        if (textInputModel.error != null) {
+            Text(
+                text = textInputModel.error,
+                style = TextStyle(
+                    color = LocalTableColors.current.errorColor,
+                    fontSize = 10.sp
+                )
+            )
+        }
     }
 }
 
@@ -240,19 +251,12 @@ fun DefaultTextInputStatusPreview() {
         secondaryLabels = listOf("header 1", "header 2"),
         currentValue = "Test"
     )
-    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
-}
-
-@Preview
-@Composable
-fun ActiveEditionTextInputStatusPreview() {
-    val previewTextInput = TextInputModel(
-        id = "",
-        mainLabel = "Row",
-        secondaryLabels = listOf("header 1", "header 2"),
-        currentValue = "Test"
+    TextInput(
+        textInputModel = previewTextInput,
+        onTextChanged = {},
+        onSave = {},
+        onNextSelected = {}
     )
-    TextInput(textInputModel = previewTextInput, onTextChanged = {}, onSave = {})
 }
 
 const val INPUT_TEST_TAG = "INPUT_TEST_TAG"

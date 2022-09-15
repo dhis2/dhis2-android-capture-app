@@ -13,38 +13,39 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import org.dhis2.commons.network.NetworkUtilsModule;
-import org.dhis2.maps.MapController;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.di.dagger.PerUser;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
+import org.dhis2.commons.filters.data.FilterPresenter;
+import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
-import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
-import org.dhis2.data.appinspector.AppInspector;
-import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
+import org.dhis2.data.appinspector.AppInspector;
+import org.dhis2.data.dispatcher.DispatcherModule;
+import org.dhis2.data.server.SSLContextInitializer;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.maps.MapController;
 import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.dhis2.utils.session.PinModule;
@@ -117,9 +118,14 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
 
+        setUpSecurityProvider();
         setUpServerComponent();
         setUpRxPlugin();
         initCustomCrashActivity();
+    }
+
+    private void setUpSecurityProvider() {
+        SSLContextInitializer.INSTANCE.initializeSSLContext(this);
     }
 
     private void initCustomCrashActivity() {

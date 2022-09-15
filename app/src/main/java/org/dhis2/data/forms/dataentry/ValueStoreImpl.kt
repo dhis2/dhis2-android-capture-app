@@ -11,12 +11,14 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.reporting.CrashReportController
 import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
@@ -30,7 +32,8 @@ class ValueStoreImpl(
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
-    private val searchTEIRepository: SearchTEIRepository
+    private val searchTEIRepository: SearchTEIRepository,
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
@@ -43,7 +46,8 @@ class ValueStoreImpl(
         enrollmentRepository: EnrollmentObjectRepository,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        searchTEIRepository: SearchTEIRepository
+        searchTEIRepository: SearchTEIRepository,
+        fieldErrorMessageProvider: FieldErrorMessageProvider
     ) : this(
         d2,
         recordUid,
@@ -51,7 +55,8 @@ class ValueStoreImpl(
         dhisEnrollmentUtils,
         crashReportController,
         networkUtils,
-        searchTEIRepository
+        searchTEIRepository,
+        fieldErrorMessageProvider
     ) {
         this.enrollmentRepository = enrollmentRepository
     }
@@ -80,14 +85,36 @@ class ValueStoreImpl(
             dataValue.attributeOptionCombo
         )
 
+        val validator = d2.dataElementModule().dataElements()
+            .uid(dataValue.dataElement).blockingGet().valueType()?.validator
+
         return if (!dataValue.value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
                 dataValueObject.blockingGet().value() == dataValue.value
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                dataValueObject.set(dataValue.value)
-                    .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+                when (val validation = validator?.validate(dataValue.value)) {
+                    is Result.Failure -> Flowable.just(
+                        StoreResult(
+                            uid = "",
+                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                            valueStoreResultMessage = fieldErrorMessageProvider
+                                .getFriendlyErrorMessage(validation.failure)
+                        )
+                    )
+                    is Result.Success ->
+                        dataValueObject.set(dataValue.value)
+                            .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+                    else -> Flowable.just(
+                        StoreResult(
+                            uid = "",
+                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                            valueStoreResultMessage = fieldErrorMessageProvider
+                                .defaultValidationErrorMessage()
+                        )
+                    )
+                }
             }
         } else {
             dataValueObject.deleteIfExist()

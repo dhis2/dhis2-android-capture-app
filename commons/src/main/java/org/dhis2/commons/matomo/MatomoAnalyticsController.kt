@@ -1,4 +1,4 @@
-package org.dhis2.utils.analytics.matomo
+package org.dhis2.commons.matomo
 
 interface MatomoAnalyticsController {
     fun trackScreenView(screen: String, title: String)

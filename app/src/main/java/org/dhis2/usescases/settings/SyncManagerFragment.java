@@ -9,20 +9,17 @@ import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_MANUAL;
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
+import static org.dhis2.commons.Constants.TIME_MANUAL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -37,7 +34,6 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
@@ -63,7 +59,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -74,7 +70,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import timber.log.Timber;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
@@ -197,21 +192,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void wipeDatabase() {
-        new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setTitle(getString(R.string.wipe_data))
-                .setMessage(getString(R.string.wipe_data_meesage))
-                .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    presenter.resetFilters();
-                    analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
-                    showDeleteProgress();
-                })
-                .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-    @Override
     public void deleteLocalData() {
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.delete_local_data))
@@ -223,25 +203,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
-    }
-
-    private void showDeleteProgress() {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel("wipe_notification", "Restart", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context, "wipe_notification")
-                        .setSmallIcon(R.drawable.ic_sync)
-                        .setContentTitle(getString(R.string.wipe_data))
-                        .setContentText(getString(R.string.please_wait))
-                        .setOngoing(true)
-                        .setAutoCancel(false)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        notificationManager.notify(123456, notificationBuilder.build());
-        presenter.wipeDb();
     }
 
     @Override
@@ -339,12 +300,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         return Unit.INSTANCE;
                     });
                     break;
-                case RESET_APP:
-                    ViewAnimationsKt.expand(binding.resetButton, true, () -> {
-                        binding.resetButton.setVisibility(View.VISIBLE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
                 case SMS:
                     ViewAnimationsKt.expand(binding.smsContent, true, () -> {
                         binding.smsContent.setVisibility(View.VISIBLE);
@@ -404,12 +359,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 case DELETE_LOCAL_DATA:
                     ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
                         binding.deleteDataButton.setVisibility(View.GONE);
-                        return Unit.INSTANCE;
-                    });
-                    break;
-                case RESET_APP:
-                    ViewAnimationsKt.collapse(binding.resetButton, () -> {
-                        binding.resetButton.setVisibility(View.GONE);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -800,18 +749,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
 
         binding.eventsEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.eventsEditText.getText().toString().isEmpty()) {
-                    presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.eventsEditText.getText().toString().isEmpty()) {
+                presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
             }
         });
 
         binding.teiEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.teiEditText.getText().toString().isEmpty()) {
-                    presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.teiEditText.getText().toString().isEmpty()) {
+                presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
             }
         });
     }

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -40,7 +40,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;

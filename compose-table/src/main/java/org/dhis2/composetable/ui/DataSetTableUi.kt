@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -51,7 +50,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import org.dhis2.composetable.R
+import org.dhis2.composetable.model.HeaderMeasures
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -63,6 +65,7 @@ import org.dhis2.composetable.model.TableRowModel
 
 @Composable
 fun TableHeader(
+    tableId: String?,
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
@@ -70,10 +73,17 @@ fun TableHeader(
     (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
-    Row(modifier = modifier.horizontalScroll(state = horizontalScrollState)) {
-        Column {
+    Row(
+        modifier = modifier
+            .horizontalScroll(state = horizontalScrollState)
+            .height(IntrinsicSize.Min)
+    ) {
+        Column(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+        ) {
             tableHeaderModel.rows.forEachIndexed { rowIndex, tableHeaderRow ->
-                Row {
+                Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                     val totalColumns = tableHeaderModel.numberOfColumns(rowIndex)
                     val rowOptions = tableHeaderRow.cells.size
                     repeat(
@@ -81,15 +91,19 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
+                                tableId = tableId,
+                                rowIndex = rowIndex,
                                 columnIndex = columnIndex,
                                 headerCell = tableHeaderRow.cells[cellIndex],
-                                headerWidth = LocalTableDimensions.current.headerCellWidth(
-                                    tableHeaderModel.numberOfColumns(rowIndex),
-                                    LocalConfiguration.current,
-                                    tableHeaderModel.tableMaxColumns(),
-                                    tableHeaderModel.hasTotals
+                                HeaderMeasures(
+                                    LocalTableDimensions.current.headerCellWidth(
+                                        tableHeaderModel.numberOfColumns(rowIndex),
+                                        LocalConfiguration.current,
+                                        tableHeaderModel.tableMaxColumns(),
+                                        tableHeaderModel.hasTotals
+                                    ),
+                                    LocalTableDimensions.current.defaultHeaderHeight
                                 ),
-                                headerHeight = LocalTableDimensions.current.defaultHeaderHeight,
                                 cellStyle = cellStyle(columnIndex, rowIndex),
                                 onCellSelected = { onHeaderCellSelected(it, rowIndex) }
                             )
@@ -100,15 +114,18 @@ fun TableHeader(
         }
         if (tableHeaderModel.hasTotals) {
             HeaderCell(
+                tableId = tableId,
+                rowIndex = 0,
                 columnIndex = tableHeaderModel.rows.size,
                 headerCell = TableHeaderCell("Total"),
-                headerWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                    LocalConfiguration.current,
-                    tableHeaderModel.tableMaxColumns(),
-                    tableHeaderModel.hasTotals
+                HeaderMeasures(
+                    LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                        LocalConfiguration.current,
+                        tableHeaderModel.tableMaxColumns(),
+                        tableHeaderModel.hasTotals
+                    ),
+                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size
                 ),
-                headerHeight =
-                    LocalTableDimensions.current.defaultHeaderHeight * tableHeaderModel.rows.size,
                 cellStyle = cellStyle(
                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                     tableHeaderModel.rows.size - 1
@@ -121,31 +138,43 @@ fun TableHeader(
 
 @Composable
 fun HeaderCell(
+    tableId: String?,
+    rowIndex: Int,
     columnIndex: Int,
     headerCell: TableHeaderCell,
-    headerWidth: Dp,
-    headerHeight: Dp,
+    headerMeasures: HeaderMeasures,
     cellStyle: CellStyle,
     onCellSelected: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
-            .width(IntrinsicSize.Min)
-            .height(headerHeight)
+            .width(headerMeasures.width)
+            .fillMaxHeight()
             .background(cellStyle.backgroundColor())
+            .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
+            .semantics {
+                tableId?.let { tableIdColumnHeader = it }
+                columnIndexHeader = columnIndex
+                rowIndexHeader = rowIndex
+                columnBackground = cellStyle.backgroundColor()
+            }
             .clickable {
                 onCellSelected(columnIndex)
-            }
+            },
+        contentAlignment = Alignment.Center
     ) {
         Text(
             modifier = Modifier
-                .width(headerWidth)
-                .align(Alignment.Center)
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 4.dp, vertical = 11.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
             color = cellStyle.mainColor(),
             text = headerCell.value,
             textAlign = TextAlign.Center,
-            fontSize = LocalTableDimensions.current.defaultHeaderTextSize
+            fontSize = LocalTableDimensions.current.defaultHeaderTextSize,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 3,
+            softWrap = true
         )
         Divider(
             color = TableTheme.colors.primary,
@@ -167,14 +196,33 @@ fun TableHeaderRow(
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
-    Row(modifier) {
+    ConstraintLayout(
+        modifier = modifier.fillMaxSize()
+    ) {
+        val (tableCorner, header) = createRefs()
+
         TableCorner(
-            modifier = cornerModifier,
+            modifier = cornerModifier
+                .constrainAs(tableCorner) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(header.start)
+                    bottom.linkTo(header.bottom)
+                    height = Dimension.fillToConstraints
+                },
             tableModel = tableModel,
             onClick = onTableCornerClick
         )
+
         TableHeader(
-            modifier = Modifier,
+            tableId = tableModel.id,
+            modifier = Modifier
+                .constrainAs(header) {
+                    top.linkTo(parent.top)
+                    start.linkTo(tableCorner.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
             cellStyle = cellStyle,
@@ -187,9 +235,7 @@ fun TableHeaderRow(
 fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    rowHeader: RowHeader,
-    dataElementValues: Map<Int, TableCell>,
-    isNotLastRow: Boolean,
+    rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
     (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
@@ -202,27 +248,30 @@ fun TableItemRow(
 ) {
     Column(
         Modifier
-            .testTag("$ROW_TEST_TAG${rowHeader.row}")
+            .testTag("$ROW_TEST_TAG${rowModel.rowHeader.row}")
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            ItemHeader(
-                tableModel.id ?: "",
-                rowHeader = rowHeader,
-                cellStyle = rowHeaderCellStyle(rowHeader.row),
-                width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                    LocalConfiguration.current,
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                ),
-                onCellSelected = onRowHeaderClick,
-                onDecorationClick = onDecorationClick
-            )
+            Box(modifier = Modifier.fillMaxHeight()) {
+                ItemHeader(
+                    tableModel.id ?: "",
+                    rowHeader = rowModel.rowHeader,
+                    cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
+                    width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                        LocalConfiguration.current,
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    ),
+                    onCellSelected = onRowHeaderClick,
+                    onDecorationClick = onDecorationClick
+                )
+            }
             ItemValues(
                 tableId = tableModel.id ?: "",
                 horizontalScrollState = horizontalScrollState,
-                cellValues = dataElementValues,
+                cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
+                maxLines = rowModel.maxLines,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
                 defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
                     LocalConfiguration.current,
@@ -234,7 +283,7 @@ fun TableItemRow(
                 onClick = onClick
             )
         }
-        if (isNotLastRow) {
+        if (!rowModel.isLastRow) {
             Divider(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -248,11 +297,6 @@ fun TableCorner(
 ) {
     Box(
         modifier = modifier
-            .height(
-                with(tableModel.tableHeaderModel) {
-                    LocalTableDimensions.current.defaultHeaderHeight * rows.size
-                }
-            )
             .width(
                 LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
                     LocalConfiguration.current,
@@ -264,7 +308,7 @@ fun TableCorner(
         contentAlignment = Alignment.CenterEnd
     ) {
         Divider(
-            Modifier
+            modifier
                 .fillMaxHeight()
                 .width(1.dp),
             color = TableTheme.colors.primary
@@ -289,7 +333,7 @@ fun ItemHeader(
             .background(cellStyle.backgroundColor())
             .semantics {
                 tableIdSemantic = tableId
-                rowIndexSemantic = rowHeader.row!!
+                rowHeader.row?.let { rowIndexSemantic = rowHeader.row }
                 infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
                 rowBackground = cellStyle.backgroundColor()
             }
@@ -345,8 +389,9 @@ fun ItemHeader(
 fun ItemValues(
     tableId: String,
     horizontalScrollState: ScrollState,
+    maxLines: Int,
     cellValues: Map<Int, TableCell>,
-    overridenValues: List<TableCell>,
+    overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
     cellStyle: @Composable
@@ -362,9 +407,12 @@ fun ItemValues(
         repeat(
             times = cellValues.size,
             action = { columnIndex ->
-                val cellValue = overridenValues.find {
-                    it.id == cellValues[columnIndex]?.id
-                } ?: cellValues[columnIndex] ?: TableCell(value = "")
+                val cellValue =
+                    if (overridenValues[columnIndex]?.id == cellValues[columnIndex]?.id) {
+                        overridenValues[columnIndex]
+                    } else {
+                        cellValues[columnIndex]
+                    } ?: TableCell(value = "")
                 val background = cellStyle(cellValue).backgroundColor()
                 TableCell(
                     modifier = Modifier
@@ -380,6 +428,7 @@ fun ItemValues(
                             backgroundColor = cellStyle(cellValue).backgroundColor()
                         ),
                     cellValue = cellValue,
+                    maxLines = maxLines,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
                             columnIndex = cellValue.column ?: -1,
@@ -398,6 +447,7 @@ fun ItemValues(
 fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
+    maxLines: Int,
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit
@@ -405,24 +455,25 @@ fun TableCell(
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
 
     CellLegendBox(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .clickable(cellValue.editable) {
+                when {
+                    cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                    else -> onClick(cellValue)
+                }
+            },
         legendColor = cellValue.legendColor?.let { Color(it) }
     ) {
         nonEditableCellLayer()
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 4.dp)
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .clickable(cellValue.editable) {
-                    when {
-                        cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
-                        else -> onClick(cellValue)
-                    }
-                },
+                .padding(horizontal = 4.dp),
             text = cellValue.value ?: "",
-            maxLines = 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
                 fontSize = LocalTableDimensions.current.defaultCellTextSize,
@@ -521,6 +572,8 @@ fun DataTable(
     tableList: List<TableModel>,
     editable: Boolean = true,
     tableColors: TableColors? = null,
+    tableSelection: TableSelection = TableSelection.Unselected(),
+    onSelectionChange: (TableSelection) -> Unit = {},
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit = {},
     onClick: (TableCell) -> Unit = {}
 ) {
@@ -535,6 +588,8 @@ fun DataTable(
         TableList(
             tableList = tableList,
             tableColors = tableColors,
+            tableSelection = tableSelection,
+            onSelectionChange = onSelectionChange,
             onDecorationClick = onDecorationClick,
             onClick = onClick
         )
@@ -546,14 +601,14 @@ fun DataTable(
 private fun TableList(
     tableList: List<TableModel>,
     tableColors: TableColors? = null,
+    tableSelection: TableSelection,
+    onSelectionChange: (TableSelection) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     TableTheme(tableColors) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
-        var tableSelection by remember {
-            mutableStateOf<TableSelection>(TableSelection.Unselected())
-        }
+
         LazyColumn(
             Modifier.padding(
                 horizontal = LocalTableDimensions.current.tableHorizontalPadding,
@@ -591,16 +646,21 @@ private fun TableList(
                             )
                         },
                         onTableCornerClick = {
-                            tableSelection =
+                            onSelectionChange(
                                 TableSelection.AllCellSelection(currentTableModel.id ?: "")
+                            )
                         },
                         onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
-                            tableSelection = TableSelection.ColumnSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = headerColumnIndex,
-                                columnHeaderRow = headerRowIndex,
-                                childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(headerRowIndex)
+                            onSelectionChange(
+                                TableSelection.ColumnSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = headerColumnIndex,
+                                    columnHeaderRow = headerRowIndex,
+                                    childrenOfSelectedHeader =
+                                        currentTableModel.countChildrenOfSelectedHeader(
+                                            headerRowIndex
+                                        )
+                                )
                             )
                         }
                     )
@@ -609,9 +669,7 @@ private fun TableList(
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
-                        rowHeader = tableRowModel.rowHeader,
-                        dataElementValues = tableRowModel.values,
-                        isNotLastRow = !tableRowModel.isLastRow,
+                        rowModel = tableRowModel,
                         nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
                             addBackgroundNonEditableCellLayer(
                                 hasToApplyLightPrimary = tableSelection.isCellParentSelected(
@@ -652,17 +710,21 @@ private fun TableList(
                             )
                         },
                         onRowHeaderClick = { rowHeaderIndex ->
-                            tableSelection = TableSelection.RowSelection(
-                                tableId = currentTableModel.id ?: "",
-                                rowIndex = rowHeaderIndex ?: -1
+                            onSelectionChange(
+                                TableSelection.RowSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    rowIndex = rowHeaderIndex ?: -1
+                                )
                             )
                         },
                         onDecorationClick = onDecorationClick,
                         onClick = { tableCell ->
-                            tableSelection = TableSelection.CellSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = tableCell.column ?: -1,
-                                rowIndex = tableCell.row ?: -1
+                            onSelectionChange(
+                                TableSelection.CellSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = tableCell.column ?: -1,
+                                    rowIndex = tableCell.row ?: -1
+                                )
                             )
                             onClick(tableCell)
                         }
@@ -768,13 +830,11 @@ fun TableItem(
                     )
                 }
             )
-            tableModel.tableRows.forEachIndexed { index, tableRowModel ->
+            tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
                     tableModel = tableModel,
                     horizontalScrollState = horizontalScrollState,
-                    rowHeader = tableRowModel.rowHeader,
-                    dataElementValues = tableRowModel.values,
-                    isNotLastRow = index != tableModel.tableRows.size - 1,
+                    rowModel = tableRowModel,
                     rowHeaderCellStyle = { rowHeaderIndex ->
                         styleForRowHeader(
                             isSelected = tableSelection.isRowSelected(
@@ -854,43 +914,87 @@ fun TableListPreview() {
     val tableRows = TableRowModel(
         rowHeader = RowHeader("uid", "Data Element", 0, true),
         values = mapOf(
-            Pair(0, TableCell(value = "12", mandatory = true)),
-            Pair(1, TableCell(value = "12", editable = false)),
-            Pair(2, TableCell(value = "", mandatory = true)),
-            Pair(3, TableCell(value = "12", mandatory = true, error = "Error")),
-            Pair(4, TableCell(value = "1", error = "Error")),
-            Pair(5, TableCell(value = "12")),
-            Pair(6, TableCell(value = "55")),
-            Pair(7, TableCell(value = "12")),
-            Pair(8, TableCell(value = "12")),
-            Pair(9, TableCell(value = "12")),
-            Pair(10, TableCell(value = "12")),
-            Pair(11, TableCell(value = "12"))
-        )
+            Pair(
+                0,
+                TableCell(
+                    id = "0",
+                    value = "12.123523452341232131312",
+                    mandatory = true,
+                    row = 0,
+                    column = 0
+                )
+            ),
+            Pair(
+                1,
+                TableCell(
+                    id = "1",
+                    value = "1",
+                    editable = false,
+                    row = 0,
+                    column = 1
+                )
+            ),
+            Pair(2, TableCell(id = "2", value = "", mandatory = true, row = 0, column = 2)),
+            Pair(
+                3,
+                TableCell(
+                    id = "3",
+                    value = "12",
+                    mandatory = true,
+                    error = "Error",
+                    row = 0,
+                    column = 3
+                )
+            ),
+            Pair(4, TableCell(id = "4", value = "1", error = "Error", row = 0, column = 4)),
+            Pair(5, TableCell(id = "5", value = "12", row = 0, column = 5)),
+            Pair(6, TableCell(id = "6", value = "55", row = 0, column = 6)),
+            Pair(7, TableCell(id = "7", value = "12", row = 0, column = 7)),
+            Pair(8, TableCell(id = "8", value = "12", row = 0, column = 8)),
+            Pair(9, TableCell(id = "9", value = "12", row = 0, column = 9)),
+            Pair(10, TableCell(id = "10", value = "12", row = 0, column = 10)),
+            Pair(11, TableCell(id = "11", value = "12", row = 0, column = 11))
+        ),
+        maxLines = 1
     )
 
     val tableModel = TableModel(
-        "",
+        "tableId",
         tableHeaderModel,
-        listOf(tableRows, tableRows, tableRows, tableRows)
+        listOf(tableRows)
     )
     val tableList = listOf(tableModel)
-    TableList(tableList = tableList, onDecorationClick = {}) {
+    TableList(
+        tableList = tableList,
+        tableColors = TableColors(),
+        tableSelection = TableSelection.Unselected(),
+        onSelectionChange = {},
+        onDecorationClick = {}
+    ) {
     }
 }
 
 const val ROW_TEST_TAG = "ROW_TEST_TAG_"
 const val CELL_TEST_TAG = "CELL_TEST_TAG_"
 const val INFO_ICON = "infoIcon"
+const val HEADER_CELL = "HEADER_CELL"
 
+/* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
 var SemanticsPropertyReceiver.infoIconId by InfoIconId
-
 val TableId = SemanticsPropertyKey<String>("TableId")
 var SemanticsPropertyReceiver.tableIdSemantic by TableId
-
-val RowIndex = SemanticsPropertyKey<Int>("RowIndex")
+val RowIndex = SemanticsPropertyKey<Int?>("RowIndex")
 var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
-
 val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
 var SemanticsPropertyReceiver.rowBackground by RowBackground
+
+/* Column Header Cell */
+val ColumnBackground = SemanticsPropertyKey<Color>("ColumnBackground")
+var SemanticsPropertyReceiver.columnBackground by ColumnBackground
+val ColumnIndexHeader = SemanticsPropertyKey<Int>("ColumnIndexHeader")
+var SemanticsPropertyReceiver.columnIndexHeader by ColumnIndexHeader
+val RowIndexHeader = SemanticsPropertyKey<Int>("RowIndexHeader")
+var SemanticsPropertyReceiver.rowIndexHeader by RowIndexHeader
+val TableIdColumnHeader = SemanticsPropertyKey<String>("TableIdColumnHeader")
+var SemanticsPropertyReceiver.tableIdColumnHeader by TableIdColumnHeader

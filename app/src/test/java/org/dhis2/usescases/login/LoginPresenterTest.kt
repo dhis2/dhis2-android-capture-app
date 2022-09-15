@@ -10,6 +10,10 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Observable
+import org.dhis2.commons.Constants.PREFS_URLS
+import org.dhis2.commons.Constants.PREFS_USERS
+import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
+import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.SECURE_PASS
@@ -22,10 +26,6 @@ import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.Constants.PREFS_URLS
-import org.dhis2.utils.Constants.PREFS_USERS
-import org.dhis2.utils.Constants.USER_ASKED_CRASHLYTICS
-import org.dhis2.utils.Constants.USER_TEST_ANDROID
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK

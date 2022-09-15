@@ -6,9 +6,10 @@ import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -21,9 +22,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
+import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
+import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
+import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
+import static org.dhis2.commons.matomo.Categories.DASHBOARD;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
@@ -40,7 +45,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public CompositeDisposable compositeDisposable;
     public DashboardProgramModel dashboardProgramModel;
     private PublishProcessor<Unit> notesCounterProcessor;
-
+    private MatomoAnalyticsController matomoAnalyticsController;
 
     public TeiDashboardPresenter(
             TeiDashboardContracts.View view,
@@ -49,7 +54,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper,
             PreferenceProvider preferenceProvider,
-            FilterManager filterManager
+            FilterManager filterManager,
+            MatomoAnalyticsController matomoAnalyticsController
     ) {
         this.view = view;
         this.teiUid = teiUid;
@@ -59,6 +65,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
         this.filterManager = filterManager;
+        this.matomoAnalyticsController = matomoAnalyticsController;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -127,6 +134,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public String getTEType() {
         return dashboardRepository.getTETypeName();
+    }
+
+    @Override
+    public void trackDashboardAnalytics() {
+        matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_ANALYTICS, CLICK);
+    }
+
+    @Override
+    public void trackDashboardRelationships() {
+        matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_RELATIONSHIPS, CLICK);
+    }
+
+    @Override
+    public void trackDashboardNotes() {
+        matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_NOTES, CLICK);
     }
 
     @Override

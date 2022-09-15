@@ -12,7 +12,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import org.dhis2.R;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.

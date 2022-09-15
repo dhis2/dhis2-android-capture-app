@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.ui
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
@@ -31,7 +31,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
 import java.io.File
 import java.util.Calendar
-import org.dhis2.R
+import org.dhis2.commons.ActivityResultObservable
+import org.dhis2.commons.ActivityResultObserver
+import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.AlertBottomDialog
@@ -45,7 +47,7 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog
 import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
-import org.dhis2.databinding.ViewFormBinding
+import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
 import org.dhis2.form.data.FormRepository
@@ -53,14 +55,13 @@ import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
+import org.dhis2.form.databinding.ViewFormBinding
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.coroutine.FormDispatcher
-import org.dhis2.form.ui.DataEntryAdapter
-import org.dhis2.form.ui.DataEntryHeaderHelper
-import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
@@ -73,10 +74,6 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
-import org.dhis2.utils.ActivityResultObservable
-import org.dhis2.utils.ActivityResultObserver
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -142,6 +139,16 @@ class FormView : Fragment() {
                             showAddImageOptions()
                         }
                     }
+
+                    override fun onRequestPermissionsResult(
+                        requestCode: Int,
+                        permissions: Array<String?>,
+                        grantResults: IntArray
+                    ) {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            showAddImageOptions()
+                        }
+                    }
                 })
             } else {
                 Toast.makeText(
@@ -168,6 +175,17 @@ class FormView : Fragment() {
             if (it.resultCode == RESULT_OK) {
                 getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
                     onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
+    private val requestLocationPermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { result ->
+            if (result.values.all { isGranted -> isGranted }) {
+                viewModel.getFocusedItemUid()?.let {
+                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
                 }
             }
         }
@@ -256,6 +274,10 @@ class FormView : Fragment() {
             }
         }
 
+        setObservers()
+    }
+
+    private fun setObservers() {
         viewModel.savedValue.observe(
             viewLifecycleOwner
         ) { rowAction ->
@@ -309,28 +331,13 @@ class FormView : Fragment() {
         viewModel.showInfo.observe(
             viewLifecycleOwner
         ) { infoUiModel ->
-            CustomDialog(
-                requireContext(),
-                requireContext().getString(infoUiModel.title),
-                requireContext().getString(infoUiModel.description),
-                requireContext().getString(R.string.action_close),
-                null,
-                Constants.DESCRIPTION_DIALOG,
-                null
-            ).show()
+            showInfoDialog(infoUiModel)
         }
 
         viewModel.dataIntegrityResult.observe(
             viewLifecycleOwner
         ) { result ->
-            if (onDataIntegrityCheck != null) {
-                onDataIntegrityCheck?.invoke(result)
-            } else {
-                when (result) {
-                    is SuccessfulResult -> onFinishDataEntry?.invoke()
-                    else -> showDataEntryResultDialog(result)
-                }
-            }
+            handleDataIntegrityResult(result)
         }
 
         viewModel.completionPercentage.observe(
@@ -346,6 +353,29 @@ class FormView : Fragment() {
                 showLoopWarning()
             }
         }
+    }
+
+    private fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+        if (onDataIntegrityCheck != null) {
+            onDataIntegrityCheck?.invoke(result)
+        } else {
+            when (result) {
+                is SuccessfulResult -> onFinishDataEntry?.invoke()
+                else -> showDataEntryResultDialog(result)
+            }
+        }
+    }
+
+    private fun showInfoDialog(infoUiModel: InfoUiModel) {
+        CustomDialog(
+            requireContext(),
+            requireContext().getString(infoUiModel.title),
+            requireContext().getString(infoUiModel.description),
+            requireContext().getString(R.string.action_close),
+            null,
+            Constants.DESCRIPTION_DIALOG,
+            null
+        ).show()
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
@@ -593,9 +623,8 @@ class FormView : Fragment() {
                 intentHandler(intent)
             },
             {
-                this@FormView.requestPermissions(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST
+                requestLocationPermissions.launch(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
                 )
             },
             {
@@ -731,7 +760,9 @@ class FormView : Fragment() {
                     )
                 }
 
-                override fun onDialogCancelled() {}
+                override fun onDialogCancelled() {
+                    // We don't need to do anything when user cancels the dialog
+                }
 
                 override fun onClear() {
                     intentHandler(FormIntent.ClearValue(uiEvent.uid))
@@ -775,20 +806,6 @@ class FormView : Fragment() {
                 )
             )
         }.show(this@FormView.childFragmentManager)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            viewModel.getFocusedItemUid()?.let {
-                requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-            }
-        }
     }
 
     fun onEditionFinish() {

@@ -9,6 +9,9 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.commons.Constants.DATA_NOW
+import org.dhis2.commons.Constants.META_NOW
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
@@ -21,10 +24,7 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
-import org.dhis2.utils.Constants.DATA_NOW
-import org.dhis2.utils.Constants.META_NOW
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.junit.Before
@@ -307,12 +307,6 @@ class SyncManagerPresenterTest {
     fun `Should reset parameters to default`() {
         presenter.resetSyncParameters()
         verify(preferencesProvider, times(4)).setValue(any(), any())
-    }
-
-    @Test
-    fun `Should show message on wipe`() {
-        presenter.onWipeData()
-        verify(view, times(1)).wipeDatabase()
     }
 
     @Test

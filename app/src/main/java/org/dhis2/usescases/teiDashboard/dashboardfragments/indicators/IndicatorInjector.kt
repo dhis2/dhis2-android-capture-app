@@ -2,9 +2,9 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import android.content.Context
 import org.dhis2.App
+import org.dhis2.commons.Constants
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.Constants
 
 class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
     fun inject(context: Context) {

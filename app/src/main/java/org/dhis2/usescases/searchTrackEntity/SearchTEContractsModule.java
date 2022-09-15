@@ -129,5 +129,9 @@ public class SearchTEContractsModule {
         void setOpeningFilterToNone();
 
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
+
+        void trackSearchAnalytics();
+
+        void trackSearchMapVisualization();
     }
 }

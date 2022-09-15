@@ -6,13 +6,13 @@ import io.reactivex.Single
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.jira.IssueRequest
 import org.dhis2.data.jira.JiraIssueListRequest
 import org.dhis2.data.jira.JiraIssueListResponse
 import org.dhis2.data.jira.toBasicAuth
 import org.dhis2.data.jira.toJiraJql
-import org.dhis2.utils.Constants
 
 class JiraRepository(
     private val jiraApi: JiraIssueService,

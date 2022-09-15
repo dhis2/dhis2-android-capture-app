@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
@@ -15,6 +16,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.utils.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 
@@ -25,7 +27,8 @@ class DataValueModule(
     private val orgUnitUid: String,
     private val periodId: String,
     private val attributeOptionComboUid: String,
-    private val view: DataValueContract.View
+    private val view: DataValueContract.View,
+    private val activityContext: Context
 ) {
 
     @Provides
@@ -93,7 +96,8 @@ class DataValueModule(
             DhisEnrollmentUtils(d2),
             crashReportController,
             networkUtils,
-            searchRepository
+            searchRepository,
+            FieldErrorMessageProvider(activityContext)
         )
     }
 

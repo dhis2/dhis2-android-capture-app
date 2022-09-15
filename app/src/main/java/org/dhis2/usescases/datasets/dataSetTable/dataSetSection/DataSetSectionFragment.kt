@@ -32,6 +32,9 @@ import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.measureText
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
+import org.dhis2.commons.Constants.ACCESS_DATA
+import org.dhis2.commons.Constants.DATA_SET_SECTION
+import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -45,9 +48,6 @@ import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.Constants.ACCESS_DATA
-import org.dhis2.utils.Constants.DATA_SET_SECTION
-import org.dhis2.utils.Constants.DATA_SET_UID
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.OrgUnitDialog
@@ -98,7 +98,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 arguments?.getString(ARG_ORG_UNIT)!!,
                 arguments?.getString(ARG_PERIOD_ID)!!,
                 arguments?.getString(ARG_ATTR_OPT_COMB)!!,
-                this
+                this,
+                activity
             )
         ).inject(this)
     }
@@ -125,7 +126,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                 presenter.editingCellValue(isEditing)
                             },
                             onCellValueChange = { cell ->
-                                presenterFragment.onCellValueChange(cell)
+                                presenterFragment.onCellValueChanged(cell)
                             },
                             onSaveValue = { cell ->
                                 presenterFragment.onSaveValueChange(cell)
@@ -500,12 +501,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 }
                 presenterFragment.onSaveValueChange(cell.copy(value = calendarTime))
             },
-            hour, minute, is24HourFormat
+            hour,
+            minute,
+            is24HourFormat
         )
         dialog.setTitle(dataElement.displayFormName())
 
         dialog.setButton(
-            DialogInterface.BUTTON_NEGATIVE, requireContext().getString(R.string.date_dialog_clear)
+            DialogInterface.BUTTON_NEGATIVE,
+            requireContext().getString(R.string.date_dialog_clear)
         ) { _: DialogInterface?, _: Int ->
             presenterFragment.onSaveValueChange(cell.copy(value = null))
         }

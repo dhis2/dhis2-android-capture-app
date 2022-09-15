@@ -10,7 +10,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.usescases.settings.models.ErrorModelMapper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
