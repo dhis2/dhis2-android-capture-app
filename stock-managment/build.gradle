@@ -183,6 +183,7 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
     testImplementation "androidx.arch.core:core-testing:$libraries.android_core_testing"
     testImplementation "com.github.javafaker:javafaker:$libraries.javafaker"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
     androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
     androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
