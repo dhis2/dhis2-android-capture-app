@@ -6,8 +6,6 @@ import javax.inject.Inject
 
 class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 
-    override fun trackScreenName(screen: String) {}
-
     override fun trackUser(user: String?, server: String?) {
         val sentryUser = io.sentry.protocol.User().apply {
             user?.let { this.username = user }

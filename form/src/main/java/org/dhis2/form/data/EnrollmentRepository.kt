@@ -161,8 +161,7 @@ class EnrollmentRepository(
 
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory()!!
-        val optionSet =
-            if (attribute.optionSet() != null) attribute.optionSet()!!.uid() else null
+        val optionSet = attribute.optionSet()?.uid()
         val generated = attribute.generated()!!
 
         val orgUnitUid = enrollmentRepository.blockingGet()!!.organisationUnit()
