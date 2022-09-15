@@ -1,9 +1,8 @@
-package org.dhis2.utils.reporting
+package org.dhis2.commons.reporting
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import javax.inject.Inject
-import org.dhis2.commons.reporting.CrashReportController
 
 class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 

@@ -1,4 +1,4 @@
-package org.dhis2.utils.reporting
+package org.dhis2.commons.reporting
 
 import android.net.Uri
 import io.sentry.Breadcrumb
@@ -7,12 +7,12 @@ import io.sentry.IHub
 import io.sentry.Sentry
 import io.sentry.SpanStatus
 import io.sentry.protocol.User
-import java.io.IOException
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.Constants.USER
 import org.dhis2.commons.prefs.PreferenceProvider
+import java.io.IOException
 
 /**
  * Usage:
