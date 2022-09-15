@@ -3,7 +3,13 @@ package org.dhis2.android.rtsm.ui.home.screens.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.*
+import androidx.compose.material.BackdropScaffoldState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -29,7 +35,6 @@ fun Toolbar(
     navigationAction: () -> Unit,
     backdropState: BackdropScaffoldState
 ) {
-
     val scope = rememberCoroutineScope()
 
     TopAppBar(
@@ -94,6 +99,6 @@ fun Toolbar(
         },
         backgroundColor = themeColor,
         contentColor = Color.White,
-        elevation = 0.dp,
+        elevation = 0.dp
     )
 }

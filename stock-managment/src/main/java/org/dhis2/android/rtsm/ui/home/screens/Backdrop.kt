@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.Toolbar
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Backdrop(
@@ -33,7 +32,8 @@ fun Backdrop(
                 themeColor,
                 navigationAction = {
                     activity.finish()
-                }, backdropState
+                },
+                backdropState
             )
         },
         backLayerBackgroundColor = themeColor,
@@ -47,6 +47,6 @@ fun Backdrop(
             }
         },
         scaffoldState = backdropState,
-        gesturesEnabled = false,
+        gesturesEnabled = false
     )
 }

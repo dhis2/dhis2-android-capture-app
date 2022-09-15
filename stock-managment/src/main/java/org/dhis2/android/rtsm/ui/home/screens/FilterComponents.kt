@@ -18,9 +18,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 @Composable
 fun FilterList(
     viewModel: HomeViewModel,
-    themeColor: Color,
+    themeColor: Color
 ) {
-    val facilities   = viewModel.facilities.value
+    val facilities = viewModel.facilities.value
     val destinations = viewModel.destinationsList.value
     val showDestination = viewModel.isDistribution.value
 
@@ -28,9 +28,7 @@ fun FilterList(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopCenter
     ) {
-        LazyColumn(
-        ) {
-
+        LazyColumn() {
             item {
                 DropdownComponent(
                     viewModel,
