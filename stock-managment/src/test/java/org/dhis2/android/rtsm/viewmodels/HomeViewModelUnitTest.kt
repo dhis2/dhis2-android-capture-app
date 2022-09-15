@@ -4,14 +4,18 @@ import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.TestScheduler
-import java.time.LocalDateTime
-import java.time.ZoneId
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.setMain
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
@@ -25,7 +29,6 @@ import org.dhis2.android.rtsm.services.UserManager
 import org.dhis2.android.rtsm.services.UserManagerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
-import org.dhis2.android.rtsm.services.scheduler.TestSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
@@ -49,6 +52,8 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @RunWith(MockitoJUnitRunner::class)
 class HomeViewModelUnitTest {
@@ -65,8 +70,9 @@ class HomeViewModelUnitTest {
     private lateinit var userManager: UserManager
     private lateinit var schedulerProvider: BaseSchedulerProvider
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Mock
-    private lateinit var testSchedulerProvider: TestSchedulerProvider
+    private lateinit var testSchedulerProvider: TestCoroutineScheduler
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
@@ -92,8 +98,14 @@ class HomeViewModelUnitTest {
     @Captor
     private lateinit var destinationsArgumentCaptor: ArgumentCaptor<OperationState<List<Option>>>
 
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
+        Dispatchers.setMain(mainThreadSurrogate)
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
@@ -110,7 +122,7 @@ class HomeViewModelUnitTest {
         destinations = DestinationFactory.getListOf(5)
 
         schedulerProvider = TrampolineSchedulerProvider()
-        testSchedulerProvider = TestSchedulerProvider(TestScheduler())
+        testSchedulerProvider = TestCoroutineScheduler()
 
         doReturn(
             Single.just(facilities)
@@ -128,8 +140,8 @@ class HomeViewModelUnitTest {
             getStateHandle()
         )
 
-        viewModel.facilities.observeForever(facilitiesObserver)
-        viewModel.destinationsList.observeForever(destinationsObserver)
+        viewModel.facilities.asLiveData().observeForever(facilitiesObserver)
+        viewModel.destinationsList.asLiveData().observeForever(destinationsObserver)
     }
 
     private fun getStateHandle(): SavedStateHandle {
@@ -163,9 +175,7 @@ class HomeViewModelUnitTest {
     fun init_shouldLoadDestinations() {
         verify(metadataManager).destinations(appConfig.distributedTo)
 
-        viewModel.destinationsList.observeForever {
-            assertEquals(it, OperationState.Success(destinations))
-        }
+        assertEquals(viewModel.destinationsList.value, OperationState.Success(destinations))
     }
 
     @Test
@@ -478,11 +488,10 @@ class HomeViewModelUnitTest {
 
         val facilityName = viewModel.getData().facility.name
         val distributedTo = viewModel.getData().distributedTo?.name
-        val transactionType = viewModel.getData().transactionType
 
         if (distributedTo != null) {
-            viewModel.setSubtitle(facilityName, distributedTo, transactionType)
-            println("${viewModel.toolbarSubtitle.value}")
+            viewModel.fromFacilitiesLabel(facilityName)
+            viewModel.deliveryToLabel(distributedTo)
         }
 
         assertNotNull(viewModel.toolbarSubtitle.value)
@@ -498,9 +507,8 @@ class HomeViewModelUnitTest {
         viewModel.setTransactionDate(getTime(now))
 
         val facilityName = viewModel.getData().facility.name
-        val transactionType = viewModel.getData().transactionType
 
-        viewModel.setSubtitle(facilityName, "", transactionType)
+        viewModel.fromFacilitiesLabel(facilityName)
 
         assertNotNull(viewModel.toolbarSubtitle.value)
     }
@@ -515,9 +523,8 @@ class HomeViewModelUnitTest {
         viewModel.setTransactionDate(getTime(now))
 
         val facilityName = viewModel.getData().facility.name
-        val transactionType = viewModel.getData().transactionType
 
-        viewModel.setSubtitle(facilityName, "", transactionType)
+        viewModel.fromFacilitiesLabel(facilityName)
 
         assertNotNull(viewModel.toolbarSubtitle.value)
     }

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -30,7 +31,7 @@ class HomeActivity : ComponentActivity() {
             Surface(
                 modifier = Modifier.fillMaxSize()
             ) {
-                updateTheme(viewModel.transactionType.value)
+                viewModel.transactionType.collectAsState().value?.let { updateTheme(it) }
                 val color = Color(colorResource(themeColor).toArgb())
                 Backdrop(this, viewModel, color)
             }
@@ -40,7 +41,7 @@ class HomeActivity : ComponentActivity() {
     private fun updateTheme(type: TransactionType) {
         val color: Int
         val theme: Int
-        viewModel.setToolbarTitle(type)
+
         when (type) {
             TransactionType.DISTRIBUTION -> {
                 color = R.color.colorPrimary

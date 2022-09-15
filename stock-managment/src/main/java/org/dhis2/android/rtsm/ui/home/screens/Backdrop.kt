@@ -9,6 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -27,8 +28,8 @@ fun Backdrop(
     BackdropScaffold(
         appBar = {
             Toolbar(
-                viewModel.toolbarTitle.value.name,
-                viewModel.toolbarSubtitle.value,
+                viewModel.toolbarTitle.collectAsState().value.name,
+                viewModel.toolbarSubtitle.collectAsState().value,
                 themeColor,
                 navigationAction = {
                     activity.finish()

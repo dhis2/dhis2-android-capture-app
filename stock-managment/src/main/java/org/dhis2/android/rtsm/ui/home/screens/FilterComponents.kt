@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,9 +21,9 @@ fun FilterList(
     viewModel: HomeViewModel,
     themeColor: Color
 ) {
-    val facilities = viewModel.facilities.value
-    val destinations = viewModel.destinationsList.value
-    val showDestination = viewModel.isDistribution.value
+    val facilities = viewModel.facilities.collectAsState().value
+    val destinations = viewModel.destinationsList.collectAsState().value
+    val showDestination = viewModel.isDistribution.collectAsState().value
 
     Box(
         modifier = Modifier.fillMaxWidth(),
