@@ -1,4 +1,4 @@
-package org.dhis2.form
+package org.dhis2.form.di
 
 import android.content.Context
 import org.dhis2.commons.data.EntryMode
