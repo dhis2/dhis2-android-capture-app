@@ -18,7 +18,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.clipWithRoundedCorners
@@ -44,6 +43,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
 class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
 
@@ -248,7 +248,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
 
         when (program.programType) {
             ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, org.dhis2.android.rtsm.ui.main.MainActivity::class.java).apply {
+                Intent(activity, HomeActivity::class.java).apply {
                     putExtras(bundle)
                     putExtra(INTENT_EXTRA_APP_CONFIG, appConfig)
                     getActivityContent.launch(this)

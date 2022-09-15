@@ -2,7 +2,6 @@ package org.dhis2.android.rtsm.ui.reviewstock;
 
 
 import static org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG;
-import static org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_MESSAGE;
 import static org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_STOCK_ENTRIES;
 import static org.dhis2.android.rtsm.utils.Utils.isValidStockOnHand;
 
@@ -36,7 +35,6 @@ import org.dhis2.android.rtsm.data.models.StockEntry;
 import org.dhis2.android.rtsm.databinding.ActivityReviewStockBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.ItemWatcher;
-import org.dhis2.android.rtsm.ui.home.HomeActivity;
 import org.dhis2.android.rtsm.utils.ActivityManager;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -187,13 +185,13 @@ public class ReviewStockActivity extends BaseActivity {
     }
 
     private void navigateToHome() {
-        Intent intent = HomeActivity.getHomeActivityIntent(
+        /*Intent intent = HomeActivity.getHomeActivityIntent(
                 this,
                 getIntent().getParcelableExtra(INTENT_EXTRA_APP_CONFIG)
         );
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(INTENT_EXTRA_MESSAGE, getString(R.string.transaction_completed));
-        ActivityManager.startActivity(this, intent, true);
+        ActivityManager.startActivity(this, intent, true);*/
     }
 
     @Override
