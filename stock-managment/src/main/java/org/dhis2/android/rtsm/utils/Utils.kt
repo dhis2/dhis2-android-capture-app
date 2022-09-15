@@ -1,8 +1,8 @@
 package org.dhis2.android.rtsm.utils
 
 import android.text.TextUtils
-import java.util.regex.Pattern
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class Utils {
     companion object {
@@ -44,6 +44,14 @@ class Utils {
                 Timber.w("Extraneous space after negative sign removed from speech input: %s", s)
                 s.replace("\\s".toRegex(), "")
             } else s
+        }
+
+        @JvmStatic
+        fun capitalizeText(text: String): String {
+            return text.lowercase()
+                .replaceFirstChar {
+                    it.uppercase()
+                }
         }
     }
 }
