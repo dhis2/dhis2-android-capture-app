@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -15,12 +16,14 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -28,6 +31,8 @@ import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
+import org.dhis2.composetable.ui.CELL_ERROR_UNDERLINE_TEST_TAG
+import org.dhis2.composetable.ui.CELL_NON_EDITABLE_LAYER_TEST_TAG
 import org.dhis2.composetable.ui.CELL_TEST_TAG
 import org.dhis2.composetable.ui.CELL_VALUE_TEST_TAG
 import org.dhis2.composetable.ui.CellSelected
@@ -37,11 +42,13 @@ import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
 import org.dhis2.composetable.ui.HEADER_CELL
+import org.dhis2.composetable.ui.HasError
 import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
+import org.dhis2.composetable.ui.IsBlocked
 import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
 import org.dhis2.composetable.ui.MainLabel
 import org.dhis2.composetable.ui.RowBackground
@@ -106,9 +113,7 @@ class TableRobot(
                         TextInputModel(
                             id = cell.id ?: "",
                             mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
-                                cell.id?.contains(
-                                    it.rowHeader.id!!
-                                ) == true
+                                cell.id?.contains(it.rowHeader.id!!) == true
                             }?.rowHeader?.title ?: "",
                             secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
                                 it.cells[cell.column!! % it.cells.size].value
@@ -315,6 +320,34 @@ class TableRobot(
     }
 
     fun assertInputComponentIsHidden() {
-        composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(INPUT_TEST_TAG, true).assertIsNotDisplayed()
+    }
+
+    fun assertUnselectedCellErrorStyle(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(HasError, true), true
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CELL_ERROR_UNDERLINE_TEST_TAG, true).assertIsDisplayed()
+    }
+
+    fun assertSelectedCellErrorStyle(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(HasError, true), true
+        ).assertIsDisplayed()
+    }
+
+    fun assertCellBlockedCell(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule
+            .onNode(
+                hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                and
+                SemanticsMatcher.expectValue(IsBlocked, true),
+        true
+            )
+            .assertIsDisplayed()
     }
 }

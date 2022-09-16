@@ -15,7 +15,7 @@ data class TableDimensions(
     val tableVerticalPadding: Dp = 16.dp,
     val defaultCellWidth: Dp = 58.dp,
     val defaultCellHeight: Dp = 36.dp,
-    val defaultRowHeaderWidth: Dp = 140.dp,
+    val defaultRowHeaderWidth: Dp = 100.dp,
     val defaultHeaderHeight: Dp = 30.dp,
     val defaultLegendCornerSize: Dp = 2.dp,
     val defaultLegendBorderWidth: Dp = 8.dp,

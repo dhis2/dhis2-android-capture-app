@@ -28,7 +28,16 @@ class CellTableTest {
 
     @Test
     fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
-        //TBD
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+            val firstId = fakeModel.first().id!!
+            clickOnCell(firstId, 0, 1)
+            assertInputComponentIsHidden()
+            assertCellBlockedCell(firstId, 0, 1)
+        }
     }
 
     @Test
@@ -146,12 +155,16 @@ class CellTableTest {
     }
 
     @Test
-    fun shouldClearValueIfNextClickedOnCellWithError() {
-
-    }
-
-    @Test
     fun shouldSetCorrectColorIfHasError() {
-
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+            val firstId = fakeModel.first().id!!
+            assertUnselectedCellErrorStyle(firstId, 2, 0)
+            clickOnCell(firstId, 2, 0)
+            assertSelectedCellErrorStyle(firstId, 2, 0)
+        }
     }
 }

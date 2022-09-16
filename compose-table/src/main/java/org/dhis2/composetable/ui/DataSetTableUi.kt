@@ -422,7 +422,7 @@ fun ItemValues(
                         cellValues[columnIndex]
                     } ?: TableCell(value = "")
                 val style = cellStyle(cellValue)
-                val errorColor = TableTheme.colors.errorColor
+                val backgroundColor = TableTheme.colors.disabledCellBackground
                 TableCell(
                     modifier = Modifier
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
@@ -432,7 +432,8 @@ fun ItemValues(
                         .semantics {
                             rowBackground = style.backgroundColor()
                             cellSelected = style.mainColor() != Color.Transparent
-                            hasError = style.mainColor() == errorColor
+                            hasError = cellValue.error != null
+                            isBlocked = style.backgroundColor() == backgroundColor
                         }
                         .cellBorder(
                             borderColor = style.mainColor(),
@@ -531,6 +532,7 @@ fun TableCell(
         if (cellValue.error != null) {
             Divider(
                 modifier = Modifier
+                    .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
                 color = TableTheme.colors.errorColor
@@ -1037,6 +1039,8 @@ const val INFO_ICON = "infoIcon"
 const val HEADER_CELL = "HEADER_CELL"
 const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
 const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
+const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
+const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
@@ -1063,3 +1067,5 @@ val CellSelected = SemanticsPropertyKey<Boolean>("CellSelected")
 var SemanticsPropertyReceiver.cellSelected by CellSelected
 val HasError = SemanticsPropertyKey<Boolean>("HasError")
 var SemanticsPropertyReceiver.hasError by HasError
+val IsBlocked = SemanticsPropertyKey<Boolean>("IsBlocked")
+var SemanticsPropertyReceiver.isBlocked by IsBlocked
