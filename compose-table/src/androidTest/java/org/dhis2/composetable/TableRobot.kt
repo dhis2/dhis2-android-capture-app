@@ -29,6 +29,7 @@ import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.KeyboardInputType
+import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.ui.CELL_ERROR_UNDERLINE_TEST_TAG
@@ -76,7 +77,8 @@ class TableRobot(
     fun initTable(
         context: Context,
         fakeModelType: FakeModelType,
-        tableColors: TableColors = TableColors()
+        tableColors: TableColors = TableColors(),
+        onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
         composeTestRule.setContent {
@@ -102,6 +104,7 @@ class TableRobot(
         context: Context,
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
+        onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
         composeTestRule.setContent {
@@ -145,7 +148,7 @@ class TableRobot(
                     model = updatedData
                 },
                 onSaveValue = { tableCell ->
-
+                    onSave(tableCell)
                 }
             )
         }

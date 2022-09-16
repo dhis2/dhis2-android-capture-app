@@ -5,11 +5,11 @@ import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
+import org.dhis2.composetable.model.TableCell
 import org.junit.Rule
 import org.junit.Test
 
 class CellTableTest {
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TableTestActivity>()
 
@@ -51,6 +51,24 @@ class CellTableTest {
             clickOnCell(firstId, 1, 0)
             typeOnInputComponent("check")
             assertCellHasText(firstId, 1, 0, "check")
+        }
+    }
+
+    @Test
+    fun shouldSaveValue() {
+        var savedValue: TableCell? = null
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            ) {
+                savedValue = it
+            }
+            val firstId = fakeModel.first().id!!
+            clickOnCell(firstId, 1, 0)
+            typeOnInputComponent("check")
+            clickOnCell(firstId, 1, 2)
+            assert(savedValue != null)
         }
     }
 
