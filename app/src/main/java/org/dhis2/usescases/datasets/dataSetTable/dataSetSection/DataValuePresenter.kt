@@ -63,7 +63,7 @@ class DataValuePresenter(
                         var dataSetTableModel: DataSetTableModel? = null
                         val dataValue = dataTableModel.dataValues?.firstOrNull {
                             it.dataElement == rowAction.dataElement() &&
-                                    it.categoryOptionCombo == rowAction.catOptCombo()
+                                it.categoryOptionCombo == rowAction.catOptCombo()
                         }
                         when (dataValue) {
                             null -> if (!rowAction.value().isNullOrEmpty()) {
@@ -235,19 +235,19 @@ class DataValuePresenter(
         handleElementInteraction(dataElement, cell)
         return dataElement.takeIf { it.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
-                TextInputModel(
-                    id = cell.id ?: "",
-                    mainLabel = dataElement.displayFormName() ?: "-",
-                    secondaryLabels = repository.getCatOptComboOptions(
-                        ids[1]
-                    ).map {
-                        it.displayName() ?: "-"
-                    },
-                    currentValue = cell.value,
-                    keyboardInputType = inputType,
-                    error = errors[cell.id]
-                )
-            }
+            TextInputModel(
+                id = cell.id ?: "",
+                mainLabel = dataElement.displayFormName() ?: "-",
+                secondaryLabels = repository.getCatOptComboOptions(
+                    ids[1]
+                ).map {
+                    it.displayName() ?: "-"
+                },
+                currentValue = cell.value,
+                keyboardInputType = inputType,
+                error = errors[cell.id]
+            )
+        }
     }
 
     private fun handleElementInteraction(

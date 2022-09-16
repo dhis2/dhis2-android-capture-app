@@ -128,7 +128,7 @@ class GraphToTable {
                                 ChartType.PIE_CHART -> it.legend == header?.text
                                 else ->
                                     DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) ==
-                                            header?.text
+                                        header?.text
                             }
                         }
 
