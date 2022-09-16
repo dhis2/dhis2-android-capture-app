@@ -1,8 +1,10 @@
 package org.dhis2.utils.granularsync
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +19,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.ParseException
 import java.util.Calendar
@@ -25,15 +26,15 @@ import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.showSMS
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.databinding.SyncBottomDialogBinding
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog
-import org.dhis2.form.ui.dialog.DataEntryBottomDialogContent
-import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
-import org.dhis2.form.ui.dialog.DialogButtonStyle
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.utils.DateUtils
@@ -69,8 +70,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
     private var syncing: Boolean = false
-
-    val SMS_RESPONSE_REQUEST = 101
 
     private val config: SyncStatusDialogUiConfig by lazy {
         SyncStatusDialogUiConfig(resources, presenter, getInputArguments())
@@ -175,16 +174,29 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         this.attributeComboDataValue = arguments?.getString(ATTRIBUTE_COMBO_DATA_VALUE)
         this.periodIdDataValue = arguments?.getString(PERIOD_ID_DATA_VALUE)
 
-        (context.applicationContext as App).serverComponent()!!.plus(
-            GranularSyncModule(
-                requireContext(),
-                conflictType,
-                recordUid,
-                orgUnitDataValue,
-                attributeComboDataValue,
-                periodIdDataValue
-            )
-        ).inject(this)
+        if (BuildConfig.FLAVOR != "dhisPlayServices") {
+            (context.applicationContext as App).serverComponent()!!.plus(
+                GranularSyncModule(
+                    requireContext(),
+                    conflictType,
+                    recordUid,
+                    orgUnitDataValue,
+                    attributeComboDataValue,
+                    periodIdDataValue
+                )
+            ).inject(this)
+        } else {
+            (context.applicationContext as App).serverComponent()!!.plus(
+                GranularSyncPlayServicesModule(
+                    requireContext(),
+                    conflictType,
+                    recordUid,
+                    orgUnitDataValue,
+                    attributeComboDataValue,
+                    periodIdDataValue
+                )
+            ).inject(this)
+        }
     }
 
     override fun onCreateView(
@@ -254,31 +266,60 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         dismiss()
     }
 
-    override fun openSmsApp(message: String) {
-        val chooser = createSMSIntent(message)
-        startActivity(chooser)
+    /*private val SmsResponseRequest = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode)
+    }*/
 
+    override fun openSmsApp(message: String) {
         if (presenter.getSmsProvider().isPlayServicesEnabled() &&
-                presenter.getSmsProvider().expectsResponseSMS()){
+            presenter.getSmsProvider().expectsResponseSMS()
+        ) {
+            // register broadcast receiver
+            context?.registerReceiver(
+                smsReceiver,
+                IntentFilter(presenter.getSmsProvider().getSSMSIntentFilter()),
+                presenter.getSmsProvider().getSendPermission(),
+                null
+            )
+
             // openSMSSendConfirmationDialog
-            DataEntryBottomDialog(
-                    dataEntryDialogUiModel = DataEntryDialogUiModel(
-                            title = getString(R.string.sms_enabled),
-                            subtitle = getString(R.string.discard_go_back),
-                            iconResource = R.drawable.ic_help,
-                            mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                            secondaryButton = DialogButtonStyle.DiscardButton()
-                    ),
-                    onSecondaryButtonClicked = {
-                    }
-            ).show(requireFragmentManager(), DataEntryDialogUiModel::class.java.simpleName)
-                // no -> close sms confirmation dialog
-                // yes -> wait for response, confirm response message
+            val smsConfirmationDialog = BottomSheetDialog(
+                bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                    title = getString(R.string.sms_enabled),
+                    subtitle = getString(R.string.discard_go_back),
+                    iconResource = R.drawable.ic_help,
+                    mainButton = DialogButtonStyle.NeutralButton(R.string.no),
+                    secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
+                ),
+                onMainButtonClicked = {
+                    // No -> unregister receiver, dismiss dialog
+                    context?.unregisterReceiver(smsReceiver)
+                },
+                onSecondaryButtonClicked = {
+                    // yes -> wait for response, confirm response message
+                    presenter.getSmsProvider()
+                        .getTaskOrNull(
+                            requireContext(),
+                            presenter.getSmsProvider().getGatewayNumber()
+                        )
+                }
+            )
+            smsConfirmationDialog
+                .show(requireFragmentManager(), BottomSheetDialogUiModel::class.java.simpleName)
+
             // close syncDialog
             // close SMSConfirmationDialog
-        } else {
-            val chooser = createSMSIntent(message)
-            startActivity(chooser)
+        }
+        val chooser = createSMSIntent(message)
+        startActivity(chooser)
+    }
+
+    private val smsReceiver: BroadcastReceiver = object : SmsResponseReceiver() {
+        override fun onConsentIntentReceived(intent: Intent) {
+            smsRetrieverResultLauncher?.launch(intent)
+            TODO("Not yet implemented")
         }
     }
 
@@ -303,9 +344,11 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     binding!!.syncButton.setText(R.string.action_sync_sms)
                     binding!!.syncButton.visibility = View.VISIBLE
                     binding!!.syncButton.setOnClickListener {
-                        //binding!!.noConflictMessage.visibility = View.GONE
-                        //binding!!.synsStatusRecycler.visibility = View.VISIBLE
-                        binding!!.connectionMessage.setText("Opening SMS application, please do not modify the SMS")
+                        // binding!!.noConflictMessage.visibility = View.GONE
+                        // binding!!.synsStatusRecycler.visibility = View.VISIBLE
+                        binding!!
+                            .connectionMessage
+                            .setText("Opening SMS application, please do not modify the SMS")
 
                         presenter.initSMSSync()
                     }
@@ -412,7 +455,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
-            val dialog = dialog as BottomSheetDialog?
+            val dialog = dialog as com.google.android.material.bottomsheet.BottomSheetDialog?
 
             val bottomSheet =
                 dialog!!

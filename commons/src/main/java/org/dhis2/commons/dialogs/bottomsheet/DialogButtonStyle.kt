@@ -1,11 +1,13 @@
-package org.dhis2.form.ui.dialog
+package org.dhis2.commons.dialogs.bottomsheet
 
-import org.dhis2.form.R
+import androidx.annotation.ColorRes
+import org.dhis2.commons.R
 
 sealed class DialogButtonStyle(
     open val textResource: Int,
     val colorResource: Int? = null,
-    val iconResource: Int? = null
+    val iconResource: Int? = null,
+    @ColorRes val backgroundColor: Int? = null
 ) {
 
     data class MainButton(override val textResource: Int) : DialogButtonStyle(
@@ -27,5 +29,11 @@ sealed class DialogButtonStyle(
     class DiscardButton : DialogButtonStyle(
         textResource = R.string.discard_changes,
         colorResource = R.color.section_warning_color
+    )
+
+    class NeutralButton(override val textResource: Int) : DialogButtonStyle(
+        textResource = textResource,
+        colorResource = R.color.colorPrimary,
+        backgroundColor = R.color.white
     )
 }

@@ -22,6 +22,8 @@ interface SMSSyncProvider {
 
     fun isPlayServicesEnabled(): Boolean
     fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>?
+    fun getSSMSIntentFilter(): String?
+    fun getSendPermission(): String?
 
     fun expectsResponseSMS(): Boolean {
         return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult

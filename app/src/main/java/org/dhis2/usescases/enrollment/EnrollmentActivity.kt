@@ -19,6 +19,9 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
@@ -26,9 +29,6 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog
-import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
-import org.dhis2.form.ui.dialog.DialogButtonStyle
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -247,8 +247,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun showDeleteDialog() {
-        DataEntryBottomDialog(
-            dataEntryDialogUiModel = DataEntryDialogUiModel(
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(R.string.not_saved),
                 subtitle = getString(R.string.discard_go_back),
                 iconResource = R.drawable.ic_alert,
@@ -259,7 +259,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.deleteAllSavedData()
                 finish()
             }
-        ).show(supportFragmentManager, DataEntryDialogUiModel::class.java.simpleName)
+        ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {

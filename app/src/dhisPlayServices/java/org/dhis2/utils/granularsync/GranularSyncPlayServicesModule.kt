@@ -38,7 +38,7 @@ import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.hisp.dhis.android.core.D2
 
 @Module
-class GranularSyncModulePlayServices(
+class GranularSyncPlayServicesModule(
     private val context: Context,
     private val conflictType: SyncStatusDialog.ConflictType,
     private val recordUid: String,

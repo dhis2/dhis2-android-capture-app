@@ -22,6 +22,8 @@ class SMSSyncProviderImpl(
 
     override fun isPlayServicesEnabled() = false
     override fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>? = null
+    override fun getSSMSIntentFilter(): String? = null
+    override fun getSendPermission(): String? = null
 
     /*
     fun sendSms(

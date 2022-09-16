@@ -25,34 +25,25 @@
 
 package org.dhis2.utils.granularsync
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.android.gms.tasks.Task
-import org.dhis2.commons.resources.ResourceManager
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Status
 
-class SMSPlayServicesSyncProviderImpl(
-    override val d2: D2,
-    override val conflictType: SyncStatusDialog.ConflictType,
-    override val recordUid: String,
-    override val dvOrgUnit: String?,
-    override val dvAttrCombo: String?,
-    override val dvPeriodId: String?,
-    override val resourceManager: ResourceManager
-) : SMSSyncProvider {
+abstract class SmsResponseReceiver : BroadcastReceiver() {
 
-    override val smsSender: SmsSubmitCase by lazy {
-        d2.smsModule().smsSubmitCase()
+    override fun onReceive(context: Context, intent: Intent) {
+        if (SmsRetriever.SMS_RETRIEVED_ACTION != intent.action) return
+
+        val extras = intent.extras
+        val smsRetrieverStatus = extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
+        if (smsRetrieverStatus?.statusCode == CommonStatusCodes.SUCCESS) {
+            val consentIntent: Intent? = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT)
+            consentIntent?.let { onConsentIntentReceived(it) }
+        }
     }
 
-    override fun isPlayServicesEnabled() = true
-
-    override fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>? {
-        return SmsRetriever.getClient(context).startSmsUserConsent(senderNumber)
-    }
-
-    override fun getSSMSIntentFilter() = SmsRetriever.SMS_RETRIEVED_ACTION
-
-    override fun getSendPermission() = SmsRetriever.SEND_PERMISSION
+    abstract fun onConsentIntentReceived(intent: Intent)
 }

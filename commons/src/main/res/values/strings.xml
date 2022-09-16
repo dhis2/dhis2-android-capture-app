@@ -214,4 +214,5 @@
     <string name="not_now">Not now</string>
     <string name="review">Review</string>
     <string name="complete">Complete</string>
+    <string name="discard_changes">Discard changes</string>
 </resources>

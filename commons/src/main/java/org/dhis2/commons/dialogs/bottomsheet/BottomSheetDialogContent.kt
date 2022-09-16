@@ -1,4 +1,4 @@
-package org.dhis2.form.ui.dialog
+package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,11 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
-import org.dhis2.form.R
+import org.dhis2.commons.R
 
 @Composable
-fun DataEntryBottomDialogContent(
-    dataEntryDialogUiModel: DataEntryDialogUiModel,
+fun BottomSheetDialogContent(
+    bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     onMainButtonClicked: () -> Unit,
     onSecondaryButtonClicked: () -> Unit = {},
     onIssueItemClicked: () -> Unit = {}
@@ -56,18 +56,18 @@ fun DataEntryBottomDialogContent(
             modifier = modifier.weight(1f, false)
         ) {
             Icon(
-                painter = painterResource(dataEntryDialogUiModel.iconResource),
+                painter = painterResource(bottomSheetDialogUiModel.iconResource),
                 contentDescription = "",
                 tint = Color.Unspecified
             )
             Text(
-                text = dataEntryDialogUiModel.title,
+                text = bottomSheetDialogUiModel.title,
                 style = MaterialTheme.typography.h5,
                 color = colorResource(id = R.color.textPrimary),
                 modifier = Modifier.padding(16.dp)
             )
             Text(
-                text = dataEntryDialogUiModel.subtitle,
+                text = bottomSheetDialogUiModel.subtitle,
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.textSecondary),
                 textAlign = TextAlign.Start,
@@ -75,12 +75,12 @@ fun DataEntryBottomDialogContent(
             )
         }
         Divider(Modifier.padding(horizontal = 24.dp))
-        if (dataEntryDialogUiModel.fieldsWithIssues.isNotEmpty()) {
+        if (bottomSheetDialogUiModel.fieldsWithIssues.isNotEmpty()) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.weight(1f, false)
             ) {
-                items(dataEntryDialogUiModel.fieldsWithIssues) {
+                items(bottomSheetDialogUiModel.fieldsWithIssues) {
                     IssueItem(it, onClick = onIssueItemClicked)
                 }
             }
@@ -92,24 +92,35 @@ fun DataEntryBottomDialogContent(
         ) {
             Button(
                 modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
+                shape = if (bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton) {
+                    RoundedCornerShape(24.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                       },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
                     disabledBackgroundColor = Color.White
                 ),
-                elevation = ButtonDefaults.elevation(0.dp),
+                elevation = if (bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton) {
+                    ButtonDefaults.elevation(2.dp)
+                } else {
+                    ButtonDefaults.elevation(0.dp)
+                       },
                 onClick = { onSecondaryButtonClicked() },
-                content = provideButtonContent(dataEntryDialogUiModel.secondaryButton),
-                enabled = dataEntryDialogUiModel.secondaryButton != null
+                content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
+                enabled = bottomSheetDialogUiModel.secondaryButton != null
             )
             Button(
                 modifier = Modifier.testTag(MAIN_BUTTON_TAG),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.colorPrimary),
+                    backgroundColor = bottomSheetDialogUiModel.mainButton.backgroundColor?.let {
+                        colorResource(it)
+                    } ?: colorResource(id = R.color.colorPrimary),
                     contentColor = Color.White
                 ),
                 onClick = { onMainButtonClicked() },
-                content = provideButtonContent(dataEntryDialogUiModel.mainButton),
+                content = provideButtonContent(bottomSheetDialogUiModel.mainButton),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
             )
         }
@@ -175,8 +186,8 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
 @Preview
 @Composable
 fun DialogPreview1() {
-    DataEntryBottomDialogContent(
-        dataEntryDialogUiModel = DataEntryDialogUiModel(
+    BottomSheetDialogContent(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Saved",
             subtitle = "If you exit now all the information in the form will be discarded.",
             iconResource = R.drawable.ic_saved_check,
@@ -191,8 +202,8 @@ fun DialogPreview1() {
 @Preview
 @Composable
 fun DialogPreview2() {
-    DataEntryBottomDialogContent(
-        dataEntryDialogUiModel = DataEntryDialogUiModel(
+    BottomSheetDialogContent(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Saved",
             subtitle = "Do you want to mark this form as complete?",
             iconResource = R.drawable.ic_saved_check,
@@ -207,8 +218,8 @@ fun DialogPreview2() {
 @Preview
 @Composable
 fun DialogPreview3() {
-    DataEntryBottomDialogContent(
-        dataEntryDialogUiModel = DataEntryDialogUiModel(
+    BottomSheetDialogContent(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Not saved",
             subtitle = "Some mandatory fields are missing and the form cannot be saved.",
             iconResource = R.drawable.ic_alert,
@@ -224,8 +235,8 @@ fun DialogPreview3() {
 @Preview
 @Composable
 fun DialogPreview4() {
-    DataEntryBottomDialogContent(
-        dataEntryDialogUiModel = DataEntryDialogUiModel(
+    BottomSheetDialogContent(
+        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Not saved",
             subtitle = "Some fields have errors and they are not saved." +
                 "If you exit now the changes will be discarded.",
