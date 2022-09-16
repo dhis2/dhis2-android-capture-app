@@ -1,16 +1,13 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import org.dhis2.composetable.model.TableCell;
-import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.SortedMap;
 
 public class DataValueContract {
 

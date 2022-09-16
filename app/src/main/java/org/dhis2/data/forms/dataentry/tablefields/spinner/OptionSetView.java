@@ -3,11 +3,10 @@ package org.dhis2.data.forms.dataentry.tablefields.spinner;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ViewDataBinding;
+
 import org.dhis2.R;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.customviews.FieldLayout;
@@ -15,8 +14,6 @@ import org.dhis2.utils.customviews.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.Option;
 
 public class OptionSetView extends FieldLayout implements OptionSetOnClickListener {
-    private ViewDataBinding binding;
-
     private TextView editText;
     private OnSelectedOption listener;
 
