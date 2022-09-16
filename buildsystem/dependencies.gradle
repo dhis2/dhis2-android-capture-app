@@ -33,6 +33,8 @@ ext {
             composeTheme              : "1.1.16",
             composeConstraintLayout   : "1.0.1",
             activityCompose           : "1.5.1",
+            fragmentCompose           : "1.5.2", 
+            viewModelCompose          : "2.5.1",
 
             //Google
             material                  : "1.6.1",
