@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
@@ -18,6 +19,7 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
+import org.dhis2.android.rtsm.services.SyncManager
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
@@ -32,7 +34,8 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val syncManager: SyncManager
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
@@ -219,4 +222,9 @@ class HomeViewModel @Inject constructor(
                 ) _toolbarSubtitle.value = "${R.string.from} $from"
         }
     }
+
+    fun syncData() {
+        syncManager.dataSync()
+    }
+    fun getSyncDataStatus() = syncManager.getSyncStatus(Constants.INSTANT_DATA_SYNC)
 }

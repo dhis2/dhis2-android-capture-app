@@ -21,6 +21,7 @@ import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
+import org.dhis2.android.rtsm.services.SyncManager
 import org.dhis2.android.rtsm.services.UserManager
 import org.dhis2.android.rtsm.services.UserManagerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
@@ -85,6 +86,9 @@ class HomeViewModelUnitTest {
     @Mock
     private lateinit var preferenceProvider: PreferenceProvider
 
+    @Mock
+    private lateinit var syncManager: SyncManager
+
     @Captor
     private lateinit var facilitiesArgumentCaptor:
         ArgumentCaptor<OperationState<List<OrganisationUnit>>>
@@ -125,7 +129,8 @@ class HomeViewModelUnitTest {
             schedulerProvider,
             preferenceProvider,
             metadataManager,
-            getStateHandle()
+            getStateHandle(),
+            syncManager
         )
 
         viewModel.facilities.observeForever(facilitiesObserver)

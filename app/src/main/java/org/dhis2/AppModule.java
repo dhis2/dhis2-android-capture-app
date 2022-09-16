@@ -3,6 +3,7 @@ package org.dhis2;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.hilt.work.HiltWorkerFactory;
 
 import org.dhis2.commons.resources.ResourceManager;
 
@@ -24,6 +25,12 @@ public class AppModule {
     @Singleton
     Context context() {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    HiltWorkerFactory workerFactory() {
+        return application.workerFactory;
     }
 
     @Provides

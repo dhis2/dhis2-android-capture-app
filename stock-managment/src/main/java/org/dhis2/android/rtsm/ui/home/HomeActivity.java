@@ -1,6 +1,7 @@
 package org.dhis2.android.rtsm.ui.home;
 
 
+import static org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC;
 import static org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG;
 
 import android.app.Dialog;
@@ -24,6 +25,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.WorkInfo;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -36,8 +38,9 @@ import org.dhis2.android.rtsm.databinding.ActivityHomeBinding;
 import org.dhis2.android.rtsm.ui.base.BaseActivity;
 import org.dhis2.android.rtsm.ui.base.GenericListAdapter;
 import org.dhis2.android.rtsm.ui.managestock.ManageStockActivity;
-import org.dhis2.android.rtsm.ui.settings.SettingsActivity;
+import org.dhis2.android.rtsm.utils.ActivityManager;
 import org.dhis2.android.rtsm.utils.DateUtils;
+import org.dhis2.android.rtsm.utils.NetworkUtils;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -47,6 +50,9 @@ import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @AndroidEntryPoint
 public class HomeActivity extends BaseActivity {
@@ -93,10 +99,57 @@ public class HomeActivity extends BaseActivity {
         binding.syncActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-                startActivity(intent);
+
+                boolean isNetworkAvailable = NetworkUtils.isOnline(HomeActivity.this);
+                if (!isNetworkAvailable) {
+                    ActivityManager.showErrorMessage(view, R.string.unable_to_sync_data_no_network_available);
+                } else {
+                    viewModel.syncData();
+
+                    viewModel.getSyncDataStatus().observe(HomeActivity.this, workInfoList ->
+                            workInfoList.forEach(workInfo -> {
+                                if (workInfo.getTags().contains(INSTANT_DATA_SYNC)) {
+                                    handleDataSyncResponse(workInfo, view);
+                                }
+                            })
+                    );
+                }
+
             }
         });
+    }
+
+    private void handleDataSyncResponse(WorkInfo workInfo, View view) {
+
+        if (workInfo.getState() == WorkInfo.State.RUNNING) {
+            if (view != null) {
+                ActivityManager.showInfoMessage(view, getString(R.string.data_sync_in_progress));
+            }
+        } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+            if (view != null) {
+                ActivityManager.showInfoMessage(view, getString(R.string.sync_completed));
+            }
+        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+            if (view != null) {
+                ActivityManager.showErrorMessage(view, getString(R.string.data_sync_error));
+            }
+        }
+    }
+
+    private void requestMicPermission() {
+        // This code will be implemented after mic implementation
+
+//        Preference useMicPref = findPreference(getString(R.string.use_mic_pref_key));
+//        if (useMicPref != null) {
+//            useMicPref.setOnPreferenceChangeListener((preference, newValue) -> {
+//                if (newValue instanceof Boolean && ((Boolean)newValue)) {
+//                    ActivityManager.checkPermission(
+//                            requireActivity(), AUDIO_RECORDING_REQUEST_CODE);
+//                }
+//
+//                return true;
+//            });
+//        }
     }
 
     @Override
