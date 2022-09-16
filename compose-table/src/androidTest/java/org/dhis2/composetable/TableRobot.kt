@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
@@ -60,6 +61,7 @@ import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
+import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Assert
 
 fun tableRobot(
@@ -76,6 +78,7 @@ class TableRobot(
 ) {
 
     lateinit var onSaveTableCell: TableCell
+    val keyboardHelper = KeyboardHelper(composeTestRule, timeout = 3000L)
 
     fun initTable(
         context: Context,
@@ -111,6 +114,7 @@ class TableRobot(
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
         composeTestRule.setContent {
+            keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(fakeModel) }
             DataSetTableScreen(
                 tableData = model,
@@ -372,5 +376,13 @@ class TableRobot(
         true
             )
             .assertIsDisplayed()
+    }
+
+    fun assertKeyBoardVisibility(visibility: Boolean){
+        keyboardHelper.waitForKeyboardVisibility(visibility)
+    }
+
+    fun hideKeyboard(){
+        keyboardHelper.hideKeyboardIfShown()
     }
 }

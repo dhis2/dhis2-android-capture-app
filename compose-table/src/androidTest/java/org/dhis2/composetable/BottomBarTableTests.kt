@@ -55,6 +55,7 @@ class BottomBarTableTests {
             typeOnInputComponent("test")
             assertIconIsVisible(R.drawable.ic_finish_edit_input)
             clickOnEditValue()
+            composeTestRule.waitForIdle()
             assertCellHasText(tableId, 1, 0, "test")
         }
     }
@@ -71,6 +72,8 @@ class BottomBarTableTests {
             composeTestRule.waitForIdle()
             typeOnInputComponent("test")
             clickOnAccept()
+            composeTestRule.waitForIdle()
+            assertCellHasText(tableId, 1, 0, "test")
             assertOnSavedTableCellValue("test")
         }
     }
