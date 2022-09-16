@@ -34,7 +34,6 @@ class DataValuePresenterTest {
                 valueStore,
                 schedulers,
                 updateProcessor,
-                featureConfigRepository,
                 mapper
             )
     }

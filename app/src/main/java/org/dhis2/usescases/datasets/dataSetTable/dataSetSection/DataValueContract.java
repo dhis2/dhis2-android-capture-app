@@ -17,17 +17,9 @@ public class DataValueContract {
     public interface View extends AbstractActivityContracts.View {
         void update(boolean modified);
 
-        void setTableData(TableData tableData);
-
         void updateTabLayout(int count);
 
-        void renderIndicators(@NotNull SortedMap<String, String> indicators);
-
-        void updateData(RowAction rowAction, @Nullable String catCombo);
-
         void onValueProcessed();
-
-        void clearTables();
 
         void updateProgressVisibility();
 

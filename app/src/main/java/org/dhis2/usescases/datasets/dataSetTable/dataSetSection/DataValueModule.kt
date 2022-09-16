@@ -53,7 +53,6 @@ class DataValueModule(
             valueStore,
             schedulerProvider,
             updateProcessor,
-            featureConfigRepository,
             tableDataToTableModelMapper
         )
     }
