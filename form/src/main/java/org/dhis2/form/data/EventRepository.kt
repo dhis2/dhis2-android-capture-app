@@ -92,10 +92,10 @@ class EventRepository(
                         .byProgramStage().eq(event.programStage())
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
-                            fields.add(
-                                transform(it)
-                            )
-                        }
+                        fields.add(
+                            transform(it)
+                        )
+                    }
                 }
             }
             return@fromCallable fields
@@ -133,9 +133,9 @@ class EventRepository(
         val options: List<Option>
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
-                    .eq(optionSet).byCode()
-                    .eq(dataValue)
-                    .one().blockingExists()
+                .eq(optionSet).byCode()
+                .eq(dataValue)
+                .one().blockingExists()
             ) {
                 dataValue =
                     d2.optionModule().options().byOptionSetUid().eq(optionSet)
