@@ -47,14 +47,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
-            buildConfigField("String","APPLICATION_ID","\"${defaultConfig.applicationId}\"")
+            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
+            buildConfigField("String", "APPLICATION_ID", "\"${defaultConfig.applicationId}\"")
         }
 
-        debug{
+        debug {
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
-            buildConfigField("String","APPLICATION_ID","\"${defaultConfig.applicationId}\"")
+            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
+            buildConfigField("String", "APPLICATION_ID", "\"${defaultConfig.applicationId}\"")
         }
 
 
@@ -70,7 +70,7 @@ android {
     }
 
     buildFeatures {
-        compose     true
+        compose true
         viewBinding true
         dataBinding true
     }
@@ -115,7 +115,7 @@ dependencies {
 
     // DHIS2 Android SDK
     // remove the no-op version of Flipper added by DHIS2 Android SDK  to avoid duplicates
-    implementation ("org.hisp.dhis:android-core:$libraries.dhis2sdk") {
+    implementation("org.hisp.dhis:android-core:$libraries.dhis2sdk") {
         exclude group: 'com.facebook.flipper'
     }
 
@@ -151,9 +151,9 @@ dependencies {
     implementation "androidx.work:work-gcm:$libraries.work"
 
     // Activity KTX for viewModels()
-    implementation "androidx.activity:activity-ktx:1.5.1"
-    implementation 'androidx.fragment:fragment-ktx:1.5.2'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    implementation "androidx.activity:activity-ktx:$libraries.activityCompose"
+    implementation "androidx.fragment:fragment-ktx:$libraries.fragmentCompose"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$libraries.viewModelCompose"
 
     // DI
     implementation "com.google.dagger:hilt-android:$libraries.hilt"
@@ -172,7 +172,7 @@ dependencies {
 
     debugImplementation "com.facebook.flipper:flipper:$libraries.flipper"
     debugImplementation "com.facebook.soloader:soloader:$libraries.soloader"
-    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$libraries.flipper") {
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:$libraries.flipper") {
         exclude group: 'com.squareup.okhttp3'
     }
 
@@ -195,5 +195,4 @@ dependencies {
 
 kapt {
     correctErrorTypes true
-    useBuildCache = false
 }
