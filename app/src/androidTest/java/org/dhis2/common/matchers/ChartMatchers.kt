@@ -2,8 +2,8 @@ package org.dhis2.common.matchers
 
 import android.view.View
 import androidx.annotation.NonNull
+import androidx.compose.ui.platform.ComposeView
 import androidx.test.espresso.matcher.BoundedMatcher
-import com.evrencoskun.tableview.TableView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
@@ -27,7 +27,7 @@ class ChartMatchers {
                     return when (chartType){
                         ChartType.LINE_CHART -> view is LineChart
                         ChartType.BAR_CHART -> view is BarChart
-                        ChartType.TABLE -> view is TableView
+                        ChartType.TABLE -> view is ComposeView
                         ChartType.SINGLE_VALUE -> view.findViewById<View>(R.id.singleValueTitle) != null
                         ChartType.NUTRITION -> view is LineChart
                         ChartType.RADAR -> view is RadarChart
