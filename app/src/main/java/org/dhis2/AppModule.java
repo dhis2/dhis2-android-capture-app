@@ -3,6 +3,7 @@ package org.dhis2;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.hilt.work.HiltWorkerFactory;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.dhis2.utils.ExpressionEvaluatorImpl;
@@ -19,6 +20,7 @@ public class AppModule {
 
     private final App application;
 
+
     public AppModule(@NonNull App application) {
         this.application = application;
     }
@@ -27,6 +29,12 @@ public class AppModule {
     @Singleton
     Context context() {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    HiltWorkerFactory workerFactory() {
+        return application.workerFactory;
     }
 
     @Provides

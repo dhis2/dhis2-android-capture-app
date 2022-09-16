@@ -271,4 +271,6 @@
     <string name="error_set_value">The value could not be set.</string>
     <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
     <string name="done_task">Home</string>
+    <string name="no_conflicts_message">There are no conflicts for this program</string>
+    <string name="action_sync">Send</string>
 </resources>
