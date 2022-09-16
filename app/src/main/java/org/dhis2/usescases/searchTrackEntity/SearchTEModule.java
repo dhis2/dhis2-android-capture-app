@@ -12,8 +12,11 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -60,9 +63,6 @@ import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.matomo.MatomoAnalyticsController;
-import org.dhis2.commons.reporting.CrashReportController;
-import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import java.util.Map;
@@ -259,7 +259,7 @@ public class SearchTEModule {
     DataEntryRepository provideDataEntryRepository(
             D2 d2,
             FieldViewModelFactory fieldViewModelFactory) {
-        return new SearchRepositoy(
+        return new org.dhis2.form.data.SearchRepository(
                 d2,
                 fieldViewModelFactory,
                 initialProgram,

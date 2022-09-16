@@ -1,8 +1,7 @@
-package org.dhis2.usescases.searchTrackEntity
+package org.dhis2.form.data
 
 import io.reactivex.Flowable
 import java.util.ArrayList
-import org.dhis2.form.data.DataEntryBaseRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -10,7 +9,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 
-class SearchRepositoy(
+class SearchRepository(
     private val d2: D2,
     private val fieldViewModelFactory: FieldViewModelFactory,
     private val programUid: String?,

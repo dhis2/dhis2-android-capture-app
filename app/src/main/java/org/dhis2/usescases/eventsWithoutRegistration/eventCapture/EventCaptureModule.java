@@ -166,7 +166,7 @@ public class EventCaptureModule {
     @PerActivity
     org.dhis2.form.data.FormRepository provideEventsFormRepository(
             @NonNull D2 d2,
-            org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
+            org.dhis2.form.data.EventRepository eventDataEntryRepository,
             CrashReportController crashReportController,
             NetworkUtils networkUtils,
             ResourceManager resourceManager
@@ -196,11 +196,11 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    org.dhis2.data.forms.dataentry.EventRepository provideEventDataEntryRepository(
+    org.dhis2.form.data.EventRepository provideEventDataEntryRepository(
             D2 d2,
             FieldViewModelFactory modelFactory
     ) {
-        return new org.dhis2.data.forms.dataentry.EventRepository(
+        return new org.dhis2.form.data.EventRepository(
                 modelFactory,
                 eventUid,
                 d2

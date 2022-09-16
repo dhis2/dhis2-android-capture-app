@@ -1,11 +1,10 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.data
 
 import android.text.TextUtils
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.form.data.DataEntryBaseRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
