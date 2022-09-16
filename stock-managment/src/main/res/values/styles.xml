@@ -32,4 +32,5 @@
         <item name="android:textSize">@dimen/splash_screen_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
+
 </resources>
