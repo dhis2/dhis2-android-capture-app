@@ -60,6 +60,7 @@ import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
+import org.junit.Assert
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -73,6 +74,8 @@ fun tableRobot(
 class TableRobot(
     private val composeTestRule: ComposeContentTestRule,
 ) {
+
+    lateinit var onSaveTableCell: TableCell
 
     fun initTable(
         context: Context,
@@ -148,6 +151,7 @@ class TableRobot(
                     model = updatedData
                 },
                 onSaveValue = { tableCell ->
+                    onSaveTableCell = tableCell
                     onSave(tableCell)
                 }
             )
@@ -231,16 +235,24 @@ class TableRobot(
         composeTestRule.onNodeWithTag("$tableId$rowIndex").assertIsEnabled()
     }
 
-    private fun clickOnEditValue() {
+    fun clickOnEditValue() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
     }
 
-    private fun clearInput() {
+    fun clearInput() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextClearance()
     }
 
-    private fun typeInput(text: String) {
+    fun typeInput(text: String) {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
+    }
+
+    fun assertBottomBarIsVisible(){
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsDisplayed()
+    }
+
+    fun assertBottomBarIsNotVisible(){
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsNotDisplayed()
     }
 
     fun clickOnAccept() {
@@ -251,8 +263,16 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsDisplayed()
     }
 
-    private fun assertInputIcon(@DrawableRes id: Int) {
+    fun assertInputIcon(@DrawableRes id: Int) {
         composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertExists()
+    }
+
+    fun assertIconIsVisible(@DrawableRes id: Int) {
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
+    }
+
+    fun assertOnSavedTableCellValue(value: String){
+        Assert.assertEquals(value, onSaveTableCell.value)
     }
 
     private fun assertInputComponentErrorMessageIsDisplayed(expectedErrorMessage: String) {

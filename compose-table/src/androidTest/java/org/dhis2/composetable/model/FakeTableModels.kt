@@ -4,7 +4,6 @@ import android.content.Context
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-
 class FakeTableModels(private val context: Context) {
 
     fun getMultiHeaderTables(
