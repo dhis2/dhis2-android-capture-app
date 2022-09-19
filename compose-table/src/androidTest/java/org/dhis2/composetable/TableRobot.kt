@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
@@ -60,6 +61,8 @@ import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
+import org.dhis2.composetable.utils.KeyboardHelper
+import org.junit.Assert
 
 fun tableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -73,6 +76,9 @@ fun tableRobot(
 class TableRobot(
     private val composeTestRule: ComposeContentTestRule,
 ) {
+
+    lateinit var onSaveTableCell: TableCell
+    val keyboardHelper = KeyboardHelper(composeTestRule, timeout = 3000L)
 
     fun initTable(
         context: Context,
@@ -108,6 +114,7 @@ class TableRobot(
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
         composeTestRule.setContent {
+            keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(fakeModel) }
             DataSetTableScreen(
                 tableData = model,
@@ -148,6 +155,7 @@ class TableRobot(
                     model = updatedData
                 },
                 onSaveValue = { tableCell ->
+                    onSaveTableCell = tableCell
                     onSave(tableCell)
                 }
             )
@@ -231,16 +239,24 @@ class TableRobot(
         composeTestRule.onNodeWithTag("$tableId$rowIndex").assertIsEnabled()
     }
 
-    private fun clickOnEditValue() {
+    fun clickOnEditValue() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
     }
 
-    private fun clearInput() {
+    fun clearInput() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextClearance()
     }
 
-    private fun typeInput(text: String) {
+    fun typeInput(text: String) {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
+    }
+
+    fun assertBottomBarIsVisible(){
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsDisplayed()
+    }
+
+    fun assertBottomBarIsNotVisible(){
+        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsNotDisplayed()
     }
 
     fun clickOnAccept() {
@@ -251,8 +267,16 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsDisplayed()
     }
 
-    private fun assertInputIcon(@DrawableRes id: Int) {
+    fun assertInputIcon(@DrawableRes id: Int) {
         composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertExists()
+    }
+
+    fun assertIconIsVisible(@DrawableRes id: Int) {
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
+    }
+
+    fun assertOnSavedTableCellValue(value: String){
+        Assert.assertEquals(value, onSaveTableCell.value)
     }
 
     private fun assertInputComponentErrorMessageIsDisplayed(expectedErrorMessage: String) {
@@ -352,5 +376,13 @@ class TableRobot(
         true
             )
             .assertIsDisplayed()
+    }
+
+    fun assertKeyBoardVisibility(visibility: Boolean){
+        keyboardHelper.waitForKeyboardVisibility(visibility)
+    }
+
+    fun hideKeyboard(){
+        keyboardHelper.hideKeyboardIfShown()
     }
 }
