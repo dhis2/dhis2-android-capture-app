@@ -17,8 +17,6 @@ import org.dhis2.utils.customviews.CategoryComboDialogComponent;
 import org.dhis2.utils.customviews.CategoryComboDialogModule;
 import org.dhis2.utils.granularsync.GranularSyncComponent;
 import org.dhis2.utils.granularsync.GranularSyncModule;
-import org.dhis2.utils.granularsync.GranularSyncPlayServicesComponent;
-import org.dhis2.utils.granularsync.GranularSyncPlayServicesModule;
 
 import dagger.Subcomponent;
 import dhis2.org.analytics.charts.Charts;
@@ -42,9 +40,6 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     GranularSyncComponent plus(@NonNull GranularSyncModule granularSyncModule);
-
-    @NonNull
-    GranularSyncPlayServicesComponent plus(@NonNull GranularSyncPlayServicesModule granularSyncPlayServicesModule);
 
     @NonNull
     CategoryComboDialogComponent plus(@NonNull CategoryComboDialogModule categoryComboDialogModule);

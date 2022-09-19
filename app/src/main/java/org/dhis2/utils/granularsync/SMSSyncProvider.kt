@@ -2,9 +2,13 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import com.google.android.gms.tasks.Task
+import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.observers.DisposableCompletableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.systeminfo.SMSVersion
@@ -24,6 +28,10 @@ interface SMSSyncProvider {
     fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>?
     fun getSSMSIntentFilter(): String?
     fun getSendPermission(): String?
+    fun registerSMSReceiver(context: Context, sendPermission: String?){
+
+    }
+    fun unregisterSMSReceiver(requireContext: Context) {}
 
     fun expectsResponseSMS(): Boolean {
         return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult
@@ -45,18 +53,18 @@ interface SMSSyncProvider {
 
         return hasCorrectSmsVersion && smsModuleIsEnabled
     }
-    fun getConvertTask(): Single<String> {
+    fun getConvertTask(): Single<ConvertTaskResult> {
         return when (conflictType) {
             SyncStatusDialog.ConflictType.EVENT -> {
                 if (d2.eventModule().events().uid(recordUid).blockingGet().enrollment() == null) {
-                    smsSender.compressSimpleEvent(recordUid)
+                    convertSimpleEvent()
                 } else {
-                    smsSender.compressTrackerEvent(recordUid)
+                    convertTrackerEvent()
                 }
             }
             SyncStatusDialog.ConflictType.TEI -> {
                 if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
-                    smsSender.compressEnrollment(recordUid)
+                    convertEnrollment()
                 } else {
                     Single.error(
                         Exception(
@@ -65,12 +73,9 @@ interface SMSSyncProvider {
                     )
                 }
             }
-            SyncStatusDialog.ConflictType.DATA_VALUES -> smsSender.compressDataSet(
-                recordUid,
-                dvOrgUnit,
-                dvPeriodId,
-                dvAttrCombo
-            )
+            SyncStatusDialog.ConflictType.DATA_VALUES -> {
+               convertDataSet()
+            }
             else -> Single.error(
                 Exception(
                     resourceManager.getString(R.string.granular_sync_unsupported_task)
@@ -78,4 +83,20 @@ interface SMSSyncProvider {
             )
         }
     }
+
+    fun convertSimpleEvent():Single<ConvertTaskResult>
+    fun convertTrackerEvent():Single<ConvertTaskResult>
+    fun convertEnrollment():Single<ConvertTaskResult>
+    fun convertDataSet():Single<ConvertTaskResult>
+
+    fun sendSms(
+        doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
+        doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
+    ): Completable = Completable.complete()
+
+    fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableSingleObserver<ConvertTaskResult>
+
+    fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableCompletableObserver
+
+    fun onSmsNotAccepted(): SmsSendingService.SendingStatus
 }

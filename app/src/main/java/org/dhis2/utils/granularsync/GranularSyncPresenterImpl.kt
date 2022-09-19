@@ -197,10 +197,35 @@ class GranularSyncPresenterImpl(
         }
         return workManagerController.getWorkInfosForUniqueWorkLiveData(workName)
     }
+    //NO PLAY SERVICES
+    override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
+        statesList = ArrayList()
+        states = MutableLiveData()
 
-    override fun initSMSSync() {
         disposable.add(
             smsSyncProvider.getConvertTask()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribeWith(
+                    smsSyncProvider.onConvertingObserver {
+                        updateStateList(it)
+                    }
+                )
+        )
+
+        return states
+    }
+
+    //PLAY SERVICES
+    override fun initSMSSyncPlayServices() {
+        disposable.add(
+            smsSyncProvider.getConvertTask()
+                .filter {
+                    it is ConvertTaskResult.Message
+                }
+                .map { result ->
+                    (result as ConvertTaskResult.Message).smsMessage
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
@@ -214,8 +239,7 @@ class GranularSyncPresenterImpl(
         return smsSyncProvider
     }
 
-/*
-    /*override fun sendSMS() {
+    override fun sendSMS() {
         disposable.add(
             smsSyncProvider.sendSms(
                 doOnNext = { sendingStatus: SmsSendingService.SendingStatus ->
@@ -235,30 +259,29 @@ class GranularSyncPresenterImpl(
                     }
                 )
         )
-    }*/
+    }
 
-   /* override fun onSmsNotAccepted() {
+    override fun onSmsNotAccepted() {
         updateStateList(
             smsSyncProvider.onSmsNotAccepted()
         )
-    }*/
+    }
 
-    /*private fun isLastSendingStateTheSame(sent: Int, total: Int): Boolean {
+    private fun isLastSendingStateTheSame(sent: Int, total: Int): Boolean {
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
             last.sent == sent &&
             last.total == total
-    }*/
+    }
 
-   /* private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {
+    private fun updateStateList(currentStatus: SmsSendingService.SendingStatus) {
         if (currentStatus.state != SmsSendingService.State.ERROR) {
             statesList.clear()
         }
         statesList.add(currentStatus)
         states.postValue(statesList)
-    }*/
-*/
+    }
 
     @VisibleForTesting
     fun getTitle(): Single<String> {

@@ -2,9 +2,17 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import com.google.android.gms.tasks.Task
+import io.reactivex.Completable
+import io.reactivex.Single
+import io.reactivex.observers.DisposableCompletableObserver
+import io.reactivex.observers.DisposableSingleObserver
+import java.util.Date
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
+import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
+import timber.log.Timber
 
 class SMSSyncProviderImpl(
     override val d2: D2,
@@ -25,8 +33,7 @@ class SMSSyncProviderImpl(
     override fun getSSMSIntentFilter(): String? = null
     override fun getSendPermission(): String? = null
 
-    /*
-    fun sendSms(
+    override fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
         doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
     ): Completable {
@@ -83,15 +90,37 @@ class SMSSyncProviderImpl(
             }
     }
 
-    fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit) =
-            object : DisposableSingleObserver<Int>() {
-            override fun onSuccess(count: Int) {
-                onComplete(
-                    reportState(SmsSendingService.State.CONVERTED, 0, count)
-                )
-                onComplete(
-                    reportState(SmsSendingService.State.WAITING_COUNT_CONFIRMATION, 0, count)
-                )
+    override fun convertSimpleEvent(): Single<ConvertTaskResult> {
+        return smsSender.convertSimpleEvent(recordUid).map { count -> ConvertTaskResult.Count(count) }
+    }
+
+    override fun convertTrackerEvent(): Single<ConvertTaskResult> {
+        return smsSender.convertTrackerEvent(recordUid).map { count -> ConvertTaskResult.Count(count) }
+    }
+
+    override fun convertEnrollment(): Single<ConvertTaskResult> {
+        return smsSender.convertEnrollment(recordUid).map { count -> ConvertTaskResult.Count(count) }
+    }
+
+    override fun convertDataSet(): Single<ConvertTaskResult> {
+        return smsSender.convertDataSet(recordUid,dvOrgUnit,dvPeriodId,dvAttrCombo).map { count -> ConvertTaskResult.Count(count) }
+    }
+
+    override fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit) =
+            object : DisposableSingleObserver<ConvertTaskResult>() {
+            override fun onSuccess(countResult: ConvertTaskResult) {
+                if(countResult is ConvertTaskResult.Count) {
+                    onComplete(
+                        reportState(SmsSendingService.State.CONVERTED, 0, countResult.smsCount)
+                    )
+                    onComplete(
+                        reportState(
+                            SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
+                            0,
+                            countResult.smsCount
+                        )
+                    )
+                }
             }
 
             override fun onError(e: Throwable) {
@@ -101,7 +130,7 @@ class SMSSyncProviderImpl(
             }
         }
 
-    fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit) =
+    override fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit) =
         object : DisposableCompletableObserver() {
             override fun onError(e: Throwable) {
                 onComplete(reportError(e))
@@ -133,7 +162,7 @@ class SMSSyncProviderImpl(
         )
     }
 
-    fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
+    override fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
         return reportState(SmsSendingService.State.COUNT_NOT_ACCEPTED, 0, 0)
-    }*/
+    }
 }

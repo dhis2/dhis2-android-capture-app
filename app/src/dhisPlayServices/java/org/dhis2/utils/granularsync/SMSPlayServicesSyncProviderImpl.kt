@@ -42,6 +42,13 @@ class SMSPlayServicesSyncProviderImpl(
     override val resourceManager: ResourceManager
 ) : SMSSyncProvider {
 
+    private val smsReceiver: BroadcastReceiver = object : SmsResponseReceiver() {
+        override fun onConsentIntentReceived(intent: Intent) {
+            smsRetrieverResultLauncher?.launch(intent)
+            TODO("Not yet implemented")
+        }
+    }
+
     override val smsSender: SmsSubmitCase by lazy {
         d2.smsModule().smsSubmitCase()
     }
@@ -55,4 +62,33 @@ class SMSPlayServicesSyncProviderImpl(
     override fun getSSMSIntentFilter() = SmsRetriever.SMS_RETRIEVED_ACTION
 
     override fun getSendPermission() = SmsRetriever.SEND_PERMISSION
+
+    override fun registerSMSReceiver(context: Context, sendPermission: String?){
+        context.registerReceiver(
+            smsReceiver,
+            IntentFilter(presenter.getSmsProvider().getSSMSIntentFilter()),
+            sendPermission,
+            null
+        )
+    }
+
+    fun unregisterSMSReceiver(context: Context){
+        context?.unregisterReceiver(smsReceiver)
+    }
+
+    override fun convertSimpleEvent(): Single<ConvertTaskResult> {
+        return smsSender.compressSimpleEvent(recordUid).map { msg -> ConvertTaskResult.Message(msg) }
+    }
+
+    override fun convertTrackerEvent(): Single<ConvertTaskResult> {
+        return smsSender.compressTrackerEvent(recordUid).map { msg -> ConvertTaskResult.Message(msg) }
+    }
+
+    override fun convertEnrollment(): Single<ConvertTaskResult> {
+        return smsSender.compressEnrollment(recordUid).map { msg -> ConvertTaskResult.Message(msg) }
+    }
+
+    override fun convertDataSet(): Single<ConvertTaskResult> {
+        return smsSender.compressDataSet(recordUid,dvOrgUnit,dvPeriodId,dvAttrCombo).map { msg -> ConvertTaskResult.Message(msg) }
+    }
 }
