@@ -1,6 +1,7 @@
 package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
@@ -62,15 +63,16 @@ fun DataSetTableScreen(
 
     val focusManager = LocalFocusManager.current
 
-    var finishEdition by remember { mutableStateOf(false) }
+    var finishEdition by remember { mutableStateOf(true) }
 
     fun finishEdition() {
+        focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
         onEdition(false)
     }
 
     fun collapseBottomSheet() {
-        focusManager.clearFocus(true)
+        finishEdition = false
         coroutineScope.launch {
             bottomSheetState.bottomSheetState.collapseIfExpanded()
         }
@@ -165,6 +167,7 @@ fun DataSetTableScreen(
                     currentCell?.let {
                         onSaveValue(it)
                     }
+                    saveClicked = true
                 },
                 onNextSelected = {
                     nextSelected = true
@@ -193,7 +196,7 @@ fun DataSetTableScreen(
                 }
 
                 override fun onClick(tableCell: TableCell) {
-                    currentCell?.let {
+                    currentCell?.takeIf { it != tableCell }?.let {
                         onSaveValue(it)
                     }
                     onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
@@ -221,14 +224,14 @@ fun DataSetTableScreen(
 @OptIn(ExperimentalMaterialApi::class)
 private suspend fun BottomSheetState.collapseIfExpanded() {
     if (isExpanded) {
-        collapse()
+        animateTo(BottomSheetValue.Collapsed, tween(1000))
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
     if (isCollapsed) {
-        expand()
         onExpand()
+        animateTo(BottomSheetValue.Expanded, tween(1000))
     }
 }
