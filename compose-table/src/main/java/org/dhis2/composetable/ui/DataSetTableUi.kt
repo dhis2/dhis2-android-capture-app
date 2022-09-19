@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -420,7 +421,8 @@ fun ItemValues(
                     } else {
                         cellValues[columnIndex]
                     } ?: TableCell(value = "")
-                val background = cellStyle(cellValue).backgroundColor()
+                val style = cellStyle(cellValue)
+                val backgroundColor = TableTheme.colors.disabledCellBackground
                 TableCell(
                     modifier = Modifier
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
@@ -428,11 +430,14 @@ fun ItemValues(
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
                         .semantics {
-                            rowBackground = background
+                            rowBackground = style.backgroundColor()
+                            cellSelected = style.mainColor() != Color.Transparent
+                            hasError = cellValue.error != null
+                            isBlocked = style.backgroundColor() == backgroundColor
                         }
                         .cellBorder(
-                            borderColor = cellStyle(cellValue).mainColor(),
-                            backgroundColor = cellStyle(cellValue).backgroundColor()
+                            borderColor = style.mainColor(),
+                            backgroundColor = style.backgroundColor()
                         )
                         .focusable(),
                     cellValue = cellValue,
@@ -477,6 +482,7 @@ fun TableCell(
         nonEditableCellLayer()
         Text(
             modifier = Modifier
+                .testTag(CELL_VALUE_TEST_TAG)
                 .align(Alignment.Center)
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp),
@@ -509,6 +515,7 @@ fun TableCell(
                 painter = painterResource(id = R.drawable.ic_mandatory),
                 contentDescription = "mandatory",
                 modifier = Modifier
+                    .testTag(MANDATORY_ICON_TEST_TAG)
                     .padding(4.dp)
                     .width(6.dp)
                     .height(6.dp)
@@ -525,6 +532,7 @@ fun TableCell(
         if (cellValue.error != null) {
             Divider(
                 modifier = Modifier
+                    .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
                 color = TableTheme.colors.errorColor
@@ -757,13 +765,13 @@ private fun TableList(
                         )
                     }
                 }
-                /*stickyHeader {
+                stickyHeader {
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
                             .background(color = Color.White)
                     )
-                }*/
+                }
             }
         }
     }
@@ -1029,6 +1037,10 @@ const val ROW_TEST_TAG = "ROW_TEST_TAG_"
 const val CELL_TEST_TAG = "CELL_TEST_TAG_"
 const val INFO_ICON = "infoIcon"
 const val HEADER_CELL = "HEADER_CELL"
+const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
+const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
+const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
+const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
@@ -1049,3 +1061,11 @@ val RowIndexHeader = SemanticsPropertyKey<Int>("RowIndexHeader")
 var SemanticsPropertyReceiver.rowIndexHeader by RowIndexHeader
 val TableIdColumnHeader = SemanticsPropertyKey<String>("TableIdColumnHeader")
 var SemanticsPropertyReceiver.tableIdColumnHeader by TableIdColumnHeader
+
+/* Cell */
+val CellSelected = SemanticsPropertyKey<Boolean>("CellSelected")
+var SemanticsPropertyReceiver.cellSelected by CellSelected
+val HasError = SemanticsPropertyKey<Boolean>("HasError")
+var SemanticsPropertyReceiver.hasError by HasError
+val IsBlocked = SemanticsPropertyKey<Boolean>("IsBlocked")
+var SemanticsPropertyReceiver.isBlocked by IsBlocked

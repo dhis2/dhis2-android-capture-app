@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.model.FakeTableModels
@@ -34,7 +32,6 @@ class RowTableTest {
 
         initTable(fakeModel)
 
-        composeTestRule.onRoot().printToLog(COMPOSE_TREE)
         val firstTableId = fakeModel[0].id!!
 
         tableRobot(composeTestRule) {
@@ -65,8 +62,6 @@ class RowTableTest {
         ).getMultiHeaderTables()
 
         initTable(fakeModel)
-
-        composeTestRule.onRoot().printToLog(COMPOSE_TREE)
 
         val firstTableId = fakeModel[0].id!!
         val secondTableId = fakeModel[1].id!!

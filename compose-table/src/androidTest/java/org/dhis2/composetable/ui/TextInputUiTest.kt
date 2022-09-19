@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
+import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
 import org.junit.Rule
@@ -47,6 +47,17 @@ class TextInputUiTest {
             assertClickOnEditOpensInputKeyboard()
             assertClickOnSaveHidesKeyboardAndSaveValue(expectedValue)
             assert(cellToSave?.value == expectedValue)
+        }
+    }
+
+    @Test
+    fun shouldSetCorrectColorAndMessageIfHasError() {
+        composeTestRule.setContent {
+            TextInputUiTestScreen { }
+        }
+
+        tableRobot(composeTestRule) {
+            assertCellWithErrorSetsErrorMessage(0,1, input_error_message)
         }
     }
 
@@ -113,7 +124,8 @@ class TextInputUiTest {
                             id = tableCell.id!!,
                             mainLabel = "Main Label",
                             secondaryLabels = listOf("Second Label 1", "Second Label 2"),
-                            tableCell.value
+                            tableCell.value,
+                            error = currentCell?.error
                         )
                         coroutineScope.launch {
                             if (bottomSheetState.bottomSheetState.isCollapsed) {

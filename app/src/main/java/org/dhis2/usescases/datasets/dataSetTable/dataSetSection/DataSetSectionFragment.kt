@@ -21,6 +21,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
+import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -39,6 +40,7 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
@@ -115,23 +117,25 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 binding = it
                 if (presenterFragment.isComposeTableEnable()) {
                     binding.tables.setContent {
-                        val tableData by presenterFragment.tableData()
-                            .observeAsState(emptyList())
-                        DataSetTableScreen(
-                            tableData = tableData,
-                            onCellClick = { cell ->
-                                presenterFragment.onCellClick(cell = cell)
-                            },
-                            onEdition = { isEditing ->
-                                presenter.editingCellValue(isEditing)
-                            },
-                            onCellValueChange = { cell ->
-                                presenterFragment.onCellValueChanged(cell)
-                            },
-                            onSaveValue = { cell ->
-                                presenterFragment.onSaveValueChange(cell)
-                            }
-                        )
+                        MdcTheme {
+                            val tableData by presenterFragment.tableData()
+                                .observeAsState(emptyList())
+                            DataSetTableScreen(
+                                tableData = tableData,
+                                onCellClick = { _, cell ->
+                                    presenterFragment.onCellClick(cell = cell)
+                                },
+                                onEdition = { isEditing ->
+                                    presenter.editingCellValue(isEditing)
+                                },
+                                onCellValueChange = { cell ->
+                                    presenterFragment.onCellValueChanged(cell)
+                                },
+                                onSaveValue = { cell ->
+                                    presenterFragment.onSaveValueChange(cell)
+                                }
+                            )
+                        }
                     }
                 }
             }

@@ -65,6 +65,7 @@
             "row": 0,
             "column": 0,
             "value": "hi",
+            "mandatory": true,
             "dropDownOptions": []
           },
           "1": {
@@ -780,7 +781,8 @@
             "id": "CgJ9UN6mh5c_F6ULrynnld7",
             "row": 2,
             "column": 0,
-            "value": null,
+            "value": "Error",
+            "error": "This is an error",
             "dropDownOptions": []
           },
           "1": {

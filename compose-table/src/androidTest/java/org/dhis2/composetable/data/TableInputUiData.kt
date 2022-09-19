@@ -8,6 +8,8 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 
+const val input_error_message = "This has an error"
+
 val tableData = listOf(
     TableModel(
         id = "table",
@@ -36,7 +38,8 @@ val tableData = listOf(
                     row = 0
                 ),
                 values = mapOf(
-                    Pair(0, TableCell("00", 0, 0, "12"))
+                    Pair(0, TableCell("00", 0, 0, "12")),
+                    Pair(1, TableCell("01", 0, 1, value = "-1", error = input_error_message))
                 ),
             ),
             TableRowModel(
