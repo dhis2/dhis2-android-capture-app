@@ -191,6 +191,7 @@ public class ReviewStockActivity extends BaseActivity {
                 this,
                 getIntent().getParcelableExtra(INTENT_EXTRA_APP_CONFIG)
         );
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(INTENT_EXTRA_MESSAGE, getString(R.string.transaction_completed));
         ActivityManager.startActivity(this, intent, true);

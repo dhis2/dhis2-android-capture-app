@@ -4,14 +4,20 @@ import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.TestScheduler
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.setMain
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.AppConfig
@@ -26,7 +32,6 @@ import org.dhis2.android.rtsm.services.UserManager
 import org.dhis2.android.rtsm.services.UserManagerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
-import org.dhis2.android.rtsm.services.scheduler.TestSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
@@ -37,7 +42,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -66,8 +70,9 @@ class HomeViewModelUnitTest {
     private lateinit var userManager: UserManager
     private lateinit var schedulerProvider: BaseSchedulerProvider
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Mock
-    private lateinit var testSchedulerProvider: TestSchedulerProvider
+    private lateinit var testSchedulerProvider: TestCoroutineScheduler
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
@@ -96,8 +101,13 @@ class HomeViewModelUnitTest {
     @Captor
     private lateinit var destinationsArgumentCaptor: ArgumentCaptor<OperationState<List<Option>>>
 
+    @OptIn(DelicateCoroutinesApi::class)
+    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
+        Dispatchers.setMain(mainThreadSurrogate)
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
@@ -114,7 +124,7 @@ class HomeViewModelUnitTest {
         destinations = DestinationFactory.getListOf(5)
 
         schedulerProvider = TrampolineSchedulerProvider()
-        testSchedulerProvider = TestSchedulerProvider(TestScheduler())
+        testSchedulerProvider = TestCoroutineScheduler()
 
         doReturn(
             Single.just(facilities)
@@ -129,12 +139,12 @@ class HomeViewModelUnitTest {
             schedulerProvider,
             preferenceProvider,
             metadataManager,
-            getStateHandle(),
-            syncManager
+            syncManager,
+            getStateHandle()
         )
 
-        viewModel.facilities.observeForever(facilitiesObserver)
-        viewModel.destinationsList.observeForever(destinationsObserver)
+        viewModel.facilities.asLiveData().observeForever(facilitiesObserver)
+        viewModel.destinationsList.asLiveData().observeForever(destinationsObserver)
     }
 
     private fun getStateHandle(): SavedStateHandle {
@@ -168,14 +178,12 @@ class HomeViewModelUnitTest {
     fun init_shouldLoadDestinations() {
         verify(metadataManager).destinations(appConfig.distributedTo)
 
-        viewModel.destinationsList.observeForever {
-            assertEquals(it, OperationState.Success(destinations))
-        }
+        assertEquals(viewModel.destinationsList.value, OperationState.Success(destinations))
     }
 
     @Test
-    fun init_shouldNotSetDefaultTransaction() {
-        assertNull(viewModel.transactionType.value)
+    fun init_shouldSetDefaultTransaction() {
+        assertNotNull(viewModel.transactionType.value)
     }
 
     @Test
@@ -217,11 +225,6 @@ class HomeViewModelUnitTest {
     fun isDistributionIsNegative_whenCorrectionIsSet() {
         viewModel.selectTransaction(TransactionType.CORRECTION)
         assertEquals(viewModel.isDistribution.value, false)
-    }
-
-    @Test
-    fun cannotManageStock_ifNoTransactionIsSelected() {
-        assertEquals(viewModel.checkForFieldErrors(), R.string.mandatory_transaction_selection)
     }
 
     @Test
@@ -359,14 +362,6 @@ class HomeViewModelUnitTest {
     }
 
     @Test(expected = UserIntentParcelCreationException::class)
-    fun missingTransactionType_cannotCreateUserIntent() {
-        viewModel.setFacility(facilities[1])
-        viewModel.setTransactionDate(getTime())
-
-        viewModel.getData()
-    }
-
-    @Test(expected = UserIntentParcelCreationException::class)
     fun distributionWithMissingFacility_cannotCreateUserIntent() {
         viewModel.selectTransaction(TransactionType.DISTRIBUTION)
         viewModel.setTransactionDate(getTime())
@@ -466,7 +461,7 @@ class HomeViewModelUnitTest {
     fun shouldChangeToolbarTitle_forCorrection() {
         viewModel.setToolbarTitle(TransactionType.CORRECTION)
 
-        val title = viewModel.toolbarTitle.value?.name
+        val title = viewModel.toolbarTitle.value.name
         assertEquals(TransactionType.CORRECTION.name, title)
     }
 
@@ -483,14 +478,14 @@ class HomeViewModelUnitTest {
 
         val facilityName = viewModel.getData().facility.name
         val distributedTo = viewModel.getData().distributedTo?.name
-        val transactionType = viewModel.getData().transactionType
 
         if (distributedTo != null) {
-            viewModel.setSubtitle(facilityName, distributedTo, transactionType)
-            println("${viewModel.toolbarSubtitle.value}")
+            viewModel.fromFacilitiesLabel(facilityName)
+            viewModel.deliveryToLabel(distributedTo)
         }
 
-        assertNotNull(viewModel.toolbarSubtitle.value)
+        assertNotNull(viewModel.fromFacility.value)
+        assertNotNull(viewModel.deliveryTo.value)
     }
 
     @Test
@@ -503,11 +498,10 @@ class HomeViewModelUnitTest {
         viewModel.setTransactionDate(getTime(now))
 
         val facilityName = viewModel.getData().facility.name
-        val transactionType = viewModel.getData().transactionType
 
-        viewModel.setSubtitle(facilityName, "", transactionType)
+        viewModel.fromFacilitiesLabel(facilityName)
 
-        assertNotNull(viewModel.toolbarSubtitle.value)
+        assertNotNull(viewModel.fromFacility.value)
     }
 
     @Test
@@ -520,10 +514,9 @@ class HomeViewModelUnitTest {
         viewModel.setTransactionDate(getTime(now))
 
         val facilityName = viewModel.getData().facility.name
-        val transactionType = viewModel.getData().transactionType
 
-        viewModel.setSubtitle(facilityName, "", transactionType)
+        viewModel.fromFacilitiesLabel(facilityName)
 
-        assertNotNull(viewModel.toolbarSubtitle.value)
+        assertNotNull(viewModel.fromFacility.value)
     }
 }
