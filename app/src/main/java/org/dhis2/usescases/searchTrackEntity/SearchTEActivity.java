@@ -72,6 +72,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Inject
     SearchNavigator searchNavigator;
 
+    private static final String INITIAL_PAGE = "initialPage";
+
     private String initialProgram;
     private String tEType;
     private Map<String, String> initialQuery;
@@ -82,7 +84,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private SearchTEIViewModel viewModel;
 
-    public boolean initSearchNeeded = true;
+    private boolean initSearchNeeded = true;
     private FormView formView;
     public SearchTEComponent searchComponent;
 
@@ -115,7 +117,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         initializeVariables(savedInstanceState);
-        inject(savedInstanceState);
+        inject();
 
         super.onCreate(savedInstanceState);
 
@@ -132,8 +134,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return Unit.INSTANCE;
                 });
         int initialPage = 0;
-        if (savedInstanceState != null && savedInstanceState.containsKey("initialPage")) {
-            initialPage = savedInstanceState.getInt("initialPage");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INITIAL_PAGE)) {
+            initialPage = savedInstanceState.getInt(INITIAL_PAGE);
             binding.setNavigationInitialPage(initialPage);
         }
         binding.setPresenter(presenter);
@@ -192,7 +194,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initialQuery = SearchTEExtraKt.queryDataExtra(this, savedInstanceState);
     }
 
-    private void inject(Bundle savedInstanceState) {
+    private void inject() {
         searchComponent = ((App) getApplicationContext()).userComponent().plus(
                 new SearchTEModule(this,
                         tEType,
@@ -206,7 +208,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showSnackbar(View view, String message, String actionText) {
         Snackbar snackbar = Snackbar.make(
                 view,
-                "",
+                actionText,
                 BaseTransientBottomBar.LENGTH_LONG
         );
         SnackbarMinAttrBinding snackbarBinding = SnackbarMinAttrBinding.inflate(getLayoutInflater());
@@ -296,7 +298,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, (Serializable) viewModel.getQueryData());
-        outState.putInt("initialPage", binding.navigationBar.currentPage());
+        outState.putInt(INITIAL_PAGE, binding.navigationBar.currentPage());
     }
 
     private void openSyncDialog() {
@@ -422,9 +424,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void observeScreenState() {
-        viewModel.getScreenState().observe(this, screenState -> {
-            searchScreenConfigurator.configure(screenState);
-        });
+        viewModel.getScreenState().observe(this, screenState ->
+                searchScreenConfigurator.configure(screenState));
     }
 
     private void observeDownload() {
@@ -440,11 +441,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             showBreakTheGlass(teiUid, enrollmentUid);
                             return Unit.INSTANCE;
                         },
-                        (teiUid) -> {
+                        teiUid -> {
                             couldNotDownload(presenter.getTrackedEntityName().displayName());
                             return Unit.INSTANCE;
                         },
-                        (errorMessage) -> {
+                        errorMessage -> {
                             displayMessage(errorMessage);
                             return Unit.INSTANCE;
                         }
@@ -605,6 +606,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), getString(R.string.downloading), Snackbar.LENGTH_SHORT).show();
+        return progress -> Snackbar.make(
+                binding.getRoot(),
+                getString(R.string.downloading),
+                BaseTransientBottomBar.LENGTH_SHORT
+        ).show();
     }
 }
