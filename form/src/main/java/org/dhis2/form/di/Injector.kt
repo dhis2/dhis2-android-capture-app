@@ -46,13 +46,11 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 object Injector {
     fun provideFormViewModelFactory(
         context: Context,
-        entryMode: EntryMode,
         repositoryRecords: FormRepositoryRecords
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
-                entryMode,
                 repositoryRecords
             ),
             provideDispatchers()
@@ -67,30 +65,29 @@ object Injector {
         )
     }
 
-    private fun provideDispatchers(): DispatcherProvider {
+    fun provideDispatchers(): DispatcherProvider {
         return FormDispatcher()
     }
 
     private fun provideFormRepository(
         context: Context,
-        entryMode: EntryMode?,
         repositoryRecords: FormRepositoryRecords
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
                 context = context,
                 recordUid = repositoryRecords.recordUid,
-                entryMode = entryMode
+                entryMode = repositoryRecords.entryMode
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
             displayNameProvider = provideDisplayNameProvider(),
             dataEntryRepository = provideDataEntryRepository(
-                entryMode = entryMode,
+                entryMode = repositoryRecords.entryMode,
                 context = context,
                 repositoryRecords = repositoryRecords
             ),
             ruleEngineRepository = provideRuleEngineRepository(
-                entryMode,
+                repositoryRecords.entryMode,
                 repositoryRecords.recordUid
             ),
             rulesUtilsProvider = provideRulesUtilsProvider(),

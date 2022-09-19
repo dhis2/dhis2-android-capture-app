@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.form.di.Injector
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetDialogViewModel
 import org.dhis2.form.model.OptionSetDialogViewModelFactory
@@ -22,7 +21,6 @@ const val TAG = "OptionSetDialog"
 
 class OptionSetDialog(
     private val field: FieldUiModel,
-    private val dispatchers: DispatcherProvider,
     private val onClearValue: () -> Unit,
     private val onSaveOptionValue: (optionCode: String?) -> Unit
 ) : DialogFragment() {
@@ -31,7 +29,7 @@ class OptionSetDialog(
         OptionSetDialogViewModelFactory(
             Injector.provideOptionSetDialog(),
             field,
-            dispatchers
+            Injector.provideDispatchers()
         )
     }
 

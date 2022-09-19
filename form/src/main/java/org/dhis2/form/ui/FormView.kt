@@ -24,13 +24,12 @@ import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
-import java.io.File
-import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
@@ -56,8 +55,10 @@ import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.databinding.ViewFormBinding
+import org.dhis2.form.di.Injector
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
@@ -80,9 +81,10 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
+import java.io.File
+import java.util.Calendar
 
 class FormView : Fragment() {
-    private lateinit var formRepository: FormRepository
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
     private var locationProvider: LocationProvider? = null
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
@@ -94,7 +96,6 @@ class FormView : Fragment() {
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
-    private lateinit var dispatchers: DispatcherProvider
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -190,7 +191,12 @@ class FormView : Fragment() {
             }
         }
 
-    private lateinit var viewModel: FormViewModel
+    private val viewModel: FormViewModel by viewModels {
+        Injector.provideFormViewModelFactory(
+            context = requireContext(),
+            repositoryRecords = arguments?.get(RECORDS) as FormRepositoryRecords
+        )
+    }
 
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
@@ -232,7 +238,7 @@ class FormView : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = FormViewModel(formRepository, dispatchers)
+//        viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
@@ -792,8 +798,7 @@ class FormView : Fragment() {
 
     private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
         OptionSetDialog(
-            uiEvent.field,
-            dispatchers,
+            field = uiEvent.field,
             onClearValue = {
                 intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
             }
@@ -849,8 +854,6 @@ class FormView : Fragment() {
         formRepository: FormRepository,
         dispatchers: DispatcherProvider
     ) {
-        this.formRepository = formRepository
-        this.dispatchers = dispatchers
     }
 
     internal fun setCallbackConfiguration(
@@ -872,6 +875,7 @@ class FormView : Fragment() {
     }
 
     class Builder {
+        private var records: FormRepositoryRecords? = null
         private var fragmentManager: FragmentManager? = null
         private var repository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
@@ -968,12 +972,15 @@ class FormView : Fragment() {
         fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
             apply { this.onFieldItemsRendered = callback }
 
+        fun setRecords(records: FormRepositoryRecords) =
+            apply { this.records = records }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
             }
-            if (repository == null) {
-                throw Exception("You need to call persistence method and pass a FormRepository")
+            if (records == null) {
+                throw Exception("You need to set record information in order to persist your data")
             }
             fragmentManager!!.fragmentFactory =
                 FormViewFragmentFactory(
@@ -992,10 +999,20 @@ class FormView : Fragment() {
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 
-            return fragmentManager!!.fragmentFactory.instantiate(
+            val fragment = fragmentManager!!.fragmentFactory.instantiate(
                 this.javaClass.classLoader!!,
                 FormView::class.java.name
             ) as FormView
+
+            val bundle = Bundle().apply {
+                putSerializable(RECORDS, records)
+            }
+            fragment.arguments = bundle
+            return fragment
         }
+    }
+
+    companion object {
+        const val RECORDS = "RECORDS"
     }
 }
