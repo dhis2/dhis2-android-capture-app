@@ -43,6 +43,7 @@
     <color name="table_text_color">#2E384D</color>
     <color name="button_highlight_color">#D685CDE8</color>
 
+    <color name="toolbar_subtitle">#8AFFFFFF</color>
     <color name="label_text_color">#2E384D</color>
     <color name="normal_text_color">#757D84</color>
     <color name="recent_activity_transaction_text_color">#000000</color>

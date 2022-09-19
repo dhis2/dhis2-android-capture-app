@@ -1,7 +1,5 @@
 package org.dhis2.android.rtsm.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -9,8 +7,10 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.commons.Constants
+import org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
@@ -34,47 +34,51 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
-    savedState: SavedStateHandle,
-    private val syncManager: SyncManager
+    private val syncManager: SyncManager,
+    savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
     val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
 
-    private val _transactionType = MutableLiveData<TransactionType>()
-    val transactionType: LiveData<TransactionType> get() = _transactionType
+    private val _transactionType = MutableStateFlow(TransactionType.DISTRIBUTION)
+    val transactionType: StateFlow<TransactionType> get() = _transactionType
 
-    private val _isDistribution: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDistribution: LiveData<Boolean>
+    private val _isDistribution = MutableStateFlow(true)
+    val isDistribution: StateFlow<Boolean>
         get() = _isDistribution
 
-    private val _facility: MutableLiveData<OrganisationUnit> = MutableLiveData()
-    val facility: LiveData<OrganisationUnit>
+    private val _facility = MutableStateFlow<OrganisationUnit?>(null)
+    val facility: StateFlow<OrganisationUnit?>
         get() = _facility
 
-    private val _transactionDate: MutableLiveData<LocalDateTime> =
-        MutableLiveData(LocalDateTime.now())
-    val transactionDate: LiveData<LocalDateTime>
+    private val _transactionDate = MutableStateFlow(LocalDateTime.now())
+    val transactionDate: StateFlow<LocalDateTime>
         get() = _transactionDate
 
-    private val _destination: MutableLiveData<Option?> = MutableLiveData(null)
-    val destination: LiveData<Option?>
+    private val _destination = MutableStateFlow<Option?>(null)
+    val destination: StateFlow<Option?>
         get() = _destination
 
-    private val _facilities = MutableLiveData<OperationState<List<OrganisationUnit>>>()
-    val facilities: LiveData<OperationState<List<OrganisationUnit>>>
+    private val _facilities =
+        MutableStateFlow<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
+    val facilities: StateFlow<OperationState<List<OrganisationUnit>>>
         get() = _facilities
 
-    private val _destinations = MutableLiveData<OperationState<List<Option>>>()
-    val destinationsList: LiveData<OperationState<List<Option>>>
+    private val _destinations =
+        MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
+    val destinationsList: StateFlow<OperationState<List<Option>>>
         get() = _destinations
 
     // Toolbar section variables
-    private val _toolbarTitle = MutableLiveData<TransactionType>()
-    val toolbarTitle: LiveData<TransactionType> get() = _toolbarTitle
+    private val _toolbarTitle = MutableStateFlow(TransactionType.DISTRIBUTION)
+    val toolbarTitle: StateFlow<TransactionType> get() = _toolbarTitle
 
-    private val _toolbarSubtitle = MutableLiveData<String>()
-    val toolbarSubtitle: LiveData<String> get() = _toolbarSubtitle
+    private val _fromFacility = MutableStateFlow("From...")
+    val fromFacility: StateFlow<String> get() = _fromFacility
+
+    private val _deliveryTo = MutableStateFlow<String?>(null)
+    val deliveryTo: StateFlow<String?> get() = _deliveryTo
 
     init {
         loadFacilities()
@@ -82,40 +86,36 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadDestinations() {
-        _destinations.postValue(OperationState.Loading)
-
         disposable.add(
             metadataManager.destinations(config.distributedTo)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { _destinations.postValue(OperationState.Success<List<Option>>(it)) },
+                    { _destinations.value = (OperationState.Success<List<Option>>(it)) },
                     {
                         it.printStackTrace()
-                        _destinations.postValue(
+                        _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
-                        )
+                            )
                     }
                 )
         )
     }
 
     private fun loadFacilities() {
-        _facilities.postValue(OperationState.Loading)
-
         disposable.add(
             metadataManager.facilities(config.program)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        _facilities.postValue(OperationState.Success(it))
+                        _facilities.value = (OperationState.Success(it))
 
-                        if (it.size == 1) _facility.postValue(it[0])
+                        if (it.size == 1) _facility.value = (it[0])
                     },
                     {
                         it.printStackTrace()
-                        _facilities.postValue(OperationState.Error(R.string.facilities_load_error))
+                        _facilities.value = (OperationState.Error(R.string.facilities_load_error))
                     }
                 )
         )
@@ -129,6 +129,7 @@ class HomeViewModel @Inject constructor(
         // so ensure you clear it for others if it has been set
         if (type != TransactionType.DISTRIBUTION) {
             _destination.value = null
+            _deliveryTo.value = null
         }
     }
 
@@ -137,7 +138,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setDestination(destination: Option?) {
-        if (isDistribution.value == false) {
+        if (!isDistribution.value) {
             throw UnsupportedOperationException(
                 "Cannot set 'distributed to' for non-distribution transactions"
             )
@@ -147,9 +148,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun checkForFieldErrors(): Int? {
-        return if (_transactionType.value == null) {
-            R.string.mandatory_transaction_selection
-        } else if (_facility.value == null) {
+        return if (_facility.value == null) {
             R.string.mandatory_facility_selection
         } else if (_transactionDate.value == null) {
             R.string.mandatory_transaction_date_selection
@@ -163,28 +162,16 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getData(): Transaction {
-        if (transactionType.value == null) {
-            throw UserIntentParcelCreationException(
-                "Unable to create parcel with empty transaction type"
-            )
-        }
-
         if (facility.value == null) {
             throw UserIntentParcelCreationException(
                 "Unable to create parcel with empty facility"
             )
         }
 
-        if (transactionDate.value == null) {
-            throw UserIntentParcelCreationException(
-                "Unable to create parcel with empty transaction date"
-            )
-        }
-
         return Transaction(
-            transactionType.value!!,
+            transactionType.value,
             ParcelUtils.facilityToIdentifiableModelParcel(facility.value!!),
-            transactionDate.value!!.humanReadableDate(),
+            transactionDate.value.humanReadableDate(),
             destination.value?.let { ParcelUtils.distributedTo_ToIdentifiableModelParcel(it) }
         )
     }
@@ -195,36 +182,26 @@ class HomeViewModel @Inject constructor(
             .toLocalDateTime()
     }
 
-    @JvmName("getToolbarTitle1")
-    fun getToolbarTitle(): LiveData<TransactionType> {
-        return toolbarTitle
-    }
-
     fun setToolbarTitle(transactionType: TransactionType) {
         _toolbarTitle.value = transactionType
     }
 
-    fun setSubtitle(from: String, to: String, type: TransactionType) {
-        when (type) {
-            TransactionType.DISTRIBUTION ->
-                if (!to.equals("", ignoreCase = true)
-                ) _toolbarSubtitle.value = "From $from -> To $to"
-                else if (!from.equals("", ignoreCase = true)
-                ) _toolbarSubtitle.value = "From $from"
-            TransactionType.DISCARD ->
-                if (!from.equals("", ignoreCase = true)
-                ) _toolbarSubtitle.value = "From $from"
-            TransactionType.CORRECTION ->
-                if (!from.equals(
-                    "",
-                    ignoreCase = true
-                )
-                ) _toolbarSubtitle.value = "${R.string.from} $from"
+    fun fromFacilitiesLabel(from: String) {
+        when (transactionType.value) {
+            TransactionType.DISTRIBUTION -> _fromFacility.value = "From $from"
+            TransactionType.DISCARD -> _fromFacility.value = "From $from"
+            TransactionType.CORRECTION -> _fromFacility.value = "From $from"
+        }
+    }
+
+    fun deliveryToLabel(to: String) {
+        if (transactionType.value == TransactionType.DISTRIBUTION) {
+            _deliveryTo.value = "To $to"
         }
     }
 
     fun syncData() {
         syncManager.dataSync()
     }
-    fun getSyncDataStatus() = syncManager.getSyncStatus(Constants.INSTANT_DATA_SYNC)
+    fun getSyncDataStatus() = syncManager.getSyncStatus(INSTANT_DATA_SYNC)
 }
