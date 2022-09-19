@@ -634,10 +634,13 @@ private fun TableList(
         }
 
         LazyColumn(
-            modifier = Modifier.padding(
-                horizontal = LocalTableDimensions.current.tableHorizontalPadding,
-                vertical = LocalTableDimensions.current.tableVerticalPadding
-            ),
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxHeight()
+                .padding(
+                    horizontal = LocalTableDimensions.current.tableHorizontalPadding,
+                    vertical = LocalTableDimensions.current.tableVerticalPadding
+                ),
             contentPadding = PaddingValues(bottom = 200.dp),
             state = verticalScrollState
         ) {
