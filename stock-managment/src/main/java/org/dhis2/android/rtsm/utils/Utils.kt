@@ -45,5 +45,13 @@ class Utils {
                 s.replace("\\s".toRegex(), "")
             } else s
         }
+
+        @JvmStatic
+        fun capitalizeText(text: String): String {
+            return text.lowercase()
+                .replaceFirstChar {
+                    it.uppercase()
+                }
+        }
     }
 }
