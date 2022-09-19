@@ -109,7 +109,7 @@ data class HeaderMeasures(val width: Dp, val height: Dp)
 fun TableModel.areAllValuesEmpty(): Boolean {
     this.tableRows.forEach { it ->
         val result = it.values.values.filterNot { it.value == "" }
-        if (result.isNotEmpty()){
+        if (result.isNotEmpty()) {
             return false
         }
     }
