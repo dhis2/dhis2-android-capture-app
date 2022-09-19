@@ -15,13 +15,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.R;
-import org.dhis2.form.ui.FormView;
+import org.dhis2.commons.Constants;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
-import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.model.DispatcherProvider;
+import org.dhis2.form.model.EventRecords;
+import org.dhis2.form.ui.FormView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.commons.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
@@ -33,12 +32,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Inject
     EventCaptureFormPresenter presenter;
-
-    @Inject
-    FormRepository formRepository;
-
-    @Inject
-    DispatcherProvider coroutineDispatcher;
 
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
@@ -67,9 +60,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         formView = new FormView.Builder()
-                .repository(formRepository)
                 .locationProvider(locationProvider)
-                .dispatcher(coroutineDispatcher)
                 .onLoadingListener(loading -> {
                     if (loading) {
                         activity.showProgress();
@@ -91,6 +82,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     return Unit.INSTANCE;
                 })
                 .factory(activity.getSupportFragmentManager())
+                .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
                 .build();
         activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);

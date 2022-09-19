@@ -20,24 +20,22 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
-import org.dhis2.form.ui.FormView;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.databinding.SnackbarMinAttrBinding;
-import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.model.DispatcherProvider;
-import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.form.model.SearchRecords;
+import org.dhis2.form.ui.FormView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
@@ -47,6 +45,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,13 +67,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     FiltersAdapter filtersAdapter;
 
     @Inject
-    FieldViewModelFactory fieldViewModelFactory;
-    @Inject
-    FormRepository formRepository;
-    @Inject
-    DispatcherProvider dispatchers;
-
-    @Inject
     SearchTeiViewModelFactory viewModelFactory;
 
     @Inject
@@ -82,6 +74,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private String initialProgram;
     private String tEType;
+    private Map<String, String> initialQuery;
 
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
@@ -121,7 +114,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        initializeVariables();
+        initializeVariables(savedInstanceState);
         inject(savedInstanceState);
 
         super.onCreate(savedInstanceState);
@@ -187,7 +180,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         observeDownload();
     }
 
-    private void initializeVariables() {
+    private void initializeVariables(Bundle savedInstanceState) {
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         try {
@@ -196,6 +189,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } catch (Exception e) {
             Timber.d(e);
         }
+        initialQuery = SearchTEExtraKt.queryDataExtra(this, savedInstanceState);
     }
 
     private void inject(Bundle savedInstanceState) {
@@ -204,7 +198,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         tEType,
                         initialProgram,
                         getContext(),
-                        SearchTEExtraKt.queryDataExtra(this, savedInstanceState)
+                        initialQuery
                 ));
         searchComponent.inject(this);
     }
@@ -326,9 +320,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void initSearchForm() {
         formView = new FormView.Builder()
-                .repository(formRepository)
                 .locationProvider(locationProvider)
-                .dispatcher(dispatchers)
                 .onItemChangeListener(action -> {
                     viewModel.updateQueryData(action);
                     return Unit.INSTANCE;
@@ -340,6 +332,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .onFieldItemsRendered(isEmpty -> Unit.INSTANCE)
                 .needToForceUpdate(true)
                 .factory(getSupportFragmentManager())
+                .setRecords(new SearchRecords(
+                        initialProgram,
+                        tEType,
+                        initialQuery
+                ))
                 .build();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.formViewContainer, formView).commit();

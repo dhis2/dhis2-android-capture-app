@@ -18,12 +18,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRepository
-import org.dhis2.form.data.EnrollmentRuleEngineRepository
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryImpl
-import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.RulesRepository
-import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -213,39 +208,6 @@ class EnrollmentModule(
             programRepository,
             teiRepository,
             enrollmentService
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideEnrollmentFormRepository(
-        d2: D2,
-        enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController,
-        dataEntryRepository: EnrollmentRepository,
-        networkUtils: NetworkUtils,
-        resourceManager: ResourceManager
-    ): FormRepository {
-        val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
-        return FormRepositoryImpl(
-            FormValueStore(
-                d2,
-                enrollmentRepository.blockingGet().trackedEntityInstance()!!,
-                EntryMode.ATTR,
-                enrollmentRepository,
-                crashReportController,
-                networkUtils,
-                resourceManager
-            ),
-            fieldErrorMessageProvider,
-            DisplayNameProviderImpl(
-                OptionSetConfiguration(d2),
-                OrgUnitConfiguration(d2)
-            ),
-            dataEntryRepository,
-            EnrollmentRuleEngineRepository(d2, enrollmentUid),
-            RulesUtilsProviderImpl(d2),
-            LegendValueProviderImpl(d2, resourceManager)
         )
     }
 

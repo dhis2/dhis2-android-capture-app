@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanOptions
+import java.io.File
+import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
@@ -49,20 +51,17 @@ import org.dhis2.commons.orgunitcascade.OrgUnitCascadeDialog.CascadeOrgUnitCallb
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormFileProvider
-import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.databinding.ViewFormBinding
 import org.dhis2.form.di.Injector
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.dialog.DataEntryBottomDialog
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
@@ -81,8 +80,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
-import java.io.File
-import java.util.Calendar
 
 class FormView : Fragment() {
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
@@ -238,7 +235,6 @@ class FormView : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        viewModel = FormViewModel(formRepository, dispatchers)
         FormCountingIdlingResource.increment()
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
@@ -850,12 +846,6 @@ class FormView : Fragment() {
         this.resultDialogUiProvider = resultDialogUiProvider
     }
 
-    internal fun setFormConfiguration(
-        formRepository: FormRepository,
-        dispatchers: DispatcherProvider
-    ) {
-    }
-
     internal fun setCallbackConfiguration(
         onItemChangeListener: ((action: RowAction) -> Unit)?,
         onLoadingListener: ((loading: Boolean) -> Unit)?,
@@ -877,12 +867,10 @@ class FormView : Fragment() {
     class Builder {
         private var records: FormRepositoryRecords? = null
         private var fragmentManager: FragmentManager? = null
-        private var repository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
-        private var dispatchers: DispatcherProvider? = null
         private var onFocused: (() -> Unit)? = null
         private var onActivityForResult: (() -> Unit)? = null
         private var onFinishDataEntry: (() -> Unit)? = null
@@ -890,19 +878,6 @@ class FormView : Fragment() {
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
         private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
-
-        /**
-         * If you want to persist the items and it's changes in any sources, please provide an
-         * implementation of the repository with a valueStore.
-         *
-         * IF you don't provide any valueStore in repository constructor, it will be kept in memory.
-         *
-         * NOTE: This step is temporary in order to facilitate refactor, in the future will be
-         * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
-         * library will generate the implementation of the repository.
-         */
-        fun repository(repository: FormRepository) =
-            apply { this.repository = repository }
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -934,12 +909,6 @@ class FormView : Fragment() {
          */
         fun onFocused(callback: () -> Unit) =
             apply { this.onFocused = callback }
-
-        /**
-         * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
-         * a custom one for testing for eg.
-         */
-        fun dispatcher(dispatcher: DispatcherProvider) = apply { this.dispatchers = dispatcher }
 
         /**
          * Set a FragmentManager for instantiating the form view
@@ -984,7 +953,6 @@ class FormView : Fragment() {
             }
             fragmentManager!!.fragmentFactory =
                 FormViewFragmentFactory(
-                    repository!!,
                     locationProvider,
                     onItemChangeListener,
                     needToForceUpdate,
@@ -995,8 +963,7 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    resultDialogUiProvider,
-                    dispatchers = dispatchers ?: FormDispatcher()
+                    resultDialogUiProvider
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(

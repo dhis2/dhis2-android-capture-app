@@ -239,37 +239,6 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    FormRepository provideFormRepository(D2 d2, DataEntryRepository dataEntryRepository) {
-        return new FormRepositoryImpl(
-                null,
-                new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
-                ),
-                dataEntryRepository,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Provides
-    @PerActivity
-    DataEntryRepository provideDataEntryRepository(
-            D2 d2,
-            FieldViewModelFactory fieldViewModelFactory) {
-        return new org.dhis2.form.data.SearchRepository(
-                d2,
-                fieldViewModelFactory,
-                initialProgram,
-                teiType,
-                initialQuery
-        );
-    }
-
-    @Provides
-    @PerActivity
     SearchTeiViewModelFactory providesViewModelFactory(
             SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
