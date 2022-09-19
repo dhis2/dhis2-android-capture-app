@@ -19,16 +19,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
+import org.dhis2.form.ui.dialog.DataEntryBottomDialog;
 import org.dhis2.form.ui.dialog.DataEntryDialogUiModel;
 import org.dhis2.form.ui.dialog.DialogButtonStyle;
 import org.dhis2.ui.ThemeManager;
@@ -40,9 +43,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog.ActionType;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -57,6 +58,8 @@ import javax.inject.Inject;
 import kotlin.Unit;
 
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable, EventDetailsComponentProvider {
+
+    private static final String SHOW_OPTIONS = "SHOW_OPTIONS";
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -89,8 +92,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
                         this,
-                        eventUid,
-                        getContext()));
+                        eventUid));
         eventCaptureComponent.inject(this);
         themeManager.setProgramTheme(getIntent().getStringExtra(PROGRAM_UID));
         super.onCreate(savedInstanceState);
@@ -231,7 +233,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                         return Unit.INSTANCE;
                     }
             );
-            dialog.show(getSupportFragmentManager(), "SHOW_OPTIONS");
+            dialog.show(getSupportFragmentManager(), SHOW_OPTIONS);
         }
     }
 
@@ -249,7 +251,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setSkip(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), SHOW_OPTIONS);
     }
 
     @Override
@@ -259,7 +261,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setReschedule(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), SHOW_OPTIONS);
     }
 
     private void setAction(ActionType actionType) {
@@ -278,7 +280,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 presenter.skipEvent();
                 break;
             case RESCHEDULE:
-                reschedule();
                 break;
             case CHECK_FIELDS:
                 break;
@@ -294,12 +295,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         showSnackBar(R.string.fix_error);
     }
 
-    private void reschedule() {
-    }
-
     @Override
     public void showSnackBar(int messageId) {
-        Snackbar mySnackbar = Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT);
+        Snackbar mySnackbar = Snackbar.make(binding.root, messageId, BaseTransientBottomBar.LENGTH_SHORT);
         mySnackbar.show();
     }
 
@@ -442,7 +440,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onRelationshipMapLoaded() {
-
+        // there are no relationships on events
     }
 
     public void setFormEditionListener(OnEditionListener onEditionListener) {

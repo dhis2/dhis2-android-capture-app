@@ -38,12 +38,10 @@ public class EventCaptureModule {
 
     private final String eventUid;
     private final EventCaptureContract.View view;
-    private final Context activityContext;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid, Context context) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
         this.view = view;
         this.eventUid = eventUid;
-        this.activityContext = context;
     }
 
     @Provides
