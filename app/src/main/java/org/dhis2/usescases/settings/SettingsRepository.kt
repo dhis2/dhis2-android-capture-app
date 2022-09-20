@@ -110,8 +110,8 @@ class SettingsRepository(
                 smsConfig.gateway,
                 smsConfig.resultSender,
                 smsConfig.resultWaitingTimeout,
-                generalSettings?.numberSmsToSend() == null,
-                generalSettings?.numberSmsConfirmation() == null,
+                true/*generalSettings?.numberSmsToSend() == null*/,
+                true/*generalSettings?.numberSmsConfirmation() == null*/,
                 smsConfig.isWaitingForResult
             )
         )

@@ -1,7 +1,6 @@
 package org.dhis2.utils.granularsync
 
 import android.content.Context
-import com.google.android.gms.tasks.Task
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.observers.DisposableCompletableObserver
@@ -24,12 +23,17 @@ class SMSSyncProviderImpl(
     override val resourceManager: ResourceManager
 ) : SMSSyncProvider {
 
-    override val smsSender: SmsSubmitCase by lazy {
-        d2.smsModule().smsSubmitCase()
-    }
+    override val smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
 
     override fun isPlayServicesEnabled() = false
-    override fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>? = null
+    override fun waitForSMSResponse(
+        context: Context,
+        senderNumber: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+    }
+
     override fun getSSMSIntentFilter(): String? = null
     override fun getSendPermission(): String? = null
 
@@ -91,25 +95,29 @@ class SMSSyncProviderImpl(
     }
 
     override fun convertSimpleEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertSimpleEvent(recordUid).map { count -> ConvertTaskResult.Count(count) }
+        return smsSender.convertSimpleEvent(recordUid)
+            .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertTrackerEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertTrackerEvent(recordUid).map { count -> ConvertTaskResult.Count(count) }
+        return smsSender.convertTrackerEvent(recordUid)
+            .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.convertEnrollment(recordUid).map { count -> ConvertTaskResult.Count(count) }
+        return smsSender.convertEnrollment(recordUid)
+            .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun convertDataSet(): Single<ConvertTaskResult> {
-        return smsSender.convertDataSet(recordUid,dvOrgUnit,dvPeriodId,dvAttrCombo).map { count -> ConvertTaskResult.Count(count) }
+        return smsSender.convertDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
+            .map { count -> ConvertTaskResult.Count(count) }
     }
 
     override fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit) =
-            object : DisposableSingleObserver<ConvertTaskResult>() {
+        object : DisposableSingleObserver<ConvertTaskResult>() {
             override fun onSuccess(countResult: ConvertTaskResult) {
-                if(countResult is ConvertTaskResult.Count) {
+                if (countResult is ConvertTaskResult.Count) {
                     onComplete(
                         reportState(SmsSendingService.State.CONVERTED, 0, countResult.smsCount)
                     )

@@ -1,6 +1,5 @@
 package org.dhis2.utils.granularsync
 
-import android.Manifest
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,8 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
@@ -51,6 +48,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
+private const val SMS_APP_REQ_ID = 103
 
 class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
@@ -62,9 +60,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     @Inject
     lateinit var networkUtils: NetworkUtils
-
-    @Inject
-    lateinit var smsProvider: SMSSyncProvider
 
     private lateinit var recordUid: String
     private lateinit var conflictType: ConflictType
@@ -151,10 +146,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                        orgUnitDataValue == null ||
-                                attributeComboDataValue == null ||
-                                periodIdDataValue == null
-                        )
+                    orgUnitDataValue == null ||
+                        attributeComboDataValue == null ||
+                        periodIdDataValue == null
+                    )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -228,8 +223,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         state: State,
         conflicts: MutableList<TrackerImportConflict>
     ) {
-        binding!!.syncIcon.setStateIcon(state, true)
-        binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
+        updateState(state)
         when (state) {
             State.TO_POST,
             State.TO_UPDATE,
@@ -255,68 +249,61 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         }
     }
 
+    override fun updateState(state: State) {
+        binding!!.syncIcon.setStateIcon(state, true)
+        binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
+    }
+
     override fun closeDialog() {
         dismiss()
     }
 
-    /*private val SmsResponseRequest = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode)
-    }*/
+    override fun openSmsApp(message: String, smsToNumber: String) {
+        val chooser = createSMSIntent(message, smsToNumber)
+        startActivityForResult(chooser, SMS_APP_REQ_ID)
+    }
 
-    override fun openSmsApp(message: String) {
-        if (presenter.getSmsProvider().isPlayServicesEnabled() &&
-            presenter.getSmsProvider().expectsResponseSMS()
-        ) {
-            // register broadcast receiver
-            smsProvider.registerSMSReceiver(
-                requireContext(),
-                presenter.getSmsProvider().getSendPermission()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == SMS_APP_REQ_ID) {
+            adapter!!.addItem(
+                StatusLogItem.create(
+                    Calendar.getInstance().time,
+                    getString(R.string.sms_sync_manual_confirmation)
+                )
             )
-
-            // openSMSSendConfirmationDialog
             val smsConfirmationDialog = BottomSheetDialog(
                 bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                     title = getString(R.string.sms_enabled),
-                    subtitle = getString(R.string.discard_go_back),
+                    subtitle = getString(R.string.sms_sync_is_sms_sent),
                     iconResource = R.drawable.ic_help,
                     mainButton = DialogButtonStyle.NeutralButton(R.string.no),
                     secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
                 ),
                 onMainButtonClicked = {
-                    // No -> unregister receiver, dismiss dialog
-                    smsProvider.unregisterSMSReceiver(requireContext())
+                    presenter.onSmsNotManuallySent(requireContext())
                 },
                 onSecondaryButtonClicked = {
-                    // yes -> wait for response, confirm response message
-                    presenter.getSmsProvider()
-                        .getTaskOrNull(
-                            requireContext(),
-                            presenter.getSmsProvider().getGatewayNumber()
-                        )
+                    presenter.onSmsManuallySent(requireContext()) {
+                        it.observe(this) { messageReceived ->
+                            presenter.onConfirmationMessageStateChanged(messageReceived)
+                        }
+                    }
                 }
             ).also {
                 it.isCancelable = false
             }
             smsConfirmationDialog
                 .show(childFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
-
-            // close syncDialog
-            // close SMSConfirmationDialog
         }
-        val chooser = createSMSIntent(message)
-        startActivity(chooser)
     }
 
-    private fun createSMSIntent(message: String): Intent? {
-        val uri = Uri.parse("smsto:${presenter.getSmsProvider().getGatewayNumber()}")
+    private fun createSMSIntent(message: String, smsToNumber: String): Intent? {
+        val uri = Uri.parse("smsto:$smsToNumber")
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = uri
             putExtra("sms_body", message)
         }
-        val chooser = Intent.createChooser(intent, "Send Sms with")
-        return chooser
+        return Intent.createChooser(intent, getString(R.string.sms_sync_sms_app_chooser_title))
     }
 
     private fun setNetworkMessage() {
@@ -330,18 +317,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     binding!!.syncButton.setText(R.string.action_sync_sms)
                     binding!!.syncButton.visibility = View.VISIBLE
                     binding!!.syncButton.setOnClickListener {
-                        if(smsProvider.isPlayServicesEnabled()){ //PLAY SERVICES
-                            binding!!
-                                .connectionMessage
-                                .setText("Opening SMS application, please do not modify the SMS")
-
-                            presenter.initSMSSync()
-                        }else{ //NO PLAY SERVICES
-
-                            if (checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID)) {
-                                syncSMS()
-                            }
-                        }
+                        binding!!.noConflictMessage.visibility = View.GONE
+                        binding!!.synsStatusRecycler.visibility = View.VISIBLE
+                        syncSms()
                     }
                 } else {
                     binding!!.syncButton.visibility = View.GONE
@@ -463,47 +441,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         super.onDismiss(dialog)
     }
 
-    private fun syncSMS() {
-        binding!!.noConflictMessage.visibility = View.GONE
-        binding!!.synsStatusRecycler.visibility = View.VISIBLE
-
-        if (checkPermissions()) {
-            presenter.initSMSSync().observe(this, { this.stateChanged(it) })
-        } else {
-            closeDialog()
-        }
-    }
-
-    private fun checkPermissions(): Boolean {
-        // check permissions
-        val smsPermissions = arrayOf(
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.SEND_SMS,
-            Manifest.permission.RECEIVE_SMS,
-            Manifest.permission.READ_SMS
-        )
-        if (!hasPermissions(smsPermissions)) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                smsPermissions, SMS_PERMISSIONS_REQ_ID
-            )
-            return false
-        }
-        return true
-    }
-
-    private fun hasPermissions(permissions: Array<String>): Boolean {
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission) !=
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }
-
     private fun getInputArguments(): InputArguments {
         val bundle = Bundle()
         when (conflictType) {
@@ -568,14 +505,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private fun syncGranular() {
         syncing = true
         presenter.initGranularSync().observe(
-            this,
-            { workInfo ->
-
-                if (workInfo != null && workInfo.isNotEmpty()) {
-                    manageWorkInfo(workInfo[0])
-                }
+            this
+        ) { workInfo ->
+            if (workInfo != null && workInfo.isNotEmpty()) {
+                manageWorkInfo(workInfo[0])
             }
-        )
+        }
     }
 
     private fun manageWorkInfo(workInfo: WorkInfo) {
@@ -586,41 +521,21 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 if (binding!!.syncIcon.drawable is AnimatedVectorDrawable) {
                     (binding!!.syncIcon.drawable as AnimatedVectorDrawable).start()
                 }
-                adapter!!.addItem(
-                    StatusLogItem.create(
-                        Calendar.getInstance().time,
-                        getString(R.string.start_sync_granular)
-                    )
-                )
+                logMessage(getString(R.string.start_sync_granular))
             }
             WorkInfo.State.RUNNING ->
-                adapter!!.addItem(
-                    StatusLogItem.create(
-                        Calendar.getInstance().time,
-                        getString(R.string.syncing)
-                    )
-                )
+                logMessage(getString(R.string.syncing))
             WorkInfo.State.SUCCEEDED -> {
                 binding!!.syncButton.visibility = View.GONE
-                adapter!!.addItem(
-                    StatusLogItem.create(
-                        Calendar.getInstance().time,
-                        getString(R.string.end_sync_granular)
-                    )
-                )
+                logMessage(getString(R.string.end_sync_granular))
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
-                binding!!.syncIcon.setStateIcon(State.SYNCED, true)
+                updateState(State.SYNCED)
                 setLastUpdated(SyncDate(Date()))
                 dismissListenerDialog!!.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
                 if (workInfo.outputData.keyValueMap["incomplete"] != null) {
-                    adapter?.addItem(
-                        StatusLogItem.create(
-                            Calendar.getInstance().time,
-                            getString(R.string.sync_incomplete_error_text)
-                        )
-                    )
+                    logMessage(getString(R.string.sync_incomplete_error_text))
                 }
                 if (workInfo.outputData.keyValueMap["conflict"] != null) {
                     val listStatusLog = ArrayList<StatusLogItem>()
@@ -647,25 +562,13 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
                     adapter!!.addAllItems(listStatusLog)
                 } else {
-                    adapter!!.addItem(
-                        StatusLogItem.create(
-                            Calendar.getInstance().time,
-                            getString(R.string.error_sync_check_logs),
-                            true
-                        )
-                    )
+                    logMessage(getString(R.string.error_sync_check_logs), true)
                 }
-                binding!!.syncIcon.setStateIcon(State.ERROR, true)
+                updateState(State.ERROR)
                 dismissListenerDialog!!.onDismiss(false)
             }
             WorkInfo.State.CANCELLED ->
-                adapter!!.addItem(
-                    StatusLogItem.create(
-                        Calendar.getInstance().time,
-                        getString(R.string.cancel_sync),
-                        true
-                    )
-                )
+                logMessage(getString(R.string.cancel_sync), true)
             else -> {
             }
         }
@@ -677,7 +580,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         } ?: getString(R.string.unknown_date)
     }
 
-    /*override fun onRequestPermissionsResult(
+    override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
@@ -685,7 +588,46 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         if (requestCode == SMS_PERMISSIONS_REQ_ID &&
             grantResults.all { it == PackageManager.PERMISSION_GRANTED }
         ) {
-            syncSMS()
+            syncSms()
         }
-    }*/
+    }
+
+    private fun syncSms() {
+        syncing = true
+        presenter.onSmsSyncClick(requireContext()) {
+            it.observe(this) { state -> this.stateChanged(state) }
+        }
+    }
+
+    override fun logWaitingForServerResponse() {
+        logMessage(getString(R.string.sms_sync_waiting_for_response))
+    }
+
+    override fun logSmsReachedServer() {
+        logMessage(getString(R.string.sms_sync_sms_reached_server))
+    }
+
+    override fun logSmsReachedServerError() {
+        logMessage(getString(R.string.sms_sync_sms_reached_server_error))
+    }
+
+    override fun logSmsSent() {
+        logMessage(getString(R.string.sms_sync_sent))
+    }
+
+    override fun logSmsNotSent() {
+        logMessage(getString(R.string.sms_sync_not_sent))
+    }
+
+    override fun logOpeningSmsApp() {
+        logMessage(getString(R.string.sms_sync_opening_app))
+    }
+
+    private fun logMessage(msg: String, openLogs: Boolean = false) {
+        adapter!!.addItem(StatusLogItem.create(Calendar.getInstance().time, msg, openLogs))
+    }
+
+    override fun checkSmsPermission(): Boolean {
+        return checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID)
+    }
 }

@@ -1,7 +1,8 @@
 package org.dhis2.utils.granularsync
 
 import android.content.Context
-import com.google.android.gms.tasks.Task
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.observers.DisposableCompletableObserver
@@ -25,12 +26,13 @@ interface SMSSyncProvider {
     val smsSender: SmsSubmitCase
 
     fun isPlayServicesEnabled(): Boolean
-    fun getTaskOrNull(context: Context, senderNumber: String): Task<Void>?
-    fun getSSMSIntentFilter(): String?
-    fun getSendPermission(): String?
-    fun registerSMSReceiver(context: Context, sendPermission: String?){
+    fun waitForSMSResponse(
+        context: Context,
+        senderNumber: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    )
 
-    }
     fun unregisterSMSReceiver(requireContext: Context) {}
 
     fun expectsResponseSMS(): Boolean {
@@ -74,7 +76,7 @@ interface SMSSyncProvider {
                 }
             }
             SyncStatusDialog.ConflictType.DATA_VALUES -> {
-               convertDataSet()
+                convertDataSet()
             }
             else -> Single.error(
                 Exception(
@@ -84,10 +86,10 @@ interface SMSSyncProvider {
         }
     }
 
-    fun convertSimpleEvent():Single<ConvertTaskResult>
-    fun convertTrackerEvent():Single<ConvertTaskResult>
-    fun convertEnrollment():Single<ConvertTaskResult>
-    fun convertDataSet():Single<ConvertTaskResult>
+    fun convertSimpleEvent(): Single<ConvertTaskResult>
+    fun convertTrackerEvent(): Single<ConvertTaskResult>
+    fun convertEnrollment(): Single<ConvertTaskResult>
+    fun convertDataSet(): Single<ConvertTaskResult>
 
     fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
@@ -99,4 +101,5 @@ interface SMSSyncProvider {
     fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableCompletableObserver
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus
+    fun observeConfirmationNumber(): LiveData<Boolean?> = MutableLiveData(null)
 }

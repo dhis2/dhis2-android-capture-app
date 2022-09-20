@@ -897,4 +897,13 @@
     <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
     <string name="open_details">Open %s details</string>
     <string name="syncing_resource">Syncing %s…</string>
+    <string name="sms_sync_waiting_for_response">SMS sent. Waiting for server response.</string>
+    <string name="sms_sync_sms_reached_server">SMS confirmed to reach server. Updating Status</string>
+    <string name="sms_sync_sms_reached_server_error">We can\'t confirm the SMS reached the server. Updating Status</string>
+    <string name="sms_sync_sent">SMS sent. Updating status.</string>
+    <string name="sms_sync_not_sent">SMS not sent.</string>
+    <string name="sms_sync_opening_app">Opening SMS app. Do not modify the message please.</string>
+    <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
+    <string name="sms_sync_is_sms_sent">Did you sent the sms?</string>
+    <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
 </resources>

@@ -25,6 +25,7 @@
 
 package org.dhis2.utils.granularsync
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -42,7 +43,15 @@ class GranularSyncContracts {
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
         fun setLastUpdated(result: SyncDate)
         fun showRefreshTitle()
-        fun openSmsApp(message: String)
+        fun logWaitingForServerResponse()
+        fun logSmsReachedServer()
+        fun logSmsReachedServerError()
+        fun logSmsSent()
+        fun logSmsNotSent()
+        fun checkSmsPermission(): Boolean
+        fun logOpeningSmsApp()
+        fun openSmsApp(message: String, smsToNumber: String)
+        fun updateState(state: State)
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
@@ -50,12 +59,18 @@ class GranularSyncContracts {
         fun configure(view: View)
         fun initGranularSync(): LiveData<List<WorkInfo>>
         fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>>
-        fun initSMSSyncPlayServices()
         fun sendSMS()
         fun syncErrors(): List<ErrorViewModel>
         fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String?
-        fun getSmsProvider(): SMSSyncProvider
         fun onSmsNotAccepted()
+        fun onSmsNotManuallySent(context: Context)
+        fun onSmsSyncClick(
+            context: Context,
+            callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
+        )
+
+        fun onSmsManuallySent(context: Context, confirmationCallback: (LiveData<Boolean?>) -> Unit)
+        fun onConfirmationMessageStateChanged(messageReceived: Boolean?)
     }
 
     interface OnDismissListener {

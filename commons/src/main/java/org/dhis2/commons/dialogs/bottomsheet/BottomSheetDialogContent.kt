@@ -32,9 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.dhis2.commons.R
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
-import org.dhis2.commons.R
 
 @Composable
 fun BottomSheetDialogContent(
@@ -96,7 +96,7 @@ fun BottomSheetDialogContent(
                     RoundedCornerShape(24.dp)
                 } else {
                     RoundedCornerShape(0.dp)
-                       },
+                },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
                     disabledBackgroundColor = Color.White
@@ -105,7 +105,7 @@ fun BottomSheetDialogContent(
                     ButtonDefaults.elevation(2.dp)
                 } else {
                     ButtonDefaults.elevation(0.dp)
-                       },
+                },
                 onClick = { onSecondaryButtonClicked() },
                 content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
                 enabled = bottomSheetDialogUiModel.secondaryButton != null
