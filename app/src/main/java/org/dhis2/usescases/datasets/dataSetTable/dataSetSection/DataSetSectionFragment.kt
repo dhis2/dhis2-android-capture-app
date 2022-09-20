@@ -10,26 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.LinearLayout
 import android.widget.TimePicker
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
-import com.evrencoskun.tableview.TableView
-import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView
 import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.SortedMap
 import javax.inject.Inject
-import org.dhis2.Bindings.calculateWidth
-import org.dhis2.Bindings.dp
-import org.dhis2.Bindings.measureText
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.commons.Constants.ACCESS_DATA
@@ -39,7 +29,7 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
@@ -52,15 +42,12 @@ import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.OrgUnitDialog
 import org.dhis2.utils.customviews.TableFieldDialog
-import org.dhis2.utils.isPortrait
 import org.dhis2.utils.optionset.OptionSetDialog
 import org.dhis2.utils.optionset.OptionSetDialog.Companion.TAG
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.data.forms.dataentry.tablefields.RowAction
 
 const val ARG_ORG_UNIT = "ARG_ORG_UNIT"
 const val ARG_PERIOD_ID = "ARG_PERIOD_ID"
@@ -117,7 +104,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             .observeAsState(emptyList())
                         DataSetTableScreen(
                             tableData = tableData,
-                            onCellClick = { cell ->
+                            onCellClick = { _, cell ->
                                 presenterFragment.onCellClick(cell = cell)
                             },
                             onEdition = { isEditing ->
