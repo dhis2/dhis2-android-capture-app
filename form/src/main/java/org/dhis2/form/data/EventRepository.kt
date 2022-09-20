@@ -202,13 +202,7 @@ class EventRepository(
         }
 
     private fun getSectionRenderingType(programStageSection: ProgramStageSection?) =
-        if (programStageSection?.renderType() != null &&
-            programStageSection.renderType()!!.mobile() != null
-        ) {
-            programStageSection.renderType()!!.mobile()!!.type()
-        } else {
-            null
-        }
+        programStageSection?.renderType()?.mobile()?.type()
 
     private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 

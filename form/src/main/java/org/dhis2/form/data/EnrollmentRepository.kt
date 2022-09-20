@@ -249,13 +249,7 @@ class EnrollmentRepository(
     private fun isEditable(generated: Boolean) = !generated && canEditAttributes
 
     private fun getSectionRenderingType(programSection: ProgramSection?) =
-        if (programSection?.renderType() != null &&
-            programSection.renderType()!!.mobile() != null
-        ) {
-            programSection.renderType()!!.mobile()!!.type()
-        } else {
-            null
-        }
+        programSection?.renderType()?.mobile()?.type()
 
     private fun getError(
         conflict: TrackerImportConflict?,
