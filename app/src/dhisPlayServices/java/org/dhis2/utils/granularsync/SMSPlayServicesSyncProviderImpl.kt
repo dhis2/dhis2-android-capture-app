@@ -126,7 +126,9 @@ class SMSPlayServicesSyncProviderImpl(
             .map { msg -> ConvertTaskResult.Message(msg) }
     }
 
-    override fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableSingleObserver<ConvertTaskResult> {
+    override fun onConvertingObserver(
+        onComplete: (SmsSendingService.SendingStatus) -> Unit
+    ): DisposableSingleObserver<ConvertTaskResult> {
         return object : DisposableSingleObserver<ConvertTaskResult>() {
             override fun onSuccess(t: ConvertTaskResult) {
             }
@@ -136,7 +138,9 @@ class SMSPlayServicesSyncProviderImpl(
         }
     }
 
-    override fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableCompletableObserver {
+    override fun onSendingObserver(
+        onComplete: (SmsSendingService.SendingStatus) -> Unit
+    ): DisposableCompletableObserver {
         return object : DisposableCompletableObserver() {
             override fun onComplete() {
             }

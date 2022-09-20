@@ -92,7 +92,9 @@ fun BottomSheetDialogContent(
         ) {
             Button(
                 modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                shape = if (bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton) {
+                shape = if (
+                    bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
+                ) {
                     RoundedCornerShape(24.dp)
                 } else {
                     RoundedCornerShape(0.dp)
@@ -101,7 +103,9 @@ fun BottomSheetDialogContent(
                     backgroundColor = Color.White,
                     disabledBackgroundColor = Color.White
                 ),
-                elevation = if (bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton) {
+                elevation = if (
+                    bottomSheetDialogUiModel.secondaryButton is DialogButtonStyle.NeutralButton
+                ) {
                     ButtonDefaults.elevation(2.dp)
                 } else {
                     ButtonDefaults.elevation(0.dp)

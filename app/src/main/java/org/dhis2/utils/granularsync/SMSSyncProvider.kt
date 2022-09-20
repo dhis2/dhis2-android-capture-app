@@ -55,6 +55,7 @@ interface SMSSyncProvider {
 
         return hasCorrectSmsVersion && smsModuleIsEnabled
     }
+
     fun getConvertTask(): Single<ConvertTaskResult> {
         return when (conflictType) {
             SyncStatusDialog.ConflictType.EVENT -> {
@@ -96,9 +97,13 @@ interface SMSSyncProvider {
         doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
     ): Completable = Completable.complete()
 
-    fun onConvertingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableSingleObserver<ConvertTaskResult>
+    fun onConvertingObserver(
+        onComplete: (SmsSendingService.SendingStatus) -> Unit
+    ): DisposableSingleObserver<ConvertTaskResult>
 
-    fun onSendingObserver(onComplete: (SmsSendingService.SendingStatus) -> Unit): DisposableCompletableObserver
+    fun onSendingObserver(
+        onComplete: (SmsSendingService.SendingStatus) -> Unit
+    ): DisposableCompletableObserver
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus
     fun observeConfirmationNumber(): LiveData<Boolean?> = MutableLiveData(null)
