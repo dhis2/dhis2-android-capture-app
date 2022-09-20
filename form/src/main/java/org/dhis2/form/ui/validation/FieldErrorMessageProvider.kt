@@ -127,6 +127,7 @@ class FieldErrorMessageProvider(private val context: Context) {
             IntegerNegativeFailure.NumberFormatException -> R.string.formatting_error
             IntegerNegativeFailure.ValueIsPositive -> R.string.invalid_negative_number
             IntegerNegativeFailure.ValueIsZero -> R.string.invalid_negative_number
+            IntegerNegativeFailure.LeadingZeroException -> R.string.leading_zero_error
         }
 
     private fun getIntegerZeroOrPositiveError(error: IntegerZeroOrPositiveFailure) =
@@ -134,6 +135,7 @@ class FieldErrorMessageProvider(private val context: Context) {
             IntegerZeroOrPositiveFailure.IntegerOverflow -> R.string.formatting_error
             IntegerZeroOrPositiveFailure.NumberFormatException -> R.string.formatting_error
             IntegerZeroOrPositiveFailure.ValueIsNegative -> R.string.invalid_possitive_zero
+            IntegerZeroOrPositiveFailure.LeadingZeroException -> R.string.leading_zero_error
         }
 
     private fun getIntegerPositiveError(error: IntegerPositiveFailure) =
@@ -142,6 +144,7 @@ class FieldErrorMessageProvider(private val context: Context) {
             IntegerPositiveFailure.NumberFormatException -> R.string.formatting_error
             IntegerPositiveFailure.ValueIsNegative -> R.string.invalid_possitive
             IntegerPositiveFailure.ValueIsZero -> R.string.invalid_possitive
+            IntegerPositiveFailure.LeadingZeroException -> R.string.leading_zero_error
         }
 
     private fun getUnitIntervalFailure(error: UnitIntervalFailure) =
@@ -167,12 +170,14 @@ class FieldErrorMessageProvider(private val context: Context) {
         when (error) {
             IntegerFailure.IntegerOverflow -> R.string.formatting_error
             IntegerFailure.NumberFormatException -> R.string.invalid_integer
+            IntegerFailure.LeadingZeroException -> R.string.leading_zero_error
         }
 
     private fun getNumberError(error: NumberFailure) =
         when (error) {
             NumberFailure.NumberFormatException -> R.string.formatting_error
             NumberFailure.ScientificNotationException -> R.string.formatting_error
+            NumberFailure.LeadingZeroException -> R.string.leading_zero_error
         }
 
     fun mandatoryWarning(): String {
