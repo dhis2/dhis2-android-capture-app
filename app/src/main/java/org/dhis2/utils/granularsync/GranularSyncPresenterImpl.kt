@@ -34,7 +34,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -206,8 +205,8 @@ class GranularSyncPresenterImpl(
 
         disposable.add(
             smsSyncProvider.getConvertTask()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.io())
                 .subscribeWith(
                     smsSyncProvider.onConvertingObserver { updateStateList(it) }
                 )
@@ -226,8 +225,8 @@ class GranularSyncPresenterImpl(
                 .map { result ->
                     (result as ConvertTaskResult.Message).smsMessage
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { message ->
                         view.openSmsApp(message, smsSyncProvider.getGatewayNumber())

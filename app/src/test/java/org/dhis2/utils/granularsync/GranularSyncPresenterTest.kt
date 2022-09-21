@@ -341,6 +341,7 @@ class GranularSyncPresenterTest {
 
         verify(view, times(1)).logOpeningSmsApp()
         verify(smsSyncProvider, times(1)).getConvertTask()
+        verify(view, times(1)).openSmsApp(testingMsg, testingGateway)
     }
 
     private fun getMockedCompleteRegistrations(
