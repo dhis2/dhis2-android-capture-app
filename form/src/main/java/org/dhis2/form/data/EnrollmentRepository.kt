@@ -38,8 +38,6 @@ class EnrollmentRepository(
     private val enrollmentRepository: EnrollmentObjectRepository =
         d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private val canEditAttributes: Boolean = canBeEdited()
-
     private fun canBeEdited(): Boolean {
         val selectedProgram = d2.programModule().programs().uid(
             d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().program()
@@ -246,7 +244,7 @@ class EnrollmentRepository(
         }
     }
 
-    private fun isEditable(generated: Boolean) = !generated && canEditAttributes
+    private fun isEditable(generated: Boolean) = !generated && canBeEdited()
 
     private fun getSectionRenderingType(programSection: ProgramSection?) =
         programSection?.renderType()?.mobile()?.type()
@@ -377,7 +375,7 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            canEditAttributes,
+            canBeEdited(),
             null,
             null,
             null,
@@ -405,7 +403,7 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            canEditAttributes,
+            canBeEdited(),
             null,
             null,
             null,
@@ -458,7 +456,7 @@ class EnrollmentRepository(
             if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
             ENROLLMENT_DATA_SECTION_UID,
             null,
-            canEditAttributes,
+            canBeEdited(),
             null,
             null,
             null,
@@ -486,7 +484,7 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             null,
-            canEditAttributes,
+            canBeEdited(),
             null,
             null,
             null,
