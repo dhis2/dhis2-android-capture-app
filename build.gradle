@@ -108,6 +108,7 @@ allprojects {
         enableExperimentalRules = true
         filter {
             exclude { element -> element.file.path.contains("androidTest") }
+            exclude { element -> element.file.path.contains("dhis2-android-sdk") }
         }
     }
 }
