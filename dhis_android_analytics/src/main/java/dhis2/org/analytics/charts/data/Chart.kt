@@ -31,7 +31,6 @@ class Chart private constructor(
             ChartType.LINE_CHART -> graphToLineChartMapper.map(context, graphData)
             ChartType.NUTRITION -> graphToNutritionChartMapper.map(context, graphData)
             ChartType.BAR_CHART -> graphToBarChartMapper.map(context, graphData)
-            ChartType.TABLE -> graphToTableMapper.map(context, graphData)
             ChartType.SINGLE_VALUE -> graphToValueMapper.map(context, graphData)
             ChartType.RADAR -> graphToRadarMapper.map(context, graphData)
             ChartType.PIE_CHART -> graphToPieChartMapper.map(context, graphData)

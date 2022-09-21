@@ -1,16 +1,10 @@
 package dhis2.org.analytics.charts.mappers
 
-import android.content.Context
-import android.view.View
-import android.widget.TextView
 import androidx.compose.runtime.Composable
-import com.evrencoskun.tableview.TableView
-import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
-import dhis2.org.analytics.charts.table.GraphTableAdapter
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -82,39 +76,6 @@ class GraphToTable {
                 disabledCellBackground = LocalTableColors.current.tableBackground
             )
         )
-    }
-
-    fun map(context: Context, graph: Graph): View {
-        if (graph.series.isEmpty()) {
-            return TextView(context).apply {
-                text = context.getString(R.string.no_data)
-            }
-        }
-
-        val series = if (graph.chartType == ChartType.NUTRITION) {
-            listOf(graph.series.last())
-        } else {
-            graph.series
-        }
-
-        val headers = headers(graph, series)
-        val rows = rows(series)
-        val cells = cells(graph, series, headers)
-
-        val tableView = TableView(context)
-        val tableAdapter = GraphTableAdapter(context)
-        tableView.isShowHorizontalSeparators = false
-        tableView.adapter = tableAdapter
-        tableView.isIgnoreSelectionColors = true
-        tableView.headerCount = rows.size
-
-        tableAdapter.setAllItems(
-            rows,
-            headers,
-            cells,
-            false
-        )
-        return tableView
     }
 
     private fun headers(graph: Graph, series: List<SerieData>): List<CellModel?> {
