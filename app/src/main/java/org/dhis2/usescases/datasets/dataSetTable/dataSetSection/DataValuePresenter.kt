@@ -8,8 +8,6 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.tuples.Trio
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature.ANDROAPP_4754
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
@@ -18,8 +16,9 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
+import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -31,7 +30,6 @@ class DataValuePresenter(
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
     private val updateProcessor: FlowableProcessor<Unit>,
-    private val featureConfigRepository: FeatureConfigRepository? = null,
     private val mapper: TableDataToTableModelMapper
 ) {
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -39,6 +37,7 @@ class DataValuePresenter(
     private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val indicatorsState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
+    private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val processor: FlowableProcessor<RowAction> =
         PublishProcessor.create()
@@ -52,10 +51,7 @@ class DataValuePresenter(
                 .map { categoryCombo ->
                     repository.getDataTableModel(categoryCombo).blockingFirst()
                 }
-        }.observeOn(schedulerProvider.ui())
-            .doOnNext {
-                view.clearTables()
-            }.publish()
+        }.observeOn(schedulerProvider.ui()).publish()
 
         initTables(dataTableModelConnectable)
 
@@ -96,26 +92,29 @@ class DataValuePresenter(
 
                         dataSetTableModel?.let {
                             val result = valueStore.save(it)
-                            if (result.blockingFirst().valueStoreResult == VALUE_CHANGED &&
-                                featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
+                            val storeResult = result.blockingFirst()
+                            val saveResult = storeResult.valueStoreResult
+                            if (
+                                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+                                saveResult == VALUE_HAS_NOT_CHANGED
                             ) {
+                                if (saveResult == ERROR_UPDATING_VALUE) {
+                                    errors[it.dataElement + "_" + it.categoryOptionCombo] =
+                                        storeResult.valueStoreResultMessage ?: "-"
+                                } else {
+                                    errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
+                                }
                                 updateData(it)
-                            } else {
-                                view.updateData(rowAction, it.catCombo)
                             }
                             result
                         } ?: Flowable.just(
-                            StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+                            StoreResult("", VALUE_HAS_NOT_CHANGED)
                         )
                     }
                 }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { storeResult ->
-                        val valueChange = VALUE_CHANGED
-                        if (storeResult.valueStoreResult == valueChange) {
-                            getDataSetIndicators()
-                        }
+                    {
                         view.onValueProcessed()
                     },
                     { Timber.e(it) }
@@ -138,49 +137,38 @@ class DataValuePresenter(
     }
 
     private fun initTables(dataTableModelConnectable: ConnectableFlowable<DataTableModel>) {
-        if (isComposeTableEnable()) {
-            view.updateProgressVisibility()
-            disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
-                    .map { tableData ->
-                        mapper(tableData)
-                    }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        {
-                            tableState.value = tableState.value?.toMutableList()?.apply {
-                                add(addUpperSpaceIfIsNotFirstTable(it))
-                            }
-                            updateTableList()
-                        }
-                    ) { Timber.e(it) }
-            )
-
-            disposable.add(
-                repository.getDataSetIndicators().map { indicatorsData ->
-                    mapper.map(indicatorsData)
+        view.updateProgressVisibility()
+        disposable.add(
+            dataTableModelConnectable.map { repository.setTableData(it, errors) }
+                .map { tableData ->
+                    mapper(tableData)
                 }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        {
-                            indicatorsState.value = listOf(it)
-                            updateTableList()
-                        },
-                        { Timber.e(it) }
-                    )
-            )
-        } else {
-            disposable.add(
-                dataTableModelConnectable.map(repository::setTableData)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        view::setTableData
-                    ) { Timber.e(it) }
-            )
-        }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        tableState.value = tableState.value?.toMutableList()?.apply {
+                            add(addUpperSpaceIfIsNotFirstTable(it))
+                        }
+                        updateTableList()
+                    }
+                ) { Timber.e(it) }
+        )
+
+        disposable.add(
+            repository.getDataSetIndicators().map { indicatorsData ->
+                mapper.map(indicatorsData)
+            }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        indicatorsState.value = listOf(it)
+                        updateTableList()
+                    },
+                    { Timber.e(it) }
+                )
+        )
     }
 
     private fun MutableList<TableModel>.addUpperSpaceIfIsNotFirstTable(
@@ -191,7 +179,7 @@ class DataValuePresenter(
         val dataTableModel =
             repository.getDataTableModel(datasetTableModel.catCombo!!)
                 .blockingFirst()
-        val tableData = repository.setTableData(dataTableModel)
+        val tableData = repository.setTableData(dataTableModel, errors)
         val updatedTableModel = mapper(tableData)
 
         allTableState.value = allTableState.value?.map { tableModel ->
@@ -212,54 +200,28 @@ class DataValuePresenter(
         )
     }
 
-    fun getDataSetIndicators() {
-        disposable.add(
-            repository.getDataSetIndicators()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { if (it.isNotEmpty()) view.renderIndicators(it) },
-                    { Timber.e(it) }
-                )
-        )
-    }
-
     fun onDettach() {
         disposable.clear()
     }
 
-    fun getProcessor(): FlowableProcessor<RowAction> {
-        return processor
-    }
-
-    fun getProcessorOptionSet(): FlowableProcessor<Trio<String, String, Int>> {
-        return processorOptionSet
-    }
-
-    fun saveCurrentSectionMeasures(rowHeaderWidth: Int, columnHeaderHeight: Int) {
-        repository.saveCurrentSectionMeasures(rowHeaderWidth, columnHeaderHeight)
-    }
-
     fun tableData(): LiveData<List<TableModel>> = allTableState
-    fun onCellValueChange(tableCell: TableCell) {
+
+    fun onCellValueChanged(tableCell: TableCell) {
         val updatedData = allTableState.value?.map { tableModel ->
-            val hasRowWithDataElement =
-                tableModel.tableRows.find {
-                    tableCell.id?.contains(it.rowHeader.id.toString()) == true
-                }
+            val hasRowWithDataElement = tableModel.tableRows.find {
+                tableCell.id?.contains(it.rowHeader.id.toString()) == true
+            }
             if (hasRowWithDataElement != null) {
                 tableModel.copy(
-                    overwrittenValues = listOf(tableCell)
+                    overwrittenValues = mapOf(
+                        Pair(tableCell.column!!, tableCell)
+                    )
                 )
             } else {
                 tableModel
             }
         }
         allTableState.postValue(updatedData)
-    }
-
-    fun isComposeTableEnable(): Boolean {
-        return featureConfigRepository?.isFeatureEnable(ANDROAPP_4754) == true
     }
 
     /**
@@ -271,7 +233,8 @@ class DataValuePresenter(
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
         handleElementInteraction(dataElement, cell)
-        return dataElement.valueType()?.toKeyBoardInputType()?.let { inputType ->
+        return dataElement.takeIf { it.optionSetUid() == null }
+            ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
             TextInputModel(
                 id = cell.id ?: "",
                 mainLabel = dataElement.displayFormName() ?: "-",
@@ -281,7 +244,8 @@ class DataValuePresenter(
                     it.displayName() ?: "-"
                 },
                 currentValue = cell.value,
-                keyboardInputType = inputType
+                keyboardInputType = inputType,
+                error = errors[cell.id]
             )
         }
     }

@@ -194,7 +194,7 @@ class EventDetailsRepository(
         return d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(categoryComboUid)
             .byCategoryOptions(categoryOptionsUid)
-            .one().blockingGet().uid()
+            .one()?.blockingGet()?.uid()
     }
 
     fun getCatOption(selectedOption: String?): CategoryOption? {

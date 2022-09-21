@@ -61,7 +61,7 @@ ext {
 
             //Analytics
             matomo                    : "4.1.2",
-            sentry                    : "5.7.2",
+            sentry                    : "6.4.1",
 
             //Debug
             timber                    : "4.7.1",
@@ -86,6 +86,7 @@ ext {
             goldfinger                : "2.0.1",
             root                      : "0.0.7",
             openid                    : "0.7.1",
+            conscrypt                 : "2.5.2",
 
             //Other
             gson                      : "2.8.5",

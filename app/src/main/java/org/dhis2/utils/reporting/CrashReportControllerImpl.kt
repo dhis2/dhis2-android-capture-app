@@ -3,6 +3,7 @@ package org.dhis2.utils.reporting
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import javax.inject.Inject
+import org.dhis2.commons.reporting.CrashReportController
 
 class CrashReportControllerImpl @Inject constructor() : CrashReportController {
 
@@ -30,10 +31,6 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
             Sentry.addBreadcrumb(breadcrumb)
         }
         Sentry.captureException(exception)
-    }
-
-    override fun logException(exception: Exception) {
-//        Sentry.captureException(exception)
     }
 
     override fun logMessage(message: String) {

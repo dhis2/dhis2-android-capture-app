@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry
 
+import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.utils.reporting.CrashReportController
 import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 class SearchTEIRepositoryImpl(
     private val d2: D2,
     private val enrollmentUtils: DhisEnrollmentUtils,
-    private val crashcontroller: CrashReportController = CrashReportControllerImpl()
+    private val crashController: CrashReportController = CrashReportControllerImpl()
 ) : SearchTEIRepository {
 
     override fun isUniqueTEIAttributeOnline(
@@ -87,7 +87,7 @@ class SearchTEIRepositoryImpl(
         } else {
             "No d2 Error"
         }
-        crashcontroller.addBreadCrumb(
+        crashController.addBreadCrumb(
             "SearchTEIRepositoryImpl.isUniqueAttribute",
             "programUid: $programUid ," +
                 " attruid: ${attribute.uid()} ," +

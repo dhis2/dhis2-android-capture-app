@@ -23,7 +23,7 @@ import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.commons.filters.di.FilterModule;
-import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.utils.reporting.CrashReportModule;
 import org.hisp.dhis.android.core.common.ValueType;
 
@@ -54,7 +54,7 @@ import dispatch.core.DispatcherProvider;
         NetworkUtilsModule.class,
         CustomDispatcherModule.class
 })
-public interface AppComponent {
+public  interface AppComponent {
 
     @Component.Builder
     interface Builder {

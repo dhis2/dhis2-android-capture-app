@@ -16,7 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
+import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
@@ -48,6 +50,17 @@ class TextInputUiTest {
         }
     }
 
+    @Test
+    fun shouldSetCorrectColorAndMessageIfHasError() {
+        composeTestRule.setContent {
+            TextInputUiTestScreen { }
+        }
+
+        tableRobot(composeTestRule) {
+            assertCellWithErrorSetsErrorMessage(0,1, input_error_message)
+        }
+    }
+
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     private fun TextInputUiTestScreen(onSave: (TableCell) -> Unit) {
@@ -64,6 +77,11 @@ class TextInputUiTest {
                 TextInputModel()
             )
         }
+
+        var tableSelection by remember {
+            mutableStateOf<TableSelection>(TableSelection.Unselected())
+        }
+
         val coroutineScope = rememberCoroutineScope()
 
         BottomSheetScaffold(
@@ -71,14 +89,15 @@ class TextInputUiTest {
             sheetContent = {
                 TextInput(
                     textInputModel = currentInputType,
-                    onTextChanged = {
-
+                    onTextChanged = { textInputModel ->
+                        currentInputType = textInputModel
+                        currentCell = currentCell?.copy(
+                            value = textInputModel.currentValue,
+                            error = null
+                        )
                     },
-                    onSave = { textInputModel ->
-                        currentCell?.copy(value = textInputModel.currentValue)?.let {
-                            onSave(it)
-                        }
-                    }
+                    onSave = { currentCell?.let { onSave(it) } },
+                    onNextSelected = {}
                 )
             },
             sheetPeekHeight = 0.dp,
@@ -92,21 +111,30 @@ class TextInputUiTest {
                 tableColors = TableColors(
                     primary = MaterialTheme.colors.primary,
                     primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                )
-            ) { cell ->
-                currentCell = cell
-                currentInputType = TextInputModel(
-                    id = cell.id!!,
-                    mainLabel = "Main Label",
-                    secondaryLabels = listOf("Second Label 1", "Second Label 2"),
-                    cell.value
-                )
-                coroutineScope.launch {
-                    if (bottomSheetState.bottomSheetState.isCollapsed) {
-                        bottomSheetState.bottomSheetState.expand()
+                ),
+                tableSelection = tableSelection,
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
+
+                    override fun onClick(tableCell: TableCell) {
+                        currentCell = tableCell
+                        currentInputType = TextInputModel(
+                            id = tableCell.id!!,
+                            mainLabel = "Main Label",
+                            secondaryLabels = listOf("Second Label 1", "Second Label 2"),
+                            tableCell.value,
+                            error = currentCell?.error
+                        )
+                        coroutineScope.launch {
+                            if (bottomSheetState.bottomSheetState.isCollapsed) {
+                                bottomSheetState.bottomSheetState.expand()
+                            }
+                        }
                     }
                 }
-            }
+            )
         }
     }
 }

@@ -53,6 +53,7 @@
     "tableRows": [
       {
         "rowHeader": {
+          "id": "sIqaW66yIfI",
           "title": "Text 1",
           "showDecoration" : true,
           "row": 0,
@@ -411,6 +412,7 @@
       },
       {
         "rowHeader": {
+          "id": "SQyQZDqII5A",
           "title": "Text 2",
           "row": 1,
           "description": "No hay información para este campo"
@@ -768,6 +770,7 @@
       },
       {
         "rowHeader": {
+          "id": "CgJ9UN6mh5c",
           "title": "Text 3",
           "row": 2,
           "description": "No hay información para este campo"
@@ -1181,6 +1184,7 @@
     "tableRows": [
       {
         "rowHeader": {
+          "id": "tikrRbUTDps",
           "title": "Number",
           "row": 0,
           "description": "No hay información para este campo"
@@ -1538,6 +1542,7 @@
       },
       {
         "rowHeader": {
+          "id": "QUAPkqxiw4C",
           "title": "Text",
           "row": 1,
           "description": "No hay información para este campo"
@@ -1895,6 +1900,7 @@
       },
       {
         "rowHeader": {
+          "id": "xQ517ooLHsu",
           "title": "Long Text",
           "row": 2,
           "description": "No hay información para este campo"
@@ -2252,6 +2258,7 @@
       },
       {
         "rowHeader": {
+          "id": "d8N01hPNSrg",
           "title": "Integer",
           "row": 3,
           "description": "No hay información para este campo"
@@ -2609,6 +2616,7 @@
       },
       {
         "rowHeader": {
+          "id": "kdR6AeQZKdy",
           "title": "Percentage",
           "row": 4,
           "description": "No hay información para este campo"

@@ -7,9 +7,9 @@ import org.dhis2.commons.Constants.SERVER
 import org.dhis2.commons.Constants.USER
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.utils.reporting.CrashReportController
 import timber.log.Timber
 
 class SplashPresenter internal constructor(

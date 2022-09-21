@@ -75,5 +75,21 @@
     <string name="from_gallery">Choose from gallery</string>
     <string name="warning_error_on_complete_title">Check this!</string>
     <string name="action_do_not_show_again">Do not show again</string>
+    <string name="validation_error_message">the provided value is not allowed for this field</string>
+    <string name="error_boolean_zero_is_not_false">Invalid character 0</string>
+    <string name="error_boolean_one_is_not_true">Invalid character 1</string>
+    <string name="error_boolean_malformed">Value is neither true or false</string>
+    <string name="error_date_parsing">This date format is not valid</string>
+    <string name="error_date_time_parsing">This date and time format is not valid</string>
+    <string name="error_time_parsing">This time format is not valid</string>
+    <string name="error_letter_empty">The value is empty</string>
+    <string name="error_letter_more_than_one">The value contains more than one letter</string>
+    <string name="error_letter_not_a_letter">The value is not a letter</string>
+    <string name="error_text_too_long">The text is too long</string>
+    <string name="error_true_only_malformed">Value is neither true or false</string>
+    <string name="error_true_only_false_not_valid">This field can only be true</string>
+    <string name="error_true_only_one_is_not_true">Invalid character 1</string>
+    <string name="data_values_save_error">DataValues can\'t be saved using these arguments. Use the other one.</string>
+    <string name="leading_zero_error">Leading zero numbers are not allowed</string>
 
 </resources>
