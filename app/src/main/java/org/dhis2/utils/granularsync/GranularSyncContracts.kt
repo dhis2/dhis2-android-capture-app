@@ -65,7 +65,6 @@ class GranularSyncContracts {
         fun onSmsNotAccepted()
         fun onSmsNotManuallySent(context: Context)
         fun onSmsSyncClick(
-            context: Context,
             callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
         )
 

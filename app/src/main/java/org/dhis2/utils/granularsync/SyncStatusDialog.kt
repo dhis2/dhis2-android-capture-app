@@ -594,7 +594,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     private fun syncSms() {
         syncing = true
-        presenter.onSmsSyncClick(requireContext()) {
+        presenter.onSmsSyncClick {
             it.observe(this) { state -> this.stateChanged(state) }
         }
     }

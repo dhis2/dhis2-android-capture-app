@@ -3,6 +3,8 @@ package org.dhis2.utils.granularsync
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import java.time.Instant
@@ -284,7 +286,7 @@ class GranularSyncPresenterTest {
     fun `should block sms for some conflict types`() {
         whenever(
             smsSyncProvider.isSMSEnabled(any())
-        )doReturn true
+        ) doReturn true
         val result = SyncStatusDialog.ConflictType.values().associate {
             val enable = GranularSyncPresenterImpl(
                 d2,
@@ -308,6 +310,38 @@ class GranularSyncPresenterTest {
         assertTrue(result[SyncStatusDialog.ConflictType.TEI] == true)
         assertTrue(result[SyncStatusDialog.ConflictType.EVENT] == true)
         assertTrue(result[SyncStatusDialog.ConflictType.DATA_VALUES] == true)
+    }
+
+    @Test
+    fun shouldSmsSyncUsingPlayServices() {
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            programUtils,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.PROGRAM,
+            "test_uid",
+            null,
+            null,
+            null,
+            workManager,
+            errorMapper,
+            preferenceProvider,
+            smsSyncProvider
+        )
+
+        val testingMsg = "testingMsg"
+        val testingGateway = "testingGateWay"
+        whenever(smsSyncProvider.isPlayServicesEnabled()) doReturn true
+        whenever(smsSyncProvider.getConvertTask()) doReturn Single.just(
+            ConvertTaskResult.Message(testingMsg)
+        )
+        whenever(smsSyncProvider.getGatewayNumber()) doReturn testingGateway
+        presenter.configure(view)
+        presenter.onSmsSyncClick { }
+
+        verify(view, times(1)).logOpeningSmsApp()
+        verify(smsSyncProvider, times(1)).getConvertTask()
+        verify(view, times(1)).openSmsApp(testingMsg, testingGateway)
     }
 
     private fun getMockedCompleteRegistrations(

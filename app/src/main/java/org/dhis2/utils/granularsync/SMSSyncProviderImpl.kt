@@ -34,9 +34,6 @@ class SMSSyncProviderImpl(
     ) {
     }
 
-    override fun getSSMSIntentFilter(): String? = null
-    override fun getSendPermission(): String? = null
-
     override fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
         doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit

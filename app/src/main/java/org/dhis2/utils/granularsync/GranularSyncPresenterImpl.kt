@@ -209,9 +209,7 @@ class GranularSyncPresenterImpl(
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribeWith(
-                    smsSyncProvider.onConvertingObserver {
-                        updateStateList(it)
-                    }
+                    smsSyncProvider.onConvertingObserver { updateStateList(it) }
                 )
         )
 
@@ -219,7 +217,7 @@ class GranularSyncPresenterImpl(
     }
 
     // PLAY SERVICES
-    private fun initSMSSyncPlayServices(context: Context) {
+    private fun initSMSSyncPlayServices() {
         disposable.add(
             smsSyncProvider.getConvertTask()
                 .filter {
@@ -299,12 +297,11 @@ class GranularSyncPresenterImpl(
     }
 
     override fun onSmsSyncClick(
-        context: Context,
         callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
     ) {
         if (smsSyncProvider.isPlayServicesEnabled()) {
             view.logOpeningSmsApp()
-            initSMSSyncPlayServices(context)
+            initSMSSyncPlayServices()
         } else if (view.checkSmsPermission()) {
             callback(initSMSSync())
         }
