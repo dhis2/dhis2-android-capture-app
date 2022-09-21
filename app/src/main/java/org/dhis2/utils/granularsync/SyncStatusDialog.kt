@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
@@ -74,6 +75,40 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     private val config: SyncStatusDialogUiConfig by lazy {
         SyncStatusDialogUiConfig(resources, presenter, getInputArguments())
+    }
+
+    private val smsAppLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        adapter!!.addItem(
+            StatusLogItem.create(
+                Calendar.getInstance().time,
+                getString(R.string.sms_sync_manual_confirmation)
+            )
+        )
+        val smsConfirmationDialog = BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = getString(R.string.sms_enabled),
+                subtitle = getString(R.string.sms_sync_is_sms_sent),
+                iconResource = R.drawable.ic_help,
+                mainButton = DialogButtonStyle.NeutralButton(R.string.no),
+                secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
+            ),
+            onMainButtonClicked = {
+                presenter.onSmsNotManuallySent(requireContext())
+            },
+            onSecondaryButtonClicked = {
+                presenter.onSmsManuallySent(requireContext()) {
+                    it.observe(this) { messageReceived ->
+                        presenter.onConfirmationMessageStateChanged(messageReceived)
+                    }
+                }
+            }
+        ).also {
+            it.isCancelable = false
+        }
+        smsConfirmationDialog
+            .show(childFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
     enum class ConflictType {
@@ -260,41 +295,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     override fun openSmsApp(message: String, smsToNumber: String) {
         val chooser = createSMSIntent(message, smsToNumber)
-        startActivityForResult(chooser, SMS_APP_REQ_ID)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == SMS_APP_REQ_ID) {
-            adapter!!.addItem(
-                StatusLogItem.create(
-                    Calendar.getInstance().time,
-                    getString(R.string.sms_sync_manual_confirmation)
-                )
-            )
-            val smsConfirmationDialog = BottomSheetDialog(
-                bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                    title = getString(R.string.sms_enabled),
-                    subtitle = getString(R.string.sms_sync_is_sms_sent),
-                    iconResource = R.drawable.ic_help,
-                    mainButton = DialogButtonStyle.NeutralButton(R.string.no),
-                    secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
-                ),
-                onMainButtonClicked = {
-                    presenter.onSmsNotManuallySent(requireContext())
-                },
-                onSecondaryButtonClicked = {
-                    presenter.onSmsManuallySent(requireContext()) {
-                        it.observe(this) { messageReceived ->
-                            presenter.onConfirmationMessageStateChanged(messageReceived)
-                        }
-                    }
-                }
-            ).also {
-                it.isCancelable = false
-            }
-            smsConfirmationDialog
-                .show(childFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
-        }
+        smsAppLauncher.launch(chooser)
     }
 
     private fun createSMSIntent(message: String, smsToNumber: String): Intent? {

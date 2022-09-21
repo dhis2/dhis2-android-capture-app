@@ -772,6 +772,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             presenter.validateGatewayObservable(binding.settingsSms.settingsSmsReceiver.getText().toString());
         }
         boolean hasNetwork = NetworkUtils.isOnline(context);
+        hasNetwork = true;
 
         binding.settingsSms.settingsSmsSwitch.setEnabled(hasNetwork);
         binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(hasNetwork);

@@ -31,9 +31,13 @@ interface SMSSyncProvider {
         senderNumber: String,
         onSuccess: () -> Unit,
         onFailure: () -> Unit
-    )
+    ) {
+        // default behaviour
+    }
 
-    fun unregisterSMSReceiver(requireContext: Context) {}
+    fun unregisterSMSReceiver(requireContext: Context) {
+        // default behaviour
+    }
 
     fun expectsResponseSMS(): Boolean {
         return d2.smsModule().configCase().smsModuleConfig.blockingGet().isWaitingForResult

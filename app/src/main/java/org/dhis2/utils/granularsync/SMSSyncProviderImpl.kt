@@ -1,6 +1,5 @@
 package org.dhis2.utils.granularsync
 
-import android.content.Context
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.observers.DisposableCompletableObserver
@@ -26,13 +25,6 @@ class SMSSyncProviderImpl(
     override val smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
 
     override fun isPlayServicesEnabled() = false
-    override fun waitForSMSResponse(
-        context: Context,
-        senderNumber: String,
-        onSuccess: () -> Unit,
-        onFailure: () -> Unit
-    ) {
-    }
 
     override fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
