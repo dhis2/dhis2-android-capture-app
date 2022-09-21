@@ -50,20 +50,6 @@ android {
         dataBinding true
     }
 
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
-
     kotlinOptions {
         jvmTarget = '1.8'
     }

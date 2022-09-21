@@ -214,7 +214,6 @@ dependencies {
 
     implementation project(':viewpagerdotsindicator')
     implementation project(":dhis_android_analytics")
-    implementation project(":form")
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
     implementation project(":compose-table")
