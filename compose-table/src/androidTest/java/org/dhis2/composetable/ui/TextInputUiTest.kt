@@ -61,6 +61,18 @@ class TextInputUiTest {
         }
     }
 
+    @Test
+    fun shouldClearFocusWhenKeyboardIsHidden(){
+        composeTestRule.setContent {
+            TextInputUiTestScreen { }
+        }
+        tableRobot(composeTestRule){
+            assertClickOnCellShouldOpenInputComponent(0, 0)
+            assertClickOnEditOpensInputKeyboard()
+            assertClickOnBackClearsFocus()
+        }
+    }
+
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     private fun TextInputUiTestScreen(onSave: (TableCell) -> Unit) {
