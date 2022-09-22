@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.R
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
@@ -14,24 +13,21 @@ import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.form.data.EnrollmentRuleEngineRepository
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryImpl
-import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.RulesRepository
-import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
+import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
+import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
@@ -81,36 +77,25 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideDataEntrytRepository(
-        context: Context,
+    fun provideDataEntryRepository(
         d2: D2,
-        dhisEnrollmentUtils: DhisEnrollmentUtils,
-        modelFactory: FieldViewModelFactory
+        modelFactory: FieldViewModelFactory,
+        enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider
     ): EnrollmentRepository {
-        val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
-        val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
-        val enrollmentOrgUnitLabel = context.getString(R.string.enrolling_ou)
-        val teiCoordinatesLabel = context.getString(R.string.tei_coordinates)
-        val enrollmentCoordinatesLabel = context.getString(R.string.enrollment_coordinates)
-        val reservedValueWarning = context.getString(R.string.no_reserved_values)
-        val enrollmentDateDefaultLabel = context.getString(R.string.enrollmment_date)
-        val incidentDateDefaultLabel = context.getString(R.string.incident_date)
         return EnrollmentRepository(
-            modelFactory,
-            enrollmentUid,
-            d2,
-            dhisEnrollmentUtils,
-            enrollmentMode,
-            enrollmentDataSectionLabel,
-            singleSectionLabel,
-            enrollmentOrgUnitLabel,
-            teiCoordinatesLabel,
-            enrollmentCoordinatesLabel,
-            reservedValueWarning,
-            enrollmentDateDefaultLabel,
-            incidentDateDefaultLabel
+            fieldFactory = modelFactory,
+            enrollmentUid = enrollmentUid,
+            d2 = d2,
+            enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
+            enrollmentFormLabelsProvider = enrollmentFormLabelsProvider
         )
     }
+
+    @Provides
+    @PerActivity
+    fun provideEnrollmentFormLabelsProvider(
+        resourceManager: ResourceManager
+    ) = EnrollmentFormLabelsProvider(resourceManager)
 
     @Provides
     @PerActivity
@@ -223,39 +208,6 @@ class EnrollmentModule(
             programRepository,
             teiRepository,
             enrollmentService
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideEnrollmentFormRepository(
-        d2: D2,
-        enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController,
-        dataEntryRepository: EnrollmentRepository,
-        networkUtils: NetworkUtils,
-        resourceManager: ResourceManager
-    ): FormRepository {
-        val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
-        return FormRepositoryImpl(
-            FormValueStore(
-                d2,
-                enrollmentRepository.blockingGet().trackedEntityInstance()!!,
-                EntryMode.ATTR,
-                enrollmentRepository,
-                crashReportController,
-                networkUtils,
-                resourceManager
-            ),
-            fieldErrorMessageProvider,
-            DisplayNameProviderImpl(
-                OptionSetConfiguration(d2),
-                OrgUnitConfiguration(d2)
-            ),
-            dataEntryRepository,
-            EnrollmentRuleEngineRepository(d2, enrollmentUid),
-            RulesUtilsProviderImpl(d2),
-            LegendValueProviderImpl(d2, resourceManager)
         )
     }
 

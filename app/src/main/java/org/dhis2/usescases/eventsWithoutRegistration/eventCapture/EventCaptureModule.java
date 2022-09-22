@@ -10,6 +10,7 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -18,29 +19,13 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
-import org.dhis2.form.data.RulesUtilsProviderImpl;
-import org.dhis2.form.data.metadata.OptionSetConfiguration;
-import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
-import org.dhis2.form.ui.FieldViewModelFactoryImpl;
-import org.dhis2.form.ui.LayoutProviderImpl;
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
-import org.dhis2.form.ui.provider.HintProviderImpl;
-import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
-import org.dhis2.form.ui.provider.LegendValueProviderImpl;
-import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
-import org.dhis2.form.ui.provider.UiStyleProviderImpl;
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
-import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -53,12 +38,10 @@ public class EventCaptureModule {
 
     private final String eventUid;
     private final EventCaptureContract.View view;
-    private final Context activityContext;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid, Context context) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
         this.view = view;
         this.eventUid = eventUid;
-        this.activityContext = context;
     }
 
     @Provides
@@ -86,30 +69,6 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(D2 d2) {
         return new EventCaptureRepositoryImpl(eventUid, d2);
-    }
-
-    @Provides
-    @PerActivity
-    FieldViewModelFactory fieldFactory(
-            Context context,
-            D2 d2,
-            ResourceManager resourceManager
-    ) {
-        return new FieldViewModelFactoryImpl(
-                false,
-                new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(activityContext, true),
-                        new LongTextUiColorFactoryImpl(activityContext, true)
-                ),
-                new LayoutProviderImpl(),
-                new HintProviderImpl(context),
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
-                ),
-                new UiEventTypesProviderImpl(),
-                new KeyboardActionProviderImpl(),
-                new LegendValueProviderImpl(d2, resourceManager));
     }
 
     @Provides
@@ -160,51 +119,6 @@ public class EventCaptureModule {
     @PerActivity
     FlowableProcessor<RowAction> getProcessor() {
         return PublishProcessor.create();
-    }
-
-    @Provides
-    @PerActivity
-    org.dhis2.form.data.FormRepository provideEventsFormRepository(
-            @NonNull D2 d2,
-            org.dhis2.data.forms.dataentry.EventRepository eventDataEntryRepository,
-            CrashReportController crashReportController,
-            NetworkUtils networkUtils,
-            ResourceManager resourceManager
-    ) {
-        FieldErrorMessageProvider fieldErrorMessageProvider = new FieldErrorMessageProvider(activityContext);
-        return new FormRepositoryImpl(
-                new FormValueStore(
-                        d2,
-                        eventUid,
-                        EntryMode.DE,
-                        null,
-                        crashReportController,
-                        networkUtils,
-                        resourceManager
-                ),
-                fieldErrorMessageProvider,
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
-                ),
-                eventDataEntryRepository,
-                new org.dhis2.form.data.EventRuleEngineRepository(d2, eventUid),
-                new RulesUtilsProviderImpl(d2),
-                new LegendValueProviderImpl(d2, resourceManager)
-        );
-    }
-
-    @Provides
-    @PerActivity
-    org.dhis2.data.forms.dataentry.EventRepository provideEventDataEntryRepository(
-            D2 d2,
-            FieldViewModelFactory modelFactory
-    ) {
-        return new org.dhis2.data.forms.dataentry.EventRepository(
-                modelFactory,
-                eventUid,
-                d2
-        );
     }
 
     @Provides

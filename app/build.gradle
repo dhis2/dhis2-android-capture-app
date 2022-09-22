@@ -264,7 +264,6 @@ dependencies {
 
     //region Analytics
     implementation "org.matomo.sdk:tracker:${libraries.matomo}"
-    implementation "io.sentry:sentry-android:${libraries.sentry}"
     //endregion
 
     //region Debug

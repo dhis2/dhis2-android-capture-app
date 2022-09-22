@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry
 
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode

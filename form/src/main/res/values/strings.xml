@@ -91,5 +91,13 @@
     <string name="error_true_only_one_is_not_true">Invalid character 1</string>
     <string name="data_values_save_error">DataValues can\'t be saved using these arguments. Use the other one.</string>
     <string name="leading_zero_error">Leading zero numbers are not allowed</string>
+    <string name="enrollment_data_section_label">Enrollment data</string>
+    <string name="enrollment_single_section_label">Attributes - %s</string>
+    <string name="enrolling_ou">Enrolling OU:</string>
+    <string name="tei_coordinates">Coordinates for the</string>
+    <string name="enrollment_coordinates">Enrollment coordinates</string>
+    <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
+    <string name="enrollmment_date">Enrollment date</string>
+    <string name="incident_date">Incident date</string>
 
 </resources>

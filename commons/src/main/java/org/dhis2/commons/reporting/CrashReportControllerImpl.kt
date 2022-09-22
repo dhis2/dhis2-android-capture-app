@@ -1,13 +1,10 @@
-package org.dhis2.utils.reporting
+package org.dhis2.commons.reporting
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import javax.inject.Inject
-import org.dhis2.commons.reporting.CrashReportController
 
 class CrashReportControllerImpl @Inject constructor() : CrashReportController {
-
-    override fun trackScreenName(screen: String) {}
 
     override fun trackUser(user: String?, server: String?) {
         val sentryUser = io.sentry.protocol.User().apply {

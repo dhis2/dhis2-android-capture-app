@@ -46,20 +46,6 @@ android {
 
     flavorDimensions "default"
 
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisPlayServices {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
-
     kotlinOptions {
         jvmTarget = '1.8'
     }
