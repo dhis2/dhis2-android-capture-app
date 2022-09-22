@@ -49,7 +49,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -70,6 +69,7 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.dhis2.composetable.model.areAllValuesEmpty
 
 @Composable
 fun TableHeader(
@@ -592,13 +592,13 @@ fun DataTable(
     inputIsOpen: Boolean = false,
     tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
-    if (!editable) {
+    if (!editable && !tableList.all { it.areAllValuesEmpty() }) {
         TableItem(
             tableModel = tableList.first(),
             tableColors = tableColors,
             tableInteractions = tableInteractions
         )
-    } else {
+    } else if (editable) {
         TableList(
             tableList = tableList,
             tableColors = tableColors,
