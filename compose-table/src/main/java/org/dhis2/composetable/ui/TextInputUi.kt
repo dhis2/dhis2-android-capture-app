@@ -68,7 +68,7 @@ fun TextInput(
         val isKeyboardOpen by keyboardAsState()
 
         LaunchedEffect(isKeyboardOpen) {
-            if(isKeyboardOpen == Keyboard.Closed) {
+            if (isKeyboardOpen == Keyboard.Closed) {
                 focusManager.clearFocus(true)
             }
         }
