@@ -6,6 +6,7 @@ import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
@@ -17,7 +18,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -168,16 +168,19 @@ class EnrollmentRepository(
 
         var dataValue: String? = getAttributeValue(attrValueRepository)
 
-        var optionCount = 0
-        var options = listOf<Option>()
+        var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {
-            optionCount =
+            val optionCount =
                 d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount()
-            options =
+            optionSetConfig = OptionSetConfiguration.config(
+                optionCount
+            ) {
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet()
+            }
         }
+
         var warning: String? = null
 
         if (generated && dataValue == null) {
@@ -228,10 +231,9 @@ class EnrollmentRepository(
             renderingType,
             attribute.displayDescription(),
             programTrackedEntityAttribute.renderType()?.mobile(),
-            optionCount,
             attribute.style(),
             attribute.fieldMask(),
-            options,
+            optionSetConfig,
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
         )
 
@@ -379,7 +381,6 @@ class EnrollmentRepository(
             null,
             null,
             null,
-            null,
             ObjectStyle.builder().build(),
             null,
             null,
@@ -407,7 +408,6 @@ class EnrollmentRepository(
             null,
             null,
             null,
-            null,
             ObjectStyle.builder().build(),
             null,
             null,
@@ -427,7 +427,6 @@ class EnrollmentRepository(
             null,
             editable,
             SectionRenderingType.LISTING,
-            null,
             null,
             null,
             ObjectStyle.builder().build(),
@@ -460,7 +459,6 @@ class EnrollmentRepository(
             null,
             null,
             null,
-            null,
             ObjectStyle.builder().build(),
             null,
             null,
@@ -485,7 +483,6 @@ class EnrollmentRepository(
             ENROLLMENT_DATA_SECTION_UID,
             null,
             canBeEdited(),
-            null,
             null,
             null,
             null,

@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -40,8 +41,20 @@ abstract class DataEntryBaseRepository(
         val item = when {
             fieldUiModel.optionSet != null -> {
                 fieldUiModel.apply {
-                    this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
-                    this.optionsToShow = optionsInGroupsToShow
+                    val optionsetConfig = optionSetConfiguration
+                    this.optionSetConfiguration = when (optionsetConfig) {
+                        is OptionSetConfiguration.BigOptionSet -> optionsetConfig.copy(
+                            optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten(),
+                            optionsToShow = optionsInGroupsToShow
+                        )
+                        is OptionSetConfiguration.DefaultOptionSet -> optionsetConfig.copy(
+                            optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten(),
+                            optionsToShow = optionsInGroupsToShow
+                        )
+                        null -> {
+                            optionSetConfiguration
+                        }
+                    }
                 }
             }
             else -> {

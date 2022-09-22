@@ -26,6 +26,6 @@ class SearchOptionSetOption(
             repository = repository.byDisplayName().like("%$textToSearch%")
         }
 
-        return repository.orderBySortOrder(RepositoryScope.OrderByDirection.DESC).blockingGet()
+        return repository.orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
     }
 }

@@ -6,6 +6,7 @@ import io.reactivex.Single
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -14,7 +15,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 
@@ -129,8 +129,7 @@ class EventRepository(
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de.displayFormName()
         val description = de.displayDescription()
-        var optionCount = 0
-        val options: List<Option>
+        var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
                 .eq(optionSet).byCode()
@@ -142,13 +141,15 @@ class EventRepository(
                         .byCode()
                         .eq(dataValue).one().blockingGet().displayName()
             }
-            optionCount =
+            val optionCount =
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .blockingCount()
-            options = d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
-        } else {
-            options = ArrayList()
+            optionSetConfig = OptionSetConfiguration.config(
+                optionCount
+            ) {
+                d2.optionModule().options().byOptionSetUid().eq(optionSet)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
+            }
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)
@@ -175,10 +176,9 @@ class EventRepository(
             renderingType,
             description,
             fieldRendering,
-            optionCount,
             objectStyle,
             de.fieldMask(),
-            options,
+            optionSetConfig,
             featureType
         )
         return if (error.isNotEmpty()) {

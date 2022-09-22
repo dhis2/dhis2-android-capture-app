@@ -113,7 +113,6 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
-            null,
             ObjectStyle.builder().build(),
             "",
             null,
@@ -489,6 +488,7 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
+            false,
             null
         )
 
@@ -544,6 +544,7 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
+            false,
             null
         )
 
@@ -616,6 +617,7 @@ class RulesUtilsProviderImplTest {
             null,
             null,
             null,
+            false,
             null
         )
 

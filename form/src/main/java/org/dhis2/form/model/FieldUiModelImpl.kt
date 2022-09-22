@@ -29,12 +29,10 @@ data class FieldUiModelImpl(
     override val uiEventFactory: UiEventFactory? = null,
     override val displayName: String? = null,
     override val renderingType: UiRenderType? = null,
-    override val options: List<Option>? = null,
-    override var optionsToHide: List<String>? = null,
-    override var optionsToShow: List<String>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
-    override val isLoadingData: Boolean = false
+    override val isLoadingData: Boolean = false,
+    override var optionSetConfiguration: OptionSetConfiguration?
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -126,16 +124,6 @@ data class FieldUiModelImpl(
 
     override val isNegativeChecked: Boolean
         get() = value?.toBoolean() == false
-
-    override val optionsToDisplay: List<Option>?
-        get() = options?.filter { option ->
-            when {
-                optionsToShow?.isNotEmpty() == true ->
-                    optionsToShow?.contains(option.uid()) ?: false
-                else ->
-                    !(optionsToHide?.contains(option.uid()) ?: false)
-            }
-        }?.sortedBy { it.sortOrder() }
 
     override fun setValue(value: String?) = this.copy(value = value)
 
