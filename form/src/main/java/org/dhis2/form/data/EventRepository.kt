@@ -1,11 +1,10 @@
-package org.dhis2.data.forms.dataentry
+package org.dhis2.form.data
 
 import android.text.TextUtils
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.Bindings.blockingGetValueCheck
 import org.dhis2.Bindings.userFriendlyValue
-import org.dhis2.form.data.DataEntryBaseRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -124,7 +123,6 @@ class EventRepository(
         var dataValue =
             if (valueRepository.blockingExists()) valueRepository.blockingGet()
                 .value() else null
-        val rawValue = dataValue
         val friendlyValue =
             if (dataValue != null) valueRepository.blockingGetValueCheck(d2, uid)
                 .userFriendlyValue(d2) else null
@@ -134,16 +132,15 @@ class EventRepository(
         var optionCount = 0
         val options: List<Option>
         if (!TextUtils.isEmpty(optionSet)) {
-            if (!TextUtils.isEmpty(dataValue)) {
-                if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode()
-                    .eq(dataValue)
-                    .one().blockingExists()
-                ) {
-                    dataValue =
-                        d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                            .byCode()
-                            .eq(dataValue).one().blockingGet().displayName()
-                }
+            if (!TextUtils.isEmpty(dataValue) && d2.optionModule().options().byOptionSetUid()
+                .eq(optionSet).byCode()
+                .eq(dataValue)
+                .one().blockingExists()
+            ) {
+                dataValue =
+                    d2.optionModule().options().byOptionSetUid().eq(optionSet)
+                        .byCode()
+                        .eq(dataValue).one().blockingGet().displayName()
             }
             optionCount =
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
@@ -153,11 +150,8 @@ class EventRepository(
         } else {
             options = ArrayList()
         }
-        val fieldRendering =
-            if (programStageDataElement.renderType() != null) programStageDataElement.renderType()!!
-                .mobile() else null
-        val objectStyle =
-            if (de.style() != null) de.style() else ObjectStyle.builder().build()
+        val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
+        val objectStyle = getObjectStyle(de)
         val error: String = checkConflicts(de.uid(), dataValue)
         val isOrgUnit =
             valueType === ValueType.ORGANISATION_UNIT
@@ -165,17 +159,8 @@ class EventRepository(
         if (!isOrgUnit && !isDate) {
             dataValue = friendlyValue
         }
-        val renderingType = if (programStageSection?.renderType() != null &&
-            programStageSection.renderType()!!.mobile() != null
-        ) {
-            programStageSection.renderType()!!.mobile()!!.type()
-        } else {
-            null
-        }
-        val featureType = when (valueType) {
-            ValueType.COORDINATE -> FeatureType.POINT
-            else -> null
-        }
+        val renderingType = getSectionRenderingType(programStageSection)
+        val featureType = getFeatureType(valueType)
 
         val fieldViewModel = fieldFactory.create(
             uid,
@@ -202,6 +187,22 @@ class EventRepository(
             fieldViewModel
         }
     }
+
+    private fun getObjectStyle(de: DataElement) =
+        if (de.style() != null) de.style() else ObjectStyle.builder().build()
+
+    private fun getValueTypeDeviceRendering(programStageDataElement: ProgramStageDataElement) =
+        if (programStageDataElement.renderType() != null) programStageDataElement.renderType()!!
+            .mobile() else null
+
+    private fun getFeatureType(valueType: ValueType?) =
+        when (valueType) {
+            ValueType.COORDINATE -> FeatureType.POINT
+            else -> null
+        }
+
+    private fun getSectionRenderingType(programStageSection: ProgramStageSection?) =
+        programStageSection?.renderType()?.mobile()?.type()
 
     private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 

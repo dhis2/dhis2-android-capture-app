@@ -76,10 +76,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         ON_RESUME
     }
 
-    public void setScreenName(String name) {
-        crashReportController.trackScreenName(name);
-    }
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(

@@ -50,20 +50,6 @@ android {
         dataBinding true
     }
 
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
-
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -152,4 +138,5 @@ dependencies {
     api 'androidx.test.espresso:espresso-idling-resource:3.3.0'
     api 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
 
+    implementation "io.sentry:sentry-android:${libraries.sentry}"
 }
