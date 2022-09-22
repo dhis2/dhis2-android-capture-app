@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,9 +68,11 @@ class SearchTEIViewModel(
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
     init {
-        viewModelScope.launch {
-            createButtonScrollVisibility.value = searchRepository.canCreateInProgramWithoutSearch()
-            _pageConfiguration.value = searchNavPageConfigurator.initVariables()
+        viewModelScope.launch(Dispatchers.IO) {
+            createButtonScrollVisibility.postValue(
+                searchRepository.canCreateInProgramWithoutSearch()
+            )
+            _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
         }
     }
 
