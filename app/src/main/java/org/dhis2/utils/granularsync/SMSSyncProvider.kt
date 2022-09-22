@@ -5,8 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.observers.DisposableCompletableObserver
-import io.reactivex.observers.DisposableSingleObserver
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.sms.SmsSendingService
@@ -100,14 +98,6 @@ interface SMSSyncProvider {
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
         doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
     ): Completable = Completable.complete()
-
-    fun onConvertingObserver(
-        onComplete: (SmsSendingService.SendingStatus) -> Unit
-    ): DisposableSingleObserver<ConvertTaskResult>
-
-    fun onSendingObserver(
-        onComplete: (SmsSendingService.SendingStatus) -> Unit
-    ): DisposableCompletableObserver
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus
     fun observeConfirmationNumber(): LiveData<Boolean?> = MutableLiveData(null)

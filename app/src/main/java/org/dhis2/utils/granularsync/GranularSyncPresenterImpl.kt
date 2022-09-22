@@ -207,9 +207,44 @@ class GranularSyncPresenterImpl(
             smsSyncProvider.getConvertTask()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
-                .subscribeWith(
-                    smsSyncProvider.onConvertingObserver { updateStateList(it) }
+                .subscribe(
+                    { countResult ->
+                        if (countResult is ConvertTaskResult.Count) {
+                            updateStateList(
+                                SmsSendingService.SendingStatus(
+                                    smsSyncProvider.smsSender.submissionId,
+                                    SmsSendingService.State.CONVERTED,
+                                    null,
+                                    0,
+                                    countResult.smsCount
+                                )
+                            )
+                            updateStateList(
+                                SmsSendingService.SendingStatus(
+                                    smsSyncProvider.smsSender.submissionId,
+                                    SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
+                                    null,
+                                    0,
+                                    countResult.smsCount
+                                )
+                            )
+                        }
+                    },
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.ERROR,
+                                it,
+                                0,
+                                0
+                            )
+                        )
+                    }
                 )
+            /*.subscribeWith(
+                smsSyncProvider.onConvertingObserver { updateStateList(it) }
+            )*/
         )
 
         return states
@@ -250,9 +285,28 @@ class GranularSyncPresenterImpl(
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
-                .subscribeWith(
-                    smsSyncProvider.onSendingObserver {
-                        updateStateList(it)
+                .subscribe(
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.COMPLETED,
+                                null,
+                                0,
+                                0
+                            )
+                        )
+                    },
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.ERROR,
+                                it,
+                                0,
+                                0
+                            )
+                        )
                     }
                 )
         )

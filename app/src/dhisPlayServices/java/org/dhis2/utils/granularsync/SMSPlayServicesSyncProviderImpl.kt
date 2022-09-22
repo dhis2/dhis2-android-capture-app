@@ -35,8 +35,6 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import io.reactivex.Single
-import io.reactivex.observers.DisposableCompletableObserver
-import io.reactivex.observers.DisposableSingleObserver
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
@@ -124,30 +122,6 @@ class SMSPlayServicesSyncProviderImpl(
     override fun convertDataSet(): Single<ConvertTaskResult> {
         return smsSender.compressDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
             .map { msg -> ConvertTaskResult.Message(msg) }
-    }
-
-    override fun onConvertingObserver(
-        onComplete: (SmsSendingService.SendingStatus) -> Unit
-    ): DisposableSingleObserver<ConvertTaskResult> {
-        return object : DisposableSingleObserver<ConvertTaskResult>() {
-            override fun onSuccess(t: ConvertTaskResult) {
-            }
-
-            override fun onError(e: Throwable) {
-            }
-        }
-    }
-
-    override fun onSendingObserver(
-        onComplete: (SmsSendingService.SendingStatus) -> Unit
-    ): DisposableCompletableObserver {
-        return object : DisposableCompletableObserver() {
-            override fun onComplete() {
-            }
-
-            override fun onError(e: Throwable) {
-            }
-        }
     }
 
     override fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
