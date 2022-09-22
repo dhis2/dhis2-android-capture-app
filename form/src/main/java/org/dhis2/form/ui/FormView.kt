@@ -63,8 +63,6 @@ import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog
-import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
