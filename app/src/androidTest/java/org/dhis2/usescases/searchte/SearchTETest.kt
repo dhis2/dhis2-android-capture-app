@@ -114,6 +114,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Checking CI")
     @Test
     fun shouldCheckDisplayInList() {
         val birthdaySearch = createDateOfBirthSearch()
