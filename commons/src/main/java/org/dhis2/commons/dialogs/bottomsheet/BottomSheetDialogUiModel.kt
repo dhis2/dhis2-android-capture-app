@@ -1,8 +1,8 @@
-package org.dhis2.form.ui.dialog
+package org.dhis2.commons.dialogs.bottomsheet
 
 import org.dhis2.commons.data.FieldWithIssue
 
-data class DataEntryDialogUiModel(
+data class BottomSheetDialogUiModel(
     var title: String,
     var subtitle: String,
     var iconResource: Int,

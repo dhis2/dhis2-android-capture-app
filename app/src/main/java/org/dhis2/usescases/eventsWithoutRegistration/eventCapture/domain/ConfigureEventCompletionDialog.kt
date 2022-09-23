@@ -2,10 +2,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
-import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
-import org.dhis2.form.ui.dialog.DialogButtonStyle.CompleteButton
-import org.dhis2.form.ui.dialog.DialogButtonStyle.MainButton
-import org.dhis2.form.ui.dialog.DialogButtonStyle.SecondaryButton
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.CompleteButton
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.MainButton
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.SecondaryButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.COMPLETE_ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.ERROR
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog.DialogType.MANDATORY
@@ -38,7 +38,7 @@ class ConfigureEventCompletionDialog(
             SecondaryButton(provider.provideNotNow()),
             FormBottomDialog.ActionType.FINISH
         )
-        val dataEntryDialogUiModel = DataEntryDialogUiModel(
+        val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
             subtitle = getSubtitle(dialogType),
             iconResource = getIcon(dialogType),
@@ -53,7 +53,7 @@ class ConfigureEventCompletionDialog(
         )
 
         return EventCompletionDialog(
-            dataEntryDialogUiModel = dataEntryDialogUiModel,
+            bottomSheetDialogUiModel = bottomSheetDialogUiModel,
             mainButtonAction = mainButton.action,
             secondaryButtonAction = secondaryButton.action
         )

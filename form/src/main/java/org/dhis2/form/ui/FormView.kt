@@ -39,6 +39,7 @@ import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
@@ -62,7 +63,6 @@ import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog
 import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.DialogDelegate
@@ -382,8 +382,8 @@ class FormView : Fragment() {
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
         resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
-            DataEntryBottomDialog(
-                dataEntryDialogUiModel = it,
+            BottomSheetDialog(
+                bottomSheetDialogUiModel = it,
                 onSecondaryButtonClicked = {
                     if (result.allowDiscard) {
                         viewModel.discardChanges()

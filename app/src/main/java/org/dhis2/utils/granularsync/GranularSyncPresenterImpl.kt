@@ -25,6 +25,7 @@
 
 package org.dhis2.utils.granularsync
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -33,7 +34,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -198,22 +198,77 @@ class GranularSyncPresenterImpl(
         return workManagerController.getWorkInfosForUniqueWorkLiveData(workName)
     }
 
+    // NO PLAY SERVICES
     override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {
         statesList = ArrayList()
         states = MutableLiveData()
 
         disposable.add(
             smsSyncProvider.getConvertTask()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribeWith(
-                    smsSyncProvider.onConvertingObserver {
-                        updateStateList(it)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.io())
+                .subscribe(
+                    { countResult ->
+                        if (countResult is ConvertTaskResult.Count) {
+                            updateStateList(
+                                SmsSendingService.SendingStatus(
+                                    smsSyncProvider.smsSender.submissionId,
+                                    SmsSendingService.State.CONVERTED,
+                                    null,
+                                    0,
+                                    countResult.smsCount
+                                )
+                            )
+                            updateStateList(
+                                SmsSendingService.SendingStatus(
+                                    smsSyncProvider.smsSender.submissionId,
+                                    SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
+                                    null,
+                                    0,
+                                    countResult.smsCount
+                                )
+                            )
+                        }
+                    },
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.ERROR,
+                                it,
+                                0,
+                                0
+                            )
+                        )
                     }
                 )
+            /*.subscribeWith(
+                smsSyncProvider.onConvertingObserver { updateStateList(it) }
+            )*/
         )
 
         return states
+    }
+
+    // PLAY SERVICES
+    private fun initSMSSyncPlayServices() {
+        disposable.add(
+            smsSyncProvider.getConvertTask()
+                .filter {
+                    it is ConvertTaskResult.Message
+                }
+                .map { result ->
+                    (result as ConvertTaskResult.Message).smsMessage
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { message ->
+                        view.openSmsApp(message, smsSyncProvider.getGatewayNumber())
+                    },
+                    { error -> Timber.e(error) }
+                )
+        )
     }
 
     override fun sendSMS() {
@@ -230,9 +285,28 @@ class GranularSyncPresenterImpl(
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
-                .subscribeWith(
-                    smsSyncProvider.onSendingObserver {
-                        updateStateList(it)
+                .subscribe(
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.COMPLETED,
+                                null,
+                                0,
+                                0
+                            )
+                        )
+                    },
+                    {
+                        updateStateList(
+                            SmsSendingService.SendingStatus(
+                                smsSyncProvider.smsSender.submissionId,
+                                SmsSendingService.State.ERROR,
+                                it,
+                                0,
+                                0
+                            )
+                        )
                     }
                 )
         )
@@ -242,6 +316,16 @@ class GranularSyncPresenterImpl(
         updateStateList(
             smsSyncProvider.onSmsNotAccepted()
         )
+    }
+
+    private fun updateStatusToSentBySMS() {
+        smsSyncProvider.smsSender.markAsSentViaSMS().blockingAwait()
+        view.updateState(State.SENT_VIA_SMS)
+    }
+
+    private fun updateStatusToSyncedWithSMS() {
+        smsSyncProvider.smsSender.markAsSentViaSMS().blockingAwait()
+        view.updateState(State.SYNCED_VIA_SMS)
     }
 
     private fun isLastSendingStateTheSame(sent: Int, total: Int): Boolean {
@@ -258,6 +342,58 @@ class GranularSyncPresenterImpl(
         }
         statesList.add(currentStatus)
         states.postValue(statesList)
+    }
+
+    override fun onSmsNotManuallySent(context: Context) {
+        view.logSmsNotSent()
+        smsSyncProvider.unregisterSMSReceiver(context)
+    }
+
+    override fun onSmsSyncClick(
+        callback: (LiveData<List<SmsSendingService.SendingStatus>>) -> Unit
+    ) {
+        if (smsSyncProvider.isPlayServicesEnabled()) {
+            view.logOpeningSmsApp()
+            initSMSSyncPlayServices()
+        } else if (view.checkSmsPermission()) {
+            callback(initSMSSync())
+        }
+    }
+
+    override fun onSmsManuallySent(
+        context: Context,
+        confirmationCallback: (LiveData<Boolean?>) -> Unit
+    ) {
+        if (smsSyncProvider.expectsResponseSMS()) {
+            view.logWaitingForServerResponse()
+            smsSyncProvider.waitForSMSResponse(
+                context,
+                smsSyncProvider.getGatewayNumber(),
+                onSuccess = {
+                    confirmationCallback(smsSyncProvider.observeConfirmationNumber())
+                },
+                onFailure = {
+                    view.logSmsReachedServerError()
+                    updateStatusToSentBySMS()
+                }
+            )
+        } else {
+            view.logSmsSent()
+            updateStatusToSentBySMS()
+        }
+    }
+
+    override fun onConfirmationMessageStateChanged(messageReceived: Boolean?) {
+        when (messageReceived) {
+            true -> {
+                view.logSmsReachedServer()
+                updateStatusToSyncedWithSMS()
+            }
+            false -> {
+                view.logSmsReachedServerError()
+                updateStatusToSentBySMS()
+            }
+        }
     }
 
     @VisibleForTesting

@@ -1,4 +1,4 @@
-package org.dhis2.form.ui.dialog
+package org.dhis2.commons.dialogs.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,10 +11,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.form.R
+import org.dhis2.commons.R
 
-class DataEntryBottomDialog(
-    var dataEntryDialogUiModel: DataEntryDialogUiModel,
+class BottomSheetDialog(
+    var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     var onMainButtonClicked: () -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {}
 ) : BottomSheetDialogFragment() {
@@ -33,8 +33,8 @@ class DataEntryBottomDialog(
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    DataEntryBottomDialogContent(
-                        dataEntryDialogUiModel = dataEntryDialogUiModel,
+                    BottomSheetDialogContent(
+                        bottomSheetDialogUiModel = bottomSheetDialogUiModel,
                         onMainButtonClicked = {
                             onMainButtonClicked.invoke()
                             dismiss()

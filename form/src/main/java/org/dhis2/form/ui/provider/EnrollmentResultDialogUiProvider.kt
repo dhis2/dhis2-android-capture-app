@@ -2,6 +2,8 @@ package org.dhis2.form.ui.provider
 
 import org.dhis2.commons.data.FieldWithIssue
 import org.dhis2.commons.data.IssueType
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -9,15 +11,13 @@ import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
-import org.dhis2.form.ui.dialog.DataEntryDialogUiModel
-import org.dhis2.form.ui.dialog.DialogButtonStyle
 
 class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
 
-    fun provideDataEntryUiModel(result: DataIntegrityCheckResult): DataEntryDialogUiModel? {
+    fun provideDataEntryUiModel(result: DataIntegrityCheckResult): BottomSheetDialogUiModel? {
         with(resourceManager) {
             return when (result) {
-                is FieldsWithErrorResult -> DataEntryDialogUiModel(
+                is FieldsWithErrorResult -> BottomSheetDialogUiModel(
                     title = getString(R.string.not_saved),
                     subtitle = getErrorSubtitle(result.allowDiscard),
                     iconResource = R.drawable.ic_error_outline,
@@ -32,7 +32,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         else -> null
                     }
                 )
-                is FieldsWithWarningResult -> DataEntryDialogUiModel(
+                is FieldsWithWarningResult -> BottomSheetDialogUiModel(
                     title = getString(R.string.saved),
                     subtitle = getString(R.string.review_message),
                     iconResource = R.drawable.ic_alert,
@@ -40,7 +40,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                     mainButton = DialogButtonStyle.MainButton(R.string.review),
                     secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now)
                 )
-                is MissingMandatoryResult -> DataEntryDialogUiModel(
+                is MissingMandatoryResult -> BottomSheetDialogUiModel(
                     title = getString(R.string.not_saved),
                     subtitle = getMandatorySubtitle(result.allowDiscard),
                     iconResource = R.drawable.ic_error_outline,
@@ -59,7 +59,7 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         else -> null
                     }
                 )
-                NotSavedResult -> DataEntryDialogUiModel(
+                NotSavedResult -> BottomSheetDialogUiModel(
                     title = getString(R.string.not_saved),
                     subtitle = getString(R.string.discard_go_back),
                     iconResource = R.drawable.ic_alert,

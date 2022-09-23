@@ -90,6 +90,7 @@ class SMSSyncProviderTest {
     @Test
     fun `should return single event task`() {
         mockIsTrackerEvent(false)
+        whenever(smsSender.convertSimpleEvent(any()))doReturn Single.just(1)
         smsSyncProvider(SyncStatusDialog.ConflictType.EVENT).getConvertTask()
         verify(smsSender).convertSimpleEvent("uid")
     }
@@ -97,6 +98,7 @@ class SMSSyncProviderTest {
     @Test
     fun `should return tracker event task`() {
         mockIsTrackerEvent(true)
+        whenever(smsSender.convertTrackerEvent(any()))doReturn Single.just(1)
         smsSyncProvider(SyncStatusDialog.ConflictType.EVENT).getConvertTask()
         verify(smsSender).convertTrackerEvent("uid")
     }
@@ -104,6 +106,7 @@ class SMSSyncProviderTest {
     @Test
     fun `should return enrollment task`() {
         mockEnrollmentExists(true)
+        whenever(smsSender.convertEnrollment(any()))doReturn Single.just(1)
         smsSyncProvider(SyncStatusDialog.ConflictType.TEI).getConvertTask()
         verify(smsSender).convertEnrollment("uid")
     }
@@ -117,6 +120,7 @@ class SMSSyncProviderTest {
 
     @Test
     fun `should return data value task`() {
+        whenever(smsSender.convertDataSet(any(), any(), any(), any()))doReturn Single.just(1)
         smsSyncProviderDataValue(SyncStatusDialog.ConflictType.DATA_VALUES).getConvertTask()
         verify(smsSender).convertDataSet(
             "uid",
@@ -231,7 +235,7 @@ class SMSSyncProviderTest {
         ) doReturn Single.just(smsConfig)
     }
 
-    fun smsSyncProvider(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProvider(
+    fun smsSyncProvider(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProviderImpl(
         d2,
         conflictType,
         "uid",
@@ -241,7 +245,7 @@ class SMSSyncProviderTest {
         resources
     )
 
-    fun smsSyncProviderDataValue(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProvider(
+    fun smsSyncProviderDataValue(conflictType: SyncStatusDialog.ConflictType) = SMSSyncProviderImpl(
         d2,
         conflictType,
         "uid",

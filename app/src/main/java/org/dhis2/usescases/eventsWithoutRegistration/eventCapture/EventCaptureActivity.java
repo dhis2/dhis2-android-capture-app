@@ -29,11 +29,11 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.form.ui.dialog.DataEntryBottomDialog;
-import org.dhis2.form.ui.dialog.DataEntryDialogUiModel;
-import org.dhis2.form.ui.dialog.DialogButtonStyle;
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel;
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
@@ -186,7 +186,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void attemptFinish() {
         if (eventMode == EventMode.NEW) {
-            DataEntryDialogUiModel dataEntryDialogUiModel = new DataEntryDialogUiModel(
+            BottomSheetDialogUiModel bottomSheetDialogUiModel = new BottomSheetDialogUiModel(
                     getString(R.string.title_delete_go_back),
                     getString(R.string.discard_go_back),
                     R.drawable.ic_alert,
@@ -194,8 +194,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     new DialogButtonStyle.MainButton(R.string.keep_editing),
                     new DialogButtonStyle.DiscardButton()
             );
-            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
-                    dataEntryDialogUiModel,
+            BottomSheetDialog dialog = new BottomSheetDialog(
+                    bottomSheetDialogUiModel,
                     () -> Unit.INSTANCE,
                     () -> {
                         presenter.deleteEvent();
@@ -222,8 +222,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             Map<String, String> emptyMandatoryFields,
             EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
-            DataEntryBottomDialog dialog = new DataEntryBottomDialog(
-                    eventCompletionDialog.getDataEntryDialogUiModel(),
+            BottomSheetDialog dialog = new BottomSheetDialog(
+                    eventCompletionDialog.getBottomSheetDialogUiModel(),
                     () -> {
                         setAction(eventCompletionDialog.getMainButtonAction());
                         return Unit.INSTANCE;

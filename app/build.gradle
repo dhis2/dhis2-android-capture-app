@@ -147,7 +147,7 @@ android {
             versionName versions.vName
         }
 
-        dhisNoSMS {
+        dhisPlayServices {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode
@@ -336,6 +336,9 @@ dependencies {
 
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"
+
+    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth:20.2.0")
+    dhisPlayServicesImplementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
 
     //Conscrypt
     implementation "org.conscrypt:conscrypt-android:${libraries.conscrypt}"

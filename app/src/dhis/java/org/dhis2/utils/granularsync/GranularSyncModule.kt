@@ -74,7 +74,7 @@ class GranularSyncModule(
 
     @Provides
     fun smsSyncProvider(d2: D2): SMSSyncProvider {
-        return SMSSyncProvider(
+        return SMSSyncProviderImpl(
             d2,
             conflictType,
             recordUid,
