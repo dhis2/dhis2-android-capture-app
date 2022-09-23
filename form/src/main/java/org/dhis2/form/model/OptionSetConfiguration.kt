@@ -47,4 +47,25 @@ sealed class OptionSetConfiguration(
             }
         }
     }
+
+    fun updateOptionsToHideAndShow(
+        optionsToHide: List<String>,
+        optionsToShow: List<String>
+    ): OptionSetConfiguration {
+        return setOptionsToShow(optionsToShow).setOptionsToHide(optionsToHide)
+    }
+
+    private fun setOptionsToHide(optionsToHide: List<String>): OptionSetConfiguration {
+        return when (this) {
+            is BigOptionSet -> copy(optionsToHide = optionsToHide)
+            is DefaultOptionSet -> copy(optionsToHide = optionsToHide)
+        }
+    }
+
+    private fun setOptionsToShow(optionsToShow: List<String>): OptionSetConfiguration {
+        return when (this) {
+            is BigOptionSet -> copy(optionsToShow = optionsToShow)
+            is DefaultOptionSet -> copy(optionsToShow = optionsToShow)
+        }
+    }
 }
