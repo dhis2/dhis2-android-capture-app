@@ -906,4 +906,9 @@
     <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
     <string name="sms_sync_is_sms_sent">Did you sent the sms?</string>
     <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
+    <string name="syncing_events">Syncing events</string>
+    <string name="syncing_teis">Syncing tracked entities</string>
+    <string name="syncing_data_sets">Syncing data sets</string>
+    <string name="syncing_resources">Syncing resources</string>
+    <string name="syncing_done">Syncing done</string>
 </resources>

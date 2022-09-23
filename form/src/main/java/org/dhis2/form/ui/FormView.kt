@@ -211,7 +211,7 @@ class FormView : Fragment() {
     ): View {
         val contextWrapper = ContextThemeWrapper(context, R.style.searchFormInputText)
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
         dialogDelegate = DialogDelegate()
         binding.recyclerView.layoutManager =

@@ -107,7 +107,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             container,
             false
         )
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         return binding.root
     }

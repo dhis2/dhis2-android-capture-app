@@ -8,6 +8,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import java.util.Calendar
 import kotlin.math.ceil
+import kotlin.math.max
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.commons.prefs.Preference.Companion.DATA
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -234,14 +235,12 @@ class SyncPresenterImpl(
         }
     }
 
-    override fun uploadResources() {
-        Completable.fromObservable(d2.fileResourceModule().fileResources().upload())
-            .blockingAwait()
-    }
-
     override fun downloadResources() {
         if (d2.systemInfoModule().versionManager().isGreaterThan(DHISVersion.V2_32)) {
-            d2.fileResourceModule().blockingDownload()
+            Completable.fromObservable(
+                d2.fileResourceModule().fileResourceDownloader()
+                    .download()
+            ).blockingAwait()
         }
     }
 
@@ -249,8 +248,10 @@ class SyncPresenterImpl(
         val maxNumberOfValuesToReserve = getSettings()?.let {
             it.reservedValues() ?: 100
         } ?: 100
-        d2.trackedEntityModule().reservedValueManager()
-            .blockingDownloadAllReservedValues(maxNumberOfValuesToReserve)
+        Completable.fromObservable(
+            d2.trackedEntityModule().reservedValueManager()
+                .downloadAllReservedValues(maxNumberOfValuesToReserve)
+        ).blockingAwait()
     }
 
     override fun checkSyncStatus(): SyncResult {

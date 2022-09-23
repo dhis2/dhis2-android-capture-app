@@ -55,12 +55,6 @@ class SyncGranularWorker(
         val uid = inputData.getString(UID) ?: return Result.failure()
         val conflictType = inputData.getString(CONFLICT_TYPE)?.let { ConflictType.valueOf(it) }
 
-        try {
-            presenter.uploadResources()
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
-
         val result = when (conflictType) {
             ConflictType.PROGRAM -> {
                 presenter.blockSyncGranularProgram(uid)
