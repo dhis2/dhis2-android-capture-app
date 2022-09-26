@@ -67,9 +67,11 @@ class SearchTEIViewModel(
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
     init {
-        viewModelScope.launch {
-            createButtonScrollVisibility.value = searchRepository.canCreateInProgramWithoutSearch()
-            _pageConfiguration.value = searchNavPageConfigurator.initVariables()
+        viewModelScope.launch(dispatchers.io()) {
+            createButtonScrollVisibility.postValue(
+                searchRepository.canCreateInProgramWithoutSearch()
+            )
+            _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
         }
     }
 
