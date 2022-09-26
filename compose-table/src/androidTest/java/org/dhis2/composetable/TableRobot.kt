@@ -19,12 +19,14 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
+import androidx.test.espresso.Espresso.pressBack
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -173,6 +175,11 @@ class TableRobot(
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 
+    fun assertClickOnBackClearsFocus() {
+        pressBack()
+        assertInputIcon(R.drawable.ic_edit_input)
+    }
+
     fun assertClickOnSaveHidesKeyboardAndSaveValue(valueToType: String) {
         clearInput()
         typeInput(valueToType)
@@ -268,7 +275,7 @@ class TableRobot(
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertExists()
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
