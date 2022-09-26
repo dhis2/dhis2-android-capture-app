@@ -989,6 +989,11 @@ class DataValueRepository(
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(catOptComboUid)
             .blockingGet()
-            .categoryOptions() ?: emptyList()
+            ?.takeIf {
+                d2.categoryModule().categoryCombos()
+                    .uid(it.categoryCombo()?.uid())
+                    .blockingGet()
+                    .isDefault == false
+            }?.categoryOptions() ?: emptyList()
     }
 }

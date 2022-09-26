@@ -175,10 +175,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void finishInputEdition(){
         isKeyboardOpened = false;
-        new Handler().postDelayed(()->{
-            binding.navigationView.setVisibility(View.VISIBLE);
-            binding.saveButton.show();
-        },1000);
+        binding.navigationView.setVisibility(View.VISIBLE);
+        binding.saveButton.show();
     }
 
     @Override

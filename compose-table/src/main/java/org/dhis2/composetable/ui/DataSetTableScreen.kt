@@ -1,6 +1,7 @@
 package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
@@ -62,29 +63,31 @@ fun DataSetTableScreen(
 
     val focusManager = LocalFocusManager.current
 
-    var finishEdition by remember { mutableStateOf(false) }
+    var alreadyFinish by remember { mutableStateOf(false) }
 
     fun finishEdition() {
+        focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
         onEdition(false)
     }
 
-    fun collapseBottomSheet() {
+    fun collapseBottomSheet(finish: Boolean = false) {
         focusManager.clearFocus(true)
         coroutineScope.launch {
-            bottomSheetState.bottomSheetState.collapseIfExpanded()
+            bottomSheetState.bottomSheetState.collapseIfExpanded {
+                if (finish) {
+                    finishEdition()
+                }
+                alreadyFinish = true
+            }
         }
-    }
-
-    fun collapseBottomSheetAndFinishEdition() {
-        collapseBottomSheet()
-        finishEdition = true
     }
 
     fun startEdition() {
         coroutineScope.launch {
             bottomSheetState.bottomSheetState.expandIfCollapsed { onEdition(true) }
         }
+        alreadyFinish = false
     }
 
     fun updateError(tableCell: TableCell) {
@@ -119,7 +122,7 @@ fun DataSetTableScreen(
             val currentTable = tableData.first { it.id == cellSelected.tableId }
             currentTable.getNextCell(cellSelected)?.let {
                 selectNextCell(it, cellSelected)
-            } ?: collapseBottomSheetAndFinishEdition()
+            } ?: collapseBottomSheet(finish = true)
         }
         nextSelected = false
     }
@@ -135,13 +138,13 @@ fun DataSetTableScreen(
     }
 
     BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-        collapseBottomSheetAndFinishEdition()
+        collapseBottomSheet(finish = true)
     }
 
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
-            finishEdition
+            !alreadyFinish
         ) {
             finishEdition()
         }
@@ -165,6 +168,7 @@ fun DataSetTableScreen(
                     currentCell?.let {
                         onSaveValue(it)
                     }
+                    saveClicked = true
                 },
                 onNextSelected = {
                     nextSelected = true
@@ -193,7 +197,7 @@ fun DataSetTableScreen(
                 }
 
                 override fun onClick(tableCell: TableCell) {
-                    currentCell?.let {
+                    currentCell?.takeIf { it != tableCell }?.let {
                         onSaveValue(it)
                     }
                     onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
@@ -219,16 +223,17 @@ fun DataSetTableScreen(
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.collapseIfExpanded() {
+private suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
     if (isExpanded) {
-        collapse()
+        onCollapse()
+        animateTo(BottomSheetValue.Collapsed, tween(400))
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
     if (isCollapsed) {
-        expand()
         onExpand()
+        animateTo(BottomSheetValue.Expanded, tween(400))
     }
 }
