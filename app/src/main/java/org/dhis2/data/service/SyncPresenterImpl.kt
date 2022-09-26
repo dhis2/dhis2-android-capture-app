@@ -8,7 +8,6 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import java.util.Calendar
 import kotlin.math.ceil
-import kotlin.math.max
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.commons.prefs.Preference.Companion.DATA
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
