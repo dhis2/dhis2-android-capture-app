@@ -275,7 +275,7 @@ class TableRobot(
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertExists()
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
