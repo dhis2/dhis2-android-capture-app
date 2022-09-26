@@ -114,22 +114,6 @@ class SyncPresenterTest {
     }
 
     @Test
-    fun `Should upload file resources`() {
-        val completable = Completable.fromObservable(
-            Observable.just(BaseD2Progress.empty(1))
-        ).test()
-        whenever(d2.fileResourceModule()) doReturn mock()
-        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResources().upload()
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-
-        presenter.uploadResources()
-
-        completable.hasSubscription()
-    }
-
-    @Test
     fun `Should configure secondary tracker if configuration exists`() {
         whenever(
             d2.metadataModule().download()
