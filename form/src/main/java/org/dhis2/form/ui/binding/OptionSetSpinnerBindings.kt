@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputEditText
+import java.lang.IllegalArgumentException
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -42,7 +43,9 @@ private fun showOptions(view: View, field: FieldUiModel) {
                 }
                 show()
             }
-        null -> {}
+        null -> {
+            throw IllegalArgumentException("Unsupported OptionSetConfiguration")
+        }
     }
     field.onItemClick()
 }
