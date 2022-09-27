@@ -40,8 +40,11 @@ abstract class DataEntryBaseRepository(
         val item = when {
             fieldUiModel.optionSet != null -> {
                 fieldUiModel.apply {
-                    this.optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten()
-                    this.optionsToShow = optionsInGroupsToShow
+                    this.optionSetConfiguration =
+                        optionSetConfiguration?.updateOptionsToHideAndShow(
+                            optionsToHide = listOf(optionsToHide, optionsInGroupsToHide).flatten(),
+                            optionsToShow = optionsInGroupsToShow
+                        )
                 }
             }
             else -> {

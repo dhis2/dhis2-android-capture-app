@@ -1,13 +1,12 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
-import java.util.ArrayList
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
 
 class SearchRepository(
     private val d2: D2,
@@ -43,19 +42,25 @@ class SearchRepository(
                     d2.trackedEntityModule().trackedEntityAttributes()
                         .uid(typeAttribute.trackedEntityAttribute()!!.uid())
                         .blockingGet()
-                val options = attribute.optionSet()?.let {
-                    d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet()
-                } ?: emptyList()
+                val optionSetConfiguration = attribute.optionSet()?.let {
+                    OptionSetConfiguration.config(
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .blockingCount()
+                    ) {
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                            .blockingGet()
+                    }
+                }
 
                 fieldViewModelFactory.createForAttribute(
                     attribute,
                     null,
                     currentSearchValues[attribute.uid()],
                     true,
-                    options
+                    optionSetConfiguration
                 )
             }.filter { item: FieldUiModel ->
                 item.valueType !== ValueType.IMAGE &&
@@ -81,20 +86,25 @@ class SearchRepository(
                     d2.trackedEntityModule().trackedEntityAttributes()
                         .uid(programAttribute.trackedEntityAttribute()!!.uid())
                         .blockingGet()
-                var options: List<Option>? =
-                    ArrayList()
-                if (attribute.optionSet() != null) {
-                    options = d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet()
+
+                val optionSetConfiguration = attribute.optionSet()?.let {
+                    OptionSetConfiguration.config(
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .blockingCount()
+                    ) {
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                            .blockingGet()
+                    }
                 }
                 fieldViewModelFactory.createForAttribute(
                     attribute,
                     programAttribute,
                     currentSearchValues[attribute.uid()],
                     true,
-                    options
+                    optionSetConfiguration
                 )
             }.filter { item: FieldUiModel? ->
                 item!!.valueType !== ValueType.IMAGE &&

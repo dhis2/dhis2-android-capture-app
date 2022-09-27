@@ -4,6 +4,7 @@ import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.DisplayNameProvider
@@ -17,7 +18,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -47,10 +47,9 @@ class FieldViewModelFactoryImpl(
         renderingType: SectionRenderingType?,
         description: String?,
         fieldRendering: ValueTypeDeviceRendering?,
-        optionCount: Int?,
         objectStyle: ObjectStyle,
         fieldMask: String?,
-        options: List<Option>?,
+        optionSetConfiguration: OptionSetConfiguration?,
         featureType: FeatureType?
     ): FieldUiModel {
         var isMandatory = mandatory
@@ -93,7 +92,7 @@ class FieldViewModelFactoryImpl(
                 fieldRendering?.type(),
                 renderingType
             ),
-            options = options,
+            optionSetConfiguration = optionSetConfiguration,
             keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
             fieldMask = fieldMask
         )
@@ -104,7 +103,7 @@ class FieldViewModelFactoryImpl(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         value: String?,
         editable: Boolean,
-        options: List<Option>?
+        optionSetConfiguration: OptionSetConfiguration?
     ): FieldUiModel {
         isNull(trackedEntityAttribute.valueType(), "type must be supplied")
         return create(
@@ -121,10 +120,9 @@ class FieldViewModelFactoryImpl(
             description = programTrackedEntityAttribute?.displayDescription()
                 ?: trackedEntityAttribute.displayDescription(),
             fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
-            optionCount = null,
             objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
             fieldMask = trackedEntityAttribute.fieldMask(),
-            options = options!!,
+            optionSetConfiguration = optionSetConfiguration,
             featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
                 FeatureType.POINT
             } else null
@@ -150,7 +148,6 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             false,
-            null,
             null,
             null,
             null,
@@ -198,7 +195,6 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             null,
-            null,
             isOpen,
             totalFields,
             completedFields,
@@ -228,7 +224,6 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             false,
-            null,
             null,
             null,
             null,

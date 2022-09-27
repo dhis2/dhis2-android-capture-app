@@ -55,11 +55,7 @@ interface FieldUiModel {
 
     val renderingType: UiRenderType?
 
-    val options: List<Option>?
-
-    var optionsToHide: List<String>?
-
-    var optionsToShow: List<String>?
+    var optionSetConfiguration: OptionSetConfiguration?
 
     val hasImage: Boolean
 
@@ -70,8 +66,6 @@ interface FieldUiModel {
     val isAffirmativeChecked: Boolean
 
     val isNegativeChecked: Boolean
-
-    val optionsToDisplay: List<Option>?
 
     val isLoadingData: Boolean
 
