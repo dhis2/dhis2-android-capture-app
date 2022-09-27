@@ -5,14 +5,17 @@ import androidx.annotation.VisibleForTesting;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.data.tuples.Trio;
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.commons.matomo.Actions;
 import org.dhis2.commons.matomo.Categories;
 import org.dhis2.commons.matomo.Labels;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.validationrules.ValidationRuleResult;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -29,6 +32,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private final DataSetTableRepositoryImpl tableRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
+    private final List<DataSetSection> sections = new ArrayList<>();
     private DataSetTableContract.View view;
     public CompositeDisposable disposable;
 
@@ -68,17 +72,21 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 tableRepository.getSections()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(view::setSections, Timber::e)
+                        .subscribe(sections -> {
+                            this.sections.clear();
+                            this.sections.addAll(sections);
+                            view.setSections(sections);
+                        }, Timber::e)
         );
 
         disposable.add(
                 Flowable.zip(
-                        tableRepository.getDataSet().toFlowable(),
-                        tableRepository.getCatComboName(catCombo),
-                        tableRepository.getPeriod().toFlowable(),
-                        tableRepository.isComplete().toFlowable(),
-                        Quartet::create
-                )
+                                tableRepository.getDataSet().toFlowable(),
+                                tableRepository.getCatComboName(catCombo),
+                                tableRepository.getPeriod().toFlowable(),
+                                tableRepository.isComplete().toFlowable(),
+                                Quartet::create
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -192,9 +200,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     public void completeDataSet() {
         disposable.add(
                 Single.zip(
-                        tableRepository.checkMandatoryFields(),
-                        tableRepository.checkFieldCombination(),
-                        Pair::create)
+                                tableRepository.checkMandatoryFields(),
+                                tableRepository.checkFieldCombination(),
+                                Pair::create)
                         .flatMap(missingAndCombination -> {
                             boolean mandatoryFieldOk = missingAndCombination.val0().isEmpty();
                             boolean fieldCombinationOk = missingAndCombination.val1().val0();
@@ -289,10 +297,19 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void editingCellValue(boolean isEditing) {
-        if(isEditing){
+        if (isEditing) {
             view.startInputEdition();
-        }else{
+        } else {
             view.finishInputEdition();
+        }
+    }
+
+    @Override
+    public String getFirstSection() {
+        if (sections.isEmpty()) {
+            return tableRepository.getSections().blockingFirst().get(0).getUid();
+        } else {
+            return sections.get(0).getUid();
         }
     }
 }

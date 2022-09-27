@@ -99,6 +99,8 @@ public class DataSetTableContract {
         boolean dataSetHasDataElementDecoration();
 
         void editingCellValue(boolean isEditing);
+
+        String getFirstSection();
     }
 
 }
