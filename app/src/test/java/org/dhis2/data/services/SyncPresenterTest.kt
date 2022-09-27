@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -111,22 +110,6 @@ class SyncPresenterTest {
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)
-    }
-
-    @Test
-    fun `Should upload file resources`() {
-        val completable = Completable.fromObservable(
-            Observable.just(BaseD2Progress.empty(1))
-        ).test()
-        whenever(d2.fileResourceModule()) doReturn mock()
-        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResources().upload()
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-
-        presenter.uploadResources()
-
-        completable.hasSubscription()
     }
 
     @Test

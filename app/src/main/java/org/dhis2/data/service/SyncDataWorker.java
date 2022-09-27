@@ -64,17 +64,9 @@ public class SyncDataWorker extends Worker {
 
         long init = System.currentTimeMillis();
 
-        try {
-            presenter.uploadResources();
-        } catch (Exception e) {
-            Timber.tag("DATA_SYNC").d("ERROR UPLOADING RESOURCES");
-            e.printStackTrace();
-            Timber.e(e);
-        }
-
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                "Syncing events",
+                getApplicationContext().getString(R.string.syncing_events),
                 25);
 
         try {
@@ -89,7 +81,7 @@ public class SyncDataWorker extends Worker {
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                "Syncing tracked entities",
+                getApplicationContext().getString(R.string.syncing_teis),
                 50);
 
         try {
@@ -104,7 +96,7 @@ public class SyncDataWorker extends Worker {
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                "Syncing data sets",
+                getApplicationContext().getString(R.string.syncing_data_sets),
                 75);
 
         try {
@@ -121,7 +113,7 @@ public class SyncDataWorker extends Worker {
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                "Syncing resources",
+                getApplicationContext().getString(R.string.syncing_resources),
                 90);
 
         try {
@@ -132,7 +124,7 @@ public class SyncDataWorker extends Worker {
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                "Syncing done",
+                getApplicationContext().getString(R.string.syncing_done),
                 100);
 
         presenter.logTimeToFinish(System.currentTimeMillis() - init, DATA_TIME);

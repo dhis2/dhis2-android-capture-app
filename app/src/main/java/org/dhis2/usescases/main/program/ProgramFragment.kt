@@ -77,7 +77,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
         ViewCompat.setTransitionName(binding.drawerLayout, "contenttest")
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         (binding.drawerLayout.background as GradientDrawable).cornerRadius = 0f
         return binding.apply {
             presenter = this@ProgramFragment.presenter

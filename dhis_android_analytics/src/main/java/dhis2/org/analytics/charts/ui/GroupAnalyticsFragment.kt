@@ -100,7 +100,7 @@ class GroupAnalyticsFragment : Fragment() {
         postponeEnterTransition()
         binding = DataBindingUtil.inflate(inflater, R.layout.analytics_group, container, false)
         ViewCompat.setTransitionName(binding.visualizationContainer, "contenttest")
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.analyticsRecycler.adapter = adapter
         adapter.onRelativePeriodCallback =
             { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
