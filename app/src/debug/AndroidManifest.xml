@@ -38,7 +38,8 @@
 
         <activity
             android:name=".usescases.splash.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -84,7 +85,8 @@
         <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
 
-        <receiver android:name=".widgets.DhisCustomLauncher">
+        <receiver android:name=".widgets.DhisCustomLauncher"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -109,6 +111,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.events.ScheduledEventActivity" />
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
+
+        <activity android:name="com.squareup.leakcanary.internal.DisplayLeakActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

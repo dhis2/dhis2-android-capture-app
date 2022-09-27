@@ -73,6 +73,7 @@ fun SearchResult(
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
         SearchResult.SearchResultType.NO_RESULTS -> NoResults()
         SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate()
+        else -> {}
     }
 }
 

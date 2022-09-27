@@ -115,6 +115,7 @@ class FormViewModel(
                 processCalculatedItems()
                 runDataIntegrityCheck()
             }
+            null -> {}
         }
     }
 

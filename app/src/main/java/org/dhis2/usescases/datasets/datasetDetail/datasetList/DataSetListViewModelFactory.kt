@@ -14,7 +14,7 @@ class DataSetListViewModelFactory(
     val matomoAnalyticsController: MatomoAnalyticsController
 ) :
     ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return DataSetListViewModel(
             dataSetDetailRepository,
             schedulerProvider,

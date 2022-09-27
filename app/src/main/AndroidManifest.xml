@@ -55,6 +55,7 @@
 
         <activity
             android:name=".usescases.splash.SplashActivity"
+            android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -104,7 +105,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
 
-        <receiver android:name=".widgets.DhisCustomLauncher">
+        <receiver android:name=".widgets.DhisCustomLauncher"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
