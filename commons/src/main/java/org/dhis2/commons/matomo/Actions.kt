@@ -16,6 +16,7 @@ class Actions {
         const val OPEN_NOTES = "notes"
         const val BLOCK_SESSION_PIN = "block_session_pin"
         const val QR_SCANNER = "qr_scanner"
+        const val JIRA_REPORT = "jira_report"
         const val MAP_VISUALIZATION = "map_visualization"
         const val VISUALIZATION_CHANGE = "visualization_change"
         const val ANALYTICS_FILTERS = "analytics_filters"

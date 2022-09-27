@@ -9,6 +9,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
+import org.dhis2.commons.matomo.Actions.Companion.JIRA_REPORT
 import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.commons.matomo.Actions.Companion.QR_SCANNER
 import org.dhis2.commons.matomo.Actions.Companion.SETTINGS
@@ -293,5 +294,9 @@ class MainPresenter(
 
     fun trackQRScanner() {
         matomoAnalyticsController.trackEvent(HOME, QR_SCANNER, CLICK)
+    }
+
+    fun trackJiraReport() {
+        matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
     }
 }
