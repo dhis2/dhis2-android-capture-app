@@ -8,9 +8,9 @@ import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemPolygonFullBinding
 
 class PolygonAdapter(
-    val list: List<PolygonViewModel.PolygonPoint>,
     val viewModel: PolygonViewModel
 ) : RecyclerView.Adapter<PolygonAdapter.Holder>() {
+    private var list: List<PolygonViewModel.PolygonPoint> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding: ItemPolygonFullBinding = DataBindingUtil.inflate(
@@ -25,18 +25,23 @@ class PolygonAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        if (holder.adapterPosition == list.size) {
+        if (holder.bindingAdapterPosition == list.size) {
             holder.bind(viewModel.createPolygonPoint())
         } else {
-            holder.bind(list[holder.adapterPosition])
+            holder.bind(list[holder.bindingAdapterPosition])
         }
+    }
+
+    fun updateItems(newList: List<PolygonViewModel.PolygonPoint>) {
+        this.list = newList
+        notifyDataSetChanged()
     }
 
     inner class Holder(val binding: ItemPolygonFullBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(polygonPoint: PolygonViewModel.PolygonPoint) {
             binding.let {
-                it.isLast = adapterPosition == list.size
+                it.isLast = bindingAdapterPosition == list.size
                 it.viewModel = viewModel
                 it.point = polygonPoint
             }

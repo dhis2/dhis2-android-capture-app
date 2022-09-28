@@ -124,7 +124,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         relationshipMapManager = new RelationshipMapManager(binding.mapView);
         getLifecycle().addObserver(relationshipMapManager);
-        relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
             if (locationProvider.hasLocationEnabled() == null || locationProvider.hasLocationEnabled() == true) {
@@ -161,12 +160,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         return binding.getRoot();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        relationshipMapManager.onSaveInstanceState(outState);
     }
 
     @Override

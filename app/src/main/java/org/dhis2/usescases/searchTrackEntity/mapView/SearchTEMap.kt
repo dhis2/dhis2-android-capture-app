@@ -122,7 +122,6 @@ class SearchTEMap : FragmentGlobalAbstract(), OnMapClickListener {
 
         teiMapManager = TeiMapManager(binding.mapView)
         teiMapManager?.let { lifecycle.addObserver(it) }
-        teiMapManager?.onCreate(savedInstanceState)
         teiMapManager?.teiFeatureType = presenter.getTrackedEntityType(tEType).featureType()
         teiMapManager?.enrollmentFeatureType =
             if (presenter.program != null) presenter.program.featureType() else null
@@ -179,11 +178,6 @@ class SearchTEMap : FragmentGlobalAbstract(), OnMapClickListener {
     override fun onLowMemory() {
         super.onLowMemory()
         teiMapManager?.onLowMemory()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        teiMapManager?.onSaveInstanceState(outState)
     }
 
     override fun onRequestPermissionsResult(

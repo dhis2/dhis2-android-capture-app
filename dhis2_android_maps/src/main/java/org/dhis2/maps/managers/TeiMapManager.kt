@@ -226,7 +226,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 eventsFeatureCollection?.keys?.toList() ?: emptyList()
             ).updateLayers(
                 LayerType.FIELD_COORDINATE_LAYER,
-                fieldFeatureCollections.keys.toList() ?: emptyList()
+                fieldFeatureCollections.keys.toList()
             )
     }
 
@@ -341,7 +341,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     ENROLLMENT_SOURCE_ID
                 )?.visible == true
             }
-                ?.map { (key, collection) ->
+                ?.map { (_, collection) ->
                     collection.features()?.filter {
                         it.getStringProperty(propertyName) == propertyValue
                     }?.map {

@@ -22,7 +22,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:padding="8dp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="60dp">
 
         <ImageView
@@ -35,16 +35,16 @@
             android:layout_height="wrap_content" />
 
         <EditText
+            android:id="@+id/data"
             android:text="@{point.toString()}"
             android:textSize="12sp"
             tools:text="5646465456,54654654"
             android:layout_marginEnd="40dp"
-            app:layout_constraintEnd_toEndOf="parent"
             android:focusable="false"
             app:layout_constraintStart_toEndOf="@id/image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
@@ -53,7 +53,7 @@
             app:tint="@color/blue_fab"
             style="@style/ActionIconUnwrap"
             app:srcCompat="@drawable/ic_add_primary"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/data"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="30dp"
@@ -65,7 +65,7 @@
             app:tint="@color/red_a14"
             app:srcCompat="@drawable/ic_close"
             style="@style/ActionIconUnwrap"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/data"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="30dp"

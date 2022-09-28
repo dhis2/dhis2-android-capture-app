@@ -57,7 +57,6 @@ class EventMapFragment :
         binding.apply {
             eventMapManager = org.dhis2.maps.managers.EventMapManager(mapView)
             eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
-            eventMapManager?.onCreate(savedInstanceState)
             eventMapManager?.featureType = presenter.programFeatureType()
             eventMapManager?.onMapClickListener = this@EventMapFragment
             eventMapManager?.init(
@@ -135,11 +134,6 @@ class EventMapFragment :
     override fun onLowMemory() {
         super.onLowMemory()
         eventMapManager?.onLowMemory()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        eventMapManager?.onSaveInstanceState(outState)
     }
 
     override fun onRequestPermissionsResult(

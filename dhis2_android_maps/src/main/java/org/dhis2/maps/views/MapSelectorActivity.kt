@@ -5,16 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.JsonPrimitive
 import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
@@ -27,11 +26,16 @@ import com.mapbox.maps.extension.style.layers.addLayer
 import com.mapbox.maps.extension.style.layers.addLayerBelow
 import com.mapbox.maps.extension.style.layers.generated.FillLayer
 import com.mapbox.maps.extension.style.layers.generated.SymbolLayer
-import com.mapbox.maps.extension.style.layers.getLayer
 import com.mapbox.maps.extension.style.sources.addSource
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
-import com.mapbox.maps.extension.style.sources.getSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
+import com.mapbox.maps.plugin.annotation.Annotation
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationDragListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
@@ -50,16 +54,15 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
+private const val POLYGON_POINT_IMG_ID = "polygon_img"
+private const val POLYGON_SOURCE_ID = "polygon_source"
+private const val POLYGON_LAYER_ID = "polygon_layer"
+
 class MapSelectorActivity :
     AppCompatActivity(),
     MapActivityLocationCallback.OnLocationChanged {
 
     override fun onLocationChanged(latLng: Point) {
-        Log.d(
-            this::class.simpleName,
-            "NEW LOCATION %s, %s".format(latLng.latitude(), latLng.longitude())
-        )
-
         if (!init) {
             init = true
             if (initialCoordinates == null) {
@@ -72,9 +75,8 @@ class MapSelectorActivity :
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     var style: Style? = null
-    private lateinit var location_type: FeatureType
+    private lateinit var locationType: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
-    private val arrayOfIds = mutableListOf<String>()
     var init: Boolean = false
 
     private var initialCoordinates: String? = null
@@ -82,8 +84,8 @@ class MapSelectorActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
-        binding.back.setOnClickListener { v -> finish() }
-        location_type = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
+        binding.back.setOnClickListener { finish() }
+        locationType = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
             FeatureType.valueOf(featureName)
         } ?: FeatureType.POINT
 
@@ -97,7 +99,7 @@ class MapSelectorActivity :
             this.style = style
             enableLocationComponent()
             centerMapOnCurrentLocation()
-            when (location_type) {
+            when (locationType) {
                 FeatureType.POINT -> bindPoint(initialCoordinates)
                 FeatureType.POLYGON -> bindPolygon(initialCoordinates)
                 else -> finish()
@@ -108,20 +110,6 @@ class MapSelectorActivity :
     @SuppressWarnings("MissingPermission")
     private fun enableLocationComponent() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            /*val locationComponent = map.locationComponent
-
-            locationComponent.activateLocationComponent(
-                LocationComponentActivationOptions.builder(
-                    this,
-                    style!!
-                ).build()
-            )
-
-            locationComponent.isLocationComponentEnabled = true
-            locationComponent.cameraMode = CameraMode.TRACKING
-            locationComponent.renderMode = RenderMode.COMPASS
-            locationComponent.zoomWhileTracking(13.0)*/
-
             LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
                 MapActivityLocationCallback(this)
             )
@@ -129,16 +117,16 @@ class MapSelectorActivity :
     }
 
     private fun bindPoint(initial_coordinates: String?) {
-        val viewModel = ViewModelProviders.of(this).get(PointViewModel::class.java)
+        val pointViewModel = ViewModelProvider(this)[PointViewModel::class.java]
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.adapter = PointAdapter(viewModel)
+        binding.recycler.adapter = PointAdapter(pointViewModel)
         map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude().truncate(), it.latitude().truncate())
-            setPointToViewModel(point, viewModel)
+            setPointToViewModel(point, pointViewModel)
             true
         }
         binding.saveButton.setOnClickListener {
-            val value = viewModel.getPointAsString()
+            val value = pointViewModel.getPointAsString()
             value?.let {
                 finishResult(it)
             }
@@ -146,11 +134,11 @@ class MapSelectorActivity :
 
         if (initial_coordinates != null) {
             val initGeometry =
-                Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+                Geometry.builder().coordinates(initial_coordinates).type(locationType).build()
             val pointGeometry = GeometryHelper.getPoint(initGeometry)
             pointGeometry.let { sdkPoint ->
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
-                setPointToViewModel(point, viewModel)
+                setPointToViewModel(point, pointViewModel)
             }
             map.moveCameraToPosition(pointGeometry.toPoint())
         }
@@ -186,20 +174,6 @@ class MapSelectorActivity :
         style?.addLayer(layer)
     }
 
-    private fun printPoint(
-        point: Point,
-        source: GeoJsonSource,
-        layer: SymbolLayer,
-        id: String,
-        drawable: Int
-    ) {
-        if (style?.getSource(source.sourceId) != null) {
-            updateSource(point, source)
-        } else {
-            showSource(source, layer, id, drawable)
-        }
-    }
-
     private fun createLayer(id: String): SymbolLayer {
         val symbolLayer = SymbolLayer(id, id)
         symbolLayer
@@ -218,16 +192,46 @@ class MapSelectorActivity :
     }
 
     private fun bindPolygon(initial_coordinates: String?) {
-        val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
+        style?.addImage(
+            POLYGON_POINT_IMG_ID,
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_map_item_1, null)!!.toBitmap()
+        )
+        style?.addLayerBelow(
+            FillLayer(POLYGON_LAYER_ID, POLYGON_SOURCE_ID)
+                .fillColor("#E71409")
+                .fillOpacity(0.3),
+            "settlement-label"
+        )
+        val viewModel = ViewModelProvider(this)[PolygonViewModel::class.java]
+        val polygonAdapter = PolygonAdapter(viewModel)
+        binding.recycler.adapter = polygonAdapter
+
+        val manager = binding.mapView.annotations.createPointAnnotationManager()
+        manager.addDragListener(object : OnPointAnnotationDragListener {
+            override fun onAnnotationDrag(annotation: Annotation<*>) {
+            }
+
+            override fun onAnnotationDragFinished(annotation: Annotation<*>) {
+                val pointAnnotation = (annotation as PointAnnotation)
+                viewModel.updatePointPosition(
+                    pointAnnotation.point,
+                    pointAnnotation.getData()?.asString
+                )
+            }
+
+            override fun onAnnotationDragStarted(annotation: Annotation<*>) {
+            }
+        })
+
         viewModel.onMessage = {
             Toast.makeText(this@MapSelectorActivity, it, Toast.LENGTH_SHORT).show()
         }
-        binding.recycler.layoutManager = GridLayoutManager(this, 2)
+        binding.recycler.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         viewModel.response.observe(
             this
         ) {
-            binding.recycler.adapter = PolygonAdapter(it, viewModel)
-            updateVector(it)
+            onPolygonPointsUpdated(it, polygonAdapter, manager)
         }
         map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude(), it.latitude())
@@ -246,16 +250,16 @@ class MapSelectorActivity :
         }
         if (initial_coordinates != null) {
             val initGeometry =
-                Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+                Geometry.builder().coordinates(initial_coordinates).type(locationType).build()
             val polygons = GeometryHelper.getPolygon(initGeometry)
             polygons.forEach {
-                it.forEach { sdkPoint ->
-                    val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
-                    val polygonPoint = viewModel.createPolygonPoint()
-                    polygonPoint.point = point
-                    polygonPoint.layer = createLayer(polygonPoint.uuid)
-                    polygonPoint.source = createSource(polygonPoint.uuid, point)
-                    viewModel.add(polygonPoint)
+                it.forEachIndexed { index, sdkPoint ->
+                    if (index != it.size - 1) {
+                        val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
+                        val polygonPoint = viewModel.createPolygonPoint()
+                        polygonPoint.point = point
+                        viewModel.add(polygonPoint)
+                    }
                 }
             }
             polygons.polygonToLatLngBounds()?.let { points ->
@@ -264,90 +268,34 @@ class MapSelectorActivity :
         }
     }
 
-    private fun updateVector(list: MutableList<PolygonViewModel.PolygonPoint>) {
+    private fun onPolygonPointsUpdated(
+        polygonPoints: MutableList<PolygonViewModel.PolygonPoint>,
+        polygonAdapter: PolygonAdapter,
+        dragManager: PointAnnotationManager
+    ) {
+        dragManager.deleteAll()
+        val points = listOf(
+            polygonPoints.map { polygonPoint ->
+                dragManager.create(
+                    PointAnnotationOptions()
+                        .withPoint(polygonPoint.point!!)
+                        .withIconImage(POLYGON_POINT_IMG_ID)
+                        .withData(JsonPrimitive(polygonPoint.uuid))
+                        .withDraggable(true)
+                )
+                polygonPoint.point
+            }
+        )
+
+        polygonAdapter.updateItems(polygonPoints)
+        updateVector(points)
+    }
+
+    private fun updateVector(points: List<List<Point?>>) {
         style?.let { style ->
-            val sourceName = "polygon_source"
-            style.removeStyleLayer(sourceName)
-            style.removeStyleSource(sourceName)
-            arrayOfIds.forEach { id ->
-                style.getLayer(id)?.let { layer ->
-                    style.removeStyleLayer(layer.layerId)
-                }
-                style.getSource(id)?.let {
-                    style.removeStyleSource(it.sourceId)
-                }
-            }
-            arrayOfIds.clear()
-            val points = mutableListOf<MutableList<Point>>()
-            points.add(mutableListOf())
-            list.forEach { point ->
-                point.point?.let {
-                    points[0].add(it)
-                    arrayOfIds.add(point.uuid)
-                    printPoint(
-                        it,
-                        point.source!!,
-                        point.layer!!,
-                        point.uuid,
-                        R.drawable.ic_oval_green
-                    )
-                }
-            }
-            if (points[0].size > 2) {
-                if (style.getSource(sourceName) == null) {
-                    style.addSource(
-                        GeoJsonSource.Builder(sourceName).geometry(Polygon.fromLngLats(points))
-                            .build()
-                    )
-                    style.addLayerBelow(
-                        FillLayer(sourceName, sourceName)
-                            .fillColor(resources.getColor(R.color.green_7ed)),
-                        "settlement-label"
-                    )
-                } else {
-                    style.getSourceAs<GeoJsonSource>(sourceName)?.let {
-                        it.geometry(
-                            Polygon.fromLngLats(
-                                points
-                            )
-                        )
-                    }
-                }
-            }
+            if (points[0].size > 3)
+                style.updateSource(POLYGON_SOURCE_ID, Polygon.fromLngLats(points))
         }
-    }
-
-    public override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    public override fun onResume() {
-        super.onResume()
-    }
-
-    public override fun onPause() {
-        super.onPause()
-    }
-
-    public override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-//        mapView.onSaveInstanceState(outState)
     }
 
     private fun centerMapOnCurrentLocation() {
@@ -425,7 +373,7 @@ class MapSelectorActivity :
         val intent = Intent()
         intent.putExtra(FIELD_UID, fieldUid)
         intent.putExtra(DATA_EXTRA, value)
-        intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
+        intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
         setResult(RESULT_OK, intent)
         finish()
     }

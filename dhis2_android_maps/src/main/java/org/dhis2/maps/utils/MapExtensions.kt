@@ -2,6 +2,7 @@ package org.dhis2.maps.utils
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Geometry
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.sources.addSource
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
@@ -23,6 +24,16 @@ fun Style.updateSource(sourceId: String, featureCollection: FeatureCollection) {
     } ?: addSource(
         GeoJsonSource.Builder(sourceId)
             .featureCollection(featureCollection)
+            .build()
+    )
+}
+
+fun Style.updateSource(sourceId: String, featureCollection: Geometry) {
+    getSourceAs<GeoJsonSource>(sourceId)?.apply {
+        geometry(featureCollection)
+    } ?: addSource(
+        GeoJsonSource.Builder(sourceId)
+            .geometry(featureCollection)
             .build()
     )
 }

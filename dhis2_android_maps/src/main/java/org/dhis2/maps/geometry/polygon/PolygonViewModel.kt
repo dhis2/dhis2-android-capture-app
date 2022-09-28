@@ -19,15 +19,27 @@ class PolygonViewModel : ViewModel() {
 
     fun add(polygonPoint: PolygonPoint) {
         if (polygonPoint.point != null) {
-            val list = _response.value
-            list?.add(polygonPoint)
+            val list = _response.value ?: mutableListOf()
+            list.add(polygonPoint)
             _response.postValue(list)
         }
     }
 
     fun remove(polygonPoint: PolygonPoint) {
-        val list = _response.value
-        list?.remove(polygonPoint)
+        val list = _response.value ?: mutableListOf()
+        list.remove(polygonPoint)
+        _response.postValue(list)
+    }
+
+    fun updatePointPosition(point: Point, uuid: String?) {
+        val list = _response.value?.map { polygonPoint ->
+            if (polygonPoint.uuid != uuid) {
+                polygonPoint
+            } else {
+                polygonPoint.point = point
+                polygonPoint
+            }
+        }?.toMutableList() ?: mutableListOf()
         _response.postValue(list)
     }
 
