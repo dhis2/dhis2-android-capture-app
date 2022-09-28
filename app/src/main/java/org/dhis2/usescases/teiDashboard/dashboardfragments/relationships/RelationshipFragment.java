@@ -1,7 +1,11 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
+import static android.app.Activity.RESULT_OK;
+import static org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -13,24 +17,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
+import com.mapbox.bindgen.Expected;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.maps.MapboxMap;
+import com.mapbox.maps.QueriedFeature;
+import com.mapbox.maps.QueryFeaturesCallback;
+import com.mapbox.maps.RenderedQueryGeometry;
+import com.mapbox.maps.RenderedQueryOptions;
+import com.mapbox.maps.ScreenCoordinate;
+import com.mapbox.maps.plugin.gestures.OnMapClickListener;
+
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.data.RelationshipViewModel;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.locationprovider.LocationSettingLauncher;
+import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;
 import org.dhis2.maps.managers.RelationshipMapManager;
 import org.dhis2.maps.model.RelationshipUiComponentModel;
-import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.commons.data.RelationshipViewModel;
-import org.dhis2.commons.data.tuples.Trio;
-import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -46,17 +62,7 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 
-import static android.app.Activity.RESULT_OK;
-
-import static org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.RELATIONSHIP_UID;
-
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-
-public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, OnMapClickListener {
 
     @Inject
     RelationshipPresenter presenter;
@@ -91,7 +97,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         return bundle;
     }
 
-    private String programUid(){
+    private String programUid() {
         return getArguments().getString("ARG_PROGRAM_UID");
     }
 
@@ -121,9 +127,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            if(locationProvider.hasLocationEnabled()) {
+            if (locationProvider.hasLocationEnabled() == null || locationProvider.hasLocationEnabled() == true) {
                 permissionManager.requestLocationPermissions(getActivity());
-            }else{
+            } else {
                 LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
             }
             return Unit.INSTANCE;
@@ -144,12 +150,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapPositionButton.setOnClickListener(view -> {
-            if(locationProvider.hasLocationEnabled()) {
+            if (locationProvider.hasLocationEnabled()) {
                 relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
                     permissionManager.requestLocationPermissions(getActivity());
                     return Unit.INSTANCE;
                 });
-            }else{
+            } else {
                 LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
             }
         });
@@ -214,7 +220,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         extras.putString("PROGRAM_UID", null);
         intent.putExtras(extras);
 
-        if(getActivity() instanceof TeiDashboardMobileActivity) {
+        if (getActivity() instanceof TeiDashboardMobileActivity) {
             ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         }
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
@@ -274,13 +280,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void openEventFor(@NonNull String eventUid, @NonNull String programUid){
+    public void openEventFor(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = EventCaptureActivity.getActivityBundle(
                 eventUid,
                 programUid,
                 EventMode.CHECK
         );
-        Intent intent = new Intent(getContext(),EventCaptureActivity.class);
+        Intent intent = new Intent(getContext(), EventCaptureActivity.class);
         intent.putExtras(bundle);
         getActivity().startActivity(intent);
     }
@@ -372,7 +378,42 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public boolean onMapClick(@NonNull LatLng point) {
+    public boolean onMapClick(@NonNull com.mapbox.geojson.Point point) {
+        ScreenCoordinate screenCoordinate = null;
+        MapboxMap map = relationshipMapManager.getMap();
+        if (map != null) {
+            screenCoordinate = map.pixelForCoordinate(point);
+        }
+        if (screenCoordinate != null) {
+
+            for (String sourceId : sources) {
+                String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+                String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+                List<String> layers = new ArrayList<String>();
+                layers.add(lineLayerId);
+                layers.add(pointLayerId);
+                map.queryRenderedFeatures(
+                        new RenderedQueryGeometry(screenCoordinate),
+                        new RenderedQueryOptions(layers, null),
+                        expectedFeatures -> {
+                            if(expectedFeatures.isValue() && expectedFeatures.getValue()!= null && expectedFeatures.getValue().size() >0){
+                                Feature feature = expectedFeatures.getValue().get(0).getFeature();
+                                relationshipMapManager.mapLayerManager.selectFeature(null);
+                                Feature selectedFeature = relationshipMapManager.findFeature(sourceId, RELATIONSHIP_UID, feature.getStringProperty(RELATIONSHIP_UID));
+                                relationshipMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(selectedFeature);
+                                binding.mapCarousel.scrollToFeature(feature);
+                            }
+                        }
+                );
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*@Override
+    public boolean onMapClick(@NonNull Point point) {
         PointF pointf = relationshipMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
 
@@ -392,5 +433,5 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
 
         return false;
-    }
+    }*/
 }

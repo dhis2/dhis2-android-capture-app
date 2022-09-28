@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry.bound
 
-import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.geojson.Point
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -28,10 +28,10 @@ class GetBoundingBoxTest {
         assertThat(limitNorthEast.latitude(), `is`(upperLatitudeWithPadding))
     }
 
-    private fun prepareCoordinates(): List<LatLng> {
-        val below = LatLng(-54.367759, -68.552575)
-        val upper = LatLng(72.501722, 52.131954)
-        val medium = LatLng(20.632784, -0.285835)
+    private fun prepareCoordinates(): List<Point> {
+        val below = Point.fromLngLat(-68.552575, -54.367759)
+        val upper = Point.fromLngLat(52.131954, 72.501722)
+        val medium = Point.fromLngLat(-0.285835, 20.632784)
         return listOf(below, upper, medium)
     }
 }

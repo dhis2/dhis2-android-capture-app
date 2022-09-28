@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,31 +20,32 @@ import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.modes.CameraMode
-import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.maps.MapView
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.layers.addLayer
+import com.mapbox.maps.extension.style.layers.addLayerBelow
+import com.mapbox.maps.extension.style.layers.generated.FillLayer
+import com.mapbox.maps.extension.style.layers.generated.SymbolLayer
+import com.mapbox.maps.extension.style.layers.getLayer
+import com.mapbox.maps.extension.style.sources.addSource
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
+import com.mapbox.maps.extension.style.sources.getSource
+import com.mapbox.maps.extension.style.sources.getSourceAs
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToPosition
 import org.dhis2.maps.databinding.ActivityMapSelectorBinding
 import org.dhis2.maps.extensions.polygonToLatLngBounds
-import org.dhis2.maps.extensions.toLatLng
-import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.extensions.toPoint
 import org.dhis2.maps.geometry.point.PointAdapter
 import org.dhis2.maps.geometry.point.PointViewModel
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.geometry.polygon.PolygonViewModel
 import org.dhis2.maps.location.MapActivityLocationCallback
+import org.dhis2.maps.utils.updateSource
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -54,10 +54,10 @@ class MapSelectorActivity :
     AppCompatActivity(),
     MapActivityLocationCallback.OnLocationChanged {
 
-    override fun onLocationChanged(latLng: LatLng) {
+    override fun onLocationChanged(latLng: Point) {
         Log.d(
             this::class.simpleName,
-            "NEW LOCATION %s, %s".format(latLng.latitude, latLng.longitude)
+            "NEW LOCATION %s, %s".format(latLng.latitude(), latLng.longitude())
         )
 
         if (!init) {
@@ -90,19 +90,17 @@ class MapSelectorActivity :
         fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
-        mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync { mapboxMap ->
-            mapView.contentDescription = "LOADED"
-            map = mapboxMap
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-                this.style = style
-                enableLocationComponent()
-                centerMapOnCurrentLocation()
-                when (location_type) {
-                    FeatureType.POINT -> bindPoint(initialCoordinates)
-                    FeatureType.POLYGON -> bindPolygon(initialCoordinates)
-                    else -> finish()
-                }
+
+        map = mapView.getMapboxMap()
+        mapView.contentDescription = "LOADED"
+        map.loadStyleUri(Style.MAPBOX_STREETS) { style ->
+            this.style = style
+            enableLocationComponent()
+            centerMapOnCurrentLocation()
+            when (location_type) {
+                FeatureType.POINT -> bindPoint(initialCoordinates)
+                FeatureType.POLYGON -> bindPolygon(initialCoordinates)
+                else -> finish()
             }
         }
     }
@@ -110,7 +108,7 @@ class MapSelectorActivity :
     @SuppressWarnings("MissingPermission")
     private fun enableLocationComponent() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            val locationComponent = map.locationComponent
+            /*val locationComponent = map.locationComponent
 
             locationComponent.activateLocationComponent(
                 LocationComponentActivationOptions.builder(
@@ -122,7 +120,7 @@ class MapSelectorActivity :
             locationComponent.isLocationComponentEnabled = true
             locationComponent.cameraMode = CameraMode.TRACKING
             locationComponent.renderMode = RenderMode.COMPASS
-            locationComponent.zoomWhileTracking(13.0)
+            locationComponent.zoomWhileTracking(13.0)*/
 
             LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
                 MapActivityLocationCallback(this)
@@ -135,7 +133,7 @@ class MapSelectorActivity :
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
         map.addOnMapClickListener {
-            val point = Point.fromLngLat(it.longitude.truncate(), it.latitude.truncate())
+            val point = Point.fromLngLat(it.longitude().truncate(), it.latitude().truncate())
             setPointToViewModel(point, viewModel)
             true
         }
@@ -154,7 +152,7 @@ class MapSelectorActivity :
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                 setPointToViewModel(point, viewModel)
             }
-            map.moveCameraToPosition(pointGeometry.toLatLng())
+            map.moveCameraToPosition(pointGeometry.toPoint())
         }
     }
 
@@ -170,18 +168,13 @@ class MapSelectorActivity :
             viewModel.source!!,
             viewModel.layer!!,
             viewModel.getId(),
-            R.drawable.mapbox_marker_icon_default
+            R.drawable.ic_map_item_1
         )
     }
 
     private fun updateSource(point: Point, source: GeoJsonSource): GeoJsonSource {
-        val geoJson = (style?.getSource(source.id) as GeoJsonSource)
-        geoJson.setGeoJson(
-            Feature.fromGeometry(
-                point
-            )
-        )
-        return geoJson
+        style?.updateSource(source.sourceId, Feature.fromGeometry(point))
+        return style?.getSourceAs(source.sourceId)!!
     }
 
     private fun showSource(source: GeoJsonSource, layer: SymbolLayer, id: String, drawable: Int) {
@@ -200,7 +193,7 @@ class MapSelectorActivity :
         id: String,
         drawable: Int
     ) {
-        if (style?.getSource(source.id) != null) {
+        if (style?.getSource(source.sourceId) != null) {
             updateSource(point, source)
         } else {
             showSource(source, layer, id, drawable)
@@ -209,19 +202,19 @@ class MapSelectorActivity :
 
     private fun createLayer(id: String): SymbolLayer {
         val symbolLayer = SymbolLayer(id, id)
-        symbolLayer.withProperties(
-            PropertyFactory.iconImage(id)
-        )
+        symbolLayer
+            .iconImage(id)
         return symbolLayer
     }
 
     private fun createSource(id: String, point: Point): GeoJsonSource {
-        return GeoJsonSource(
-            id,
-            Feature.fromGeometry(
-                point
+        return GeoJsonSource.Builder(id)
+            .feature(
+                Feature.fromGeometry(
+                    point
+                )
             )
-        )
+            .build()
     }
 
     private fun bindPolygon(initial_coordinates: String?) {
@@ -231,14 +224,13 @@ class MapSelectorActivity :
         }
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(
-            this,
-            Observer<MutableList<PolygonViewModel.PolygonPoint>> {
-                binding.recycler.adapter = PolygonAdapter(it, viewModel)
-                updateVector(it)
-            }
-        )
+            this
+        ) {
+            binding.recycler.adapter = PolygonAdapter(it, viewModel)
+            updateVector(it)
+        }
         map.addOnMapClickListener {
-            val point = Point.fromLngLat(it.longitude, it.latitude)
+            val point = Point.fromLngLat(it.longitude(), it.latitude())
             val polygonPoint = viewModel.createPolygonPoint()
             polygonPoint.point = point
             polygonPoint.layer = createLayer(polygonPoint.uuid)
@@ -266,8 +258,8 @@ class MapSelectorActivity :
                     viewModel.add(polygonPoint)
                 }
             }
-            polygons.polygonToLatLngBounds(GetBoundingBox())?.let { bounds ->
-                map.initCameraToViewAllElements(this, bounds)
+            polygons.polygonToLatLngBounds()?.let { points ->
+                map.initCameraToViewAllElements(this, points)
             }
         }
     }
@@ -275,14 +267,14 @@ class MapSelectorActivity :
     private fun updateVector(list: MutableList<PolygonViewModel.PolygonPoint>) {
         style?.let { style ->
             val sourceName = "polygon_source"
-            style.removeLayer(sourceName)
-            style.removeSource(sourceName)
+            style.removeStyleLayer(sourceName)
+            style.removeStyleSource(sourceName)
             arrayOfIds.forEach { id ->
                 style.getLayer(id)?.let { layer ->
-                    style.removeLayer(layer)
+                    style.removeStyleLayer(layer.layerId)
                 }
                 style.getSource(id)?.let {
-                    style.removeSource(it)
+                    style.removeStyleSource(it.sourceId)
                 }
             }
             arrayOfIds.clear()
@@ -303,19 +295,23 @@ class MapSelectorActivity :
             }
             if (points[0].size > 2) {
                 if (style.getSource(sourceName) == null) {
-                    style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
+                    style.addSource(
+                        GeoJsonSource.Builder(sourceName).geometry(Polygon.fromLngLats(points))
+                            .build()
+                    )
                     style.addLayerBelow(
-                        FillLayer(sourceName, sourceName).withProperties(
-                            fillColor(resources.getColor(R.color.green_7ed))
-                        ),
+                        FillLayer(sourceName, sourceName)
+                            .fillColor(resources.getColor(R.color.green_7ed)),
                         "settlement-label"
                     )
                 } else {
-                    (style.getSource(sourceName) as GeoJsonSource).setGeoJson(
-                        Polygon.fromLngLats(
-                            points
+                    style.getSourceAs<GeoJsonSource>(sourceName)?.let {
+                        it.geometry(
+                            Polygon.fromLngLats(
+                                points
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -328,12 +324,10 @@ class MapSelectorActivity :
 
     public override fun onResume() {
         super.onResume()
-        mapView.onResume()
     }
 
     public override fun onPause() {
         super.onPause()
-        mapView.onPause()
     }
 
     public override fun onStop() {
@@ -353,7 +347,7 @@ class MapSelectorActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+//        mapView.onSaveInstanceState(outState)
     }
 
     private fun centerMapOnCurrentLocation() {

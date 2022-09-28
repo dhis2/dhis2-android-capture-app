@@ -1,11 +1,11 @@
 package org.dhis2.maps.layer
 
 import android.graphics.Color
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.maps.extension.style.expressions.dsl.generated.literal
+import com.mapbox.maps.extension.style.expressions.generated.Expression
+import com.mapbox.maps.extension.style.layers.generated.SymbolLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
+import com.mapbox.maps.extension.style.layers.properties.generated.Visibility
 import org.dhis2.maps.geometry.TEI_UID
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -30,34 +30,34 @@ fun isLine(): Expression = Expression.eq(
 
 fun isBiderectional(): Expression = Expression.eq(
     Expression.get(MapRelationshipsToFeatureCollection.BIDIRECTIONAL),
-    true
+    literal(true)
 )
 
 fun isUnidirectional(): Expression = Expression.eq(
     Expression.get(MapRelationshipsToFeatureCollection.BIDIRECTIONAL),
-    false
+    literal(false)
 )
 
-fun SymbolLayer.withTEIMarkerProperties(): SymbolLayer = withProperties(
-    PropertyFactory.iconImage(Expression.get(TEI_UID)),
-    PropertyFactory.iconOffset(org.dhis2.maps.layer.TEI_ICON_OFFSET),
-    PropertyFactory.iconAllowOverlap(true),
-    PropertyFactory.textAllowOverlap(true)
-)
+fun SymbolLayer.withTEIMarkerProperties(): SymbolLayer = apply {
+    iconImage(Expression.get(TEI_UID))
+        .iconOffset(TEI_ICON_OFFSET.map { it.toDouble() }.toList())
+        .iconAllowOverlap(true)
+        .textAllowOverlap(true)
+}
 
-fun SymbolLayer.withInitialVisibility(@VISIBILITY visibility: String): SymbolLayer = withProperties(
-    PropertyFactory.visibility(visibility)
-)
+fun SymbolLayer.withInitialVisibility(visibility: Visibility): SymbolLayer = apply {
+    visibility(visibility)
+}
 
-fun SymbolLayer.withDEIconAndTextProperties(): SymbolLayer = withProperties(
-    PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
-    PropertyFactory.iconAllowOverlap(true),
-    PropertyFactory.textField(Expression.get(MapCoordinateFieldToFeatureCollection.FIELD_NAME)),
-    PropertyFactory.textAllowOverlap(false),
-    PropertyFactory.textIgnorePlacement(true),
-    PropertyFactory.textAnchor(Property.TEXT_ANCHOR_TOP),
-    PropertyFactory.textRadialOffset(2f),
-    PropertyFactory.textHaloWidth(1f),
-    PropertyFactory.textHaloColor(Color.WHITE),
-    PropertyFactory.textSize(10f)
-)
+fun SymbolLayer.withDEIconAndTextProperties(): SymbolLayer = apply {
+    iconImage("${EventMapManager.DE_ICON_ID}_$sourceId")
+        .iconAllowOverlap(true)
+        .textField(Expression.get(MapCoordinateFieldToFeatureCollection.FIELD_NAME))
+        .textAllowOverlap(false)
+        .textIgnorePlacement(true)
+        .textAnchor(TextAnchor.TOP)
+        .textRadialOffset(2.0)
+        .textHaloWidth(1.0)
+        .textHaloColor(Color.WHITE)
+        .textSize(10.0)
+}

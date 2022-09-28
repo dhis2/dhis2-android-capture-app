@@ -4,13 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import com.mapbox.geojson.Feature
 import javax.inject.Inject
-import org.dhis2.maps.geometry.getPointLatLng
+import org.dhis2.maps.geometry.getPoint
 
 open class ExternalMapNavigation @Inject constructor() {
     fun navigateToMapIntent(feature: Feature): Intent {
-        val point = feature.getPointLatLng()
-        val longitude = point.longitude.toString()
-        val latitude = point.latitude.toString()
+        val point = feature.getPoint()
+        val longitude = point.longitude().toString()
+        val latitude = point.latitude().toString()
         val location = "geo:0,0?q=$latitude,$longitude"
         val intent =
             Intent(Intent.ACTION_VIEW)

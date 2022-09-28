@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.geojson.Point
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
@@ -25,7 +25,7 @@ import org.dhis2.usescases.programEventDetail.ProgramEventMapData
 class EventMapFragment :
     FragmentGlobalAbstract(),
     EventMapFragmentView,
-    MapboxMap.OnMapClickListener {
+    OnMapClickListener {
 
     private lateinit var binding: FragmentProgramEventDetailMapBinding
 
@@ -65,28 +65,42 @@ class EventMapFragment :
                     presenter.init()
                 },
                 onMissingPermission = { permissionsManager ->
-                    if (locationProvider.hasLocationEnabled()) {
+                    when (locationProvider.hasLocationEnabled()) {
+                        false -> LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+                        else -> permissionsManager?.requestLocationPermissions(requireActivity())
+                    }
+                    /*if (locationProvider.hasLocationEnabled()) {
                         permissionsManager?.requestLocationPermissions(requireActivity())
                     } else {
                         LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-                    }
+                    }*/
                 }
             )
             mapLayerButton.setOnClickListener {
                 eventMapManager?.let {
-                    org.dhis2.maps.layer.MapLayerDialog(it)
+                    MapLayerDialog(it)
                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                 }
             }
 
             mapPositionButton.setOnClickListener {
-                if (locationProvider.hasLocationEnabled()) {
+                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
+                /*when (locationProvider.hasLocationEnabled()) {
+                    true -> eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                        permissionManager?.requestLocationPermissions(requireActivity())
+                    }
+                    else -> LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+
+                }*/
+                /*if (locationProvider.hasLocationEnabled()) {
                     eventMapManager?.centerCameraOnMyPosition { permissionManager ->
                         permissionManager?.requestLocationPermissions(requireActivity())
                     }
                 } else {
                     LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-                }
+                }*/
             }
         }
 
@@ -191,10 +205,13 @@ class EventMapFragment :
         programEventsViewModel.updateEvent = null
     }
 
-    override fun onMapClick(point: LatLng): Boolean {
-        eventMapManager?.markFeatureAsSelected(point, null)?.let {
-            binding.mapCarousel.scrollToFeature(it)
-            return true
-        } ?: return false
+    override fun onMapClick(point: Point): Boolean {
+        eventMapManager?.markFeatureAsSelected(
+            point, null,
+            onFeature = {
+                it?.let { binding.mapCarousel.scrollToFeature(it) }
+            }
+        )
+        return true
     }
 }

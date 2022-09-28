@@ -3,22 +3,22 @@ package org.dhis2.maps.layer.types
 import android.graphics.Color
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_SQUARE
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.generated.Expression
+import com.mapbox.maps.extension.style.layers.Layer
+import com.mapbox.maps.extension.style.layers.addLayer
+import com.mapbox.maps.extension.style.layers.addLayerAbove
+import com.mapbox.maps.extension.style.layers.addLayerBelow
+import com.mapbox.maps.extension.style.layers.generated.FillLayer
+import com.mapbox.maps.extension.style.layers.generated.LineLayer
+import com.mapbox.maps.extension.style.layers.generated.SymbolLayer
+import com.mapbox.maps.extension.style.layers.getLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.LineCap
+import com.mapbox.maps.extension.style.layers.properties.generated.SymbolPlacement
+import com.mapbox.maps.extension.style.layers.properties.generated.Visibility
+import com.mapbox.maps.extension.style.sources.addSource
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.isBiderectional
 import org.dhis2.maps.layer.isLine
@@ -68,7 +68,7 @@ class RelationshipMapLayer(
         if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
             style.addLayer(baseRelationshipLayer)
         }
-        style.addSource(GeoJsonSource(SELECTED_SOURCE))
+        style.addSource(GeoJsonSource.Builder(SELECTED_SOURCE).build())
         style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
         style.addLayerAbove(teiPointLayer, BASE_RELATIONSHIP_LAYER_ID)
@@ -83,109 +83,99 @@ class RelationshipMapLayer(
     private val baseRelationshipLayer: Layer
         get() = style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
             ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
-                .withProperties(visibility(Property.NONE))
+                .visibility(Visibility.NONE)
 
     private val linesLayer: Layer
         get() = style.getLayer(LINE_LAYER_ID)
             ?: LineLayer(LINE_LAYER_ID, sourceId)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE)
-                ).withFilter(isLine())
+                .lineColor(lineColor ?: LINE_COLOR)
+                .lineWidth(LINE_WIDTH)
+                .lineCap(LineCap.SQUARE)
+                .filter(isLine())
 
     private val selectedLineLayer: Layer
         get() = style.getLayer(SELECTED_LINE_LAYER_ID)
             ?: LineLayer(SELECTED_LINE_LAYER_ID, SELECTED_SOURCE)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(SELECTED_LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE)
-                )
+                .lineColor(lineColor ?: LINE_COLOR)
+                .lineWidth(SELECTED_LINE_WIDTH)
+                .lineCap(LineCap.SQUARE)
 
     private val arrowLayer: Layer
         get() = style.getLayer(LINE_ARROW_LAYER_ID)
             ?: SymbolLayer(LINE_ARROW_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
-                ).withFilter(isLine())
-                .withFilter(isUnidirectional())
+                .iconImage(RelationshipMapManager.RELATIONSHIP_ARROW)
+                .iconAllowOverlap(true)
+                .symbolPlacement(SymbolPlacement.LINE_CENTER)
+                .iconColor(lineColor ?: LINE_COLOR)
+                .filter(Expression.all(isLine(), isUnidirectional()))
 
     private val arrowBidirectionalLayer: Layer
         get() = style.getLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID)
             ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(
-                        RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL
-                    ),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
-                ).withFilter(isLine())
-                .withFilter(isBiderectional())
+                .iconImage(
+                    RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL
+                )
+                .iconAllowOverlap(true)
+                .symbolPlacement(SymbolPlacement.LINE_CENTER)
+                .iconColor(lineColor ?: LINE_COLOR)
+                .filter(Expression.all(isLine(), isBiderectional()))
+
     private val selectedArrowLayer: Layer
         get() = style.getLayer(SELECTED_LINE_ARROW_LAYER_ID)
             ?: SymbolLayer(SELECTED_LINE_ARROW_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
-                    PropertyFactory.iconAllowOverlap(true),
-                    visibility(Property.NONE),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
-                ).withFilter(isLine())
+                .iconImage(RelationshipMapManager.RELATIONSHIP_ICON)
+                .iconAllowOverlap(true)
+                .visibility(Visibility.NONE)
+                .symbolPlacement(SymbolPlacement.LINE_CENTER)
+                .iconColor(lineColor ?: LINE_COLOR)
+                .filter(isLine())
 
     private val pointLayer: Layer
         get() = style.getLayer(POINT_LAYER_ID)
             ?: SymbolLayer(POINT_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(
-                        "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId"
-                    ),
-                    PropertyFactory.iconAllowOverlap(true),
-                    visibility(Property.NONE),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
-                ).withFilter(isPoint())
+                .iconImage(
+                    "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId"
+                )
+                .iconAllowOverlap(true)
+                .visibility(Visibility.NONE)
+                .iconColor(lineColor ?: LINE_COLOR)
+                .filter(isPoint())
 
     private val teiPointLayer: Layer
         get() = style.getLayer(TEI_POINT_LAYER_ID)
             ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
                 .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+                .withInitialVisibility(Visibility.NONE)
+                .filter(isPoint())
 
     private val selectedPointLayer: Layer
         get() = style.getLayer(SELECTED_POINT_LAYER_ID)
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_SOURCE)
                 .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+                .withInitialVisibility(Visibility.NONE)
+                .filter(isPoint())
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.fillColor(
-                        ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
-                    )
-                ).withFilter(isPolygon())
+                .fillColor(
+                    ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
+                )
+                .filter(isPolygon())
 
     private val polygonBorderLayer: Layer
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH)
-                ).withFilter(isPolygon())
+                .lineColor(lineColor ?: LINE_COLOR)
+                .lineWidth(LINE_WIDTH)
+                .filter(isPolygon())
 
     override fun showLayer() {
-        setVisibility(Property.VISIBLE)
+        setVisibility(Visibility.VISIBLE)
     }
 
     override fun hideLayer() {
-        setVisibility(Property.NONE)
+        setVisibility(Visibility.NONE)
     }
 
     override fun setSelectedItem(feature: Feature?) {
@@ -197,52 +187,38 @@ class RelationshipMapLayer(
     }
 
     fun selectPoints(features: List<Feature>) {
-        style.getSourceAs<GeoJsonSource>(SELECTED_SOURCE)?.apply {
-            setGeoJson(FeatureCollection.fromFeatures(features))
-        }
+        style.addSource(
+            GeoJsonSource.Builder(SELECTED_SOURCE)
+                .featureCollection(FeatureCollection.fromFeatures(features))
+                .build()
+        )
 
-        selectedLineLayer.setProperties(visibility(Property.VISIBLE))
-        selectedPointLayer.setProperties(visibility(Property.VISIBLE))
-        selectedPointLayer.setProperties(PropertyFactory.iconSize(1.5f))
+        selectedLineLayer.visibility(Visibility.VISIBLE)
+        selectedPointLayer.visibility(Visibility.VISIBLE)
+        (selectedPointLayer as SymbolLayer).iconSize(1.5)
     }
 
     private fun deselectCurrent() {
-        selectedLineLayer.setProperties(PropertyFactory.iconSize(1f))
-        selectedPointLayer.setProperties(visibility(Property.NONE))
+        selectedPointLayer.visibility(Visibility.NONE)
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(sourceId)
-            ?.querySourceFeatures(
-                Expression.eq(
-                    Expression.get(MapRelationshipsToFeatureCollection.RELATIONSHIP_UID),
-                    featureUidProperty
-                )
-            )
-            ?.firstOrNull()
-            ?.let {
-                setSelectedItem(it)
-                it
-            }
-    }
-
-    private fun setVisibility(visibility: String) {
-        arrowLayer.setProperties(visibility(visibility))
-        arrowBidirectionalLayer.setProperties(visibility(visibility))
-        pointLayer.setProperties(visibility(visibility))
-        selectedLineLayer.setProperties(visibility(visibility))
-        selectedPointLayer.setProperties(visibility(visibility))
-        linesLayer.setProperties(visibility(visibility))
-        polygonLayer.setProperties(visibility(visibility))
-        polygonBorderLayer.setProperties(visibility(visibility))
-        teiPointLayer.setProperties(visibility(visibility))
-        visible = visibility == Property.VISIBLE
+    private fun setVisibility(visibility: Visibility) {
+        arrowLayer.visibility(visibility)
+        arrowBidirectionalLayer.visibility(visibility)
+        pointLayer.visibility(visibility)
+        selectedLineLayer.visibility(visibility)
+        selectedPointLayer.visibility(visibility)
+        linesLayer.visibility(visibility)
+        polygonLayer.visibility(visibility)
+        polygonBorderLayer.visibility(visibility)
+        teiPointLayer.visibility(visibility)
+        visible = visibility == Visibility.VISIBLE
     }
 
     companion object {
         private const val LINE_COLOR = Color.RED
-        private const val LINE_WIDTH = 2f
-        private const val SELECTED_LINE_WIDTH = 4f
+        private const val LINE_WIDTH = 2.0
+        private const val SELECTED_LINE_WIDTH = 4.0
     }
 
     override fun getId(): String {

@@ -2,23 +2,32 @@ package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Gravity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.mapbox.android.core.location.LocationEngineCallback
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
+import com.mapbox.maps.MapView
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.interpolate
+import com.mapbox.maps.plugin.LocationPuck2D
+import com.mapbox.maps.plugin.attribution.attribution
+import com.mapbox.maps.plugin.compass.compass
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.logo.logo
+import com.mapbox.maps.plugin.scalebar.scalebar
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
@@ -30,9 +39,8 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     var map: MapboxMap? = null
     lateinit var mapLayerManager: MapLayerManager
-    var markerViewManager: MarkerViewManager? = null
-    var symbolManager: SymbolManager? = null
-    var onMapClickListener: MapboxMap.OnMapClickListener? = null
+
+    var onMapClickListener: OnMapClickListener? = null
     var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
@@ -49,13 +57,12 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
         if (style == null) {
-            mapView.getMapAsync { mapLoaded ->
-                mapView.contentDescription = "LOADED"
-                this.map = mapLoaded
-                setUi()
-                map?.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
+            if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
+                this.map = mapView.getMapboxMap()
+                this.map?.loadStyleUri(Style.MAPBOX_STREETS) { styleLoaded ->
+                    setUi()
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded).apply {
+                    mapLayerManager = MapLayerManager(this.map!!).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()
@@ -66,11 +73,21 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     onMapClickListener?.let { mapClickListener ->
                         map?.addOnMapClickListener(mapClickListener)
                     }
-                    markerViewManager = MarkerViewManager(mapView, map)
                     loadDataForStyle()
-                    enableLocationComponent(styleLoaded, onMissingPermission)
+                    enableLocationComponent()
                     onInitializationFinished()
                 }
+            } else {
+                permissionsManager = PermissionsManager(object : PermissionsListener {
+                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+
+                    override fun onPermissionResult(granted: Boolean) {
+                        if (granted) {
+                            init(onInitializationFinished, onMissingPermission)
+                        }
+                    }
+                })
+                onMissingPermission(permissionsManager)
             }
         } else {
             onInitializationFinished()
@@ -78,16 +95,23 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     }
 
     private fun setUi() {
-        map?.apply {
+        mapView.scalebar.updateSettings {
+            this.enabled = false
+        }
+        mapView.logo.updateSettings {
+            this.position = Gravity.TOP or Gravity.START
+        }
+        mapView.attribution.updateSettings {
+            this.position = Gravity.TOP or Gravity.START
+        }
+        mapView.compass.updateSettings {
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
-                uiSettings.setCompassImage(it)
-                uiSettings.setCompassMargins(
-                    defaultUiIconLeftMargin,
-                    numberOfUiIcons * defaultUiIconSize +
-                        (numberOfUiIcons + 1) * defaultUiIconTopMargin,
-                    defaultUiIconRightMargin,
-                    defaultUiIconBottomMargin
-                )
+                image = it
+                marginLeft = defaultUiIconLeftMargin.toFloat()
+                marginTop = (numberOfUiIcons * defaultUiIconSize +
+                        (numberOfUiIcons + 1) * defaultUiIconTopMargin).toFloat()
+                marginRight = defaultUiIconRightMargin.toFloat()
+                marginBottom = defaultUiIconBottomMargin.toFloat()
             }
         }
     }
@@ -99,57 +123,57 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     fun initCameraPosition(
         boundingBox: BoundingBox
     ) {
-        val bounds = LatLngBounds.Builder()
-            .include(pointToLatLn(boundingBox.northeast()))
-            .include(pointToLatLn(boundingBox.southwest()))
-            .build()
+        map?.apply {
+            cameraForCoordinates(listOf(boundingBox.northeast(), boundingBox.southwest()))
+        }
+
         map?.initCameraToViewAllElements(
-            mapView.context, bounds
+            mapView.context, listOf(boundingBox.northeast(), boundingBox.southwest())
         )
     }
 
-    fun pointToLatLn(point: Point): LatLng {
-        return LatLng(point.latitude(), point.longitude())
-    }
-
+    @SuppressLint("MissingPermission")
     fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
-        val isLocationActivated =
-            map?.locationComponent?.let { it.isLocationComponentActivated } ?: false
+        val isLocationActivated = mapView.location.enabled
+
         if (isLocationActivated) {
-            val isLocationEnabled = map?.locationComponent?.isLocationComponentEnabled ?: false
-            if (isLocationEnabled) {
-                val location = map?.locationComponent?.lastKnownLocation
-                location?.let { map?.moveCameraToDevicePosition(LatLng(location)) }
-            }
+            LocationEngineProvider.getBestLocationEngine(mapView.context)
+                .getLastLocation(object : LocationEngineCallback<LocationEngineResult> {
+                    override fun onSuccess(result: LocationEngineResult?) {
+                        result?.lastLocation?.let {
+                            map?.moveCameraToDevicePosition(
+                                Point.fromLngLat(
+                                    it.longitude,
+                                    it.latitude
+                                )
+                            )
+                        }
+                    }
+
+                    override fun onFailure(exception: Exception) {
+                        TODO("Not yet implemented")
+                    }
+
+                })
         } else {
             enableLocationComponentAndCenterCamera(onMissingPermission)
         }
     }
 
-    fun isMapReady() = map != null && style?.isFullyLoaded ?: false
-
-    fun onCreate(savedInstanceState: Bundle?) {
-        mapView.onCreate(savedInstanceState)
-    }
-
-    fun onSaveInstanceState(outState: Bundle) {
-        mapView.onSaveInstanceState(outState)
-    }
+    fun isMapReady() = map != null && style?.isStyleLoaded ?: false
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
         mapView.onStart()
-        map?.locationComponent?.onStart()
+        mapView.location.onStart()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
-        mapView.onResume()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause() {
-        mapView.onPause()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -161,9 +185,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy() {
         mapView.onDestroy()
-        markerViewManager?.onDestroy()
-        symbolManager?.onDestroy()
-        map?.locationComponent?.onStop()
+        mapView.location.onStop()
     }
 
     fun onLowMemory() {
@@ -188,36 +210,40 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         return source
     }
 
-    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? {
-        return null
+    open fun markFeatureAsSelected(
+        point: Point,
+        layer: String? = null,
+        onFeature: (Feature?) -> Unit
+    ) {
+
     }
 
-    @SuppressLint("MissingPermission")
-    private fun enableLocationComponent(
-        style: Style,
-        onMissingPermission: (PermissionsManager?) -> Unit
-    ) {
-        map?.locationComponent?.apply {
-            if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
-                activateLocationComponent(
-                    LocationComponentActivationOptions.builder(
-                        mapView.context,
-                        style
-                    ).build()
-                )
-                isLocationComponentEnabled = true
-            } else {
-                permissionsManager = PermissionsManager(object : PermissionsListener {
-                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
-
-                    override fun onPermissionResult(granted: Boolean) {
-                        if (granted) {
-                            enableLocationComponent(style, onMissingPermission)
-                        }
+    private fun enableLocationComponent() {
+        val locationComponentPlugin = mapView.location
+        locationComponentPlugin.updateSettings {
+            this.enabled = true
+            this.locationPuck = LocationPuck2D(
+                bearingImage = AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.mapbox_user_icon,
+                ),
+                shadowImage = AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.mapbox_user_icon_shadow,
+                ),
+                scaleExpression = interpolate {
+                    linear()
+                    zoom()
+                    stop {
+                        literal(0.0)
+                        literal(0.6)
                     }
-                })
-                onMissingPermission(permissionsManager)
-            }
+                    stop {
+                        literal(20.0)
+                        literal(1.0)
+                    }
+                }.toJson()
+            )
         }
     }
 
@@ -225,29 +251,8 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     private fun enableLocationComponentAndCenterCamera(
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
-        map?.locationComponent?.apply {
-            if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
-                activateLocationComponent(
-                    LocationComponentActivationOptions.builder(
-                        mapView.context,
-                        style!!
-                    ).build()
-                )
-                isLocationComponentEnabled = true
-                centerCameraOnMyPosition(onMissingPermission)
-            } else {
-                permissionsManager = PermissionsManager(object : PermissionsListener {
-                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
-
-                    override fun onPermissionResult(granted: Boolean) {
-                        if (granted) {
-                            centerCameraOnMyPosition(onMissingPermission)
-                        }
-                    }
-                })
-                onMissingPermission(permissionsManager)
-            }
-        }
+        enableLocationComponent()
+        centerCameraOnMyPosition(onMissingPermission)
     }
 
     fun requestMapLayerManager(): MapLayerManager? {

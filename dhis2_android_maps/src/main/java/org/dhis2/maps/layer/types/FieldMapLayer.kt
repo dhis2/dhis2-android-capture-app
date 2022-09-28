@@ -1,18 +1,20 @@
 package org.dhis2.maps.layer.types
 
 import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import org.dhis2.maps.geometry.TEI_UID
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.layers.Layer
+import com.mapbox.maps.extension.style.layers.addLayer
+import com.mapbox.maps.extension.style.layers.addLayerBelow
+import com.mapbox.maps.extension.style.layers.generated.SymbolLayer
+import com.mapbox.maps.extension.style.layers.getLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.Visibility
+import com.mapbox.maps.extension.style.sources.addSource
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.withDEIconAndTextProperties
 import org.dhis2.maps.layer.withInitialVisibility
 import org.dhis2.maps.layer.withTEIMarkerProperties
+import org.dhis2.maps.utils.updateSource
 
 class FieldMapLayer(
     var style: Style,
@@ -28,7 +30,7 @@ class FieldMapLayer(
 
     init {
         style.addLayer(pointLayer)
-        style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
+        style.addSource(GeoJsonSource.Builder(SELECTED_POINT_SOURCE_ID).build())
         style.addLayer(teiPointLayer)
         style.addLayerBelow(selectedPointLayer, POINT_LAYER_ID)
     }
@@ -42,27 +44,27 @@ class FieldMapLayer(
         get() = style.getLayer(SELECTED_POINT_LAYER_ID)
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withDEIconAndTextProperties()
-                .withInitialVisibility(Property.NONE)
+                .withInitialVisibility(Visibility.NONE)
 
     private val teiPointLayer: Layer
         get() = style.getLayer(TEI_POINT_LAYER_ID)
             ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
                 .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
+                .withInitialVisibility(Visibility.NONE)
 
-    private fun setVisibility(visibility: String) {
-        pointLayer.setProperties(PropertyFactory.visibility(visibility))
-        selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
-        teiPointLayer.setProperties(PropertyFactory.visibility(visibility))
-        visible = visibility == Property.VISIBLE
+    private fun setVisibility(visibility: Visibility) {
+        pointLayer.visibility(visibility)
+        selectedPointLayer.visibility(visibility)
+        teiPointLayer.visibility(visibility)
+        visible = visibility == Visibility.VISIBLE
     }
 
     override fun showLayer() {
-        setVisibility(Property.VISIBLE)
+        setVisibility(Visibility.VISIBLE)
     }
 
     override fun hideLayer() {
-        setVisibility(Property.NONE)
+        setVisibility(Visibility.NONE)
     }
 
     override fun setSelectedItem(feature: Feature?) {
@@ -70,28 +72,17 @@ class FieldMapLayer(
     }
 
     private fun selectPoint(feature: Feature) {
-        style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
-            setGeoJson(feature)
-        }
+        style.updateSource(SELECTED_POINT_LAYER_ID, feature)
 
-        selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1.5f),
-            PropertyFactory.visibility(Property.VISIBLE)
-        )
+        (selectedPointLayer as SymbolLayer)
+            .iconSize(1.5)
+            .visibility(Visibility.VISIBLE)
     }
 
     private fun deselectCurrentPoint() {
-        selectedPointLayer.setProperties(
-            PropertyFactory.iconSize(1f),
-            PropertyFactory.visibility(Property.NONE)
-        )
-    }
-
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(sourceId)
-            ?.querySourceFeatures(Expression.eq(Expression.get(TEI_UID), featureUidProperty))
-            ?.firstOrNull()
-            .also { setSelectedItem(it) }
+        (selectedPointLayer as SymbolLayer)
+            .iconSize(1.0)
+            .visibility(Visibility.NONE)
     }
 
     override fun getId(): String {

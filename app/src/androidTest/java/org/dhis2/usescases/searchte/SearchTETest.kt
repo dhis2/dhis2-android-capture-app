@@ -8,12 +8,10 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.Bindings.app
 import org.dhis2.R
-import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
@@ -37,9 +35,6 @@ class SearchTETest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
-
-    private var mapIdlingResource: MapIdlingResource? = null
-    private var map: MapboxMap? = null
 
     val customDispatcherProvider = context.applicationContext.app().appComponent().customDispatcherProvider()
 
@@ -347,13 +342,6 @@ class SearchTETest : BaseTest() {
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
-        }
-    }
-
-    @After
-    fun unregisterIdlingResource() {
-        if (mapIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
 

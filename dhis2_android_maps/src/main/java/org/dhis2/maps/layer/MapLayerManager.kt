@@ -3,8 +3,8 @@ package org.dhis2.maps.layer
 import android.graphics.Color
 import androidx.annotation.ColorRes
 import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.Style
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
@@ -62,7 +62,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
 
     fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
         apply {
-            val style = mapboxMap.style!!
+            val style = mapboxMap.getStyle()!!
             mapLayers[sourceId ?: layerType.name] = when (layerType) {
                 LayerType.TEI_LAYER -> TeiMapLayer(
                     style,
@@ -182,7 +182,7 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
             BaseMapType.STREET -> Style.MAPBOX_STREETS
             BaseMapType.SATELLITE -> Style.SATELLITE_STREETS
         }
-        mapboxMap.setStyle(
+        mapboxMap.loadStyleUri(
             currentStyle
         ) {
             styleChangeCallback?.invoke(it)

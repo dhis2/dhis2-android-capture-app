@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.maps.Style
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.BasemapItemBinding
 

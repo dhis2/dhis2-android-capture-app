@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.layer
 
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.Style
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -29,9 +29,9 @@ class MapLayerManagerTest {
     @Test
     @Ignore
     fun `Should add layer with sourceId`() {
-        whenever(mapboxMap.style) doReturn style
+        whenever(mapboxMap.getStyle()) doReturn style
         mapLayerManager
-            .addLayer(org.dhis2.maps.layer.LayerType.TEI_LAYER, sourceId = sourceId)
+            .addLayer(LayerType.TEI_LAYER, sourceId = sourceId)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
@@ -40,10 +40,10 @@ class MapLayerManagerTest {
     @Test
     @Ignore
     fun `Should add layer without sourceId`() {
-        whenever(mapboxMap.style) doReturn style
+        whenever(mapboxMap.getStyle()) doReturn style
         mapLayerManager
             .withMapStyle(mapStyle)
-            .addLayer(org.dhis2.maps.layer.LayerType.HEATMAP_LAYER)
+            .addLayer(LayerType.HEATMAP_LAYER)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is HeatmapMapLayer)
@@ -53,7 +53,7 @@ class MapLayerManagerTest {
     @Ignore
     fun `Should add layers with sourceIds`() {
         val otherSourceId = "otherSourceId"
-        whenever(mapboxMap.style) doReturn style
+        whenever(mapboxMap.getStyle()) doReturn style
         mapLayerManager
             .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId), false)
 

@@ -1,21 +1,24 @@
 package org.dhis2.maps.managers
 
-import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.geojson.Point
+import com.mapbox.maps.MapView
+import com.mapbox.maps.RenderedQueryGeometry
+import com.mapbox.maps.RenderedQueryOptions
+import com.mapbox.maps.ScreenCoordinate
 import org.dhis2.maps.R
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.FIELD_NAME
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.LayerType
+import org.dhis2.maps.utils.updateSource
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager(mapView: MapView) : MapManager(mapView) {
@@ -48,7 +51,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
             AppCompatResources.getDrawable(
                 mapView.context,
                 R.drawable.map_marker
-            )!!
+            )?.toBitmap()!!
         )
         setLayer()
         addDynamicIcons()
@@ -56,11 +59,10 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setSource() {
-        (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
-            ?: style?.addSource(GeoJsonSource(EVENTS, featureCollection))
+        style?.updateSource(EVENTS, featureCollection!!)
+
         deFeatureCollection.forEach {
-            (style?.getSource(it.key) as GeoJsonSource?)?.setGeoJson(it.value)
-                ?: style?.addSource(GeoJsonSource(it.key, it.value))
+            style?.updateSource(it.key, it.value)
         }
     }
 
@@ -75,7 +77,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         deFeatureCollection.entries.forEach {
             style?.addImage(
                 "${DE_ICON_ID}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key).toBitmap()
             )
         }
     }
@@ -169,19 +171,54 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         return findFeatures("", MapEventToFeatureCollection.EVENT, propertyValue)
     }
 
-    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
-        val rectF = map?.projection?.toScreenLocation(point)?.let { pointf ->
-            RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
-        } ?: RectF()
+    override fun markFeatureAsSelected(
+        point: Point,
+        layer: String?,
+        onFeature: (Feature?) -> Unit
+    ) {
+        val screenCoordinate = map?.pixelForCoordinate(point)
+        if (screenCoordinate != null) {
+            selectedFeature(screenCoordinate) {
+                onFeature(it)
+            }
+        } else {
+            onFeature(null)
+        }
+    }
+
+    private fun selectedFeature(
+        screenCoordinate: ScreenCoordinate,
+        onFeatureClicked: (Feature?) -> Unit
+    ) {
         var selectedFeature: Feature? = null
         mapLayerManager.sourcesAndLayersForSearch()
-            .filter { it.value.isNotEmpty() }.forEach { (_, layer) ->
-                val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
-                if (features.isNotEmpty()) {
-                    mapLayerManager.selectFeature(null)
-                    selectedFeature = features.first()
+            .filter { it.value.isNotEmpty() }
+            .forEach { (source, layer) ->
+                map?.queryRenderedFeatures(
+                    RenderedQueryGeometry(screenCoordinate),
+                    RenderedQueryOptions(listOf(layer.first()), null)
+                ) { expected ->
+                    if (expected.isValue && expected.value?.size!! > 0) {
+                        expected.value?.get(0)?.feature?.let { feature ->
+                            if (selectedFeature == null) {
+                                mapLayerManager.selectFeature(null)
+                            }
+                            if (selectedFeature == null || source.contains(TeiMapManager.TEIS_SOURCE_ID)) {
+                                selectedFeature = when {
+                                    layer.any { it.contains("RELATIONSHIP") } -> findFeature(
+                                        source,
+                                        MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                                        feature.getStringProperty(
+                                            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID
+                                        )
+                                    )
+                                    else -> feature
+                                }
+                            }
+                        }
+                    }
+                    onFeatureClicked(selectedFeature)
                 }
             }
-        return selectedFeature
     }
 }

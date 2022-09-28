@@ -1,17 +1,17 @@
 package org.dhis2.maps.managers
 
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.utils.BitmapUtils
+import com.mapbox.maps.MapView
 import org.dhis2.maps.R
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.LayerType
+import org.dhis2.maps.utils.updateSource
 
 class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
 
@@ -41,32 +41,26 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     override fun loadDataForStyle() {
         style?.addImage(
             RELATIONSHIP_ARROW,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.ic_arrowhead
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.ic_arrowhead
+            )?.toBitmap()!!,
             true
         )
         style?.addImage(
             RELATIONSHIP_ICON,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.map_marker
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.map_marker
+            )?.toBitmap()!!,
             true
         )
         style?.addImage(
             RELATIONSHIP_ARROW_BIDIRECTIONAL,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.ic_arrowhead_bidirectional
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.ic_arrowhead_bidirectional
+            )?.toBitmap()!!,
             true
         )
         setSource()
@@ -79,9 +73,8 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     }
 
     override fun setSource() {
-        featureCollections.keys.forEach {
-            style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(featureCollections[it])
-                ?: style?.addSource(GeoJsonSource(it, featureCollections[it]))
+        featureCollections.keys.forEach { sourceId ->
+            style?.updateSource(sourceId, featureCollections[sourceId]!!)
         }
         initCameraPosition(boundingBox)
     }

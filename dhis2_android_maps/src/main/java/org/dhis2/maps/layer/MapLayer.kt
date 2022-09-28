@@ -17,8 +17,6 @@ interface MapLayer {
 
     fun setSelectedItem(features: List<Feature>?) {}
 
-    fun findFeatureWithUid(featureUidProperty: String): Feature?
-
     var visible: Boolean
 
     fun getId(): String

@@ -2,6 +2,7 @@ package org.dhis2.maps.layer
 
 import android.app.Dialog
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -210,11 +211,16 @@ class MapLayerDialog(
                 if (it == HEATMAP_ICON) {
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
-                    layerIcon.setImageBitmap(
-                        mapManager.mapLayerManager.mapboxMap.style?.getImage(
-                            image
-                        )
-                    )
+                    mapManager.mapLayerManager.mapboxMap.getStyle()?.getStyleImage(image)
+                        ?.let { image ->
+                            layerIcon.setImageBitmap(
+                                BitmapFactory.decodeByteArray(
+                                    image.data,
+                                    0,
+                                    image.data.size
+                                )
+                            )
+                        }
                 }
             }
         }.root

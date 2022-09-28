@@ -35,7 +35,7 @@
             android:text="@string/empty_relationships"
             android:textSize="@dimen/primaryTextSize" />
 
-        <com.mapbox.mapboxsdk.maps.MapView
+        <com.mapbox.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -44,9 +44,9 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:mapbox_uiAttributionGravity="top|start"
-            app:mapbox_uiLogoGravity="top|start"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            app:mapbox_resourcesAccessToken="pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
+            />
 
         <ImageView
             android:id="@+id/mapLayerButton"

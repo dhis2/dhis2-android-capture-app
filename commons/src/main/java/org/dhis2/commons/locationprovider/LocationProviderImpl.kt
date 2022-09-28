@@ -42,7 +42,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     ) {
         if (!hasPermission()) {
             onPermissionNeeded()
-        } else if (!hasLocationEnabled()) {
+        } else if (hasLocationEnabled() != true) {
             onLocationDisabled()
             requestLocationUpdates(onNewLocation)
         } else {
@@ -82,8 +82,10 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun hasLocationEnabled(): Boolean {
-        return locationProvider?.let { locationManager.isProviderEnabled(it) } ?: false
+    override fun hasLocationEnabled(): Boolean? {
+        return locationProvider?.let {
+            locationManager.isProviderEnabled(it)
+        }
     }
 
     override fun stopLocationUpdates() {

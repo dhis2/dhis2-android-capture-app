@@ -2,22 +2,21 @@ package org.dhis2.maps.managers
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.PointF
-import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.CustomTarget
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.utils.BitmapUtils
-import java.util.HashMap
+import com.mapbox.geojson.Point
+import com.mapbox.maps.MapView
+import com.mapbox.maps.RenderedQueryGeometry
+import com.mapbox.maps.RenderedQueryOptions
+import com.mapbox.maps.ScreenCoordinate
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.TeiMarkers
@@ -30,6 +29,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollecti
 import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
+import org.dhis2.maps.utils.updateSource
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiMapManager(mapView: MapView) : MapManager(mapView) {
@@ -65,7 +65,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         this.boundingBox = boundingBox
 
         teiImages.forEach { entry ->
-            style?.removeImage(entry.key)
+            style?.removeStyleImage(entry.key)
         }
 
         addDynamicIcons()
@@ -79,7 +79,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         style?.apply {
             style?.addImage(
                 MapLayerManager.TEI_ICON_ID,
-                getTintedDrawable(TEIS_SOURCE_ID)
+                getTintedDrawable(TEIS_SOURCE_ID).toBitmap()
             )
             mapStyle?.teiSymbolIcon?.let {
                 addImage(
@@ -94,55 +94,49 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
             mapStyle?.enrollmentSymbolIcon?.let {
                 addImage(
                     MapLayerManager.ENROLLMENT_ICON_ID,
-                    getTintedDrawable(ENROLLMENT_SOURCE_ID)
+                    getTintedDrawable(ENROLLMENT_SOURCE_ID).toBitmap()
                 )
             }
             mapStyle?.stagesStyle?.keys?.forEach { key ->
                 addImage(
                     "${MapLayerManager.STAGE_ICON_ID}_$key",
-                    getTintedDrawable(key)
+                    getTintedDrawable(key).toBitmap()
                 )
             }
         }
         style?.addImage(
             RelationshipMapManager.RELATIONSHIP_ARROW,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.ic_arrowhead
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.ic_arrowhead
+            )!!.toBitmap(),
             true
         )
         style?.addImage(
             RelationshipMapManager.RELATIONSHIP_ICON,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.map_marker
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.map_marker
+            )!!.toBitmap(),
             true
         )
         style?.addImage(
             RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
-            BitmapUtils.getBitmapFromDrawable(
-                AppCompatResources.getDrawable(
-                    mapView.context,
-                    R.drawable.ic_arrowhead_bidirectional
-                )
-            )!!,
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.ic_arrowhead_bidirectional
+            )!!.toBitmap(),
             true
         )
 
-        mapView.addOnStyleImageMissingListener { id ->
+        map?.addOnStyleImageMissingListener { event ->
             teiFeatureCollections?.get(TEIS_SOURCE_ID)?.features()
-                ?.firstOrNull { id == it.getStringProperty(TEI_UID) }
+                ?.firstOrNull { event.id == it.getStringProperty(TEI_UID) }
                 ?.let {
-                    teiImages[id]?.let { it1 -> style?.addImage(id, it1) }
+                    teiImages[event.id]?.let { it1 -> style?.addImage(event.id, it1) }
                 } ?: mapStyle?.teiSymbolIcon?.let {
                 style?.addImage(
-                    id,
+                    event.id,
                     TeiMarkers.getMarker(
                         mapView.context,
                         it,
@@ -173,12 +167,10 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
 
     override fun setSource() {
         teiFeatureCollections?.keys?.forEach {
-            style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(teiFeatureCollections!![it])
-                ?: style?.addSource(GeoJsonSource(it, teiFeatureCollections!![it]))
+            style?.updateSource(it, teiFeatureCollections!![it]!!)
         }
         fieldFeatureCollections.forEach {
-            (style?.getSource(it.key) as GeoJsonSource?)?.setGeoJson(it.value)
-                ?: style?.addSource(GeoJsonSource(it.key, it.value))
+            style?.updateSource(it.key, it.value)
         }
         addDynamicLayers()
         boundingBox?.let { initCameraPosition(it) }
@@ -242,7 +234,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         fieldFeatureCollections.entries.forEach {
             style?.addImage(
                 "${EventMapManager.DE_ICON_ID}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key).toBitmap()
             )
         }
         teiFeatureCollections?.entries?.filter {
@@ -251,7 +243,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }?.forEach {
             style?.addImage(
                 "${RelationshipMapManager.RELATIONSHIP_ICON}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key).toBitmap()
             )
         }
     }
@@ -408,34 +400,52 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }
     }
 
-    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
-        val pointf: PointF = map?.projection?.toScreenLocation(point)!!
-        val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
-
-        return selectedFeature(rectF)
+    override fun markFeatureAsSelected(
+        point: Point,
+        layer: String?,
+        onFeature: (Feature?) -> Unit
+    ) {
+        val screenCoordinate = map?.pixelForCoordinate(point)
+        if (screenCoordinate != null) {
+            selectedFeature(screenCoordinate) {
+                onFeature(it)
+            }
+        } else {
+            onFeature(null)
+        }
     }
 
-    private fun selectedFeature(rectF: RectF): Feature? {
+    private fun selectedFeature(
+        screenCoordinate: ScreenCoordinate,
+        onFeatureClicked: (Feature?) -> Unit
+    ) {
         var selectedFeature: Feature? = null
         val sourcesAndLayers = mapLayerManager.sourcesAndLayersForSearch()
         sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (source, layer) ->
-            val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
-            if (features.isNotEmpty()) {
-                if (selectedFeature == null) {
-                    mapLayerManager.selectFeature(null)
-                }
-                if (selectedFeature == null || source.contains(TEIS_SOURCE_ID)) {
-                    selectedFeature = when {
-                        layer.any { it.contains("RELATIONSHIP") } -> findFeature(
-                            source,
-                            RELATIONSHIP_UID,
-                            features.first().getStringProperty(RELATIONSHIP_UID)
-                        )
-                        else -> features.first()
+            map?.queryRenderedFeatures(
+                RenderedQueryGeometry(screenCoordinate),
+                RenderedQueryOptions(listOf(layer.first()), null)
+            ) { expected ->
+                if (expected.isValue && expected.value?.size!! > 0) {
+                    expected.value?.get(0)?.feature?.let { feature ->
+                        if (selectedFeature == null) {
+                            mapLayerManager.selectFeature(null)
+                        }
+                        if (selectedFeature == null || source.contains(TEIS_SOURCE_ID)) {
+                            selectedFeature = when {
+                                layer.any { it.contains("RELATIONSHIP") } -> findFeature(
+                                    source,
+                                    RELATIONSHIP_UID,
+                                    feature.getStringProperty(RELATIONSHIP_UID)
+                                )
+                                else -> feature
+                            }
+                        }
                     }
                 }
+
+                onFeatureClicked(selectedFeature)
             }
         }
-        return selectedFeature
     }
 }

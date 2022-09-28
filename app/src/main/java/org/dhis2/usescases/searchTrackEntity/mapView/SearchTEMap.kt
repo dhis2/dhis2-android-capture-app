@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.geojson.Point
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.Bindings.dp
@@ -38,7 +38,7 @@ import org.dhis2.utils.isPortrait
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
 
-class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
+class SearchTEMap : FragmentGlobalAbstract(), OnMapClickListener {
 
     @Inject
     lateinit var mapNavigation: ExternalMapNavigation
@@ -101,13 +101,19 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         }
 
         binding.mapPositionButton.setOnClickListener {
-            if (locationProvider.hasLocationEnabled()) {
+            when (locationProvider.hasLocationEnabled()) {
+                true -> teiMapManager?.centerCameraOnMyPosition { permissionManager ->
+                    permissionManager?.requestLocationPermissions(requireActivity())
+                }
+                else -> LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+            }
+           /* if (locationProvider.hasLocationEnabled()) {
                 teiMapManager?.centerCameraOnMyPosition { permissionManager ->
                     permissionManager?.requestLocationPermissions(requireActivity())
                 }
             } else {
                 LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-            }
+            }*/
         }
 
         binding.openSearchButton.setOnClickListener {
@@ -281,12 +287,12 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         teiMapManager?.let { binding.mapCarousel.attachToMapManager(it) }
     }
 
-    override fun onMapClick(point: LatLng): Boolean {
-        val featureFound = teiMapManager!!.markFeatureAsSelected(point, null)
-        if (featureFound != null) {
-            binding.mapCarousel.scrollToFeature(featureFound)
-            return true
+    override fun onMapClick(point: Point): Boolean {
+        teiMapManager!!.markFeatureAsSelected(point, null) {
+            if (it != null) {
+                binding.mapCarousel.scrollToFeature(it)
+            }
         }
-        return false
+        return true
     }
 }

@@ -7,137 +7,91 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import org.dhis2.maps.geometry.bound.GetBoundingBox
+import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.EdgeInsets
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
 
-const val DEFAULT_BOUND_PADDING = 50
-const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
+const val DEFAULT_BOUND_PADDING = 50.0
+const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 5000L
 
-fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBounds) {
-    if (bounds.latNorth == 0.0 && bounds.latSouth == 0.0 &&
-        bounds.lonEast == 0.0 && bounds.lonWest == 0.0
-    ) {
-        this.cameraPosition = CameraPosition.Builder()
-            .zoom(2.0)
-            .build()
+fun MapboxMap.initCameraToViewAllElements(context: Context?, points: List<Point>) {
+    if (points.isEmpty()) {
+        cameraAnimationsPlugin {
+            flyTo(
+                CameraOptions.Builder()
+                    .zoom(2.0)
+                    .build()
+            )
+        }
         context?.let { Toast.makeText(context, "No data to load on map", LENGTH_LONG).show() }
     } else {
-        this.easeCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                bounds,
-                org.dhis2.maps.camera.DEFAULT_BOUND_PADDING
-            ),
-            org.dhis2.maps.camera.DEFAULT_EASE_CAMERA_ANIM_DURATION
-        )
-    }
-}
-
-fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
-    this.animateCamera(
-        CameraUpdateFactory.newLatLngZoom(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude
-            ),
-            13.0
-        )
-    )
-    val cameraPosition = CameraPosition.Builder()
-        .target(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude
-            )
-        )
-        .zoom(15.0)
-        .build()
-    this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-}
-
-fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
-    this.easeCamera(
-        CameraUpdateFactory.newLatLng(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude
-            )
-        )
-    )
-    val cameraPosition = CameraPosition.Builder()
-        .target(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude
-            )
-        )
-        .build()
-    this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-}
-
-fun MapboxMap.centerCameraOnFeature(feature: Feature) {
-    when (val geometry = feature.geometry()) {
-        is Point -> {
-            this.easeCamera(
-                CameraUpdateFactory.newLatLng(
-                    LatLng(
-                        geometry.latitude(),
-                        geometry.longitude()
+        cameraForCoordinates(points)
+        cameraAnimationsPlugin {
+            flyTo(
+                cameraForCoordinates(
+                    points,
+                    padding = EdgeInsets(
+                        DEFAULT_BOUND_PADDING,
+                        DEFAULT_BOUND_PADDING,
+                        DEFAULT_BOUND_PADDING,
+                        DEFAULT_BOUND_PADDING
                     )
-                )
-            )
-        }
-        is Polygon -> {
-            val boundsBuilder = LatLngBounds.Builder()
-            (geometry.outer() as LineString).coordinates().forEach {
-                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
-            }
-            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
-        }
-        is LineString -> {
-            val boundsBuilder = LatLngBounds.Builder()
-            geometry.coordinates().forEach {
-                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
-            }
-            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
-        }
-    }
-}
-
-fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
-    val latLongs = mutableListOf<LatLng>().apply {
-        features.forEach {
-            addAll(
-                when (val geometry = it.geometry()) {
-                    is Point -> arrayListOf(LatLng(geometry.latitude(), geometry.longitude()))
-                    is Polygon -> geometry.coordinates()[0].map { point ->
-                        LatLng(
-                            point.latitude(),
-                            point.longitude()
-                        )
-                    }
-                    is LineString -> geometry.coordinates().map { point ->
-                        LatLng(
-                            point.latitude(),
-                            point.longitude()
-                        )
-                    }
-                    else -> emptyList<LatLng>()
+                ),
+                MapAnimationOptions.mapAnimationOptions {
+                    this.duration(
+                        DEFAULT_EASE_CAMERA_ANIM_DURATION
+                    )
                 }
             )
         }
     }
-    val bbox = GetBoundingBox().getEnclosingBoundingBox(latLongs)
-    val bounds = LatLngBounds.Builder()
-        .include(pointToLatLn(bbox.northeast()))
-        .include(pointToLatLn(bbox.southwest()))
-        .build()
-    initCameraToViewAllElements(null, bounds)
 }
 
-fun pointToLatLn(point: Point): LatLng {
-    return LatLng(point.latitude(), point.longitude())
+fun MapboxMap.moveCameraToPosition(point: Point) {
+    cameraAnimationsPlugin {
+        this.flyTo(
+            CameraOptions.Builder()
+                .center(point)
+                .zoom(15.0)
+                .build()
+        )
+    }
+}
+
+fun MapboxMap.moveCameraToDevicePosition(point: Point) {
+    cameraAnimationsPlugin {
+        flyTo(
+            CameraOptions.Builder()
+                .center(point)
+                .build()
+        )
+    }
+}
+
+fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
+    val latLongs = mutableListOf<Point>().apply {
+        features.forEach {
+            addAll(
+                when (val geometry = it.geometry()) {
+                    is Point -> arrayListOf(geometry)
+                    is Polygon -> geometry.coordinates()[0].map { point ->
+                        Point.fromLngLat(
+                            point.longitude(),
+                            point.latitude()
+                        )
+                    }
+                    is LineString -> geometry.coordinates().map { point ->
+                        Point.fromLngLat(
+                            point.longitude(),
+                            point.latitude()
+                        )
+                    }
+                    else -> emptyList()
+                }
+            )
+        }
+    }
+
+    initCameraToViewAllElements(null, latLongs)
 }
