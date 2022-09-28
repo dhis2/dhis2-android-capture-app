@@ -7,7 +7,6 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -101,7 +100,6 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    @Ignore("Our testing platform (Browserstack) is rotating device and making it fail")
     @Test
     fun shouldReopenModifyAndCompleteDataset() {
         startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
@@ -115,15 +113,7 @@ class DataSetTest : BaseTest() {
             clickOnMenuReOpen()
             clickOnPositiveButton()
             typeOnCell("bjDvmb4bfuf", 0, 0)
-            clickOnEditValue()
-            typeInput("5")
-            pressBack()
-            composeTestRule.waitForIdle()
-            pressBack()
-            composeTestRule.waitForIdle()
-            pressBack()
-            composeTestRule.waitForIdle()
-//            acceptDateSelected() removed id
+            clickOnAcceptDate()
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnPositiveButton()

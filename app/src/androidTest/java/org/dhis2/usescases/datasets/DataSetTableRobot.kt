@@ -72,4 +72,8 @@ class DataSetTableRobot(
     fun checkActivityHasNotFinished(activity: DataSetTableActivity) {
         assertTrue(!activity.isDestroyed)
     }
+
+    fun clickOnAcceptDate() {
+        onView(withText(R.string.action_accept)).perform(click())
+    }
 }
