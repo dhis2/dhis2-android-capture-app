@@ -38,6 +38,7 @@ class MapFieldValueToUser(
             ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.REFERENCE,
+            ValueType.USERNAME,
             ValueType.GEOJSON -> resources.getString(R.string.unsupported_value_type)
             ValueType.ORGANISATION_UNIT -> {
                 if (!field.value().isNullOrEmpty()) {
@@ -46,11 +47,6 @@ class MapFieldValueToUser(
                     field.value()
                 }
             }
-            ValueType.IMAGE,
-            ValueType.FILE_RESOURCE,
-            ValueType.TRACKER_ASSOCIATE,
-            ValueType.REFERENCE,
-            ValueType.GEOJSON -> resources.getString(R.string.unsupported_value_type)
             else -> field.value()
         }
     }
