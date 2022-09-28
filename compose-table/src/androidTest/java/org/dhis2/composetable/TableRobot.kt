@@ -49,6 +49,7 @@ import org.dhis2.composetable.ui.HEADER_CELL
 import org.dhis2.composetable.ui.HasError
 import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
+import org.dhis2.composetable.ui.INPUT_ICON_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
 import org.dhis2.composetable.ui.InfoIconId
@@ -248,6 +249,10 @@ class TableRobot(
 
     fun clickOnEditValue() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
+    }
+
+    fun clickOnEditionIcon() {
+        composeTestRule.onNodeWithTag(INPUT_ICON_TEST_TAG).performClick()
     }
 
     fun clearInput() {
