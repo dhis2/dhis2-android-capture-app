@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -20,6 +21,9 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val ruleDataSetDetail = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
     fun shouldNotCloseActivityAfterQualityCheckIfDataSetIsComplete() {
         setupCredentials()
@@ -34,16 +38,15 @@ class DataSetTest : BaseTest() {
             ruleDataSet
         )
 
-        dataSetTableRobot {
+        dataSetTableRobot(composeTestRule) {
             clickOnSaveButton()
             checkActivityHasNotFinished(ruleDataSet.activity)
         }
     }
 
-    @Ignore
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Mar 2021"
+        val period = "Mar 2022"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
@@ -58,25 +61,40 @@ class DataSetTest : BaseTest() {
             selectPeriod(period)
             clickOnActionButton()
         }
-        dataSetTableRobot {
-            typeOnEditTextCell("9", 0, 0)
+        dataSetTableRobot(composeTestRule) {
+            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnEditValue()
+            typeInput("1")
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnNegativeButton()
         }
     }
 
-    @Ignore ("ADD new Dataset Uid")
     @Test
-    fun shouldOpenAndEditDataset(){
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST",ruleDataSetDetail)
+    fun shouldOpenAndEditDataset() {
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
 
-        dataSetTableRobot {
-            typeOnEditTextCell("5", 0, 0)
+        dataSetTableRobot(composeTestRule) {
+            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnEditValue()
+            typeInput("5")
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnNegativeButton()
@@ -85,19 +103,27 @@ class DataSetTest : BaseTest() {
 
     @Ignore("Our testing platform (Browserstack) is rotating device and making it fail")
     @Test
-    fun shouldReopenModifyAndCompleteDataset(){
+    fun shouldReopenModifyAndCompleteDataset() {
         startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
 
-        dataSetTableRobot {
+        dataSetTableRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnMenuReOpen()
             clickOnPositiveButton()
-            clickOnEditTextCell(0, 0)
-            acceptDateSelected()
+            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnEditValue()
+            typeInput("5")
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
+            pressBack()
+            composeTestRule.waitForIdle()
+//            acceptDateSelected() removed id
             clickOnSaveButton()
             waitToDebounce(500)
             clickOnPositiveButton()
