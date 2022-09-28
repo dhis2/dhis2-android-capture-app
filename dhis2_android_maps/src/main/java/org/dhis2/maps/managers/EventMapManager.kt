@@ -203,7 +203,9 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
                             if (selectedFeature == null) {
                                 mapLayerManager.selectFeature(null)
                             }
-                            if (selectedFeature == null || source.contains(TeiMapManager.TEIS_SOURCE_ID)) {
+                            if (selectedFeature == null ||
+                                source.contains(TeiMapManager.TEIS_SOURCE_ID)
+                            ) {
                                 selectedFeature = when {
                                     layer.any { it.contains("RELATIONSHIP") } -> findFeature(
                                         source,

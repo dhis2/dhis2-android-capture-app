@@ -65,14 +65,10 @@ class EventMapFragment :
                 },
                 onMissingPermission = { permissionsManager ->
                     when (locationProvider.hasLocationEnabled()) {
-                        false -> LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+                        false ->
+                            LocationSettingLauncher.requestEnableLocationSetting(requireContext())
                         else -> permissionsManager?.requestLocationPermissions(requireActivity())
                     }
-                    /*if (locationProvider.hasLocationEnabled()) {
-                        permissionsManager?.requestLocationPermissions(requireActivity())
-                    } else {
-                        LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-                    }*/
                 }
             )
             mapLayerButton.setOnClickListener {

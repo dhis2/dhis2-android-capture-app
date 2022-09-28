@@ -107,13 +107,6 @@ class SearchTEMap : FragmentGlobalAbstract(), OnMapClickListener {
                 }
                 else -> LocationSettingLauncher.requestEnableLocationSetting(requireContext())
             }
-           /* if (locationProvider.hasLocationEnabled()) {
-                teiMapManager?.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(requireActivity())
-                }
-            } else {
-                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-            }*/
         }
 
         binding.openSearchButton.setOnClickListener {

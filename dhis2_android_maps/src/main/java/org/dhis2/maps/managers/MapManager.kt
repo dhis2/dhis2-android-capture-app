@@ -1,7 +1,6 @@
 package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.view.Gravity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -108,8 +107,10 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
                 image = it
                 marginLeft = defaultUiIconLeftMargin.toFloat()
-                marginTop = (numberOfUiIcons * defaultUiIconSize +
-                        (numberOfUiIcons + 1) * defaultUiIconTopMargin).toFloat()
+                marginTop = (
+                    numberOfUiIcons * defaultUiIconSize +
+                        (numberOfUiIcons + 1) * defaultUiIconTopMargin
+                    ).toFloat()
                 marginRight = defaultUiIconRightMargin.toFloat()
                 marginBottom = defaultUiIconBottomMargin.toFloat()
             }
@@ -153,7 +154,6 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     override fun onFailure(exception: Exception) {
                         TODO("Not yet implemented")
                     }
-
                 })
         } else {
             enableLocationComponentAndCenterCamera(onMissingPermission)
@@ -215,7 +215,6 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         layer: String? = null,
         onFeature: (Feature?) -> Unit
     ) {
-
     }
 
     private fun enableLocationComponent() {
@@ -225,11 +224,11 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             this.locationPuck = LocationPuck2D(
                 bearingImage = AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.mapbox_user_icon,
+                    R.drawable.mapbox_user_icon
                 ),
                 shadowImage = AppCompatResources.getDrawable(
                     mapView.context,
-                    R.drawable.mapbox_user_icon_shadow,
+                    R.drawable.mapbox_user_icon_shadow
                 ),
                 scaleExpression = interpolate {
                     linear()

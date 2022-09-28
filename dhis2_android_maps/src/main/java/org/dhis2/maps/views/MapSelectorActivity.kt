@@ -293,8 +293,9 @@ class MapSelectorActivity :
 
     private fun updateVector(points: List<List<Point?>>) {
         style?.let { style ->
-            if (points[0].size > 3)
+            if (points[0].size > 3) {
                 style.updateSource(POLYGON_SOURCE_ID, Polygon.fromLngLats(points))
+            }
         }
     }
 
