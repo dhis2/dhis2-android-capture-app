@@ -55,6 +55,7 @@
                 app:layout_constraintStart_toEndOf="@id/composeProgramStageIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constrainedWidth="true"
                 tools:text="Program stage name" />
 
             <TextView
