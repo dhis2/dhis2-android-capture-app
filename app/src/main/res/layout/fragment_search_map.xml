@@ -16,7 +16,6 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:mapbox_resourcesAccessToken="pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
              />
 
         <ImageView
