@@ -54,10 +54,7 @@ android {
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
-        def mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") != null ? System.getenv("MAPBOX_ACCESS_TOKEN") : "pk.eyJ1IjoiZGhpczJhbmRyb2lkIiwiYSI6ImNrcWt1a2hzYzE5Ymsyb254MWtlbGt4Y28ifQ.JrP61q9BFTVEKO4SwRUwDw"
-
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
-        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\""
         buildConfigField "String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\""
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")

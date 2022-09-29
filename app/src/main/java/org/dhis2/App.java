@@ -39,7 +39,6 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
-import org.dhis2.maps.MapController;
 import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
@@ -110,8 +109,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         appInspector = new AppInspector(this).init();
-
-        MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));
