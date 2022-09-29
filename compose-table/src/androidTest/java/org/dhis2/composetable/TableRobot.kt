@@ -77,7 +77,7 @@ fun tableRobot(
 }
 
 class TableRobot(
-    private val composeTestRule: ComposeContentTestRule,
+    private val composeTestRule: ComposeContentTestRule
 ) {
 
     lateinit var onSaveTableCell: TableCell

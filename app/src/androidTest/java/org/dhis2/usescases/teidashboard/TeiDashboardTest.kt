@@ -328,6 +328,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         teiDashboardRobot {
+            waitToDebounce(1000)
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             checkEventWasScheduled(visitPNCEvent, 0)
