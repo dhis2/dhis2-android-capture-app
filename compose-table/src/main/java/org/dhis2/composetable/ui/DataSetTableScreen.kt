@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -62,6 +63,7 @@ fun DataSetTableScreen(
     )
 
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     var alreadyFinish by remember { mutableStateOf(false) }
 
@@ -106,6 +108,7 @@ fun DataSetTableScreen(
             onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
                 currentCell = tableCell
                 currentInputType = inputModel
+                focusRequester.requestFocus()
             } ?: collapseBottomSheet()
         } else {
             updateError(tableCell)
@@ -172,7 +175,8 @@ fun DataSetTableScreen(
                 },
                 onNextSelected = {
                     nextSelected = true
-                }
+                },
+                focusRequester = focusRequester
             )
         },
         sheetPeekHeight = 0.dp,
@@ -204,6 +208,7 @@ fun DataSetTableScreen(
                         currentCell = tableCell
                         currentInputType = inputModel.copy(currentValue = currentCell?.value)
                         startEdition()
+                        focusRequester.requestFocus()
                     } ?: collapseBottomSheet()
                 }
             }

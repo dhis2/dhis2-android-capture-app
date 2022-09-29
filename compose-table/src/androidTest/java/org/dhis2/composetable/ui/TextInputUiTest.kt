@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -109,7 +110,8 @@ class TextInputUiTest {
                         )
                     },
                     onSave = { currentCell?.let { onSave(it) } },
-                    onNextSelected = {}
+                    onNextSelected = {},
+                    focusRequester = FocusRequester()
                 )
             },
             sheetPeekHeight = 0.dp,

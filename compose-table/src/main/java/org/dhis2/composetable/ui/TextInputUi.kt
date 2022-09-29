@@ -61,7 +61,8 @@ fun TextInput(
     tableColors: TableColors? = null,
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
-    onNextSelected: () -> Unit
+    onNextSelected: () -> Unit,
+    focusRequester: FocusRequester
 ) {
     val focusManager = LocalFocusManager.current
     TableTheme(tableColors) {
@@ -88,7 +89,8 @@ fun TextInput(
                 textInputModel,
                 onTextChanged = onTextChanged,
                 onSave = onSave,
-                onNextSelected = onNextSelected
+                onNextSelected = onNextSelected,
+                focusRequester = focusRequester
             )
         }
     }
@@ -150,12 +152,11 @@ private fun TextInputContent(
     textInputModel: TextInputModel,
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
-    onNextSelected: () -> Unit
+    onNextSelected: () -> Unit,
+    focusRequester: FocusRequester
 ) {
     val focusManager = LocalFocusManager.current
-    val focusRequester = remember {
-        FocusRequester()
-    }
+
     var hasFocus by remember { mutableStateOf(false) }
 
     val dividerColor = when {
@@ -214,6 +215,7 @@ private fun TextInputContent(
             Spacer(modifier = Modifier.size(8.dp))
             TextInputContentActionIcon(
                 modifier = Modifier
+                    .testTag(INPUT_ICON_TEST_TAG)
                     .clickable(role = Role.Button) {
                         if (hasFocus && textInputModel.error == null) {
                             focusManager.clearFocus(force = true)
@@ -302,17 +304,20 @@ fun DefaultTextInputStatusPreview() {
         secondaryLabels = listOf("header 1", "header 2"),
         currentValue = "Test"
     )
+
     TextInput(
         textInputModel = previewTextInput,
         onTextChanged = {},
         onSave = {},
-        onNextSelected = {}
+        onNextSelected = {},
+        focusRequester = FocusRequester()
     )
 }
 
 const val INPUT_TEST_TAG = "INPUT_TEST_TAG"
 const val INPUT_TEST_FIELD_TEST_TAG = "INPUT_TEST_FIELD_TEST_TAG"
 const val INPUT_ERROR_MESSAGE_TEST_TAG = "INPUT_ERROR_MESSAGE_TEST_TAG"
+const val INPUT_ICON_TEST_TAG = "INPUT_ICON_TEST_TAG"
 
 val DrawableId = SemanticsPropertyKey<Int>("DrawableResId")
 var SemanticsPropertyReceiver.drawableId by DrawableId
