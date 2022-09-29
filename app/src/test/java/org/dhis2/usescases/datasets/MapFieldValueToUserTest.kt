@@ -234,4 +234,33 @@ class MapFieldValueToUserTest {
         val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
         assert(result == UNSUPPORTED_VALUES)
     }
+
+    @Test
+    fun `Should not map username`() {
+        val fieldViewModel = EditTextViewModel.create(
+            "",
+            "",
+            true,
+            "True",
+            "",
+            1,
+            ValueType.USERNAME,
+            "",
+            true,
+            "",
+            "none",
+            listOf(),
+            "",
+            0,
+            1,
+            "1",
+            ""
+        )
+        whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
+        val dataElement =
+            DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.USERNAME).build()
+
+        val result = mapFieldValueToUser.map(fieldViewModel, dataElement)
+        assert(result == UNSUPPORTED_VALUES)
+    }
 }
