@@ -62,7 +62,7 @@ fun TextInput(
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
-    focusRequester: () -> FocusRequester
+    focusRequester: FocusRequester
 ) {
     val focusManager = LocalFocusManager.current
     TableTheme(tableColors) {
@@ -153,7 +153,7 @@ private fun TextInputContent(
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
-    focusRequester: () -> FocusRequester
+    focusRequester: FocusRequester
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -177,7 +177,7 @@ private fun TextInputContent(
                 BasicTextField(
                     modifier = Modifier
                         .testTag(INPUT_TEST_FIELD_TEST_TAG)
-                        .focusRequester(focusRequester.invoke())
+                        .focusRequester(focusRequester)
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .onFocusChanged {
@@ -221,7 +221,7 @@ private fun TextInputContent(
                             focusManager.clearFocus(force = true)
                             onSave()
                         } else {
-                            focusRequester.invoke().requestFocus()
+                            focusRequester.requestFocus()
                         }
                     },
                 hasFocus = hasFocus
@@ -310,7 +310,7 @@ fun DefaultTextInputStatusPreview() {
         onTextChanged = {},
         onSave = {},
         onNextSelected = {},
-        focusRequester = { FocusRequester() }
+        focusRequester = FocusRequester()
     )
 }
 

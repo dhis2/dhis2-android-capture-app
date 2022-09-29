@@ -176,9 +176,7 @@ fun DataSetTableScreen(
                 onNextSelected = {
                     nextSelected = true
                 },
-                focusRequester = {
-                    focusRequester
-                }
+                focusRequester = focusRequester
             )
         },
         sheetPeekHeight = 0.dp,

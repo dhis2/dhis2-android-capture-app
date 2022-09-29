@@ -172,7 +172,7 @@ class TableRobot(
     }
 
     fun assertClickOnEditOpensInputKeyboard() {
-        clickOnEditValue()
+        clickOnEditionIcon()
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 

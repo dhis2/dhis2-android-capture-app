@@ -111,7 +111,7 @@ class TextInputUiTest {
                     },
                     onSave = { currentCell?.let { onSave(it) } },
                     onNextSelected = {},
-                    focusRequester = { FocusRequester() }
+                    focusRequester = FocusRequester()
                 )
             },
             sheetPeekHeight = 0.dp,
