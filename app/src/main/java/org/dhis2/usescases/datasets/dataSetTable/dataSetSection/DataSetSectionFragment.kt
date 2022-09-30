@@ -135,7 +135,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
     override fun updateTabLayout(count: Int) {
         this.tablesCount = count
-        activity.updateTabLayout()
     }
 
     override fun onValueProcessed() {
