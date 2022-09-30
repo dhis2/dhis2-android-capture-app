@@ -21,6 +21,7 @@ import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
+import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
@@ -58,18 +59,19 @@ class TextInputUiTest {
         }
 
         tableRobot(composeTestRule) {
-            assertCellWithErrorSetsErrorMessage(0,1, input_error_message)
+            assertCellWithErrorSetsErrorMessage(0, 1, input_error_message)
         }
     }
 
     @Test
-    fun shouldClearFocusWhenKeyboardIsHidden(){
-        composeTestRule.setContent {
-            TextInputUiTestScreen { }
-        }
-        tableRobot(composeTestRule){
-            assertClickOnCellShouldOpenInputComponent(0, 0)
-            assertClickOnEditOpensInputKeyboard()
+    fun shouldClearFocusWhenKeyboardIsHidden() {
+        tableRobot(composeTestRule) {
+            val fakeModels = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+            clickOnCell(fakeModels.first().id!!,0,0)
+            assertInputComponentIsDisplayed()
             assertClickOnBackClearsFocus()
         }
     }

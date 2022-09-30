@@ -1,11 +1,18 @@
 package org.dhis2.composetable
 
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.unit.IntSize
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.INPUT_TEST_TAG
+import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Rule
 import org.junit.Test
 
@@ -148,8 +155,10 @@ class CellTableTest {
                 )
             )
             clickOnCell(testingTableId, 0, 0)
+            assertKeyBoardVisibility(true)
             assertInputComponentIsDisplayed()
             clickOnCell(testingTableId, 1, 0)
+            assertKeyBoardVisibility(false)
             assertInputComponentIsHidden()
         }
     }
