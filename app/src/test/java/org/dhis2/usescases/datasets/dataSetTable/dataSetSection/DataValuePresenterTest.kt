@@ -69,7 +69,9 @@ class DataValuePresenterTest {
     @Test
     fun shouldInitData() {
         whenever(dataValueRepository.getCatCombo()) doReturn Flowable.just(mockedCatCombos)
-        whenever(dataValueRepository.getDataTableModel(any<CategoryCombo>())) doReturn Observable.just(
+        whenever(
+            dataValueRepository.getDataTableModel(any<CategoryCombo>())
+        ) doReturn Observable.just(
             mockedDataTableModel
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
@@ -356,7 +358,9 @@ class DataValuePresenterTest {
             )
         )
 
-        whenever(dataValueRepository.getDataTableModel(any<String>()))doReturn Observable.just(mockedDataTableModel)
+        whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
+            mockedDataTableModel
+        )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
 
@@ -397,7 +401,9 @@ class DataValuePresenterTest {
             )
         )
 
-        whenever(dataValueRepository.getDataTableModel(any<String>()))doReturn Observable.just(mockedDataTableModel)
+        whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
+            mockedDataTableModel
+        )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
 
