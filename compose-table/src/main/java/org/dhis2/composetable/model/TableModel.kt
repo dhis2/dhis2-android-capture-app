@@ -10,7 +10,6 @@ data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
-    val upperPadding: Boolean = true,
     val overwrittenValues: Map<Int, TableCell> = emptyMap()
 ) {
     fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
@@ -47,6 +46,12 @@ data class TableModel(
             row.values.filter { it.value.error != null }
                 .values.firstOrNull()
         }.firstOrNull()
+
+    fun hasCellWithId(cellId: String?): Boolean {
+        return tableRows.find {
+            cellId?.contains(it.rowHeader.id.toString()) == true
+        } != null
+    }
 }
 
 @Serializable

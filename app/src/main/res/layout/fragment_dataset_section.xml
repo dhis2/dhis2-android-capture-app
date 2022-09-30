@@ -8,20 +8,6 @@
         android:orientation="vertical"
         android:background="@color/white">
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/tables"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-
-        <FrameLayout
-            android:id="@+id/headerContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@color/white"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ProgressBar
             android:id="@+id/program_progress"
             android:layout_width="wrap_content"
@@ -32,6 +18,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:progressColor="@{@color/colorPrimary}" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/tables"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

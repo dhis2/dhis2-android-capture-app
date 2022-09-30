@@ -13,7 +13,6 @@ import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
@@ -50,25 +49,32 @@ class ValueStoreImpl(
         }
     }
 
-    override fun save(dataValue: DataSetTableModel): Flowable<StoreResult> {
+    override fun save(
+        orgUnitUid: String,
+        periodId: String,
+        attributeOptionComboUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        value: String?
+    ): Flowable<StoreResult> {
         val dataValueObject = d2.dataValueModule().dataValues().value(
-            dataValue.period,
-            dataValue.organisationUnit,
-            dataValue.dataElement,
-            dataValue.categoryOptionCombo,
-            dataValue.attributeOptionCombo
+            periodId,
+            orgUnitUid,
+            dataElementUid,
+            categoryOptionComboUid,
+            attributeOptionComboUid
         )
 
         val validator = d2.dataElementModule().dataElements()
-            .uid(dataValue.dataElement).blockingGet().valueType()?.validator
+            .uid(dataElementUid).blockingGet().valueType()?.validator
 
-        return if (!dataValue.value.isNullOrEmpty()) {
+        return if (!value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
-                dataValueObject.blockingGet().value() == dataValue.value
+                dataValueObject.blockingGet().value() == value
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                when (val validation = validator?.validate(dataValue.value)) {
+                when (val validation = validator?.validate(value)) {
                     is Result.Failure -> Flowable.just(
                         StoreResult(
                             uid = "",
@@ -78,7 +84,7 @@ class ValueStoreImpl(
                         )
                     )
                     is Result.Success ->
-                        dataValueObject.set(dataValue.value)
+                        dataValueObject.set(value)
                             .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
                     else -> Flowable.just(
                         StoreResult(
@@ -91,8 +97,12 @@ class ValueStoreImpl(
                 }
             }
         } else {
-            dataValueObject.deleteIfExist()
-                .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+            if (dataValueObject.blockingExists()) {
+                dataValueObject.deleteIfExist()
+                    .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+            } else {
+                Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+            }
         }
     }
 
