@@ -54,16 +54,12 @@ class DataValuePresenter(
         )
     }
 
-    private fun tables() = repository.getCatCombo()
-        .map {
-            it.map { categoryCombo ->
-                repository.getDataTableModel(categoryCombo).blockingFirst()
-            }
-        }.map { dataTables ->
-            dataTables.map { dataTable ->
-                mapper(repository.setTableData(dataTable, errors))
-            }
+    private fun tables() = repository.getCatCombo().map {
+        it.map { categoryCombo ->
+            val dataTable = repository.getDataTableModel(categoryCombo).blockingFirst()
+            mapper(repository.setTableData(dataTable, errors))
         }
+    }
 
     private fun indicatorTables(): TableModel? = try {
         repository.getDataSetIndicators().map { indicatorsData ->
