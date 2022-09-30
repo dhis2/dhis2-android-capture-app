@@ -178,6 +178,7 @@ class TableRobot(
 
     fun assertClickOnBackClearsFocus() {
         pressBack()
+        composeTestRule.waitForIdle()
         assertInputIcon(R.drawable.ic_edit_input)
     }
 
@@ -280,7 +281,8 @@ class TableRobot(
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id),true)
+            .assertIsDisplayed()
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
