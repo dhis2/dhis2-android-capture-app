@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -17,15 +16,12 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.pressBack
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.data.TableAppScreenOptions
@@ -36,7 +32,6 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.ui.CELL_ERROR_UNDERLINE_TEST_TAG
-import org.dhis2.composetable.ui.CELL_NON_EDITABLE_LAYER_TEST_TAG
 import org.dhis2.composetable.ui.CELL_TEST_TAG
 import org.dhis2.composetable.ui.CELL_VALUE_TEST_TAG
 import org.dhis2.composetable.ui.CellSelected
@@ -173,6 +168,7 @@ class TableRobot(
 
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
+        composeTestRule.waitForIdle()
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 
@@ -264,11 +260,11 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
     }
 
-    fun assertBottomBarIsVisible(){
+    fun assertBottomBarIsVisible() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsDisplayed()
     }
 
-    fun assertBottomBarIsNotVisible(){
+    fun assertBottomBarIsNotVisible() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).assertIsNotDisplayed()
     }
 
@@ -281,7 +277,7 @@ class TableRobot(
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id),true)
+        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id), true)
             .assertIsDisplayed()
     }
 
@@ -289,7 +285,7 @@ class TableRobot(
         composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id)).assertIsDisplayed()
     }
 
-    fun assertOnSavedTableCellValue(value: String){
+    fun assertOnSavedTableCellValue(value: String) {
         Assert.assertEquals(value, onSaveTableCell.value)
     }
 
@@ -385,18 +381,18 @@ class TableRobot(
         composeTestRule
             .onNode(
                 hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
-                and
-                SemanticsMatcher.expectValue(IsBlocked, true),
-        true
+                        and
+                        SemanticsMatcher.expectValue(IsBlocked, true),
+                true
             )
             .assertIsDisplayed()
     }
 
-    fun assertKeyBoardVisibility(visibility: Boolean){
+    fun assertKeyBoardVisibility(visibility: Boolean) {
         keyboardHelper.waitForKeyboardVisibility(visibility)
     }
 
-    fun hideKeyboard(){
+    fun hideKeyboard() {
         keyboardHelper.hideKeyboardIfShown()
     }
 }
