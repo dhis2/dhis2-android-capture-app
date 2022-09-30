@@ -8,27 +8,6 @@
         android:orientation="vertical"
         android:background="@color/white">
 
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:paddingTop="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <LinearLayout
-                android:id="@+id/tableLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="48dp"
-                android:clipToPadding="false"
-                android:orientation="vertical">
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/tables"
             android:layout_width="match_parent"
@@ -51,7 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerContainer"
+            app:layout_constraintTop_toTopOf="parent"
             app:progressColor="@{@color/colorPrimary}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

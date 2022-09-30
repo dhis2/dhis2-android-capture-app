@@ -1,7 +1,5 @@
 package org.dhis2;
 
-
-
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.network.NetworkUtilsModule;
@@ -25,8 +23,8 @@ import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import org.dhis2.commons.filters.di.FilterModule;
-import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.reporting.CrashReportModule;
+import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportModule;
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Map;
@@ -57,8 +55,6 @@ import dispatch.core.DispatcherProvider;
         NetworkUtilsModule.class,
         CustomDispatcherModule.class
 })
-
-
 public interface AppComponent {
 
     @Component.Builder

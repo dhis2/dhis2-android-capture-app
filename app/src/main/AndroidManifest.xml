@@ -16,6 +16,14 @@
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="smsto" android:host="*" />
+        </intent>
+
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="false"

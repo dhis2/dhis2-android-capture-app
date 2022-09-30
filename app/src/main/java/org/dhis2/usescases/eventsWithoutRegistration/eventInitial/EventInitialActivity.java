@@ -126,7 +126,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getContext())
                 );
         eventInitialComponent.inject(this);
-        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);

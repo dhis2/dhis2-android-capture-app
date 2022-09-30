@@ -4,13 +4,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 
 class FormViewFragmentFactory(
-    val formRepository: FormRepository,
     val locationProvider: LocationProvider?,
     private val onItemChangeListener: ((action: RowAction) -> Unit)?,
     private val needToForceUpdate: Boolean = false,
@@ -21,16 +18,11 @@ class FormViewFragmentFactory(
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
-    val dispatchers: DispatcherProvider
+    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
             FormView::class.java.name -> FormView().apply {
-                setFormConfiguration(
-                    formRepository = formRepository,
-                    dispatchers = dispatchers
-                )
                 setCallbackConfiguration(
                     onItemChangeListener = onItemChangeListener,
                     onLoadingListener = onLoadingListener,

@@ -54,20 +54,6 @@ android {
 
     flavorDimensions "default"
 
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
-
     buildFeatures {
         compose true
     }

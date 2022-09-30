@@ -28,15 +28,25 @@ data class TableModel(
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
         cellSelection.rowIndex < tableRows.size - 1 ->
-            cellSelection.copy(columnIndex = 0, rowIndex = cellSelection.rowIndex + 1)
+            cellSelection.copy(
+                columnIndex = 0,
+                rowIndex = cellSelection.rowIndex + 1,
+                globalIndex = cellSelection.globalIndex + 1
+            )
         else -> null
     }?.let { nextCell ->
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
         when (tableCell?.editable) {
             true -> Pair(tableCell, nextCell)
-            else -> null
+            else -> getNextCell(nextCell)
         }
     }
+
+    fun tableErrorCell(): TableCell? =
+        tableRows.map { row ->
+            row.values.filter { it.value.error != null }
+                .values.firstOrNull()
+        }.firstOrNull()
 }
 
 @Serializable
@@ -95,3 +105,13 @@ data class RowHeader(
 )
 
 data class HeaderMeasures(val width: Dp, val height: Dp)
+
+fun TableModel.areAllValuesEmpty(): Boolean {
+    this.tableRows.forEach { it ->
+        val result = it.values.values.filterNot { it.value == "" }
+        if (result.isNotEmpty()) {
+            return false
+        }
+    }
+    return true
+}

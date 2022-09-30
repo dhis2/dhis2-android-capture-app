@@ -83,6 +83,10 @@ fun TextInput(
 private fun InputTitle(textInputModel: TextInputModel) {
     Row(
         modifier = Modifier.fillMaxWidth()
+            .semantics {
+                mainLabel = textInputModel.mainLabel
+                secondaryLabel = textInputModel.secondaryLabels.joinToString(separator = ",")
+            }
     ) {
         Text(
             text = displayName(
@@ -177,6 +181,7 @@ private fun TextInputContent(
         }
         if (textInputModel.error != null) {
             Text(
+                modifier = Modifier.testTag(INPUT_ERROR_MESSAGE_TEST_TAG),
                 text = textInputModel.error,
                 style = TextStyle(
                     color = LocalTableColors.current.errorColor,
@@ -261,6 +266,11 @@ fun DefaultTextInputStatusPreview() {
 
 const val INPUT_TEST_TAG = "INPUT_TEST_TAG"
 const val INPUT_TEST_FIELD_TEST_TAG = "INPUT_TEST_FIELD_TEST_TAG"
+const val INPUT_ERROR_MESSAGE_TEST_TAG = "INPUT_ERROR_MESSAGE_TEST_TAG"
 
 val DrawableId = SemanticsPropertyKey<Int>("DrawableResId")
 var SemanticsPropertyReceiver.drawableId by DrawableId
+val MainLabel = SemanticsPropertyKey<String>("MainLabel")
+var SemanticsPropertyReceiver.mainLabel by MainLabel
+val SecondaryLabels = SemanticsPropertyKey<String>("SecondaryLabels")
+var SemanticsPropertyReceiver.secondaryLabel by SecondaryLabels

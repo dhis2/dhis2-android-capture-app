@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
+import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.model.TableModel
@@ -33,7 +32,6 @@ class RowTableTest {
 
         initTable(fakeModel)
 
-        composeTestRule.onRoot().printToLog(COMPOSE_TREE)
         val firstTableId = fakeModel[0].id!!
 
         tableRobot(composeTestRule) {
@@ -43,7 +41,7 @@ class RowTableTest {
     }
 
     @Test
-    fun should_show_information_icon(){
+    fun should_show_information_icon() {
         val fakeModel = FakeTableModels(
             context = composeTestRule.activity.applicationContext
         ).getMultiHeaderTables()
@@ -65,8 +63,6 @@ class RowTableTest {
 
         initTable(fakeModel)
 
-        composeTestRule.onRoot().printToLog(COMPOSE_TREE)
-
         val firstTableId = fakeModel[0].id!!
         val secondTableId = fakeModel[1].id!!
 
@@ -77,9 +73,9 @@ class RowTableTest {
             assertRowHeaderText(firstTableId, "Text 2", 1)
             assertRowHeaderText(firstTableId, "Text 3", 2)
 
-            assertRowHeaderIsClickable(firstTableId, "Text 1",0)
-            assertRowHeaderIsClickable(firstTableId, "Text 2",1)
-            assertRowHeaderIsClickable(firstTableId, "Text 3",2)
+            assertRowHeaderIsClickable(firstTableId, "Text 1", 0)
+            assertRowHeaderIsClickable(firstTableId, "Text 2", 1)
+            assertRowHeaderIsClickable(firstTableId, "Text 3", 2)
         }
 
         tableRobot(composeTestRule) {
@@ -91,11 +87,11 @@ class RowTableTest {
             assertRowHeaderText(secondTableId, "Integer", 3)
             assertRowHeaderText(secondTableId, "Percentage", 4)
 
-            assertRowHeaderIsClickable(secondTableId, "Number",0)
-            assertRowHeaderIsClickable(secondTableId, "Text",1)
-            assertRowHeaderIsClickable(secondTableId, "Long Text",2)
-            assertRowHeaderIsClickable(secondTableId, "Integer",3)
-            assertRowHeaderIsClickable(secondTableId, "Percentage",4)
+            assertRowHeaderIsClickable(secondTableId, "Number", 0)
+            assertRowHeaderIsClickable(secondTableId, "Text", 1)
+            assertRowHeaderIsClickable(secondTableId, "Long Text", 2)
+            assertRowHeaderIsClickable(secondTableId, "Integer", 3)
+            assertRowHeaderIsClickable(secondTableId, "Percentage", 4)
         }
     }
 
@@ -109,12 +105,10 @@ class RowTableTest {
                 tableList = fakeModel,
                 tableColors = tableColors,
                 tableSelection = tableSelection,
-                onSelectionChange = { tableSelection = it },
-                onDecorationClick = {
-
-                },
-                onClick = {
-
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
+                    }
                 }
             )
         }

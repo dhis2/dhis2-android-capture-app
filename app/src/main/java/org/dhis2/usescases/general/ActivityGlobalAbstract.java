@@ -41,7 +41,7 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.utils.session.PinDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,10 +74,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public enum Status {
         ON_PAUSE,
         ON_RESUME
-    }
-
-    public void setScreenName(String name) {
-        crashReportController.trackScreenName(name);
     }
 
     @Override

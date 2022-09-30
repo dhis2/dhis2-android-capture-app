@@ -33,6 +33,7 @@ class TableSelectionTest {
     val cellSelection = TableSelection.CellSelection(
         selectedTableId,
         selectedColumn,
+        selectedRow,
         selectedRow
     )
 
