@@ -35,6 +35,7 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.login.accounts.AccountsActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.qrScanner.ScanActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
@@ -112,7 +113,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity) && !(this instanceof AccountsActivity)) {
+        if (!(this instanceof SplashActivity) &&
+                !(this instanceof LoginActivity) &&
+                !(this instanceof AccountsActivity) &&
+                !(this instanceof ScanActivity)
+        ) {
             if (serverComponent != null) {
                 setTheme(serverComponent.themeManager().getProgramTheme());
             } else {
