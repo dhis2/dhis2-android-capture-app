@@ -1,15 +1,11 @@
 package org.dhis2.composetable.ui
 
-import android.content.res.Configuration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TableDimensionsTest {
-
-    private val tableDimensions = TableDimensions()
-    private val configuration: Configuration = Configuration()
 
     @Test
     fun `Should calculate default cell width for different tables`() {
@@ -25,19 +21,23 @@ class TableDimensionsTest {
             TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = false),
             TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = true)
         ).forEachIndexed { index, testScenario ->
+            val tableDimensions = TableDimensions()
+
             val tableWidth = tableDimensions.tableWidth(
                 totalColumns = testScenario.totalColumns,
                 hasTotal = testScenario.hasTotal
             )
-            configuration.screenWidthDp = (tableWidth + testScenario.extraSpacing).value.toInt()
 
-            val cellWidth = tableDimensions.defaultCellWidthWithExtraSize(
-                configuration,
+            val updatedTableDimensions = tableDimensions.copy(
+                totalWidth = tableWidth + testScenario.extraSpacing
+            )
+
+            val cellWidth = updatedTableDimensions.defaultCellWidthWithExtraSize(
                 testScenario.totalColumns,
                 testScenario.hasTotal
             )
             assertTrue(
-                expectedExtraWidth[index] == cellWidth - tableDimensions.defaultCellWidth
+                expectedExtraWidth[index] == cellWidth - updatedTableDimensions.defaultCellWidth
             )
         }
     }
@@ -47,20 +47,22 @@ class TableDimensionsTest {
         val totalColumns = 4
         val hasTotal = false
 
+        val tableDimensions = TableDimensions()
         val tableWidth =
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        configuration.screenWidthDp = (tableWidth + 100.dp).value.toInt()
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100.dp)
         calculateWidth(
+            tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
             headerRowColumns = headerRowColumns
         ).let { result ->
-            assertTrue(result.cellWidth > tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
+            assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
-                assertTrue(calculatedHeaderCellWidth > tableDimensions.defaultCellWidth)
+                assertTrue(calculatedHeaderCellWidth > updatedTableDimensions.defaultCellWidth)
             }
         }
     }
@@ -69,21 +71,23 @@ class TableDimensionsTest {
     fun `Should add extra spacing to cell width if table with totals is smaller than screen`() {
         val totalColumns = 4
         val hasTotal = true
-
+        val tableDimensions = TableDimensions()
         val tableWidth =
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        configuration.screenWidthDp = (tableWidth + 100.dp).value.toInt()
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100.dp)
+
         calculateWidth(
+            tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
             headerRowColumns = headerRowColumns
         ).let { result ->
-            assertTrue(result.cellWidth > tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.cellWidth > updatedTableDimensions.defaultCellWidth)
+            assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEach { calculatedHeaderCellWidth ->
-                assertTrue(calculatedHeaderCellWidth > tableDimensions.defaultCellWidth)
+                assertTrue(calculatedHeaderCellWidth > updatedTableDimensions.defaultCellWidth)
             }
         }
     }
@@ -92,22 +96,24 @@ class TableDimensionsTest {
     fun `Should not add extra spacing to cell width if table is bigger than screen width`() {
         val totalColumns = 4
         val hasTotal = false
-
+        val tableDimensions = TableDimensions()
         val tableWidth =
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        configuration.screenWidthDp = (tableWidth - 100.dp).value.toInt()
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100.dp)
+
         calculateWidth(
+            tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
             headerRowColumns = headerRowColumns
         ).let { result ->
-            assertTrue(result.cellWidth == tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.cellWidth == updatedTableDimensions.defaultCellWidth)
+            assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEachIndexed { index, calculatedHeaderCellWidth ->
                 assertTrue(
-                    calculatedHeaderCellWidth == tableDimensions.headerCellWidth(
+                    calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
                         headerRowColumns[index],
                         totalColumns
                     )
@@ -120,22 +126,24 @@ class TableDimensionsTest {
     fun `Should not add extra spacing to cell width if table with totals is bigger than screen`() {
         val totalColumns = 4
         val hasTotal = false
-
+        val tableDimensions = TableDimensions()
         val tableWidth =
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        configuration.screenWidthDp = (tableWidth - 100.dp).value.toInt()
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100.dp)
+
         calculateWidth(
+            tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
             hasTotal = false,
             headerRowColumns = headerRowColumns
         ).let { result ->
-            assertTrue(result.cellWidth == tableDimensions.defaultCellWidth)
-            assertTrue(result.rowHeaderCellWidth == tableDimensions.defaultRowHeaderWidth)
+            assertTrue(result.cellWidth == updatedTableDimensions.defaultCellWidth)
+            assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEachIndexed { index, calculatedHeaderCellWidth ->
                 assertTrue(
-                    calculatedHeaderCellWidth == tableDimensions.headerCellWidth(
+                    calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
                         headerRowColumns[index],
                         totalColumns
                     )
@@ -145,24 +153,22 @@ class TableDimensionsTest {
     }
 
     private fun calculateWidth(
+        tableDimensions: TableDimensions,
         totalColumns: Int,
         hasTotal: Boolean,
         vararg headerRowColumns: Int
     ): WidthCalculationResult {
         val cellWidth = tableDimensions.defaultCellWidthWithExtraSize(
-            configuration = configuration,
             totalColumns = totalColumns,
             hasExtra = hasTotal
         )
         val rowHeaderWidth = tableDimensions.defaultRowHeaderCellWidthWithExtraSize(
-            configuration = configuration,
             totalColumns = totalColumns,
             hasExtra = hasTotal
         )
         val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
             tableDimensions.headerCellWidth(
                 headerRowColumns = headerParentRowColumns,
-                configuration = configuration,
                 totalColumns = totalColumns,
                 hasTotal = hasTotal
             )
