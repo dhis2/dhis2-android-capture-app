@@ -24,6 +24,7 @@ import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
+import org.dhis2.android.rtsm.utils.UIText
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -74,11 +75,11 @@ class HomeViewModel @Inject constructor(
     private val _toolbarTitle = MutableStateFlow(TransactionType.DISTRIBUTION)
     val toolbarTitle: StateFlow<TransactionType> get() = _toolbarTitle
 
-    private val _fromFacility = MutableStateFlow("From...")
-    val fromFacility: StateFlow<String> get() = _fromFacility
+    private val _fromFacility = MutableStateFlow(UIText.StringRes(R.string.from_facility))
+    val fromFacility: StateFlow<UIText> get() = _fromFacility
 
-    private val _deliveryTo = MutableStateFlow<String?>(null)
-    val deliveryTo: StateFlow<String?> get() = _deliveryTo
+    private val _deliveryTo = MutableStateFlow<UIText?>(UIText.StringRes(R.string.to_facility))
+    val deliveryTo: StateFlow<UIText?> get() = _deliveryTo
 
     init {
         loadFacilities()
@@ -130,6 +131,8 @@ class HomeViewModel @Inject constructor(
         if (type != TransactionType.DISTRIBUTION) {
             _destination.value = null
             _deliveryTo.value = null
+        } else {
+            _deliveryTo.value = UIText.StringRes(R.string.to_facility)
         }
     }
 
@@ -188,20 +191,27 @@ class HomeViewModel @Inject constructor(
 
     fun fromFacilitiesLabel(from: String) {
         when (transactionType.value) {
-            TransactionType.DISTRIBUTION -> _fromFacility.value = "From $from"
-            TransactionType.DISCARD -> _fromFacility.value = "From $from"
-            TransactionType.CORRECTION -> _fromFacility.value = "From $from"
+            TransactionType.DISTRIBUTION -> {
+                _fromFacility.value = UIText.StringRes(R.string.subtitle, from)
+            }
+            TransactionType.DISCARD -> {
+                _fromFacility.value = UIText.StringRes(R.string.subtitle, from)
+            }
+            TransactionType.CORRECTION -> {
+                _fromFacility.value = UIText.StringRes(R.string.subtitle, from)
+            }
         }
     }
 
     fun deliveryToLabel(to: String) {
         if (transactionType.value == TransactionType.DISTRIBUTION) {
-            _deliveryTo.value = "To $to"
+            _deliveryTo.value = UIText.StringRes(R.string.subtitle, to)
         }
     }
 
     fun syncData() {
         syncManager.dataSync()
     }
+
     fun getSyncDataStatus() = syncManager.getSyncStatus(INSTANT_DATA_SYNC)
 }

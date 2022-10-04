@@ -155,11 +155,29 @@
 <!--        <item name="textAllCaps">true</item>-->
     </style>
 
+    <style name="discard" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/discard_color</item>
+        <item name="colorPrimaryDark">@color/discard_dark_color</item>
+        <item name="colorPrimaryLight">@color/discard_light_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!--        <item name="textAllCaps">true</item>-->
+    </style>
+
     <style name="ThemeOverlay.App.Correction.Toolbar" parent="">
         <item name="colorPrimary">@color/correction_color</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
 <!--        <item name="textAllCaps">true</item>-->
+    </style>
+
+    <style name="correction" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/correction_color</item>
+        <item name="colorPrimaryDark">@color/correction_dark_color</item>
+        <item name="colorPrimaryLight">@color/correction_light_color</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!--        <item name="textAllCaps">true</item>-->
     </style>
 
     <style name="Widget.App.Button.OutlinedButton.IconOnly"
