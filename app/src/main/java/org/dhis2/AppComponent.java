@@ -55,7 +55,7 @@ import dispatch.core.DispatcherProvider;
         NetworkUtilsModule.class,
         CustomDispatcherModule.class
 })
-public interface AppComponent {
+public  interface AppComponent {
 
     @Component.Builder
     interface Builder {

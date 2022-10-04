@@ -393,7 +393,6 @@ class GranularSyncPresenterImpl(
                 view.logSmsReachedServerError()
                 updateStatusToSentBySMS()
             }
-            else -> {}
         }
     }
 
