@@ -64,7 +64,6 @@ class DataSetTest : BaseTest() {
             typeOnCell("bjDvmb4bfuf", 0, 0)
             clickOnEditValue()
             typeInput("1")
-            pressBack()
             composeTestRule.waitForIdle()
             pressBack()
             composeTestRule.waitForIdle()
