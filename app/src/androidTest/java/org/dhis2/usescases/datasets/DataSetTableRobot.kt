@@ -31,7 +31,7 @@ class DataSetTableRobot(
 ) : BaseRobot() {
 
     fun clickOnSaveButton() {
-        onView(withId(R.id.saveButton)).perform(click())
+        waitForView(withId(R.id.saveButton)).perform(click())
     }
 
     fun clickOnPositiveButton() {
