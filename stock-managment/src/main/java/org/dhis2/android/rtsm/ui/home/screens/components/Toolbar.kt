@@ -3,7 +3,9 @@ package org.dhis2.android.rtsm.ui.home.screens.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -40,13 +43,16 @@ fun Toolbar(
     navigationAction: () -> Unit,
     backdropState: BackdropScaffoldState,
     scaffoldState: ScaffoldState,
-    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
+    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
+    hasFacilitySelected: Boolean,
+    hasDestinationSelected: Boolean?
 ) {
     val scope = rememberCoroutineScope()
 
     TopAppBar(
         title = {
             Column(
+                modifier = Modifier.offset(x = (-16).dp),
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.Start
             ) {
@@ -56,7 +62,8 @@ fun Toolbar(
                     },
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
-                    fontSize = 20.sp
+                    fontSize = 17.sp,
+                    lineHeight = 24.sp
                 )
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -65,28 +72,40 @@ fun Toolbar(
                     Text(
                         text = from,
                         style = MaterialTheme.typography.subtitle2,
-                        softWrap = true,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         fontSize = 12.sp,
-                        color = colorResource(R.color.toolbar_subtitle)
+                        color = colorResource(R.color.toolbar_subtitle),
+                        modifier = Modifier.weight(1f, fill = false)
                     )
                     if (to != null) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_from_to),
                             contentDescription = null,
-                            Modifier.padding(5.dp),
+                            Modifier
+                                .padding(start = 5.dp, end = 5.dp)
+                                .size(18.dp),
                             tint = colorResource(R.color.toolbar_subtitle)
                         )
                         Text(
                             text = to,
                             style = MaterialTheme.typography.subtitle2,
-                            softWrap = true,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             fontSize = 12.sp,
-                            color = colorResource(R.color.toolbar_subtitle)
+                            color = colorResource(R.color.toolbar_subtitle),
+                            modifier = Modifier.weight(1f, fill = false)
                         )
+                    }
+
+                    if (!hasFacilitySelected) {
+                        AlertIcon()
+                    } else if (TransactionType.DISTRIBUTION.name.equals(title, true)) {
+                        hasDestinationSelected?.let {
+                            if (!it) {
+                                AlertIcon()
+                            }
+                        }
                     }
                 }
             }
@@ -134,5 +153,17 @@ fun Toolbar(
         backgroundColor = themeColor,
         contentColor = Color.White,
         elevation = 0.dp
+    )
+}
+
+@Composable
+private fun AlertIcon() {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_alert),
+        contentDescription = null,
+        Modifier
+            .size(18.dp)
+            .padding(start = 5.dp),
+        tint = Color.White
     )
 }
