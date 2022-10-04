@@ -238,11 +238,7 @@ class DataValuePresenter(
             TextInputModel(
                 id = cell.id ?: "",
                 mainLabel = dataElement.displayFormName() ?: "-",
-                secondaryLabels = repository.getCatOptComboOptions(
-                    ids[1]
-                ).map {
-                    it.displayName() ?: "-"
-                },
+                secondaryLabels = repository.getCatOptComboOptions(ids[1]),
                 currentValue = cell.value,
                 keyboardInputType = inputType,
                 error = errors[cell.id]
