@@ -268,6 +268,7 @@ fun TableItemRow(
                         tableModel.tableHeaderModel.tableMaxColumns(),
                         tableModel.tableHeaderModel.hasTotals
                     ),
+                    maxLines = rowModel.maxLines,
                     onCellSelected = onRowHeaderClick,
                     onDecorationClick = onDecorationClick
                 )
@@ -326,6 +327,7 @@ fun ItemHeader(
     rowHeader: RowHeader,
     cellStyle: CellStyle,
     width: Dp,
+    maxLines: Int,
     onCellSelected: (Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
@@ -366,7 +368,9 @@ fun ItemHeader(
                     .weight(1f),
                 text = rowHeader.title,
                 color = cellStyle.mainColor(),
-                fontSize = LocalTableDimensions.current.defaultRowHeaderTextSize
+                fontSize = LocalTableDimensions.current.defaultRowHeaderTextSize,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             if (rowHeader.showDecoration) {
                 Spacer(modifier = Modifier.size(4.dp))
