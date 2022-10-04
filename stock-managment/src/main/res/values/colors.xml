@@ -10,8 +10,12 @@
     <color name="transparent">#00FFFFFF</color>
 
     <color name="distribution_color">#FF5F8D79</color>
-    <color name="discard_color">#FFAF2D3B</color>
-    <color name="correction_color">#FF969191</color>
+    <color name="discard_color">#E91E63</color>
+    <color name="discard_dark_color">#C1134E</color>
+    <color name="discard_light_color">#FF5196</color>
+    <color name="correction_color">#FF9800</color>
+    <color name="correction_dark_color">#CC7A00</color>
+    <color name="correction_light_color">#FFCB33</color>
 
     <!-- Change to actual red color for errors -->
     <color name="error">#FFAF2D3B</color>

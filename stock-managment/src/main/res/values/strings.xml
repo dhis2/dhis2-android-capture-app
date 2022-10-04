@@ -50,7 +50,9 @@
     <string name="confirmation">Confirmation</string>
     
     <string name="from">From</string>
-    <string name="to">To</string>
+    <string name="to">Delivery to…</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg">To %s</string>
 
     <!-- Languages -->
     <string name="language_english">English</string>
@@ -274,4 +276,6 @@
     <string name="back">Back</string>
     <string name="no_conflicts_message">There are no conflicts for this program</string>
     <string name="action_sync">Send</string>
+    <string name="from_facility">From facility</string>
+    <string name="to_facility">To facility</string>
 </resources>
