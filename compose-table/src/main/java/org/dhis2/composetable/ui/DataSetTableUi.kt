@@ -37,13 +37,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -106,7 +107,6 @@ fun TableHeader(
                                 HeaderMeasures(
                                     LocalTableDimensions.current.headerCellWidth(
                                         tableHeaderModel.numberOfColumns(rowIndex),
-                                        LocalConfiguration.current,
                                         tableHeaderModel.tableMaxColumns(),
                                         tableHeaderModel.hasTotals
                                     ),
@@ -128,7 +128,6 @@ fun TableHeader(
                 headerCell = TableHeaderCell("Total"),
                 HeaderMeasures(
                     LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                        LocalConfiguration.current,
                         tableHeaderModel.tableMaxColumns(),
                         tableHeaderModel.hasTotals
                     ),
@@ -266,7 +265,6 @@ fun TableItemRow(
                     rowHeader = rowModel.rowHeader,
                     cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
                     width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                        LocalConfiguration.current,
                         tableModel.tableHeaderModel.tableMaxColumns(),
                         tableModel.tableHeaderModel.hasTotals
                     ),
@@ -282,7 +280,6 @@ fun TableItemRow(
                 maxLines = rowModel.maxLines,
                 defaultHeight = LocalTableDimensions.current.defaultCellHeight,
                 defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                    LocalConfiguration.current,
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 ),
@@ -307,7 +304,6 @@ fun TableCorner(
         modifier = modifier
             .width(
                 LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                    LocalConfiguration.current,
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 )
@@ -618,7 +614,12 @@ private fun TableList(
     inputIsOpen: Boolean,
     tableInteractions: TableInteractions
 ) {
-    TableTheme(tableColors) {
+    val localDensity = LocalDensity.current
+    var tableTotalWidth by remember {
+        mutableStateOf(0.dp)
+    }
+
+    TableTheme(tableColors, TableDimensions(totalWidth = tableTotalWidth)) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val verticalScrollState = rememberLazyListState()
 
@@ -636,11 +637,17 @@ private fun TableList(
         LazyColumn(
             modifier = Modifier
                 .background(Color.White)
+                .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(
                     horizontal = LocalTableDimensions.current.tableHorizontalPadding,
                     vertical = LocalTableDimensions.current.tableVerticalPadding
-                ),
+                )
+                .onSizeChanged {
+                    tableTotalWidth = with(localDensity) {
+                        it.width.toDp()
+                    }
+                },
             contentPadding = PaddingValues(bottom = 200.dp),
             state = verticalScrollState
         ) {
@@ -791,7 +798,6 @@ fun ExtendDivider(
             modifier = Modifier
                 .width(
                     LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                        LocalConfiguration.current,
                         tableModel.tableHeaderModel.tableMaxColumns(),
                         tableModel.tableHeaderModel.hasTotals
                     )
@@ -833,8 +839,25 @@ fun TableItem(
     tableColors: TableColors? = null,
     tableInteractions: TableInteractions
 ) {
-    TableTheme(tableColors) {
-        Column(Modifier.padding(16.dp)) {
+    val localDensity = LocalDensity.current
+    var tableTotalWidth by remember {
+        mutableStateOf(0.dp)
+    }
+
+    TableTheme(
+        tableColors,
+        TableDimensions(totalWidth = tableTotalWidth)
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .onSizeChanged {
+                    tableTotalWidth = with(localDensity) {
+                        it.width.toDp()
+                    }
+                }
+        ) {
             val horizontalScrollState = rememberScrollState()
             val selectionState = rememberSelectionState()
             val tableSelection by remember {
@@ -921,14 +944,12 @@ fun SelectionScrollEffect(
     inputIsOpen: Boolean
 ) {
     val localDimensions = LocalTableDimensions.current
-    val localConf = LocalConfiguration.current
     val localDensity = LocalDensity.current
 
     LaunchedEffect(tableSelection) {
         if (tableSelection is TableSelection.CellSelection) {
             val cellWidth = with(localDensity) {
                 localDimensions.defaultCellWidthWithExtraSize(
-                    localConf,
                     selectedTable.tableHeaderModel.tableMaxColumns(),
                     selectedTable.tableHeaderModel.hasTotals
                 ).toPx()
