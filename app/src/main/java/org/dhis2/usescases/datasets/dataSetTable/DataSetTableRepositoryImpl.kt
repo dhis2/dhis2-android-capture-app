@@ -104,7 +104,12 @@ class DataSetTableRepositoryImpl(
         return d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
             .map { sections ->
                 if (sections.isEmpty()) {
-                    arrayListOf(DataSetSection("NO_SECTION", resourceManager.defaultEmptyDataSetSectionLabel()))
+                    arrayListOf(
+                        DataSetSection(
+                            "NO_SECTION",
+                            resourceManager.defaultEmptyDataSetSectionLabel()
+                        )
+                    )
                 } else {
                     sections.map { DataSetSection(it.uid(), it.displayName()) }
                 }
