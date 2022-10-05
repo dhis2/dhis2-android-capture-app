@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
@@ -184,6 +185,38 @@ class FormView : Fragment() {
             if (result.values.all { isGranted -> isGranted }) {
                 viewModel.getFocusedItemUid()?.let {
                     requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
+                }
+            } else {
+                displayCoordinatesPermissionDeclined()
+            }
+        }
+
+    private val permissionSettings =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            val result =
+                requireActivity().checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            if (result == PackageManager.PERMISSION_GRANTED) {
+                viewModel.getFocusedItemUid()?.let {
+                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
+                }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
+                }
+            }
+        }
+
+    private val locationDisabledSettings =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (locationProvider?.hasLocationEnabled() == true) {
+                viewModel.getFocusedItemUid()?.let {
+                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
+                }
+            } else {
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
                 }
             }
         }
@@ -399,6 +432,24 @@ class FormView : Fragment() {
             .setTitle(getString(R.string.program_rules_loop_warning_title))
             .setMessage(getString(R.string.program_rules_loop_warning_message))
             .setPositiveButton(R.string.action_accept) { _, _ -> }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun displayCoordinatesPermissionDeclined() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
+            .setTitle(getString(R.string.info))
+            .setMessage(getString(R.string.location_permission_denied))
+            .setPositiveButton(R.string.action_accept) { _, _ ->
+                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.fromParts("package", requireActivity().packageName, null)
+                permissionSettings.launch(intent)
+            }
+            .setNegativeButton(R.string.action_close) { _, _ ->
+                viewModel.getFocusedItemUid()?.let {
+                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
+                }
+            }
             .setCancelable(false)
             .show()
     }
@@ -630,9 +681,15 @@ class FormView : Fragment() {
                 )
             },
             {
-                LocationSettingLauncher.requestEnableLocationSetting(requireContext()) {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
-                }
+                LocationSettingLauncher.requestEnableLocationSetting(
+                    requireContext(),
+                    {
+                        locationDisabledSettings.launch(LocationSettingLauncher.locationSourceSettingIntent())
+                    },
+                    {
+                        viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
+                    }
+                )
             }
         )
     }

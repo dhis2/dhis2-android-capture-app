@@ -99,5 +99,6 @@
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
     <string name="enrollmment_date">Enrollment date</string>
     <string name="incident_date">Incident date</string>
+    <string name="location_permission_denied">The location permission is needed for capturing coordinates. Please, enable them in the application settings</string>
 
 </resources>
