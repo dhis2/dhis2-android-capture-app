@@ -174,7 +174,9 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             LocationSettingLauncher.requestEnableLocationSetting(
                 requireContext(),
                 {
-                    locationDisabledSettings.launch(LocationSettingLauncher.locationSourceSettingIntent())
+                    locationDisabledSettings.launch(
+                        LocationSettingLauncher.locationSourceSettingIntent()
+                    )
                 },
                 {
                     viewModel.cancelCoordinateRequest()

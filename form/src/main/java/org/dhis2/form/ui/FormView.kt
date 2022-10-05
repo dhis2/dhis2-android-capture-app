@@ -195,8 +195,9 @@ class FormView : Fragment() {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            val result =
-                requireActivity().checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            val result = requireActivity().checkCallingOrSelfPermission(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
             if (result == PackageManager.PERMISSION_GRANTED) {
                 viewModel.getFocusedItemUid()?.let {
                     requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
@@ -684,7 +685,9 @@ class FormView : Fragment() {
                 LocationSettingLauncher.requestEnableLocationSetting(
                     requireContext(),
                     {
-                        locationDisabledSettings.launch(LocationSettingLauncher.locationSourceSettingIntent())
+                        locationDisabledSettings.launch(
+                            LocationSettingLauncher.locationSourceSettingIntent()
+                        )
                     },
                     {
                         viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
