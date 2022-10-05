@@ -4,13 +4,9 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 
 data class SyncStatusData(
+    val running: Boolean,
     val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap()
 ) {
-
-    fun isDownloading(): Boolean {
-        return programSyncStatusMap.isNotEmpty() &&
-            programSyncStatusMap.values.any { !it.isComplete }
-    }
 
     fun isProgramDownloading(uid: String): Boolean {
         return programSyncStatusMap.isNotEmpty() && programSyncStatusMap[uid]?.isComplete == false

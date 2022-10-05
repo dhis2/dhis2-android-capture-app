@@ -222,7 +222,7 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            if (it.isDownloading()) {
+            if (it.running) {
                 setFilterButtonVisibility(false)
                 setBottomNavigationVisibility(false)
             } else {

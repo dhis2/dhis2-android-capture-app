@@ -7,13 +7,13 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 
 class SyncStatusController {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
-    private val downloadStatus = MutableLiveData(SyncStatusData())
+    private val downloadStatus = MutableLiveData(SyncStatusData(false))
 
     fun observeDownloadProcess(): LiveData<SyncStatusData> = downloadStatus
 
     fun initDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
         progressStatusMap = programDownload
-        downloadStatus.postValue(SyncStatusData(progressStatusMap))
+        downloadStatus.postValue(SyncStatusData(true, progressStatusMap))
     }
 
     fun updateDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
@@ -21,14 +21,14 @@ class SyncStatusController {
             it.putAll(programDownload)
         }
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(true, progressStatusMap)
         )
     }
 
     fun finishSync() {
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(false, progressStatusMap)
         )
     }
 
@@ -41,7 +41,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(true, progressStatusMap)
         )
     }
 
@@ -54,7 +54,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(true, progressStatusMap)
         )
     }
 
@@ -67,7 +67,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(true, progressStatusMap)
         )
     }
 
@@ -80,7 +80,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(progressStatusMap)
+            SyncStatusData(false, progressStatusMap)
         )
     }
 }
