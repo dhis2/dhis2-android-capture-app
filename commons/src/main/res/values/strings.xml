@@ -216,4 +216,5 @@
     <string name="complete">Complete</string>
     <string name="default_table_header_label">Value</string>
     <string name="discard_changes">Discard changes</string>
+    <string name="default_empty_dataset_section_label">Data</string>
 </resources>

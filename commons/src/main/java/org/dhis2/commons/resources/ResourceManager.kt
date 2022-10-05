@@ -76,4 +76,6 @@ class ResourceManager(val context: Context) {
     }
 
     fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
+    fun defaultEmptyDataSetSectionLabel(): String =
+        context.getString(R.string.default_empty_dataset_section_label)
 }

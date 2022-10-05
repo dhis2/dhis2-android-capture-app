@@ -726,7 +726,6 @@
     <string name="show_events_timeline">Mostrar eventos por fecha</string>
     <string name="filters_title_date">Fecha</string>
     <string name="filters_title_event_date">Fecha de evento</string>
-    <string name="dataset_data">Datos</string>
     <string name="tei_type_has_no_attributes">%s no tiene atributos públicos. Por favor seleccione un programa</string>
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>

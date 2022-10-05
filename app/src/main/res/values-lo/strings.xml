@@ -419,7 +419,6 @@
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filters_title_event_date">ວັນທີເຫດການ</string>
-    <string name="dataset_data">ຂໍ້ມູນ</string>
     <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
