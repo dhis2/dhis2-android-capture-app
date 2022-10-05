@@ -1,25 +1,22 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.flowables.ConnectableFlowable
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
-import org.dhis2.commons.data.tuples.Trio
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
-import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
@@ -29,173 +26,63 @@ class DataValuePresenter(
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
-    private val updateProcessor: FlowableProcessor<Unit>,
-    private val mapper: TableDataToTableModelMapper
+    private val mapper: TableDataToTableModelMapper,
+    private val dispatcherProvider: DispatcherProvider
 ) {
     var disposable: CompositeDisposable = CompositeDisposable()
-
-    private val tableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
-    private val indicatorsState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
     private val errors: MutableMap<String, String> = mutableMapOf()
 
-    private val processor: FlowableProcessor<RowAction> =
-        PublishProcessor.create()
-    private val processorOptionSet: FlowableProcessor<Trio<String, String, Int>> =
-        PublishProcessor.create()
+    private val dataSetInfo = repository.getDataSetInfo()
 
     fun init() {
-        val dataTableModelConnectable = updateProcessor.startWith(Unit).switchMap {
-            repository.getCatCombo()
-                .flatMapIterable { categoryCombos -> categoryCombos }
-                .map { categoryCombo ->
-                    repository.getDataTableModel(categoryCombo).blockingFirst()
+        disposable.add(
+            Flowable.fromCallable {
+                val tables = tables().blockingFirst()
+                val indicators = indicatorTables()
+
+                tables.toMutableList().also { list ->
+                    indicators?.let { list.add(indicators) }
                 }
-        }.observeOn(schedulerProvider.ui()).publish()
-
-        initTables(dataTableModelConnectable)
-
-        disposable.add(
-            dataTableModelConnectable
-                .switchMap { dataTableModel ->
-                    processor.flatMap { rowAction ->
-
-                        var dataSetTableModel: DataSetTableModel? = null
-                        val dataValue = dataTableModel.dataValues?.firstOrNull {
-                            it.dataElement == rowAction.dataElement() &&
-                                it.categoryOptionCombo == rowAction.catOptCombo()
-                        }
-                        when (dataValue) {
-                            null -> if (!rowAction.value().isNullOrEmpty()) {
-                                dataSetTableModel = DataSetTableModel(
-                                    rowAction.dataElement(),
-                                    dataTableModel.periodId,
-                                    dataTableModel.orgUnitUid,
-                                    rowAction.catOptCombo(),
-                                    dataTableModel.attributeOptionComboUid,
-                                    rowAction.value(),
-                                    "",
-                                    "",
-                                    rowAction.listCategoryOption(),
-                                    rowAction.catCombo()
-                                ).also {
-                                    dataTableModel.dataValues?.add(it)
-                                }
-                            }
-                            else -> {
-                                dataSetTableModel = dataValue.setValue(rowAction.value())
-                                if (rowAction.value().isNullOrEmpty()) {
-                                    dataTableModel.dataValues.remove(dataValue)
-                                }
-                            }
-                        }
-
-                        dataSetTableModel?.let {
-                            val result = valueStore.save(it)
-                            val storeResult = result.blockingFirst()
-                            val saveResult = storeResult.valueStoreResult
-                            if (
-                                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
-                                saveResult == VALUE_HAS_NOT_CHANGED
-                            ) {
-                                if (saveResult == ERROR_UPDATING_VALUE) {
-                                    errors[it.dataElement + "_" + it.categoryOptionCombo] =
-                                        storeResult.valueStoreResultMessage ?: "-"
-                                } else {
-                                    errors.remove(it.dataElement + "_" + it.categoryOptionCombo)
-                                }
-                                updateData(it)
-                            }
-                            result
-                        } ?: Flowable.just(
-                            StoreResult("", VALUE_HAS_NOT_CHANGED)
-                        )
-                    }
-                }.subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.onValueProcessed()
-                    },
-                    { Timber.e(it) }
-                )
-        )
-
-        disposable.add(
-            repository.getCatCombo().map { it.size }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.updateTabLayout(it) },
-                    { Timber.e(it) }
-                )
-        )
-
-        disposable.add(
-            dataTableModelConnectable.connect()
-        )
-    }
-
-    private fun initTables(dataTableModelConnectable: ConnectableFlowable<DataTableModel>) {
-        view.updateProgressVisibility()
-        disposable.add(
-            dataTableModelConnectable.map { repository.setTableData(it, errors) }
-                .map { tableData ->
-                    mapper(tableData)
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        tableState.value = tableState.value?.toMutableList()?.apply {
-                            add(addUpperSpaceIfIsNotFirstTable(it))
-                        }
-                        updateTableList()
-                    }
-                ) { Timber.e(it) }
-        )
-
-        disposable.add(
-            repository.getDataSetIndicators().map { indicatorsData ->
-                mapper.map(indicatorsData)
             }
                 .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
                 .subscribe(
-                    {
-                        indicatorsState.value = listOf(it)
-                        updateTableList()
-                    },
+                    { allTableState.postValue(it) },
                     { Timber.e(it) }
                 )
         )
     }
 
-    private fun MutableList<TableModel>.addUpperSpaceIfIsNotFirstTable(
-        it: TableModel
-    ) = it.copy(upperPadding = this.isNotEmpty())
+    private fun tables() = repository.getCatCombo().map {
+        it.map { categoryCombo ->
+            val dataTable = repository.getDataTableModel(categoryCombo).blockingFirst()
+            mapper(repository.setTableData(dataTable, errors))
+        }
+    }
 
-    private fun updateData(datasetTableModel: DataSetTableModel) {
+    private fun indicatorTables(): TableModel? = try {
+        repository.getDataSetIndicators().map { indicatorsData ->
+            mapper.map(indicatorsData)
+        }.blockingGet()
+    } catch (e: Exception) {
+        null
+    }
+
+    private fun updateData(catComboUid: String) {
         val dataTableModel =
-            repository.getDataTableModel(datasetTableModel.catCombo!!)
+            repository.getDataTableModel(catComboUid)
                 .blockingFirst()
         val tableData = repository.setTableData(dataTableModel, errors)
         val updatedTableModel = mapper(tableData)
 
-        allTableState.value = allTableState.value?.map { tableModel ->
-            if (tableModel.id == datasetTableModel.catCombo) {
-                updatedTableModel
-            } else {
-                tableModel
-            }
-        }
-    }
-
-    private fun updateTableList() {
         allTableState.postValue(
-            mutableListOf<TableModel>().apply {
-                addAll(tableState.value ?: emptyList())
-                addAll(indicatorsState.value ?: emptyList())
+            allTableState.value?.map { tableModel ->
+                if (tableModel.id == catComboUid) {
+                    updatedTableModel
+                } else {
+                    tableModel
+                }
             }
         )
     }
@@ -206,12 +93,15 @@ class DataValuePresenter(
 
     fun tableData(): LiveData<List<TableModel>> = allTableState
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun mutableTableData() = allTableState
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun errors() = errors
+
     fun onCellValueChanged(tableCell: TableCell) {
         val updatedData = allTableState.value?.map { tableModel ->
-            val hasRowWithDataElement = tableModel.tableRows.find {
-                tableCell.id?.contains(it.rowHeader.id.toString()) == true
-            }
-            if (hasRowWithDataElement != null) {
+            if (tableModel.hasCellWithId(tableCell.id)) {
                 tableModel.copy(
                     overwrittenValues = mapOf(
                         Pair(tableCell.column!!, tableCell)
@@ -282,24 +172,40 @@ class DataValuePresenter(
     }
 
     fun onSaveValueChange(cell: TableCell) {
+        runBlocking {
+            saveValue(cell)
+            view.onValueProcessed()
+        }
+    }
+
+    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
         val ids = cell.id?.split("_")
         val dataElementUid = ids!![0]
         val catOptCombUid = ids[1]
-        val catComboUid = allTableState.value?.find { tableModel ->
-            tableModel.tableRows.find { tableRowModel ->
-                tableRowModel.values.values.find { it.id == cell.id } != null
-            } != null
-        }?.id
+        val catComboUid =
+            allTableState.value?.find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
 
-        val row = RowAction.create(
-            cell.id!!,
-            cell.value,
+        val result = valueStore.save(
+            dataSetInfo.second,
+            dataSetInfo.first,
+            dataSetInfo.third,
             dataElementUid,
             catOptCombUid,
-            catComboUid,
-            cell.row!!,
-            cell.column!!
+            cell.value
         )
-        processor.onNext(row)
+        val storeResult = result.blockingFirst()
+        val saveResult = storeResult.valueStoreResult
+        if (
+            saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+            saveResult == VALUE_HAS_NOT_CHANGED
+        ) {
+            if (saveResult == ERROR_UPDATING_VALUE) {
+                errors[cell.id!!] =
+                    storeResult.valueStoreResultMessage ?: "-"
+            } else {
+                errors.remove(cell.id!!)
+            }
+            updateData(catComboUid!!)
+        }
     }
 }

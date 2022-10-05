@@ -133,10 +133,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.navigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_details:
+                    binding.syncButton.setVisibility(View.VISIBLE);
                     binding.tabLayout.setVisibility(View.GONE);
                     openDetails();
                     break;
                 case R.id.navigation_data_entry:
+                    binding.syncButton.setVisibility(View.GONE);
                     binding.tabLayout.setVisibility(View.VISIBLE);
                     openSection(presenter.getFirstSection());
                     break;

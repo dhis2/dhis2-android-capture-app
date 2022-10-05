@@ -33,7 +33,6 @@ import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
-import timber.log.Timber
 
 class DataValueRepository(
     private val d2: D2,
@@ -867,12 +866,8 @@ class DataValueRepository(
         for (dataValues in cells) {
             for (i in dataValues.indices) {
                 if (dataValues[i].isNotEmpty()) {
-                    try {
-                        val value = dataValues[i].toDouble()
-                        totals[i] += value
-                    } catch (e: Exception) {
-                        Timber.d(e)
-                    }
+                    val value = dataValues[i].toDoubleOrNull() ?: 0.0
+                    totals[i] += value
                 }
             }
         }
@@ -995,5 +990,9 @@ class DataValueRepository(
                     .blockingGet()
                     .isDefault == false
             }?.categoryOptions() ?: emptyList()
+    }
+
+    fun getDataSetInfo(): Triple<String, String, String> {
+        return Triple(periodId, orgUnitUid, attributeOptionComboUid)
     }
 }

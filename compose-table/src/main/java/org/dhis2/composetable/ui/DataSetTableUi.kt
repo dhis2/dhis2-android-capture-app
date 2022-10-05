@@ -701,7 +701,10 @@ private fun TableList(
                         }
                     )
                 }
-                itemsIndexed(items = currentTableModel.tableRows) { globalIndex, tableRowModel ->
+                itemsIndexed(
+                    items = currentTableModel.tableRows,
+                    key = { _, item -> item.rowHeader.id!! }
+                ) { globalIndex, tableRowModel ->
                     TableItemRow(
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],

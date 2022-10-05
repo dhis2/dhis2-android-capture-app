@@ -14,11 +14,7 @@ public class DataValueContract {
     public interface View extends AbstractActivityContracts.View {
         void update(boolean modified);
 
-        void updateTabLayout(int count);
-
         void onValueProcessed();
-
-        void updateProgressVisibility();
 
         void showCalendar(DataElement dataElement, TableCell cell, Boolean showTimePicker);
 

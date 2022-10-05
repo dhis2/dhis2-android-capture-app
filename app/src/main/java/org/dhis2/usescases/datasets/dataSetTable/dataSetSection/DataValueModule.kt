@@ -3,10 +3,8 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import io.reactivex.processors.FlowableProcessor
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
@@ -17,6 +15,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 
@@ -43,17 +42,16 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        updateProcessor: FlowableProcessor<Unit>,
-        featureConfigRepository: FeatureConfigRepository,
-        tableDataToTableModelMapper: TableDataToTableModelMapper
+        tableDataToTableModelMapper: TableDataToTableModelMapper,
+        dispatcherProvider: DispatcherProvider
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
             repository,
             valueStore,
             schedulerProvider,
-            updateProcessor,
-            tableDataToTableModelMapper
+            tableDataToTableModelMapper,
+            dispatcherProvider
         )
     }
 
