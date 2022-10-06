@@ -372,6 +372,61 @@ class DataValuePresenterTest {
     }
 
     @Test
+    fun shouldUpdateIndicatorValueWhenSaved() {
+        val mockedTableCell = mock<TableCell> {
+            on { id } doReturn "mocked_id"
+            on { column } doReturn 1
+            on { row } doReturn 0
+            on { value } doReturn "valueToSave"
+        }
+
+        val mockedTableModel = mock<TableModel> {
+            on { id } doReturn "tableId"
+            on { hasCellWithId(any()) } doReturn true
+        }
+
+        val mockedIndicatorTableModel = mock<TableModel> {
+            on { id } doReturn null
+        }
+
+        val mockedUpdatedTableModel = mock<TableModel> {
+            on { id } doReturn "tableId_updated"
+            on { hasCellWithId(any()) } doReturn true
+        }
+
+        val mockedUpdatedIndicatorTableModel = mock<TableModel> {
+            on { id } doReturn "updated_indicator"
+        }
+
+        val tableStateValue = presenter.mutableTableData()
+        tableStateValue.value = listOf(mockedTableModel, mockedIndicatorTableModel)
+
+        whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
+            StoreResult(
+                uid = "id",
+                valueStoreResult = ValueStoreResult.VALUE_CHANGED,
+                valueStoreResultMessage = null
+            )
+        )
+
+        whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
+            mockedDataTableModel
+        )
+        whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
+        whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
+
+        whenever(dataValueRepository.getDataSetIndicators()) doReturn Single.just(mockedIndicators)
+        whenever(mapper.map(any())) doReturn mockedUpdatedIndicatorTableModel
+
+        presenter.onSaveValueChange(mockedTableCell)
+
+        assertTrue(presenter.tableData().value!!.size == 2)
+        assertTrue(presenter.tableData().value!![0].id == "tableId_updated")
+        assertTrue(presenter.tableData().value!!.last().id == "updated_indicator")
+        verify(view).onValueProcessed()
+    }
+
+    @Test
     fun shouldSetErrorValue() {
         val mockedTableCell = mock<TableCell> {
             on { id } doReturn "mocked_id"

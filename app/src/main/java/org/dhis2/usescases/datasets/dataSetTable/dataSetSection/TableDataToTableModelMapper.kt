@@ -80,7 +80,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         )
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = RowHeader("", title = indicatorName!!),
+                rowHeader = RowHeader(id = indicatorName, title = indicatorName!!),
                 values = mapOf(
                     0 to TableCell(id = indicatorName, value = indicatorValue, editable = false)
                 )
