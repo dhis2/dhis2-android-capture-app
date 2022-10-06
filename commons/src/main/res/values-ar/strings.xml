@@ -146,6 +146,7 @@
     <string name="login_error_dhis_version">يقوم هذا الخادم بتشغيل إصدار dhis مختلف عن 2.29. قم بتحديث إصدار الخادم الخاص بك أو استخدم بيئة الاختبار للمتابعة.</string>
     <string name="login_error_unsuccessful_response">هناك خطأ ما. يرجى التحقق من صحة عنوان URL الخاص بالخادم واسم المستخدم وكلمة المرور وحاول مرة أخرى.</string>
     <string name="login_error_error_response">آسف! فشل شيء ما من جانب الخادم.</string>
+    <string name="login_error_no_dhis_instance">عنوان URL ليس خادم DHIS2.</string>
     <string name="login_error_bad_credentials">إسمك او كلمة المرور الخاصة بك غير صحيحة</string>
     <string name="login_error_unknown_host">خادم غير معروف</string>
     <string name="online_search_parsing_error">خطأ اثناء تحليل البيانات</string>
@@ -167,17 +168,28 @@
     <string name="error_file_not_found">لم يتم العثور على الملف.</string>
     <string name="error_file_resize">حدث خطأ في تغيير حجم الصورة.</string>
     <string name="error_generate_coordinate">لا يمكن توليد الإحداثيات.</string>
+    <string name="error_low_on_available_values">قد يكون لديك نفاد من القيم المتاحة.</string>
     <string name="error_user_no_authenticated">لا يوجد مستخدم مصدق عليه.</string>
     <string name="error_user_no_authenticated_offline">لا يوجد مستخدم تمت مصادقته في وضع عدم الاتصال.</string>
+    <string name="error_different_offline_user">أنت تحاول تسجيل الدخول دون اتصال مع مستخدم مختلف.</string>
     <string name="error_object_update">لم يتمكن من تحديث الكائن.</string>
+    <string name="error_object_insert">تعذر إدراج الكائن.</string>
     <string name="error_ownership_access">ليس لديك حق الوصول.</string>
     <string name="error_null_url">عنوان URL للخادم مفقود. الرجاء إدخال URL.</string>
     <string name="error_server_malformed">عنوان URL للخادم غير منسق بشكل جيد. رجاءا تأكد.</string>
+    <string name="error_settings_app_not_supported">هذا الإصدار من Settings Web App غير مدعوم.</string>
+    <string name="error_settings_app_not_intalled">لم يتم تثبيت تطبيق الويب الإعدادات في الخادم.</string>
+    <string name="error_socket_timeout">استغرق الخادم وقتًا طويلاً للاستجابة. لقد ألغينا الطلب.</string>
     <string name="error_relationship_updated">لا يمكن تحديث العلاقة.</string>
     <string name="error_too_many_periods">هناك فترات كثيرة جدا.</string>
     <string name="error_url_not_found">لم نتمكن من العثور على URL. الرجاء التحقق منه.</string>
     <string name="error_account_disabled">تم تعطيل حساب المستخدم الخاص بك. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
     <string name="error_account_locked">حساب المستخدم الخاص بك مغلق. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
+    <string name="error_set_value">تعذر تعيين القيمة.</string>
+    <string name="error_value_reservation_time">استغرق طلب حجز القيم وقتًا طويلاً. الرجاء اعادة المحاولة.</string>
+    <string name="error_ssl">هناك مشكلة في شهادات الخادم. من فضلك ، اتصل بالمسؤول الخاص بك.</string>
+    <string name="error_sms_not_supported">الرسائل القصيرة غير مدعومة.</string>
+    <string name="error_min_attributes">لا توجد سمات كافية لإجراء البحث. يرجى تحسين البحث الخاص بك بمزيد من السمات.</string>
     <string name="unsupported_field_description">هذا الحقل غير متاح للإدخال بالموبايل</string>
     <string name="add_image">إضافة صورة</string>
     <string name="action_ok">موافق\!</string>
@@ -185,4 +197,6 @@
     <string name="keep_editing">استمر في التعديل</string>
     <string name="not_now">ليس الان</string>
     <string name="complete">مكتمل</string>
-    </resources>
+    <string name="default_table_header_label">القيمة</string>
+    <string name="discard_changes">تجاهل التغييرات</string>
+</resources>
