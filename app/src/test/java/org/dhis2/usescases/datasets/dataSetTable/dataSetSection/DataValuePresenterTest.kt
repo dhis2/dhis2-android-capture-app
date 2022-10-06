@@ -22,7 +22,6 @@ import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -317,12 +316,10 @@ class DataValuePresenterTest {
                 on { valueType() } doReturn valueType
             }
 
-            val mockedOption = mock<CategoryOption> {
-                on { displayName() } doReturn "option_${valueType.name}"
-            }
-
             whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
-            whenever(dataValueRepository.getCatOptComboOptions(any())) doReturn listOf(mockedOption)
+            whenever(
+                dataValueRepository.getCatOptComboOptions(any())
+            ) doReturn listOf("option_${valueType.name}")
             val textInput = presenter.onCellClick(mockedTableCell)
             assertTrue(textInput != null)
         }
