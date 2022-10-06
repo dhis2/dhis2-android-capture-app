@@ -89,8 +89,7 @@ data class TableDimensions(
     ): Dp {
         val totalCellWidth = defaultCellWidth.takeIf { hasTotal } ?: 0.dp
 
-        return tableHorizontalPadding * 2 +
-            defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
+        return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
 }
 
