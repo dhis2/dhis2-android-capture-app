@@ -38,7 +38,7 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnAcceptEnrollmentDate() {
-        onView(withId(R.id.acceptBtn)).perform(click())
+        waitForView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun clickOnSaveEnrollment() {
@@ -95,6 +95,12 @@ class EnrollmentRobot : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<DashboardProgramViewHolder>(position, click())
             )
+    }
+
+    fun clickOnAgeField(label:String){
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItem<FormViewHolder>(
+                hasDescendant(withText(label)), clickChildViewWithId(R.id.date_picker)))
     }
 
     fun clickOnInputDate(label: String) {

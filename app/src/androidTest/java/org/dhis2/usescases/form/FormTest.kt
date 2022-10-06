@@ -205,7 +205,7 @@ class FormTest: BaseTest() {
         enrollmentRobot {
             clickOnPersonAttributesUsingButton("Attributes - Person")
             scrollToBottomProgramForm()
-            clickOnDatePicker()
+            clickOnAgeField("DD TEST AGE *")
             clickOnAcceptEnrollmentDate()
             clickOnInputDate("DD TEST DATE *")
             clickOnAcceptEnrollmentDate()
@@ -243,7 +243,7 @@ class FormTest: BaseTest() {
             waitToDebounce(500)
             clickOnPersonAttributes("Attributes - Person")
             scrollToBottomProgramForm()
-            clickOnDatePicker()
+            clickOnAgeField("DD TEST AGE *")
             clickOnAcceptEnrollmentDate()
             clickOnInputDate("DD TEST DATE *")
             clickOnAcceptEnrollmentDate()
