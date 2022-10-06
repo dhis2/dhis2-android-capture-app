@@ -4,11 +4,11 @@ source config_v2.init
 
 # Upload app and testing apk
 echo "Uploading app APK to Browserstack..."
-upload_app_response="$(curl -u $browserstack_username:$browserstack_access_key -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
+upload_app_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
 app_url=$(echo "$upload_app_response" | jq .app_url)
 
 echo "Uploading test APK to Browserstack..."
-upload_test_response="$(curl -u $browserstack_username:$browserstack_access_key -X POST https://api-cloud.browserstack.com/app-automate/espresso/test-suite -F file=@$test_apk_path)"
+upload_test_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/espresso/test-suite -F file=@$test_apk_path)"
 test_url=$(echo "$upload_test_response" | jq .test_url)
 
 # Prepare json and run tests
@@ -33,7 +33,7 @@ json=$(jq -n \
                 --argjson shards "$shards" \
                 '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, shards: $shards}')
 
-test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$browserstack_username:$browserstack_access_key")"
+test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
 # Get build
 build_id=$(echo "$test_execution_response" | jq -r .build_id)
@@ -47,7 +47,7 @@ echo "Monitoring build status started...."
 while [[ $build_status = "running" ]];
 do
   # Get build status
-  build_status_response="$(curl -u "$browserstack_username:$browserstack_access_key" -X GET "https://api-cloud.browserstack.com/app-automate/espresso/builds/$build_id")"
+  build_status_response="$(curl -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW" -X GET "https://api-cloud.browserstack.com/app-automate/espresso/builds/$build_id")"
   build_status=$(echo "$build_status_response" | jq -r .status)
   echo "current build status: $build_status"
 
