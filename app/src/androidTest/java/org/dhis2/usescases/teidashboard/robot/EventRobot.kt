@@ -82,7 +82,7 @@ class EventRobot : BaseRobot() {
     }
 
     fun clickOnUpdate() {
-        onView(withId(R.id.action_button)).perform(click())
+        waitForView(withId(R.id.action_button)).perform(click())
     }
 
     fun typeOnRequiredEventForm(text: String, position: Int) {
