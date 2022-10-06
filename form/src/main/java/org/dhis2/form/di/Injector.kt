@@ -127,7 +127,7 @@ object Injector {
                 searchRecords.allowMandatoryFields,
                 searchRecords.isBackgroundTransparent
             ),
-            programUid = searchRecords.recordUid,
+            programUid = searchRecords.programUid,
             teiTypeUid = searchRecords.teiTypeUid,
             currentSearchValues = searchRecords.currentSearchValues
         )
@@ -143,7 +143,7 @@ object Injector {
                 enrollmentRecords.allowMandatoryFields,
                 enrollmentRecords.isBackgroundTransparent
             ),
-            enrollmentUid = enrollmentRecords.recordUid,
+            enrollmentUid = enrollmentRecords.enrollmentUid,
             d2 = provideD2(),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context)
@@ -160,7 +160,7 @@ object Injector {
                 eventRecords.allowMandatoryFields,
                 eventRecords.isBackgroundTransparent
             ),
-            eventUid = eventRecords.recordUid,
+            eventUid = eventRecords.eventUid,
             d2 = provideD2()
         )
     }
