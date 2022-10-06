@@ -75,6 +75,7 @@ class SyncFlowTest : BaseTest() {
             waitToDebounce(500)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
+            waitToDebounce(500)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully()
@@ -139,7 +140,9 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnEventToSync(0)
             clickOnSyncButton()
+            waitToDebounce(500)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
+            waitToDebounce(3000)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully()
         }
@@ -163,6 +166,7 @@ class SyncFlowTest : BaseTest() {
             clickOnEventToSync(1)
             clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
+            waitToDebounce(3000)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
         }
@@ -195,9 +199,11 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnDataSetToSync(0)
             clickOnSyncButton()
+            waitToDebounce(500)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
+            waitToDebounce(3000)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            checkSyncWasSuccessfully() //sync failed
+            checkSyncWasSuccessfully()
         }
         cleanLocalDatabase()
     }
@@ -228,7 +234,9 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnDataSetToSync(1)
             clickOnSyncButton()
+            waitToDebounce(500)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
+            waitToDebounce(3000)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
         }

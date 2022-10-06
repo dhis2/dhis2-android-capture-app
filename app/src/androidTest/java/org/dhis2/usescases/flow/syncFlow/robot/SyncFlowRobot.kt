@@ -31,15 +31,15 @@ class SyncFlowRobot : BaseRobot() {
     }
 
     fun clickOnSyncButton() {
-        onView(withId(R.id.syncButton)).perform(click())
+        waitForView(withId(R.id.syncButton)).perform(click())
     }
 
     fun checkSyncWasSuccessfully() {
-        onView(withId(R.id.noConflictMessage)).check(matches(withText(R.string.no_conflicts_synced_message)))
+        waitForView(withId(R.id.noConflictMessage)).check(matches(withText(R.string.no_conflicts_synced_message)))
     }
 
     fun checkSyncFailed() {
-        onView(withId(R.id.noConflictMessage)).check(matches(withText(R.string.no_conflicts_update_message)))
+        waitForView(withId(R.id.noConflictMessage)).check(matches(withText(R.string.no_conflicts_update_message)))
     }
 
     fun clickOnEventToSync(position: Int) {
