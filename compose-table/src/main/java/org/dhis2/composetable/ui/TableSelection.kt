@@ -18,8 +18,14 @@ sealed class TableSelection(open val tableId: String) {
         override val tableId: String,
         val columnIndex: Int,
         val columnHeaderRow: Int,
-        val childrenOfSelectedHeader: Int?
+        val childrenOfSelectedHeader: Map<Int, HeaderCellRange>
     ) : TableSelection(tableId)
+
+    data class HeaderCellRange(val size: Int, val firstIndex: Int, val lastIndex: Int) {
+        fun isInRange(columnIndex: Int): Boolean {
+            return columnIndex in firstIndex..lastIndex
+        }
+    }
 
     data class CellSelection(
         override val tableId: String,
@@ -46,9 +52,13 @@ sealed class TableSelection(open val tableId: String) {
         columnHeaderRowIndex: Int
     ) = selectedTableId == tableId && (this is ColumnSelection) &&
         (
-            this.childrenOfSelectedHeader?.let { columnIndex / it == this.columnIndex } ?: false ||
-                this.columnHeaderRow == columnHeaderRowIndex &&
-                this.columnIndex != columnIndex
+            when {
+                columnHeaderRowIndex < this.columnHeaderRow -> false
+                columnHeaderRowIndex == this.columnHeaderRow -> this.columnIndex != columnIndex
+                else -> this.childrenOfSelectedHeader[columnHeaderRowIndex]?.isInRange(
+                    columnIndex
+                ) ?: false
+            }
             )
 
     fun isRowSelected(
@@ -79,16 +89,15 @@ sealed class TableSelection(open val tableId: String) {
     ) = when (this) {
         is AllCellSelection -> isCornerSelected(selectedTableId)
         is ColumnSelection ->
-            isCellValid(columnIndex, rowIndex) &&
-                this.columnIndex == columnIndex &&
-                this.tableId == selectedTableId &&
-                childrenOfSelectedHeader == null ||
-                (
-                    isCellValid(columnIndex, rowIndex) &&
-                        this.tableId == selectedTableId && this.childrenOfSelectedHeader?.let {
-                        columnIndex / it == this.columnIndex
-                    } ?: false
-                    )
+            if (childrenOfSelectedHeader.isEmpty()) {
+                isCellValid(columnIndex, rowIndex) &&
+                    this.columnIndex == columnIndex &&
+                    this.tableId == selectedTableId
+            } else {
+                isCellValid(columnIndex, rowIndex) &&
+                    this.tableId == selectedTableId &&
+                    this.childrenOfSelectedHeader.values.last().isInRange(columnIndex)
+            }
         is RowSelection -> {
             isRowSelected(selectedTableId, rowIndex)
         }

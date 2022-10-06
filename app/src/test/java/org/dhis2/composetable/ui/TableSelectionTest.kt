@@ -10,7 +10,9 @@ class TableSelectionTest {
     private val selectedRow = 2
     private val selectedColumn = 3
     private val selectedColumnHeaderRow = 2
-    private val childrenOfSelectedHeader = 3
+    private val childrenOfSelectedHeader = mapOf(
+        selectedColumnHeaderRow to TableSelection.HeaderCellRange(3, 3, 5)
+    )
     private val selectedChildColumn = 9
 
     private val otherTableId = "otherTableId"
@@ -145,7 +147,7 @@ class TableSelectionTest {
                 selectedColumnHeaderRow
             )
         )
-        assertTrue(
+        assertFalse(
             columnSelection.isParentHeaderSelected(
                 selectedTableId,
                 selectedChildColumn,
@@ -207,7 +209,7 @@ class TableSelectionTest {
         )
         assertFalse(unselected.isCellParentSelected(selectedTableId, selectedColumn, selectedRow))
 
-        assertFalse(
+        assertTrue(
             columnSelection.isCellParentSelected(
                 selectedTableId,
                 selectedColumn,
@@ -217,13 +219,13 @@ class TableSelectionTest {
         assertFalse(
             columnSelection.isCellParentSelected(
                 selectedTableId,
-                selectedColumn,
+                otherSelectedColumn,
                 selectedRow
             )
         )
         assertFalse(
             columnSelection.isCellParentSelected(
-                selectedTableId,
+                otherTableId,
                 selectedColumn,
                 selectedRow
             )

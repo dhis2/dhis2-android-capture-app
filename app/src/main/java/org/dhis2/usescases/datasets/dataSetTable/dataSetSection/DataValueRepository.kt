@@ -980,7 +980,7 @@ class DataValueRepository(
         )
     }
 
-    fun getCatOptComboOptions(catOptComboUid: String): List<CategoryOption> {
+    fun getCatOptComboOptions(catOptComboUid: String): List<String> {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(catOptComboUid)
             .blockingGet()
@@ -989,7 +989,7 @@ class DataValueRepository(
                     .uid(it.categoryCombo()?.uid())
                     .blockingGet()
                     .isDefault == false
-            }?.categoryOptions() ?: emptyList()
+            }?.displayName()?.split(", ") ?: emptyList()
     }
 
     fun getDataSetInfo(): Triple<String, String, String> {

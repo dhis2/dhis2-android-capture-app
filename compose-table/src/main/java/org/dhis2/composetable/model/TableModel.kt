@@ -12,11 +12,22 @@ data class TableModel(
     val tableRows: List<TableRowModel>,
     val overwrittenValues: Map<Int, TableCell> = emptyMap()
 ) {
-    fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
+    fun countChildrenOfSelectedHeader(
+        headerRowIndex: Int,
+        headerColumnIndex: Int
+    ): Map<Int, TableSelection.HeaderCellRange> {
         return tableHeaderModel.rows
             .filterIndexed { index, _ -> index > headerRowIndex }
-            .map { row -> row.cells.size }
-            .reduceOrNull { acc, i -> acc * i }
+            .mapIndexed { index, _ ->
+                val rowIndex = headerRowIndex + 1 + index
+                val rowSize =
+                    tableHeaderModel.numberOfColumns(rowIndex) / tableHeaderModel.numberOfColumns(
+                        headerRowIndex
+                    )
+                val init = headerColumnIndex * rowSize
+                val end = (headerColumnIndex + 1) * rowSize - 1
+                rowIndex to TableSelection.HeaderCellRange(rowSize, init, end)
+            }.toMap()
     }
 
     fun getNextCell(
