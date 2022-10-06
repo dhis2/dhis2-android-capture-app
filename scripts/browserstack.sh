@@ -58,7 +58,6 @@ done
 
 # Export test reports to bitrise
 test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
-envman add --key BROWSERSTACK_TEST_REPORTS --value "$test_reports_url"
 
 # weird behavior from Browserstack api, you can have "done" status with failed tests
 # "devices" only show one device result which is inconsistance
