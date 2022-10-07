@@ -113,7 +113,7 @@ class TableDataToTableModelMapperTest {
 
         result.tableRows.forEach { row ->
             row.values.values.forEach { cell ->
-                assertFalse(!cell.editable)
+                assertFalse(cell.editable)
             }
         }
     }
