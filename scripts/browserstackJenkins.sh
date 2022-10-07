@@ -1,9 +1,8 @@
 #!/bin/bash
 set -ex
-source config_v2.init
+source config_jenkins.init
 
 # Upload app and testing apk
-echo "Testing Credentials $BROWSERSTACK"
 echo "Uploading app APK to Browserstack..."
 upload_app_response="$(curl -u $BROWSERSTACK_USR:$BROWSERSTACK_PSW -X POST https://api-cloud.browserstack.com/app-automate/upload -F file=@$app_apk_path)"
 app_url=$(echo "$upload_app_response" | jq .app_url)
