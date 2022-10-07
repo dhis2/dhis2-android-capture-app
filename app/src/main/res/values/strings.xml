@@ -911,4 +911,5 @@
     <string name="syncing_data_sets">Syncing data sets</string>
     <string name="syncing_resources">Syncing resources</string>
     <string name="syncing_done">Syncing done</string>
+    <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
 </resources>

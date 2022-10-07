@@ -310,9 +310,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private fun setNetworkMessage() {
         if (!networkUtils.isOnline()) {
             if (presenter.isSMSEnabled(context?.showSMS() == true)) {
-                if (conflictType != ConflictType.PROGRAM &&
-                    conflictType != ConflictType.DATA_SET
-                ) {
+                if (presenter.canSendSMS()) {
                     analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
                     binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
                     binding!!.syncButton.setText(R.string.action_sync_sms)
@@ -323,7 +321,9 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                         syncSms()
                     }
                 } else {
+                    binding!!.connectionMessage.setText(R.string.sms_available_for_individual_records)
                     binding!!.syncButton.visibility = View.GONE
+                    binding!!.syncButton.setOnClickListener(null)
                 }
             } else {
                 analyticsHelper.setEvent(SYNC_GRANULAR_ONLINE, CLICK, SYNC_GRANULAR)
