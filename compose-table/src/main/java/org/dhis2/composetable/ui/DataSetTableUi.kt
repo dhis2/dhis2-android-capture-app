@@ -571,13 +571,15 @@ fun DropDownOptions(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        options.forEach {
+        options.forEach { option ->
+            val code = option.split("_")[0]
+            val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
-                    onSelected.invoke(it)
+                    onSelected.invoke(code)
                 }
             ) {
-                Text(text = it)
+                Text(text = label)
             }
         }
     }
