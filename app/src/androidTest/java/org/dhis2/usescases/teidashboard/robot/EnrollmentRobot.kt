@@ -9,6 +9,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -97,7 +98,9 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
-    fun clickOnAgeField(label:String){
+    fun clickOnAgeField(label: String) {
+        onView(isRoot())
+            .perform(waitForView(hasDescendant(withId(R.id.date_picker)),5000L))
         onView(withId(R.id.recyclerView))
             .perform(actionOnItem<FormViewHolder>(
                 hasDescendant(withText(label)), clickChildViewWithId(R.id.date_picker)))
