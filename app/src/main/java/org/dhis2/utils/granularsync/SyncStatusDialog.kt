@@ -321,7 +321,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                         syncSms()
                     }
                 } else {
-                    binding!!.connectionMessage.setText(R.string.sms_available_for_individual_records)
+                    binding!!.connectionMessage
+                        .setText(R.string.sms_available_for_individual_records)
                     binding!!.syncButton.visibility = View.GONE
                     binding!!.syncButton.setOnClickListener(null)
                 }
