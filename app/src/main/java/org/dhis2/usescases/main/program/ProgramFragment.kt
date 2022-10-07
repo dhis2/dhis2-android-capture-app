@@ -147,7 +147,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun renderError(message: String) {
         if (isAdded && activity != null) {
             AlertDialog.Builder(requireActivity())
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(getString(R.string.button_ok), null)
                 .setTitle(getString(R.string.error))
                 .setMessage(message)
                 .show()
