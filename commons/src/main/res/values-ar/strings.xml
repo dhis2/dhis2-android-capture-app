@@ -72,7 +72,7 @@
     <string name="enrollment_status_active">مفتوح</string>
     <string name="enrollment_status_completed">مكتمل</string>
     <string name="enrollment_status_cancelled">ملغي</string>
-    <string name="record_marked_for_deletion">تم وضع علامة على هذا السجل للحذف. لا يمكنك الوصول إليها.</string>
+    <string name="record_marked_for_deletion">تم وضع علامة على هذا السجل للحذف. لا يمكنك الوصول إليه.</string>
 
     <!-- Periods -->
     <string name="filter_period_today">اليوم</string>
@@ -90,8 +90,8 @@
     <string name="working_list_default_label">قائمة عمل: %s</string>
     <string name="filter_period_last_n_days">آخر %d يوم</string>
     <string name="filter_period_this_year">السنة الحالية</string>
-    <string name="filter_period_this_bimonth">ثنائي شهرين الحالي</string>
-    <string name="filter_period_last_bimonth">آخر ثنائي شهري</string>
+    <string name="filter_period_this_bimonth">الشهرين الحاليين</string>
+    <string name="filter_period_last_bimonth">آخر شهرين</string>
     <string name="filter_period_this_quarter">ربع السنة الحالي</string>
     <string name="filter_period_last_quarter">ربع السنة الماضي</string>
     <string name="filter_period_six_months">الستة الأشهر الحالية</string>
@@ -106,8 +106,8 @@
     <string name="filter_period_months_last_year">أشهر السنة الماضية</string>
     <string name="filter_period_quarters_last_year">أرباع السنة الماضية</string>
     <string name="filter_period_last_year">السنة الماضية</string>
-    <string name="filter_period_this_biweek">زوج اسبوعي الحالي</string>
-    <string name="filter_period_last_biweek">زوج اسبوعي الماضي</string>
+    <string name="filter_period_this_biweek">الإسبوعين الحالييّن</string>
+    <string name="filter_period_last_biweek">آخر اسبوعين</string>
     <string name="filter_period_last_n_bimonths">آخر %d أزواج شهرية</string>
     <string name="filter_period_last_n_quarters">آخر %d ربع</string>
     <string name="last_n_months">آخر %d شهر</string>
@@ -134,7 +134,7 @@
     <string name="interval_yesterday">الأمس</string>
 
     <!-- Sections -->
-    <string name="section_feedback">التغذية الراجعة</string>
+    <string name="section_feedback">تغذية الراجعة</string>
     <string name="section_indicators">المؤشرات</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="section_charts_indicators">الرسوم البيانية والمؤشرات</string>
@@ -155,7 +155,7 @@
     <string name="online_search_parsing_error">خطأ اثناء تحليل البيانات</string>
     <string name="error_unexpected">حدثت مشكلة غير متوقعة.</string>
     <string name="error_max_tei_count_reached">تتجاوز النتائج عبر الإنترنت الحد الأقصى لعدد حالات المتتبعة التي يمكن عرضها. يرجى إضافة تفاصيل أخرى لبحثك لحصر النتائج.</string>
-    <string name="error_many_requests">الخادم مشغول بعض الشيء في هذه اللحظة. من فضلك حاول قليلا في وقت لاحق.</string>
+    <string name="error_many_requests">الخادم مشغول بعض الشيء في هذه اللحظة. من فضلك حاول بعد وقت قصير.</string>
     <string name="error_already_authenticated">المستخدم مسجل للدخول مسبقًا</string>
     <string name="error_already_executed">سبق وأن تم تنفيذ الطلب</string>
     <string name="error_api_invalid_query">طلب الخادم غير صالح.</string>
@@ -172,7 +172,7 @@
     <string name="error_file_not_found">لم يتم العثور على الملف.</string>
     <string name="error_file_resize">حدث خطأ في تغيير حجم الصورة.</string>
     <string name="error_generate_coordinate">لا يمكن توليد الإحداثيات.</string>
-    <string name="error_low_on_available_values">قد يكون لديك نفاد من القيم المتاحة.</string>
+    <string name="error_low_on_available_values">قد يكون لديك نفاد في القيم المتاحة.</string>
     <string name="error_user_no_authenticated">لا يوجد مستخدم مصدق عليه.</string>
     <string name="error_user_no_authenticated_offline">لا يوجد مستخدم تمت مصادقته في وضع عدم الاتصال.</string>
     <string name="error_no_values_left_on_server">لا توجد قيم كافية للحجز على الخادم. يرجى الاتصال بالمسؤول الخاص بك.</string>

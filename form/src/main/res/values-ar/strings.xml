@@ -60,6 +60,7 @@
     <string name="fields_mandatory_missing">بعض الحقول الإلزامية غير مدخله ولا يمكن حفظ النموذج.</string>
     <string name="fields_mandatory_missing_discard">بعض الحقول الإلزامية مفقودة ولا يمكن حفظ النموذج. \n إذا قمت بالخروج الآن ، فسيتم تجاهل التغييرات.</string>
     <string name="share">مشاركة</string>
+    <string name="camera_permission_denied">تم رفض إذن الكاميرا.\n تحتاج إلى تمكينها لاستخدام هذه الميزة.</string>
     <string name="action_close">إغلاق</string>
     <string name="copied_text">تم النسخ</string>
     <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
