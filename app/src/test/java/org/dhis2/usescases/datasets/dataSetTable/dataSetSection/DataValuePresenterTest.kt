@@ -401,7 +401,9 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel, mockedIndicatorTableModel), false)
+        tableStateValue.value = TableScreenState(
+            listOf(mockedTableModel, mockedIndicatorTableModel), false
+        )
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
