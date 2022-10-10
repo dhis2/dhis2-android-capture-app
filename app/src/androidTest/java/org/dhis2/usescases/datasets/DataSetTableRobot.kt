@@ -1,5 +1,8 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -13,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.CELL_TEST_TAG
+import org.dhis2.composetable.ui.CellSelected
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.junit.Assert.assertTrue
@@ -55,6 +59,14 @@ class DataSetTableRobot(
             .performScrollTo()
         composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
             .performClick()
+    }
+
+    fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int){
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(CellSelected, true), true
+        ).assertIsDisplayed()
     }
 
     fun clickOnEditValue() {

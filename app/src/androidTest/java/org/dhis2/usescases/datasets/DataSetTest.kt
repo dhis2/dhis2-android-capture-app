@@ -1,8 +1,11 @@
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -120,5 +123,43 @@ class DataSetTest : BaseTest() {
             checkDataSetIsCompleteAndModified("2019")
         }
 
+    }
+
+    @Test
+    fun shouldBlockSelectingNewCellIfCurrentHasError() {
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+
+        dataSetTableRobot(composeTestRule) {
+            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnEditValue()
+            typeInput("5,,")
+            composeTestRule.waitForIdle()
+            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
+            composeTestRule.waitForIdle()
+            assertCellSelected("bjDvmb4bfuf", 0, 0)
+        }
+    }
+
+    @Test
+    fun shouldSelectNewCellIfCurrentHasNoError() {
+        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+
+        dataSetTableRobot(composeTestRule) {
+            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnEditValue()
+            typeInput("5")
+            composeTestRule.waitForIdle()
+            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
+            composeTestRule.waitForIdle()
+            assertCellSelected("bjDvmb4bfuf", 1, 0)
+        }
     }
 }
