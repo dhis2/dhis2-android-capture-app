@@ -97,7 +97,6 @@ data class TableCell(
     val editable: Boolean = true,
     val mandatory: Boolean? = false,
     val error: String? = null,
-    val dropDownOptions: List<String>? = null,
     val legendColor: Int? = null
 ) {
     fun isSelected(selectionState: SelectionState): Boolean {
@@ -112,7 +111,8 @@ data class TableRowModel(
     val rowHeader: RowHeader,
     val values: Map<Int, TableCell>,
     val isLastRow: Boolean = false,
-    val maxLines: Int = 3
+    val maxLines: Int = 3,
+    val dropDownOptions: List<String>? = null
 )
 
 @Serializable

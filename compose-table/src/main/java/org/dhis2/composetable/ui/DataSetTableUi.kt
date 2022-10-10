@@ -285,6 +285,7 @@ fun TableItemRow(
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 ),
+                options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
                 onClick = onClick
@@ -403,6 +404,7 @@ fun ItemValues(
     overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
+    options: List<String>,
     cellStyle: @Composable
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
@@ -443,6 +445,7 @@ fun ItemValues(
                         .focusable(),
                     cellValue = cellValue,
                     maxLines = maxLines,
+                    options = options,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
                             columnIndex = cellValue.column ?: -1,
@@ -462,6 +465,7 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     maxLines: Int,
+    options: List<String>,
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit
@@ -474,7 +478,7 @@ fun TableCell(
             .fillMaxHeight()
             .clickable(cellValue.editable) {
                 when {
-                    cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                    options.isNotEmpty() -> setExpanded(true)
                     else -> onClick(cellValue)
                 }
             },
@@ -499,10 +503,10 @@ fun TableCell(
                 )
             )
         )
-        if (cellValue.dropDownOptions?.isNotEmpty() == true) {
+        if (options.isNotEmpty()) {
             DropDownOptions(
                 expanded = dropDownExpanded,
-                options = cellValue.dropDownOptions,
+                options = options,
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
@@ -572,13 +576,15 @@ fun DropDownOptions(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        options.forEach {
+        options.forEach { option ->
+            val code = option.split("_")[0]
+            val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
-                    onSelected.invoke(it)
+                    onSelected.invoke(code)
                 }
             ) {
-                Text(text = it)
+                Text(text = label)
             }
         }
     }
