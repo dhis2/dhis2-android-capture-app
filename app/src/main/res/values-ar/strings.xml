@@ -731,7 +731,6 @@
     <string name="show_events_timeline">عرض الخط الزمني للأحداث</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="filters_title_event_date">بيانات الحدث</string>
-    <string name="dataset_data">بيانات</string>
     <string name="tei_type_has_no_attributes">%s لا يملك أي سمات عامة، يرجى تحديد برنامج</string>
     <string name="privacy_policy_title">سياسة الخصوصية</string>
     <string name="open_privacy_policy">إنقر هنا للإطلاع على <a href=""> سياسة الخصوصية الخاصة بنا</a></string>

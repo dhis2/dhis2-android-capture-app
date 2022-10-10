@@ -317,7 +317,6 @@
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="filters_title_date">Сана</string>
     <string name="filters_title_event_date">Тадбир санаси</string>
-    <string name="dataset_data">Маълумот</string>
     <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
     <string name="customactivityoncrash_error_activity_error_details_close">Ёпиқ</string>
     </resources>
