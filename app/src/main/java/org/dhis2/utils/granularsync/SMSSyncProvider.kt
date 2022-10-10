@@ -21,7 +21,7 @@ interface SMSSyncProvider {
     val dvAttrCombo: String?
     val dvPeriodId: String?
     val resourceManager: ResourceManager
-    val smsSender: SmsSubmitCase
+    var smsSender: SmsSubmitCase
 
     fun isPlayServicesEnabled(): Boolean
     fun waitForSMSResponse(
@@ -101,4 +101,8 @@ interface SMSSyncProvider {
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus
     fun observeConfirmationNumber(): LiveData<Boolean?> = MutableLiveData(null)
+
+    fun restartSmsSender() {
+        smsSender = d2.smsModule().smsSubmitCase()
+    }
 }

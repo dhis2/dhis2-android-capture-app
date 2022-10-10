@@ -19,7 +19,7 @@ class SMSSyncProviderImpl(
     override val resourceManager: ResourceManager
 ) : SMSSyncProvider {
 
-    override val smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
+    override var smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
 
     override fun isPlayServicesEnabled() = false
 

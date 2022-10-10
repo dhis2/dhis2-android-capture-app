@@ -244,12 +244,13 @@ class GranularSyncPresenterImpl(
                         )
                     }
                 )
-            /*.subscribeWith(
-                smsSyncProvider.onConvertingObserver { updateStateList(it) }
-            )*/
         )
 
         return states
+    }
+
+    override fun restartSmsSender() {
+        smsSyncProvider.restartSmsSender()
     }
 
     // PLAY SERVICES
