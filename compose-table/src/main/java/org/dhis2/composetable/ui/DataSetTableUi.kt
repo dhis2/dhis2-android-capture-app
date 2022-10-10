@@ -5,6 +5,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -626,6 +627,9 @@ private fun TableList(
     TableTheme(tableColors, TableDimensions(totalWidth = tableTotalWidth)) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val verticalScrollState = rememberLazyListState()
+        val calculatedHeaderSize by remember {
+            mutableStateOf<MutableMap<Int, Int>>(mutableMapOf())
+        }
 
         tableList.indexOfFirst { it.id == tableSelection.tableId }
             .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
@@ -634,7 +638,8 @@ private fun TableList(
                 tableList[selectedTableIndex],
                 horizontalScrollStates[selectedTableIndex],
                 verticalScrollState,
-                inputIsOpen
+                inputIsOpen,
+                calculatedHeaderSize[selectedTableIndex]
             )
         }
 
@@ -659,7 +664,10 @@ private fun TableList(
                 stickyHeader {
                     TableHeaderRow(
                         modifier = Modifier
-                            .background(Color.White),
+                            .background(Color.White)
+                            .onSizeChanged {
+                                calculatedHeaderSize[index] = it.height
+                            },
                         cornerModifier = Modifier
                             .cornerBackground(
                                 isSelected = tableSelection.isCornerSelected(
@@ -763,12 +771,18 @@ private fun TableList(
                         },
                         onDecorationClick = tableInteractions::onDecorationClick,
                         onClick = { tableCell ->
+                            var prevIndex = 0
+                            repeat(index) { tableIndex ->
+                                prevIndex += tableList[tableIndex].tableRows.size + 2
+                            }
+                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
+
                             tableInteractions.onSelectionChange(
                                 TableSelection.CellSelection(
                                     tableId = currentTableModel.id ?: "",
                                     columnIndex = tableCell.column ?: -1,
                                     rowIndex = tableCell.row ?: -1,
-                                    globalIndex = globalIndex
+                                    globalIndex = mGlobalIndex
                                 )
                             )
                             tableInteractions.onClick(tableCell)
@@ -949,7 +963,8 @@ fun SelectionScrollEffect(
     selectedTable: TableModel,
     selectedScrollState: ScrollState,
     verticalScrollState: LazyListState,
-    inputIsOpen: Boolean
+    inputIsOpen: Boolean,
+    calculatedHeaderSize: Int?
 ) {
     val localDimensions = LocalTableDimensions.current
     val localDensity = LocalDensity.current
@@ -967,9 +982,10 @@ fun SelectionScrollEffect(
                 cellWidth.toInt() * tableSelection.columnIndex
             )
             if (inputIsOpen) {
-                verticalScrollState.animateScrollToItem(
-                    (tableSelection.globalIndex - 1).takeIf { it >= 0 } ?: 0
+                verticalScrollState.scrollToItem(
+                    (tableSelection.globalIndex).takeIf { it >= 0 } ?: 0
                 )
+                verticalScrollState.scrollBy(-(calculatedHeaderSize ?: 0).toFloat())
             }
         }
     }
