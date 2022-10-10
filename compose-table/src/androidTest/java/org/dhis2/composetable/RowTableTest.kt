@@ -66,6 +66,22 @@ class RowTableTest {
         val firstTableId = fakeModel[0].id!!
         val secondTableId = fakeModel[1].id!!
 
+
+        tableRobot(composeTestRule) {
+            clickOnCell("My_ID",3,2)
+            clickOnEditValue()
+            typeInput()
+            clickOnAccept()
+            assertCellHasText()
+            assertInputIcon() //Ya no hay lapiz
+            assertBottomBarIsNotVisible()
+        }
+
+
+
+
+
+
         tableRobot(composeTestRule) {
             assert(fakeModel[0].tableRows.size == 3)
 
