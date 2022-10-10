@@ -312,7 +312,7 @@ class GranularSyncPresenterTest {
                 errorMapper,
                 preferenceProvider,
                 smsSyncProvider
-            ).isSMSEnabled(true)
+            ).canSendSMS()
             it to enable
         }
         assertTrue(result[SyncStatusDialog.ConflictType.PROGRAM] == false)

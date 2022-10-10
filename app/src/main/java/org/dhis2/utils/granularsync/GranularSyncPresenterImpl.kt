@@ -136,15 +136,17 @@ class GranularSyncPresenterImpl(
     }
 
     override fun isSMSEnabled(showSms: Boolean): Boolean {
+        return smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
+    }
+
+    override fun canSendSMS(): Boolean {
         return when (conflictType) {
             ALL,
             PROGRAM,
             DATA_SET -> false
             TEI,
             EVENT,
-            DATA_VALUES -> {
-                smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
-            }
+            DATA_VALUES -> true
         }
     }
 
