@@ -401,7 +401,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = listOf(mockedTableModel, mockedIndicatorTableModel)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel, mockedIndicatorTableModel), false)
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -416,15 +416,18 @@ class DataValuePresenterTest {
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
+        whenever(
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+        ) doReturn mockedUpdatedTableModel
 
         whenever(dataValueRepository.getDataSetIndicators()) doReturn Single.just(mockedIndicators)
         whenever(mapper.map(any())) doReturn mockedUpdatedIndicatorTableModel
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.tableData().value!!.size == 2)
-        assertTrue(presenter.tableData().value!![0].id == "tableId_updated")
-        assertTrue(presenter.tableData().value!!.last().id == "updated_indicator")
+        assertTrue(presenter.currentState().value!!.tables.size == 2)
+        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value!!.tables.last().id == "updated_indicator")
         verify(view).onValueProcessed()
     }
 

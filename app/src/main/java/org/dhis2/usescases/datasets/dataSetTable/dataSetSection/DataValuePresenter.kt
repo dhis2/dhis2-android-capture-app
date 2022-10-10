@@ -88,6 +88,8 @@ class DataValuePresenter(
         val updatedTables = screenState.value?.tables?.map { tableModel ->
             if (tableModel.id == catComboUid) {
                 updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
+            } else if (tableModel.id == null && updatedIndicators != null) {
+                updatedIndicators
             } else {
                 tableModel
             }
