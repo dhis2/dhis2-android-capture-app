@@ -111,7 +111,7 @@ class TableRobot(
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
-        val screenState = TableScreenState(fakeModel,false)
+        val screenState = TableScreenState(fakeModel, false)
         composeTestRule.setContent {
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
@@ -151,20 +151,20 @@ class TableRobot(
                             tableModel
                         }
                     }
-                    model = TableScreenState(updatedData,false)
+                    model = TableScreenState(updatedData, false)
                 },
                 onSaveValue = { tableCell, selectNext ->
                     onSaveTableCell = tableCell
                     onSave(tableCell)
-                    model = TableScreenState(fakeModel,selectNext)
+                    model = TableScreenState(fakeModel, selectNext)
                 }
             )
         }
         return fakeModel
     }
 
-    fun assertClickOnCellShouldOpenInputComponent(rowIndex: Int, columnIndex: Int) {
-        clickOnCell("table", rowIndex, columnIndex)
+    fun assertClickOnCellShouldOpenInputComponent(tableId: String,rowIndex: Int, columnIndex: Int) {
+        clickOnCell(tableId, rowIndex, columnIndex)
         assertInputComponentIsDisplayed()
     }
 
@@ -326,9 +326,9 @@ class TableRobot(
         composeTestRule.onNode(
             hasParent(hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"))
                     and
-                    hasTestTag(CELL_VALUE_TEST_TAG), true
-        )
-            .assertTextEquals(expectedValue)
+                    hasTestTag(CELL_VALUE_TEST_TAG),
+            true
+        ).assertTextEquals(expectedValue)
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
