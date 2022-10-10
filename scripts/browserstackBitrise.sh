@@ -32,6 +32,12 @@ shards=$(jq -n \
                 --arg number_of_shards "$browserstack_number_of_parallel_executions" \
                 '{numberOfShards: $number_of_shards}')
 
+
+
+
+
+
+
 json=$(jq -n \
                 --argjson app_url $app_url \
                 --argjson test_url $test_url \
