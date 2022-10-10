@@ -201,7 +201,6 @@ private fun TextInputContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            onSave()
                             onNextSelected()
                         }
                     )

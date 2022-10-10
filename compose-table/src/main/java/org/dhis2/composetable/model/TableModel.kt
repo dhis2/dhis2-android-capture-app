@@ -31,9 +31,11 @@ data class TableModel(
     }
 
     fun getNextCell(
-        cellSelection: TableSelection.CellSelection
+        cellSelection: TableSelection.CellSelection,
+        discardErrors: Boolean
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
-        tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
+        !discardErrors &&
+            tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
             cellSelection
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
@@ -48,7 +50,7 @@ data class TableModel(
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
         when (tableCell?.editable) {
             true -> Pair(tableCell, nextCell)
-            else -> getNextCell(nextCell)
+            else -> getNextCell(nextCell, discardErrors)
         }
     }
 

@@ -1,18 +1,11 @@
 package org.dhis2.composetable
 
-import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.unit.IntSize
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.ui.INPUT_TEST_TAG
-import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Rule
 import org.junit.Test
 
@@ -160,24 +153,6 @@ class CellTableTest {
             clickOnCell(testingTableId, 1, 0)
             assertKeyBoardVisibility(false)
             assertInputComponentIsHidden()
-        }
-    }
-
-    @Test
-    fun shouldBlockSelectingNewCellIfCurrentHasError() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 2, 0)
-            composeTestRule.waitForIdle()
-            typeOnInputComponent("")
-            composeTestRule.waitForIdle()
-            clickOnAccept()
-            composeTestRule.waitForIdle()
-            assertCellSelected(firstId, 2, 0)
         }
     }
 

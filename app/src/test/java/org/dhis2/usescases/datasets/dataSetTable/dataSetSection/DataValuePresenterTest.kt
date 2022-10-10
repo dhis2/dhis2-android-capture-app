@@ -13,6 +13,7 @@ import io.reactivex.Single
 import java.util.SortedMap
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -81,9 +82,9 @@ class DataValuePresenterTest {
 
         presenter.init()
 
-        val tableStateValue = presenter.tableData().value
-        assertTrue(tableStateValue!!.isNotEmpty())
-        assertTrue(tableStateValue.size == 2)
+        val tableStateValue = presenter.currentState().value
+        assertTrue(tableStateValue!!.tables.isNotEmpty())
+        assertTrue(tableStateValue.tables.size == 2)
     }
 
     @Test
@@ -98,7 +99,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = listOf(mockedTableModel)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
         presenter.onCellValueChanged(mockedTableCell)
         verify(mockedTableModel).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
     }
@@ -115,7 +116,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = listOf(mockedTableModel)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
         presenter.onCellValueChanged(mockedTableCell)
         verify(mockedTableModel, times(0)).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
     }
@@ -337,6 +338,7 @@ class DataValuePresenterTest {
         val mockedTableModel = mock<TableModel> {
             on { id } doReturn "tableId"
             on { hasCellWithId(any()) } doReturn true
+            on { overwrittenValues } doReturn emptyMap()
         }
 
         val mockedUpdatedTableModel = mock<TableModel> {
@@ -345,7 +347,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = listOf(mockedTableModel)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -360,11 +362,14 @@ class DataValuePresenterTest {
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
+        whenever(
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+        ) doReturn mockedUpdatedTableModel
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.tableData().value!!.size == 1)
-        assertTrue(presenter.tableData().value!![0].id == "tableId_updated")
+        assertTrue(presenter.mutableTableData().value!!.tables.size == 1)
+        assertTrue(presenter.mutableTableData().value!!.tables[0].id == "tableId_updated")
         verify(view).onValueProcessed()
     }
 
@@ -435,6 +440,7 @@ class DataValuePresenterTest {
         val mockedTableModel = mock<TableModel> {
             on { id } doReturn "tableId"
             on { hasCellWithId(any()) } doReturn true
+            on { overwrittenValues } doReturn emptyMap()
         }
 
         val mockedUpdatedTableModel = mock<TableModel> {
@@ -443,7 +449,7 @@ class DataValuePresenterTest {
         }
 
         val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = listOf(mockedTableModel)
+        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
 
         whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
             StoreResult(
@@ -458,11 +464,14 @@ class DataValuePresenterTest {
         )
         whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
         whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
+        whenever(
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues)
+        ) doReturn mockedUpdatedTableModel
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.tableData().value!!.size == 1)
-        assertTrue(presenter.tableData().value!![0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value!!.tables.size == 1)
+        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
         assertTrue(presenter.errors().isNotEmpty())
         verify(view).onValueProcessed()
     }

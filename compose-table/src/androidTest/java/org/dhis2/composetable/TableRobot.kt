@@ -111,11 +111,12 @@ class TableRobot(
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
         val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        val screenState = TableScreenState(fakeModel,false)
         composeTestRule.setContent {
             keyboardHelper.view = LocalView.current
-            var model by remember { mutableStateOf(fakeModel) }
+            var model by remember { mutableStateOf(screenState) }
             DataSetTableScreen(
-                tableData = model,
+                tableScreenState = model,
                 onCellClick = { tableId, cell ->
                     if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
                         TextInputModel(
@@ -150,11 +151,12 @@ class TableRobot(
                             tableModel
                         }
                     }
-                    model = updatedData
+                    model = TableScreenState(updatedData,false)
                 },
-                onSaveValue = { tableCell ->
+                onSaveValue = { tableCell, selectNext ->
                     onSaveTableCell = tableCell
                     onSave(tableCell)
+                    model = TableScreenState(fakeModel,selectNext)
                 }
             )
         }
