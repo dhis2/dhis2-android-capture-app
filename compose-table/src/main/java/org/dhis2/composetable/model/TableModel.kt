@@ -61,9 +61,11 @@ data class TableModel(
         }.firstOrNull()
 
     fun hasCellWithId(cellId: String?): Boolean {
-        return tableRows.find {
-            cellId?.contains(it.rowHeader.id.toString()) == true
-        } != null
+        return tableRows.any { row ->
+            row.rowHeader.id?.let {
+                it.isNotEmpty() && cellId?.contains(it) == true
+            } ?: false
+        }
     }
 }
 
