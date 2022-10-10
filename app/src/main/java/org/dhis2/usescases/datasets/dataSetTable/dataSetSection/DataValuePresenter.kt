@@ -8,6 +8,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
@@ -30,7 +31,9 @@ class DataValuePresenter(
     private val dispatcherProvider: DispatcherProvider
 ) {
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val allTableState: MutableLiveData<List<TableModel>> = MutableLiveData(emptyList())
+    private val screenState: MutableLiveData<TableScreenState> = MutableLiveData(
+        TableScreenState(emptyList(), false)
+    )
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
@@ -48,7 +51,11 @@ class DataValuePresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribe(
-                    { allTableState.postValue(it) },
+                    {
+                        screenState.postValue(
+                            TableScreenState(it, false)
+                        )
+                    },
                     { Timber.e(it) }
                 )
         )
@@ -69,7 +76,7 @@ class DataValuePresenter(
         null
     }
 
-    private fun updateData(catComboUid: String) {
+    private fun updateData(catComboUid: String, selectNext: Boolean) {
         val dataTableModel =
             repository.getDataTableModel(catComboUid)
                 .blockingFirst()
@@ -78,16 +85,18 @@ class DataValuePresenter(
 
         val updatedIndicators = indicatorTables()
 
-        allTableState.postValue(
-            allTableState.value?.map { tableModel ->
-                if (tableModel.id == catComboUid) {
-                    updatedTableModel
-                } else if (tableModel.id == null && updatedIndicators != null) {
-                    updatedIndicators
-                } else {
-                    tableModel
-                }
+        val updatedTables = screenState.value?.tables?.map { tableModel ->
+            if (tableModel.id == catComboUid) {
+                updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
+            } else if (tableModel.id == null && updatedIndicators != null) {
+                updatedIndicators
+            } else {
+                tableModel
             }
+        } ?: emptyList()
+
+        screenState.postValue(
+            TableScreenState(updatedTables, selectNext)
         )
     }
 
@@ -95,16 +104,16 @@ class DataValuePresenter(
         disposable.clear()
     }
 
-    fun tableData(): LiveData<List<TableModel>> = allTableState
+    fun currentState(): LiveData<TableScreenState> = screenState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun mutableTableData() = allTableState
+    fun mutableTableData() = screenState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun errors() = errors
 
     fun onCellValueChanged(tableCell: TableCell) {
-        val updatedData = allTableState.value?.map { tableModel ->
+        val updatedData = screenState.value?.tables?.map { tableModel ->
             if (tableModel.hasCellWithId(tableCell.id)) {
                 tableModel.copy(
                     overwrittenValues = mapOf(
@@ -114,8 +123,10 @@ class DataValuePresenter(
             } else {
                 tableModel
             }
-        }
-        allTableState.postValue(updatedData)
+        } ?: emptyList()
+        screenState.postValue(
+            TableScreenState(updatedData, false)
+        )
     }
 
     /**
@@ -171,41 +182,41 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell) {
+    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) =
         runBlocking {
-            saveValue(cell)
+            saveValue(cell, selectNext)
             view.onValueProcessed()
         }
-    }
 
-    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
-        val ids = cell.id?.split("_")
-        val dataElementUid = ids!![0]
-        val catOptCombUid = ids[1]
-        val catComboUid =
-            allTableState.value?.find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
+    private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
+        withContext(dispatcherProvider.io()) {
+            val ids = cell.id?.split("_")
+            val dataElementUid = ids!![0]
+            val catOptCombUid = ids[1]
+            val catComboUid = screenState.value?.tables
+                ?.find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
 
-        val result = valueStore.save(
-            dataSetInfo.second,
-            dataSetInfo.first,
-            dataSetInfo.third,
-            dataElementUid,
-            catOptCombUid,
-            cell.value
-        )
-        val storeResult = result.blockingFirst()
-        val saveResult = storeResult.valueStoreResult
-        if (
-            saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
-            saveResult == VALUE_HAS_NOT_CHANGED
-        ) {
-            if (saveResult == ERROR_UPDATING_VALUE) {
-                errors[cell.id!!] =
-                    storeResult.valueStoreResultMessage ?: "-"
-            } else {
-                errors.remove(cell.id!!)
+            val result = valueStore.save(
+                dataSetInfo.second,
+                dataSetInfo.first,
+                dataSetInfo.third,
+                dataElementUid,
+                catOptCombUid,
+                cell.value
+            )
+            val storeResult = result.blockingFirst()
+            val saveResult = storeResult.valueStoreResult
+            if (
+                saveResult == VALUE_CHANGED || saveResult == ERROR_UPDATING_VALUE ||
+                saveResult == VALUE_HAS_NOT_CHANGED
+            ) {
+                if (saveResult == ERROR_UPDATING_VALUE) {
+                    errors[cell.id!!] =
+                        storeResult.valueStoreResultMessage ?: "-"
+                } else {
+                    errors.remove(cell.id!!)
+                }
+                updateData(catComboUid!!, selectNext)
             }
-            updateData(catComboUid!!)
         }
-    }
 }

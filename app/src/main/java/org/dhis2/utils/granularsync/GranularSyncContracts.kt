@@ -71,6 +71,7 @@ class GranularSyncContracts {
         fun onSmsManuallySent(context: Context, confirmationCallback: (LiveData<Boolean?>) -> Unit)
         fun onConfirmationMessageStateChanged(messageReceived: Boolean?)
         fun restartSmsSender()
+        fun canSendSMS(): Boolean
     }
 
     interface OnDismissListener {

@@ -10,6 +10,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTable
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableMeasure
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
@@ -80,6 +81,41 @@ class TableDataToTableModelMapperTest {
         assert(result.tableRows[1].rowHeader.title == DATAELEMENT_FORM_NAME)
         assert(result.tableRows[0].values.size == 2)
         assert(result.tableRows[1].values.size == 2)
+    }
+
+    @Test
+    fun `Should mark all cell as no editable if write access is false`() {
+        val dataTableModel = DataTableModel(
+            "123",
+            "Madrid",
+            "none",
+            listOf(getDataElement(), getDataElement()).toMutableList(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val tableData = TableData(
+            dataTableModel,
+            listOf(listOf(getElements(), getElements()), listOf(getElements(), getElements())),
+            emptyList(),
+            false,
+            showRowTotals = false,
+            showColumnTotals = false,
+            overriddenMeasure = TableMeasure(0, 0),
+            hasDataElementDecoration = false
+        )
+
+        val result = tableDataToTableModelMapper(tableData)
+
+        result.tableRows.forEach { row ->
+            row.values.values.forEach { cell ->
+                assertFalse(cell.editable)
+            }
+        }
     }
 
     private fun getElements(): FieldViewModel {

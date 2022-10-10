@@ -35,6 +35,8 @@ class ProgramEventMapper @Inject constructor(
             "Event: $event"
         )
 
+        val eventDate = event.eventDate() ?: event.dueDate()
+
         return EventViewModel(
             EventViewModelType.EVENT,
             programStage,
@@ -49,10 +51,13 @@ class ProgramEventMapper @Inject constructor(
             catComboName = getCatComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
-            displayDate = periodUtils.getPeriodUIString(
-                programStage.periodType() ?: PeriodType.Daily,
-                event.eventDate() ?: event.dueDate()!!, Locale.getDefault()
-            )
+            displayDate = eventDate?.let {
+                periodUtils.getPeriodUIString(
+                    programStage.periodType() ?: PeriodType.Daily,
+                    it,
+                    Locale.getDefault()
+                )
+            }
         )
     }
 

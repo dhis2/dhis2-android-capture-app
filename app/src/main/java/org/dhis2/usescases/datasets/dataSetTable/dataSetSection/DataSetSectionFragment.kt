@@ -29,6 +29,7 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
@@ -94,11 +95,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val tableData by presenterFragment.tableData()
-                        .observeAsState(emptyList())
+                    val screenState by presenterFragment.currentState().observeAsState(
+                        initial = TableScreenState(emptyList(), false)
+                    )
 
                     DataSetTableScreen(
-                        tableData = tableData,
+                        tableScreenState = screenState,
                         onCellClick = { _, cell ->
                             presenterFragment.onCellClick(cell = cell)
                         },
@@ -108,8 +110,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         onCellValueChange = { cell ->
                             presenterFragment.onCellValueChanged(cell)
                         },
-                        onSaveValue = { cell ->
-                            presenterFragment.onSaveValueChange(cell)
+                        onSaveValue = { cell, selectNext ->
+                            presenterFragment.onSaveValueChange(cell, selectNext)
                         }
                     )
                 }

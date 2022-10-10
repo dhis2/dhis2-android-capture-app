@@ -5,6 +5,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -284,6 +285,7 @@ fun TableItemRow(
                     tableModel.tableHeaderModel.tableMaxColumns(),
                     tableModel.tableHeaderModel.hasTotals
                 ),
+                options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
                 onClick = onClick
@@ -402,6 +404,7 @@ fun ItemValues(
     overridenValues: Map<Int, TableCell>,
     defaultHeight: Dp,
     defaultWidth: Dp,
+    options: List<String>,
     cellStyle: @Composable
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
@@ -442,6 +445,7 @@ fun ItemValues(
                         .focusable(),
                     cellValue = cellValue,
                     maxLines = maxLines,
+                    options = options,
                     nonEditableCellLayer = {
                         nonEditableCellLayer(
                             columnIndex = cellValue.column ?: -1,
@@ -461,6 +465,7 @@ fun TableCell(
     modifier: Modifier,
     cellValue: TableCell,
     maxLines: Int,
+    options: List<String>,
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit
@@ -473,7 +478,7 @@ fun TableCell(
             .fillMaxHeight()
             .clickable(cellValue.editable) {
                 when {
-                    cellValue.dropDownOptions?.isNotEmpty() == true -> setExpanded(true)
+                    options.isNotEmpty() -> setExpanded(true)
                     else -> onClick(cellValue)
                 }
             },
@@ -498,10 +503,10 @@ fun TableCell(
                 )
             )
         )
-        if (cellValue.dropDownOptions?.isNotEmpty() == true) {
+        if (options.isNotEmpty()) {
             DropDownOptions(
                 expanded = dropDownExpanded,
-                options = cellValue.dropDownOptions,
+                options = options,
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
@@ -571,13 +576,15 @@ fun DropDownOptions(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        options.forEach {
+        options.forEach { option ->
+            val code = option.split("_")[0]
+            val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
-                    onSelected.invoke(it)
+                    onSelected.invoke(code)
                 }
             ) {
-                Text(text = it)
+                Text(text = label)
             }
         }
     }
@@ -626,6 +633,9 @@ private fun TableList(
     TableTheme(tableColors, TableDimensions(totalWidth = tableTotalWidth)) {
         val horizontalScrollStates = tableList.map { rememberScrollState() }
         val verticalScrollState = rememberLazyListState()
+        val calculatedHeaderSize by remember {
+            mutableStateOf<MutableMap<Int, Int>>(mutableMapOf())
+        }
 
         tableList.indexOfFirst { it.id == tableSelection.tableId }
             .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
@@ -634,7 +644,8 @@ private fun TableList(
                 tableList[selectedTableIndex],
                 horizontalScrollStates[selectedTableIndex],
                 verticalScrollState,
-                inputIsOpen
+                inputIsOpen,
+                calculatedHeaderSize[selectedTableIndex]
             )
         }
 
@@ -659,7 +670,10 @@ private fun TableList(
                 stickyHeader {
                     TableHeaderRow(
                         modifier = Modifier
-                            .background(Color.White),
+                            .background(Color.White)
+                            .onSizeChanged {
+                                calculatedHeaderSize[index] = it.height
+                            },
                         cornerModifier = Modifier
                             .cornerBackground(
                                 isSelected = tableSelection.isCornerSelected(
@@ -763,12 +777,18 @@ private fun TableList(
                         },
                         onDecorationClick = tableInteractions::onDecorationClick,
                         onClick = { tableCell ->
+                            var prevIndex = 0
+                            repeat(index) { tableIndex ->
+                                prevIndex += tableList[tableIndex].tableRows.size + 2
+                            }
+                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
+
                             tableInteractions.onSelectionChange(
                                 TableSelection.CellSelection(
                                     tableId = currentTableModel.id ?: "",
                                     columnIndex = tableCell.column ?: -1,
                                     rowIndex = tableCell.row ?: -1,
-                                    globalIndex = globalIndex
+                                    globalIndex = mGlobalIndex
                                 )
                             )
                             tableInteractions.onClick(tableCell)
@@ -949,7 +969,8 @@ fun SelectionScrollEffect(
     selectedTable: TableModel,
     selectedScrollState: ScrollState,
     verticalScrollState: LazyListState,
-    inputIsOpen: Boolean
+    inputIsOpen: Boolean,
+    calculatedHeaderSize: Int?
 ) {
     val localDimensions = LocalTableDimensions.current
     val localDensity = LocalDensity.current
@@ -967,9 +988,10 @@ fun SelectionScrollEffect(
                 cellWidth.toInt() * tableSelection.columnIndex
             )
             if (inputIsOpen) {
-                verticalScrollState.animateScrollToItem(
-                    (tableSelection.globalIndex - 1).takeIf { it >= 0 } ?: 0
+                verticalScrollState.scrollToItem(
+                    (tableSelection.globalIndex).takeIf { it >= 0 } ?: 0
                 )
+                verticalScrollState.scrollBy(-(calculatedHeaderSize ?: 0).toFloat())
             }
         }
     }

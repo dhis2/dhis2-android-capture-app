@@ -39,14 +39,15 @@ class TextInputUiTest {
         var cellToSave: TableCell? = null
         val expectedValue = "55"
 
-        composeTestRule.setContent {
-            TextInputUiTestScreen {
-                cellToSave = it
-            }
-        }
-
         tableRobot(composeTestRule) {
-            assertClickOnCellShouldOpenInputComponent(0, 0)
+           val fakeModels = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MULTIHEADER_TABLE,
+                onSave = { cellToSave = it }
+            )
+            val tableId = fakeModels[0].id!!
+            assertClickOnCellShouldOpenInputComponent(tableId,0, 0)
+            assertClickOnBackClearsFocus()
             assertClickOnEditOpensInputKeyboard()
             assertClickOnSaveHidesKeyboardAndSaveValue(expectedValue)
             assert(cellToSave?.value == expectedValue)
@@ -72,7 +73,7 @@ class TextInputUiTest {
                 composeTestRule.activity.applicationContext,
                 FakeModelType.MANDATORY_TABLE
             )
-            clickOnCell(fakeModels.first().id!!,0,0)
+            clickOnCell(fakeModels.first().id!!, 0, 0)
             assertInputComponentIsDisplayed()
             assertClickOnBackClearsFocus()
         }

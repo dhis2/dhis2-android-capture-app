@@ -596,6 +596,14 @@ class DataValueRepository(
                 isNumber = dataElement.valueType()!!.isNumeric
             }
 
+            val options = dataElement.optionSetUid()?.let {
+                d2.optionModule().options()
+                    .byOptionSetUid().eq(it)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .blockingGet()
+                    .map { option -> "${option.code()}_${option.displayName()}" }
+            } ?: emptyList()
+
             for (
                 categoryOptionCombo in categorOptionCombos
             ) {
@@ -615,14 +623,6 @@ class DataValueRepository(
                     dataSetTableModel.dataElement == dataElement.uid() &&
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
                 }?.value
-
-                val options = dataElement.optionSetUid()?.let {
-                    d2.optionModule().options()
-                        .byOptionSetUid().eq(it)
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet()
-                        .map { it.displayName() }
-                } ?: emptyList()
 
                 val fieldViewModel = fieldFactory.create(
                     dataElement.uid() + "_" + categoryOptionCombo.uid(),

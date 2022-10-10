@@ -186,14 +186,6 @@ class SearchTEList : FragmentGlobalAbstract() {
     @ExperimentalAnimationApi
     private fun configureCreateButton(createButton: ComposeView) {
         createButton.apply {
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
-                val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
-                    56.dp
-                } else {
-                    16.dp
-                }
-                setMargins(0, 0, 0, bottomMargin)
-            }
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
@@ -202,6 +194,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val createButtonVisibility by viewModel
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
+                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
+                        56.dp
+                    } else {
+                        16.dp
+                    }
+                    setMargins(0, 0, 0, bottomMargin)
+                }
                 if (createButtonVisibility && !filtersOpened) {
                     CreateNewButton(
                         modifier = Modifier,

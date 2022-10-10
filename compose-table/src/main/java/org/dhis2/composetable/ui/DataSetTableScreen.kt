@@ -31,20 +31,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
-import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun DataSetTableScreen(
-    tableData: List<TableModel>,
+    tableScreenState: TableScreenState,
     onCellClick: (tableId: String, TableCell) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
-    onSaveValue: (TableCell) -> Unit
+    onSaveValue: (TableCell, selectNext: Boolean) -> Unit
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -125,24 +125,11 @@ fun DataSetTableScreen(
         }
     }
 
-    var nextSelected by remember { mutableStateOf(false) }
-
     var saveClicked by remember { mutableStateOf(false) }
-
-    if (tableData.isNotEmpty() && nextSelected) {
-        (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-
-            val currentTable = tableData.first { it.id == cellSelected.tableId }
-            currentTable.getNextCell(cellSelected)?.let {
-                selectNextCell(it, cellSelected)
-            } ?: collapseBottomSheet(finish = true)
-        }
-        nextSelected = false
-    }
 
     if (saveClicked) {
         (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-            val currentTable = tableData.firstOrNull { it.id == cellSelected.tableId }
+            val currentTable = tableScreenState.tables.firstOrNull { it.id == cellSelected.tableId }
             currentTable?.tableErrorCell()?.let {
                 updateError(it)
                 saveClicked = false
@@ -153,7 +140,16 @@ fun DataSetTableScreen(
     BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
         collapseBottomSheet(finish = true)
     }
-
+    LaunchedEffect(tableScreenState) {
+        if (tableScreenState.selectNext) {
+            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+                val currentTable = tableScreenState.tables.first { it.id == cellSelected.tableId }
+                currentTable.getNextCell(cellSelected, false)?.let {
+                    selectNextCell(it, cellSelected)
+                } ?: collapseBottomSheet(finish = true)
+            }
+        }
+    }
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
@@ -179,12 +175,24 @@ fun DataSetTableScreen(
                 },
                 onSave = {
                     currentCell?.let {
-                        onSaveValue(it)
+                        onSaveValue(it, false)
                     }
                     saveClicked = true
                 },
                 onNextSelected = {
-                    nextSelected = true
+                    currentCell?.let { tableCell ->
+                        if (tableCell.error == null) {
+                            onSaveValue(tableCell, true)
+                        } else {
+                            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+                                val currentTable =
+                                    tableScreenState.tables.first { it.id == cellSelected.tableId }
+                                currentTable.getNextCell(cellSelected, true)?.let {
+                                    selectNextCell(it, cellSelected)
+                                } ?: collapseBottomSheet(finish = true)
+                            }
+                        }
+                    }
                 },
                 focusRequester = focusRequester
             )
@@ -196,7 +204,7 @@ fun DataSetTableScreen(
         )
     ) {
         AnimatedVisibility(
-            visible = tableData.isEmpty(),
+            visible = tableScreenState.tables.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -210,7 +218,7 @@ fun DataSetTableScreen(
             }
         }
         DataTable(
-            tableList = tableData,
+            tableList = tableScreenState.tables,
             editable = true,
             tableColors = tableColors,
             tableSelection = tableSelection,
@@ -226,7 +234,7 @@ fun DataSetTableScreen(
 
                 override fun onClick(tableCell: TableCell) {
                     currentCell?.takeIf { it != tableCell }?.let {
-                        onSaveValue(it)
+                        onSaveValue(it, false)
                     }
                     onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
                         currentCell = tableCell
