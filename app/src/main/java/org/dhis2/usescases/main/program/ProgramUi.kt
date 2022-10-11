@@ -213,7 +213,8 @@ fun StateIcon(state: State, onClick: () -> Unit) {
                 imageVector = when (state) {
                     State.TO_POST,
                     State.TO_UPDATE,
-                    State.UPLOADING -> ImageVector.vectorResource(id = R.drawable.ic_sync_problem_grey)
+                    State.UPLOADING ->
+                        ImageVector.vectorResource(id = R.drawable.ic_sync_problem_grey)
                     State.ERROR -> ImageVector.vectorResource(id = R.drawable.ic_sync_problem_red)
                     State.WARNING -> ImageVector.vectorResource(id = R.drawable.ic_sync_warning)
                     State.SENT_VIA_SMS,
