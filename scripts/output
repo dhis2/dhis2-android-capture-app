@@ -1,0 +1,5 @@
+commit 5cfe435418bf277a17358bfd33257014b06bda9b
+Author: Jaime Toca <jaime.toca.munoz@gmail.com>
+Date:   2022-10-10 14:44:12 +0200
+
+    fix: add dependency script (#2922)

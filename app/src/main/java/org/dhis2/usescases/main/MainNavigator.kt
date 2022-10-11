@@ -63,6 +63,7 @@ class MainNavigator(
         }
     }
 
+
     fun openPrograms() {
         val programFragment = ProgramFragment()
         val sharedView = if (isVisualizations()) {
