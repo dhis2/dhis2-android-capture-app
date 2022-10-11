@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
+import timber.log.Timber
 
 class SyncStatusController {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
@@ -12,11 +13,13 @@ class SyncStatusController {
     fun observeDownloadProcess(): LiveData<SyncStatusData> = downloadStatus
 
     fun initDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
+        Timber.tag("SYNC").d("INIT DATA SYNC")
         progressStatusMap = programDownload
         downloadStatus.postValue(SyncStatusData(true, false, progressStatusMap))
     }
 
     fun updateDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
+        Timber.tag("SYNC").d("Updating PROGRAM")
         progressStatusMap = progressStatusMap.toMutableMap().also {
             it.putAll(programDownload)
         }
@@ -26,6 +29,7 @@ class SyncStatusController {
     }
 
     fun finishSync() {
+        Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
             SyncStatusData(false, false, progressStatusMap)
@@ -46,6 +50,7 @@ class SyncStatusController {
     }
 
     fun finishDownloadingEvents(eventProgramUids: List<String>) {
+        Timber.tag("SYNC").d("FINISHED EVENTS")
         progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
             if (!eventProgramUids.contains(entry.key) || entry.value.isComplete) {
                 entry.value
@@ -59,6 +64,8 @@ class SyncStatusController {
     }
 
     fun finishDownloadingTracker(trackerProgramUids: List<String>) {
+        Timber.tag("SYNC").d("FINISHED TRACKER")
+
         progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
             if (!trackerProgramUids.contains(entry.key) || entry.value.isComplete) {
                 entry.value
@@ -85,6 +92,8 @@ class SyncStatusController {
     }
 
     fun initDownloadMedia() {
+        Timber.tag("SYNC").d("INIT FILES")
+
         downloadStatus.postValue(
             SyncStatusData(true, true, progressStatusMap)
         )

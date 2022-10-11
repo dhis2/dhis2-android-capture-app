@@ -3,6 +3,7 @@ package org.dhis2.usescases.main.program
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import java.util.concurrent.TimeUnit
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
@@ -34,7 +35,7 @@ class ProgramPresenter internal constructor(
         disposable.add(
             applyFiler
                 .switchMap {
-                    refreshData.startWith(Unit).flatMap {
+                    refreshData.debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io()).startWith(Unit).switchMap {
                         programRepository.homeItems(
                             syncStatusController.observeDownloadProcess().value!!
                         )
