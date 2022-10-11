@@ -168,7 +168,7 @@ class RelationshipPresenter internal constructor(
             } else {
                 view.showTeiWithoutEnrollmentError(
                     d2.trackedEntityModule()
-                        .trackedEntityTypes().uid(teiType).blockingGet()!!.displayName() ?: ""
+                        .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: ""
                 )
             }
         } else {
