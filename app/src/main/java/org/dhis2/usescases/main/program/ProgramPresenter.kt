@@ -35,7 +35,11 @@ class ProgramPresenter internal constructor(
         disposable.add(
             applyFiler
                 .switchMap {
-                    refreshData.debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io()).startWith(Unit).switchMap {
+                    refreshData.debounce(
+                        500,
+                        TimeUnit.MILLISECONDS,
+                        schedulerProvider.io()
+                    ).startWith(Unit).switchMap {
                         programRepository.homeItems(
                             syncStatusController.observeDownloadProcess().value!!
                         )
