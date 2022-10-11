@@ -97,7 +97,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             )
             setContent {
                 val items by presenter.programs().observeAsState(emptyList())
+                val state by presenter.downloadState().observeAsState()
                 ProgramList(
+                    downLoadState = state,
                     programs = items,
                     onItemClick = {
                         presenter.onItemClick(it)

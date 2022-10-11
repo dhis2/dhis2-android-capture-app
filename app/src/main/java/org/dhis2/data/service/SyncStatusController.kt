@@ -13,7 +13,7 @@ class SyncStatusController {
 
     fun initDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
         progressStatusMap = programDownload
-        downloadStatus.postValue(SyncStatusData(true, progressStatusMap))
+        downloadStatus.postValue(SyncStatusData(true, false, progressStatusMap))
     }
 
     fun updateDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
@@ -21,14 +21,14 @@ class SyncStatusController {
             it.putAll(programDownload)
         }
         downloadStatus.postValue(
-            SyncStatusData(true, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap)
         )
     }
 
     fun finishSync() {
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(false, progressStatusMap)
+            SyncStatusData(false, false, progressStatusMap)
         )
     }
 
@@ -41,7 +41,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap)
         )
     }
 
@@ -54,7 +54,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap)
         )
     }
 
@@ -67,7 +67,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap)
         )
     }
 
@@ -80,7 +80,13 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(false, progressStatusMap)
+            SyncStatusData(false, false, progressStatusMap)
+        )
+    }
+
+    fun initDownloadMedia() {
+        downloadStatus.postValue(
+            SyncStatusData(true, true, progressStatusMap)
         )
     }
 }

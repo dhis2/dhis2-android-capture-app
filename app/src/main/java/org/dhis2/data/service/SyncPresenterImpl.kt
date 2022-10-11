@@ -237,6 +237,7 @@ class SyncPresenterImpl(
 
     override fun downloadResources() {
         if (d2.systemInfoModule().versionManager().isGreaterThan(DHISVersion.V2_32)) {
+            syncStatusController.initDownloadMedia()
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
                     .byValueType().eq(FileResourceValueType.IMAGE)
