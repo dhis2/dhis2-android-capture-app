@@ -112,7 +112,7 @@ class GroupAnalyticsFragment : Fragment() {
     private fun setUpAdapter() {
         adapter.apply {
             onRelativePeriodCallback =
-                { chartModel: ChartModel, relativePeriod: RelativePeriod?, current: RelativePeriod? ->
+                { chartModel, relativePeriod, current ->
                     groupViewModel.trackAnalyticsPeriodFilter(mode)
                     relativePeriod?.let {
                         if (it.isNotCurrent()) {
@@ -238,7 +238,8 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
-                            binding?.analyticChipGroupContainer?.scrollToPosition(chip.tag as String)
+                            binding?.analyticChipGroupContainer
+                                ?.scrollToPosition(chip.tag as String)
                             binding?.progressLayout?.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
