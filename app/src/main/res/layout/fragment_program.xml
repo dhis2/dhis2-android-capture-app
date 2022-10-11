@@ -70,30 +70,13 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <RelativeLayout
-            android:id="@+id/progressLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter">
-
-            <ProgressBar
-                android:id="@+id/program_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerInParent="true"
-                android:layout_margin="5dp"
-                app:progressColor="@{@color/colorPrimary}" />
-        </RelativeLayout>
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/programList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressLayout" />
+            app:layout_constraintTop_toBottomOf="@id/filter" />
 
         <TextView
             android:id="@+id/emptyView"
@@ -104,7 +87,7 @@
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/progressLayout" />
+            app:layout_constraintTop_toBottomOf="@id/filter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

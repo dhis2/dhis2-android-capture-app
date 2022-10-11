@@ -109,8 +109,6 @@ public class SyncDataWorker extends Worker {
             isDataValue = false;
         }
 
-        presenter.finishSync();
-
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_resources),
@@ -139,6 +137,8 @@ public class SyncDataWorker extends Worker {
         cancelNotification();
 
         presenter.startPeriodicDataWork();
+
+        presenter.finishSync();
 
         return Result.success(createOutputData(true));
     }

@@ -53,11 +53,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     @Inject
     lateinit var animation: ProgramAnimation
 
-    private var hasToShowProgressLoading = true
-
     private val getActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            hasToShowProgressLoading = false
         }
 
     // -------------------------------------------
@@ -97,7 +94,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             )
             setContent {
                 val items by presenter.programs().observeAsState(emptyList())
+                val state by presenter.downloadState().observeAsState()
                 ProgramList(
+                    downLoadState = state,
                     programs = items,
                     onItemClick = {
                         presenter.onItemClick(it)
@@ -129,15 +128,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     //endregion
 
     override fun swapProgramModelData(programs: List<ProgramViewModel>) {
-        binding.progressLayout.visibility = View.GONE
         binding.emptyView.visibility = if (programs.isEmpty()) View.VISIBLE else View.GONE
-        if (!hasToShowProgressLoading) hasToShowProgressLoading = true
     }
 
     override fun showFilterProgress() {
-        if (hasToShowProgressLoading) {
-            binding.progressLayout.visibility = View.VISIBLE
-        }
         Bindings.setViewVisibility(
             binding.clearFilter,
             FilterManager.getInstance().totalFilters > 0
