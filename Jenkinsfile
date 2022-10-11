@@ -13,11 +13,12 @@ pipeline {
             steps {
                 script {
                     echo 'Running Ktlint'
-                    sh './gradlew ktlintCheck'
+                    sh 'env'
+                    //sh './gradlew ktlintCheck'
                 }
             }
         }
-        stage('Unit tests') {
+    /*    stage('Unit tests') {
             environment {
                 ANDROID_HOME = '/opt/android-sdk'
             }
@@ -66,7 +67,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
     }
     post {
         success {
@@ -84,7 +85,8 @@ def custom_msg(){
   def JOB_NAME = env.JOB_NAME
   def BUILD_ID = env.BUILD_ID
   def BRANCH_NAME = "bs_migration"
-  def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
+  def GIT_AUTHOR = env.GIT_AUTHOR_NAME
+  def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Author:*$GIT_AUTHOR\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
   return JENKINS_LOG
 }
 
