@@ -324,7 +324,8 @@ fun DownloadMedia() {
                     contentDescription = ""
                 )
                 Text(
-                    modifier = Modifier.weight(1f), text = "Downloading media...",
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.downloading_image_resources),
                     style = LocalTextStyle.current.copy(
                         color = Color.Black.copy(alpha = 0.87f),
                         fontFamily = FontFamily(Font(R.font.rubik_regular))
