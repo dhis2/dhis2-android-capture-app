@@ -81,6 +81,7 @@ pipeline {
 
 def custom_msg(){
   /* custom slack message */
+  // Test
   def BUILD_URL= env.BUILD_URL
   def JOB_NAME = env.JOB_NAME
   def BUILD_ID = env.BUILD_ID
