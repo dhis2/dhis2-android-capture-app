@@ -30,9 +30,9 @@ pipeline {
         }
         stage('Sonnarqube') {
             environment {
-                BITRISE_GIT_BRANCH = env.GIT_BRANCH
+                BITRISE_GIT_BRANCH = "$env.GIT_BRANCH"
                 BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
-                BITRISE_PULL_REQUEST = env.CHANGE_ID
+                BITRISE_PULL_REQUEST = "$env.CHANGE_ID"
                 SONAR_TOKEN = credentials('android-sonarcloud-token')
             }
             steps {
