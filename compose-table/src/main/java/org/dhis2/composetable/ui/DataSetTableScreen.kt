@@ -130,7 +130,7 @@ fun DataSetTableScreen(
     if (saveClicked) {
         (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
             val currentTable = tableScreenState.tables.firstOrNull { it.id == cellSelected.tableId }
-            currentTable?.tableErrorCell()?.let {
+            currentTable?.cellHasError(cellSelected)?.let {
                 updateError(it)
                 saveClicked = false
             }
