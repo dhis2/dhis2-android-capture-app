@@ -30,13 +30,15 @@ pipeline {
         }
         stage('Sonnarqube') {
             environment {
-                BITRISE_GIT_BRANCH = "bs_migration"
-                BITRISEIO_GIT_BRANCH_DEST = "bs_migration"
+                BITRISE_GIT_BRANCH = env.GIT_BRANCH
+                BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
+                BITRISE_PULL_REQUEST = env.CHANGE_ID
                 SONAR_TOKEN = credentials('android-sonarcloud-token')
             }
             steps {
                 script {
                     echo 'Running sonnarqube'
+                    sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
                     sh './gradlew sonarqube'
                 }
             }
@@ -83,7 +85,7 @@ def custom_msg(){
   def BUILD_URL= env.BUILD_URL
   def JOB_NAME = env.JOB_NAME
   def BUILD_ID = env.BUILD_ID
-  def BRANCH_NAME = "bs_migration"
+  def BRANCH_NAME = env.GIT_BRANCH
   def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
   return JENKINS_LOG
 }
