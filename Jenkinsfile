@@ -80,6 +80,7 @@ pipeline {
 }
 
 def custom_msg(){
+  // this is a comment
   def BUILD_URL= env.BUILD_URL
   def JOB_NAME = env.JOB_NAME
   def BUILD_ID = env.BUILD_ID
