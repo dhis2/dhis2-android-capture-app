@@ -38,7 +38,9 @@ pipeline {
             steps {
                 script {
                     echo 'Running sonnarqube'
+                    sh 'echo $BITRISE_GIT_BRANCH'
                     sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
+                    sh 'echo $BITRISE_PULL_REQUEST'
                     sh './gradlew sonarqube'
                 }
             }
