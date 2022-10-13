@@ -122,6 +122,7 @@
                     android:singleLine="true"
                     android:textSize="@dimen/form_edit_text_size"
                     app:action_handler="@{item}"
+                    app:setLongCLickToClipboard="@{item}"
                     app:input_style="@{item}"
                     app:requestFocus="@{item.focused}"
                     app:view_edition="@{item.editable}"

@@ -132,6 +132,7 @@
                         app:textWatcher="@{textWatcher}"
                         android:textAlignment="textStart"
                         android:textSize="@dimen/form_edit_text_size"
+                        app:setLongCLickToClipboard="@{item}"
                         app:input_style="@{item}"
                         app:requestFocus="@{item.focused}"
                         app:setFilters="@{item.valueType}"
