@@ -486,8 +486,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
             SmsSendingService.State.ERROR,
             SmsSendingService.State.COMPLETED -> {
+                presenter.restartSmsSender()
                 if (lastState.state == SmsSendingService.State.COMPLETED) {
-                    presenter.restartSmsSender()
                     updateState(State.SENT_VIA_SMS)
                 }
             }
