@@ -54,11 +54,8 @@ data class TableModel(
         }
     }
 
-    fun tableErrorCell(): TableCell? =
-        tableRows.map { row ->
-            row.values.filter { it.value.error != null }
-                .values.firstOrNull()
-        }.firstOrNull()
+    fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
+        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
 
     fun hasCellWithId(cellId: String?): Boolean {
         return tableRows.any { row ->
