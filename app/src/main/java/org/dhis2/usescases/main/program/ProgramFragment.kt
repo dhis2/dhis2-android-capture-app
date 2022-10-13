@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -136,16 +135,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             binding.clearFilter,
             FilterManager.getInstance().totalFilters > 0
         )
-    }
-
-    override fun renderError(message: String) {
-        if (isAdded && activity != null) {
-            AlertDialog.Builder(requireActivity())
-                .setPositiveButton(getString(R.string.button_ok), null)
-                .setTitle(getString(R.string.error))
-                .setMessage(message)
-                .show()
-        }
     }
 
     override fun openOrgUnitTreeSelector() {
