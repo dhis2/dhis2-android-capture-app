@@ -705,6 +705,8 @@ class FormView : Fragment() {
     }
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
+        viewModel.clearFocus()
+        onEditionFinish()
         onActivityForResult?.invoke()
         val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
             when (it) {
@@ -782,6 +784,8 @@ class FormView : Fragment() {
     }
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
+        viewModel.clearFocus()
+        onEditionFinish()
         QRDetailBottomDialog(
             event.value,
             event.renderingType,
