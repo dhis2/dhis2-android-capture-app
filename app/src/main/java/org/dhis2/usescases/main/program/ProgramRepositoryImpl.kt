@@ -25,6 +25,7 @@ internal class ProgramRepositoryImpl(
 
     private val programViewModelMapper = ProgramViewModelMapper(resourceManager)
     private var lastSyncStatus: SyncStatusData? = null
+    private var baseProgramCache: List<ProgramViewModel> = emptyList()
 
     override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
         return programModels(syncStatusData).onErrorReturn { arrayListOf() }
@@ -73,8 +74,10 @@ internal class ProgramRepositoryImpl(
 
     override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
         return Flowable.fromCallable {
-            basePrograms()
-                .applyFilters()
+            baseProgramCache.ifEmpty {
+                baseProgramCache = basePrograms()
+                baseProgramCache
+            }.applyFilters()
                 .applySync(syncStatusData)
         }
     }

@@ -252,11 +252,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList(false);
+        FilterManager.getInstance().clearWorkingList(true);
         FilterManager.getInstance().clearSorting();
         FilterManager.getInstance().clearAssignToMe();
         FilterManager.getInstance().clearFollowUp();
-
         presenter.clearOtherFiltersIfWebAppIsConfig();
 
         super.onDestroy();
