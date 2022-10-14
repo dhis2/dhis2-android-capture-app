@@ -41,9 +41,7 @@ fun TextInputLayout.setErrorMessage(errorMessage: String?, warningMessage: Strin
 
 @BindingAdapter("action_handler")
 fun TextInputEditText.setActionHandler(model: FieldUiModel) {
-    isEnabled = model.editable
-    isFocusable = true
-    isClickable = model.editable
+    isFocusable = model.editable
 
     setOnTouchListener { v, event ->
         if (MotionEvent.ACTION_UP == event.action) model.onItemClick()

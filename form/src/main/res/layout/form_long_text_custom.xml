@@ -124,7 +124,8 @@
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:enabled="@{item.editable}"
+                    android:focusable="@{item.editable}"
+                    android:focusableInTouchMode="@{item.editable}"
                     android:gravity="start"
                     android:hint='@{item.hint}'
                     app:onTyping="@{item}"
