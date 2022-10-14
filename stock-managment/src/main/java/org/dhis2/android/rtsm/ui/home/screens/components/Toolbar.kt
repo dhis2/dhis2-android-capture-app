@@ -48,7 +48,6 @@ fun Toolbar(
     hasDestinationSelected: Boolean?
 ) {
     val scope = rememberCoroutineScope()
-
     TopAppBar(
         title = {
             Column(
