@@ -28,6 +28,7 @@ import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
+import org.dhis2.android.rtsm.ui.home.screens.components.MainContent
 import org.dhis2.android.rtsm.ui.managestock.ManageStockActivity
 import org.dhis2.android.rtsm.utils.NetworkUtils
 
