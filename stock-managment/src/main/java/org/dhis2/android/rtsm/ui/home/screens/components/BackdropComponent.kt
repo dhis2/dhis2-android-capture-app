@@ -34,7 +34,7 @@ fun Backdrop(
     var hasFacilitySelected by remember { mutableStateOf(false) }
     var hasDestinationSelected by remember { mutableStateOf<Boolean?>(null) }
     var toolbarTitle by remember {
-         mutableStateOf(TransactionType.DISTRIBUTION.name)
+        mutableStateOf(TransactionType.DISTRIBUTION.name)
     }
     var dpHeight by remember { mutableStateOf<Dp?>(0.dp) }
 
@@ -54,7 +54,7 @@ fun Backdrop(
                 hasFacilitySelected,
                 hasDestinationSelected
             )
-            toolbarTitle =  viewModel.toolbarTitle.collectAsState().value.name
+            toolbarTitle = viewModel.toolbarTitle.collectAsState().value.name
         },
         backLayerBackgroundColor = themeColor,
         backLayerContent = {
@@ -71,16 +71,17 @@ fun Backdrop(
         scaffoldState = backdropState,
         gesturesEnabled = false,
         frontLayerScrimColor = if (toolbarTitle == TransactionType.DISTRIBUTION.name) {
-            if (hasFacilitySelected && hasDestinationSelected == true)
+            if (hasFacilitySelected && hasDestinationSelected == true) {
                 Color.Unspecified
-            else
+            } else {
                 MaterialTheme.colors.surface.copy(alpha = 0.60f)
-
+            }
         } else {
-            if (!hasFacilitySelected)
+            if (!hasFacilitySelected) {
                 MaterialTheme.colors.surface.copy(alpha = 0.60f)
-            else
+            } else {
                 Color.Unspecified
+            }
         }
     )
 }

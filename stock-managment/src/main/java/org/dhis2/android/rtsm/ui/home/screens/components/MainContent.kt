@@ -37,14 +37,14 @@ fun MainContent(dpHeight: Dp, backdropState: BackdropScaffoldState, toolbartitle
             onClick = {
                 scope.launch { backdropState.conceal() }
             },
-            modifier =Modifier
+            modifier = Modifier
                 .alpha(commentsAlpha)
                 .padding(8.dp)
         ) {
             Icon(resource, contentDescription = null, tint = MaterialTheme.colors.primary)
         }
     }
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
