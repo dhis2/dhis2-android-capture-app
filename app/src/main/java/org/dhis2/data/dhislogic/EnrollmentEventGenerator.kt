@@ -5,7 +5,9 @@ import java.util.Date
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.ProgramStage
+import timber.log.Timber
 
 class EnrollmentEventGenerator(
     private val generatorRepository: EnrollmentEventGeneratorRepository
@@ -70,31 +72,35 @@ class EnrollmentEventGenerator(
         programStage: ProgramStage,
         dateToUse: () -> Date?
     ) {
-        val eventUid = generatorRepository.addEvent(
-            enrollment.uid(),
-            enrollment.program()!!,
-            programStage.uid(),
-            enrollment.organisationUnit()!!
-        )
+        try {
+            val eventUid = generatorRepository.addEvent(
+                enrollment.uid(),
+                enrollment.program()!!,
+                programStage.uid(),
+                enrollment.organisationUnit()!!
+            )
 
-        val hideDueDate = programStage.hideDueDate() ?: false
-        val periodType = programStage.periodType()
-        val minDaysFromStart = programStage.minDaysFromStart() ?: 0
-        val calendar = DateUtils.getInstance().calendar
+            val hideDueDate = programStage.hideDueDate() ?: false
+            val periodType = programStage.periodType()
+            val minDaysFromStart = programStage.minDaysFromStart() ?: 0
+            val calendar = DateUtils.getInstance().calendar
 
-        val now = Calendar.getInstance().time
-        dateToUse()?.let { date -> calendar.time = date }
+            val now = Calendar.getInstance().time
+            dateToUse()?.let { date -> calendar.time = date }
 
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        calendar.add(Calendar.DATE, minDaysFromStart)
-        var eventDate = calendar.time
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            calendar.add(Calendar.DATE, minDaysFromStart)
+            var eventDate = calendar.time
 
-        periodType?.let { eventDate = generatorRepository.periodStartingDate(it, eventDate) }
+            periodType?.let { eventDate = generatorRepository.periodStartingDate(it, eventDate) }
 
-        val isSchedule = eventDate.after(now) && !hideDueDate
-        generatorRepository.setEventDate(eventUid, isSchedule, eventDate)
+            val isSchedule = eventDate.after(now) && !hideDueDate
+            generatorRepository.setEventDate(eventUid, isSchedule, eventDate)
+        } catch (d2Error: D2Error) {
+            Timber.e(d2Error)
+        }
     }
 }

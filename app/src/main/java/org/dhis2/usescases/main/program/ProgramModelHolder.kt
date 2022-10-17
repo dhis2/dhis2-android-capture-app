@@ -1,13 +1,23 @@
 package org.dhis2.usescases.main.program
 
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIcon
+import org.dhis2.commons.ui.MetadataIconData
 import org.dhis2.databinding.ItemProgramModelBinding
 
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
     RecyclerView.ViewHolder(binding.root) {
+
+    init {
+        binding.composeProgramImage.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     fun bind(presenter: ProgramPresenter, programViewModel: ProgramViewModel) {
         binding.program = programViewModel
@@ -16,28 +26,29 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         val color = ColorUtils.getColorFrom(
             programViewModel.color(),
             ColorUtils.getPrimaryColor(
-                binding.programImage.context,
+                itemView.context,
                 ColorUtils.ColorType.PRIMARY_LIGHT
             )
         )
 
-        binding.programImage.background = ColorUtils.tintDrawableWithColor(
-            binding.programImage.background,
-            color
+        val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
+            programViewModel.icon(),
+            R.drawable.ic_default_outline
         )
 
-        binding.programImage.setImageResource(
-            ResourceManager(itemView.context).getObjectStyleDrawableResource(
-                programViewModel.icon(),
-                R.drawable.ic_default_outline
-            )
-        )
+        binding.composeProgramImage.setContent {
+            MdcTheme {
+                MetadataIcon(
+                    MetadataIconData(
+                        programColor = color,
+                        iconResource = iconResource
+                    )
+                )
+            }
+        }
 
-        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color))
-
-        itemView.setOnClickListener { v ->
-            val programTheme = ColorUtils.getThemeFromColor(programViewModel.color())
-            presenter.onItemClick(programViewModel, programTheme)
+        itemView.setOnClickListener {
+            presenter.onItemClick(programViewModel)
         }
 
         binding.root.alpha = if (programViewModel.translucent()) {

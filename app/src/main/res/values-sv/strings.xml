@@ -140,9 +140,6 @@
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Välj plats</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minut</string>
     <string name="fifteen_minute">15 minuter</string>
@@ -180,7 +177,6 @@
     <string name="enroll_in">Registreras %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriska fält saknas</string>
     <string name="missing_mandatory_fields_text">Några obligatoriska fält saknas. Om du vill gå tillbaka nu raderas alla sparade uppgifter.</string>
-    <string name="missing_mandatory_fields_events">Några obligatoriska fält saknas. Du kan gå tillbaka nu, men den här händelsen kommer inte att kunna slutföras</string>
     <string name="missing_mandatory_fields_go_back">Ta bort och gå tillbaka</string>
     <!--EVENT SUMMARY-->
     <string name="section_list">Sektion lista</string>

@@ -2,6 +2,7 @@ package org.dhis2.data.forms;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.form.data.RulesRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.rules.RuleEngine;

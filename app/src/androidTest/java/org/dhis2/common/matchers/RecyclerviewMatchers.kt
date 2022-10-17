@@ -3,8 +3,10 @@ package org.dhis2.common.matchers
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.NonNull
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
+import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -47,7 +49,11 @@ class RecyclerviewMatchers {
                 }
 
                 override fun matchesSafely(view: RecyclerView): Boolean {
-                    val adapter = view.adapter
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
+                        (view.adapter as ConcatAdapter).adapters[1] as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    }else{
+                        view.adapter!!
+                    }
                     for (position in 0 until adapter!!.itemCount) {
                         val type = adapter.getItemViewType(position)
                         val holder = adapter.createViewHolder(view, type)
@@ -68,7 +74,11 @@ class RecyclerviewMatchers {
                     matcher.describeTo(description)
                 }
                 override fun matchesSafely(view: RecyclerView): Boolean {
-                    val adapter = view.adapter
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
+                        (view.adapter as ConcatAdapter).adapters[1] as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    }else{
+                        view.adapter!!
+                    }
                     for (position in 0 until adapter!!.itemCount) {
                         val type = adapter.getItemViewType(position)
                         val holder = adapter.createViewHolder(view, type)
@@ -87,7 +97,11 @@ class RecyclerviewMatchers {
                     matcher.describeTo(description)
                 }
                 override fun matchesSafely(view: RecyclerView): Boolean {
-                    val adapter = view.adapter
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
+                        (view.adapter as ConcatAdapter).adapters[1] as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    }else{
+                        view.adapter!!
+                    }
                     for (position in 0 until adapter!!.itemCount) {
                         val type = adapter.getItemViewType(position)
                         val holder = adapter.createViewHolder(view, type)
@@ -107,8 +121,12 @@ class RecyclerviewMatchers {
                     description.appendText("all elements have dates between $startDate and $endDate : ")
                 }
                 override fun matchesSafely(view: RecyclerView): Boolean {
-                    val adapter = view.adapter
-                    for (position in 0 until adapter!!.itemCount) {
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
+                        (view.adapter as ConcatAdapter).adapters[1] as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    }else{
+                        view.adapter!!
+                    }
+                    for (position in 0 until adapter.itemCount) {
                         val type = adapter.getItemViewType(position)
                         val holder = adapter.createViewHolder(view, type)
                         adapter.onBindViewHolder(holder, position)
@@ -121,6 +139,27 @@ class RecyclerviewMatchers {
                         val formatter = SimpleDateFormat("yyyy-MM-dd")
                         val parsedDate = formatter.format(initialFormattedDate)
                         if (Date.valueOf(parsedDate) !in range) return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        fun hasNoMoreResultsInProgram():Matcher<View>{
+            return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
+                override fun describeTo(description: Description) {
+                    description.appendText("result element is no more items message")
+                }
+                override fun matchesSafely(view: RecyclerView): Boolean {
+                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
+                        (view.adapter as ConcatAdapter).adapters[3] as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                    }else{
+                        view.adapter!!
+                    }
+                    for (position in 0 until adapter.itemCount) {
+                        val typeOrdinal = adapter.getItemViewType(position)
+                        val resultType = SearchResult.SearchResultType.values()[typeOrdinal]
+                        if (resultType != SearchResult.SearchResultType.NO_MORE_RESULTS) return false
                     }
                     return true
                 }

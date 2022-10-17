@@ -9,8 +9,11 @@ import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+import kotlin.Unit;
+import kotlinx.coroutines.flow.Flow;
 
-@PerActivity
 @Module
 public class DataSetTableModule {
 
@@ -33,8 +36,9 @@ public class DataSetTableModule {
     DataSetTableContract.Presenter providesPresenter(
             DataSetTableRepositoryImpl dataSetTableRepository,
             SchedulerProvider schedulerProvider,
-            AnalyticsHelper analyticsHelper) {
-        return new DataSetTablePresenter(view, dataSetTableRepository, schedulerProvider, analyticsHelper);
+            AnalyticsHelper analyticsHelper,
+            FlowableProcessor<Unit> updateProcessor) {
+        return new DataSetTablePresenter(view, dataSetTableRepository, schedulerProvider, analyticsHelper, updateProcessor);
     }
 
     @Provides
@@ -47,6 +51,12 @@ public class DataSetTableModule {
     @PerActivity
     DataSetInitialRepository DataSetInitialRepository(D2 d2) {
         return new DataSetInitialRepositoryImpl(d2, dataSetUid);
+    }
+
+    @Provides
+    @PerActivity
+    FlowableProcessor<Unit> updateProcessor(){
+        return PublishProcessor.create();
     }
 
 }

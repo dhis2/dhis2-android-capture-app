@@ -7,7 +7,7 @@
     <item
         android:id="@+id/deleteTei"
         android:icon="@drawable/ic_delete"
-        android:title="@string/dashboard_menu_delete_tei" />
+        android:title="@string/dashboard_menu_delete_tei_v2" />
     <item
         android:id="@+id/programSelector"
         android:icon="@drawable/ic_program_border"

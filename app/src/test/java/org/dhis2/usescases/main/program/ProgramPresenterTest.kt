@@ -9,9 +9,8 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.utils.Constants.PROGRAM_THEME
+import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -24,7 +23,7 @@ class ProgramPresenterTest {
     private val view: ProgramView = mock()
     private val programRepository: ProgramRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
-    private val preferences: PreferenceProvider = mock()
+    private val themeManager: ThemeManager = mock()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
@@ -34,7 +33,7 @@ class ProgramPresenterTest {
             view,
             programRepository,
             schedulers,
-            preferences,
+            themeManager,
             filterManager,
             matomoAnalyticsController
         )
@@ -96,20 +95,20 @@ class ProgramPresenterTest {
     fun `Should navigate to program clicked and save program's theme setting if it has a theme`() {
         val programViewModel = programViewModel()
 
-        presenter.onItemClick(programViewModel, 1)
+        presenter.onItemClick(programViewModel)
 
-        verify(preferences).setValue(PROGRAM_THEME, 1)
+        verify(themeManager).setProgramTheme(programViewModel.id())
         verify(view).navigateTo(programViewModel)
     }
 
     @Test
-    fun `Should navigate to program clicked and remove theme setting if it doesn't has a theme`() {
-        val programViewModel = programViewModel()
+    fun `Should navigate to dataSet clicked and save program's theme setting if it has a theme`() {
+        val dataSetViewModel = dataSetViewModel()
 
-        presenter.onItemClick(programViewModel, -1)
+        presenter.onItemClick(dataSetViewModel)
 
-        verify(preferences).removeValue(PROGRAM_THEME)
-        verify(view).navigateTo(programViewModel)
+        verify(themeManager).setDataSetTheme(dataSetViewModel.id())
+        verify(view).navigateTo(dataSetViewModel)
     }
 
     @Test
@@ -171,6 +170,24 @@ class ProgramPresenterTest {
             "type",
             "typeName",
             "programType",
+            "description",
+            onlyEnrollOnce = true,
+            accessDataWrite = true,
+            state = "Synced",
+            hasOverdueEvent = false
+        )
+    }
+
+    private fun dataSetViewModel(): ProgramViewModel {
+        return ProgramViewModel.create(
+            "uid",
+            "displayName",
+            "#ffcdd2",
+            "icon",
+            1,
+            "type",
+            "typeName",
+            "",
             "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,

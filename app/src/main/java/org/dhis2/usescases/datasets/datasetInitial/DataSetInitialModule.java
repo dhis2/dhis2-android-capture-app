@@ -10,7 +10,6 @@ import dagger.Provides;
 /**
  * QUADRAM. Created by ppajuelo on 24/09/2018.
  */
-@PerActivity
 @Module
 public class DataSetInitialModule {
     private final String dataSetUid;

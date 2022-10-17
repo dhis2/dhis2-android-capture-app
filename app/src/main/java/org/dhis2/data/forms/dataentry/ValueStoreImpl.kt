@@ -5,6 +5,7 @@ import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.Bindings.toDate
 import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.model.EnrollmentDetail
@@ -13,6 +14,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.reporting.CrashReportController
+import org.dhis2.utils.reporting.CrashReportControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -26,9 +28,12 @@ class ValueStoreImpl(
     private val recordUid: String,
     private val entryMode: DataEntryStore.EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
-    private val crashReportController: CrashReportController
+    private val crashReportController: CrashReportController,
+    private val networkUtils: NetworkUtils,
+    private val searchTEIRepository: SearchTEIRepository
 ) : ValueStore, FormValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
+    var overrideProgramUid: String? = null
 
     constructor(
         d2: D2,
@@ -36,15 +41,23 @@ class ValueStoreImpl(
         entryMode: DataEntryStore.EntryMode,
         dhisEnrollmentUtils: DhisEnrollmentUtils,
         enrollmentRepository: EnrollmentObjectRepository,
-        crashReportController: CrashReportController
+        crashReportController: CrashReportController,
+        networkUtils: NetworkUtils,
+        searchTEIRepository: SearchTEIRepository
     ) : this(
         d2,
         recordUid,
         entryMode,
         dhisEnrollmentUtils,
-        crashReportController
+        crashReportController,
+        networkUtils,
+        searchTEIRepository
     ) {
         this.enrollmentRepository = enrollmentRepository
+    }
+
+    override fun overrideProgram(programUid: String?) {
+        overrideProgramUid = programUid
     }
 
     override fun save(uid: String, value: String?): Flowable<StoreResult> {
@@ -60,20 +73,20 @@ class ValueStoreImpl(
 
     override fun save(dataValue: DataSetTableModel): Flowable<StoreResult> {
         val dataValueObject = d2.dataValueModule().dataValues().value(
-            dataValue.period(),
-            dataValue.organisationUnit(),
-            dataValue.dataElement(),
-            dataValue.categoryOptionCombo(),
-            dataValue.attributeOptionCombo()
+            dataValue.period,
+            dataValue.organisationUnit,
+            dataValue.dataElement,
+            dataValue.categoryOptionCombo,
+            dataValue.attributeOptionCombo
         )
 
-        return if (!dataValue.value().isNullOrEmpty()) {
+        return if (!dataValue.value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
-                dataValueObject.blockingGet().value() == dataValue.value()
+                dataValueObject.blockingGet().value() == dataValue.value
             ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
-                dataValueObject.set(dataValue.value())
+                dataValueObject.set(dataValue.value)
                     .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
             }
         } else {
@@ -126,7 +139,14 @@ class ValueStoreImpl(
         }
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue)
+                valueRepository.blockingSetCheck(d2, uid, newValue) { _attrUid, _value ->
+                    val crashController = CrashReportControllerImpl()
+                    crashController.addBreadCrumb(
+                        "blockingSetCheck Crash",
+                        "Attribute: $_attrUid," +
+                            "" + " value: $_value"
+                    )
+                }
             } else {
                 valueRepository.blockingDeleteIfExist()
             }
@@ -168,7 +188,12 @@ class ValueStoreImpl(
     }
 
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        return if (!networkUtils.isOnline()) {
+            dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
+        } else {
+            val programUid = overrideProgramUid ?: enrollmentRepository?.blockingGet()?.program()
+            searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid)
+        }
     }
 
     private fun saveFileResource(path: String): String {

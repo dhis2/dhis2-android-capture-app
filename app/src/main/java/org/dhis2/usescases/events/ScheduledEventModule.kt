@@ -7,7 +7,6 @@ import org.dhis2.data.dhislogic.DhisEventUtils
 import org.hisp.dhis.android.core.D2
 
 @Module
-@PerActivity
 class ScheduledEventModule(val eventUid: String, val view: ScheduledEventContract.View) {
 
     @Provides

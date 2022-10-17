@@ -7,11 +7,11 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertEquals
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
+import org.dhis2.maps.geometry.point.MapPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -34,7 +34,8 @@ class MapGeometryToFeatureTest {
 
     @Before
     fun setup() {
-        mapGeometryToFeature = MapGeometryToFeature(pointMapper, polygonMapper)
+        mapGeometryToFeature =
+            MapGeometryToFeature(pointMapper, polygonMapper)
     }
 
     @Test

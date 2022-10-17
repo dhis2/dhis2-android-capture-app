@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="ruleValidation"
+            type="org.dhis2.usescases.development.RuleValidation" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary"
+        android:paddingHorizontal="@dimen/padding_16"
+        android:paddingVertical="@dimen/padding_8">
+
+        <TextView
+            android:id="@+id/item_title"
+            style="@style/TextPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{ruleValidation.title()}"
+            android:textColor="?primaryBgTextColor"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Program" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

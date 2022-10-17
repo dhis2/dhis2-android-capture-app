@@ -107,6 +107,9 @@ public class OrgUnitDialog extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
+        if(title == null){
+            title = getString(R.string.enrollment_org_unit);
+        }
     }
 
     @NonNull

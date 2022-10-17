@@ -34,7 +34,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/failed_check_box"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_feedback" />
+            tools:listitem="@layout/item_feedback"
+            android:paddingBottom="72dp"
+            android:clipToPadding="false"/>
 
         <TextView
             android:id="@+id/msg_feedback"

@@ -12,6 +12,12 @@ class GraphToRadarData {
 
     fun map(graph: Graph, serieToHighlight: String? = null): RadarData {
         return RadarData().apply {
+            if (graph.series.isEmpty()) {
+                val radarEntries = ArrayList<RadarEntry>()
+                radarEntries.add(RadarEntry(0f, 0.0f))
+                val radarDataSet = RadarDataSet(radarEntries, "")
+                addDataSet(radarDataSet)
+            }
             graph.series.forEachIndexed { index: Int, serie: SerieData ->
                 val radarEntry = graph.categories.mapIndexed { categoryIndex, categoryLabel ->
                     val point = serie.coordinates.find { it.position == categoryIndex.toFloat() }

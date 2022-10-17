@@ -3,6 +3,7 @@ package org.dhis2.form.ui.validation
 import android.content.Context
 import org.dhis2.form.R
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
+import org.hisp.dhis.android.core.common.valuetype.validation.failures.CoordinateFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.EmailFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerNegativeFailure
@@ -32,7 +33,13 @@ class FieldErrorMessageProvider(private val context: Context) {
             is IntegerFailure -> getIntegerError(error)
             is NumberFailure -> getNumberError(error)
             is FieldMaskFailure -> getFieldMaskError(error)
+            is CoordinateFailure -> getCoordinateError(error)
             else -> R.string.invalid_field
+        }
+
+    private fun getCoordinateError(error: CoordinateFailure) =
+        when (error) {
+            CoordinateFailure.CoordinateMalformedException -> R.string.wrong_pattern
         }
 
     private fun getFieldMaskError(error: FieldMaskFailure) =
@@ -104,4 +111,8 @@ class FieldErrorMessageProvider(private val context: Context) {
             NumberFailure.NumberFormatException -> R.string.formatting_error
             NumberFailure.ScientificNotationException -> R.string.formatting_error
         }
+
+    fun mandatoryWarning(): String {
+        return context.getString(R.string.field_is_mandatory)
+    }
 }

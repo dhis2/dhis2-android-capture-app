@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="FieldLabel">
         <item name="android:textSize">@dimen/field_label_size</item>
         <item name="android:layout_marginStart">16dp</item>
@@ -12,10 +13,20 @@
         <item name="android:textColor">@color/placeholder</item>
     </style>
 
-    <style name="loginInputText"><!--parent="TextAppearance.AppCompat"-->
+    <style name="formInputText"><!--parent="TextAppearance.AppCompat"-->
         <item name="android:textColorHint">@color/textSecondary</item>
         <item name="colorControlNormal">@color/textPrimary</item>
         <item name="android:textColor">@color/textPrimary</item>
         <item name="colorControlActivated">?colorPrimary</item>
+    </style>
+
+    <style name="dataInputTextAccent" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
+
+    <style name="searchFormInputText" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorControlActivated">?colorAccent</item>
     </style>
 </resources>

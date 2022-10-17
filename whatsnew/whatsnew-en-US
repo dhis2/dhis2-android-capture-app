@@ -1,8 +1,8 @@
 This is a patch version that fixes:
-- ANDROAPP-4544 Sync re-start if it takes more than 10 minutes
-- ANDROAPP-4260 App is selecting the wrong image for the profile picture
-- ANDROAPP-4383 App does not mark TEI with error when failing to upload image
-- ANDROAPP-4430 Display correct error message for wrong configured server in login
-- Fixed several crashes related to navigation and maps
+- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
+- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
+- [ANDROAPP-4814] Infinite login with wrong url/username/password
+- [ANDROAPP-4795] SMS Sync Unable to Send
 ....
+General system stability improvements to enhance the user's experience.
 You can find all the details on Jira and Github.

@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.date.Period;

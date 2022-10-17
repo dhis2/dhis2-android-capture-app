@@ -29,10 +29,10 @@ class TestingDatabase : BaseTest() {
 
         /* Download db */
         val d2 = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(ApplicationProvider.getApplicationContext<AppTest>()))
-        d2.userModule()
-            .logIn(username, password, url)
-            .blockingGet()
-        d2.metadataModule().blockingDownload()
+        d2?.userModule()
+            ?.logIn(username, password, url)
+            ?.blockingGet()
+        d2?.metadataModule()?.blockingDownload()
 
         /* Export Db to sdcard */
         try {

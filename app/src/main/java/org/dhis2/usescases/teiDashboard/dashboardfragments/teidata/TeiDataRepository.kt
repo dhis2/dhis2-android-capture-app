@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
+import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.filters.sorting.SortingItem
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="LoginButton" parent="Widget.MaterialComponents.Button">
+        <item name="fontFamily">@font/rubik_regular</item>
+        <item name="fontWeight">500</item>
         <item name="android:textSize">12sp</item>
         <item name="background">@color/login_bg_selector</item>
         <item name="android:textColor">@color/login_text_color_selector</item>
