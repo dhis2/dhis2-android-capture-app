@@ -172,6 +172,13 @@ android {
             versionCode 11
             versionName "2.5.2-psi-fork-1"
         }
+
+        spOCC {
+            applicationId "org.samaritan.cpr"
+            dimension "default"
+            versionCode versions.vCode
+            versionName "2.5.2-spOCC-fork-1"
+        }
     }
 
     applicationVariants.all { variant ->
