@@ -9,6 +9,7 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import androidx.core.app.ActivityCompat
 
 class LocationProviderImpl(val context: Context) : LocationProvider {
@@ -59,12 +60,24 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     @SuppressLint("MissingPermission")
     private fun requestLocationUpdates(onNewLocation: (Location) -> Unit) {
         if (hasPermission()) {
-            locationListener = LocationListener { location ->
-                location.let {
-                    onNewLocation(it)
-                    stopLocationUpdates()
+            locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    location.let {
+                        onNewLocation(it)
+                        stopLocationUpdates()
+                    }
+                }
+                override fun onProviderEnabled(provider: String) {
+                    // Need implementation for compatibility
+                }
+                override fun onProviderDisabled(provider: String) {
+                    // Need implementation for compatibility
+                }
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                    // Need implementation for compatibility
                 }
             }
+
             locationManager.requestLocationUpdates(
                 1000,
                 5f,
