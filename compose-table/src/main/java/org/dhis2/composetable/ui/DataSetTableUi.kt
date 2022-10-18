@@ -648,15 +648,15 @@ private fun TableList(
 
     tableList.indexOfFirst { it.id == tableSelection.tableId }
         .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
-            SelectionScrollEffect(
-                tableSelection,
-                tableList[selectedTableIndex],
-                horizontalScrollStates[selectedTableIndex],
-                verticalScrollState,
-                inputIsOpen,
-                calculatedHeaderSize[selectedTableIndex]
-            )
-        }
+        SelectionScrollEffect(
+            tableSelection,
+            tableList[selectedTableIndex],
+            horizontalScrollStates[selectedTableIndex],
+            verticalScrollState,
+            inputIsOpen,
+            calculatedHeaderSize[selectedTableIndex]
+        )
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -716,10 +716,10 @@ private fun TableList(
                                 columnIndex = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                currentTableModel.countChildrenOfSelectedHeader(
-                                    headerRowIndex,
-                                    headerColumnIndex
-                                )
+                                    currentTableModel.countChildrenOfSelectedHeader(
+                                        headerRowIndex,
+                                        headerColumnIndex
+                                    )
                             )
                         )
                     }
