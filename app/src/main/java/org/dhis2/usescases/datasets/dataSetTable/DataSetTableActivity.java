@@ -193,6 +193,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             if (behavior != null && behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
+            closeBottomSheet();
         }
     }
 
@@ -201,6 +202,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         isKeyboardOpened = false;
         binding.navigationView.setVisibility(View.VISIBLE);
         binding.saveButton.show();
+        if (behavior != null) {
+            showBottomSheet();
+        }
     }
 
     @Override
@@ -449,6 +453,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void closeBottomSheet() {
         binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
+    }
+
+    private void showBottomSheet() {
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
