@@ -719,7 +719,7 @@ class FormView : Fragment() {
         qrScanContent.launch(
             ScanOptions().apply {
                 setDesiredBarcodeFormats()
-                setPrompt("Hello there")
+                setPrompt("")
                 setBeepEnabled(true)
                 setBarcodeImageEnabled(false)
                 addExtra(Constants.UID, event.uid)
