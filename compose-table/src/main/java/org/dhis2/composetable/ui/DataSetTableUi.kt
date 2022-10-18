@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -205,21 +206,37 @@ fun TableHeaderRow(
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
     ConstraintLayout(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxWidth()
     ) {
-        val (tableCorner, header) = createRefs()
-
+        val (tableCorner, divider, header) = createRefs()
+        val localDimension = LocalTableDimensions.current
         TableCorner(
             modifier = cornerModifier
                 .constrainAs(tableCorner) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    end.linkTo(header.start)
                     bottom.linkTo(header.bottom)
                     height = Dimension.fillToConstraints
-                },
-            tableModel = tableModel,
+                }
+                .width(
+                    localDimension.defaultRowHeaderCellWidthWithExtraSize(
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    )
+                ),
             onClick = onTableCornerClick
+        )
+
+        Divider(
+            modifier
+                .constrainAs(divider) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(header.bottom)
+                    start.linkTo(tableCorner.end)
+                    height = Dimension.fillToConstraints
+                }
+                .width(1.dp),
+            color = TableTheme.colors.primary
         )
 
         TableHeader(
@@ -227,7 +244,7 @@ fun TableHeaderRow(
             modifier = Modifier
                 .constrainAs(header) {
                     top.linkTo(parent.top)
-                    start.linkTo(tableCorner.end)
+                    start.linkTo(divider.end)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                 },
@@ -254,77 +271,80 @@ fun TableItemRow(
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
-    Column(
-        Modifier
+    ConstraintLayout(
+        modifier = Modifier
             .testTag("$ROW_TEST_TAG${rowModel.rowHeader.row}")
-            .width(IntrinsicSize.Min)
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
-        Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight()) {
-                ItemHeader(
-                    tableModel.id ?: "",
-                    rowHeader = rowModel.rowHeader,
-                    cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-                    width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                        tableModel.tableHeaderModel.tableMaxColumns(),
-                        tableModel.tableHeaderModel.hasTotals
-                    ),
-                    maxLines = rowModel.maxLines,
-                    onCellSelected = onRowHeaderClick,
-                    onDecorationClick = onDecorationClick
-                )
-            }
-            ItemValues(
-                tableId = tableModel.id ?: "",
-                horizontalScrollState = horizontalScrollState,
-                cellValues = rowModel.values,
-                overridenValues = tableModel.overwrittenValues,
-                maxLines = rowModel.maxLines,
-                defaultHeight = LocalTableDimensions.current.defaultCellHeight,
-                defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                ),
-                options = rowModel.dropDownOptions ?: emptyList(),
-                cellStyle = cellStyle,
-                nonEditableCellLayer = nonEditableCellLayer,
-                onClick = onClick
-            )
-        }
-        if (!rowModel.isLastRow) {
-            Divider(modifier = Modifier.fillMaxWidth())
-        }
+        val (rowHeader, divider, items) = createRefs()
+        ItemHeader(
+            modifier = Modifier.constrainAs(rowHeader) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                height = Dimension.fillToConstraints
+            },
+            tableId = tableModel.id ?: "",
+            rowHeader = rowModel.rowHeader,
+            cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
+            width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                tableModel.tableHeaderModel.tableMaxColumns(),
+                tableModel.tableHeaderModel.hasTotals
+            ),
+            maxLines = rowModel.maxLines,
+            onCellSelected = onRowHeaderClick,
+            onDecorationClick = onDecorationClick
+        )
+        Divider(
+            modifier = Modifier
+                .constrainAs(divider) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(rowHeader.end)
+                    height = Dimension.fillToConstraints
+                }
+                .width(1.dp),
+            color = TableTheme.colors.primary
+        )
+        ItemValues(
+            modifier = Modifier.constrainAs(items) {
+                start.linkTo(divider.end)
+            },
+            tableId = tableModel.id ?: "",
+            horizontalScrollState = horizontalScrollState,
+            cellValues = rowModel.values,
+            overridenValues = tableModel.overwrittenValues,
+            maxLines = rowModel.maxLines,
+            defaultHeight = LocalTableDimensions.current.defaultCellHeight,
+            defaultWidth = LocalTableDimensions.current.defaultCellWidthWithExtraSize(
+                tableModel.tableHeaderModel.tableMaxColumns(),
+                tableModel.tableHeaderModel.hasTotals
+            ),
+            options = rowModel.dropDownOptions ?: emptyList(),
+            cellStyle = cellStyle,
+            nonEditableCellLayer = nonEditableCellLayer,
+            onClick = onClick
+        )
     }
 }
 
 @Composable
 fun TableCorner(
     modifier: Modifier = Modifier,
-    tableModel: TableModel,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
-            .width(
-                LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                )
-            )
             .clickable { onClick() },
         contentAlignment = Alignment.CenterEnd
     ) {
-        Divider(
-            modifier
-                .fillMaxHeight()
-                .width(1.dp),
-            color = TableTheme.colors.primary
-        )
     }
 }
 
 @Composable
 fun ItemHeader(
+    modifier: Modifier = Modifier,
     tableId: String,
     rowHeader: RowHeader,
     cellStyle: CellStyle,
@@ -334,10 +354,8 @@ fun ItemHeader(
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .defaultMinSize(minHeight = LocalTableDimensions.current.defaultCellHeight)
+        modifier = modifier
             .width(width)
-            .fillMaxHeight()
             .background(cellStyle.backgroundColor())
             .semantics {
                 tableIdSemantic = tableId
@@ -356,47 +374,36 @@ fun ItemHeader(
                         )
                     )
                 }
-            },
+            }
+            .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        Text(
             modifier = Modifier
-                .weight(1f)
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier
-                    .weight(1f),
-                text = rowHeader.title,
-                color = cellStyle.mainColor(),
-                fontSize = LocalTableDimensions.current.defaultRowHeaderTextSize,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (rowHeader.showDecoration) {
-                Spacer(modifier = Modifier.size(4.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "info",
-                    modifier = Modifier
-                        .height(10.dp)
-                        .width(10.dp),
-                    tint = cellStyle.mainColor()
-                )
-            }
-        }
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp),
-            color = TableTheme.colors.primary
+                .weight(1f),
+            text = rowHeader.title,
+            color = cellStyle.mainColor(),
+            fontSize = LocalTableDimensions.current.defaultRowHeaderTextSize,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
         )
+        if (rowHeader.showDecoration) {
+            Spacer(modifier = Modifier.size(4.dp))
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "info",
+                modifier = Modifier
+                    .height(10.dp)
+                    .width(10.dp),
+                tint = cellStyle.mainColor()
+            )
+        }
     }
 }
 
 @Composable
 fun ItemValues(
+    modifier: Modifier = Modifier,
     tableId: String,
     horizontalScrollState: ScrollState,
     maxLines: Int,
@@ -412,7 +419,7 @@ fun ItemValues(
     onClick: (TableCell) -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .horizontalScroll(state = horizontalScrollState)
     ) {
         repeat(
@@ -801,6 +808,8 @@ private fun TableList(
                                 currentTableModel.id ?: ""
                             )
                         )
+                    } else {
+                        Divider(modifier = Modifier.fillMaxWidth())
                     }
                 }
                 stickyHeader {
@@ -828,7 +837,7 @@ fun ExtendDivider(
                     LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
                         tableModel.tableHeaderModel.tableMaxColumns(),
                         tableModel.tableHeaderModel.hasTotals
-                    )
+                    ) + 1.dp
                 )
                 .height(8.dp)
                 .background(
