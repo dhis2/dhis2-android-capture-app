@@ -225,8 +225,6 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             fieldsWithErrors.add(
                 FieldWithError(showError.field(), errorMessage)
             )
-//            valueStore?.saveWithTypeCheck(showError.field(), null)?.blockingFirst()
-            valueStore?.save(showError.field(), null, null)
         }
     }
 
