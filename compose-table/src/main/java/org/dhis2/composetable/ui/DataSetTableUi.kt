@@ -73,6 +73,7 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.model.areAllValuesEmpty
+import org.dhis2.composetable.semantics.withItemHeaderSemantics
 
 @Composable
 fun TableHeader(
@@ -271,46 +272,49 @@ fun TableItemRow(
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
-    ConstraintLayout(
+    val mCellStyle = rowHeaderCellStyle(rowModel.rowHeader.row)
+    val dimensions = LocalTableDimensions.current
+    val density = LocalDensity.current
+    var rowHeight by remember {
+        mutableStateOf(dimensions.defaultCellHeight)
+    }
+    Row(
         modifier = Modifier
             .testTag("$ROW_TEST_TAG${rowModel.rowHeader.row}")
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        val (rowHeader, divider, items) = createRefs()
         ItemHeader(
-            modifier = Modifier.constrainAs(rowHeader) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                height = Dimension.fillToConstraints
-            },
-            tableId = tableModel.id ?: "",
+            modifier = Modifier
+                .withItemHeaderSemantics(
+                    tableId = tableModel.id ?: "",
+                    rowIndex = rowModel.rowHeader.row,
+                    showDecoration = rowModel.rowHeader.showDecoration,
+                    cellBackgroundColor = mCellStyle.backgroundColor()
+                )
+                .width(
+                    LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    )
+                )
+                .height(rowHeight),
             rowHeader = rowModel.rowHeader,
-            cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-            width = LocalTableDimensions.current.defaultRowHeaderCellWidthWithExtraSize(
-                tableModel.tableHeaderModel.tableMaxColumns(),
-                tableModel.tableHeaderModel.hasTotals
-            ),
-            maxLines = rowModel.maxLines,
+            cellStyle = mCellStyle,
             onCellSelected = onRowHeaderClick,
             onDecorationClick = onDecorationClick
         )
         Divider(
             modifier = Modifier
-                .constrainAs(divider) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(rowHeader.end)
-                    height = Dimension.fillToConstraints
-                }
+                .height(rowHeight)
                 .width(1.dp),
             color = TableTheme.colors.primary
         )
         ItemValues(
-            modifier = Modifier.constrainAs(items) {
-                start.linkTo(divider.end)
-            },
+            modifier = Modifier
+                .onSizeChanged {
+                    rowHeight = with(density) { it.height.toDp() }
+                },
             tableId = tableModel.id ?: "",
             horizontalScrollState = horizontalScrollState,
             cellValues = rowModel.values,
@@ -345,33 +349,19 @@ fun TableCorner(
 @Composable
 fun ItemHeader(
     modifier: Modifier = Modifier,
-    tableId: String,
     rowHeader: RowHeader,
     cellStyle: CellStyle,
-    width: Dp,
-    maxLines: Int,
     onCellSelected: (Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
     Row(
         modifier = modifier
-            .width(width)
             .background(cellStyle.backgroundColor())
-            .semantics {
-                tableIdSemantic = tableId
-                rowHeader.row?.let { rowIndexSemantic = rowHeader.row }
-                infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
-                rowBackground = cellStyle.backgroundColor()
-            }
-            .testTag("$tableId${rowHeader.row}")
             .clickable {
                 onCellSelected(rowHeader.row)
                 if (rowHeader.showDecoration) {
                     onDecorationClick(
-                        TableDialogModel(
-                            rowHeader.title,
-                            rowHeader.description ?: ""
-                        )
+                        TableDialogModel(rowHeader.title, rowHeader.description ?: "")
                     )
                 }
             }
@@ -420,6 +410,7 @@ fun ItemValues(
 ) {
     Row(
         modifier = modifier
+            .wrapContentHeight()
             .horizontalScroll(state = horizontalScrollState)
     ) {
         repeat(
@@ -437,7 +428,6 @@ fun ItemValues(
                     modifier = Modifier
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
                         .width(defaultWidth)
-                        .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
                         .semantics {
                             rowBackground = style.backgroundColor()
