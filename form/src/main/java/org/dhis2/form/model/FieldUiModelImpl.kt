@@ -98,7 +98,7 @@ data class FieldUiModelImpl(
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
         callback?.intent(FormIntent.OnRequestCoordinates(uid))
-        if (!focused) {
+        if (uiEventType != UiEventType.QR_CODE && !focused) {
             onItemClick()
         }
         uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
