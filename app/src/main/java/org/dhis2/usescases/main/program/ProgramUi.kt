@@ -360,7 +360,7 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(
-                onClick = { onDismiss() },
+                onClick = { onDismiss() }
             ) {
                 Text(
                     text = stringResource(id = R.string.action_close).uppercase(),
