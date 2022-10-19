@@ -92,6 +92,7 @@ class FormViewModel(
             }
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
                 showToast.value = R.string.update_field_error
+                onItemsRendered()
             }
             ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
                 Timber.tag(TAG)
@@ -152,7 +153,9 @@ class FormViewModel(
                     )
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
-                    repository.updateValueOnList(action.id, action.value, action.valueType)
+                    if (saveResult?.valueStoreResult == ValueStoreResult.VALUE_CHANGED) {
+                        repository.updateValueOnList(action.id, action.value, action.valueType)
+                    }
                     saveResult ?: StoreResult(
                         action.id,
                         ValueStoreResult.VALUE_CHANGED

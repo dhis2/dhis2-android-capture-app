@@ -169,6 +169,14 @@ class FormValueStore(
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (valueType == ValueType.IMAGE && value != null) {
             newValue = saveFileResource(value)
+            if (newValue == IMAGE_ERROR) {
+                return Flowable.just(
+                    StoreResult(
+                        "",
+                        ValueStoreResult.ERROR_UPDATING_VALUE
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -335,7 +343,11 @@ class FormValueStore(
 
     private fun saveFileResource(path: String): String {
         val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
+        return try {
+            d2.fileResourceModule().fileResources().blockingAdd(file)
+        } catch (d2Error: D2Error) {
+            IMAGE_ERROR
+        }
     }
 
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
@@ -345,6 +357,14 @@ class FormValueStore(
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (valueType == ValueType.IMAGE && value != null) {
             newValue = saveFileResource(value)
+            if (newValue == IMAGE_ERROR) {
+                return Flowable.just(
+                    StoreResult(
+                        "",
+                        ValueStoreResult.ERROR_UPDATING_VALUE
+                    )
+                )
+            }
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -479,5 +499,9 @@ class FormValueStore(
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         }
+    }
+
+    companion object {
+        const val IMAGE_ERROR = "ERROR"
     }
 }
