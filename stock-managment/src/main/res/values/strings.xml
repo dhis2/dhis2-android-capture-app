@@ -48,7 +48,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="confirmation">Confirmation</string>
-    
+
     <string name="from">From</string>
     <string name="to">Delivery to…</string>
     <string name="subtitle">%s</string>

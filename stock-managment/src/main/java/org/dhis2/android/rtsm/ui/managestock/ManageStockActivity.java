@@ -83,7 +83,6 @@ public class ManageStockActivity extends BaseActivity {
         configureScanner();
         updateNextButton();
     }
-
     private final ItemWatcher<StockItem, String, String> itemWatcher =
             new ItemWatcher<StockItem, String, String>() {
 

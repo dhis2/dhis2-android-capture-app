@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,12 +48,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
+import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
+import org.dhis2.commons.orgunitdialog.CommonOrgUnitDialog
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+
+var orgUnitData: OrganisationUnit? = null
+var orgUnitName: String? = null
 
 @Preview
 @Composable
@@ -193,6 +200,8 @@ fun DropdownComponent(
 fun DropdownComponentFacilities(
     viewModel: HomeViewModel,
     themeColor: Color = colorResource(R.color.colorPrimary),
+    supportFragmentManager: FragmentManager,
+    homeContext: HomeActivity,
     data: List<OrganisationUnit>,
     isFacilitySelected: (value: String) -> Unit = { }
 ) {
@@ -217,14 +226,14 @@ fun DropdownComponentFacilities(
 
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
-        isExpanded = !isExpanded
+        openOrgUnitTreeSelector(supportFragmentManager, homeContext, data, viewModel)
     }
 
     isFacilitySelected(selectedText)
 
     Column(Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
-            value = selectedText,
+            value = viewModel.orgUnitName.collectAsState().value,
             onValueChange = { selectedText = it },
             modifier = Modifier
                 .fillMaxWidth()
@@ -253,7 +262,14 @@ fun DropdownComponentFacilities(
             },
             trailingIcon = {
                 IconButton(
-                    onClick = { isExpanded = !isExpanded }
+                    onClick = {
+                        openOrgUnitTreeSelector(
+                            supportFragmentManager,
+                            homeContext,
+                            data,
+                            viewModel
+                        )
+                    }
                 ) {
                     Icon(icon, contentDescription = null, tint = themeColor)
                 }
@@ -445,5 +461,43 @@ fun DropdownComponentDistributedTo(
                 }
             }
         }
+    }
+}
+
+fun openOrgUnitTreeSelector(
+    supportFragmentManager: FragmentManager,
+    homeContext: HomeActivity,
+    data: List<OrganisationUnit>,
+    viewModel: HomeViewModel
+) {
+    val programUid = "F5ijs28K4s8"
+    val orgUnitDialog = CommonOrgUnitDialog()
+
+    orgUnitDialog
+        .setTitle("Facilities")
+        .setMultiSelection(false)
+        .setOrgUnits(data)
+        .setProgram(programUid)
+        .setPossitiveListener {
+            if (orgUnitDialog.selectedOrgUnitModel != null) {
+                viewModel.setFacility(orgUnitDialog.selectedOrgUnitModel)
+                viewModel.fromFacilitiesLabel(orgUnitDialog.selectedOrgUnitName)
+                viewModel.setSelectedText(orgUnitDialog.selectedOrgUnitName)
+                orgUnitData = orgUnitDialog.selectedOrgUnitModel
+            }
+            orgUnitDialog.dismiss()
+        }
+        .setNegativeListener {
+            orgUnitDialog.dismiss()
+        }
+
+    orgUnitData?.let {
+        orgUnitDialog.setOrgUnit(orgUnitData)
+    }
+    orgUnitName = viewModel.orgUnitName.value
+    orgUnitDialog.setOrgUnitName(orgUnitName)
+
+    if (!orgUnitDialog.isAdded) {
+        orgUnitDialog.show(supportFragmentManager, "")
     }
 }

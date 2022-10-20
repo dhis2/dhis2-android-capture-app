@@ -142,4 +142,6 @@ dependencies {
     api "androidx.test.espresso.idling:idling-concurrent:$libraries.espresso_core"
 
     implementation "io.sentry:sentry-android:${libraries.sentry}"
+    implementation 'com.github.bmelnychuk:atv:1.2.9'
+
 }

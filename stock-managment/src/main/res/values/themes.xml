@@ -162,6 +162,29 @@
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
         <!--        <item name="textAllCaps">true</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
+        <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
+        <item name="whiteBgTextColor">@color/discard_light_color</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="button_selector">@drawable/button_selector</item>
+        <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
+        <item name="selector_button_round_7">@drawable/selector_button_round_7</item>
+        <item name="selector_button_round_2">@drawable/selector_button_round_2</item>
+        <item name="image_selector_bg">@drawable/image_selector_bg</item>
+        <item name="period_button">@drawable/period_button</item>
+        <item name="period_time_button">@drawable/period_time_button</item>
+        <item name="toast_bg">@drawable/toast_bg</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+        <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
     </style>
 
     <style name="ThemeOverlay.App.Correction.Toolbar" parent="">
@@ -178,6 +201,31 @@
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
         <!--        <item name="textAllCaps">true</item>-->
+
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
+        <item name="primaryBgTextColor">@color/primaryBgTextColor</item>
+        <item name="primaryLightBgTextColor">@color/primaryLightBgTextColor</item>
+        <item name="primaryDarkBgTextColor">@color/primaryDarkBgTextColor</item>
+        <item name="whiteBgTextColor">@color/whiteBgTextColor</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="button_selector">@drawable/button_selector</item>
+        <item name="selector_button_round_20">@drawable/selector_button_round_20</item>
+        <item name="selector_button_round_7">@drawable/selector_button_round_7</item>
+        <item name="selector_button_round_2">@drawable/selector_button_round_2</item>
+        <item name="image_selector_bg">@drawable/image_selector_bg</item>
+        <item name="period_button">@drawable/period_button</item>
+        <item name="period_time_button">@drawable/period_time_button</item>
+        <item name="toast_bg">@drawable/toast_bg</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+        <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
+
     </style>
 
     <style name="Widget.App.Button.OutlinedButton.IconOnly"
