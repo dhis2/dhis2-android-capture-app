@@ -120,6 +120,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                                 orgUnitDialog.dismiss();
                             binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
                             checkPeriodIsValidForOrgUnit(selectedOrgUnit);
+                            orgUnitDialog.setOrgUnit(selectedOrgUnit);
                         }
                         checkActionVisivbility();
                         orgUnitDialog.dismiss();
