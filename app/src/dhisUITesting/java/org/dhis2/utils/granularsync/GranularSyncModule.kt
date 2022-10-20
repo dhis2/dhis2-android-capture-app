@@ -40,7 +40,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class GranularSyncModule(
     private val context: Context,
-    private val conflictType: SyncStatusDialog.ConflictType,
+    private val conflictType: ConflictType,
     private val recordUid: String,
     private val dvOrgUnit: String?,
     private val dvAttrCombo: String?,

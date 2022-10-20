@@ -43,7 +43,7 @@ import timber.log.Timber
 
 class SMSPlayServicesSyncProviderImpl(
     override val d2: D2,
-    override val conflictType: SyncStatusDialog.ConflictType,
+    override val conflictType: ConflictType,
     override val recordUid: String,
     override val dvOrgUnit: String?,
     override val dvAttrCombo: String?,

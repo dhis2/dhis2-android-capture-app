@@ -37,7 +37,7 @@ import org.dhis2.commons.Constants.CONFLICT_TYPE
 import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType
+import org.dhis2.commons.sync.ConflictType
 
 class SyncGranularWorker(
     context: Context,
