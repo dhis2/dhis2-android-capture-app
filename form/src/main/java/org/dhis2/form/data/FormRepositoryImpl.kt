@@ -412,6 +412,10 @@ class FormRepositoryImpl(
         }
     }
 
+    override fun clearFocusItem() {
+        focusedItemId = null
+    }
+
     override fun currentFocusedItem(): FieldUiModel? {
         return itemList.find { focusedItemId == it.uid }
     }

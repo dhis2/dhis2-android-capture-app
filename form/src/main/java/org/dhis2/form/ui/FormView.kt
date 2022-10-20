@@ -705,6 +705,8 @@ class FormView : Fragment() {
     }
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
+        viewModel.clearFocus()
+        onEditionFinish()
         onActivityForResult?.invoke()
         val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
             when (it) {
@@ -717,7 +719,7 @@ class FormView : Fragment() {
         qrScanContent.launch(
             ScanOptions().apply {
                 setDesiredBarcodeFormats()
-                setPrompt("Hello there")
+                setPrompt("")
                 setBeepEnabled(true)
                 setBarcodeImageEnabled(false)
                 addExtra(Constants.UID, event.uid)
@@ -782,6 +784,8 @@ class FormView : Fragment() {
     }
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
+        viewModel.clearFocus()
+        onEditionFinish()
         QRDetailBottomDialog(
             event.value,
             event.renderingType,

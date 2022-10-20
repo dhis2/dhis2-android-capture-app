@@ -22,4 +22,5 @@ interface FormRepository {
     fun updateSectionOpened(action: RowAction)
     fun removeAllValues()
     fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
+    fun clearFocusItem()
 }
