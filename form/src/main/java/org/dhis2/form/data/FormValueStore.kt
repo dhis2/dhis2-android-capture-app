@@ -343,6 +343,10 @@ class FormValueStore(
 
     private fun saveFileResource(path: String): String {
         val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        crashReportController.addBreadCrumb(
+            "blockingAdd Crash",
+            "File: $file,"
+        )
         return try {
             d2.fileResourceModule().fileResources().blockingAdd(file)
         } catch (d2Error: D2Error) {
