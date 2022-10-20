@@ -394,7 +394,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         animateArrowUp();
-                        binding.saveButton.show();
                         binding.saveButton.animate()
                                 .translationY(-ExtensionsKt.getDp(48))
                                 .start();
