@@ -342,7 +342,7 @@ fun ProgramDescriptionIcon(onClick: () -> Unit) {
                 .size(16.dp)
                 .padding(1.dp),
             painter = painterResource(id = R.drawable.ic_info),
-            contentDescription = "Overdue",
+            contentDescription = stringResource(id = R.string.program_description),
             tint = Color.Unspecified
         )
     }
