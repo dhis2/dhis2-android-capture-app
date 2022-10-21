@@ -20,6 +20,8 @@
     <!-- Change to actual red color for errors -->
     <color name="error">#FFAF2D3B</color>
 
+    <color name="primary_stock">#2C98F0</color>
+
     <color name="dark_grey">#FF716C6C</color>
     <color name="light_grey">#FFF6F5F5</color>
     <color name="cyan">#FF62A3BB</color>

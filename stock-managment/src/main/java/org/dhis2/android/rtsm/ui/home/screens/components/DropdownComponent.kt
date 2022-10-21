@@ -229,7 +229,7 @@ fun DropdownComponentFacilities(
         openOrgUnitTreeSelector(supportFragmentManager, homeContext, data, viewModel)
     }
 
-    isFacilitySelected(selectedText)
+    isFacilitySelected(viewModel.orgUnitName.collectAsState().value)
 
     Column(Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
