@@ -5,6 +5,9 @@
     <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">错误</string>
+    <plurals name="error_message">
+        <item quantity="other">失误</item>
+    </plurals>
     <string name="error_wrong_server_url">服务器URL错误</string>
     <string name="error_wrong_credentials">证书不正确</string>
     <string name="error_unexpected_error">未知错误</string>
@@ -15,6 +18,7 @@
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
     <string name="errors">错误</string>
+    <string name="something_wrong">出了些问题</string>
     <!-- SyncService strings: -->
     <string name="sync_now">现在同步</string>
     <string name="sync_text">与服务器同步中</string>
@@ -97,12 +101,16 @@
     <string name="cancelled">已取消</string>
     <string name="re_open">重新打开</string>
     <string name="activate">激活</string>
+    <string name="active">活跃的</string>
+
     <!-- State -->
     <string name="state_synced">同步</string>
+    <string name="state_to_post">发送</string>
     <string name="state_to_update">更新</string>
     <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
     <string name="action_sync">同步</string>
+    <string name="action_send">发送</string>
     <string name="action_sync_sms">同步短信</string>
 
     <!--Completion-->
@@ -129,6 +137,7 @@
     <string name="cat_option">采集选项</string>
     <string name="field_required">如果你设置值，整行的值需要设置才能完成数据集。</string>
     <string name="field_mandatory">一些必需的值缺失，你需要设置强制的值才能完成数据集。</string>
+    <string name="field_mandatory_v2">有强制字段请填充后完成数据集</string>
     <string name="datavalue_saved">值已被保存</string>
     <string name="there_is_no_available_period">没有可用期间可选</string>
     <!--Event Detail-->
@@ -142,6 +151,8 @@
     <string name="confirm_delete_event">你确定删除事件</string>
     <string name="event_was_deleted">事件删除成功</string>
     <string name="total">总共</string>
+    <string name="most_recent_event_date">最近事件日期</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -430,8 +441,10 @@
     <string name="dashboard_overview">概要</string>
     <string name="dashboard_relationships">关系</string>
     <string name="dashboard_indicators">指标</string>
+    <string name="dashboard_analytics">分析</string>
     <string name="empty_indicators">该项目无指标</string>
     <string name="dashboard_notes">笔记</string>
+    <string name="unable_to_complete">不能完成</string>
     <string name="field_errors">有些字段有错误，请检查，才能完成项目</string>
     <string name="unselect_enrollment">所有的注册</string>
     <string name="unselect_enrollment_description">显示所有活动项目的仪表盘</string>
@@ -479,6 +492,7 @@
     <string name="check_mandatory_field">检查字段</string>
     <string name="error_no_network_during_sync">你丢掉了互联网连接，当执行配置同步的时候。稍后再试。</string>
     <string name="action_agree">同意</string>
+    <string name="action_continue">继续</string>
     <string name="login_server_info_title">服务器URL</string>
     <string name="login_server_info_message">输入管理员提供的服务器地址。\n\n 可选的你可以扫描服务器地址 二维码</string>
     <string name="forgot_your_code">忘记你的数字口令</string>
@@ -488,6 +502,7 @@
     <string name="relationship_not_found_message">你试图访问的记录不可用。你想搜索吗？</string>
     <string name="sync_by_sms">通过短信同步。</string>
     <string name="state_warning">警告</string>
+    <string name="state_relationship">关系</string>
     <string name="no_conflicts_message">该项目没有冲突。</string>
     <string name="network_unavailable_sms">网络不可用。但是看起来电话系统可用，你可以使用短信</string>
     <string name="network_unavailable">网络连接不可用。</string>
@@ -497,6 +512,8 @@
     <string name="no_conflicts_synced_message">已经更新。所有的数据已经发送到服务器。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="unblock_session">解锁会话</string>
+    <string name="data_set_complete">完成</string>
+    <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">不支持的值类型</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="data_every_fifteen_minutes">15分钟</string>
@@ -550,6 +567,7 @@
     <string name="syncing">同步</string>
     <string name="end_sync_granular">同步完成</string>
     <string name="error_sync">同步中发生错误。</string>
+    <string name="error_sync_check_logs">同步期间发生错误。点击这里查看错误日志</string>
     <string name="cancel_sync">取消的同步</string>
 
     <string name="copied_text">副本</string>
@@ -573,6 +591,7 @@
     <string name="filters_disabled">无过滤器</string>
     <string name="filters_title_period">期间</string>
     <string name="filters_title_org_unit">机构</string>
+    <string name="filters_title_sorting">排序</string>
     <string name="filters_title_status">状态</string>
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
@@ -653,4 +672,109 @@
     <string name="syncing_period_not_editable">同步期间不能编辑</string>
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
+    <string name="downloading">下载中</string>
+    <string name="filter_sync_synced">已同步</string>
+    <string name="filter_sync_not_synced">未同步</string>
+    <string name="filter_sync_error">同步错误</string>
+    <string name="filter_sync_sms">短信已同步</string>
+    <string name="dataset_overview">详情</string>
+    <string name="dataset_comments">评论</string>
+    <string name="saved">已经保存！</string>
+    <string name="run_validation_rules">你要检查数据质量？</string>
+    <string name="validation_success_title">一切都很好</string>
+    <string name="mark_dataset_complete">你要完成数据集？</string>
+    <string name="dataset_completed">标记已经完成</string>
+    <string name="name">名称</string>
+    <string name="formula">公式</string>
+    <string name="complete_anyway">任何都要完成</string>
+    <string name="fk_message">遗失 %s %s 从%s %s</string>
+    <string name="filters_title_event_status">事件状态</string>
+    <string name="filters_title_enrollment_status">注册状态</string>
+    <string name="enrollment_date">注册日期</string>
+    <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
+    <string name="dataset_emtpy_list_can_not_create">没有数据，您没有权限添加新记录</string>
+    <string name="validation_rules_empty_description">没有提供描述或指导</string>
+    <string name="validation_rules_data_to_review">复查的数据</string>
+    <string name="dataset_saved_completed">保存并完成！</string>
+    <string name="status_change_error_active_exist">已经存在活动的注册</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">完成</string>
+    <string name="enrollment_status_cancelled">取消</string>
+    <string name="event_data">数据</string>
+    <string name="download_tei_error">选择的%s不能下载</string>
+    <string name="completed_by">%s完成：%s</string>
+    <string name="updated_time">已更新：%s</string>
+    <string name="action_done">完成！</string>
+    <string name="validation_internal_error_datasets">不能检查质量，联系管理员</string>
+    <string name="are_you_sure">你确信？</string>
+    <string name="reopen_question">你要重新打开数据集？</string>
+    <string name="group_events_by_stage">按阶段分组事件</string>
+    <string name="show_events_timeline">显示事件时间线</string>
+    <string name="filters_title_date">日期</string>
+    <string name="filters_title_event_date">事故日期</string>
+    <string name="dataset_data">数据</string>
+    <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
+    <string name="privacy_policy_title">私有策略</string>
+    <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
+    <string name="coordinates_error">坐标值无效</string>
+    <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
+    <string name="field_is_mandatory">此字段是必填字段</string>
+    <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">糟糕！某些事情并没有按计划进行。\ n  我们让您重新执行。</string>
+    <string name="customactivityoncrash_error_activity_restart_app">回退</string>
+    <string name="customactivityoncrash_error_activity_close_app">关闭应用</string>
+    <string name="customactivityoncrash_error_activity_error_details">更多细节</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">更多细节</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">关闭</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">复制到剪贴板</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">错误信息</string>
+    <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
+    <string name="error_init_session">我们无法与您的用户发起会话</string>
+    <string name="enrollment_date_edition_warning">已经计划的事件不会重新安排</string>
+    <string name="jira_issue_sent">已发送的问题</string>
+    <string name="jira_issue_sent_error">发送问题时出错</string>
+    <string name="section_charts">图表</string>
+    <string name="navigation_list_view">列表显示</string>
+    <string name="navigation_table_view">表格检视</string>
+    <string name="navigation_map_view">地图检视</string>
+    <string name="navigation_analytics">分析</string>
+    <string name="navigation_tasks">任务</string>
+    <string name="navigation_programs">项目</string>
+    <string name="navigation_events">事件</string>
+    <string name="navigation_relationships">关系</string>
+    <string name="navigation_notes">笔记</string>
+    <string name="navigation_data_entry">数据输入</string>
+    <string name="navigation_tei_data">详情</string>
+    <string name="show_bar_graph">查看柱状图</string>
+    <string name="show_line_graph">查看折线图</string>
+    <string name="show_table_graph">查看表格</string>
+    <string name="show_table_value">查看值</string>
+    <string name="filter_period_this_year">今年</string>
+    <string name="filter_period_this_bimonth">本俩月</string>
+    <string name="filter_period_last_bimonth">最近俩月</string>
+    <string name="filter_period_this_quarter">本季</string>
+    <string name="filter_period_last_quarter">最近一季</string>
+    <string name="filter_period_weeks_this_year">今年的星期</string>
+    <string name="filter_period_months_this_year">今年的月份</string>
+    <string name="filter_period_bimonths_this_year">今年的俩月</string>
+    <string name="filter_period_quarters_this_year">今年的季度</string>
+    <string name="filter_period_months_last_year">去年的月份</string>
+    <string name="filter_period_last_year">去年</string>
+    <string name="filter_period_this_financial_year">本财政年</string>
+    <string name="filter_period_last_financial_year">上一财政年</string>
+    <string name="section_feedback">反馈</string>
+    <string name="section_indicators">指标</string>
+    <string name="value">值</string>
+    <string name="data_set_quality_check_done">完成！</string>
+    <string name="login_error_bad_credentials">证书不正确</string>
+    <string name="invalid_integer">值必须是一个整数</string>
+    <string name="dataset_column_default">值</string>
+    <string name="available">可用的</string>
+    <string name="unknown_date">未知</string>
+    <string name="troubleshooting_language_title">语言</string>
+    <string name="search_too_many_results">结果太多</string>
+    <string name="search_create_new">新建</string>
+    <string name="action_ok">Ok!</string>
     </resources>
