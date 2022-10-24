@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_bar_graph">查看柱状图</string>
+    <string name="show_line_graph">查看折线图</string>
+    <string name="show_table_graph">查看表格</string>
+    <string name="show_table_value">查看值</string>
+    <string name="action_accept">接受</string>
+    <string name="period">周期</string>
+    <string name="none">无</string>
+    <string name="daily">每日</string>
+    <string name="today">今天</string>
+    <string name="other">其它</string>
+    <string name="yesterday">昨天</string>
+    <string name="thisyear">今年</string>
+    <string name="weekly">每周</string>
+    <string name="monthly">每月</string>
+    <string name="yearly">每年</string>
+    <string name="all">全部</string>
+    <string name="reset">复位</string>
+    </resources>
