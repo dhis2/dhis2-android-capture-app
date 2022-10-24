@@ -690,7 +690,6 @@
     <string name="show_events_timeline">Hodisa/tadbirlar jadvalini koʼrsatish</string>
     <string name="filters_title_date">Sana</string>
     <string name="filters_title_event_date">Hodisa/Tadbir sanasi</string>
-    <string name="dataset_data">Маълумот</string>
     <string name="tei_type_has_no_attributes">%s umumiy xususiyatlarga ega emas. Iltimos, dasturni tanlang</string>
     <string name="privacy_policy_title">Maxfiylik siyosati</string>
     <string name="coordinates_error">Koordinata qiymatlari yaroqsiz</string>

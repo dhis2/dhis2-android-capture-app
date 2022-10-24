@@ -712,7 +712,6 @@
     <string name="show_events_timeline">显示事件时间线</string>
     <string name="filters_title_date">日期</string>
     <string name="filters_title_event_date">事故日期</string>
-    <string name="dataset_data">数据</string>
     <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>

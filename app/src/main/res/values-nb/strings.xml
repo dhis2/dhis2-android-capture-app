@@ -713,7 +713,6 @@
     <string name="show_events_timeline">Vis tidslinjen for hendelser</string>
     <string name="filters_title_date">Dato</string>
     <string name="filters_title_event_date">Hendelsesdato</string>
-    <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%shar ingen offentlige attributter. Velg et program</string>
     <string name="privacy_policy_title">Personvernregler</string>
     <string name="open_privacy_policy">Klikk her for å sjekke<a href="">personvernreglene</a> våre</string>

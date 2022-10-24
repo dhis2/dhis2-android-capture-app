@@ -715,7 +715,6 @@
     <string name="show_events_timeline">Mostrar cronograma de eventos</string>
     <string name="filters_title_date">Data</string>
     <string name="filters_title_event_date">Data de incidente</string>
-    <string name="dataset_data">Dados</string>
     <string name="tei_type_has_no_attributes">%s não tem atributos públicos. Selecione um programa</string>
     <string name="privacy_policy_title">Política de Privacidade</string>
     <string name="open_privacy_policy">Clique aqui para conferir nosso <a href=""> política de privacidade </a></string>

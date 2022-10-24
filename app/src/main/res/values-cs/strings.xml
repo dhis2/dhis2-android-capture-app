@@ -731,7 +731,6 @@
     <string name="show_events_timeline">Zobrazit časovou osu událostí</string>
     <string name="filters_title_date">Datum</string>
     <string name="filters_title_event_date">Datum události</string>
-    <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s nemá žádné veřejné atributy. Vyberte program</string>
     <string name="privacy_policy_title">Zásady ochrany osobních údajů</string>
     <string name="open_privacy_policy">Kliknutím sem zobrazíte naše <a href="">zásady ochrany osobních údajů</a></string>

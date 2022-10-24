@@ -826,7 +826,6 @@
     <string name="show_events_timeline">Tampilkan timeline even</string>
     <string name="filters_title_date">Tanggal</string>
     <string name="filters_title_event_date">Tanggal even</string>
-    <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s tidak memiliki atribut publik. Silakan pilih program</string>
     <string name="privacy_policy_title">Kebijakan pribadi</string>
     <string name="open_privacy_policy">Klik di sini untuk memeriksa kebijakan privasi <a href=""> kami </a></string>

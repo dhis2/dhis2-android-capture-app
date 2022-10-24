@@ -348,7 +348,7 @@
     <string name="limit_by_organisation_unit">Обмеження за організаційним підрозділом</string>
     <string name="limit_by_program">Обмеження за програмою</string>
     <string name="programs_list">Список програм</string>
-    <string name="wipe_data">Скинути дані програми & конфігурацію</string>
+    <string name="wipe_data">Скинути дані програми &amp; конфігурацію</string>
     <string name="add_relationship_error">Неможливо додати цей зв’язок</string>
     <string name="warning_error_on_complete_title">Перевірити це!</string>
     <string name="warning_on_complete_title">Попередження</string>
@@ -731,7 +731,6 @@
     <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
-    <string name="dataset_data">Дані</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>
     <string name="privacy_policy_title">Політика конфіденційності</string>
     <string name="open_privacy_policy">Натисніть тут, щоб ознайомитися з нашою <a href=""> політикою конфіденційності </a></string>
