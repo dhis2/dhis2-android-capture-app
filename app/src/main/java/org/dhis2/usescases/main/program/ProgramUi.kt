@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -36,6 +37,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -152,10 +155,30 @@ fun ProgramItem(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MetadataIcon(
-            modifier = Modifier.alpha(programViewModel.getAlphaValue()),
-            metadataIconData = programViewModel.metadataIconData
-        )
+        Box(
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            MetadataIcon(
+                modifier = Modifier.alpha(programViewModel.getAlphaValue()),
+                metadataIconData = programViewModel.metadataIconData
+            )
+            var openDescriptionDialog by remember {
+                mutableStateOf(false) // Initially dialog is closed
+            }
+
+            if (programViewModel.description != null) {
+                ProgramDescriptionIcon {
+                    openDescriptionDialog = true
+                }
+            }
+
+            if (openDescriptionDialog) {
+                ProgramDescriptionDialog(programViewModel.description ?: "") {
+                    openDescriptionDialog = false
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.width(16.dp))
         Column(
             modifier = Modifier
@@ -300,6 +323,55 @@ fun visibility(viewModel: ProgramViewModel): Boolean {
 }
 
 @Composable
+fun ProgramDescriptionIcon(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(
+                RoundedCornerShape(
+                    topStart = 15.dp,
+                    topEnd = 10.dp,
+                    bottomEnd = 4.dp,
+                    bottomStart = 15.dp
+                )
+            )
+            .background(Color.White)
+            .clickable { onClick() }
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(16.dp)
+                .padding(1.dp),
+            painter = painterResource(id = R.drawable.ic_info),
+            contentDescription = stringResource(id = R.string.program_description),
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(text = stringResource(R.string.info))
+        },
+        text = {
+            Text(text = description)
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onDismiss() }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.action_close).uppercase(),
+                    color = colorResource(id = R.color.black_de0)
+                )
+            }
+        }
+    )
+}
+
+@Composable
 @Preview
 fun DownloadMedia() {
     Box(
@@ -355,6 +427,14 @@ fun ProgramTestToPost() {
 
 @Preview
 @Composable
+fun ProgramTestWithDescription() {
+    ProgramItem(
+        programViewModel = testingProgramModel().copy(description = "Program description")
+    )
+}
+
+@Preview
+@Composable
 fun ProgramTestDownloaded() {
     var downloadState by remember {
         mutableStateOf(ProgramDownloadState.DOWNLOADING)
@@ -388,6 +468,12 @@ fun ListPreview() {
         onGranularSyncClick = {},
         downLoadState = SyncStatusData(true, true, emptyMap())
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProgramDescriptionDialogPReview() {
+    ProgramDescriptionDialog(description = "Program description") { }
 }
 
 private fun testingProgramModel() = ProgramViewModel(
