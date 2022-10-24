@@ -350,6 +350,7 @@ class GranularSyncPresenterImpl(
     override fun onSmsNotManuallySent(context: Context) {
         view.logSmsNotSent()
         smsSyncProvider.unregisterSMSReceiver(context)
+        restartSmsSender()
     }
 
     override fun onSmsSyncClick(
@@ -378,11 +379,13 @@ class GranularSyncPresenterImpl(
                 onFailure = {
                     view.logSmsReachedServerError()
                     updateStatusToSentBySMS()
+                    restartSmsSender()
                 }
             )
         } else {
             view.logSmsSent()
             updateStatusToSentBySMS()
+            restartSmsSender()
         }
     }
 
@@ -397,6 +400,7 @@ class GranularSyncPresenterImpl(
                 updateStatusToSentBySMS()
             }
         }
+        restartSmsSender()
     }
 
     @VisibleForTesting
