@@ -1,8 +1,10 @@
-This is a patch version that fixes:
-- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
-- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
-- [ANDROAPP-4814] Infinite login with wrong url/username/password
-- [ANDROAPP-4795] SMS Sync Unable to Send
-....
+This new version includes the following features:
+- Tables has a new design which ensures good contrast and visibility.
+- Sync process improvements: open home after syncing metadata, not full sync after user is logged in.
+- Tracker: manage ownership in permanent referrals.
+- SMS functionality.
+- Simplify steps to create a program stage.
+- More intuitive navigation for event sections.
+
 General system stability improvements to enhance the user's experience.
 You can find all the details on Jira and Github.
