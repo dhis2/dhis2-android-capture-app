@@ -1,3 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="show_bar_graph">Afficher comme graphique</string>
+    <string name="show_line_graph">Afficher comme une ligne</string>
+    <string name="show_table_graph">Afficher comme tableau</string>
+    <string name="show_table_value">Afficher comme valeur</string>
+    <string name="action_accept">Accepter</string>
+    <string name="period">Période</string>
+    <string name="none">Aucun</string>
+    <string name="daily">Quotidien</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="other">Autre</string>
+    <string name="yesterday">Hier</string>
+    <string name="lastweek">Semaine dernière</string>
+    <string name="thismonth">Ce mois-ci</string>
+    <string name="thisyear">Cette année</string>
+    <string name="weekly">Hebdomadaire</string>
+    <string name="monthly">Mensuel</string>
+    <string name="yearly">Annuel</string>
+    <string name="all">Tout</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="error_invalid_program">Vous n\'avez pas accès au programme 1%s</string>
+    <string name="error_invalid_attribute">Vous n\'avez pas accès à l\'attribut 1%s</string>
     </resources>

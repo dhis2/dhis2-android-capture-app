@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -75,7 +76,19 @@ fun OptionSetDialogScreen(
                 viewModel.onSearchingOption("")
             }
         )
-        OptionList(options) { onOptionClick(it) }
+
+        if (options.isNotEmpty()) {
+            OptionList(options) { onOptionClick(it) }
+        } else {
+            Box(
+                modifier = Modifier
+                    .height(300.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
         DialogButtonActions(
             onClearClick = onClearClick,
             onCancelClick = onCancelClick

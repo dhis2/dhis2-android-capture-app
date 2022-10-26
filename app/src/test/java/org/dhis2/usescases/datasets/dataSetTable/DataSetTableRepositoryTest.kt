@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -22,6 +23,8 @@ class DataSetTableRepositoryTest {
 
     private lateinit var repository: DataSetTableRepositoryImpl
 
+    private val resourceManager: ResourceManager = mock()
+
     private val d2: D2 = mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val dataSetUid = "dataSetUid"
     private val periodId = "periodId"
@@ -30,7 +33,14 @@ class DataSetTableRepositoryTest {
 
     @Before
     fun setUp() {
-        repository = DataSetTableRepositoryImpl(d2, dataSetUid, periodId, orgUnitUid, catOptCombo)
+        repository = DataSetTableRepositoryImpl(
+            d2,
+            dataSetUid,
+            periodId,
+            orgUnitUid,
+            catOptCombo,
+            resourceManager
+        )
     }
 
     @Test

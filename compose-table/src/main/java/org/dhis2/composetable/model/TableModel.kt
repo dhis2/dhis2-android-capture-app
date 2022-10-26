@@ -10,20 +10,32 @@ data class TableModel(
     val id: String? = null,
     val tableHeaderModel: TableHeader,
     val tableRows: List<TableRowModel>,
-    val upperPadding: Boolean = true,
     val overwrittenValues: Map<Int, TableCell> = emptyMap()
 ) {
-    fun countChildrenOfSelectedHeader(headerRowIndex: Int): Int? {
+    fun countChildrenOfSelectedHeader(
+        headerRowIndex: Int,
+        headerColumnIndex: Int
+    ): Map<Int, TableSelection.HeaderCellRange> {
         return tableHeaderModel.rows
             .filterIndexed { index, _ -> index > headerRowIndex }
-            .map { row -> row.cells.size }
-            .reduceOrNull { acc, i -> acc * i }
+            .mapIndexed { index, _ ->
+                val rowIndex = headerRowIndex + 1 + index
+                val rowSize =
+                    tableHeaderModel.numberOfColumns(rowIndex) / tableHeaderModel.numberOfColumns(
+                        headerRowIndex
+                    )
+                val init = headerColumnIndex * rowSize
+                val end = (headerColumnIndex + 1) * rowSize - 1
+                rowIndex to TableSelection.HeaderCellRange(rowSize, init, end)
+            }.toMap()
     }
 
     fun getNextCell(
-        cellSelection: TableSelection.CellSelection
+        cellSelection: TableSelection.CellSelection,
+        discardErrors: Boolean
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
-        tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
+        !discardErrors &&
+            tableRows[cellSelection.rowIndex].values[cellSelection.columnIndex]?.error != null ->
             cellSelection
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
@@ -38,15 +50,20 @@ data class TableModel(
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
         when (tableCell?.editable) {
             true -> Pair(tableCell, nextCell)
-            else -> getNextCell(nextCell)
+            else -> getNextCell(nextCell, discardErrors)
         }
     }
 
-    fun tableErrorCell(): TableCell? =
-        tableRows.map { row ->
-            row.values.filter { it.value.error != null }
-                .values.firstOrNull()
-        }.firstOrNull()
+    fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
+        tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+
+    fun hasCellWithId(cellId: String?): Boolean {
+        return tableRows.any { row ->
+            row.rowHeader.id?.let {
+                it.isNotEmpty() && cellId?.contains(it) == true
+            } ?: false
+        }
+    }
 }
 
 @Serializable
@@ -77,7 +94,6 @@ data class TableCell(
     val editable: Boolean = true,
     val mandatory: Boolean? = false,
     val error: String? = null,
-    val dropDownOptions: List<String>? = null,
     val legendColor: Int? = null
 ) {
     fun isSelected(selectionState: SelectionState): Boolean {
@@ -92,7 +108,8 @@ data class TableRowModel(
     val rowHeader: RowHeader,
     val values: Map<Int, TableCell>,
     val isLastRow: Boolean = false,
-    val maxLines: Int = 3
+    val maxLines: Int = 3,
+    val dropDownOptions: List<String>? = null
 )
 
 @Serializable

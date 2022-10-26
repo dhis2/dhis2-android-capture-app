@@ -148,27 +148,11 @@ class CellTableTest {
                 )
             )
             clickOnCell(testingTableId, 0, 0)
+            assertKeyBoardVisibility(true)
             assertInputComponentIsDisplayed()
             clickOnCell(testingTableId, 1, 0)
+            assertKeyBoardVisibility(false)
             assertInputComponentIsHidden()
-        }
-    }
-
-    @Test
-    fun shouldBlockSelectingNewCellIfCurrentHasError() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                composeTestRule.activity.applicationContext,
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 2, 0)
-            composeTestRule.waitForIdle()
-            typeOnInputComponent("")
-            composeTestRule.waitForIdle()
-            clickOnAccept()
-            composeTestRule.waitForIdle()
-            assertCellSelected(firstId, 2, 0)
         }
     }
 

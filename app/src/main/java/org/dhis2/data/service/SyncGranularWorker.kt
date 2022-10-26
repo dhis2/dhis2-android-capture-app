@@ -38,7 +38,6 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
 import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType
-import timber.log.Timber
 
 class SyncGranularWorker(
     context: Context,
@@ -54,12 +53,6 @@ class SyncGranularWorker(
 
         val uid = inputData.getString(UID) ?: return Result.failure()
         val conflictType = inputData.getString(CONFLICT_TYPE)?.let { ConflictType.valueOf(it) }
-
-        try {
-            presenter.uploadResources()
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
 
         val result = when (conflictType) {
             ConflictType.PROGRAM -> {

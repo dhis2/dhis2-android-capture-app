@@ -723,7 +723,6 @@
     <string name="show_events_timeline">Hiển thị dòng thời gian sự kiện</string>
     <string name="filters_title_date">Ngày</string>
     <string name="filters_title_event_date">Ngày sự kiện</string>
-    <string name="dataset_data">Dữ liệu</string>
     <string name="tei_type_has_no_attributes">%s không có các thuộc tính công khai. Vui lòng chọn một chương trình.</string>
     <string name="privacy_policy_title">Chính Sách Bảo Mật</string>
     <string name="open_privacy_policy">Bấm vào đây để kiểm tra<a href="">chính sách bảo mật</a></string>

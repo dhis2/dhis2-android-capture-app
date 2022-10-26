@@ -87,6 +87,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean initSearchNeeded = true;
     private FormView formView;
     public SearchTEComponent searchComponent;
+    private int initialPage = 0;
 
     public enum Extra {
         TEI_UID("TRACKED_ENTITY_UID"),
@@ -133,7 +134,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     viewModel.setFiltersOpened(isOpen);
                     return Unit.INSTANCE;
                 });
-        int initialPage = 0;
         if (savedInstanceState != null && savedInstanceState.containsKey(INITIAL_PAGE)) {
             initialPage = savedInstanceState.getInt(INITIAL_PAGE);
             binding.setNavigationInitialPage(initialPage);
@@ -175,9 +175,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
 
         configureBottomNavigation();
-        if (initialPage == 0) {
-            showList();
-        }
         observeScreenState();
         observeDownload();
     }
@@ -255,11 +252,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         FilterManager.getInstance().clearEnrollmentStatus();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList(false);
+        FilterManager.getInstance().clearWorkingList(true);
         FilterManager.getInstance().clearSorting();
         FilterManager.getInstance().clearAssignToMe();
         FilterManager.getInstance().clearFollowUp();
-
         presenter.clearOtherFiltersIfWebAppIsConfig();
 
         super.onDestroy();
@@ -374,6 +370,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
+            if (initialPage == 0) {
+                showList();
+            }
             binding.navigationBar.setOnConfigurationFinishListener(() -> {
                 binding.navigationBar.show();
                 return Unit.INSTANCE;

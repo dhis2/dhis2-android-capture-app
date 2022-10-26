@@ -208,7 +208,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         presenter.onDettach();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
-        FilterManager.getInstance().clearWorkingList(false);
+        FilterManager.getInstance().clearWorkingList(true);
         FilterManager.getInstance().clearAssignToMe();
         presenter.clearOtherFiltersIfWebAppIsConfig();
     }
@@ -227,7 +227,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void renderError(String message) {
         if (getActivity() != null)
             new AlertDialog.Builder(getActivity())
-                    .setPositiveButton(android.R.string.ok, null)
+                    .setPositiveButton(getString(R.string.button_ok), null)
                     .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .show();

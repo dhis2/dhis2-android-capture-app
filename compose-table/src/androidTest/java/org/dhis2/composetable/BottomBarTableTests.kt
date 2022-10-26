@@ -37,7 +37,7 @@ class BottomBarTableTests {
             composeTestRule.waitForIdle()
             typeOnInputComponent("test")
             composeTestRule.waitForIdle()
-            clickOnAccept()
+            composeTestRule.waitForIdle()
             assertCellHasText(tableId, 1, 0, "test")
         }
     }
@@ -51,12 +51,12 @@ class BottomBarTableTests {
             )
             val tableId = fakeModel[0].id
             clickOnCell(tableId!!, 1, 0)
-            assertIconIsVisible(R.drawable.ic_edit_input)
-            typeOnInputComponent("test")
             assertIconIsVisible(R.drawable.ic_finish_edit_input)
-            clickOnEditValue()
-            composeTestRule.waitForIdle()
+            typeOnInputComponent("test")
             assertCellHasText(tableId, 1, 0, "test")
+            clickOnEditionIcon()
+            assertIconIsVisible(R.drawable.ic_edit_input)
+            composeTestRule.waitForIdle()
         }
     }
 
@@ -71,9 +71,9 @@ class BottomBarTableTests {
             clickOnCell(tableId!!, 1, 0)
             composeTestRule.waitForIdle()
             typeOnInputComponent("test")
+            assertCellHasText(tableId, 1, 0, "test")
             clickOnAccept()
             composeTestRule.waitForIdle()
-            assertCellHasText(tableId, 1, 0, "test")
             assertOnSavedTableCellValue("test")
         }
     }

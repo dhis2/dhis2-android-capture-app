@@ -66,7 +66,7 @@ class ColumnTableTest {
 
         val firstTableId = fakeModel[0].id!!
 
-        val sonColumnsHighlight = 12
+        val sonColumnsHighlight = 3
         val grandsonColumnsHighlight = 12
         val maxColumnGrandSon = MAX_COLUMNS
 

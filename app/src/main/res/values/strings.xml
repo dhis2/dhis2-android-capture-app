@@ -737,7 +737,6 @@
     <string name="show_events_timeline">Show events timeline</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
-    <string name="dataset_data">Data</string>
     <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
@@ -906,4 +905,12 @@
     <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
     <string name="sms_sync_is_sms_sent">Did you sent the sms?</string>
     <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
+    <string name="syncing_events">Syncing events</string>
+    <string name="syncing_teis">Syncing tracked entities</string>
+    <string name="syncing_data_sets">Syncing data sets</string>
+    <string name="syncing_resources">Syncing resources</string>
+    <string name="syncing_done">Syncing done</string>
+    <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
+    <string name="downloading_image_resources">Downloading images...</string>
+    <string name="program_description">Program description</string>
 </resources>

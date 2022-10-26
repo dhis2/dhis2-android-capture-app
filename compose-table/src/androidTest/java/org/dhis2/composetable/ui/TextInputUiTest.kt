@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -20,9 +21,11 @@ import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.input_error_message
 import org.dhis2.composetable.data.tableData
+import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -36,14 +39,15 @@ class TextInputUiTest {
         var cellToSave: TableCell? = null
         val expectedValue = "55"
 
-        composeTestRule.setContent {
-            TextInputUiTestScreen {
-                cellToSave = it
-            }
-        }
-
         tableRobot(composeTestRule) {
-            assertClickOnCellShouldOpenInputComponent(0, 0)
+           val fakeModels = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MULTIHEADER_TABLE,
+                onSave = { cellToSave = it }
+            )
+            val tableId = fakeModels[0].id!!
+            assertClickOnCellShouldOpenInputComponent(tableId,0, 0)
+            assertClickOnBackClearsFocus()
             assertClickOnEditOpensInputKeyboard()
             assertClickOnSaveHidesKeyboardAndSaveValue(expectedValue)
             assert(cellToSave?.value == expectedValue)
@@ -57,7 +61,21 @@ class TextInputUiTest {
         }
 
         tableRobot(composeTestRule) {
-            assertCellWithErrorSetsErrorMessage(0,1, input_error_message)
+            assertCellWithErrorSetsErrorMessage(0, 1, input_error_message)
+        }
+    }
+
+    @Ignore("It is not deterministic, to fix on https://dhis2.atlassian.net/browse/ANDROAPP-4987")
+    @Test
+    fun shouldClearFocusWhenKeyboardIsHidden() {
+        tableRobot(composeTestRule) {
+            val fakeModels = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+            clickOnCell(fakeModels.first().id!!, 0, 0)
+            assertInputComponentIsDisplayed()
+            assertClickOnBackClearsFocus()
         }
     }
 
@@ -97,7 +115,8 @@ class TextInputUiTest {
                         )
                     },
                     onSave = { currentCell?.let { onSave(it) } },
-                    onNextSelected = {}
+                    onNextSelected = {},
+                    focusRequester = FocusRequester()
                 )
             },
             sheetPeekHeight = 0.dp,

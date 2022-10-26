@@ -46,10 +46,9 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         row = rowIndex,
                         column = columnIndex,
                         value = mapFieldValueToUser.map(field, dataElement),
-                        editable = field.editable()!!,
+                        editable = tableData.accessDataWrite && field.editable()!!,
                         mandatory = field.mandatory(),
-                        error = field.error(),
-                        dropDownOptions = field.options()
+                        error = field.error()
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
@@ -57,7 +56,8 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                     1
                 } else {
                     3
-                }
+                },
+                dropDownOptions = tableData.fieldViewModels[rowIndex][0].options()
             )
         } ?: emptyList()
 
@@ -80,8 +80,10 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         )
         val tableRows = tableData.map { (indicatorName, indicatorValue) ->
             TableRowModel(
-                rowHeader = RowHeader("", title = indicatorName!!),
-                values = mapOf(Pair(0, TableCell(value = indicatorValue)))
+                rowHeader = RowHeader(id = indicatorName, title = indicatorName!!),
+                values = mapOf(
+                    0 to TableCell(id = indicatorName, value = indicatorValue, editable = false)
+                )
             )
         }
 

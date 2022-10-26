@@ -24,8 +24,8 @@ class OptionSetPresenter(
     fun init(optionSet: FieldUiModel) {
         this.optionSetUid = optionSet.optionSet
         this.optionSetOptionHandler = OptionSetOptionsHandler(
-            optionSet.optionsToHide,
-            optionSet.optionsToShow,
+            optionSet.optionSetConfiguration?.optionsToHide,
+            optionSet.optionSetConfiguration?.optionsToShow,
             null
         )
         getOptions()

@@ -33,7 +33,6 @@ import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
-import timber.log.Timber
 
 class DataValueRepository(
     private val d2: D2,
@@ -597,6 +596,14 @@ class DataValueRepository(
                 isNumber = dataElement.valueType()!!.isNumeric
             }
 
+            val options = dataElement.optionSetUid()?.let {
+                d2.optionModule().options()
+                    .byOptionSetUid().eq(it)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .blockingGet()
+                    .map { option -> "${option.code()}_${option.displayName()}" }
+            } ?: emptyList()
+
             for (
                 categoryOptionCombo in categorOptionCombos
             ) {
@@ -616,14 +623,6 @@ class DataValueRepository(
                     dataSetTableModel.dataElement == dataElement.uid() &&
                         dataSetTableModel.categoryOptionCombo == categoryOptionCombo.uid()
                 }?.value
-
-                val options = dataElement.optionSetUid()?.let {
-                    d2.optionModule().options()
-                        .byOptionSetUid().eq(it)
-                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet()
-                        .map { it.displayName() }
-                } ?: emptyList()
 
                 val fieldViewModel = fieldFactory.create(
                     dataElement.uid() + "_" + categoryOptionCombo.uid(),
@@ -867,12 +866,8 @@ class DataValueRepository(
         for (dataValues in cells) {
             for (i in dataValues.indices) {
                 if (dataValues[i].isNotEmpty()) {
-                    try {
-                        val value = dataValues[i].toDouble()
-                        totals[i] += value
-                    } catch (e: Exception) {
-                        Timber.d(e)
-                    }
+                    val value = dataValues[i].toDoubleOrNull() ?: 0.0
+                    totals[i] += value
                 }
             }
         }
@@ -985,10 +980,19 @@ class DataValueRepository(
         )
     }
 
-    fun getCatOptComboOptions(catOptComboUid: String): List<CategoryOption> {
+    fun getCatOptComboOptions(catOptComboUid: String): List<String> {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(catOptComboUid)
             .blockingGet()
-            .categoryOptions() ?: emptyList()
+            ?.takeIf {
+                d2.categoryModule().categoryCombos()
+                    .uid(it.categoryCombo()?.uid())
+                    .blockingGet()
+                    .isDefault == false
+            }?.displayName()?.split(", ") ?: emptyList()
+    }
+
+    fun getDataSetInfo(): Triple<String, String, String> {
+        return Triple(periodId, orgUnitUid, attributeOptionComboUid)
     }
 }

@@ -2,10 +2,8 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -14,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.WorkInfo
@@ -30,9 +27,6 @@ import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
@@ -77,39 +71,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         SyncStatusDialogUiConfig(resources, presenter, getInputArguments())
     }
 
-    private val smsAppLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        adapter!!.addItem(
-            StatusLogItem.create(
-                Calendar.getInstance().time,
-                getString(R.string.sms_sync_manual_confirmation)
-            )
-        )
-        val smsConfirmationDialog = BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = getString(R.string.sms_enabled),
-                subtitle = getString(R.string.sms_sync_is_sms_sent),
-                iconResource = R.drawable.ic_help,
-                mainButton = DialogButtonStyle.NeutralButton(R.string.no),
-                secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
-            ),
-            onMainButtonClicked = {
-                presenter.onSmsNotManuallySent(requireContext())
-            },
-            onSecondaryButtonClicked = {
-                presenter.onSmsManuallySent(requireContext()) {
-                    it.observe(this) { messageReceived ->
-                        presenter.onConfirmationMessageStateChanged(messageReceived)
-                    }
-                }
-            }
-        ).also {
-            it.isCancelable = false
-        }
-        smsConfirmationDialog
-            .show(childFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
-    }
+    private var smsSenderHelper: SMSSenderHelper? = null
 
     enum class ConflictType {
         ALL, PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
@@ -294,25 +256,57 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     override fun openSmsApp(message: String, smsToNumber: String) {
-        val chooser = createSMSIntent(message, smsToNumber)
-        smsAppLauncher.launch(chooser)
+        smsSenderHelper = SMSSenderHelper(
+            requireContext(),
+            requireActivity().activityResultRegistry,
+            childFragmentManager,
+            smsToNumber,
+            message,
+            onStatusChanged = { status ->
+                when (status) {
+                    SMSSenderHelper.Status.ALL_SMS_SENT -> allSmsSent()
+                    SMSSenderHelper.Status.SMS_NOT_MANUALLY_SENT -> smsNotManuallySent()
+                    SMSSenderHelper.Status.RETURNED_TO_APP -> returnedToApp()
+                }
+            }
+        ).also {
+            if (it.smsCount() > 1) {
+                askForMessagesAmount(
+                    it.smsCount(),
+                    { it.pollSms() },
+                    { logSmsNotSent() }
+                )
+            } else {
+                it.pollSms()
+            }
+        }
     }
 
-    private fun createSMSIntent(message: String, smsToNumber: String): Intent? {
-        val uri = Uri.parse("smsto:$smsToNumber")
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = uri
-            putExtra("sms_body", message)
+    private fun allSmsSent() {
+        presenter.onSmsManuallySent(requireContext()) {
+            it.observe(this) { messageReceived ->
+                presenter.onConfirmationMessageStateChanged(messageReceived)
+            }
         }
-        return Intent.createChooser(intent, getString(R.string.sms_sync_sms_app_chooser_title))
+    }
+
+    private fun smsNotManuallySent() {
+        presenter.onSmsNotManuallySent(requireContext())
+    }
+
+    private fun returnedToApp() {
+        adapter!!.addItem(
+            StatusLogItem.create(
+                Calendar.getInstance().time,
+                getString(R.string.sms_sync_manual_confirmation)
+            )
+        )
     }
 
     private fun setNetworkMessage() {
         if (!networkUtils.isOnline()) {
             if (presenter.isSMSEnabled(context?.showSMS() == true)) {
-                if (conflictType != ConflictType.PROGRAM &&
-                    conflictType != ConflictType.DATA_SET
-                ) {
+                if (presenter.canSendSMS()) {
                     analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
                     binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
                     binding!!.syncButton.setText(R.string.action_sync_sms)
@@ -323,7 +317,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                         syncSms()
                     }
                 } else {
+                    binding!!.connectionMessage
+                        .setText(R.string.sms_available_for_individual_records)
                     binding!!.syncButton.visibility = View.GONE
+                    binding!!.syncButton.setOnClickListener(null)
                 }
             } else {
                 analyticsHelper.setEvent(SYNC_GRANULAR_ONLINE, CLICK, SYNC_GRANULAR)
@@ -470,7 +467,11 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         val lastState = states[states.size - 1]
         when (lastState.state!!) {
             SmsSendingService.State.WAITING_COUNT_CONFIRMATION -> {
-                askForMessagesAmount(lastState.total)
+                askForMessagesAmount(
+                    amount = lastState.total,
+                    onAccept = { presenter.sendSMS() },
+                    onDecline = { presenter.onSmsNotAccepted() }
+                )
                 syncing = true
             }
             SmsSendingService.State.STARTED,
@@ -485,18 +486,26 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
             SmsSendingService.State.ERROR,
             SmsSendingService.State.COMPLETED -> {
+                presenter.restartSmsSender()
+                if (lastState.state == SmsSendingService.State.COMPLETED) {
+                    updateState(State.SENT_VIA_SMS)
+                }
             }
         }
     }
 
-    private fun askForMessagesAmount(amount: Int) {
+    private fun askForMessagesAmount(
+        amount: Int,
+        onAccept: () -> Unit,
+        onDecline: () -> Unit
+    ) {
         val args = Bundle()
         args.putInt(MessageAmountDialog.ARG_AMOUNT, amount)
         val dialog = MessageAmountDialog { accepted ->
             if (accepted) {
-                presenter.sendSMS()
+                onAccept()
             } else {
-                presenter.onSmsNotAccepted()
+                onDecline()
             }
         }
         dialog.arguments = args
@@ -595,6 +604,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     private fun syncSms() {
         syncing = true
+        adapter!!.addAllItems(emptyList())
         presenter.onSmsSyncClick {
             it.observe(this) { state -> this.stateChanged(state) }
         }

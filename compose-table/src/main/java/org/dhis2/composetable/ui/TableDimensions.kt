@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import android.content.res.Configuration
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -21,19 +20,18 @@ data class TableDimensions(
     val defaultLegendBorderWidth: Dp = 8.dp,
     val defaultHeaderTextSize: TextUnit = 12.sp,
     val defaultRowHeaderTextSize: TextUnit = 12.sp,
-    val defaultCellTextSize: TextUnit = 12.sp
+    val defaultCellTextSize: TextUnit = 12.sp,
+    val totalWidth: Dp = 0.dp
 ) {
 
     fun defaultCellWidthWithExtraSize(
-        configuration: Configuration,
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Dp {
-        return defaultCellWidth.withExtraSize(configuration, totalColumns, hasExtra)
+        return defaultCellWidth.withExtraSize(totalColumns, hasExtra)
     }
 
     fun defaultRowHeaderCellWidthWithExtraSize(
-        configuration: Configuration,
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Dp {
@@ -42,14 +40,13 @@ data class TableDimensions(
 
     fun headerCellWidth(
         headerRowColumns: Int,
-        configuration: Configuration,
         totalColumns: Int,
         hasTotal: Boolean = false
     ): Dp {
         val fullWidth = defaultCellWidth * totalColumns
         val rowHeaderRatio = totalColumns / headerRowColumns
         return (fullWidth / headerRowColumns)
-            .withExtraSize(configuration, totalColumns, hasTotal, rowHeaderRatio)
+            .withExtraSize(totalColumns, hasTotal, rowHeaderRatio)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -62,26 +59,24 @@ data class TableDimensions(
     }
 
     private fun Dp.withExtraSize(
-        configuration: Configuration,
         totalColumns: Int,
         hasExtra: Boolean = false,
         extraWidthRatio: Int = 1
     ): Dp {
-        return this + extraWidth(configuration, totalColumns, hasExtra) * extraWidthRatio
+        return this + extraWidth(totalColumns, hasExtra) * extraWidthRatio
     }
 
     private fun extraWidth(
-        configuration: Configuration,
         totalColumns: Int,
         hasTotal: Boolean
     ): Dp {
-        val screenWidth = configuration.screenWidthDp
+        val screenWidth = totalWidth
         val tableWidth = tableWidth(totalColumns, hasTotal)
 
-        return if (tableWidth < screenWidth.dp) {
+        return if (tableWidth < screenWidth) {
             val totalColumnCount = 1.takeIf { hasTotal } ?: 0
             val columnsCount = totalColumns + totalColumnCount
-            (screenWidth.dp - tableWidth) / columnsCount
+            (screenWidth - tableWidth) / columnsCount
         } else {
             0.dp
         }
@@ -94,8 +89,7 @@ data class TableDimensions(
     ): Dp {
         val totalCellWidth = defaultCellWidth.takeIf { hasTotal } ?: 0.dp
 
-        return tableHorizontalPadding * 2 +
-            defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
+        return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
 }
 

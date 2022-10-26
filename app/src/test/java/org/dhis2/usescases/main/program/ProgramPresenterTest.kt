@@ -53,7 +53,7 @@ class ProgramPresenterTest {
         val programs = listOf(programViewModel())
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
-        val syncStatusData = SyncStatusData()
+        val syncStatusData = SyncStatusData(true)
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
@@ -73,7 +73,7 @@ class ProgramPresenterTest {
     @Test
     fun `Should render error when there is a problem getting programs`() {
         val filterManagerFlowable = Flowable.just(filterManager)
-        val syncStatusData = SyncStatusData()
+        val syncStatusData = SyncStatusData(true)
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable

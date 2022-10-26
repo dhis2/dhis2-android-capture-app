@@ -136,15 +136,17 @@ class GranularSyncPresenterImpl(
     }
 
     override fun isSMSEnabled(showSms: Boolean): Boolean {
+        return smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
+    }
+
+    override fun canSendSMS(): Boolean {
         return when (conflictType) {
             ALL,
             PROGRAM,
             DATA_SET -> false
             TEI,
             EVENT,
-            DATA_VALUES -> {
-                smsSyncProvider.isSMSEnabled(conflictType == TEI) && showSms
-            }
+            DATA_VALUES -> true
         }
     }
 
@@ -242,12 +244,13 @@ class GranularSyncPresenterImpl(
                         )
                     }
                 )
-            /*.subscribeWith(
-                smsSyncProvider.onConvertingObserver { updateStateList(it) }
-            )*/
         )
 
         return states
+    }
+
+    override fun restartSmsSender() {
+        smsSyncProvider.restartSmsSender()
     }
 
     // PLAY SERVICES
@@ -347,6 +350,7 @@ class GranularSyncPresenterImpl(
     override fun onSmsNotManuallySent(context: Context) {
         view.logSmsNotSent()
         smsSyncProvider.unregisterSMSReceiver(context)
+        restartSmsSender()
     }
 
     override fun onSmsSyncClick(
@@ -375,11 +379,13 @@ class GranularSyncPresenterImpl(
                 onFailure = {
                     view.logSmsReachedServerError()
                     updateStatusToSentBySMS()
+                    restartSmsSender()
                 }
             )
         } else {
             view.logSmsSent()
             updateStatusToSentBySMS()
+            restartSmsSender()
         }
     }
 
@@ -394,6 +400,7 @@ class GranularSyncPresenterImpl(
                 updateStatusToSentBySMS()
             }
         }
+        restartSmsSender()
     }
 
     @VisibleForTesting

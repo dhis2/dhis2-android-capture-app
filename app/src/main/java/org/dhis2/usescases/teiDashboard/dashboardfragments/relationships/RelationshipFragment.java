@@ -124,7 +124,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             if(locationProvider.hasLocationEnabled()) {
                 permissionManager.requestLocationPermissions(getActivity());
             }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
             }
             return Unit.INSTANCE;
         });
@@ -150,7 +150,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     return Unit.INSTANCE;
                 });
             }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), () -> null);
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
             }
         });
 

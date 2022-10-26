@@ -69,6 +69,15 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             }
         }
 
+    private val locationDisabledSettings =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (locationProvider?.hasLocationEnabled() == true) {
+                viewModel.requestCurrentLocation()
+            } else {
+                viewModel.cancelCoordinateRequest()
+            }
+        }
+
     private val viewModel: EventDetailsViewModel by viewModels {
         factory
     }
@@ -107,7 +116,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             container,
             false
         )
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         return binding.root
     }
@@ -162,9 +171,17 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
 
         viewModel.showEnableLocationMessage = {
-            LocationSettingLauncher.requestEnableLocationSetting(requireContext()) {
-                viewModel.cancelCoordinateRequest()
-            }
+            LocationSettingLauncher.requestEnableLocationSetting(
+                requireContext(),
+                {
+                    locationDisabledSettings.launch(
+                        LocationSettingLauncher.locationSourceSettingIntent()
+                    )
+                },
+                {
+                    viewModel.cancelCoordinateRequest()
+                }
+            )
         }
 
         viewModel.onButtonClickCallback = {

@@ -119,44 +119,23 @@ class GraphToTable {
         series: List<SerieData>,
         headers: List<CellModel?>
     ): List<List<CellModel>> {
-        return if (graph.categories.isEmpty()) {
+        return headers.mapIndexed { index, header ->
             series.map { serie ->
-                mutableListOf<CellModel>().apply {
-                    headers.forEach { header ->
-                        val point = serie.coordinates.firstOrNull {
-                            when (graph.chartType) {
-                                ChartType.PIE_CHART -> it.legend == header?.text
-                                else ->
-                                    DateUtils.SIMPLE_DATE_FORMAT.format(it.eventDate) ==
-                                        header?.text
-                            }
+                val point = serie.coordinates.firstOrNull { point ->
+                    if (graph.categories.isEmpty()) {
+                        when (graph.chartType) {
+                            ChartType.PIE_CHART -> point.legend == header?.text
+                            else ->
+                                DateUtils.SIMPLE_DATE_FORMAT.format(point.eventDate) == header?.text
                         }
-
-                        add(
-                            CellModel(
-                                point?.fieldValue?.toString() ?: "",
-                                point?.legendValue?.color
-                            )
-                        )
+                    } else {
+                        point.position?.toInt() == index
                     }
                 }
-            }
-        } else {
-            return mutableListOf<List<CellModel>>().apply {
-                headers.forEachIndexed { index, s ->
-                    add(
-                        series.map {
-                            val point = it.coordinates.firstOrNull { point ->
-                                point.position?.toInt() == index
-                            }
-
-                            CellModel(
-                                point?.fieldValue?.toString() ?: "",
-                                point?.legendValue?.color
-                            )
-                        }
-                    )
-                }
+                CellModel(
+                    point?.fieldValue?.toString() ?: "",
+                    point?.legendValue?.color
+                )
             }
         }
     }

@@ -1,10 +1,19 @@
 package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
@@ -16,23 +25,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
-import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun DataSetTableScreen(
-    tableData: List<TableModel>,
+    tableScreenState: TableScreenState,
     onCellClick: (tableId: String, TableCell) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
-    onSaveValue: (TableCell) -> Unit
+    onSaveValue: (TableCell, selectNext: Boolean) -> Unit
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -61,30 +73,33 @@ fun DataSetTableScreen(
     )
 
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
-    var finishEdition by remember { mutableStateOf(false) }
+    var alreadyFinish by remember { mutableStateOf(false) }
 
     fun finishEdition() {
+        focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
         onEdition(false)
     }
 
-    fun collapseBottomSheet() {
+    fun collapseBottomSheet(finish: Boolean = false) {
         focusManager.clearFocus(true)
         coroutineScope.launch {
-            bottomSheetState.bottomSheetState.collapseIfExpanded()
+            bottomSheetState.bottomSheetState.collapseIfExpanded {
+                if (finish) {
+                    finishEdition()
+                }
+                alreadyFinish = true
+            }
         }
-    }
-
-    fun collapseBottomSheetAndFinishEdition() {
-        collapseBottomSheet()
-        finishEdition = true
     }
 
     fun startEdition() {
         coroutineScope.launch {
             bottomSheetState.bottomSheetState.expandIfCollapsed { onEdition(true) }
         }
+        alreadyFinish = false
     }
 
     fun updateError(tableCell: TableCell) {
@@ -103,45 +118,45 @@ fun DataSetTableScreen(
             onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
                 currentCell = tableCell
                 currentInputType = inputModel
+                focusRequester.requestFocus()
             } ?: collapseBottomSheet()
         } else {
             updateError(tableCell)
         }
     }
 
-    var nextSelected by remember { mutableStateOf(false) }
-
     var saveClicked by remember { mutableStateOf(false) }
-
-    if (tableData.isNotEmpty() && nextSelected) {
-        (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-
-            val currentTable = tableData.first { it.id == cellSelected.tableId }
-            currentTable.getNextCell(cellSelected)?.let {
-                selectNextCell(it, cellSelected)
-            } ?: collapseBottomSheetAndFinishEdition()
-        }
-        nextSelected = false
-    }
 
     if (saveClicked) {
         (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-            val currentTable = tableData.first { it.id == cellSelected.tableId }
-            currentTable.tableErrorCell()?.let {
+            val currentTable = tableScreenState.tables.firstOrNull { it.id == cellSelected.tableId }
+            currentTable?.cellHasError(cellSelected)?.let {
                 updateError(it)
                 saveClicked = false
             }
         }
     }
 
-    BackHandler(bottomSheetState.bottomSheetState.isExpanded) {
-        collapseBottomSheetAndFinishEdition()
+    BackHandler(
+        bottomSheetState.bottomSheetState.isExpanded &&
+            !bottomSheetState.bottomSheetState.isAnimationRunning
+    ) {
+        collapseBottomSheet(finish = true)
     }
-
+    LaunchedEffect(tableScreenState) {
+        if (tableScreenState.selectNext) {
+            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+                val currentTable = tableScreenState.tables.first { it.id == cellSelected.tableId }
+                currentTable.getNextCell(cellSelected, false)?.let {
+                    selectNextCell(it, cellSelected)
+                } ?: collapseBottomSheet(finish = true)
+            }
+        }
+    }
     LaunchedEffect(bottomSheetState.bottomSheetState.currentValue) {
         if (
             bottomSheetState.bottomSheetState.currentValue == BottomSheetValue.Collapsed &&
-            finishEdition
+            !alreadyFinish
         ) {
             finishEdition()
         }
@@ -163,12 +178,26 @@ fun DataSetTableScreen(
                 },
                 onSave = {
                     currentCell?.let {
-                        onSaveValue(it)
+                        onSaveValue(it, false)
                     }
+                    saveClicked = true
                 },
                 onNextSelected = {
-                    nextSelected = true
-                }
+                    currentCell?.let { tableCell ->
+                        if (tableCell.error == null) {
+                            onSaveValue(tableCell, true)
+                        } else {
+                            (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
+                                val currentTable =
+                                    tableScreenState.tables.first { it.id == cellSelected.tableId }
+                                currentTable.getNextCell(cellSelected, true)?.let {
+                                    selectNextCell(it, cellSelected)
+                                } ?: collapseBottomSheet(finish = true)
+                            }
+                        }
+                    }
+                },
+                focusRequester = focusRequester
             )
         },
         sheetPeekHeight = 0.dp,
@@ -177,8 +206,22 @@ fun DataSetTableScreen(
             topEnd = 16.dp
         )
     ) {
+        AnimatedVisibility(
+            visible = tableScreenState.tables.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
         DataTable(
-            tableList = tableData,
+            tableList = tableScreenState.tables,
             editable = true,
             tableColors = tableColors,
             tableSelection = tableSelection,
@@ -193,13 +236,14 @@ fun DataSetTableScreen(
                 }
 
                 override fun onClick(tableCell: TableCell) {
-                    currentCell?.let {
-                        onSaveValue(it)
+                    currentCell?.takeIf { it != tableCell }?.let {
+                        onSaveValue(it, false)
                     }
                     onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
                         currentCell = tableCell
                         currentInputType = inputModel.copy(currentValue = currentCell?.value)
                         startEdition()
+                        focusRequester.requestFocus()
                     } ?: collapseBottomSheet()
                 }
             }
@@ -219,16 +263,17 @@ fun DataSetTableScreen(
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-private suspend fun BottomSheetState.collapseIfExpanded() {
+private suspend fun BottomSheetState.collapseIfExpanded(onCollapse: () -> Unit) {
     if (isExpanded) {
-        collapse()
+        onCollapse()
+        animateTo(BottomSheetValue.Collapsed, tween(400))
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 private suspend fun BottomSheetState.expandIfCollapsed(onExpand: () -> Unit) {
     if (isCollapsed) {
-        expand()
         onExpand()
+        animateTo(BottomSheetValue.Expanded, tween(400))
     }
 }

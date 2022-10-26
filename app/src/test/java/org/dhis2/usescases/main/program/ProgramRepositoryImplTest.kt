@@ -102,7 +102,7 @@ class ProgramRepositoryImplTest {
 
     @Test
     fun `Should return list of data set ProgramViewModel`() {
-        val syncStatusData = SyncStatusData()
+        val syncStatusData = SyncStatusData(true)
         whenever(
             filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
@@ -124,7 +124,7 @@ class ProgramRepositoryImplTest {
 
     @Test
     fun `Should set data set count to 0 if assign to me is active`() {
-        val syncStatusData = SyncStatusData()
+        val syncStatusData = SyncStatusData(true)
         whenever(
             filterPresenter.filteredDataSetInstances()
         ) doReturn mock()
@@ -153,7 +153,7 @@ class ProgramRepositoryImplTest {
 
     @Test
     fun `Should return list of program ProgramViewModels`() {
-        val syncStatusData = SyncStatusData()
+        val syncStatusData = SyncStatusData(true)
         initWheneverForPrograms()
         whenever(
             filterPresenter.areFiltersActive()

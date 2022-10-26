@@ -222,7 +222,7 @@ class MainActivity :
 
     private fun observeSyncState() {
         presenter.observeDataSync().observe(this) {
-            if (it.isDownloading()) {
+            if (it.running) {
                 setFilterButtonVisibility(false)
                 setBottomNavigationVisibility(false)
             } else {
@@ -416,6 +416,7 @@ class MainActivity :
                 mainNavigator.openQR()
             }
             R.id.menu_jira -> {
+                presenter.trackJiraReport()
                 mainNavigator.openJira()
             }
             R.id.menu_about -> {

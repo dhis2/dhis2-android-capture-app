@@ -49,7 +49,10 @@ class ChartViewHolder(
     }
 
     private fun loadChart(chart: ChartModel) {
-        loadComposeChart(chart, chart.observableChartType.get() == ChartType.TABLE)
+        loadComposeChart(
+            chart = chart,
+            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart()
+        )
         if (chart.observableChartType.get() != ChartType.TABLE) {
             val chartView = chart.graph.toChartBuilder()
                 .withType(chart.observableChartType.get()!!)

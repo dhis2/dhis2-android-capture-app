@@ -13,7 +13,8 @@ import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -28,13 +29,13 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
-import org.dhis2.databinding.FragmentDatasetSectionBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -55,16 +56,11 @@ const val ARG_ATTR_OPT_COMB = "ARG_ATTR_OPT_COMB"
 
 class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View {
 
-    private lateinit var binding: FragmentDatasetSectionBinding
     private lateinit var activity: DataSetTableActivity
     private lateinit var presenter: DataSetTableContract.Presenter
 
     @Inject
     lateinit var presenterFragment: DataValuePresenter
-
-    private var heights = ArrayList<Int>()
-    private val currentTablePosition = MutableLiveData<Int>()
-    private var tablesCount: Int = 0
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -95,32 +91,32 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentDatasetSectionBinding.inflate(inflater, container, false)
-            .also {
-                binding = it
-                binding.tables.setContent {
-                    MdcTheme {
-                        val tableData by presenterFragment.tableData()
-                            .observeAsState(emptyList())
-                        DataSetTableScreen(
-                            tableData = tableData,
-                            onCellClick = { _, cell ->
-                                presenterFragment.onCellClick(cell = cell)
-                            },
-                            onEdition = { isEditing ->
-                                presenter.editingCellValue(isEditing)
-                            },
-                            onCellValueChange = { cell ->
-                                presenterFragment.onCellValueChanged(cell)
-                            },
-                            onSaveValue = { cell ->
-                                presenterFragment.onSaveValueChange(cell)
-                            }
-                        )
-                    }
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    val screenState by presenterFragment.currentState().observeAsState(
+                        initial = TableScreenState(emptyList(), false)
+                    )
+
+                    DataSetTableScreen(
+                        tableScreenState = screenState,
+                        onCellClick = { _, cell ->
+                            presenterFragment.onCellClick(cell = cell)
+                        },
+                        onEdition = { isEditing ->
+                            presenter.editingCellValue(isEditing)
+                        },
+                        onCellValueChange = { cell ->
+                            presenterFragment.onCellValueChanged(cell)
+                        },
+                        onSaveValue = { cell, selectNext ->
+                            presenterFragment.onSaveValueChange(cell, selectNext)
+                        }
+                    )
                 }
             }
-            .root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,21 +129,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         presenterFragment.onDettach()
     }
 
-    override fun updateTabLayout(count: Int) {
-        this.tablesCount = count
-        activity.updateTabLayout()
-    }
-
     override fun onValueProcessed() {
         if (activity.isBackPressed) {
             activity.abstractActivity.back()
-        }
-    }
-
-    override fun updateProgressVisibility() {
-        when (binding.programProgress.visibility) {
-            View.GONE -> binding.programProgress.visibility = View.VISIBLE
-            View.VISIBLE -> binding.programProgress.visibility = View.GONE
         }
     }
 
@@ -158,7 +142,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     }
 
     override fun showCalendar(dataElement: DataElement, cell: TableCell, showTimePicker: Boolean) {
-        val dialog = CalendarPicker(binding.root.context)
+        val dialog = CalendarPicker(requireContext())
         dialog.setTitle(dataElement.displayFormName())
 
         val calendar = Calendar.getInstance()
