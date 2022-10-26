@@ -1,6 +1,6 @@
 This new version includes the following features:
 - Tables has a new design which ensures good contrast and visibility.
-- Sync process improvements: open home after syncing metadata, not full sync after user is logged in.
+- Sync process improvements: not full sync after user is logged in.
 - Tracker: manage ownership in permanent referrals.
 - SMS functionality.
 - Simplify steps to create a program stage.
