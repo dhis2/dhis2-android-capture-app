@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
 }
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -41,6 +43,8 @@ android {
     buildFeatures {
         dataBinding true
     }
+
+    flavorDimensions "default"
 
     kotlinOptions {
         jvmTarget = '1.8'

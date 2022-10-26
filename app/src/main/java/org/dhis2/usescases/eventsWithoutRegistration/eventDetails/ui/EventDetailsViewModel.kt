@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
-import org.dhis2.data.location.LocationProvider
+import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -284,6 +284,10 @@ class EventDetailsViewModel(
             },
             onFailure = { error -> error.message?.let { onReopenError?.invoke(it) } }
         )
+    }
+
+    fun cancelCoordinateRequest() {
+        setUpCoordinates(value = eventCoordinates.value.model?.value)
     }
 }
 

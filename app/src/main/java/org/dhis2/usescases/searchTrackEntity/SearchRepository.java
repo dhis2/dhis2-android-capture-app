@@ -68,7 +68,9 @@ public interface SearchRepository {
 
     boolean canCreateInProgramWithoutSearch();
 
-    void setCurrentTheme(@org.jetbrains.annotations.Nullable Program selectedProgram);
+    void setCurrentTheme(@org.jetbrains.annotations.Nullable ProgramSpinnerModel selectedProgram);
 
     List<String> trackedEntityTypeFields();
+
+    boolean filtersApplyOnGlobalSearch();
 }

@@ -12,6 +12,5 @@ data class DataSetTableModel(
     val listCategoryOption: List<String?>?,
     val catCombo: String?
 ) {
-    fun id() = "$dataElement$attributeOptionCombo"
     fun setValue(value: String?) = copy(value = value)
 }

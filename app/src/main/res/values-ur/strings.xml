@@ -11,7 +11,6 @@
     <string name="user_hint">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
     <string name="password_hint">پاسورڈ</string>
     <string name="account_recovery">اکاؤنٹ بحالی</string>
-
     <!--PERIOD-->
     <string name="DAILY">روزانہ</string>
     <string name="WEEKLY">ہفتہ وار</string>
@@ -22,7 +21,6 @@
     <string name="search">تلاش کریں</string>
     <string name="event_open">کھلا</string>
     <string name="read_only">صرف دیکھنے کی حد تک</string>
-    <string name="complete">مکمل</string>
     <string name="completed">مکمل</string>
     <string name="cancelled">منسوخ</string>
     <string name="state_error">غلطی</string>

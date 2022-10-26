@@ -27,33 +27,33 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @Override
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), programStageSection(), null, true, null, description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning, error());
+                value(), programStageSection(), null, true, null, description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning, error());
     }
 
     @Override
     public FieldViewModel setValue(String value) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value, programStageSection(), null, true, null, description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning(), error());
+                value, programStageSection(), null, true, null, description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning(), error());
     }
 
     @NonNull
     @Override
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), programStageSection(), null, true, null, description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning(), error);
+                value(), programStageSection(), null, true, null, description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning(), error);
     }
 
     @NonNull
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
-                value(), programStageSection(), null, editable(), null, description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
+                value(), programStageSection(), null, editable(), null, description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
     }
 
    @NonNull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                data, programStageSection(), null, editable(), null, description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
+                data, programStageSection(), null, editable(), null, description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
     }
 }

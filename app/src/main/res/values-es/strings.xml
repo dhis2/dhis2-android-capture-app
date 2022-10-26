@@ -63,6 +63,7 @@
     <string name="configuration_sync_failed">Error en la sincronizacion de configuracion</string>
     <string name="data_sync_failed">Error en la sincronizacion de datos</string>
     <string name="account_recovery">Recuperación de cuenta</string>
+    <string name="no_network_to_recover_account">Necesita conexión de datos si desea recuperar su cuenta.</string>
 
     <!--PERIOD-->
     <string name="DAILY">Diario</string>
@@ -102,7 +103,6 @@
     <string name="event_approved">Evento aprobado</string>
     <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Sólo lectura</string>
-    <string name="complete">Completo</string>
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
@@ -266,7 +266,6 @@
     <string name="missing_mandatory_fields_events">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
     <string name="delete_go_back">Si vuelve ahora la información registrada se perderá </string>
-    <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
     <string name="missing_mandatory_fields_events_2.0">Faltan campos obligatorios:+n%s\nPuede ir atrás, pero el evento no se puede completar.</string>
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
@@ -458,7 +457,6 @@
     <string name="unable_to_save">No se pudo guardar</string>
     <string name="warnings_in_form">Hay mensajes de aviso en el formulario</string>
     <string name="what_to_do">¿Qué quiere hacer?</string>
-    <string name="review">Revisar</string>
     <string name="field_errors">Algunos campos contienen errores. Por favor, revíselos para poder completar.</string>
     <string name="unselect_enrollment">Deseleccionar inscripción</string>
     <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
@@ -542,6 +540,7 @@
     <string name="sync_setting">Parámetros de configuración: %s</string>
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
+    <string name="dashboard_menu_delete_tei_v2">Eliminar %s</string>
     <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="validation_url">La URL no es válida</string>
@@ -730,12 +729,12 @@
     <string name="show_events_timeline">Mostrar eventos por fecha</string>
     <string name="filters_title_date">Fecha</string>
     <string name="filters_title_event_date">Fecha de evento</string>
-    <string name="dataset_data">Datos</string>
     <string name="tei_type_has_no_attributes">%s no tiene atributos públicos. Por favor seleccione un programa</string>
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>
     <string name="coordinates_error">El valor de las coordenadas no es válido</string>
     <string name="break_glass_error">No puede registrar TEIs de otras unidades organizativas en este programa porque está protegido.\nContacte con su administrador.</string>
+    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -754,7 +753,6 @@
     <string name="jira_issue_sent">Incidencia reportada</string>
     <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
     <string name="section_charts">Gráficas</string>
-    <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítela para capturar coordenadas. </string>
     <string name="navigation_list_view">Vista de lista</string>
     <string name="navigation_table_view">Vista de tabla</string>
     <string name="navigation_map_view">Vista del mapa</string>
@@ -843,7 +841,7 @@
     <string name="granular_sync_refresh">Recarga</string>
     <string name="unknown_date">Desconocido</string>
     <string name="granular_sync_refresh_title">Recarga todos los datos</string>
-    <string name="max_accounts_text">Se ha alcanzado el nunero máximo de cuentas de usuario (%d). Para agregar ubna nueva cuenta, inicie sesion y elimine una de las existentes.</string>
+    <string name="max_accounts_text">Se ha alcanzado el nunero máximo de cuentas de usuario (%d). Para agregar una nueva cuenta, inicie sesion y elimine una de las existentes.</string>
     <string name="add_accout">Añadir una cuenta</string>
     <string name="delete_account">Eliminar una cuenta</string>
     <string name="manage_accounts">Administrar cuenta</string>
@@ -856,10 +854,7 @@
     <string name="troubleshooting_pass_rule_validation">No se encontraron advertencias</string>
     <string name="troobleshooting_pass_rule_validation_title">¡Parece que todo está bien!</string>
     <string name="not_saved">No guardado</string>
-    <string name="discard_changes">Descartar los cambios</string>
-    <string name="keep_editing">Seguir editando</string>
     <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
-    <string name="not_now">Ahora no</string>
     <string name="search_loading_more">Cargando más resultados</string>
     <string name="search_no_results_in_program">No hay más resultados para %s</string>
     <string name="search_outside_action">Búsqueda fuera del programa</string>
@@ -877,13 +872,26 @@
     <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
-    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
-    <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
-    <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
-    <string name="fields_mandatory_missing_discard">Algunos campos obligatorios faltan llenarse, el formulario no puede guardarse. \nSi sale, los cambios serán descartados.</string>
     <string name="changes_will_be_discarted">Si sales los cambios serán descartados.</string>
     <string name="re_opened">Reabrir</string>
     <string name="account_disable_title">Cuenta deshabilitada</string>
     <string name="account_disable_message">Tu cuenta ha sido deshabilitada por un administrador</string>
     <string name="search_unable_search_outside">Para hacer una búsqueda fuera del programa, debe abrir el formulario de búsqueda y llenar uno de los siguientes campos %s :</string>
-    </resources>
+    <string name="enrollment_org_unit">Unid. Org. del registro</string>
+    <string name="customactivityoncrash_error_activity_build_version">Versión de compilación: %s</string>
+    <string name="customactivityoncrash_error_activity_buid_date">Fecha de compilación: %s</string>
+    <string name="customactivityoncrash_error_activity_current_date">Fecha actual: %s</string>
+    <string name="customactivityoncrash_error_activity_device">Dispositivo: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Versión del SO: %s</string>
+    <string name="open_details">Abrir detalles de %s</string>
+    <string name="syncing_resource">Sincronizando %s...</string>
+    <string name="sms_sync_waiting_for_response">SMS enviado. Esperando respuesta del servidor.</string>
+    <string name="sms_sync_sms_reached_server">Se ha confirmado que el SMS llegó al servidor. Actualizando estado</string>
+    <string name="sms_sync_sms_reached_server_error">No podemos confirmar que el SMS llegó al servidor. Actualizando estado</string>
+    <string name="sms_sync_sent">SMS enviado. Actualizando estado.</string>
+    <string name="sms_sync_not_sent">SMS no enviado.</string>
+    <string name="sms_sync_opening_app">Abriendo aplicación de SMS. Por favor, no modifique el mensaje.</string>
+    <string name="sms_sync_sms_app_chooser_title">Enviar SMS con</string>
+    <string name="sms_sync_is_sms_sent">¿Ha enviado el sms?</string>
+    <string name="sms_sync_manual_confirmation">Esperando confirmación manual</string>
+</resources>

@@ -15,6 +15,14 @@
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="smsto" android:host="*" />
+        </intent>
+
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -119,16 +127,6 @@
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
         <activity android:name=".usescases.about.PolicyView" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/content_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -153,8 +151,15 @@
                 <data android:scheme="*" />
             </intent-filter>
         </activity>
-        <activity android:name=".data.forms.ScanCaptureActivity"/>
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
+        <activity
+            android:exported="false"
+            android:name=".usescases.crash.CrashActivity"
+            android:process=":error_activity">
+            <intent-filter>
+                <action android:name="cat.ereza.customactivityoncrash.ERROR" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

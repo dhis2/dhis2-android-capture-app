@@ -29,29 +29,29 @@ public abstract class AgeViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, value());
     }
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), mandatory(), value);
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(), options(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), mandatory(), value);
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), value());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), value());
     }
 
     @NonNull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), data);
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(), options(), storeBy(),row(), column(), categoryOptionCombo(),catCombo(), mandatory(), data);
     }
 }

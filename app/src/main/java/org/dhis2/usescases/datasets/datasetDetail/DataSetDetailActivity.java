@@ -25,7 +25,7 @@ import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -91,6 +91,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     fragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
                     break;
                 case R.id.navigation_analytics:
+                    presenter.trackDataSetAnalytics();
                     fragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
                     break;
             }
@@ -213,6 +214,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void showGranularSync() {
+        presenter.trackDataSetGranularSync();
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.DATA_SET)
                 .setUid(dataSetUid)

@@ -53,6 +53,7 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram())
         whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
         whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
         viewModel = SearchTEIViewModel(
             initialProgram,
             initialQuery,
@@ -481,6 +482,20 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should return no more results for global search when filter do not apply for it`() {
+        setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
+        setAllowCreateBeforeSearch(false)
+        whenever(repository.filtersApplyOnGlobalSearch()) doReturn false
+        performSearch()
+        viewModel.onDataLoaded(1, 1)
+        viewModel.dataResult.value?.apply {
+            assertTrue(isNotEmpty())
+            assertTrue(size == 1)
+            assertTrue(first().type == SearchResultType.NO_MORE_RESULTS)
+        }
+    }
+
+    @Test
     fun `Should close keyboard and filters`() {
         viewModel.onBackPressed(
             isPortrait = true,
@@ -576,8 +591,8 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return selected program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build(),
-            Program.builder().uid("program2").build()
+            ProgramSpinnerModel("program1", "program1", false),
+            ProgramSpinnerModel("program2", "program2", false)
         )
 
         viewModel.onProgramSelected(2, programs) {
@@ -589,7 +604,7 @@ class SearchTEIViewModelTest {
     @Test
     fun `should return first program uid and set theme`() {
         val programs = listOf(
-            Program.builder().uid("program1").build()
+            ProgramSpinnerModel("program1", "program1", false)
         )
 
         viewModel.onProgramSelected(2, programs) {

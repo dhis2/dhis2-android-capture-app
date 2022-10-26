@@ -37,6 +37,13 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
 
+    var numberOfUiIcons: Int = 2
+    val defaultUiIconLeftMargin = 8.dp
+    val defaultUiIconTopMargin = 9.dp
+    val defaultUiIconRightMargin = 9.dp
+    val defaultUiIconBottomMargin = 0.dp
+    val defaultUiIconSize = 40.dp
+
     fun init(
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit
@@ -74,7 +81,13 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         map?.apply {
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
                 uiSettings.setCompassImage(it)
-                uiSettings.setCompassMargins(8.dp, 56.dp, 7.dp, 0.dp)
+                uiSettings.setCompassMargins(
+                    defaultUiIconLeftMargin,
+                    numberOfUiIcons * defaultUiIconSize +
+                        (numberOfUiIcons + 1) * defaultUiIconTopMargin,
+                    defaultUiIconRightMargin,
+                    defaultUiIconBottomMargin
+                )
             }
         }
     }

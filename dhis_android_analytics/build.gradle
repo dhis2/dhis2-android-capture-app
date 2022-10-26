@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -39,20 +41,7 @@ android {
 
     buildFeatures {
         dataBinding true
-    }
-
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
+        compose true
     }
 
     compileOptions {
@@ -62,13 +51,17 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.1'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    implementation project(':tableview')
     implementation project(':commons')
+    implementation project(':compose-table')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 

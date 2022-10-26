@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.locationprovider.LocationSettingLauncher;
 import org.dhis2.maps.ExternalMapNavigation;
 import org.dhis2.maps.carousel.CarouselAdapter;
 import org.dhis2.maps.layer.MapLayerDialog;
@@ -29,7 +30,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -120,7 +121,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            permissionManager.requestLocationPermissions(getActivity());
+            if(locationProvider.hasLocationEnabled()) {
+                permissionManager.requestLocationPermissions(getActivity());
+            }else{
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
+            }
             return Unit.INSTANCE;
         });
 
@@ -139,10 +144,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapPositionButton.setOnClickListener(view -> {
-            relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
-                permissionManager.requestLocationPermissions(getActivity());
-                return Unit.INSTANCE;
-            });
+            if(locationProvider.hasLocationEnabled()) {
+                relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
+                    permissionManager.requestLocationPermissions(getActivity());
+                    return Unit.INSTANCE;
+                });
+            }else{
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
+            }
         });
 
         return binding.getRoot();

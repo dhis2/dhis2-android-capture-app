@@ -11,9 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import javax.inject.Inject
 import org.dhis2.commons.databinding.OuTreeFragmentBinding
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import javax.inject.Inject
 
 const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"

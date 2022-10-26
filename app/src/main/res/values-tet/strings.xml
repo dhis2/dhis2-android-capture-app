@@ -6,7 +6,6 @@
     <string name="user_hint">Utilizador nia Naran</string>
     <string name="password_hint">Seña</string>
     <string name="account_recovery">Restaurasaun konta</string>
-
     <!--PERIOD-->
     <string name="DAILY">Diáriu</string>
     <string name="WEEKLY">Semanal</string>
@@ -14,7 +13,6 @@
     <string name="YEARLY">Anual</string>
     <string name="action_share_zero_items">Partilla</string>
     <string name="read_only">Le deit</string>
-    <string name="complete">Kompletu</string>
     <string name="state_error">Erru</string>
     <!--Event initial-->
     <string name="create">Kria</string>

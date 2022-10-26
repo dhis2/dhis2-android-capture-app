@@ -4,21 +4,25 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Single
+import org.dhis2.commons.Constants
 import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.data.server.UserManager
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.utils.Constants
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ThemeManagerTest {
+    private val userManager: UserManager = mock()
     private val programConfiguration: ProgramConfiguration = mock()
     private val dataSetConfiguration: DataSetConfiguration = mock()
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val themeManager = ThemeManager(
+        userManager,
         programConfiguration,
         dataSetConfiguration,
         trackedEntityTypeConfiguration,
@@ -83,6 +87,7 @@ class ThemeManagerTest {
     @Test
     fun shouldReturnAppThemeColorIfProgramIsNull() {
         var result = false
+        whenever(userManager.theme)doReturn Single.just(Pair("flag", R.style.AppTheme))
         themeManager.getThemePrimaryColor(
             null,
             { result = false },
@@ -95,6 +100,7 @@ class ThemeManagerTest {
     fun shouldReturnAppThemeColorIfProgramColorIsNull() {
         var result = false
         whenever(programConfiguration.getProgramColor("uid")) doReturn null
+        whenever(userManager.theme)doReturn Single.just(Pair("flag", R.style.AppTheme))
         themeManager.getThemePrimaryColor(
             "uid",
             { result = false },

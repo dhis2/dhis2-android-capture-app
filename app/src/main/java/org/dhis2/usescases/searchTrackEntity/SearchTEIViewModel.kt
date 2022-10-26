@@ -19,7 +19,6 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
-import org.hisp.dhis.android.core.program.Program
 import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
@@ -68,9 +67,11 @@ class SearchTEIViewModel(
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
     init {
-        viewModelScope.launch {
-            createButtonScrollVisibility.value = searchRepository.canCreateInProgramWithoutSearch()
-            _pageConfiguration.value = searchNavPageConfigurator.initVariables()
+        viewModelScope.launch(dispatchers.io()) {
+            createButtonScrollVisibility.postValue(
+                searchRepository.canCreateInProgramWithoutSearch()
+            )
+            _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
         }
     }
 
@@ -446,7 +447,8 @@ class SearchTEIViewModel(
                 listOf(SearchResult(SearchResult.SearchResultType.TOO_MANY_RESULTS))
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() -> {
+                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -456,7 +458,8 @@ class SearchTEIViewModel(
                 )
             }
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.trackedEntityTypeFields().isNotEmpty() -> {
+                searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -476,6 +479,8 @@ class SearchTEIViewModel(
         }
         _dataResult.value = result
     }
+
+    fun filtersApplyOnGlobalSearch(): Boolean = searchRepository.filtersApplyOnGlobalSearch()
 
     private fun handleInitWithoutData() {
         val result = when (searchRepository.canCreateInProgramWithoutSearch()) {
@@ -534,7 +539,7 @@ class SearchTEIViewModel(
 
     fun onProgramSelected(
         programIndex: Int,
-        programs: List<Program>,
+        programs: List<ProgramSpinnerModel>,
         onProgramChanged: (selectedProgramUid: String?) -> Unit
     ) {
         val selectedProgram = when {
@@ -545,8 +550,8 @@ class SearchTEIViewModel(
         }
         searchRepository.setCurrentTheme(selectedProgram)
 
-        if (selectedProgram?.uid() != initialProgramUid) {
-            onProgramChanged(selectedProgram?.uid())
+        if (selectedProgram?.uid != initialProgramUid) {
+            onProgramChanged(selectedProgram?.uid)
         }
     }
 

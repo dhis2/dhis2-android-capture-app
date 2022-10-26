@@ -11,7 +11,6 @@
     <string name="user_hint">Имя пользователя</string>
     <string name="password_hint">Пароль</string>
     <string name="account_recovery">Восстановить учетную запись</string>
-
     <!--PERIOD-->
     <string name="DAILY">Ежедневно</string>
     <string name="WEEKLY">Еженедельно</string>
@@ -23,7 +22,6 @@
     <string name="search">Поиск</string>
     <string name="event_open">Открыть</string>
     <string name="read_only">Только читать</string>
-    <string name="complete">Завершенный</string>
     <string name="completed">Завершенный</string>
     <string name="cancelled">Отмененный</string>
     <string name="state_error">Ошибка</string>

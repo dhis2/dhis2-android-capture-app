@@ -12,8 +12,11 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper;
+import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -21,10 +24,8 @@ import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
+import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.form.data.DataEntryRepository;
-import org.dhis2.form.data.FormRepository;
-import org.dhis2.form.data.FormRepositoryImpl;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -38,7 +39,6 @@ import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.maps.geometry.bound.BoundsGeometry;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
@@ -59,9 +59,6 @@ import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController;
-import org.dhis2.utils.reporting.CrashReportController;
-import org.dhis2.utils.reporting.CrashReportControllerImpl;
 import org.hisp.dhis.android.core.D2;
 
 import java.util.Map;
@@ -69,7 +66,6 @@ import java.util.Map;
 import dagger.Module;
 import dagger.Provides;
 import dhis2.org.analytics.charts.Charts;
-import dispatch.core.DispatcherProvider;
 
 @Module
 public class SearchTEModule {
@@ -107,11 +103,12 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        TeiFilterToWorkingListItemMapper teiWorkingListMapper,
                                                        FilterRepository filterRepository,
-                                                       MatomoAnalyticsController matomoAnalyticsController) {
+                                                       MatomoAnalyticsController matomoAnalyticsController,
+                                                       SyncStatusController syncStatusController) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 teiWorkingListMapper, filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController);
+                matomoAnalyticsController, syncStatusController);
     }
 
     @Provides
@@ -234,37 +231,6 @@ public class SearchTEModule {
     @PerActivity
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
-    }
-
-    @Provides
-    @PerActivity
-    FormRepository provideFormRepository(D2 d2, DataEntryRepository dataEntryRepository) {
-        return new FormRepositoryImpl(
-                null,
-                new FieldErrorMessageProvider(moduleContext),
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2)
-                ),
-                dataEntryRepository,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Provides
-    @PerActivity
-    DataEntryRepository provideDataEntryRepository(
-            D2 d2,
-            FieldViewModelFactory fieldViewModelFactory) {
-        return new SearchRepositoy(
-                d2,
-                fieldViewModelFactory,
-                initialProgram,
-                teiType,
-                initialQuery
-        );
     }
 
     @Provides

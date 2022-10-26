@@ -351,6 +351,19 @@ class FormRepositoryImpl(
         }
     }
 
+    override fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean) {
+        itemList.let { list ->
+            list.find { item ->
+                item.uid == uid
+            }?.let { item ->
+                itemList = list.updated(
+                    list.indexOf(item),
+                    item.setIsLoadingData(requestInProcess)
+                )
+            }
+        }
+    }
+
     private fun List<FieldUiModel>.mergeListWithErrorFields(
         fieldsWithError: MutableList<RowAction>
     ): List<FieldUiModel> {
@@ -397,6 +410,10 @@ class FormRepositoryImpl(
             ActionType.ON_FINISH -> null
             else -> action.id
         }
+    }
+
+    override fun clearFocusItem() {
+        focusedItemId = null
     }
 
     override fun currentFocusedItem(): FieldUiModel? {

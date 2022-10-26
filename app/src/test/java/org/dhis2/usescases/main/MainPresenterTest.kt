@@ -17,6 +17,8 @@ import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.matomo.Categories.Companion.HOME
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -25,10 +27,10 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
-import org.dhis2.utils.analytics.matomo.Categories.Companion.HOME
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
@@ -52,7 +54,8 @@ class MainPresenterTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
-
+    private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
+    private val syncStatusController: SyncStatusController = mock()
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -70,7 +73,9 @@ class MainPresenterTest {
                 filterRepository,
                 matomoAnalyticsController,
                 userManager,
-                deleteUserData
+                deleteUserData,
+                syncIsPerfomedInteractor,
+                syncStatusController
             )
     }
 

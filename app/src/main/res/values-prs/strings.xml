@@ -10,7 +10,6 @@
     <string name="user_hint">نام کاربر</string>
     <string name="password_hint">کلید رمز</string>
     <string name="account_recovery">بهبود حساب</string>
-
     <!--PERIOD-->
     <string name="DAILY">روزنه</string>
     <string name="WEEKLY">هفته وار</string>
@@ -22,7 +21,6 @@
     <string name="search">جستجو</string>
     <string name="event_open">باز کردن</string>
     <string name="read_only">تنها قابل مطالعه میباشد</string>
-    <string name="complete">تکمیل</string>
     <string name="completed">تکمیل شد</string>
     <string name="state_error">خطا</string>
     <!--Event initial-->

@@ -42,6 +42,8 @@ public class TeiProgramListContract {
         void onUnselectEnrollment();
 
         String getProgramColor(String uid);
+
+        void refreshData();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -52,5 +54,7 @@ public class TeiProgramListContract {
         Program getProgramFromUid(String programUid);
 
         String getProgramColor(@NonNull String programUid);
+
+        void refreshData();
     }
 }

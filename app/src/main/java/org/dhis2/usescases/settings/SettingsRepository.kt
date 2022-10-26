@@ -3,6 +3,7 @@ package org.dhis2.usescases.settings
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.Bindings.toSeconds
+import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_ORG_UNIT
@@ -18,7 +19,6 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
-import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.GeneralSettings

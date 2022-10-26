@@ -208,4 +208,13 @@
     <string name="error_invalid_characters">There are invalid characters in the query. Please ask the administrator to verify the server configuration (relaxedQueryChars,...).</string>
     <string name="unsupported_field_description">This field is not available for mobile capture</string>
     <string name="add_image">Add Image</string>
+    <string name="action_ok">Ok</string>
+    <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="not_now">Not now</string>
+    <string name="review">Review</string>
+    <string name="complete">Complete</string>
+    <string name="default_table_header_label">Value</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="default_empty_dataset_section_label">Data</string>
 </resources>

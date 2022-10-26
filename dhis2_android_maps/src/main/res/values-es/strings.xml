@@ -7,7 +7,7 @@
     <string name="action_apply">Aplicar</string>
     <string name="dialog_layer_satellite">Mostrar vista satélite</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
     <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
-    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
 </resources>

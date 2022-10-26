@@ -1,6 +1,8 @@
 package org.dhis2.commons.filters.data
 
 import androidx.databinding.ObservableField
+import java.util.Calendar
+import javax.inject.Inject
 import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.CatOptionComboFilter
 import org.dhis2.commons.filters.EnrollmentDateFilter
@@ -35,8 +37,6 @@ import org.hisp.dhis.android.core.settings.DataSetFilter
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import java.util.Calendar
-import javax.inject.Inject
 
 class FilterRepository @Inject constructor(
     private val d2: D2,

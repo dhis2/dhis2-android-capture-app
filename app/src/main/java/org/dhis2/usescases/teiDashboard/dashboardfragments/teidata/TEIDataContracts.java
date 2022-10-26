@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.commons.filters.FilterItem;
@@ -53,8 +54,6 @@ public class TEIDataContracts {
 
         void seeDetails(Intent intent, Bundle bundle);
 
-        void showQR(Intent intent);
-
         void openEventDetails(Intent intent, Bundle bundle);
 
         void openEventInitial(Intent intent);
@@ -67,7 +66,7 @@ public class TEIDataContracts {
 
         void hideFilters();
 
-        Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
+        Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 
         void showNewEventOptions(android.view.View view, ProgramStage stageUid);
 
@@ -101,8 +100,6 @@ public class TEIDataContracts {
         void completeEnrollment();
 
         void onFollowUp(DashboardProgramModel dashboardProgramModel);
-
-        void onShareClick(android.view.View mView);
 
         void seeDetails(android.view.View sharedView, DashboardProgramModel dashboardProgramModel);
 

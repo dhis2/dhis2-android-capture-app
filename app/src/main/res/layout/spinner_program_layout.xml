@@ -6,11 +6,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.Program" />
-
-        <variable
-            name="programTitle"
-            type="java.lang.String" />
+            type="org.dhis2.usescases.searchTrackEntity.ProgramSpinnerModel" />
     </data>
 
     <TextView
@@ -20,9 +16,11 @@
         android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
         android:gravity="center_vertical"
         android:padding="5dp"
-        android:text="@{program.displayName!=null?program.displayName:programTitle}"
+        android:text="@{program.displayName}"
         android:textColor="@color/text_black_333"
         android:maxLines="1"
+        android:alpha="@{program.downloading ? 0.5f : 1f}"
+        android:clickable="@{program.downloading}"
         android:ellipsize="end"
         android:textSize="16sp"
         tools:text="nameddddddddddddddddddddddddddddddddddddddddddddddddddddddd"

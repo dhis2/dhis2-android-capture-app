@@ -104,8 +104,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:alpha="@{item.editable? 1f : 0.5f}"
-                    android:hint="@{item.hint}"
                     android:theme="@style/formInputText"
+                    app:hintEnabled="false"
                     app:inputError="@{item.error}"
                     app:inputWarning="@{item.warning}"
                     app:input_layout_style="@{item.style}">
@@ -119,6 +119,7 @@
                         android:text="@{item.displayName}"
                         android:textSize="@dimen/form_edit_text_size"
                         android:inputType="textNoSuggestions"
+                        android:hint="@{item.hint}"
                         app:options="@{item}"
                         app:input_style="@{item}"
                         app:drawableEndCompat="@drawable/ic_arrow_drop_down"

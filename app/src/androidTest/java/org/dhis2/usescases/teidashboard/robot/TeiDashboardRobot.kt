@@ -20,6 +20,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.isToast
+import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
@@ -194,7 +195,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnShareButton() {
-        onView(withId(R.id.shareContainer)).perform(click())
+        onView(withText(R.string.share)).perform(click())
     }
 
     fun clickOnNextQR() {
@@ -220,7 +221,7 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.viewMore)).perform(click())
+        onView(withId(R.id.detailsButton)).perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
@@ -284,7 +285,14 @@ class TeiDashboardRobot : BaseRobot() {
         )
 
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
+            .perform(
+                actionOnItemAtPosition<DashboardProgramViewHolder>(
+                    6,
+                    clickChildViewWithId(R.id.section_details)
+                )
+            )
+
+        waitToDebounce(5000)
 
         onView(withId(R.id.recyclerView)).check(
             matches(

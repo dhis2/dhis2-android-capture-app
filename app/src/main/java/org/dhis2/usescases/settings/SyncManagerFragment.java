@@ -9,20 +9,17 @@ import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_MANUAL;
+import static org.dhis2.commons.Constants.DATA_NOW;
+import static org.dhis2.commons.Constants.META_NOW;
+import static org.dhis2.commons.Constants.TIME_MANUAL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -37,7 +34,6 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
@@ -49,6 +45,7 @@ import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
@@ -62,7 +59,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.settings.LimitScope;
@@ -97,6 +94,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
+    private SettingItem settingOpened = null;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -194,21 +192,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void wipeDatabase() {
-        new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setTitle(getString(R.string.wipe_data))
-                .setMessage(getString(R.string.wipe_data_meesage))
-                .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    presenter.resetFilters();
-                    analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
-                    showDeleteProgress();
-                })
-                .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-    @Override
     public void deleteLocalData() {
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.delete_local_data))
@@ -220,25 +203,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
-    }
-
-    private void showDeleteProgress() {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel("wipe_notification", "Restart", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context, "wipe_notification")
-                        .setSmallIcon(R.drawable.ic_sync)
-                        .setContentTitle(getString(R.string.wipe_data))
-                        .setContentText(getString(R.string.please_wait))
-                        .setOngoing(true)
-                        .setAutoCancel(false)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        notificationManager.notify(123456, notificationBuilder.build());
-        presenter.wipeDb();
     }
 
     @Override
@@ -285,46 +249,130 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void openItem(SettingItem settingsItem) {
-        binding.syncDataActions.setVisibility(View.GONE);
-        binding.syncMetadataActions.setVisibility(View.GONE);
-        binding.parameterData.setVisibility(View.GONE);
-        binding.reservedValuesActions.setVisibility(View.GONE);
-        binding.deleteDataButton.setVisibility(View.GONE);
-        binding.resetButton.setVisibility(View.GONE);
-        binding.smsContent.setVisibility(View.GONE);
-        binding.dataDivider.setVisibility(View.VISIBLE);
-        binding.metaDivider.setVisibility(View.VISIBLE);
-        binding.parameterDivider.setVisibility(View.VISIBLE);
-        binding.reservedValueDivider.setVisibility(View.VISIBLE);
+        if (settingsItem != settingOpened) {
+            closedSettingItem(settingOpened);
+            settingOpened = settingsItem;
+            binding.dataDivider.setVisibility(View.VISIBLE);
+            binding.metaDivider.setVisibility(View.VISIBLE);
+            binding.parameterDivider.setVisibility(View.VISIBLE);
+            binding.reservedValueDivider.setVisibility(View.VISIBLE);
 
-        switch (settingsItem) {
-            case DATA_SYNC:
-                binding.syncDataActions.setVisibility(View.VISIBLE);
-                binding.dataDivider.setVisibility(View.GONE);
-                break;
-            case META_SYNC:
-                binding.syncMetadataActions.setVisibility(View.VISIBLE);
-                binding.metaDivider.setVisibility(View.GONE);
-                break;
-            case SYNC_PARAMETERS:
-                binding.parameterData.setVisibility(View.VISIBLE);
-                binding.parameterDivider.setVisibility(View.GONE);
-                break;
-            case RESERVED_VALUES:
-                binding.reservedValuesActions.setVisibility(View.VISIBLE);
-                binding.reservedValueDivider.setVisibility(View.GONE);
-                break;
-            case DELETE_LOCAL_DATA:
-                binding.deleteDataButton.setVisibility(View.VISIBLE);
-                break;
-            case RESET_APP:
-                binding.resetButton.setVisibility(View.VISIBLE);
-                break;
-            case SMS:
-                binding.smsContent.setVisibility(View.VISIBLE);
-                break;
-            default:
-                break;
+            switch (settingsItem) {
+                case DATA_SYNC:
+                    ViewAnimationsKt.expand(binding.syncDataActions, true, () -> {
+                        binding.syncDataActions.setVisibility(View.VISIBLE);
+                        binding.dataDivider.setVisibility(View.GONE);
+                        binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
+                        binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case META_SYNC:
+                    ViewAnimationsKt.expand(binding.syncMetadataActions, true, () -> {
+                        binding.syncMetadataActions.setVisibility(View.VISIBLE);
+                        binding.metaDivider.setVisibility(View.GONE);
+                        binding.metaDataTopShadow.setVisibility(View.VISIBLE);
+                        binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SYNC_PARAMETERS:
+                    ViewAnimationsKt.expand(binding.parameterData, true, () -> {
+                        binding.parameterData.setVisibility(View.VISIBLE);
+                        binding.parameterDivider.setVisibility(View.GONE);
+                        binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
+                        binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case RESERVED_VALUES:
+                    ViewAnimationsKt.expand(binding.reservedValuesActions, true, () -> {
+                        binding.reservedValuesActions.setVisibility(View.VISIBLE);
+                        binding.reservedValueDivider.setVisibility(View.GONE);
+                        binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
+                        binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case DELETE_LOCAL_DATA:
+                    ViewAnimationsKt.expand(binding.deleteDataButton, true, () -> {
+                        binding.deleteDataButton.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SMS:
+                    ViewAnimationsKt.expand(binding.smsContent, true, () -> {
+                        binding.smsContent.setVisibility(View.VISIBLE);
+                        binding.smsTopShadow.setVisibility(View.VISIBLE);
+                        binding.smsBottomShadow.setVisibility(View.VISIBLE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            closedSettingItem(settingOpened);
+            settingOpened = null;
+        }
+    }
+
+    private void closedSettingItem(SettingItem settingItemToClose) {
+        if (settingItemToClose != null) {
+            switch (settingItemToClose) {
+                case DATA_SYNC:
+                    ViewAnimationsKt.collapse(binding.syncDataActions, () -> {
+                        binding.syncDataActions.setVisibility(View.GONE);
+                        binding.dataSyncTopShadow.setVisibility(View.GONE);
+                        binding.dataSyncBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    binding.dataDivider.setVisibility(View.VISIBLE);
+                    break;
+                case META_SYNC:
+                    ViewAnimationsKt.collapse(binding.syncMetadataActions, () -> {
+                        binding.syncMetadataActions.setVisibility(View.GONE);
+                        binding.metaDataTopShadow.setVisibility(View.GONE);
+                        binding.metaDataBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    binding.metaDivider.setVisibility(View.VISIBLE);
+                    break;
+                case SYNC_PARAMETERS:
+                    ViewAnimationsKt.collapse(binding.parameterData, () -> {
+                        binding.parameterData.setVisibility(View.GONE);
+                        binding.itemParamsSyncTopShadow.setVisibility(View.GONE);
+                        binding.itemParamsSyncBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    binding.parameterDivider.setVisibility(View.VISIBLE);
+                    break;
+                case RESERVED_VALUES:
+                    ViewAnimationsKt.collapse(binding.reservedValuesActions, () -> {
+                        binding.reservedValuesActions.setVisibility(View.GONE);
+                        binding.reservedValueTopShadow.setVisibility(View.GONE);
+                        binding.reservedValueBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    binding.reservedValueDivider.setVisibility(View.VISIBLE);
+                    break;
+                case DELETE_LOCAL_DATA:
+                    ViewAnimationsKt.collapse(binding.deleteDataButton, () -> {
+                        binding.deleteDataButton.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                case SMS:
+                    ViewAnimationsKt.collapse(binding.smsContent, () -> {
+                        binding.smsContent.setVisibility(View.GONE);
+                        binding.smsTopShadow.setVisibility(View.GONE);
+                        binding.smsBottomShadow.setVisibility(View.GONE);
+                        return Unit.INSTANCE;
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -701,18 +749,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
 
         binding.eventsEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.eventsEditText.getText().toString().isEmpty()) {
-                    presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.eventsEditText.getText().toString().isEmpty()) {
+                presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
             }
         });
 
         binding.teiEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                if (!binding.teiEditText.getText().toString().isEmpty()) {
-                    presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
-                }
+            if (!hasFocus && !binding.teiEditText.getText().toString().isEmpty()) {
+                presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
             }
         });
     }

@@ -44,7 +44,6 @@
     <string name="configuration_sync_failed">Konfigurationssynkroniseringen misslyckades</string>
     <string name="data_sync_failed">Data synkronisering misslyckades</string>
     <string name="account_recovery">kontoåterställning</string>
-
     <!--PERIOD-->
     <string name="DAILY">Dagligen</string>
     <string name="WEEKLY">Varje vecka</string>
@@ -78,7 +77,6 @@
     <string name="event_approved">Händelse godkänd</string>
     <string name="event_inactive">Händelse inaktiv</string>
     <string name="read_only">read only</string>
-    <string name="complete">Färdigt</string>
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
     <string name="re_open">Öppna igen</string>

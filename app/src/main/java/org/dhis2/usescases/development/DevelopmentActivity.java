@@ -50,6 +50,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadLocaleDevTools();
         loadIconsDevTools();
         loadBreakTheGlass();
+        loadCrashControl();
         loadFeatureConfig();
     }
 
@@ -215,6 +216,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                         .show(
                                 getSupportFragmentManager(),
                                 BreakTheGlassBottomDialog.class.getName()));
+    }
+
+    private void loadCrashControl(){
+        binding.crashButton.setOnClickListener(view -> {
+            throw new IllegalArgumentException("KA BOOOOOM!");
+        });
     }
 
     private void loadFeatureConfig() {

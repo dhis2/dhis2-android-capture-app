@@ -1,8 +1,13 @@
 <resources>
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
+    <plurals name="error_message">
+        <item quantity="other">Kesalahan</item>
+    </plurals>
     <string name="error_wrong_server_url">URL Server salah</string>
     <string name="error_wrong_credentials">Kredensial salah</string>
     <string name="error_unexpected_error">Kesalahan tak terduga</string>
@@ -12,12 +17,17 @@
     <string name="no_value">tidak ada nilai</string>
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
     <string name="no_reserved_values_connection">Tidak ada nilai lainnya. Sambungkan ke Internet untuk mengisi.</string>
+    <string name="errors">Kesalahan</string>
+    <string name="something_wrong">Terjadi kesalahan</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Sinkronkan sekarang</string>
     <string name="sync_text">Mensinkronkan dengan server</string>
     <string name="sync_title">Sedang mensinkronkan</string>
 
+    <string name="sync_metadata">Metadata</string>
     <string name="sync_events">Event</string>
+    <string name="sync_tei">Entitas terlacak</string>
+
     <string name="sync_complete_title">Selesai</string>
     <string name="sync_complete_text">Sync lengkap</string>
 
@@ -26,37 +36,208 @@
     <string name="metadata_sync_error">GAGAL: Terjadi kesalahan saat sinkronisasi. Jika Anda memiliki koneksi silakan coba kembali. Jika kesalahan tetap terjadi, hubungi administrator Anda.</string>
     <string name="data_sync_warning">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Periksa kembali status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
     <string name="data_sync_warning_program">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Jika status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
+    <string name="data_sync_error">ERROR: Beberapa data gagal disinkronkan. Silahkan cek status sinkronisasi: program yang error ditandai sebagai @, TEI dan even sebagai $\"</string>
+    <string name="data_sync_error_program">KESALAHAN: Beberapa data gagal disinkronkan. Silahkan cek status sinkronisasi: TEI dan even dengan konflik ditandai dengan $\"</string>
+    <string name="server_sync_error">Terjadi kesalahan dan server tidak merespon. Hubungi administrator anda.</string>
+
+    <string name="search_result_text">%s hasil ditemukan</string>
     <string name="add_new">Tambahkan baru</string>
     <string name="add">Tambah</string>
+    <string name="schedule_new">Penjadwalan baru</string>
+    <string name="referral">Rujukan</string>
+
+    <!-- Login -->
+    <string name="url_hint">URL server</string>
     <string name="user_hint">User name</string>
+    <string name="password_hint">Password</string>
+    <string name="log_in_button">Masuk</string>
+    <string name="unlock_button">Buka sesi</string>
+    <string name="syncing_configuration">Mensinkronkan konfigurasi Anda</string>
+    <string name="syncing_data_shortly">Data Anda segera disinkronkan</string>
+    <string name="syncing_data">Mensinkronkan data Anda</string>
+    <string name="configuration_ready">Konfigurasi Anda siap digunakan</string>
+    <string name="data_ready">Data Anda tersedia</string>
+    <string name="configuration_sync_failed">Konfigurasi sinkron gagal</string>
+    <string name="data_sync_failed">Sinkronisasi data gagal</string>
+    <string name="account_recovery">Penyelamatan akun</string>
     <!--PERIOD-->
     <string name="DAILY">Harian</string>
     <string name="WEEKLY">Mingguan</string>
     <string name="MONTHLY">Bulanan</string>
     <string name="YEARLY">Tahunan</string>
+    <string name="clear_filters">Hapus penyaring</string>
+    <string name="action_accept">Terima</string>
     <string name="action_share_zero_items">Bagikan</string>
+    <string name="action_share_single_item">Berbagi %d item</string>
+    <string name="action_share_multiple_item">Berbagi %d item</string>
+
     <!-- Input hints -->
     <string name="search">Pencarian</string>
+    <string name="enter_text">Masukkan teks</string>
+    <string name="enter_long_text">Masukkan teks panjang</string>
+    <string name="enter_number">Masukkan angka</string>
+    <string name="enter_integer">Masukkan angka positif</string>
+    <string name="enter_negative_integer">Masukkan angka bulat negatif</string>
+    <string name="enter_positive_integer_or_zero">Masukkan bilangan bulat positif atau nol</string>
+    <string name="enter_positive_integer">Masukkan bilangan bulat</string>
+    <string name="filter_options">Pilihan penyaringan</string>
+    <string name="choose_date">Pilih tanggal</string>
+    <string name="change_calendar">Ganti kalender</string>
+
+    <!-- Status -->
+    <string name="program_completed">Program selesai</string>
+    <string name="program_inactive">Program tidak aktif</string>
+
     <string name="event_open">Buka</string>
-    <string name="complete">Lengkap</string>
+    <string name="event_completed">Even selesai</string>
+    <string name="event_skipped">Even dilewati</string>
+    <string name="event_schedule">Jadwal even</string>
+    <string name="event_expired">Even kadaluarsa</string>
+    <string name="event_editing_expired">Ubah kadaluarsa</string>
+    <string name="event_accepted">Even diterima</string>
+    <string name="event_approved">Even disetujui</string>
+    <string name="event_inactive">Even tidak aktif</string>
+    <string name="read_only">Baca saja</string>
+    <string name="finish_and_complete">Selesai dan lengkap</string>
     <string name="completed">Selesai</string>
+    <string name="cancelled">Dibatalkan</string>
+    <string name="re_open">Buka kembali</string>
+    <string name="activate">Aktivasi</string>
+    <string name="active">Aktif</string>
+
+    <!-- State -->
+    <string name="state_synced">Sinkronisasi</string>
+    <string name="state_to_post">Untuk dikirim</string>
+    <string name="state_to_update">Untuk diperbarui</string>
+    <string name="state_to_delete">Untuk dihapus</string>
     <string name="state_error">Error</string>
+    <string name="action_sync">SINKRONISASI</string>
+    <string name="action_send">KIRIM</string>
+    <string name="action_sync_sms">SINKRONISASI SMS</string>
+
+    <!--Completion-->
+    <string name="completion">Melengkapi</string>
+
     <!--Event initial-->
     <string name="create">Buat</string>
     <string name="update">perbarui</string>
     <string name="date">Tanggal</string>
+    <string name="org_unit">Unit Organisasi</string>
+    <string name="no_org_units">Tidak ada unit organisasi yang terbuka untuk tanggal terpilih. Mohon pilih tanggal atau unit organisasi lain</string>
+    <string name="category_option">Kategori opsi</string>
+    <string name="latitude">Lintang</string>
+    <string name="longitude">Bujur</string>
     <string name="new_event">Event baru</string>
+    <string name="failed_insert_event">Gagal menambahkan even baru</string>
+    <string name="event_created">Even dibuat</string>
+    <string name="event_updated">Even diperbarui</string>
+    <string name="one_time">Satu kali</string>
+    <string name="permanent">Permanen</string>
+
+    <!--DataSet initial-->
+    <string name="report_period">Periode pelaporan</string>
+    <string name="cat_option">Opsi kategori</string>
+    <string name="field_required">Jika Anda mengisi, semua baris harus terisi untuk menyelesaikan data set</string>
+    <string name="field_mandatory">Beberapa data yang diperlukan tidak ada. Anda perlu menetapkan data wajib terisi untuk menyelesaikan Data.Set</string>
+    <string name="field_mandatory_v2">Terdapat hal penting yang hilang. Harap mengisinya untuk melengkapi data.set</string>
+    <string name="datavalue_saved">Data tersimpan!</string>
+    <string name="there_is_no_available_period">Tidak ada periode yang dapat dipilih.</string>
     <!--Event Detail-->
     <string name="event_date">Tanggal Event</string>
     <string name="due_date">Tanggal jatuh tempo</string>
+    <string name="cat_combo">Cat Combo</string>
+    <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">batal</string>
     <string name="delete">hapus</string>
+    <string name="delete_event">Hapus even</string>
+    <string name="confirm_delete_event">Apakah Anda yakin akan menghapus even ini?</string>
+    <string name="event_was_deleted">Even terhapus</string>
+    <string name="total">Total</string>
+    <string name="most_recent_event_date">hal yang paling terbaru</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Data pendaftaran</string>
     <string name="active_programs">Aktifkan program</string>
+    <string name="to_enroll_programs">Program untuk didaftarkan</string>
     <string name="enroll">Daftar</string>
+    <string name="last_visit">Kunjungan terakhir:</string>
+    <string name="apply">Terapkan</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">Lihat rincian</string>
+    <string name="view_more">LIHAT LAINNYA</string>
+    <string name="edit">UBAH</string>
+    <string name="enrolling_ou">Daftarkan OU:</string>
+    <string name="follow_up">Tindak lanjut</string>
+    <string name="follow_up_enabled">Tindak lanjut diterapkan</string>
+    <string name="follow_up_disabled">Tindak lanjut ditutup</string>
     <string name="deactivate">Deaktivasi</string>
+    <string name="program_not_allow_events">Program ini tidak diperbolehkan menambah even</string>
+
+    <!--DONE TASKS-->
+    <string name="events">Even</string>
     <string name="done_task">Beranda</string>
+    <string name="app_info">Informasi App</string>
+    <string name="log_out">Keluar</string>
+    <string name="block_session">Tutup sesi</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 Menit</string>
+    <string name="fifteen_minute">15 Menit</string>
+    <string name="thirty_minutes">30 Menit</string>
+    <string name="a_hour">1 Jam</string>
+    <string name="every_6_hours">6 Jam</string>
+    <string name="a_day">1 Hari (Default)</string>
+    <string name="every_12_hours">12 Jam</string>
+    <string name="Automatic_Sync_Data">Sinkronisasi data otomatis setiap:</string>
+    <string name="Manual">Manual</string>
+    <string name="Automatic_Sync_Metadata">Sinkronisasi konfigurasi otomasi setiap:</string>
+    <string name="a_week">1 Minggu</string>
+    <string name="sync_max_parameters">Parameter sinkronisasi saat ini:</string>
+    <string name="sync_default_parameters">Kembalikan ke default</string>
+    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
+    <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
+    <string name="SYNC_DATA">Sinkronkan Data Sekarang</string>
+    <string name="SYNC_META">Sinkronkan Konfigurasi Sekarang</string>
     <string name="SYNC_MANAGER">Setting</string>
+    <string name="last_data_sync_date">Sinkronisasi terakhir pada: %s</string>
+    <string name="last_metadata_sync_date">Sinkronisasi terakhir pada: %s</string>
+    <string name="refill_reserved_values">Isi ulang</string>
+    <string name="settings_sms_module_title">Modul SMS:</string>
+    <string name="settings_sms_receiver_number">SMS Gateway</string>
+    <string name="settings_sms_result_sender_number">Pengirim hasil SMS</string>
+    <string name="settings_sms_result_timeout">Batas waktu hasil SMS</string>
+    <string name="settings_sms_result_timeout_hint">Kedua</string>
+    <string name="settings_sms_result_sender_hint">Nomor</string>
+    <string name="settings_sms_receiver_number_hint">Nomor</string>
+    <string name="settings_sms_module_switch">Fungsikan pengiriman SMS</string>
+    <string name="settings_sms_response_wait_switch">Tunggu balasan hasil SMS</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="other">Terdapat %s program dengan pengaturan khusus</item>
+    </plurals>
+    <string name="settings_sync_period">Periode sinkronisasi</string>
+    <string name="settings_limit_scope">pengaturan terbatas</string>
+    <string name="settings_limit_globally">Secara global</string>
+    <string name="settings_limit_program">berdasarkan program</string>
+    <string name="settings_limit_ou">berdasarkan unit organisasi</string>
+    <string name="settings_limit_ou_program">berdasarkan unit organisasi dan program</string>
+    <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">Sinkronkan data</string>
+    <string name="settingsSyncMetadata">Sinkronkan konfigurasi</string>
+    <string name="settingsSyncParameters">Sinkronkan paramater</string>
+    <string name="settingsReservedValues">Nilai cadangan</string>
+    <string name="settingsReservedValues_descr">Disini Anda dapat melihat jumlah dari nilai yang tersedia secara offline dan nilai cadangan baru</string>
+    <string name="settingsErrorLog">Buka log kesalahan sinkronisasi</string>
+    <string name="settingsErrorLog_descr">Log ini berisi semua kesalahan yang disebabkan karena sinkronisasi data dan metadata Anda</string>
+    <string name="settingsDeleteLocalData">Menghapus data local</string>
+    <string name="settingsDeleteLocalData_descr">Semua data aplikasi yang tersimpan pada perangkat Anda akan dihapus. Data yang belum tersinkron pada server akan hilang.</string>
+    <string name="settingsReset">Setel ulang app data &amp; konfigurasi</string>
+    <string name="settingsReset_descr">Konfigurasi dan aplikasi penyimpan data pada perangkat Anda akan dihapus. Anda akan diminta untuk masuk kembali dan data yang belum disinkronkan pada server akan hilang.</string>
+    <string name="settingsSms">Pengaturan SMS</string>
+    <string name="settingsSms_descr">Periksa dan edit parameter yang terkait dengan SMS gateway</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Tanggal pendaftaran</string>
@@ -65,52 +246,671 @@
     <string name="search_optionset">Pencarian</string>
     <!--FORM FRAGMENT-->
     <string name="report_date">Tanggal pelaporan</string>
+    <string name="add_file">Tambahkan berkas</string>
+    <string name="write_new_note">Tulis catatan baru</string>
+    <string name="clear">Kosongkan</string>
     <string name="add_note">Tambah catatan</string>
+    <string name="revert">Kembali</string>
+    <string name="activated">Diaktifkan</string>
+    <string name="enroll_in">Mendaftar %s</string>
+    <string name="missing_mandatory_fields_title">Bidang wajib tidak ada</string>
+    <string name="missing_mandatory_fields_text">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali sekarang, semua informasi yang disimpan akan dihapus.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali, silakan isi.</string>
+    <string name="title_delete_go_back">Data Anda tidak disimpan</string>
+    <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
+    <string name="missing_mandatory_fields_events_2.0">Beberapa bidang wajib tidak ada:\n%s\nAnda dapat kembali sekarang, tetapi even ini tidak akan dapat diselesaikan.</string>
+    <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
+    <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
+    <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
+    <string name="enrollment_coordinates">Koordinat pendaftaran</string>
+    <string name="tei_coordinates">Koordinat untuk</string>
+
+    <!--EVENT SUMMARY-->
+    <string name="section_list">Daftar bagian</string>
+    <string name="event_summary_header" formatted="false">%s pertanyaan %s selesai</string>
+    <string name="event_summary_sections_header" formatted="false">%s dari %s selesai</string>
+    <string name="complete_and_close">Selesai dan tutup</string>
+
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">Hari</string>
     <string name="hint_month">Bulan</string>
     <string name="hint_year">Tahun</string>
     <string name="week">Minggu</string>
     <string name="incident_date">Tanggal insiden</string>
+    <string name="local_results">Hasil lokal</string>
+    <string name="online_results">Hasil online</string>
+    <string name="past_programs">Program sebelumnya</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">Anda tidak memiliki izin yang dibutuhkan untuk melakukan tindakan ini</string>
+    <string name="add_relation_button">Tambahkan sebagai…</string>
+
     <string name="date_dialog_clear">Hapus</string>
     <string name="period">Periode</string>
+    <string name="org_unit_filter">(%d) Unit Organisasi</string>
+    <string name="org_unit_select_level">Tingkat %d</string>
+    <string name="tuto_main_1">Selamat datang di dhis2</string>
+    <string name="tuto_main_2">Di sini Anda dapat melihat aktivitas Anda</string>
+    <string name="tuto_main_3">Anda dapat menerapkan filter…</string>
+    <string name="tuto_main_4">…dengan mengubah periode dan memilih tanggal…</string>
+    <string name="tuto_main_5">…atau filter berdasarkan Unit Organisasi</string>
+    <string name="tuto_main_6">Periksa tindakan lain di menu utama</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Buat hubungan</string>
     <string name="next">Se;lanjutnya</string>
+    <string name="search_min_num_attr">Anda harus memasukkan setidaknya %d atribut untuk melakukan pencarian</string>
+    <string name="search_attr">Anda harus memasukkan setidaknya satu atribut untuk melakukan pencarian</string>
+    <string name="search_max_tei_reached">Ada lebih dari %d hasil. Silakan masukkan kriteria pencarian lebih lanjut</string>
+    <string name="search_criteria_not_met">Kriteria penelusuran Anda tidak memberikan hasil apa pun.\nRevisi kriteria Anda atau daftarkan %s baru</string>
+    <string name="search_init">Masukkan kriteria pencarian Anda</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">Impor data QR</string>
     <string name="SAVE">Simpan</string>
+    <string name="button_ok">OK</string>
+    <string name="qr_id">Identifikasi</string>
     <string name="qr_attributes">Atribut</string>
+    <string name="qr_enrollment">Pendaftaran</string>
     <string name="qr_events">Event</string>
     <string name="qr_relationships">Hubungan</string>
+    <string name="read_more_qr">Baca QR berikutnya untuk mendapatkan info lebih lanjut.</string>
+    <string name="save_qr">Berhenti membaca dan simpan data</string>
+    <string name="qr_no_data">tidak ada data</string>
+    <string name="qr_error_id">Kode QR tidak valid</string>
+    <string name="qr_error_attr">Atribut ini tidak dapat ditambahkan</string>
+    <string name="qr_error_enrollment">Pendaftaran ini tidak dapat ditambahkan</string>
+    <string name="qr_error_event">Even ini tidak dapat ditambahkan</string>
+
+    <string name="jira_report">Laporkan Masalah Jira</string>
     <string name="about">Tentang</string>
+    <string name="programs_to_enroll">Program untuk didaftarkan</string>
+    <string name="select_all">Pilih Semua</string>
+    <string name="clear_all">hapus pilihan</string>
+    <string name="empty_program_list">Tidak ada informasi untuk filter yang dipilih. Silakan coba mengubahnya.</string>
     <string name="share">Bagikan</string>
+    <string name="share_qr">Bagikan QR</string>
+    <string name="teiType_search_online">Pencarian menurut jenis tidak dimungkinkan untuk pencarian online.\nSilakan pilih program dari daftar.</string>
     <string name="max">Maks</string>
     <string name="current">Saat ini</string>
+    <string name="tei">TEI</string>
+    <string name="teis">TEI</string>
+    <string name="limit_by_organisation_unit">Batasi menurut unit organisasi</string>
+    <string name="limit_by_program">Batasi menurut program</string>
+    <string name="programs_list">Daftar program</string>
+    <string name="wipe_data">Setel ulang app data &amp; konfigurasi</string>
+    <string name="add_relationship_error">Tidak mungkin untuk menambahkan hubungan ini</string>
+    <string name="warning_error_on_complete_title">Periksa ini!</string>
     <string name="warning_on_complete_title">Peringatan</string>
     <string name="error_on_complete_title">Error</string>
     <string name="save">Simpan</string>
+    <string name="reserved_value">Nilai Cadangan</string>
+
+    <string name="downloaded_confirm">Apakah Anda ingin menambahkan lebih banyak data dari QR?</string>
+
+    <!--ABOUT-->
+    <string name="about_app">Versi Aplikasi: %s</string>
+    <string name="about_sdk">Versi SDK: %s</string>
+    <string name="about_connected">Terhubung ke: %s</string>
+    <string name="about_user">Pengguna saat ini: %s</string>
+    <string name="about_more">Lebih lanjut tentang aplikasi ini: baca <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M"> di sini </a> apa yang didukung dan apa yang tidak didukung</string>
+    <string name="about_git">Versi aplikasi ini dan sebelumnya, serta kode sumber tersedia di <a href="https://github.com/dhis2/dhis2-android-capture-app"> GitHub </a> . DHIS2 Android Capture dilisensikan di bawah persyaratan Lisensi Publik Umum GNU yang diterbitkan oleh Free Software Foundation - lihat <a href="http://www.gnu.org/licenses/gpl-3.0.html"> http://www.gnu.org/licenses/gpl-3.0.html </a> .</string>
+    <string name="about_dev">Dikembangkan dan dikelola oleh proyek <a href="https://www.dhis2.org/"> DHIS2 </a>, bagian dari Universitas Oslo, <a href="https://www.mn.uio.no/ifi/english/"> departemen informatika </a> .</string>
+    <string name="about_contact">Untuk informasi lebih lanjut atau pertanyaan tentang aplikasi ini, silakan menulis ke <a href="mailto:android@dhis2.org"> android@dhis2.org </a></string>
+
+    <string name="login_error_null_pass">Kata sandi tidak ada. Silakan isi kolom ini.</string>
+    <string name="login_error_null_username">Nama pengguna tidak ada. Silakan isi kolom ini.</string>
+    <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
+    <string name="login_error_dhis_version_v2">Server ini menjalankan versi dhis yang berbeda dari %s. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
+    <string name="login_error_unsuccessful_response">Ada yang salah. Harap periksa bahwa url server, nama pengguna, dan kata sandi sudah benar dan coba lagi.</string>
+    <string name="login_error_error_response">Server tidak dapat menyelesaikan permintaan ini.</string>
+    <string name="login_error_default">Terjadi masalah saat mencoba masuk ke server.</string>
+    <string name="login_error">Kesalahan login</string>
+    <string name="missing_mandatory_fields">Bidang wajib tidak ada</string>
+    <string name="online_search_unexpected">Kesalahan tak terduga pada saat pencarian online</string>
+    <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
+    <string name="online_search_error">Pencarian online menghasilkan kesalahan</string>
+    <string name="online_search_response_error">Ada yang salah di server</string>
+    <string name="search_program_not_selected">Pilih program untuk mengaktifkan pendaftaran</string>
+    <string name="search_access_error">Anda tidak memiliki izin yang diperlukan</string>
+    <string name="feature_unavaible">Fungsi ini belum tersedia</string>
+    <string name="relationship_label_error">Kesalahan saat mengambil label hubungan</string>
+    <string name="all_tei_type">Semua %s</string>
+    <string name="invalid_phone_number">Ini bukan nomor telepon yang valid</string>
+    <string name="invalid_email">Ini bukan email yang valid</string>
+    <string name="invalid_negative_number">Hanya angka negatif yang diperbolehkan</string>
+    <string name="invalid_possitive_zero">Hanya angka positif atau nol yang diperbolehkan</string>
+    <string name="invalid_possitive">Hanya angka positif yang diperbolehkan</string>
+    <string name="invalid_interval">Hanya nilai dari 0 hingga 1 yang diperbolehkan</string>
+    <string name="invalid_percentage">Hanya nilai dari 0 hingga 100 yang diizinkan</string>
+    <string name="date_dialog_tigle">Pilih tanggal untuk difilter</string>
+    <string name="select_option">Pilih opsi</string>
+    <string name="issue_reported">Masalah dilaporkan</string>
+    <string name="jira_credential_error">Periksa apakah pengguna dan kata sandi jira Anda benar</string>
+    <string name="jira_issue_error">Terjadi kesalahan saat melaporkan masalah</string>
+    <string name="jira_fields_error">Semua bidang wajib</string>
+    <string name="dialog_generate_new_event">Buat even baru</string>
+    <string name="message_generate_new_event">Apakah Anda ingin membuat even lain?</string>
+    <string name="event_completed_title">Even Selesai</string>
+    <string name="event_completed_message">Semua even dalam program ini selesai. Apakah Anda ingin menutup program?</string>
+    <string name="complete_enrollment_message">Apakah Anda ingin menyelesaikan pendaftaran juga?</string>
+    <string name="check_event">Memeriksa</string>
+
     <string name="menu_home">Beranda</string>
+    <string name="appwidget_text">CONTOH</string>
+    <string name="add_widget">Tambahkan widget</string>
+    <string name="showHelp">Tampilkan bantuan</string>
+    <string name="tuto_settings_1">Proses sinkronisasi data...</string>
+    <string name="tuto_settings_2">…konfigurasi Anda…</string>
+    <string name="tuto_settings_3">…atur berapa banyak catatan yang akan diunduh dari server…</string>
+    <string name="tuto_settings_reserved">Periksa dan kelola berapa banyak nilai cadangan yang tersisa</string>
+    <string name="tuto_settings_errors">Periksa apakah koneksi ke server gagal</string>
+    <string name="tuto_settings_reset">Kosongkan sebagian ruang disk</string>
+    <string name="tuto_settings_4">…atau hapus semuanya untuk memulai dari awal.</string>
+    <string name="tuto_search_1_v2">Temukan entitas Anda baik di perangkat lokal maupun server online.</string>
+    <string name="tuto_search_2">Anda dapat beralih ke program lain</string>
+    <string name="tuto_search_3_v2">Cari atau Tambahkan entitas baru. Anda perlu mencari sebelum Anda dapat menambahkan yang baru!</string>
+    <string name="tuto_search_4_v2">Klik di sini untuk membersihkan bidang dan memulai kembali pencarian.</string>
+    <string name="tuto_dashboard_1">Ini adalah dasbor entitas</string>
+    <string name="tuto_dashboard_2">Lihat informasi profil entitas…</string>
+    <string name="tuto_dashboard_3">…Berbagi informasi melalui QR atau SMS…</string>
+    <string name="tuto_dashboard_4">…Atau tandai entitas untuk ditindaklanjuti</string>
+    <string name="tuto_dashboard_5">Klik untuk membuat atau menjadwalkan even atau alihkan ke Unit Org lain.</string>
+    <string name="tuto_dashboard_6">Di sini Anda akan melihat semua even. Klik untuk melihat detail even.</string>
+    <string name="tuto_dashboard_7">Navigasikan menu untuk menambahkan hubungan, melihat indikator, atau menulis catatan.</string>
+    <string name="tuto_dashboard_8">Klik untuk melihat semua pendaftaran entitas Anda atau buat yang baru.</string>
+    <string name="tuto_tei_event_1">Klik untuk menghapus even ini. Tindakan ini tidak bisa dibatalkan.</string>
+    <string name="tuto_tei_event_2">Selesaikan even.</string>
+    <string name="tuto_program_event_1">Semua even yang terkait dengan program ini akan dicantumkan di sini.</string>
+    <string name="tuto_program_event_2">Klik untuk menambahkan even baru</string>
+    <string name="tuto_event_initial_new_1">Masukkan semua data untuk membuat even</string>
+    <string name="tuto_event_initial_1">Klik untuk memeriksa status penyelesaian even.</string>
+    <string name="tuto_event_summary">Klik untuk menyelesaikan atau membuka kembali even</string>
+    <string name="tuto_main_7">Baca dan simpan informasi dari perangkat lain melalui QR</string>
+    <string name="tuto_main_8">Mensinkronkan data Anda pada server</string>
+    <string name="tuto_main_9">Blokir sesi dengan kode 4 digit. Jangan lupa kode Anda!</string>
+    <string name="tuto_main_10">Logout untuk mengubah pengguna atau server. Anda akan dapat masuk kembali meskipun tidak ada koneksi internet.</string>
+    <string name="text_plus_colon">%s:</string>
+    <string name="relationships">hubungan</string>
+    <string name="empty_relationships">Tidak ada hubungan, klik \"+\" untuk menambahkan yang baru.</string>
+    <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
+    <string name="empty_tei_no_add">Tidak ada even yang terdaftar.</string>
     <string name="qr_data_values">Nilai data</string>
+    <string name="info">Info</string>
+    <string name="qr_no_id_error">Tidak dapat membaca ID ini</string>
+    <string name="delete_local_data">Menghapus data lokal</string>
+    <string name="dashboard_overview">Gambaran</string>
     <string name="dashboard_relationships">Hubungan</string>
     <string name="dashboard_indicators">Indikator</string>
+    <string name="dashboard_analytics">Analitik</string>
+    <string name="empty_indicators">Tidak ada indikator untuk program ini.</string>
     <string name="dashboard_notes">Catatan</string>
+    <string name="field_errors">Beberapa parameter terjadi kesalahan. Mohon periksa untuk dapat menyelesaikannya</string>
+    <string name="unselect_enrollment">Semua pendaftaran</string>
+    <string name="unselect_enrollment_description">Tampilkan dasbor dengan semua program aktif</string>
+    <string name="CHECK_SYNC_ERRORS">Buka log kesalahan sinkronisasi</string>
+    <string name="error_dialog_title">Log kesalahan sinkronisasi</string>
+    <string name="share_with">Berbagi dengan...</string>
+    <string name="errors_during_sync">Konfigurasi sinkronisasi Anda gagal. Terdapat kesalahan pada server. Klik bagian ini untuk informasi lebih lanjut</string>
+    <string name="sectionSelectorPrev">SEBELUMNYA</string>
+    <string name="sectionSelectorNext">SELANJUTNYA</string>
     <string name="event_overview">Rincian</string>
     <string name="event_indicators">Indikator</string>
     <string name="event_notes">Catatan</string>
+    <string name="complete_add_new"> <![CDATA[Complete & add new]]></string>
+    <string name="complete_later">Selesaikan nanti</string>
+    <string name="finish_add_new"> <![CDATA[Finish & add new]]></string>
+    <string name="finish">Selesai</string>
+    <string name="error_fields_title">Parameter dengan kesalahan</string>
+    <string name="error_fields_events">Beberapa parameter terdapat kesalahan. Parameter ini belum disimpan. Mohon periksa kembali</string>
+    <string name="event_reopened">Even ini sekarang dapat diedit</string>
+    <string name="unique_warning">Nilai harus unik, kebetulan telah ditemukan. Itu belum disimpan. Tolong diperiksa.</string>
+    <string name="unique_coincidence_found">Sebuah kebetulan di bidang yang unik telah ditemukan. Silakan periksa formulir untuk menyimpan Pendaftaran.</string>
+    <string name="please_wait">Mohon tunggu</string>
     <string name="skip">Lewati</string>
     <string name="reschedule">Jadwal ulang</string>
+    <string name="event_was_skipped">Even ditandai sebagai dilewati</string>
+    <string name="no_intructions">Tidak ada informasi untuk layar ini</string>
+    <string name="event_overdue">Lewat waktu</string>
+    <string name="unsupported_program_rule">Terdapat satu aturan program yang tidak didukung. Silakan periksa dokumentasi</string>
+    <string name="delete_event_error">Even ini belum dibuat</string>
+    <string name="empty_description">Tidak ada info untuk bidang ini</string>
+    <string name="biometrics_dialog_title">Kredensial Kosong</string>
+    <string name="biometrics_first_use_text">Untuk dapat login menggunakan pemindai sidik jari, Anda terlebih dahulu harus menggunakan cara default</string>
+    <string name="biometrics_security_title">Keamanan Biometrik</string>
+    <string name="biometrics_security_text">Gunakan sidik jari Anda untuk masuk dengan pengguna ini?</string>
+    <string name="tab_tables">Tabel</string>
     <string name="table">Tabel</string>
+    <string name="login_https">https://</string>
+    <string name="delete_local_data_message">Data yang belum tersinkron akan hilang. Apakah Anda akan melanjutkan?</string>
+    <string name="local_data_accept">Terima</string>
+    <string name="delete_local_data_error">Data tidak dapat dihapus. Silakan coba lagi.</string>
+    <string name="delete_local_data_done">Hapus data lokal berhasil diselesaikan.</string>
+    <string name="org_unit_selection_warning">Setidaknya satu unit organisasi harus dipilih</string>
+    <string name="send_user_name_title">Kirim data</string>
+    <string name="send_user_name_mesage">Bantu DHIS2 menyempurnakan app ini dengan membagi log kesalahan yang berkaitan dengan id user Anda</string>
+    <string name="analytics_crash_name_message">Aplikasi ini akan mengirimkan log kesalahan yang terkait dengan id pengguna Anda untuk meningkatkan kinerjanya dan statistik yang tidak dapat dilacak untuk meningkatkan pengalaman pengguna.</string>
+    <string name="send_user_privacy_policy">Untuk informasi lebih lanjut, periksa kebijakan privasi kami</string>
+    <string name="check_mandatory_field">Periksa bidang</string>
+    <string name="error_no_network_during_sync">Anda kehilangan koneksi internet saat sedang mensinkronkan konfigurasi. Silahkan coba lagi nanti</string>
+    <string name="action_agree">Setuju</string>
+    <string name="action_continue">Terus</string>
+    <string name="login_server_info_title">URL server</string>
+    <string name="login_server_info_message">Masukkan url server DHIS 2 untuk organisasi Anda seperti yang disediakan oleh administrator sistem Anda.\n\nAtau, Anda dapat memindai kode QR yang berisi URL server Anda</string>
+    <string name="forgot_your_code">Lupa kode Anda?</string>
+    <string name="event_form_end_options_title">Apa yang ingin Anda lakukan untuk even ini?</string>
+    <string name="sectionSelectorEnd">AKHIR</string>
+    <string name="resource_not_found">%s tidak ditemukan</string>
+    <string name="relationship_not_found_message">Catatan yang Anda coba akses tidak tersedia. Apakah Anda ingin mencarinya?</string>
+    <string name="sync_by_sms">Sinkronkan dengan SMS</string>
     <string name="state_warning">Peringatan</string>
+    <string name="state_uploading">Mengunggah</string>
+    <string name="state_relationship">Hubungan</string>
+    <string name="sent_by_sms">Dikirim melalui sms</string>
+    <string name="no_conflicts_message">Tidak ada konflik untuk program ini</string>
+    <string name="network_unavailable_sms">Koneksi jaringan tidak tersedia, tetapi sepertinya ada layanan telepon - Anda dapat menggunakan SMS.</string>
+    <string name="network_unavailable">Koneksi jaringan tidak tersedia.</string>
     <string name="action_close">Tutup</string>
+    <string name="tuto_main_11">Anda bisa melihat hasil sinkronisasi dengan klik bagian ini</string>
+    <string name="no_conflicts_update_message">Data ini disimpan dalam perangkat Anda saja, tidak disinkronkan pada server</string>
+    <string name="no_conflicts_synced_message">Anda up to date! Semua data Anda dikirim ke server.</string>
+    <string name="relationship_error_recursive">Anda tidak dapat menghubungkan rekaman dengan dirinya sendiri</string>
+    <string name="unblock_session">Buka blokir sesi</string>
+    <string name="data_set_complete">Lengkap</string>
+    <string name="data_set_open">Buka</string>
+    <string name="unsupported_value_type">Jenis nilai yang tidak didukung</string>
+    <string name="change_calendar_view">Ubah tampilan kalender</string>
+    <string name="data_every_fifteen_minutes">15 menit</string>
+    <string name="data_every_hour">Setiap jam</string>
     <string name="data_every_day">Harian</string>
     <string name="data_every_week">Mingguan</string>
     <string name="period_week">Minggu</string>
+    <string name="sync_setting">Pengaturan sinkronisasi: %s</string>
+    <string name="relationship_without_enrollment">Catatan yang Anda coba akses tidak memiliki pendaftaran. Anda tidak dapat mengakses dasbor.</string>
+    <string name="formatting_error">Memformat kesalahan</string>
+    <string name="dashboard_menu_delete_enrollment">Hapus pendaftaran saja</string>
+    <string name="delete_authority_error">Anda tidak memiliki wewenang untuk menghapus catatan ini</string>
+    <string name="validation_url">Ini bukan url yang valid</string>
+    <string name="uncomplete_authority_error">Anda tidak memiliki wewenang untuk membuka kembali acara ini</string>
+    <string name="adjusting_form">Menyesuaikan formulir…</string>
+
+    <string name="sms_receiver_number">Nomor penerima</string>
+    <string name="sms_amount_question">Apakah Anda menerima untuk mengirim pesan %d?</string>
+    <string name="sms_sending">Mengirim %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Konfirmasi jumlah tunggu - %d</string>
+    <string name="sms_all_sent">Semua terkirim</string>
+    <string name="sms_submission_completed">Penyerahan selesai</string>
+    <string name="sms_waiting_confirmation">Menunggu SMS konfirmasi</string>
+    <string name="sms_waiting_timeout">Tidak menerima pesan konfirmasi</string>
+    <string name="sms_confirmed">Konfirmasi diterima</string>
+    <string name="sms_error">Kesalahan dikirim</string>
+    <string name="sms_error_item_not_ready">Data belum bisa dikirimkan</string>
+    <string name="sms_error_no_network">Tidak ada jaringan</string>
+    <string name="sms_error_no_check_network_permission">Tidak ada izin cek jaringan</string>
+    <string name="sms_error_no_receive_sms_permission">Tidak menerima izin sms</string>
+    <string name="sms_error_no_send_sms_permission">Tidak ada izin kirim</string>
+    <string name="sms_error_no_gateway_set">Tidak ada gateway yang disetel</string>
+    <string name="sms_error_no_user_login">Pengguna tidak masuk</string>
+    <string name="sms_error_module_disabled">Modul SMS dinonaktifkan</string>
+    <string name="sms_error_ongoing_sunmission">Pengiriman SMS lainnya sedang berlangsung</string>
+    <string name="sms_metadata_empty">Modul SMS tidak dimulai, tidak ditemukan metadata yang diperlukan</string>
     <string name="sms_completed">Selesai</string>
+    <string name="sms_count_error">Jumlah SMS tidak diterima</string>
+    <string name="sms_state_started">Mulai pengiriman sms</string>
+    <string name="sms_state_converted">Data dibaca dan dikonversi. Id pengiriman: %d</string>
+    <string name="sms_general_error">Kesalahan pengiriman sms</string>
+    <string name="sms_title_enrollment">Pendaftaran dan registrasi SMS TEI</string>
+    <string name="sms_title_event">Pengiriman even SMS</string>
+    <string name="sms_title_data_set">Pengiriman data set SMS</string>
+    <string name="sms_bar_state_starting">Mulai</string>
     <string name="sms_bar_state_sending">Dalam proses</string>
+    <string name="sms_bar_state_sent">terkirim</string>
+    <string name="sms_bar_state_failed">Gagal</string>
+
+    <string name="start_sync_granular">Mulai sinkronisasi</string>
+    <string name="syncing">Sedang sinkronisasi...</string>
+    <string name="end_sync_granular">Sinkronisasi selesai.</string>
+    <string name="error_sync">Kesalahan terjadi saat sinkronisasi</string>
+    <string name="error_sync_check_logs">Terjadi kesalahan selama sinkronisasi. Klik di sini untuk memeriksa log kesalahan</string>
+    <string name="cancel_sync">Batalkan sinkronisasi.</string>
+
+    <string name="copied_text">Tersalin</string>
+    <string name="image_selected">Gambar dipilih</string>
+    <string name="show_in_map">Tampilkan di peta</string>
+    <string name="show_list">Tampilkan daftar</string>
+
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
+    <string name="value_required_but_not_provided">%s adalah wajib tetapi belum disediakan.</string>
+    <string name="polygon_captured">Poligon ditangkap</string>
     <string name="polygon">Poligon</string>
+    <!--endregion-->
+
+    <string name="fingerprint_title">Sidik jari</string>
+    <string name="fingerprint_message">Harap, letakkan jari Anda di pembaca sidik jari Anda.</string>
+    <string name="security_title">Keamanan</string>
+    <string name="security_rooted_message">Untuk alasan keamanan, versi aplikasi ini tidak diizinkan untuk digunakan di perangkat yang di-rooting. Silakan gunakan versi pelatihan.</string>
+    <string name="fix_error">Terdapat beberapa kesalahan. Mohon perbaiki sebelum melanjutkan</string>
+
+    <string name="filters_active">Filter menerapkan</string>
+    <string name="filters_disabled">Tidak ada filter yang diterapkan</string>
     <string name="filters_title_period">Periode</string>
+    <string name="filters_title_org_unit">Organisasi Satuan</string>
+    <string name="filters_title_sorting">Penyortiran</string>
     <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Sinkronisasi</string>
+    <string name="filters_title_assigned">Ditugaskan kepada saya</string>
     <string name="filter_period_today">Hari ini</string>
     <string name="filter_period_yesterday">Kemarin</string>
+    <string name="filter_period_tomorrow">Besok</string>
     <string name="filter_period_this_week">Minggu ini</string>
     <string name="filter_period_last_week">Minggu lalu</string>
+    <string name="filter_perdior_next_week">Minggu depan</string>
     <string name="filter_period_this_month">Bulan ini</string>
     <string name="filter_period_last_month">Bulan lalu</string>
+    <string name="filter_period_next_month">Bulan depan</string>
+    <string name="filter_period_form_to">Dari untuk</string>
+    <string name="filter_period_other">Lainnya</string>
+    <string name="filter_period_any">Kapan saja</string>
+    <string name="data_values_error_sync_message">Sinkronisasi gagal. Periksa kembali nilai data untuk memperbaiki permasalahan kemudian coba lagi. Jika tetap gagal hubungi administrator sistem</string>
+    <string name="sms_synced_message">Data ini telah terkirim ke server tetapi tidak dijamin telah disimpan</string>
+    <string name="filter_event_status_open">Buka</string>
+    <string name="filter_event_status_schedule">Jadwal</string>
+    <string name="filter_event_status_overdue">Lewat waktu</string>
+    <string name="filter_event_status_visited">Dikunjungi</string>
+    <string name="filter_event_status_completed">Selesai</string>
+    <string name="filter_event_status_skipped">Dilewati</string>
+    <string name="event_tei_limits">Even:%smaks:%s%ssaatini:%s TEI:%smaks:%s%ssatt ini:%s
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ </string>
+    <string name="event_tei_limits_v2">Pengaturan terbatas %s\nAcara: %s/%s TEI: %s/%s</string>
+    <string name="enrollment_data_hide">Sembunyikan data pendaftaran</string>
+    <string name="enrollment_data_show">Tampilkan data pendaftaran</string>
+    <string name="enrollment_data_section_label">Data pendaftaran</string>
+    <string name="sms_enabled">Modul SMS diaktifkan</string>
+    <string name="sms_disabled">Modul SMS dinonaktifkan</string>
+    <string name="sms_downloading_data">Mengunduh data untuk modul SMS. Mohon tunggu</string>
+    <string name="sms_empty_gateway">Gerbang SMS tidak boleh kosong</string>
+    <string name="granular_sync_enrollments_empty">Tidak ada pendaftaran untuk diunggah</string>
+    <string name="granular_sync_unsupported_task">convertTask ini tidak didukung</string>
+    <string name="disable_pin_locked">Jangan tampilkan layar kunci lagi</string>
+    <string name="set_pin">Setel pin</string>
+    <string name="conflict">Konflik</string>
+    <string name="event_date_in_future_message">Even ini tidak dapat memiliki tanggal di masa mendatang. Silakan ubah.</string>
+    <string name="change_event_date">Ganti tanggal</string>
+    <string name="go_back">Kembali</string>
+    <string name="data_sets">Data set</string>
+    <string name="no_notes">Tidak ada catatan</string>
+    <string name="no_add_notes">Tidak ada lagi catatan yang dapat ditambahkan</string>
+    <string name="new_note">Catatan baru</string>
+    <string name="note_saved">Catatan disimpan</string>
+    <string name="discard_note">Buang catatan?</string>
+    <string name="interval_now">sekarang</string>
+    <string name="interval_minute_ago">%d mnt. lalu</string>
+    <string name="interval_hour_ago">%d jam yang lalu</string>
+    <string name="interval_yesterday">Kemarin</string>
+    <string name="enrollment_single_section_label">Atribut - %s</string>
+    <string name="program_selector">Pendaftaran program</string>
+    <string name="select_time">Pilih waktu</string>
+    <string name="enter_letter">Masukkan huruf</string>
+    <string name="enter_unit_interval">Masukkan nomor dari 0 hingga 1</string>
+    <string name="enter_percentage">Masukkan persentase</string>
+    <string name="enter_phone_number">Masukkan nomor telepon</string>
+    <string name="enter_email">Masukan email</string>
+    <string name="choose_ou">Pilih unit organisasi</string>
+    <string name="enter_url">Masukkan URL</string>
+    <string name="enter_value">Masukkan nilai</string>
+    <string name="choose_image">Pilih gambar</string>
+    <string name="scan_code">Pindai kode</string>
+    <string name="choose_option">Pilih opsi</string>
+    <string name="reserved_values_hint">Nilai yang dicadangkan diunduh per atribut TEI</string>
+    <string name="settings_reserved_values_message">Nilai yang dicadangkan diunduh per atribut TEI</string>
+    <string name="reserved_values_left">%s nilai yang dicadangkan tersisa</string>
+    <string name="manage_reserved_values_button">Kelola nilai yang dicadangkan</string>
+    <string name="events_to_download">Even untuk diunduh</string>
+    <string name="teis_to_download">TEI untuk diunduh</string>
+    <string name="program_settings">Pengaturan program</string>
+    <string name="limit_scope_all_ou_trailing">untuk semua unit organisasi</string>
+    <string name="limit_scope_global_trailing">secara global</string>
+    <string name="limit_scope_ou_trailing">per unit organisasi</string>
+    <string name="limit_scope_program_trailing">per program</string>
+    <string name="limit_scope_ou_program_trailing">per organisasi unit dan program</string>
+    <string name="activity_program_settings">Pengaturan sinkronisasi program</string>
+    <string name="syncing_period_not_editable">Periode sinkronisasi tidak dapat diganti</string>
+    <string name="sync_parameters_not_editable">Paramater sinkronisasi tidak dapat diganti</string>
+    <string name="rv_no_editable">Jumlah nilai cadangan yang diunduh tidak dapat diedit</string>
+    <string name="downloading">Mengunduh</string>
+    <string name="filter_sync_synced">Tersinkronisasi</string>
+    <string name="filter_sync_not_synced">Tidak tersinkronisasi</string>
+    <string name="filter_sync_error">Sync error</string>
+    <string name="filter_sync_sms">SMS tersinkronisasi</string>
+    <string name="dataset_overview">Rincian</string>
+    <string name="dataset_comments">Komentar</string>
+    <string name="saved">Tersimpan!</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="validation_success_title">Semuanya terlihat bagus!</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="dataset_completed">Tandai sebagai selesai</string>
+    <string name="name">Nama</string>
+    <string name="formula">Formula</string>
+    <string name="complete_anyway">Lengkap</string>
+    <string name="fk_message">Tidak ada %s %s dari %s %s</string>
+    <string name="filters_title_event_status">Status even</string>
+    <string name="filters_title_enrollment_status">Status pendaftaran</string>
+    <string name="enrollment_date">Tanggal pendaftaran</string>
+    <string name="dataset_empty_list_can_create">Tidak ada data. Klik \"+\" untuk menambahkan catatan baru</string>
+    <string name="dataset_emtpy_list_can_not_create">Tidak ada data. Anda tidak memiliki izin untuk menambahkan catatan baru.</string>
+    <string name="validation_rules_empty_description">Tidak ada deskripsi atau instruksi yang tersedia</string>
+    <string name="validation_rules_data_to_review">Data untuk ditinjau</string>
+    <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
+    <string name="status_change_error_active_exist">Sudah ada pendaftaran aktif</string>
+    <string name="enrollment_status_active">Buka</string>
+    <string name="enrollment_status_completed">Lengkap</string>
+    <string name="enrollment_status_cancelled">Dibatalkan</string>
+    <string name="event_data">Data</string>
+    <string name="download_tei_error">%s yang dipilih tidak dapat diunduh.</string>
+    <string name="completed_by">Diselesaikan oleh %s: %s</string>
+    <string name="updated_time">Diperbarui: %s</string>
+    <string name="action_done">Selesai!</string>
+    <string name="validation_internal_error_datasets">Kami tidak dapat memeriksa kualitas data. Hubungi administrator Anda</string>
+    <string name="are_you_sure">Anda yakin?</string>
+    <string name="reopen_question">Apakah Anda ingin membuka kembali data set?</string>
+    <string name="group_events_by_stage">Grup even berdasarkan tahap</string>
+    <string name="show_events_timeline">Tampilkan timeline even</string>
+    <string name="filters_title_date">Tanggal</string>
+    <string name="filters_title_event_date">Tanggal even</string>
+    <string name="tei_type_has_no_attributes">%s tidak memiliki atribut publik. Silakan pilih program</string>
+    <string name="privacy_policy_title">Kebijakan pribadi</string>
+    <string name="open_privacy_policy">Klik di sini untuk memeriksa kebijakan privasi <a href=""> kami </a></string>
+    <string name="coordinates_error">Nilai koordinat tidak valid</string>
+    <string name="break_glass_error">Anda tidak dapat mendaftarkan TEI dari unit organisasi lain dalam program ini karena program ini dilindungi.\nHubungi administrator Anda.</string>
+    <string name="field_is_mandatory">Bidang ini wajib</string>
+    <string name="security_debugger_message">Untuk alasan keamanan, versi aplikasi ini tidak diizinkan untuk digunakan dengan adb. Silakan gunakan versi pelatihan.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ups! Sesuatu tidak berjalan sesuai rencana.\nIzinkan kami mengembalikan Anda ke tindakan.</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Kembali</string>
+    <string name="customactivityoncrash_error_activity_close_app">Tutup aplikasi</string>
+    <string name="customactivityoncrash_error_activity_error_details">Keterangan lebih lanjut</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">Keterangan lebih lanjut</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Tutup</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Menyalin ke clipboard</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Disalin ke papan klip</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasi kesalahan</string>
+    <string name="metada_first_sync_error">Kami menemukan kesalahan saat menyinkronkan dengan server Anda. Bagikan kesalahan dengan administrator sistem Anda jika memungkinkan.</string>
+    <string name="error_init_session">Kami tidak dapat memulai sesi dengan pengguna Anda</string>
+    <string name="enrollment_date_edition_warning">Ada even yang direncanakan yang tidak akan dijadwalkan ulang</string>
+    <string name="jira_issue_sent">Masalah Terkirim</string>
+    <string name="jira_issue_sent_error">Terjadi kesalahan saat melaporkan masalah</string>
+    <string name="section_charts">Grafik</string>
+    <string name="navigation_list_view">Tampilan daftar</string>
+    <string name="navigation_table_view">Tampilan tabel</string>
+    <string name="navigation_map_view">Tampilan peta</string>
+    <string name="navigation_analytics">Analitik</string>
+    <string name="navigation_tasks">Tugas</string>
+    <string name="navigation_programs">Program-program</string>
+    <string name="navigation_events">Even</string>
+    <string name="navigation_relationships">Hubungan</string>
+    <string name="navigation_notes">Catatan</string>
+    <string name="navigation_data_entry">Data entri</string>
+    <string name="navigation_tei_data">Rincian</string>
+    <string name="show_bar_graph">Lihat sebagai Bar</string>
+    <string name="show_line_graph">Lihat sebagai Garis</string>
+    <string name="show_table_graph">Lihat sebagai Tabel</string>
+    <string name="show_table_value">Lihat sebagai Nilai</string>
+    <string name="working_list_default_label">Daftar kerja %s</string>
+    <string name="filter_period_this_year">Tahun ini</string>
+    <string name="filter_period_this_bimonth">Dwiwulan ini</string>
+    <string name="filter_period_last_bimonth">Dwiwulan yang lalu</string>
+    <string name="filter_period_this_quarter">Triwulan ini</string>
+    <string name="filter_period_last_quarter">Triwulan yang lalu</string>
+    <string name="filter_period_six_months">Enam bulan ini</string>
+    <string name="filter_period_last_six_months">Enam bulan terakhir</string>
+    <string name="filter_period_last_n_years">%d tahun terakhir</string>
+    <string name="filter_period_last_n_months">%d bulan terakhir</string>
+    <string name="filter_period_weeks_this_year">Mingguan tahun ini</string>
+    <string name="filter_period_months_this_year">Bulanan tahun ini</string>
+    <string name="filter_period_bimonths_this_year">Dwiwulan tahun ini</string>
+    <string name="filter_period_quarters_this_year">Triwulanan tahun ini</string>
+    <string name="filter_period_months_last_year">Bulanan tahun lalu</string>
+    <string name="filter_period_quarters_last_year">Triwulan tahun lalu</string>
+    <string name="filter_period_last_year">Tahun lalu</string>
+    <string name="filter_period_this_biweek">dua minggu ini</string>
+    <string name="filter_period_last_biweek">dua minggu terakhir</string>
+    <string name="filter_period_last_n_bimonths">Dua bulan terakhir %d</string>
+    <string name="filter_period_last_n_quarters">Kuartal %d terakhir</string>
+    <string name="last_n_months">%d bulan terakhir</string>
+    <string name="filter_period_this_financial_year">Anggaran tahun ini</string>
+    <string name="filter_period_last_financial_year">Anggaran tahun lalu</string>
+    <string name="filter_period_last_n_financial_years">Anggaran tahun %d terakhir</string>
+    <string name="section_feedback">Umpan balik</string>
+    <string name="section_indicators">Indikator</string>
+    <string name="camera_permission_denied">Izin kamera ditolak.\nAnda harus mengaktifkannya untuk menggunakan fitur ini.</string>
+    <string name="value">Nilai</string>
+    <string name="section_charts_indicators">Grafik dan indikator</string>
+    <string name="take_photo">Ambil gambar</string>
+    <string name="from_gallery">Pilih dari galeri</string>
+    <string name="data_set_quality_check_done">Selesai!</string>
+    <string name="break_glass_dialog_title">Program ini dilindungi</string>
+    <string name="break_glass_dialog_description">Anda harus memberikan alasan untuk memeriksa pendaftaran dalam program yang dilindungi ini. Semua aktivitas akan dicatat.</string>
+    <string name="break_glass_reason">Alasan untuk memeriksa pendaftaran</string>
+    <string name="break_glass_hint">Jelaskan alasannya di sini</string>
+    <string name="authenticating">Otentikasi</string>
+    <string name="login_error_no_dhis_instance">URL server yang disediakan bukan instance dhis</string>
+    <string name="login_error_bad_credentials">Kredensial salah</string>
+    <string name="invalid_integer">Nilai harus dalam bilangan bulat</string>
+    <string name="openid_session_expired">Sesi telah berakhir</string>
+    <string name="openid_session_expired_message">Sesi Anda saat ini telah kedaluwarsa. Untuk alasan keamanan, Anda harus memberikan kredensial Anda lagi</string>
+    <string name="dataset_column_default">Nilai</string>
+    <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
+    <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
+    <string name="available">Tersedia</string>
+    <string name="troubleshooting_language_title">Bahasa</string>
+    <string name="search_too_many_results">Hasil terlalu banyak</string>
     </resources>

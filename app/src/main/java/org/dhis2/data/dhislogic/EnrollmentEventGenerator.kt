@@ -2,7 +2,7 @@ package org.dhis2.data.dhislogic
 
 import java.util.Calendar
 import java.util.Date
-import org.dhis2.utils.Constants
+import org.dhis2.commons.Constants
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.maintenance.D2Error

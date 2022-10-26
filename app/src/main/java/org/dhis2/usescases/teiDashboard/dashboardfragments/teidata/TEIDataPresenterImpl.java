@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -23,7 +24,6 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
-import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.commons.data.EventViewModelType;
@@ -58,9 +58,6 @@ import timber.log.Timber;
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
-import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
-import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
 
 public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
@@ -154,19 +151,14 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         if (programUid != null) {
 
-            Flowable<String> sectionFlowable = view.observeStageSelection(
+            Flowable<StageSection> sectionFlowable = view.observeStageSelection(
                     d2.programModule().programs().uid(programUid).blockingGet(),
                     d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
             )
-                    .startWith("")
+                    .startWith(new StageSection("", false))
                     .map(selectedStage -> {
-                        if (!selectedStage.equals(currentStage)) {
-                            currentStage = selectedStage;
-                            return selectedStage;
-                        } else {
-                            currentStage = "";
-                            return "";
-                        }
+                        currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
+                        return new StageSection(currentStage, selectedStage.getShowOptions());
                     });
             Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
                     getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : true
@@ -182,7 +174,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
-                                                    stageAndGrouping.val1().isEmpty() ? null : stageAndGrouping.val1(),
+                                                    stageAndGrouping.val1(),
                                                     stageAndGrouping.val2(),
                                                     filterManager.getPeriodFilters(),
                                                     filterManager.getOrgUnitUidsFilters(),
@@ -373,14 +365,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         view.switchFollowUp(followup);
 
-    }
-
-    @Override
-    public void onShareClick(View mView) {
-        analyticsHelper.setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
-        Intent intent = new Intent(view.getContext(), QrActivity.class);
-        intent.putExtra("TEI_UID", teiUid);
-        view.showQR(intent);
     }
 
     @Override

@@ -14,7 +14,7 @@ import android.widget.ArrayAdapter;
 import org.dhis2.R;
 import org.dhis2.databinding.SpinnerProgramLayoutBinding;
 
-import org.hisp.dhis.android.core.program.Program;
+import org.dhis2.usescases.searchTrackEntity.ProgramSpinnerModel;
 
 import java.util.List;
 
@@ -23,12 +23,12 @@ import java.util.List;
  * Created by ppajuelo on 07/11/2017-sdfghsdfh .
  */
 
-public class ProgramAdapter extends ArrayAdapter<Program> {
+public class ProgramAdapter extends ArrayAdapter<ProgramSpinnerModel> {
 
-    private List<Program> programs;
+    private List<ProgramSpinnerModel> programs;
     private String trackedEntityName;
 
-    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<Program> programs, String trackedEntityName) {
+    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<ProgramSpinnerModel> programs, String trackedEntityName) {
         super(context, resource, textViewResourceId, programs);
         this.programs = programs;
         this.trackedEntityName = trackedEntityName;
@@ -42,9 +42,7 @@ public class ProgramAdapter extends ArrayAdapter<Program> {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
             convertView = binding.getRoot();
-            if (position > 0)
-                binding.setProgram(programs.get(position - 1));
-            binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
+            setProgram(binding, position);
             binding.spinnerText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
         }
@@ -56,11 +54,20 @@ public class ProgramAdapter extends ArrayAdapter<Program> {
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
-        if (position != 0)
-            binding.setProgram(programs.get(position - 1));
-
-        binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
+        setProgram(binding, position);
         return binding.getRoot();
+    }
+
+    private void setProgram(SpinnerProgramLayoutBinding binding, int position) {
+        if (position != 0) {
+            binding.setProgram(programs.get(position - 1));
+        } else {
+            binding.setProgram(new ProgramSpinnerModel(
+                    trackedEntityName,
+                    String.format(getContext().getString(R.string.all_tei_type), trackedEntityName),
+                    false
+            ));
+        }
     }
 
     @Override

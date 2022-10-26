@@ -1,5 +1,6 @@
 package org.dhis2.utils.analytics.matomo
 
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2Manager
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
@@ -37,7 +38,7 @@ class MatomoAnalyticsControllerImpl(
 
     private fun updateDhisImplementationTrackerFirstTime() {
         if (dhisImplementationTracker == null && D2Manager.isD2Instantiated() && D2Manager.getD2()
-                .userModule().isLogged.blockingGet()
+            .userModule().isLogged.blockingGet()
         ) {
             D2Manager.getD2().settingModule()?.let { settingModule ->
                 val settings = settingModule.generalSetting().blockingGet()

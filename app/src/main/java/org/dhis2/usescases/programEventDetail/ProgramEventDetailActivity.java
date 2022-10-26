@@ -2,8 +2,8 @@ package org.dhis2.usescases.programEventDetail;
 
 import static android.view.View.GONE;
 import static org.dhis2.R.layout.activity_program_event_detail;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -24,7 +23,6 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.commons.bindings.BindingsKt;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -36,7 +34,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment;
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment;
-import org.dhis2.utils.Constants;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
@@ -101,9 +99,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     programEventsViewModel.showList();
                     return true;
                 case R.id.navigation_map_view:
+                    presenter.trackEventProgramMap();
                     programEventsViewModel.showMap();
                     return true;
                 case R.id.navigation_analytics:
+                    presenter.trackEventProgramAnalytics();
                     programEventsViewModel.showAnalytics();
                     return true;
                 default:
@@ -208,7 +208,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         presenter.onDettach();
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
-        FilterManager.getInstance().clearWorkingList(false);
+        FilterManager.getInstance().clearWorkingList(true);
         FilterManager.getInstance().clearAssignToMe();
         presenter.clearOtherFiltersIfWebAppIsConfig();
     }
@@ -227,7 +227,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void renderError(String message) {
         if (getActivity() != null)
             new AlertDialog.Builder(getActivity())
-                    .setPositiveButton(android.R.string.ok, null)
+                    .setPositiveButton(getString(R.string.button_ok), null)
                     .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .show();

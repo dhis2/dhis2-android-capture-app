@@ -23,7 +23,6 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
-import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -90,13 +89,8 @@ class RelationshipPresenterTest {
     @Test
     fun `If user has permission should create a new relationship`() {
         whenever(
-            relationshipConstrain.relationshipEntity()
-        ) doReturn RelationshipEntityType.TRACKED_ENTITY_INSTANCE
-        whenever(
-            d2.programModule().programs()
-                .uid("programUid")
-                .blockingGet()
-        ) doReturn getMockedProgram(true)
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+        ) doReturn true
 
         presenter.goToAddRelationship("teiType", relationshipType)
 
@@ -107,10 +101,8 @@ class RelationshipPresenterTest {
     @Test
     fun `If user don't have permission should show an error`() {
         whenever(
-            d2.programModule().programs()
-                .uid("programUid")
-                .blockingGet()
-        ) doReturn getMockedProgram(false)
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+        ) doReturn false
 
         presenter.goToAddRelationship("teiType", relationshipType)
 

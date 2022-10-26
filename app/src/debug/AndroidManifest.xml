@@ -104,27 +104,11 @@
         <service android:name=".usescases.sms.SmsSendingService" />
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/content_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity android:name=".usescases.enrollment.EnrollmentActivity"
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.events.ScheduledEventActivity" />
-        <activity
-            android:name="cat.ereza.customactivityoncrash.activity.DefaultErrorActivity"
-            android:theme="@style/ErrorActivityTheme"
-            android:process=":error_activity" />
-
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
-
     </application>
 
 </manifest>

@@ -23,6 +23,7 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
@@ -31,9 +32,7 @@ import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -44,8 +43,10 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
+private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
+const val AVOID_SYNC = "AvoidSync"
 
 class MainActivity :
     ActivityGlobalAbstract(),
@@ -65,6 +66,7 @@ class MainActivity :
     lateinit var pageConfigurator: NavigationPageConfigurator
 
     var notification: Boolean = false
+    var forceToNotSynced = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -90,12 +92,27 @@ class MainActivity :
     }
 
     companion object {
-        fun intent(context: Context, initScreen: MainNavigator.MainScreen?): Intent {
+        fun intent(
+            context: Context,
+            initScreen: MainNavigator.MainScreen? = null,
+            launchDataSync: Boolean = false
+        ): Intent {
             return Intent(context, MainActivity::class.java).apply {
                 initScreen?.let {
                     putExtra(FRAGMENT, initScreen.name)
                 }
+                putExtra(INIT_DATA_SYNC, launchDataSync)
             }
+        }
+
+        fun bundle(
+            initScreen: MainNavigator.MainScreen? = null,
+            launchDataSync: Boolean = false
+        ) = Bundle().apply {
+            initScreen?.let {
+                putString(FRAGMENT, initScreen.name)
+            }
+            putBoolean(INIT_DATA_SYNC, launchDataSync)
         }
     }
 
@@ -108,6 +125,7 @@ class MainActivity :
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false)
         if (::presenter.isInitialized) {
             binding.presenter = presenter
         } else {
@@ -136,6 +154,7 @@ class MainActivity :
                     mainNavigator.openPrograms()
                 }
                 R.id.navigation_analytics -> {
+                    presenter.trackHomeAnalytics()
                     mainNavigator.openVisualizations()
                 }
             }
@@ -173,6 +192,12 @@ class MainActivity :
                 initCurrentScreen()
             }
         }
+
+        observeSyncState()
+
+        if (!presenter.wasSyncAlreadyDone()) {
+            presenter.launchInitialDataSync()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -193,6 +218,19 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    private fun observeSyncState() {
+        presenter.observeDataSync().observe(this) {
+            if (it.running) {
+                setFilterButtonVisibility(false)
+                setBottomNavigationVisibility(false)
+            } else {
+                setFilterButtonVisibility(true)
+                setBottomNavigationVisibility(true)
+                presenter.onDataSuccess()
+            }
+        }
     }
 
     override fun showGranularSync() {
@@ -374,16 +412,18 @@ class MainActivity :
                 mainNavigator.openSettings()
             }
             R.id.qr_scan -> {
+                presenter.trackQRScanner()
                 mainNavigator.openQR()
             }
             R.id.menu_jira -> {
+                presenter.trackJiraReport()
                 mainNavigator.openJira()
             }
             R.id.menu_about -> {
                 mainNavigator.openAbout()
             }
             R.id.block_button -> {
-                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION)
+                presenter.trackPinDialog()
                 onLockClick()
             }
             R.id.logout_button -> {
@@ -449,6 +489,10 @@ class MainActivity :
 
     private fun isNotificationRunning(): Boolean {
         return notification
+    }
+
+    override fun hasToNotSync(): Boolean {
+        return forceToNotSynced
     }
 
     override fun cancelNotifications() {

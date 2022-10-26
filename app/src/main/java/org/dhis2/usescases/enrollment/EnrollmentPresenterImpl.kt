@@ -1,21 +1,19 @@
 package org.dhis2.usescases.enrollment
 
-import android.annotation.SuppressLint
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.Bindings.profilePicturePath
+import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
+import org.dhis2.commons.matomo.Categories.Companion.TRACKER_LIST
+import org.dhis2.commons.matomo.Labels.Companion.CLICK
+import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
-import org.dhis2.data.forms.dataentry.EnrollmentRepository
-import org.dhis2.data.forms.dataentry.ValueStore
+import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.model.RowAction
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
-import org.dhis2.utils.analytics.matomo.Actions.Companion.CREATE_TEI
-import org.dhis2.utils.analytics.matomo.Categories.Companion.TRACKER_LIST
-import org.dhis2.utils.analytics.matomo.Labels.Companion.CLICK
-import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
@@ -42,7 +40,6 @@ class EnrollmentPresenterImpl(
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
     private val enrollmentFormRepository: EnrollmentFormRepository,
-    private val valueStore: ValueStore,
     private val analyticsHelper: AnalyticsHelper,
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
@@ -232,11 +229,6 @@ class EnrollmentPresenterImpl(
             enrollmentObjectRepository.blockingDelete()
         }
         analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-    }
-
-    @SuppressLint("CheckResult")
-    fun saveFile(attributeUid: String, value: String?) {
-        valueStore.save(attributeUid, value).blockingFirst()
     }
 
     fun onDettach() {

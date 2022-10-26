@@ -66,7 +66,10 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
         stageUid: String,
         orgUnitUid: String
     ): String {
-        val catComboUid = d2.programModule().programs().uid(programUid).blockingGet().categoryComboUid()
+        val catComboUid = d2.programModule().programs()
+            .uid(programUid)
+            .blockingGet()
+            .categoryComboUid()
         val catCombo = d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet()
         val catOptionCombo = if (catCombo.isDefault == true) {
             d2.categoryModule().categoryOptionCombos()

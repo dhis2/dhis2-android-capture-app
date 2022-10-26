@@ -22,7 +22,9 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -36,12 +38,13 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.utils.Constants;
+import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
+import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.utils.customviews.ImageDetailBottomDialog;
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -71,14 +74,14 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
-import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.commons.Constants.ENROLLMENT_UID;
+import static org.dhis2.commons.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.commons.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.commons.Constants.EVENT_REPEATABLE;
+import static org.dhis2.commons.Constants.EVENT_SCHEDULE_INTERVAL;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
@@ -268,6 +271,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
+        DetailsButtonKt.setButtonContent(
+                binding.cardFront.detailsButton,
+                activity.presenter.getTEType(),
+                () -> {
+                    presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
+                    return Unit.INSTANCE;
+                }
+        );
+
         binding.executePendingBindings();
 
         if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
@@ -300,7 +312,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
+    public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram);
             adapter.setEnrollment(currentEnrollment);
@@ -497,11 +509,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showQR(Intent intent) {
-        startActivity(intent);
-    }
-
-    @Override
     public void openEventDetails(Intent intent, Bundle bundle) {
         this.startActivityForResult(intent, REQ_EVENT, bundle);
     }
@@ -590,11 +597,20 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private void showHideFilters(boolean showFilters) {
         if (showFilters) {
-            binding.teiData.setVisibility(View.GONE);
-            binding.filterLayout.setVisibility(View.VISIBLE);
+            ViewAnimationsKt.expand(binding.filterLayout, false, () -> {
+                binding.teiData.setVisibility(View.GONE);
+                binding.filterLayout.setVisibility(View.VISIBLE);
+                return Unit.INSTANCE;
+            });
+
         } else {
-            binding.teiData.setVisibility(View.VISIBLE);
-            binding.filterLayout.setVisibility(View.GONE);
+            ViewAnimationsKt.collapse(binding.filterLayout, () -> {
+                binding.teiData.setVisibility(View.VISIBLE);
+                binding.filterLayout.setVisibility(View.GONE);
+                return Unit.INSTANCE;
+            });
+
+
         }
     }
 

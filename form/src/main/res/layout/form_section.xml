@@ -17,16 +17,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sectionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:minHeight="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="@{() -> item.setSelected() }"
+            android:insetBottom="0dp"
+            android:insetTop="0dp"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="?whiteBgTextColor"
+            android:textSize="14sp"
+            android:visibility="@{ item.showNextButton() ? View.VISIBLE : View.GONE }"
+            app:backgroundTint="@color/white"
+            app:cornerRadius="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:textColor="@color/colorPrimary" />
+
         <ImageView
             android:id="@+id/shadow_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:background="@color/form_field_background"
             android:scaleType="fitXY"
             android:src="@drawable/inner_shadow_bottom"
             android:visibility="@{ item.showBottomShadow() ? View.VISIBLE : View.GONE }"
-            app:layout_constraintTop_toBottomOf="@id/section_details"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sectionButton"
             tools:visibility="visible" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,8 +56,8 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:background="@drawable/item_white_ripple"
-            android:onClick="@{() -> item.setSelected() }"
             android:minHeight="48dp"
+            android:onClick="@{() -> item.setSelected() }"
             android:paddingStart="16dp"
             android:paddingEnd="15dp"
             android:visibility="@{item.isClosingSection() ? View.GONE : View.VISIBLE}"
@@ -88,13 +109,13 @@
                 style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:onClick="@{() -> item.onDescriptionClick() }"
+                android:visibility="gone"
                 app:isEllipsisNeeded="@{ item }"
-                app:sectionName="@{ sectionName }"
                 app:layout_constraintBottom_toBottomOf="@id/sectionName"
                 app:layout_constraintEnd_toStartOf="@id/sectionInfoLayout"
                 app:layout_constraintTop_toTopOf="@id/sectionName"
+                app:sectionName="@{ sectionName }"
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary"
                 tools:ignore="ContentDescription"
@@ -175,12 +196,12 @@
             <ImageView
                 android:id="@+id/openIndicator"
                 style="@style/ActionIconNoPadding"
-                android:scaleY="@{item.isOpen ? 1f : -1f}"
                 android:onClick="@{ () -> item.setSelected() }"
+                android:scaleY="@{item.isOpen ? 1f : -1f}"
+                app:animateArrow="@{ item.isSelected() }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:animateArrow="@{ item.isSelected() }"
                 app:srcCompat="@drawable/ic_arrow_up_sections" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -193,8 +214,8 @@
             android:paddingStart="16dp"
             android:paddingEnd="15dp"
             android:visibility="@{item.isClosingSection() ? View.VISIBLE : View.GONE}"
-            app:setLastSectionHeight="@{ item.lastPositionShouldChangeHeight() }"
-            app:layout_constraintTop_toBottomOf="@id/section_details" />
+            app:layout_constraintTop_toBottomOf="@id/section_details"
+            app:setLastSectionHeight="@{ item.lastPositionShouldChangeHeight() }" />
 
         <ImageView
             android:id="@+id/shadow_top"

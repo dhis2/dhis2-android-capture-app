@@ -26,8 +26,6 @@ public class SyncManagerContracts {
 
         void hideGatewayError();
 
-        void wipeDatabase();
-
         void deleteLocalData();
 
         void showTutorial();
@@ -92,8 +90,6 @@ public class SyncManagerContracts {
         void dispose();
 
         void resetSyncParameters();
-
-        void onWipeData();
 
         void wipeDb();
 

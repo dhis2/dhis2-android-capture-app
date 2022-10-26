@@ -2,7 +2,6 @@ package org.dhis2.data.dhislogic
 
 import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -18,53 +17,6 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
         } else {
             true
         }
-    }
-
-    fun hasEventsGeneratedByEnrollmentDate(enrollment: Enrollment): Boolean {
-        val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byOpenAfterEnrollment().isTrue
-            .byReportDateToUse().eq("enrollmentDate")
-            .blockingGetUids()
-        val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byAutoGenerateEvent().isTrue
-            .byGeneratedByEnrollmentDate().isTrue
-            .blockingGetUids()
-        return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment.trackedEntityInstance()))
-            .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
-            .blockingIsEmpty()
-    }
-
-    fun hasEventsGeneratedByIncidentDate(enrollment: Enrollment): Boolean {
-        val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byOpenAfterEnrollment().isTrue
-            .byReportDateToUse().eq("incidentDate")
-            .blockingGetUids()
-        val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byAutoGenerateEvent().isTrue
-            .byGeneratedByEnrollmentDate().isFalse
-            .blockingGetUids()
-        return !d2.eventModule().events()
-            .byTrackedEntityInstanceUids(arrayListOf(enrollment.trackedEntityInstance()))
-            .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
-            .blockingIsEmpty()
-    }
-
-    fun canBeEdited(enrollmentUid: String): Boolean {
-        val selectedProgram = d2.programModule().programs().uid(
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().program()
-        ).blockingGet()
-        val programAccess =
-            selectedProgram.access().data().write() != null && selectedProgram.access().data()
-                .write()
-        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram.trackedEntityType()?.uid()
-        ).blockingGet().access().data().write()
-        return programAccess && teTypeAccess
     }
 
     fun isTrackedEntityAttributeValueUnique(uid: String, value: String?, teiUid: String): Boolean {

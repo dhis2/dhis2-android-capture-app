@@ -21,4 +21,6 @@ interface FormRepository {
     fun setFocusedItem(action: RowAction)
     fun updateSectionOpened(action: RowAction)
     fun removeAllValues()
+    fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean)
+    fun clearFocusItem()
 }

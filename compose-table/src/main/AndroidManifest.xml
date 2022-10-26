@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.dhis2.compose_table">
+    package="org.dhis2.composetable">
 
+    <application
+        android:allowBackup="false">
+        <activity
+            android:name=".activity.TableTestActivity"
+            android:windowSoftInputMode="adjustResize" />
+    </application>
 </manifest>

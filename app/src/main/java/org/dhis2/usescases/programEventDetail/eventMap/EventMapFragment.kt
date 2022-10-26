@@ -13,6 +13,7 @@ import javax.inject.Inject
 import org.dhis2.Bindings.dp
 import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.data.ProgramEventViewModel
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerDialog
@@ -64,7 +65,11 @@ class EventMapFragment :
                     presenter.init()
                 },
                 onMissingPermission = { permissionsManager ->
-                    permissionsManager?.requestLocationPermissions(requireActivity())
+                    if (locationProvider.hasLocationEnabled()) {
+                        permissionsManager?.requestLocationPermissions(requireActivity())
+                    } else {
+                        LocationSettingLauncher.requestEnableLocationSetting(requireContext())
+                    }
                 }
             )
             mapLayerButton.setOnClickListener {
@@ -75,8 +80,12 @@ class EventMapFragment :
             }
 
             mapPositionButton.setOnClickListener {
-                eventMapManager?.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(requireActivity())
+                if (locationProvider.hasLocationEnabled()) {
+                    eventMapManager?.centerCameraOnMyPosition { permissionManager ->
+                        permissionManager?.requestLocationPermissions(requireActivity())
+                    }
+                } else {
+                    LocationSettingLauncher.requestEnableLocationSetting(requireContext())
                 }
             }
         }

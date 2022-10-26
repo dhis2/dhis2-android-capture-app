@@ -4,6 +4,9 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco/jacoco.gradle"
+
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
@@ -44,25 +47,17 @@ android {
     }
 
     buildFeatures {
+        compose true
+
         dataBinding true
-    }
-
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
     }
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = '1.0.1'
     }
 }
 
@@ -70,6 +65,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     implementation project(":commons")
+    implementation project(":dhis2_android_maps")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
