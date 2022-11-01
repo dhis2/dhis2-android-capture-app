@@ -44,6 +44,7 @@
     <string name="scan_barcode">Scan barcode</string>
     <string name="scanning">Scanning&#8230;</string>
     <string name="search">Search item</string>
+    <string name="search_placeholder">Search…</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
