@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.commons.components.ComponentProvider;
-import org.dhis2.commons.sync.SyncComponentProvider;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider;
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider;
 import org.dhis2.commons.filters.di.FilterPresenterProvider;
