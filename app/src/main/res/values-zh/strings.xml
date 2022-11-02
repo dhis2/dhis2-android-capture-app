@@ -890,4 +890,4 @@
     <string name="sms_sync_sms_app_chooser_title">发送短信</string>
     <string name="sms_sync_is_sms_sent">你发短信了吗？</string>
     <string name="sms_sync_manual_confirmation">等待手工确认</string>
-</resources>
+    </resources>

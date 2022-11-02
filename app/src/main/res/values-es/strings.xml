@@ -894,4 +894,4 @@
     <string name="sms_sync_sms_app_chooser_title">Enviar SMS con</string>
     <string name="sms_sync_is_sms_sent">¿Ha enviado el sms?</string>
     <string name="sms_sync_manual_confirmation">Esperando confirmación manual</string>
-</resources>
+    </resources>
