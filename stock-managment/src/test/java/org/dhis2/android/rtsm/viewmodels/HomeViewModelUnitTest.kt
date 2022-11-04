@@ -190,9 +190,9 @@ class HomeViewModelUnitTest {
     fun init_shouldSetTransactionDateToCurrentDate() {
         val today = LocalDateTime.now()
 
-        assertEquals(viewModel.transactionDate.value?.year, today.year)
-        assertEquals(viewModel.transactionDate.value?.month, today.month)
-        assertEquals(viewModel.transactionDate.value?.dayOfMonth, today.dayOfMonth)
+        assertEquals(viewModel.transactionDate.value.year, today.year)
+        assertEquals(viewModel.transactionDate.value.month, today.month)
+        assertEquals(viewModel.transactionDate.value.dayOfMonth, today.dayOfMonth)
     }
 
     @Test
@@ -445,7 +445,7 @@ class HomeViewModelUnitTest {
     fun shouldChangeToolbarTitle_forDistribution() {
         viewModel.setToolbarTitle(TransactionType.DISTRIBUTION)
 
-        val title = viewModel.toolbarTitle.value?.name
+        val title = viewModel.toolbarTitle.value.name
         assertEquals(TransactionType.DISTRIBUTION.name, title)
     }
 
@@ -453,7 +453,7 @@ class HomeViewModelUnitTest {
     fun shouldChangeToolbarTitle_forDiscard() {
         viewModel.setToolbarTitle(TransactionType.DISCARD)
 
-        val title = viewModel.toolbarTitle.value?.name
+        val title = viewModel.toolbarTitle.value.name
         assertEquals(TransactionType.DISCARD.name, title)
     }
 

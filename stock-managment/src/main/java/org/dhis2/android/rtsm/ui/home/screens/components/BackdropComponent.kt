@@ -18,19 +18,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Backdrop(
     activity: Activity,
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel,
+    manageStockViewModel: ManageStockViewModel,
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     homeContext: HomeActivity,
@@ -67,7 +68,7 @@ fun Backdrop(
         },
         backLayerBackgroundColor = themeColor,
         backLayerContent = {
-            val height = FilterList(
+            val height = filterList(
                 viewModel,
                 themeColor,
                 supportFragmentManager,
@@ -81,7 +82,15 @@ fun Backdrop(
         },
         frontLayerElevation = 5.dp,
         frontLayerContent = {
-            MainContent(backdropState, isFrontLayerDisabled, themeColor)
+            MainContent(
+                backdropState,
+                isFrontLayerDisabled,
+                themeColor,
+                viewModel,
+                manageStockViewModel,
+                hasFacilitySelected,
+                hasDestinationSelected
+            )
         },
         scaffoldState = backdropState,
         gesturesEnabled = false,

@@ -279,4 +279,5 @@
     <string name="action_sync">Send</string>
     <string name="from_facility">From facility</string>
     <string name="to_facility">To facility</string>
+    <string name="stock">Stock</string>
 </resources>

@@ -142,7 +142,7 @@ fun DropdownComponent(
                 unfocusedBorderColor = Color.White
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
         )
 
         MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
@@ -283,7 +283,7 @@ fun DropdownComponentFacilities(
                 unfocusedBorderColor = Color.White
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
         )
 
         MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
@@ -413,7 +413,7 @@ fun DropdownComponentDistributedTo(
                 unfocusedBorderColor = Color.White
             ),
             interactionSource = interactionSource,
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
         )
 
         MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {

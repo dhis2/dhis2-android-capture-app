@@ -24,11 +24,13 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
+import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 
 @Composable
 fun HomeScreen(
     activity: Activity,
     viewModel: HomeViewModel = viewModel(),
+    manageStockViewModel: ManageStockViewModel = viewModel(),
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     homeContext: HomeActivity,
@@ -68,6 +70,7 @@ fun HomeScreen(
         Backdrop(
             activity,
             viewModel,
+            manageStockViewModel,
             themeColor,
             supportFragmentManager,
             homeContext,
