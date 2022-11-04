@@ -146,12 +146,13 @@ class ManageStockViewModelTest {
             distributedTo = distributedTo
         )
         val viewModel = getModel(transaction)
+        viewModel.setup(transaction)
 
         viewModel.transaction.let {
-            assertNotNull(it.facility)
-            assertEquals(it.facility.displayName, facility.displayName)
-            assertEquals(it.distributedTo!!.displayName, distributedTo.displayName)
-            assertEquals(it.transactionDate, transactionDate)
+            assertNotNull(it.value?.facility)
+            assertEquals(it.value?.facility?.displayName, facility.displayName)
+            assertEquals(it.value?.distributedTo!!.displayName, distributedTo.displayName)
+            assertEquals(it.value?.transactionDate, transactionDate)
         }
     }
 
@@ -164,12 +165,13 @@ class ManageStockViewModelTest {
             distributedTo = null
         )
         val viewModel = getModel(transaction)
+        viewModel.setup(transaction)
 
         viewModel.transaction.let {
-            assertNotNull(it.facility)
-            assertNull(it.distributedTo)
-            assertEquals(it.facility.displayName, facility.displayName)
-            assertEquals(it.transactionDate, transactionDate)
+            assertNotNull(it.value?.facility)
+            assertNull(it.value?.distributedTo)
+            assertEquals(it.value?.facility?.displayName, facility.displayName)
+            assertEquals(it.value?.transactionDate, transactionDate)
         }
     }
 
@@ -182,12 +184,13 @@ class ManageStockViewModelTest {
             distributedTo = null
         )
         val viewModel = getModel(transaction)
+        viewModel.setup(transaction)
 
         viewModel.transaction.let {
-            assertNotNull(it.facility)
-            assertNull(it.distributedTo)
-            assertEquals(it.facility.displayName, facility.displayName)
-            assertEquals(it.transactionDate, transactionDate)
+            assertNotNull(it.value?.facility)
+            assertNull(it.value?.distributedTo)
+            assertEquals(it.value?.facility?.displayName, facility.displayName)
+            assertEquals(it.value?.transactionDate, transactionDate)
         }
     }
 

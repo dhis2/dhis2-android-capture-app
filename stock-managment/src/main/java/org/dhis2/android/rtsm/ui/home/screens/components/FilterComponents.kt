@@ -30,7 +30,7 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 @Composable
-fun FilterList(
+fun filterList(
     viewModel: HomeViewModel,
     themeColor: Color,
     supportFragmentManager: FragmentManager,

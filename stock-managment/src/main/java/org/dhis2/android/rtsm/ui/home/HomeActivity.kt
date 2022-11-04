@@ -17,9 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.colorResource
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
+import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -29,7 +28,8 @@ import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
-import org.dhis2.android.rtsm.ui.managestock.ManageStockActivity
+import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.android.rtsm.ui.reviewstock.ReviewStockActivity
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
@@ -37,7 +37,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
+
     private val viewModel: HomeViewModel by viewModels()
+    private val manageStockViewModel: ManageStockViewModel by viewModels()
     private var themeColor = R.color.colorPrimary
     private lateinit var filterManager: FilterManager
     private var orgUnitList = listOf<OrganisationUnit>()
@@ -46,23 +48,32 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
         super.onCreate(savedInstanceState)
 
         viewModel.orgUnitList.observe(
-            this,
-            Observer {
-                orgUnitList = it
-            }
-        )
+            this
+        ) {
+            orgUnitList = it
+        }
         filterManager = FilterManager.getInstance()
+        intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
+            ?.let { manageStockViewModel.setConfig(it) }
 
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                updateTheme(viewModel.transactionType.collectAsState().value)
-                HomeScreen(
-                    this, viewModel, Color(colorResource(themeColor).toArgb()),
-                    supportFragmentManager, this@HomeActivity,
-                    { scope, scaffold -> navigateToManageStock(scope, scaffold) }
-                ) { scope, scaffold -> synchronizeData(scope, scaffold) }
+            updateTheme(viewModel.transactionType.collectAsState().value)
+            MdcTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(colorResource(themeColor).toArgb())
+                ) {
+                    HomeScreen(
+                        this,
+                        viewModel,
+                        manageStockViewModel,
+                        Color(colorResource(themeColor).toArgb()),
+                        supportFragmentManager,
+                        this@HomeActivity,
+                        { scope, scaffold -> navigateToReviewStock(scope, scaffold) },
+                        { scope, scaffold -> synchronizeData(scope, scaffold) }
+                    )
+                }
             }
         }
     }
@@ -152,7 +163,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
         }
     }
 
-    private fun navigateToManageStock(
+    private fun navigateToReviewStock(
         scope: CoroutineScope,
         scaffoldState: ScaffoldState
     ) {
@@ -165,11 +176,10 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
             return
         }
         startActivity(
-            this.baseContext,
-            ManageStockActivity
-                .getManageStockActivityIntent(
+            ReviewStockActivity
+                .getReviewStockActivityIntent(
                     this.baseContext,
-                    viewModel.getData(),
+                    manageStockViewModel.getData(),
                     intent.getParcelableExtra(INTENT_EXTRA_APP_CONFIG)
                 ).apply {
                     this.addFlags(FLAG_ACTIVITY_NEW_TASK)
@@ -180,7 +190,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
 
     companion object {
         @JvmStatic
-        fun getHomeActivityIntent(context: Context, config: AppConfig): Intent? {
+        fun getHomeActivityIntent(context: Context, config: AppConfig): Intent {
             val intent = Intent(context, HomeActivity::class.java)
             intent.putExtra(INTENT_EXTRA_APP_CONFIG, config)
             return intent

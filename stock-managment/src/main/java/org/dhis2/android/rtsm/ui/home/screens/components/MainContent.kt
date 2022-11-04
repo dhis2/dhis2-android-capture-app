@@ -23,6 +23,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +40,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -51,7 +55,11 @@ import timber.log.Timber
 fun MainContent(
     backdropState: BackdropScaffoldState,
     isFrontLayerDisabled: Boolean?,
-    themeColor: Color
+    themeColor: Color,
+    viewModel: HomeViewModel,
+    manageStockViewModel: ManageStockViewModel,
+    hasFacilitySelected: Boolean,
+    hasDestinationSelected: Boolean?
 ) {
     val scope = rememberCoroutineScope()
     val resource = painterResource(R.drawable.ic_arrow_up)
@@ -187,7 +195,24 @@ fun MainContent(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Table content", textAlign = TextAlign.Center)
+            if (viewModel.toolbarTitle.collectAsState().value.name
+                == TransactionType.DISTRIBUTION.name
+            ) {
+                if (hasFacilitySelected && hasDestinationSelected == true) {
+                    updateTableState(manageStockViewModel, viewModel)
+                    ManageStockTable(manageStockViewModel)
+                }
+            } else if (hasFacilitySelected) {
+                updateTableState(manageStockViewModel, viewModel)
+                ManageStockTable(manageStockViewModel)
+            }
         }
     }
+}
+
+private fun updateTableState(
+    manageStockViewModel: ManageStockViewModel,
+    viewModel: HomeViewModel
+) {
+    manageStockViewModel.setup(viewModel.getData())
 }
