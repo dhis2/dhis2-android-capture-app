@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 private class PeriodAdapter(
     private val periodType: PeriodType,
-    openFuturePeriods: Int,
+    val openFuturePeriods: Int,
     val listener: (Date) -> Unit,
     var withInputPeriod: Boolean,
     val organisationUnit: OrganisationUnit?,
@@ -92,11 +92,12 @@ private class PeriodAdapter(
 
     fun setInputPeriod() {
         var isAllowed = false
+
         for (inputPeriodModel in inputPeriods) {
             do {
                 if (isTodayRightDayForInputPeriod(inputPeriodModel)) {
                     isAllowed = true
-                    datePeriods.add(currentDate)
+                    datePeriods.add(inputPeriodModel.initialPeriodDate() ?: currentDate)
                     lastDate = currentDate
                 } else if (
                     currentDate.before(inputPeriods[inputPeriods.size - 1].initialPeriodDate()) ||
@@ -112,24 +113,36 @@ private class PeriodAdapter(
     }
 
     fun isTodayRightDayForInputPeriod(inputPeriodModel: DateRangeInputPeriodModel): Boolean {
-        return (
-            (
-                currentDate.after(inputPeriodModel.initialPeriodDate()) ||
-                    currentDate == inputPeriodModel.initialPeriodDate()
-                ) &&
-                currentDate.before(inputPeriodModel.endPeriodDate()) &&
-                (
-                    inputPeriodModel.openingDate() == null ||
-                        inputPeriodModel.openingDate() != null &&
-                        DateUtils.getInstance().today.after(inputPeriodModel.openingDate()) ||
-                        DateUtils.getInstance().today == inputPeriodModel.openingDate()
-                    ) &&
-                (
-                    inputPeriodModel.closingDate() == null ||
-                        inputPeriodModel.closingDate() != null &&
-                        DateUtils.getInstance().today.before(inputPeriodModel.closingDate())
-                    )
-            )
+        val isFuturePeriodsConfigured = openFuturePeriods > 0
+        val isPeriodInTheFuture =
+            inputPeriodModel.initialPeriodDate() != null &&
+                DateUtils.getInstance().today.before(inputPeriodModel.initialPeriodDate())
+
+        val hasNotExpired =
+            currentDate.after(inputPeriodModel.initialPeriodDate()) ||
+                currentDate == inputPeriodModel.initialPeriodDate() &&
+                currentDate.before(inputPeriodModel.endPeriodDate())
+
+        val isInsideOpenDates =
+            inputPeriodModel.openingDate() == null ||
+                inputPeriodModel.openingDate() != null &&
+                DateUtils.getInstance().today.after(inputPeriodModel.openingDate()) ||
+                DateUtils.getInstance().today == inputPeriodModel.openingDate()
+
+        val isInsideCloseDates =
+            inputPeriodModel.closingDate() == null ||
+                inputPeriodModel.closingDate() != null &&
+                DateUtils.getInstance().today.before(inputPeriodModel.closingDate())
+
+        return if (isFuturePeriodsConfigured && isPeriodInTheFuture) {
+            val isInsideInitialPeriodDate =
+                DateUtils.getInstance()
+                    .isInsideFutureInputPeriod(inputPeriodModel, openFuturePeriods)
+
+            isInsideInitialPeriodDate && isInsideOpenDates && isInsideCloseDates
+        } else {
+            hasNotExpired && isInsideOpenDates && isInsideCloseDates
+        }
     }
 
     override fun getItemCount() =
