@@ -17,6 +17,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -216,7 +217,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void showGranularSync() {
         presenter.trackDataSetGranularSync();
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.DATA_SET)
+                .setConflictType(ConflictType.DATA_SET)
                 .setUid(dataSetUid)
                 .onDismissListener(hasChanged -> presenter.refreshList()).build();
 

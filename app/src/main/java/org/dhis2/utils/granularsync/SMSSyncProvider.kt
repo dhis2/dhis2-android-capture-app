@@ -7,6 +7,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -15,7 +16,7 @@ import org.hisp.dhis.android.core.systeminfo.SMSVersion
 interface SMSSyncProvider {
 
     val d2: D2
-    val conflictType: SyncStatusDialog.ConflictType
+    val conflictType: ConflictType
     val recordUid: String
     val dvOrgUnit: String?
     val dvAttrCombo: String?
@@ -60,14 +61,14 @@ interface SMSSyncProvider {
 
     fun getConvertTask(): Single<ConvertTaskResult> {
         return when (conflictType) {
-            SyncStatusDialog.ConflictType.EVENT -> {
+            ConflictType.EVENT -> {
                 if (d2.eventModule().events().uid(recordUid).blockingGet().enrollment() == null) {
                     convertSimpleEvent()
                 } else {
                     convertTrackerEvent()
                 }
             }
-            SyncStatusDialog.ConflictType.TEI -> {
+            ConflictType.TEI -> {
                 if (d2.enrollmentModule().enrollments().uid(recordUid).blockingExists()) {
                     convertEnrollment()
                 } else {
@@ -78,7 +79,7 @@ interface SMSSyncProvider {
                     )
                 }
             }
-            SyncStatusDialog.ConflictType.DATA_VALUES -> {
+            ConflictType.DATA_VALUES -> {
                 convertDataSet()
             }
             else -> Single.error(

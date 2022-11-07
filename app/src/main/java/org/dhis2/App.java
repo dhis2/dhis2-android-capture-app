@@ -14,6 +14,7 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.sync.SyncComponentProvider;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.di.dagger.PerUser;
@@ -48,6 +49,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.commons.reporting.CrashReportModule;
+import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
 import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
@@ -365,5 +367,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
         return serverComponent.plus(module);
+    }
+
+
+    @NonNull
+    @Override
+    public SyncComponentProvider getSyncComponentProvider() {
+        return new SyncStatusDialogProvider();
     }
 }

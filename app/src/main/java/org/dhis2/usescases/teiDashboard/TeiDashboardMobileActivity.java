@@ -39,6 +39,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
@@ -244,7 +245,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setConflictType(ConflictType.TEI)
                 .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged && !restartingActivity) {

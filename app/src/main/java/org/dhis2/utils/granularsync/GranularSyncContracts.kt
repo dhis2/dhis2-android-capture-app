@@ -73,8 +73,4 @@ class GranularSyncContracts {
         fun restartSmsSender()
         fun canSendSMS(): Boolean
     }
-
-    interface OnDismissListener {
-        fun onDismiss(hasChanged: Boolean)
-    }
 }
