@@ -278,7 +278,7 @@
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">天</string>
     <string name="hint_month">月</string>
-    <string name="hint_year">年</string>
+    <string name="hint_year">岁</string>
     <string name="week">星期</string>
     <string name="incident_date">事故日期</string>
     <string name="local_results">本地结果</string>
@@ -844,16 +844,16 @@
     <string name="main_menu_troubleshooting">配置疑难解答</string>
     <string name="troubleshooting_language_title">语言</string>
     <string name="troubleshooting_language_description">点击此处更改应用程序的语言</string>
-    <string name="troubleshooting_rules_title">程序规则验证</string>
+    <string name="troubleshooting_rules_title">项目规则验证</string>
     <string name="troubleshooting_rules_description">此操作将检查所有配置的规则并显示错误配置（如果有）</string>
-    <string name="troubleshooting_ongoing_rule_validation">正在验证程序规则...</string>
+    <string name="troubleshooting_ongoing_rule_validation">正在验证项目规则...</string>
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
     <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
-    <string name="search_outside_action">在此程序之外搜索</string>
+    <string name="search_outside_action">在此项目之外搜索</string>
     <string name="string_no_more_results">没有更多结果</string>
     <string name="search_no_more_results_offline">搜索更多结果</string>
     <string name="search_no_results">此搜索没有结果</string>
@@ -873,7 +873,7 @@
     <string name="account_disable_title">帐户已禁用</string>
     <string name="account_disable_message">您的帐户已被管理员禁用。</string>
     <string name="search_unable_search_outside">要在此项目之外进行搜索，请打开搜索表单并填写以下 %s 字段之一：</string>
-    <string name="enrollment_org_unit">招生单位</string>
+    <string name="enrollment_org_unit">注册机构</string>
     <string name="customactivityoncrash_error_activity_build_version">构建版本：%s</string>
     <string name="customactivityoncrash_error_activity_buid_date">构建日期：%s</string>
     <string name="customactivityoncrash_error_activity_current_date">当前日期：%s</string>
@@ -890,4 +890,4 @@
     <string name="sms_sync_sms_app_chooser_title">发送短信</string>
     <string name="sms_sync_is_sms_sent">你发短信了吗？</string>
     <string name="sms_sync_manual_confirmation">等待手工确认</string>
-</resources>
+    </resources>

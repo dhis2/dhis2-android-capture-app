@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_empty_dataset_section_label">ຂໍ້ມູນ</string>
     <string name="event_event">ເຫດການ</string>
     <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
@@ -85,4 +84,4 @@
     <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="default_table_header_label">Value</string>
-</resources>
+    </resources>

@@ -204,7 +204,6 @@
     <string name="keep_editing">استمر في التعديل</string>
     <string name="not_now">ليس الان</string>
     <string name="complete">مكتمل</string>
-    <string name="default_empty_dataset_section_label">بيانات</string>
     <string name="default_table_header_label">القيمة</string>
     <string name="discard_changes">تجاهل التغييرات</string>
-</resources>
+    </resources>
