@@ -142,20 +142,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
         binding.searchButton.setOnClickListener(v -> {
-            hideKeyboard();
             if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
             formView.onEditionFinish();
-            binding.backdropLayout.post(() ->
-                    viewModel.onSearchClick(minNumberOfAttributes -> {
-                        showSnackbar(
-                                v,
-                                String.format(getString(R.string.search_min_num_attr),
-                                        minNumberOfAttributes),
-                                getString(R.string.button_ok)
+            viewModel.onSearchClick(minNumberOfAttributes -> {
+                showSnackbar(
+                        v,
+                        String.format(getString(R.string.search_min_num_attr),
+                                minNumberOfAttributes),
+                        getString(R.string.button_ok)
 
-                        );
-                        return Unit.INSTANCE;
-                    }));
+                );
+                return Unit.INSTANCE;
+            });
         });
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
