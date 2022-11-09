@@ -21,7 +21,7 @@ fun ManageStockTable(
 
     MdcTheme {
         DataSetTableScreen(
-            tableData = viewModel.tableRowData(
+            tableScreenState = viewModel.tableRowData(
                 viewModel.getStockItems().observeAsState(),
                 stringResource(R.string.stock),
                 stringResource(R.string.quantity)
@@ -35,7 +35,7 @@ fun ManageStockTable(
             onCellValueChange = { cell ->
                 onCellValueChanged(cell)
             },
-            onSaveValue = { cell ->
+            onSaveValue = { cell, _ ->
                 onSaveValueChange(cell)
             }
         )

@@ -30,6 +30,7 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
+import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -158,7 +159,7 @@ class ManageStockViewModel @Inject constructor(
         stockItems: State<PagedList<StockItem>?>,
         stockLabel: String,
         qtdLabel: String
-    ): MutableList<TableModel> {
+    ): TableScreenState {
         val tableRowModels = mutableListOf<TableRowModel>()
 
         stockItems.value?.forEachIndexed { index, item ->
@@ -190,10 +191,13 @@ class ManageStockViewModel @Inject constructor(
             tableRowModels.add(tableRowModel)
         }
 
-        return mapTableModel(
-            tableRowModels,
-            stockLabel,
-            qtdLabel
+        return TableScreenState(
+          tables = mapTableModel(
+              tableRowModels,
+              stockLabel,
+              qtdLabel
+          ),
+          selectNext = true
         )
     }
 
@@ -214,8 +218,7 @@ class ManageStockViewModel @Inject constructor(
                     )
                 )
             ),
-            tableRows = stocks,
-            upperPadding = false
+            tableRows = stocks
         )
     )
 
