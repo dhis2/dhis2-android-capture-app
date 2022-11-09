@@ -381,5 +381,4 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .setWorkerFactory(workerFactory)
                 .build();
     }
-
 }
