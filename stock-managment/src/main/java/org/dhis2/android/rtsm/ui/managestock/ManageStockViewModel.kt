@@ -192,12 +192,12 @@ class ManageStockViewModel @Inject constructor(
         }
 
         return TableScreenState(
-          tables = mapTableModel(
-              tableRowModels,
-              stockLabel,
-              qtdLabel
-          ),
-          selectNext = true
+            tables = mapTableModel(
+                tableRowModels,
+                stockLabel,
+                qtdLabel
+            ),
+            selectNext = true
         )
     }
 
