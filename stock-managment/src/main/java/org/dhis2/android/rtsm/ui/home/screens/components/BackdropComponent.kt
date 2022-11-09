@@ -2,6 +2,7 @@ package org.dhis2.android.rtsm.ui.home.screens.components
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.data.TransactionType
@@ -35,6 +37,7 @@ fun Backdrop(
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     homeContext: HomeActivity,
+    barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
 ) {
@@ -89,7 +92,9 @@ fun Backdrop(
                 viewModel,
                 manageStockViewModel,
                 hasFacilitySelected,
-                hasDestinationSelected
+                hasDestinationSelected,
+                homeContext,
+                barcodeLauncher
             )
         },
         scaffoldState = backdropState,

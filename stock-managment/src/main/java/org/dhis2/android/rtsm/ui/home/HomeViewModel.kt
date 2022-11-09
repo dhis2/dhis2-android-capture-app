@@ -11,6 +11,7 @@ import java.time.ZoneId
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
@@ -54,6 +55,9 @@ class HomeViewModel @Inject constructor(
     private val _facility = MutableStateFlow<OrganisationUnit?>(null)
     val facility: StateFlow<OrganisationUnit?>
         get() = _facility
+
+    private val _scanText = MutableStateFlow("")
+    val scanText = _scanText.asStateFlow()
 
     private val _transactionDate = MutableStateFlow(LocalDateTime.now())
     val transactionDate: StateFlow<LocalDateTime>
@@ -228,5 +232,9 @@ class HomeViewModel @Inject constructor(
 
     fun setSelectedText(text: String) {
         _orgUnitName.value = text
+    }
+
+    fun setScannedText(text: String) {
+        _scanText.value = text
     }
 }

@@ -1,6 +1,7 @@
 package org.dhis2.android.rtsm.ui.home.screens
 
 import android.app.Activity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeActivity
@@ -34,6 +36,7 @@ fun HomeScreen(
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     homeContext: HomeActivity,
+    barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     proceedAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
 ) {
@@ -74,6 +77,7 @@ fun HomeScreen(
             themeColor,
             supportFragmentManager,
             homeContext,
+            barcodeLauncher,
             scaffoldState
         ) { coroutineScope, scaffold ->
             syncAction(coroutineScope, scaffold)

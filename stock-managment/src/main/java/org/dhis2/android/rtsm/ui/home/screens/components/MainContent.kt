@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.ui.home.screens.components
 
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,12 +43,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
+import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -58,7 +62,9 @@ fun MainContent(
     viewModel: HomeViewModel,
     manageStockViewModel: ManageStockViewModel,
     hasFacilitySelected: Boolean,
-    hasDestinationSelected: Boolean?
+    hasDestinationSelected: Boolean?,
+    homeContext: HomeActivity,
+    barcodeLauncher: ActivityResultLauncher<ScanOptions>
 ) {
     val scope = rememberCoroutineScope()
     val resource = painterResource(R.drawable.ic_arrow_up)
@@ -70,6 +76,7 @@ fun MainContent(
     val weightValueArrow = if (backdropState.isRevealed) 0.10f else 0.05f
     val weightValueArrowStatus = backdropState.isRevealed
     val focusManager = LocalFocusManager.current
+    val search = viewModel.scanText.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -83,17 +90,9 @@ fun MainContent(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.Top
         ) {
-            var search by remember { mutableStateOf("") }
             OutlinedTextField(
                 value = search,
-                onValueChange = {
-                    search = it
-                    closeButtonVisibility = when (search) {
-                        "" -> 0f
-                        else -> 1f
-                    }
-                    manageStockViewModel.onSearchQueryChanged(it)
-                },
+                onValueChange = viewModel::setScannedText,
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .background(Color.White, shape = CircleShape)
@@ -127,7 +126,7 @@ fun MainContent(
                         modifier = Modifier
                             .alpha(closeButtonVisibility),
                         onClick = {
-                            search = ""
+                            viewModel.setScannedText("")
                             closeButtonVisibility = 0f
                         }
                     ) {
@@ -155,7 +154,9 @@ fun MainContent(
                 }
             )
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    scanBarcode(barcodeLauncher)
+                },
                 modifier = Modifier
                     .weight(weightValue)
                     .alignBy(FirstBaseline)
@@ -192,6 +193,11 @@ fun MainContent(
                     }
                 }
             }
+            closeButtonVisibility = when (search) {
+                "" -> 0f
+                else -> 1f
+            }
+            manageStockViewModel.onSearchQueryChanged(search)
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -215,4 +221,11 @@ private fun updateTableState(
     viewModel: HomeViewModel
 ) {
     manageStockViewModel.setup(viewModel.getData())
+}
+
+private fun scanBarcode(launcher: ActivityResultLauncher<ScanOptions>) {
+    val scanOptions = ScanOptions()
+        .setBeepEnabled(true)
+        .setCaptureActivity(ScannerActivity::class.java)
+    launcher.launch(scanOptions)
 }

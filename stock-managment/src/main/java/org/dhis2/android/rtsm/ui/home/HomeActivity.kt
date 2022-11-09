@@ -6,7 +6,9 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.colorResource
 import androidx.work.WorkInfo
 import com.google.android.material.composethemeadapter.MdcTheme
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -43,6 +48,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
     private var themeColor = R.color.colorPrimary
     private lateinit var filterManager: FilterManager
     private var orgUnitList = listOf<OrganisationUnit>()
+    private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,12 +76,14 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
                         Color(colorResource(themeColor).toArgb()),
                         supportFragmentManager,
                         this@HomeActivity,
-                        { scope, scaffold -> navigateToReviewStock(scope, scaffold) },
-                        { scope, scaffold -> synchronizeData(scope, scaffold) }
-                    )
+                        barcodeLauncher,
+                        { scope, scaffold -> navigateToReviewStock(scope, scaffold) }
+                    ) { scope, scaffold -> synchronizeData(scope, scaffold) }
                 }
             }
         }
+
+        configureScanner()
     }
 
     private fun updateTheme(type: TransactionType) {
@@ -206,5 +214,28 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
 
     fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit>) {
         filterManager.addOrgUnits(selectedOrgUnits)
+    }
+
+    private fun configureScanner() {
+        val barcodeLauncher: ActivityResultLauncher<ScanOptions> =
+            registerForActivityResult(
+                ScanContract()
+            ) { scanIntentResult ->
+                if (scanIntentResult.getContents() == null) {
+                    Toast.makeText(this, "Scan cancelled!", Toast.LENGTH_SHORT).show()
+                } else {
+                    onScanCompleted(
+                        scanIntentResult
+                    )
+                }
+            }
+        this.barcodeLauncher = barcodeLauncher
+    }
+
+    private fun onScanCompleted(
+        result: ScanIntentResult
+    ) {
+        val data = result.contents
+        viewModel.setScannedText(data)
     }
 }
