@@ -9,6 +9,7 @@ import org.dhis2.commons.date.Period;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.customviews.RxDateDialog;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
@@ -788,6 +789,26 @@ public class DateUtils {
 
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
                 && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+    }
+
+    public Boolean isInsideFutureInputPeriod(DateRangeInputPeriodModel inputPeriod, Integer futureOpenDays) {
+        if (futureOpenDays != null && futureOpenDays > 0) {
+            boolean isInside = false;
+
+            Date today = Calendar.getInstance().getTime();
+            Date inputPeriodOpeningDate = inputPeriod.endPeriodDate();
+
+            long diffInMillis = Math.abs(inputPeriodOpeningDate.getTime() - today.getTime());
+            long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+
+            if (diffInDays < futureOpenDays) {
+                isInside = true;
+            }
+            return isInside;
+        } else {
+            return false;
+        }
     }
 
     public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {

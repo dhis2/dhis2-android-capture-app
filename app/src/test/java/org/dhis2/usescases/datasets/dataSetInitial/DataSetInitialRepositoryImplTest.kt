@@ -49,20 +49,19 @@ class DataSetInitialRepositoryImplTest {
         ) doReturn Single.just(dataSet)
 
         whenever(
-            d2.periodModule().periods()
-                .byPeriodId()
+            d2.periodModule().periodHelper()
         ) doReturn mock()
 
         whenever(
-            d2.periodModule().periods()
-                .byPeriodId().eq(dataInputPeriod.period().uid())
+            d2.periodModule().periodHelper()
+                .getPeriodForPeriodId(dataInputPeriod.period().uid())
         ) doReturn mock()
 
         whenever(
-            d2.periodModule().periods()
-                .byPeriodId().eq(dataInputPeriod.period().uid())
+            d2.periodModule().periodHelper()
+                .getPeriodForPeriodId(dataInputPeriod.period().uid())
                 .blockingGet()
-        ) doReturn listOf(period)
+        ) doReturn period
 
         val dateRangeInputPeriodModel = DateRangeInputPeriodModel.create(
             dataSetUid,
