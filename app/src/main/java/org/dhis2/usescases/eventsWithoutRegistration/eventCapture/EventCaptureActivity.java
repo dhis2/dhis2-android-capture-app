@@ -117,6 +117,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 pageConfigurator.displayRelationships()
         );
         binding.eventViewPager.setAdapter(adapter);
+
+        System.out.println("#########################################");
+        System.out.println(binding.navigationBar.getInitialPage());
+
         binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
         binding.eventViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -144,7 +148,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void setUpNavigationBar() {
         binding.navigationBar.pageConfiguration(pageConfigurator);
+
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+
+            System.out.println("*****************************************************");
+            System.out.println(adapter.getDynamicTabIndex(item.getItemId()));
+            System.out.println(item);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+
             binding.eventViewPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
             return true;
         });

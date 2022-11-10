@@ -26,9 +26,9 @@ import org.dhis2.R
 const val itemIndicatorTag = "ITEM_INDICATOR"
 
 class NavigationBottomBar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
 ) : BottomNavigationView(context, attrs, defStyleAttr) {
     private val animations = NavigationBottomBarAnimations(this)
     private var hidden = false
@@ -48,18 +48,18 @@ class NavigationBottomBar @JvmOverloads constructor(
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {
             currentItemIndicatorColor = getColor(
-                R.styleable.NavigationBottomBar_currentItemSelectorColor,
-                ContextCompat.getColor(context, R.color.colorPrimary)
+                    R.styleable.NavigationBottomBar_currentItemSelectorColor,
+                    ContextCompat.getColor(context, R.color.colorPrimary)
             )
             itemIndicatorSize = getDimension(
-                R.styleable.NavigationBottomBar_currentItemSelectorSize,
-                40.dp.toFloat()
+                    R.styleable.NavigationBottomBar_currentItemSelectorSize,
+                    40.dp.toFloat()
             )
             itemIndicatorDrawable =
-                getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
+                    getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
             initialPage = getInt(R.styleable.NavigationBottomBar_initialPage, 0)
             forceShowAnalytics =
-                getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
+                    getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
             recycle()
         }
         setIconsColor(currentItemIndicatorColor)
@@ -106,7 +106,7 @@ class NavigationBottomBar @JvmOverloads constructor(
     private fun initCurrentItemIndicator(): View {
         return ImageView(context).apply {
             layoutParams =
-                ViewGroup.LayoutParams(itemIndicatorSize.toInt(), itemIndicatorSize.toInt())
+                    ViewGroup.LayoutParams(itemIndicatorSize.toInt(), itemIndicatorSize.toInt())
             x = 0f
             y = 0f
             setImageDrawable(itemIndicatorDrawable)
@@ -125,9 +125,9 @@ class NavigationBottomBar @JvmOverloads constructor(
     private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
         currentItemIndicator.apply {
             x = selectedItemView.x +
-                selectedItemView.width / 2f +
-                intrinsicHorizontalMargin() -
-                itemIndicatorSize / 2f
+                    selectedItemView.width / 2f +
+                    intrinsicHorizontalMargin() -
+                    itemIndicatorSize / 2f
             y = (this@NavigationBottomBar.height - itemIndicatorSize) / 2f
         }
 
@@ -139,7 +139,7 @@ class NavigationBottomBar @JvmOverloads constructor(
 
     private fun indicatorHasPosition(): Boolean {
         return currentItemIndicator.x != -itemIndicatorSize / 2f &&
-            currentItemIndicator.y != -itemIndicatorSize / 2f
+                currentItemIndicator.y != -itemIndicatorSize / 2f
     }
 
     private fun isItemIndicatorAdded(): Boolean {
@@ -180,21 +180,21 @@ class NavigationBottomBar @JvmOverloads constructor(
     fun setIconsColor(color: Int) {
         currentItemIndicatorColor = color
         val iconsColorStates =
-            ColorStateList(
-                arrayOf(
-                    intArrayOf(android.R.attr.state_checked),
-                    intArrayOf(-android.R.attr.state_checked)
-                ),
-                intArrayOf(
-                    currentItemIndicatorColor,
-                    Color.argb(
-                        114,
-                        currentItemIndicatorColor.red,
-                        currentItemIndicatorColor.green,
-                        currentItemIndicatorColor.blue
-                    )
+                ColorStateList(
+                        arrayOf(
+                                intArrayOf(android.R.attr.state_checked),
+                                intArrayOf(-android.R.attr.state_checked)
+                        ),
+                        intArrayOf(
+                                currentItemIndicatorColor,
+                                Color.argb(
+                                        114,
+                                        currentItemIndicatorColor.red,
+                                        currentItemIndicatorColor.green,
+                                        currentItemIndicatorColor.blue
+                                )
+                        )
                 )
-            )
         itemIconTintList = iconsColorStates
         itemIndicatorDrawable?.let {
             DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
@@ -209,6 +209,10 @@ class NavigationBottomBar @JvmOverloads constructor(
                 visibleMenuItems.add(it)
             }
         }
+
+        System.out.println("prtttttttttttttttttttttttttttttttttttttttttttttttttt");
+        System.out.println(visibleMenuItems.size);
+
         when {
             visibleMenuItems.size < 2 && !isHidden() -> {
                 hidden = true
