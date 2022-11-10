@@ -23,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
@@ -638,7 +639,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void showSyncDialog(String uid) {
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setConflictType(ConflictType.TEI)
                 .setUid(uid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged)

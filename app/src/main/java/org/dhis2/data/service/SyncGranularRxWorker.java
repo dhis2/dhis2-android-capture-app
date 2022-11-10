@@ -7,6 +7,7 @@ import androidx.work.Data;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,6 @@ import static org.dhis2.commons.Constants.CONFLICT_TYPE;
 import static org.dhis2.commons.Constants.ORG_UNIT;
 import static org.dhis2.commons.Constants.PERIOD_ID;
 import static org.dhis2.commons.Constants.UID;
-import static org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType;
 
 public class SyncGranularRxWorker extends RxWorker {
 

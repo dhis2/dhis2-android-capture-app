@@ -21,6 +21,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -299,7 +300,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.PROGRAM)
+                .setConflictType(ConflictType.PROGRAM)
                 .setUid(initialProgram)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
@@ -483,7 +484,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showSyncDialog(String teiUid) {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setConflictType(ConflictType.TEI)
                 .setUid(teiUid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();

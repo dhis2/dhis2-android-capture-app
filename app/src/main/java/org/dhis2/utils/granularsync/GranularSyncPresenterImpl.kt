@@ -44,6 +44,13 @@ import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.ConflictType.ALL
+import org.dhis2.commons.sync.ConflictType.DATA_SET
+import org.dhis2.commons.sync.ConflictType.DATA_VALUES
+import org.dhis2.commons.sync.ConflictType.EVENT
+import org.dhis2.commons.sync.ConflictType.PROGRAM
+import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
@@ -51,12 +58,6 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.sms.SmsSendingService
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.ALL
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_SET
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.DATA_VALUES
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.EVENT
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.PROGRAM
-import org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType.TEI
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
@@ -67,7 +68,7 @@ class GranularSyncPresenterImpl(
     val d2: D2,
     private val dhisProgramUtils: DhisProgramUtils,
     val schedulerProvider: SchedulerProvider,
-    private val conflictType: SyncStatusDialog.ConflictType,
+    private val conflictType: ConflictType,
     private val recordUid: String,
     private val dvOrgUnit: String?,
     private val dvAttrCombo: String?,
@@ -151,7 +152,7 @@ class GranularSyncPresenterImpl(
     }
 
     override fun initGranularSync(): LiveData<List<WorkInfo>> {
-        var conflictTypeData: SyncStatusDialog.ConflictType? = null
+        var conflictTypeData: ConflictType? = null
         var dataToDataValues: Data? = null
         when (conflictType) {
             PROGRAM -> conflictTypeData = PROGRAM
@@ -506,7 +507,7 @@ class GranularSyncPresenterImpl(
     }
 
     private fun getConflicts(
-        conflictType: SyncStatusDialog.ConflictType
+        conflictType: ConflictType
     ): Single<MutableList<TrackerImportConflict>> {
         return when (conflictType) {
             TEI -> {
