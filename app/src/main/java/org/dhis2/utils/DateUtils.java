@@ -795,7 +795,7 @@ public class DateUtils {
         if (futureOpenDays != null && futureOpenDays > 0) {
             boolean isInside = false;
 
-            Date today = Calendar.getInstance().getTime();
+            Date today = DateUtils.getInstance().getToday();
             Date inputPeriodOpeningDate = inputPeriod.endPeriodDate();
 
             long diffInMillis = Math.abs(inputPeriodOpeningDate.getTime() - today.getTime());
