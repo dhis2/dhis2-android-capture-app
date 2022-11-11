@@ -21,6 +21,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -54,6 +55,7 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
@@ -72,6 +74,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     SearchNavigator searchNavigator;
+
+    @Inject
+    NetworkUtils networkUtils;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -354,10 +359,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showSearchAndFilterButtons();
                     break;
                 case R.id.navigation_map_view:
-                    presenter.trackSearchMapVisualization();
-                    viewModel.setMapScreen();
-                    showMap();
-                    showSearchAndFilterButtons();
+                    networkUtils.performIfOnline(
+                            this,
+                            () -> {
+                                presenter.trackSearchMapVisualization();
+                                viewModel.setMapScreen();
+                                showMap();
+                                showSearchAndFilterButtons();
+                                return null;
+                            },
+                            () -> {
+                                binding.navigationBar.selectItemAt(0);
+                                return null;
+                            },
+                            getString(R.string.msg_network_connection_maps)
+                    );
+
                     break;
                 case R.id.navigation_analytics:
                     presenter.trackSearchAnalytics();
