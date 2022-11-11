@@ -89,6 +89,7 @@ class ProgramEventDetailActivity :
                 }
                 R.id.navigation_map_view -> {
                     networkUtils.performIfOnline(
+                        this,
                         {
                             presenter.trackEventProgramMap()
                             programEventsViewModel.showMap()
