@@ -56,7 +56,9 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 this.map = mapLoaded
                 setUi()
                 val assets = mapView.context.assets
-                map?.setStyle(BaseMapManager.loadStyle(assets, BaseMapType.OSM_LIGHT)) { styleLoaded ->
+                map?.setStyle(
+                    BaseMapManager.loadStyle(assets, BaseMapType.OSM_LIGHT)
+                ) { styleLoaded ->
                     this.style = styleLoaded
                     mapLayerManager = MapLayerManager(mapLoaded, assets).apply {
                         styleChangeCallback = { newStyle ->
