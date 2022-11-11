@@ -5,6 +5,7 @@ import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.commons.Constants.ORG_UNIT;
 import static org.dhis2.commons.Constants.PROGRAM_UID;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -14,15 +15,19 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -52,6 +57,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
         OnOrgUnitSelectionFinished {
@@ -68,6 +75,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Inject
     NavigationPageConfigurator pageConfigurator;
+
+    @Inject
+    NetworkUtils networkUtils;
 
     private boolean backDropActive;
     private String programUid;
@@ -100,8 +110,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     programEventsViewModel.showList();
                     return true;
                 case R.id.navigation_map_view:
-                    presenter.trackEventProgramMap();
-                    programEventsViewModel.showMap();
+                    networkUtils.performIfOnline(
+                            ()->{
+                                presenter.trackEventProgramMap();
+                                programEventsViewModel.showMap();
+                                return null;
+                            },
+                            ()->{
+                                binding.navigationBar.selectItemAt(0);
+                                return null;
+                            },
+                            getString(R.string.msg_network_connection_maps)
+                    );
                     return true;
                 case R.id.navigation_analytics:
                     presenter.trackEventProgramAnalytics();
