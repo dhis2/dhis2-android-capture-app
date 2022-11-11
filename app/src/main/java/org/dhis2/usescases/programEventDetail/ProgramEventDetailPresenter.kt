@@ -67,7 +67,9 @@ class ProgramEventDetailPresenter(
             Single.zip(
                 Single.just(eventRepository.getAccessDataWrite()),
                 eventRepository.hasAccessToAllCatOptions()
-            ) { hasWritePermission: Boolean, hasAccessToAllCatOptions: Boolean -> hasWritePermission && hasAccessToAllCatOptions }
+            ) { hasWritePermission, hasAccessToAllCatOptions ->
+                hasWritePermission && hasAccessToAllCatOptions
+            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
