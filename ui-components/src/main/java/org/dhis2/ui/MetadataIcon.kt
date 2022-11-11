@@ -1,4 +1,4 @@
-package org.dhis2.commons.ui
+package org.dhis2.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,8 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.commons.R
-import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.ui.utils.getAlphaContrastColor
 
 @Composable
 fun MetadataIcon(
@@ -33,7 +32,7 @@ fun MetadataIcon(
         painter = painterResource(id = metadataIconData.iconResource),
         contentDescription = "",
         colorFilter = ColorFilter.tint(
-            Color(ColorUtils.getAlphaContrastColor(metadataIconData.programColor))
+            metadataIconData.programColor.getAlphaContrastColor()
         )
     )
 }

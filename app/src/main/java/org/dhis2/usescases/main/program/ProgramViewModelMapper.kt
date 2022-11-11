@@ -2,7 +2,7 @@ package org.dhis2.usescases.main.program
 
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary

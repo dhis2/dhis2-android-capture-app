@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program
 
+import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit
 import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
@@ -177,7 +178,7 @@ class ProgramPresenterTest {
             "uid",
             "displayName",
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive
             ),
             1,
@@ -199,7 +200,7 @@ class ProgramPresenterTest {
             "uid",
             "displayName",
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive
             ),
             1,

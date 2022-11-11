@@ -10,8 +10,8 @@ import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIconData
-import org.dhis2.commons.ui.setUpMetadataIcon
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 

@@ -1,12 +1,13 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
+import android.graphics.Color
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -159,7 +160,7 @@ class TeiProgramListPresenterTest {
             "uid",
             "programName",
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = Color.parseColor("#84FFFF"),
                 iconResource = R.drawable.ic_home_positive
             ),
             0,

@@ -5,8 +5,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.setItemPic
-import org.dhis2.commons.ui.MetadataIconData
-import org.dhis2.commons.ui.setUpMetadataIcon
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.databinding.ItemRelationshipBinding
 
 class RelationshipViewHolder(
