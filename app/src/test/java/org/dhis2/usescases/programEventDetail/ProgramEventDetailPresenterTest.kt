@@ -11,7 +11,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
@@ -49,7 +48,7 @@ class ProgramEventDetailPresenterTest {
     private val filterRepository: FilterRepository = mock()
     private lateinit var presenter: ProgramEventDetailPresenter
 
-    private val view: ProgramEventDetailContract.View = mock()
+    private val view: ProgramEventDetailView = mock()
     private val repository: ProgramEventDetailRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = FilterManager.getInstance()
@@ -69,7 +68,6 @@ class ProgramEventDetailPresenterTest {
             filterManager,
             workingListMapper,
             filterRepository,
-            filterPresenter,
             disableHomeFilters,
             matomoAnalyticsController
         )
@@ -117,9 +115,9 @@ class ProgramEventDetailPresenterTest {
             BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
         )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
-        whenever(repository.accessDataWrite) doReturn true
+        whenever(repository.getAccessDataWrite()) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
-        whenever(repository.program()) doReturn Observable.just(program)
+        whenever(repository.program()) doReturn Single.just(program)
         whenever(
             repository.filteredProgramEvents()
         ) doReturn events
