@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import kotlin.math.pow
 import org.dhis2.ui.theme.contrastDark
 import org.dhis2.ui.theme.contrastLight
-import kotlin.math.pow
 
 fun Int.getAlphaContrastColor(): Color {
     val rgb = listOf(

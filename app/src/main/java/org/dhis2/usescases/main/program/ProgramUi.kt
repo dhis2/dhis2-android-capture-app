@@ -66,10 +66,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.data.service.SyncStatusData
-import org.dhis2.ui.utils.getAlphaContrastColor
 import org.hisp.dhis.android.core.common.State
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
