@@ -6,14 +6,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.permissions.PermissionsListener
+import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -24,6 +24,8 @@ import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
+import org.dhis2.maps.layer.BaseMapManager
+import org.dhis2.maps.layer.BaseMapType
 import org.dhis2.maps.layer.MapLayerManager
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
@@ -53,9 +55,10 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
                 setUi()
-                map?.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
+                val assets = mapView.context.assets
+                map?.setStyle(BaseMapManager.loadStyle(assets, BaseMapType.OSM_LIGHT)) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, assets).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()

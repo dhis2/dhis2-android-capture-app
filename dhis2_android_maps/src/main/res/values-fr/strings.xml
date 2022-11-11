@@ -2,8 +2,6 @@
 <resources>
     <string name="select_location">Sélectionnez l\'emplacement</string>
     <string name="map_layers">Couches de la carte</string>
-    <string name="dialog_layer_street_base_map">Vue sur la rue</string>
-    <string name="dialog_layer_satellite_base_map">Vue satellite</string>
     <string name="action_apply">Appliquer</string>
     <string name="dialog_layer_satellite">Afficher la vue satellite</string>
     <string name="dialog_layer_event">Afficher les événements</string>

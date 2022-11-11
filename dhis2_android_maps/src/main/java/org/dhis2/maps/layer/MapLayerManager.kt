@@ -1,5 +1,6 @@
 package org.dhis2.maps.layer
 
+import android.content.res.AssetManager
 import android.graphics.Color
 import androidx.annotation.ColorRes
 import com.mapbox.geojson.Feature
@@ -16,13 +17,16 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
-class MapLayerManager(val mapboxMap: MapboxMap) {
+class MapLayerManager(
+    val mapboxMap: MapboxMap,
+    val assetManager: AssetManager
+) {
 
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
-    var currentStyle: String = Style.MAPBOX_STREETS
+    var currentStyle = BaseMapType.OSM_LIGHT
 
     private val relationShipColors =
         mutableListOf(
@@ -178,13 +182,8 @@ class MapLayerManager(val mapboxMap: MapboxMap) {
     }
 
     fun changeStyle(baseMapType: BaseMapType) {
-        currentStyle = when (baseMapType) {
-            BaseMapType.STREET -> Style.MAPBOX_STREETS
-            BaseMapType.SATELLITE -> Style.SATELLITE_STREETS
-        }
-        mapboxMap.setStyle(
-            currentStyle
-        ) {
+        currentStyle = baseMapType
+        mapboxMap.setStyle(BaseMapManager.loadStyle(assetManager, baseMapType)) {
             styleChangeCallback?.invoke(it)
         }
     }

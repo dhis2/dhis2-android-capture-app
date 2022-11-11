@@ -27,7 +27,7 @@
             app:strokeWidth="@{currentSelectedStyle == itemStyle ? 5 : 0}"
             app:layout_constraintEnd_toStartOf="parent"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/satellite_map_preview"
+            app:srcCompat="@drawable/basemap_bing_aerial_labels"
             android:layout_height="60dp"/>
 
         <TextView
