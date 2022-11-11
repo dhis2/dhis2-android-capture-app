@@ -2,8 +2,6 @@
 <resources>
     <string name="select_location">Chọn địa điểm</string>
     <string name="map_layers">Các lớp bản đồ</string>
-    <string name="dialog_layer_street_base_map">Xem Đường Phố</string>
-    <string name="dialog_layer_satellite_base_map">Xem Vệ Tinh</string>
     <string name="action_apply">Áp dụng</string>
     <string name="dialog_layer_satellite">Xem Vệ Tinh</string>
     <string name="dialog_layer_event">Hiển thị sự kiện</string>

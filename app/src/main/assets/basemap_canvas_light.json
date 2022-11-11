@@ -1,0 +1,25 @@
+{
+  "version": 8,
+  "sources": {
+    "raster-tiles": {
+      "type": "raster",
+      "tiles": [
+        "https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
+        "https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
+        "https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
+        "https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z"
+      ],
+      "tileSize": 256
+    }
+  },
+  "layers": [
+    {
+      "id": "simple-tiles",
+      "type": "raster",
+      "source": "raster-tiles",
+      "minzoom": 0,
+      "maxzoom": 22
+    }
+  ],
+  "id": "test"
+}
