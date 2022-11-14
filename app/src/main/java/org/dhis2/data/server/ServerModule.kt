@@ -9,6 +9,7 @@ import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -26,12 +27,17 @@ import org.dhis2.utils.analytics.AnalyticsInterceptor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
 
 @Module
 class ServerModule {
     @Provides
     @PerServer
-    fun sdk(): D2 {
+    fun sdk(context: Context): D2 {
+        if (!D2Manager.isD2Instantiated()) {
+            val d2Configuration = blockingInstantiateD2(getD2Configuration(context))
+            d2Configuration!!.userModule().accountManager().setMaxAccounts(Constants.MAX_ACCOUNTS)
+        }
         return D2Manager.getD2()
     }
 
