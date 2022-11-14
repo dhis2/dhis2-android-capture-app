@@ -888,6 +888,5 @@
     <string name="sms_sync_not_sent">短信未发送。</string>
     <string name="sms_sync_opening_app">打开短信应用。请不要修改留言。</string>
     <string name="sms_sync_sms_app_chooser_title">发送短信</string>
-    <string name="sms_sync_is_sms_sent">你发短信了吗？</string>
     <string name="sms_sync_manual_confirmation">等待手工确认</string>
     </resources>

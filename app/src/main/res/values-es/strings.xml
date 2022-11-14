@@ -892,6 +892,5 @@
     <string name="sms_sync_not_sent">SMS no enviado.</string>
     <string name="sms_sync_opening_app">Abriendo aplicación de SMS. Por favor, no modifique el mensaje.</string>
     <string name="sms_sync_sms_app_chooser_title">Enviar SMS con</string>
-    <string name="sms_sync_is_sms_sent">¿Ha enviado el sms?</string>
     <string name="sms_sync_manual_confirmation">Esperando confirmación manual</string>
     </resources>

@@ -894,6 +894,5 @@
     <string name="sms_sync_not_sent">SMS не відправлено.</string>
     <string name="sms_sync_opening_app">Відкриття програми SMS. Будь ласка, не змінюйте повідомлення.</string>
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
-    <string name="sms_sync_is_sms_sent">Ви відправили SMS?</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
     </resources>
