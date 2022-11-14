@@ -44,6 +44,7 @@ public class DateUtils {
         return instance;
     }
 
+    public static final String DATABASE_FORMAT_EXPRESSION_MILLIS = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
@@ -201,6 +202,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat dateTimeFormat() {
         return new SimpleDateFormat(DATE_TIME_FORMAT_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat databaseDateFormatMillis() {
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_MILLIS, Locale.US);
     }
 
     @NonNull
