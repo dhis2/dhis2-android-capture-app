@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
@@ -17,6 +18,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
+import org.dhis2.ui.theme.programColorDark
+import org.dhis2.ui.theme.programColorLight
 import org.dhis2.ui.utils.getAlphaContrastColor
 
 @Composable
@@ -69,27 +72,27 @@ class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData>
     override val values: Sequence<MetadataIconData>
         get() = sequenceOf(
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
+                programColor = programColorDark.toArgb(),
                 iconResource = R.drawable.ic_home_negative
             ),
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
+                programColor = programColorDark.toArgb(),
                 iconResource = R.drawable.ic_home_positive
             ),
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#00BCD4"),
+                programColor = programColorDark.toArgb(),
                 iconResource = R.drawable.ic_home_outline
             ),
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = programColorLight.toArgb(),
                 iconResource = R.drawable.ic_home_negative
             ),
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = programColorLight.toArgb(),
                 iconResource = R.drawable.ic_home_positive
             ),
             MetadataIconData(
-                programColor = android.graphics.Color.parseColor("#84FFFF"),
+                programColor = programColorLight.toArgb(),
                 iconResource = R.drawable.ic_home_outline
             )
 

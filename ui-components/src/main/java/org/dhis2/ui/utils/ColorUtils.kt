@@ -19,9 +19,9 @@ fun Int.getAlphaContrastColor(): Color {
             else -> ((it + 0.055) / 1.055).pow(2.4)
         }
     }
-    val L = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+    val l = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
     return when {
-        L > 0.500 -> contrastDark
+        l > 0.500 -> contrastDark
         else -> contrastLight
     }
 }
