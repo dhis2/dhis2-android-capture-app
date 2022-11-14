@@ -46,6 +46,7 @@ import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
@@ -61,7 +62,6 @@ import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.settings.LimitScope;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,6 +78,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Inject
     WorkManagerController workManagerController;
+
+    @Inject
+    NetworkUtils networkUtils;
 
     private FragmentSettingsBinding binding;
     private Context context;
@@ -771,7 +774,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         if (!binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
             presenter.validateGatewayObservable(binding.settingsSms.settingsSmsReceiver.getText().toString());
         }
-        boolean hasNetwork = NetworkUtils.isOnline(context);
+
+        boolean hasNetwork = networkUtils.isOnline();
 
         binding.settingsSms.settingsSmsSwitch.setEnabled(hasNetwork);
         binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(hasNetwork);
@@ -811,6 +815,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.settingsSms.settingsSmsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             clearSmsFocus();
+            if (binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
+                binding.settingsSms.settingsSmsSwitch.setChecked(false);
+                requestNoEmptySMSGateway();
+            }
             if (!isChecked || presenter.isGatewaySetAndValid(binding.settingsSms.settingsSmsReceiver.getText().toString())) {
                 presenter.enableSmsModule(isChecked);
             }
@@ -907,14 +915,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void checkSyncDataButtonStatus() {
-        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !dataWorkRunning;
         binding.buttonSyncData.setEnabled(canBeClicked);
         binding.buttonSyncData.setClickable(canBeClicked);
     }
 
     private void checkSyncMetaButtonStatus() {
-        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean isOnline = networkUtils.isOnline();
         boolean canBeClicked = isOnline && !metadataInit;
         binding.buttonSyncMeta.setEnabled(canBeClicked);
         binding.buttonSyncMeta.setClickable(canBeClicked);
