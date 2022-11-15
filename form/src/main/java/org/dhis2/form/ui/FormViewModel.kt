@@ -435,7 +435,12 @@ class FormViewModel(
     }
 
     private fun processCalculatedItems() {
-        _items.value = repository.composeList()
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
+                repository.composeList()
+            }
+            _items.postValue(result.await())
+        }
     }
 
     fun updateConfigurationErrors() {

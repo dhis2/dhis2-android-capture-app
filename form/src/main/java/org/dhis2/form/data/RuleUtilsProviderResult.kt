@@ -11,7 +11,7 @@ data class RuleUtilsProviderResult(
     val fieldsWithErrors: List<FieldWithError>,
     val fieldsWithWarnings: List<FieldWithError>,
     val unsupportedRules: List<String>,
-    val fieldsToUpdate: List<String>,
+    val fieldsToUpdate: List<FieldWithNewValue>,
     val stagesToHide: List<String>,
     val configurationErrors: List<RulesUtilsProviderConfigurationError>,
     val optionsToHide: Map<String, List<String>>,
@@ -38,6 +38,8 @@ data class RuleUtilsProviderResult(
         return optionGroupsToShow[fieldUid] ?: mutableListOf()
     }
 }
+
+data class FieldWithNewValue(val fieldUid: String, val newValue: String?)
 
 data class FieldWithError(val fieldUid: String, val errorMessage: String)
 
