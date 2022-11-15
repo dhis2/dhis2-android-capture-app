@@ -32,6 +32,22 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     private final List<EventPageType> pages;
     private EventCaptureFormFragment formFragment;
 
+    public int getNavigationPagePosition(int navigationId) {
+
+        int i = navigationId;
+        EventPageType pageType =
+                i == R.id.navigation_details ? EventPageType.DETAILS :
+                        i == R.id.navigation_analytics ? EventPageType.ANALYTICS :
+                                i == R.id.navigation_relationships ? EventPageType.RELATIONSHIPS :
+                                        i == R.id.navigation_notes ? EventPageType.NOTES :
+                                                i == R.id.navigation_data_entry ? EventPageType.DATA_ENTRY :
+                                                        null;
+
+        return pages.indexOf(pageType);
+
+    }
+
+
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
     }
@@ -40,7 +56,8 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String programUid,
                                     String eventUid,
                                     boolean displayAnalyticScreen,
-                                    boolean displayRelationshipScreen
+                                    boolean displayRelationshipScreen,
+                                    boolean displayDataEntryScreen
 
     ) {
         super(fragmentActivity);
@@ -48,7 +65,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.eventUid = eventUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
-        pages.add(EventPageType.DATA_ENTRY);
+
+        if (displayDataEntryScreen) {
+            pages.add(EventPageType.DATA_ENTRY);
+        }
 
         if (displayAnalyticScreen) {
             pages.add(EventPageType.ANALYTICS);

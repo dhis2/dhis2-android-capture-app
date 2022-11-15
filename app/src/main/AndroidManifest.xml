@@ -17,8 +17,10 @@
 
     <queries>
         <intent>
-            <action android:name="android.intent.action.SENDTO"/>
-            <data android:scheme="smsto" android:host="*" />
+            <action android:name="android.intent.action.SENDTO" />
+            <data
+                android:host="*"
+                android:scheme="smsto" />
         </intent>
 
     </queries>
@@ -115,10 +117,7 @@
         </receiver>
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
-        <activity
-            android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
@@ -153,8 +152,8 @@
         </activity>
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
         <activity
-            android:exported="false"
             android:name=".usescases.crash.CrashActivity"
+            android:exported="false"
             android:process=":error_activity">
             <intent-filter>
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />

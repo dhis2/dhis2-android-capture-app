@@ -119,6 +119,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+        System.out.println("whaaaaaaatttttttttttttttttttttt????");
+        System.out.println(savedInstanceState);
+
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(PROGRAM_UID);
@@ -147,7 +150,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.navigationBar.pageConfiguration(pageConfigurator);
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
             if (adapter == null) return true;
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.navigation_analytics:
                     presenter.trackDashboardAnalytics();
                     break;
@@ -560,7 +563,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             return Unit.INSTANCE;
                         }
                 )
-                .onMenuItemClicked(itemId->{
+                .onMenuItemClicked(itemId -> {
                     switch (itemId) {
                         case R.id.showHelp:
                             analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);

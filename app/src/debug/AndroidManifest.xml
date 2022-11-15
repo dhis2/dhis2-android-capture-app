@@ -81,8 +81,9 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
-        <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher">
             <intent-filter>
@@ -95,19 +96,20 @@
         </receiver>
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
-        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
+
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
-        <activity android:name=".usescases.enrollment.EnrollmentActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.enrollment.EnrollmentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
+
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
     </application>
 

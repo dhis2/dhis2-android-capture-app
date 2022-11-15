@@ -118,13 +118,45 @@
                 app:layout_constraintTop_toBottomOf="@id/guideline" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <include
+            android:id="@+id/calculationIndicator"
+            layout="@layout/indicator_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/layoutContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <LinearLayout
+            android:id="@+id/layoutContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
             android:weightSum="100"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activityToolbar">
+            app:layout_constraintTop_toBottomOf="@+id/calculationIndicator">
+
+            <!--            <View-->
+            <!--                android:id="@+id/top_dummy_view"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:background="?colorPrimary"-->
+            <!--                app:layout_constraintBottom_toTopOf="@id/bottom_dummy_view"-->
+            <!--                app:layout_constraintLeft_toLeftOf="@id/eventViewPager"-->
+            <!--                app:layout_constraintRight_toRightOf="@id/eventViewPager"-->
+            <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+            <!--            <View-->
+            <!--                android:id="@+id/bottom_dummy_view"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:background="@color/form_field_background"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintLeft_toLeftOf="@id/eventViewPager"-->
+            <!--                app:layout_constraintRight_toRightOf="@id/eventViewPager"-->
+            <!--                app:layout_constraintTop_toBottomOf="@id/top_dummy_view" />-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/form_column"
@@ -132,44 +164,15 @@
                 android:layout_height="match_parent"
                 android:layout_weight="60">
 
-                <View
-                    android:id="@+id/top_dummy_view"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="?colorPrimary"
-                    app:layout_constraintBottom_toTopOf="@id/bottom_dummy_view"
-                    app:layout_constraintLeft_toLeftOf="@id/eventViewPager"
-                    app:layout_constraintRight_toRightOf="@id/eventViewPager"
-                    app:layout_constraintTop_toTopOf="parent" />
 
-                <View
-                    android:id="@+id/bottom_dummy_view"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@color/form_field_background"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="@id/eventViewPager"
-                    app:layout_constraintRight_toRightOf="@id/eventViewPager"
-                    app:layout_constraintTop_toBottomOf="@id/top_dummy_view" />
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/eventViewPager"
+                <FrameLayout
+                    android:id="@+id/eventForm"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <include
-                    android:id="@+id/calculationIndicator"
-                    layout="@layout/indicator_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/eventViewPager" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -178,6 +181,15 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="40">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/eventViewPager"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/navigationBar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
                     android:id="@+id/navigationBar"

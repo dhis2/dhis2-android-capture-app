@@ -205,6 +205,11 @@ class NavigationBottomBar @JvmOverloads constructor(
         val visibleMenuItems = mutableListOf<MenuItem>()
         menu.forEach {
             it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
+
+            System.out.println("999999999999999999999999999999");
+            System.out.println(it.itemId);
+            System.out.println(it.isVisible);
+
             if (it.isVisible) {
                 visibleMenuItems.add(it)
             }
