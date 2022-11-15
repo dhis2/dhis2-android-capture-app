@@ -120,18 +120,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
 
             if (adapter == null) return true;
-            switch (item.getItemId()) {
-                case R.id.navigation_analytics:
-                    break;
-                case R.id.navigation_relationships:
-                    break;
-                case R.id.navigation_notes:
-                    break;
-                case R.id.navigation_data_entry:
-                    break;
-                default:
-                    break;
-            }
 
             int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
             if (pagePosition != -1) {
@@ -150,9 +138,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid))
                     .commitAllowingStateLoss();
 
-        } else {
-            setUpViewPagerAdapter();
-
         }
 
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
@@ -170,8 +155,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.eventViewPager.setUserInputEnabled(false);
         binding.eventViewPager.setAdapter(null);
 
-        System.out.println("Ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        System.out.println(this.getResources().getConfiguration().orientation);
 
         int newOrientaation = this.getResources().getConfiguration().orientation;
 
@@ -182,6 +165,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             System.out.println("oooooooooooooooooooooooooooooo: portrait onrientation");
             this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true);
         }
+
+        System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+        System.out.println(this.adapter.getItemCount());
 
         binding.eventViewPager.setAdapter(this.adapter);
 
@@ -235,9 +221,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onResume() {
         super.onResume();
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println("on resume called");
 
         if (currentOrientation != -1) {
             int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;

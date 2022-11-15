@@ -43,6 +43,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                                 i == R.id.navigation_data_entry ? EventPageType.DATA_ENTRY :
                                                         null;
 
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        System.out.println(pages);
+        System.out.println(pages.indexOf(pageType));
+
         return pages.indexOf(pageType);
 
     }
