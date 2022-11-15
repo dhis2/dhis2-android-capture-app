@@ -5,6 +5,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -99,14 +100,23 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         System.out.println("do i get run");
 
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
+
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
+
         eventCaptureComponent.inject(this);
+
         themeManager.setProgramTheme(getIntent().getStringExtra(PROGRAM_UID));
+
         super.onCreate(savedInstanceState);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
+
         binding.setPresenter(presenter);
+
         setUpViewPagerAdapter();
+
         binding.navigationBar.pageConfiguration(pageConfigurator);
+
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
 
             if (adapter == null) return true;
@@ -134,17 +144,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             return true;
         });
 
+        if (OrientationUtilsKt.isLandscape(this)) {
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid))
+                    .commitAllowingStateLoss();
+
+        } else {
+            setUpViewPagerAdapter();
+
+        }
 
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
+
         showProgress();
         presenter.initNoteCounter();
+
         presenter.init();
+
         binding.syncButton.setOnClickListener(view -> showSyncDialog());
     }
 
     private void setUpViewPagerAdapter() {
 
         binding.eventViewPager.setUserInputEnabled(false);
+        binding.eventViewPager.setAdapter(null);
 
         System.out.println("Ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         System.out.println(this.getResources().getConfiguration().orientation);
@@ -200,6 +224,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 //        });
 //    }
 
+    //    @Override
+    public void restoreAdapter(String programUid, String eventUid) {
+        this.adapter = null;
+        this.programUid = programUid;
+        this.eventUid = eventUid;
+        presenter.init();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -216,11 +248,18 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
 
         if (adapter == null) {
-//            restoreAdapter(programUid);
+            restoreAdapter(programUid, eventUid);
         }
 
         presenter.refreshTabCounters();
     }
+
+    @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -280,7 +319,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, Map<String, String> emptyMandatoryFields, EventCompletionDialog eventCompletionDialog) {
+    public void showCompleteActions(boolean canComplete, Map<
+            String, String> emptyMandatoryFields, EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             BottomSheetDialog dialog = new BottomSheetDialog(eventCompletionDialog.getBottomSheetDialogUiModel(), () -> {
                 setAction(eventCompletionDialog.getMainButtonAction());
@@ -364,7 +404,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
+    public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String
+            catOption) {
         binding.programStageName.setText(stageName);
         StringBuilder eventDataString = new StringBuilder(String.format("%s | %s", eventDate, orgUnit));
         if (catOption != null && !catOption.isEmpty()) {
@@ -467,7 +508,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Nullable
     @Override
-    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule module) {
+    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule
+                                                                      module) {
         return eventCaptureComponent.plus(module);
     }
 

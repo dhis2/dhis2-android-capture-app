@@ -119,9 +119,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        System.out.println("whaaaaaaatttttttttttttttttttttt????");
-        System.out.println(savedInstanceState);
-
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(PROGRAM_UID);
@@ -358,6 +355,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         if (OrientationUtilsKt.isLandscape(this)) {
             if (binding.teiTablePager.getAdapter() == null) {
+
                 setViewpagerAdapter();
             }
             getSupportFragmentManager().beginTransaction()
