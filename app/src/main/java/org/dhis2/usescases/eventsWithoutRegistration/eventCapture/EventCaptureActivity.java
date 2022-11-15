@@ -471,7 +471,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void hideNavigationBar() {
-        binding.navigationBar.hide();
+
+        if (OrientationUtilsKt.isPortrait(this)) {
+            binding.navigationBar.hide();
+        }
+
     }
 
     @NotNull
