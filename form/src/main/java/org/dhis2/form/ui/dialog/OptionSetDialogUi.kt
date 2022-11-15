@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -170,7 +172,8 @@ private fun OptionList(options: List<Option>, onOptionClick: (code: String?) -> 
         items(items = options) { option ->
             Box(
                 modifier = Modifier
-                    .height(42.dp)
+                    .defaultMinSize(minHeight = 42.dp)
+                    .wrapContentHeight()
                     .fillMaxWidth()
                     .clickable { onOptionClick(option.code()) },
                 contentAlignment = Alignment.CenterStart
