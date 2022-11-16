@@ -113,12 +113,6 @@ dependencies {
     implementation project(":commons")
     implementation project(":compose-table")
 
-    // DHIS2 Android SDK
-    // remove the no-op version of Flipper added by DHIS2 Android SDK  to avoid duplicates
-    implementation("org.hisp.dhis:android-core:$libraries.dhis2sdk") {
-        exclude group: 'com.facebook.flipper'
-    }
-
     implementation "androidx.activity:activity-compose:$libraries.compose"
 
     implementation "org.hisp.dhis.rules:rule-engine:$libraries.ruleEngine"

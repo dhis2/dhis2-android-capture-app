@@ -37,6 +37,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
@@ -219,22 +220,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
             program.accessDataWrite.toString()
         )
 
-        val appConfig = AppConfig(
-            "F5ijs28K4s8",
-            "wBr4wccNBj1",
-            "MBczRWvfM46",
-            "ypCQAFr1a5l",
-            "yfsEseIcEXr",
-            "lpGYJoVUudr",
-            "ej1YwWaYGmm",
-            "I7cmT3iXT0y"
-        )
-
         when (program.programType) {
             ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, HomeActivity::class.java).apply {
+                Intent(activity, SearchTEActivity::class.java).apply {
                     putExtras(bundle)
-                    putExtra(INTENT_EXTRA_APP_CONFIG, appConfig)
                     getActivityContent.launch(this)
                 }
             }
@@ -250,6 +239,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                     getActivityContent.launch(this)
                 }
             }
+        }
+    }
+
+    override fun navigateToStockManagement(config: AppConfig) {
+        Intent(activity, HomeActivity::class.java).apply {
+            putExtra(INTENT_EXTRA_APP_CONFIG, config)
+            getActivityContent.launch(this)
         }
     }
 
