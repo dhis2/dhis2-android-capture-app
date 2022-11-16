@@ -18,6 +18,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -670,5 +671,12 @@ public class DateUtilsTest {
         );
 
         assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 0));
+    }
+
+    @Test
+    public void shouldParseDate(){
+        String testDate = "2022-01-01'T'12:01:01.001";
+        Date date = StringExtensionsKt.toDate(testDate);
+        assertNotNull(date);
     }
 }
