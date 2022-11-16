@@ -36,7 +36,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertFalse
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -92,7 +91,6 @@ class EventDetailsIntegrationTest {
 
     private lateinit var viewModel: EventDetailsViewModel
 
-    @Ignore
     @Test
     fun `should reopen a completed event`() = runBlocking {
         // Given an event that can be reopened

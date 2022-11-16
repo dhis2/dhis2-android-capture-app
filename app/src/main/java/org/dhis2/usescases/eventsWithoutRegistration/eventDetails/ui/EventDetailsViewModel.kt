@@ -87,11 +87,55 @@ class EventDetailsViewModel(
     }
 
     private fun loadEventDetails() {
-        setUpEventDetails()
-        setUpEventReportDate()
-        setUpCategoryCombo()
-        setUpCoordinates()
-        setUpEventTemp()
+        viewModelScope.launch {
+            configureEventReportDate().collect {
+                _eventDate.value = it
+            }
+
+            configureOrgUnit(eventDate.value.currentDate)
+                .collect {
+                    _eventOrgUnit.value = it
+                }
+
+            configureEventCatCombo()
+                .collect {
+                    _eventCatCombo.value = it
+                }
+
+            configureEventCoordinates("")
+                .collect { eventCoordinates ->
+                    eventCoordinates.model?.setCallback(
+                        geometryController.getCoordinatesCallback(
+                            updateCoordinates = { value ->
+                                setUpCoordinates(value)
+                            },
+                            currentLocation = {
+                                requestCurrentLocation()
+                            },
+                            mapRequest = { _, featureType, initCoordinate ->
+                                requestLocationByMap?.invoke(featureType, initCoordinate)
+                            }
+                        )
+                    )
+                    _eventCoordinates.value = eventCoordinates
+                }
+
+            configureEventTemp().apply {
+                _eventTemp.value = this
+            }
+
+            configureEventDetails(
+                selectedDate = eventDate.value.currentDate,
+                selectedOrgUnit = eventOrgUnit.value.selectedOrgUnit?.uid(),
+                catOptionComboUid = eventCatCombo.value.uid,
+                isCatComboCompleted = eventCatCombo.value.isCompleted,
+                coordinates = eventCoordinates.value.model?.value,
+                tempCreate = eventTemp.value.status?.name
+            )
+                .collect {
+                    _eventDetails.value = it
+                }
+        }
     }
 
     private fun setUpEventDetails() {
