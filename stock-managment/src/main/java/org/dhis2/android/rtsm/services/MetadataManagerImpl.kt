@@ -14,20 +14,18 @@ class MetadataManagerImpl @Inject constructor(
 ) : MetadataManager {
 
     override fun stockManagementProgram(programUid: String): Single<Program?> {
-        return Single.just(programUid).map {
-            if (it.isBlank()) {
-                throw InitializationException(
-                    "The program config has not been set in the configuration file"
-                )
-            }
-
-            d2.programModule()
-                .programs()
-                .byUid()
-                .eq(programUid)
-                .one()
-                .blockingGet()
+        if (programUid.isBlank()) {
+            throw InitializationException(
+                "The program config has not been set in the configuration file"
+            )
         }
+
+        return d2.programModule()
+            .programs()
+            .byUid()
+            .eq(programUid)
+            .one()
+            .get()
     }
 
     /**

@@ -25,7 +25,9 @@ class ProgramModule(private val view: ProgramView) {
         themeManager: ThemeManager,
         filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
-        syncStatusController: SyncStatusController
+        syncStatusController: SyncStatusController,
+        identifyProgramType: IdentifyProgramType,
+        stockManagementMapper: StockManagementMapper
     ): ProgramPresenter {
         return ProgramPresenter(
             view,
@@ -34,7 +36,9 @@ class ProgramModule(private val view: ProgramView) {
             themeManager,
             filterManager,
             matomoAnalyticsController,
-            syncStatusController
+            syncStatusController,
+            identifyProgramType,
+            stockManagementMapper
         )
     }
 
@@ -61,5 +65,29 @@ class ProgramModule(private val view: ProgramView) {
     @PerFragment
     fun provideAnimations(): ProgramAnimation {
         return ProgramAnimation()
+    }
+
+    @Provides
+    @PerFragment
+    internal fun provideIdentifyProgramType(
+        repository: ProgramThemeRepository
+    ): IdentifyProgramType {
+        return IdentifyProgramType(repository)
+    }
+
+    @Provides
+    @PerFragment
+    internal fun provideStockManagementMapper(
+        repository: ProgramThemeRepository
+    ): StockManagementMapper {
+        return StockManagementMapper(repository)
+    }
+
+    @Provides
+    @PerFragment
+    internal fun provideProgramThemeRepository(
+        d2: D2
+    ): ProgramThemeRepository {
+        return ProgramThemeRepository(d2)
     }
 }
