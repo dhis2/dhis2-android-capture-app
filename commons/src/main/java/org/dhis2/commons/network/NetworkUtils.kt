@@ -2,6 +2,8 @@ package org.dhis2.commons.network
 
 import android.content.Context
 import android.net.ConnectivityManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.dhis2.commons.R
 import timber.log.Timber
 
 class NetworkUtils(val context: Context) {
@@ -19,5 +21,33 @@ class NetworkUtils(val context: Context) {
             Timber.e(ex)
         }
         return isOnline
+    }
+
+    fun performIfOnline(
+        context: Context,
+        action: () -> Unit,
+        onDialogDismissed: () -> Unit = {},
+        noNetworkMessage: String
+    ) {
+        if (isOnline()) {
+            action()
+        } else {
+            displayNetworkConnectionUnavailable(context, noNetworkMessage, onDialogDismissed)
+        }
+    }
+
+    private fun displayNetworkConnectionUnavailable(
+        context: Context,
+        noNetworkMessage: String,
+        onDialogDismissed: () -> Unit = {}
+    ) {
+        MaterialAlertDialogBuilder(context, R.style.DhisMaterialDialog)
+            .setTitle(context.getString(R.string.title_network_connection_unavailable))
+            .setMessage(noNetworkMessage)
+            .setPositiveButton(context.getString(R.string.action_accept)) { _, _ ->
+                onDialogDismissed()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

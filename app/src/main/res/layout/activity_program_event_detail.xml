@@ -14,7 +14,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailPresenter" />
 
         <variable
             name="totalFilters"
