@@ -35,8 +35,8 @@ class ServerModule {
     @PerServer
     fun sdk(context: Context): D2 {
         if (!D2Manager.isD2Instantiated()) {
-            val d2Configuration = blockingInstantiateD2(getD2Configuration(context))
-            d2Configuration!!.userModule().accountManager().setMaxAccounts(Constants.MAX_ACCOUNTS)
+            blockingInstantiateD2(getD2Configuration(context))
+                ?.userModule()?.accountManager()?.setMaxAccounts(Constants.MAX_ACCOUNTS)
         }
         return D2Manager.getD2()
     }
