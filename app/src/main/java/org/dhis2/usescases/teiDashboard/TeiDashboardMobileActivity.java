@@ -171,7 +171,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 if (OrientationUtilsKt.isLandscape(this)) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
-                    binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
+                    binding.syncButton.setVisibility(pagePosition == 0 && programUid != null ? View.VISIBLE : View.GONE);
                     binding.teiPager.setCurrentItem(pagePosition);
                 }
             }
