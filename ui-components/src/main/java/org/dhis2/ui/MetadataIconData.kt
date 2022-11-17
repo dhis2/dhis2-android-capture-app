@@ -1,4 +1,4 @@
-package org.dhis2.commons.ui
+package org.dhis2.ui
 
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes

@@ -8,11 +8,11 @@ import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIconData
-import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.model.EventUiComponentModel
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.setUpMetadataIcon
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 

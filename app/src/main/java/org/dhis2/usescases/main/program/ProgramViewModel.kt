@@ -1,6 +1,6 @@
 package org.dhis2.usescases.main.program
 
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 
 data class ProgramViewModel(

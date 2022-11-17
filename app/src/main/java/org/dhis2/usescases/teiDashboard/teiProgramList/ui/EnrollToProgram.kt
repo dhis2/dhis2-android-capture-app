@@ -22,8 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.commons.ui.MetadataIcon
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIcon
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
