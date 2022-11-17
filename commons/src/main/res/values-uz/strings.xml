@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_empty_dataset_section_label">Маълумот</string>
     <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="no_data">Маълумот йўқ</string>
     <string name="change_calendar_view">Тақвим кўринишини ўзгартириш</string>
@@ -141,4 +140,4 @@
     <string name="complete">Тўлдириш</string>
     <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
-</resources>
+    </resources>
