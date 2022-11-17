@@ -159,6 +159,7 @@ class ProgramEventDetailActivity :
                 EventProgramScreen.LIST -> showList()
                 EventProgramScreen.MAP -> showMap()
                 EventProgramScreen.ANALYTICS -> showAnalytics()
+                null -> {}
             }
         }
     }

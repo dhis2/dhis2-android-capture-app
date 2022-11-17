@@ -4,8 +4,5 @@
 
     <application
         android:allowBackup="false">
-        <activity
-            android:name=".activity.TableTestActivity"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

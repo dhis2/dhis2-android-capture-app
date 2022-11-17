@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -87,7 +86,9 @@ class FormViewModel(
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
         when (result.second.valueStoreResult) {
             ValueStoreResult.VALUE_CHANGED -> {
-                _savedValue.value = result.first
+                result.first?.let {
+                    _savedValue.value = it
+                }
                 processCalculatedItems()
             }
             ValueStoreResult.ERROR_UPDATING_VALUE -> {
@@ -109,13 +110,16 @@ class FormViewModel(
                 processCalculatedItems()
             }
             ValueStoreResult.TEXT_CHANGING -> {
-                Timber.d("${result.first.id} is changing its value")
-                _queryData.value = result.first
+                result.first?.let {
+                    Timber.d("${result.first.id} is changing its value")
+                    _queryData.value = it
+                }
             }
             ValueStoreResult.FINISH -> {
                 processCalculatedItems()
                 runDataIntegrityCheck()
             }
+            null -> {}
         }
     }
 

@@ -117,6 +117,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true
                     )
+                    null -> {
+                        // Nothing to do in this case
+                    }
                 }
             }
         }
