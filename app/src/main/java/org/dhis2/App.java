@@ -5,7 +5,6 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -13,7 +12,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import org.dhis2.commons.Constants;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.di.dagger.PerUser;
@@ -54,7 +52,6 @@ import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,9 +71,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
 
     @NonNull
     @Singleton
@@ -147,7 +141,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     protected void setUpServerComponent() {
         serverComponent = appComponent.plus(new ServerModule());
-        if (serverComponent.userManager().isUserLoggedIn().blockingFirst())
+        if (Boolean.TRUE.equals(serverComponent.userManager().isUserLoggedIn().blockingFirst()))
             setUpUserComponent();
     }
 
