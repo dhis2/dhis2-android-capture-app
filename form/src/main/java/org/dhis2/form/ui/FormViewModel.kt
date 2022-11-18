@@ -27,6 +27,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -435,6 +436,7 @@ class FormViewModel(
     }
 
     private fun processCalculatedItems() {
+        FormCountingIdlingResource.increment()
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
                 repository.composeList()
