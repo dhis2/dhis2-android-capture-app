@@ -80,10 +80,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 data -> {
                                     preferences.setValue(Preference.CURRENT_ORG_UNIT, data.val2().uid());
                                     view.renderInitialInfo(data.val0(), data.val1(), data.val2().displayName(), data.val3());
-
-                                    //review if this is update with field change
-                                    String stageName = eventCaptureRepository.programStageName().blockingFirst();
-                                    view.updateProgramStageName(stageName);
                                 },
                                 Timber::e
                         )
@@ -91,6 +87,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         checkExpiration();
+    }
+
+    @Override
+    public void refreshProgramStage() {
+        String stageName = eventCaptureRepository.programStageName().blockingFirst();
+        view.updateProgramStageName(stageName);
     }
 
     private void checkExpiration() {
