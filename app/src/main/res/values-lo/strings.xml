@@ -438,6 +438,7 @@
     <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
     <string name="choose_option">ເລືອກຄໍາຕອບ</string>
     <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
+    <string name="syncing_period_not_editable">ໄລຍະເວລາການຊິ້ງຂໍ້ມູນແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="dataset_overview">ລາຍລະອຽດ</string>
     <string name="dataset_comments">ຄຳເຫັນ</string>
