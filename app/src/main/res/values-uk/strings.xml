@@ -348,7 +348,7 @@
     <string name="limit_by_organisation_unit">Обмеження за організаційним підрозділом</string>
     <string name="limit_by_program">Обмеження за програмою</string>
     <string name="programs_list">Список програм</string>
-    <string name="wipe_data">Скинути дані програми & конфігурацію</string>
+    <string name="wipe_data">Скинути дані програми &amp; конфігурацію</string>
     <string name="add_relationship_error">Неможливо додати цей зв’язок</string>
     <string name="warning_error_on_complete_title">Перевірити це!</string>
     <string name="warning_on_complete_title">Попередження</string>
