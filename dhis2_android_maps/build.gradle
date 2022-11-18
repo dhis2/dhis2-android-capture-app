@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'maven-publish'
 }
 apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco/jacoco.gradle"
@@ -9,7 +10,13 @@ apply from: "$project.rootDir/jacoco/jacoco.gradle"
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
+repositories {
+    mavenLocal()
+}
+
 android {
+    namespace = "org.dhis2.maps"
+
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
 
@@ -50,10 +57,30 @@ android {
         jvmTarget = '1.8'
     }
 }
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'org.dhis2.android'
+            artifactId = 'maps'
+            version = '1.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'repotest'
+            url = "${project.buildDir}/repo"
+        }
+    }
+}
 
 dependencies {
 
-    implementation project(":commons")
+//    implementation project(":commons")
+    implementation "org.dhis2.android:commons:1.0"
 
     //region Mapbox
     api "com.mapbox.mapboxsdk:mapbox-android-sdk:${libraries.mapboxsdk}"

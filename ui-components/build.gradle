@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 apply plugin: 'jacoco'
@@ -11,6 +12,8 @@ def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
 android {
+    namespace = "org.dhis2.ui"
+
     compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
 
@@ -51,6 +54,25 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion '1.0.1'
+    }
+}
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'org.dhis2.android'
+            artifactId = 'ui-components'
+            version = '1.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'repotest'
+            url = "${project.buildDir}/repo"
+        }
     }
 }
 
