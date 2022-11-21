@@ -155,11 +155,12 @@ class ProgramEventDetailActivity :
             binding.addEventButton.visibility = if (canWrite) View.VISIBLE else View.GONE
         }
         programEventsViewModel.currentScreen.observe(this) { currentScreen: EventProgramScreen? ->
-            when (currentScreen) {
-                EventProgramScreen.LIST -> showList()
-                EventProgramScreen.MAP -> showMap()
-                EventProgramScreen.ANALYTICS -> showAnalytics()
-                null -> {}
+            currentScreen?.let {
+                when (it) {
+                    EventProgramScreen.LIST -> showList()
+                    EventProgramScreen.MAP -> showMap()
+                    EventProgramScreen.ANALYTICS -> showAnalytics()
+                }
             }
         }
     }

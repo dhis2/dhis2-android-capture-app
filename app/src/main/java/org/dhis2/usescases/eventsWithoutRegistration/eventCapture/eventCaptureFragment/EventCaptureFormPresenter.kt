@@ -47,7 +47,9 @@ class EventCaptureFormPresenter(
                 emptyMap(),
                 emptyList()
             )
-            NotSavedResult -> {}
+            NotSavedResult -> {
+                // Nothing to do in this case
+            }
         }
     }
 

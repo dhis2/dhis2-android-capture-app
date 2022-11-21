@@ -84,42 +84,43 @@ class FormViewModel(
     }
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
-        when (result.second.valueStoreResult) {
-            ValueStoreResult.VALUE_CHANGED -> {
-                result.first?.let {
-                    _savedValue.value = it
+        result.second.valueStoreResult?.let {
+            when (it) {
+                ValueStoreResult.VALUE_CHANGED -> {
+                    result.first.let {
+                        _savedValue.value = it
+                    }
+                    processCalculatedItems()
                 }
-                processCalculatedItems()
-            }
-            ValueStoreResult.ERROR_UPDATING_VALUE -> {
-                showToast.value = R.string.update_field_error
-            }
-            ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
-                Timber.tag(TAG)
-                    .d("${result.first.id} is not a data element or attribute")
-                processCalculatedItems()
-            }
-            ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                showInfo.value = InfoUiModel(
-                    R.string.error,
-                    R.string.unique_warning
-                )
-                processCalculatedItems()
-            }
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                processCalculatedItems()
-            }
-            ValueStoreResult.TEXT_CHANGING -> {
-                result.first?.let {
-                    Timber.d("${result.first.id} is changing its value")
-                    _queryData.value = it
+                ValueStoreResult.ERROR_UPDATING_VALUE -> {
+                    showToast.value = R.string.update_field_error
+                }
+                ValueStoreResult.UID_IS_NOT_DE_OR_ATTR -> {
+                    Timber.tag(TAG)
+                        .d("${result.first.id} is not a data element or attribute")
+                    processCalculatedItems()
+                }
+                ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                    showInfo.value = InfoUiModel(
+                        R.string.error,
+                        R.string.unique_warning
+                    )
+                    processCalculatedItems()
+                }
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                    processCalculatedItems()
+                }
+                ValueStoreResult.TEXT_CHANGING -> {
+                    result.first.let {
+                        Timber.d("${result.first.id} is changing its value")
+                        _queryData.value = it
+                    }
+                }
+                ValueStoreResult.FINISH -> {
+                    processCalculatedItems()
+                    runDataIntegrityCheck()
                 }
             }
-            ValueStoreResult.FINISH -> {
-                processCalculatedItems()
-                runDataIntegrityCheck()
-            }
-            null -> {}
         }
     }
 

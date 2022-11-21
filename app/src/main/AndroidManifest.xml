@@ -91,7 +91,6 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
-        <!--<activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />-->
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
 
@@ -107,7 +106,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
