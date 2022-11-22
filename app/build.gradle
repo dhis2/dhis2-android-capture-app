@@ -301,12 +301,12 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     testImplementation "androidx.arch.core:core-testing:2.1.0"
-    testImplementation "androidx.test:core:1.4.0"
+    testImplementation "androidx.test:core:$libraries.androidx_test"
 
     testImplementation "org.mockito:mockito-core:$libraries.mockito"
     testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$libraries.mockito_kotlin"
-    testImplementation 'com.google.truth:truth:1.1.2'
+    testImplementation "com.google.truth:truth:$libraries.google_truth"
 
     implementation(platform("com.rickbusarow.dispatch:dispatch-bom:1.0.0-beta10"))
     implementation("com.rickbusarow.dispatch:dispatch-core")
@@ -314,24 +314,26 @@ dependencies {
     androidTestImplementation("com.rickbusarow.dispatch:dispatch-android-espresso:1.0.0-beta10")
 
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
-    androidTestImplementation "androidx.test:runner:1.4.0"
+    androidTestImplementation "androidx.test:runner:$libraries.androidx_test"
     androidTestImplementation "androidx.test.espresso:espresso-intents:$libraries.espresso_core"
+
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$libraries.espresso_core"
     androidTestImplementation "androidx.test.espresso:espresso-accessibility:$libraries.espresso_core"
     androidTestImplementation "androidx.test.espresso:espresso-web:$libraries.espresso_core"
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
-    androidTestImplementation "androidx.test:core:1.4.0"
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation "androidx.test:core-ktx:1.4.0"
+    androidTestImplementation "androidx.test:core:$libraries.androidx_test"
+    androidTestImplementation "androidx.test:rules:$libraries.androidx_test"
+    androidTestImplementation "androidx.test:core-ktx:$libraries.androidx_test"
     androidTestImplementation "androidx.test.ext:junit-ktx:$libraries.junit_ext"
-    androidTestImplementation 'org.mockito:mockito-android:3.3.3'
+    androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
     androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"
     androidTestImplementation 'com.android.support:support-annotations:28.0.0'
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
     androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.11.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.2.1")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.2.1")
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$libraries.kotlinxcoroutines"
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$libraries.compose_ui_test")
+    androidTestImplementation "org.hamcrest:hamcrest:$libraries.hamcrest"
     //endregion
 
     //Serialization library

@@ -73,7 +73,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${libraries.appcompat}"
     implementation "com.google.android.material:material:${libraries.material}"
     implementation "androidx.activity:activity-compose:${libraries.activityCompose}"
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation "junit:junit:${libraries.junit}"
     androidTestImplementation "androidx.test.ext:junit:$libraries.junit_ext"
     androidTestImplementation "androidx.test.espresso:espresso-core:$libraries.espresso_core"
 
@@ -87,8 +87,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:${libraries.compose}"
 
     //test
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.0.4")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$libraries.compose_ui_test")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$libraries.compose_ui_test")
 
     //Serialization library
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${libraries.kotlinxserialization}"

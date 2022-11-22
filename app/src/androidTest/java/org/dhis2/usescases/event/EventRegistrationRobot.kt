@@ -12,8 +12,8 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.usescases.event.entity.EventDetailsUIModel
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 
 fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> Unit) {
     EventRegistrationRobot().apply {
