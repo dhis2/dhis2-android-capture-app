@@ -81,6 +81,7 @@ class D2ErrorUtils(private val context: Context) {
             D2ErrorCode.MIN_SEARCH_ATTRIBUTES_REQUIRED -> context.getString(R.string.error_min_attributes)
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE -> context.getString(R.string.error_org_unit_scope)
             D2ErrorCode.INVALID_CHARACTERS -> context.getString(R.string.error_invalid_characters)
+            D2ErrorCode.PROGRAM_ACCESS_CLOSED -> TODO("Implement for ANDROAPP-657")
         }
     }
 }

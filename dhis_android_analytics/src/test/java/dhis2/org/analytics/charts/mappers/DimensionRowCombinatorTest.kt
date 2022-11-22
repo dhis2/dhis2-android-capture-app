@@ -13,7 +13,7 @@ class DimensionRowCombinatorTest {
     private val dimensionRowCombinator = DimensionRowCombinator()
 
     @Test
-    fun test() {
+    fun shouldCombineRows() {
         val finalList = mutableListOf<String>()
         dimensionRowCombinator.combineWithNextItem(
             gridAnalyticsResponse = testGridAnalyticsResponse(),
@@ -37,7 +37,23 @@ class DimensionRowCombinatorTest {
         )
     }
 
-    private fun testGridAnalyticsResponse() = GridAnalyticsResponseSamples.sample1.copy(
+    @Test
+    fun shouldNotCombineIfThereAreNoRows() {
+        val finalList = mutableListOf<String>()
+        dimensionRowCombinator.combineWithNextItem(
+            gridAnalyticsResponse = testGridAnalyticsResponse(emptyList()),
+            currentList = finalList,
+            hasMoreRows = false
+        )
+
+        assertTrue(
+            finalList.isEmpty()
+        )
+    }
+
+    private fun testGridAnalyticsResponse(
+        testingRows: List<List<GridHeaderItem>> = testingRows()
+    ) = GridAnalyticsResponseSamples.sample1.copy(
         metadata = GridAnalyticsResponseSamples.sample1.metadata.toMutableMap().apply {
             putAll(
                 mapOf(
@@ -53,21 +69,23 @@ class DimensionRowCombinatorTest {
         },
         headers = GridHeader(
             columns = GridAnalyticsResponseSamples.sample1.headers.columns,
-            rows = listOf(
-                listOf(
-                    GridHeaderItem(row11.uid(), 6),
-                    GridHeaderItem(row12.uid(), 6)
-                ),
-                listOf(
-                    GridHeaderItem(row21.uid(), 2),
-                    GridHeaderItem(row22.uid(), 2),
-                    GridHeaderItem(row23.uid(), 2)
-                ),
-                listOf(
-                    GridHeaderItem(row31.uid(), 1),
-                    GridHeaderItem(row32.uid(), 1)
-                )
-            )
+            rows = testingRows
+        )
+    )
+
+    private fun testingRows() = listOf(
+        listOf(
+            GridHeaderItem(row11.uid(), 6),
+            GridHeaderItem(row12.uid(), 6)
+        ),
+        listOf(
+            GridHeaderItem(row21.uid(), 2),
+            GridHeaderItem(row22.uid(), 2),
+            GridHeaderItem(row23.uid(), 2)
+        ),
+        listOf(
+            GridHeaderItem(row31.uid(), 1),
+            GridHeaderItem(row32.uid(), 1)
         )
     )
 

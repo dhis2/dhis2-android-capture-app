@@ -73,10 +73,12 @@ sealed class Validation {
         val dataElement: String,
         val message: String
     ) : Validation()
+
     data class DataElementError(
         val dataElement: String,
         val message: String
     ) : Validation()
+
     data class ProgramStageWarning(
         val programStage: String,
         val message: String
@@ -106,5 +108,7 @@ data class Event(
 )
 
 data class MultilingualFeedback(val text: String, val locale: String)
+
+data class Hnqis2Metadata(val isCritical: String)
 
 data class ResponseWithValidations<T>(val data: T, val validations: List<Validation>)

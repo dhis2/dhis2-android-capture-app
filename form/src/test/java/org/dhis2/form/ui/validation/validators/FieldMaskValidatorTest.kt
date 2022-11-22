@@ -21,8 +21,8 @@ class FieldMaskValidatorTest {
             { assertTrue(false) }
         )
         FieldMaskValidator("\\X\\d\\d-\\w\\d\\d-\\w\\d\\d").validateNullSafe("S43-r55-t44").fold(
-            { assertTrue(false) },
-            { assertTrue(it is FieldMaskFailure.InvalidPatternException) }
+            { assertTrue(true) },
+            { assertTrue(false) }
         )
     }
 

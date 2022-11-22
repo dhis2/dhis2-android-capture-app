@@ -55,7 +55,7 @@
                 tools:text="James Johnson" />
 
             <View
-                android:id="@+id/indicator_legend"
+                android:id="@+id/single_value_legend"
                 android:layout_width="15dp"
                 android:layout_height="0dp"
                 android:background="@color/gray_e7e"

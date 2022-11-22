@@ -4,14 +4,10 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 
+import org.dhis2.maps.model.StageStyle;
 import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.uicomponents.map.model.EventUiComponentModel;
-import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -20,8 +16,10 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -37,31 +35,13 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<Program> programModels);
 
-        void setFiltersVisibility(boolean showFilters);
-
         void clearList(String uid);
 
-        void clearData();
-
-        void showFilterProgress();
-
-        void setTutorial();
-
-        void setProgramColor(String data);
-
         String fromRelationshipTEI();
-
-        void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
-
-        void setFabIcon(boolean needsSearch);
-
-        void showHideFilter();
 
         void showHideFilterGeneral();
 
         void updateFilters(int totalFilters);
-
-        void closeFilters();
 
         void openOrgUnitTreeSelector();
 
@@ -69,13 +49,7 @@ public class SearchTEContractsModule {
 
         void clearFilters();
 
-        void updateFiltersSearch(int totalFilters);
-
-        void setMap(TrackerMapData trackerMapData);
-
         Consumer<D2Progress> downloadProgress();
-
-        boolean isMapVisible();
 
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
 
@@ -87,22 +61,16 @@ public class SearchTEContractsModule {
 
         void couldNotDownload(String typeName);
 
-        void setFormData(List<FieldUiModel> data);
-
         void setInitialFilters(List<FilterItem> filtersToDisplay);
-
-        void showClearSearch(boolean empty);
 
         void hideFilter();
 
-        void updateNavigationBar();
-
-        void displayMinNumberOfAttributesMessage(int minAttributes);
+        void showSyncDialog(String teiUid);
     }
 
     public interface Presenter {
 
-        void init(String trackedEntityType);
+        void init();
 
         void onDestroy();
 
@@ -112,9 +80,9 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onFabClick(boolean needsSearch);
+        void onEnrollClick(HashMap<String, String> queryData);
 
-        void onEnrollClick();
+        void enroll(String programUid, String teiUid, HashMap<String, String> queryData);
 
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 
@@ -128,57 +96,31 @@ public class SearchTEContractsModule {
 
         void downloadTei(String teiUid, String enrollmentUid);
 
-        void downloadTeiWithReason(String teiUid, String enrollmentUid, String reason);
-
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
         Observable<List<OrganisationUnit>> getOrgUnits();
 
         String getProgramColor(String uid);
 
-        SearchMessageResult getMessage(List<SearchTeiModel> list);
-
-        HashMap<String, String> getQueryData();
-
         void onSyncIconClick(String teiUid);
-
-        void showFilter();
 
         void showFilterGeneral();
 
-        void resetSearch();
-
         void clearFilterClick();
-
-        void closeFilterClick();
 
         void getMapData();
 
-        void getListData();
-
         Drawable getSymbolIcon();
-
-        void getEnrollmentMapData();
 
         Drawable getEnrollmentSymbolIcon();
 
         HashMap<String, StageStyle> getProgramStageStyle();
 
-        String nameOUByUid(String uid);
-
         int getTEIColor();
 
         int getEnrollmentColor();
 
-        void checkFilters(boolean listResultIsOk);
-
-        void restoreQueryData(HashMap<String, String> queryData);
-
         void deleteRelationship(String relationshipUid);
-
-        SearchTeiModel getTeiInfo(String teiUid);
-
-        EventUiComponentModel getEventInfo(String eventUid, String teiUid);
 
         void setProgramForTesting(Program program);
 
@@ -186,10 +128,6 @@ public class SearchTEContractsModule {
 
         void setOpeningFilterToNone();
 
-        void populateList(List<FieldUiModel> list);
-
         void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits);
-
-        boolean selectedProgramMinNumberOfAttributesCheck();
     }
 }

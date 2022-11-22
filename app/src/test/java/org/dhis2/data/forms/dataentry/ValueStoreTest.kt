@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.utils.reporting.CrashReportController
@@ -25,6 +26,8 @@ class ValueStoreTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
     private val crashReportController: CrashReportController = mock()
+    private val networkUtils: NetworkUtils = mock()
+    private val searchTEIRepository: SearchTEIRepository = mock()
 
     @Before
     fun setUp() {
@@ -34,7 +37,8 @@ class ValueStoreTest {
                 "recordUid",
                 DataEntryStore.EntryMode.ATTR,
                 dhisEnrollmentUtils,
-                crashReportController
+                crashReportController,
+                networkUtils, searchTEIRepository
             )
         deValueStore =
             ValueStoreImpl(
@@ -42,7 +46,8 @@ class ValueStoreTest {
                 "recordUid",
                 DataEntryStore.EntryMode.DE,
                 dhisEnrollmentUtils,
-                crashReportController
+                crashReportController,
+                networkUtils, searchTEIRepository
             )
         dvValueStore =
             ValueStoreImpl(
@@ -50,7 +55,8 @@ class ValueStoreTest {
                 "recordUid",
                 DataEntryStore.EntryMode.DV,
                 dhisEnrollmentUtils,
-                crashReportController
+                crashReportController,
+                networkUtils, searchTEIRepository
             )
     }
 

@@ -6,6 +6,7 @@ import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 
 class HomeRepositoryImpl(
@@ -42,4 +43,10 @@ class HomeRepositoryImpl(
     override fun hasHomeAnalytics(): Boolean {
         return charts?.getHomeVisualizations(null)?.isNotEmpty() == true
     }
+
+    override fun getServerVersion(): Single<SystemInfo> {
+        return d2.systemInfoModule().systemInfo().get()
+    }
+
+    override fun accountsCount() = d2.userModule().accountManager().getAccounts().count()
 }

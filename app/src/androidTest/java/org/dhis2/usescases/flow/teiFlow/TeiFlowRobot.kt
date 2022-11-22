@@ -27,8 +27,8 @@ class TeiFlowRobot : BaseRobot() {
             clickOnDateField()
             selectSpecificDate(registrationDate.year, registrationDate.month, registrationDate.day)
             acceptDate()
-            clickOnFab()
-            clickOnFab()
+            clickOnSearch()
+            clickOnEnroll()
             selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
             acceptDate()
         }
@@ -47,7 +47,6 @@ class TeiFlowRobot : BaseRobot() {
         enrollmentRobot {
             clickOnSameProgramForEnrollment(program)
             clickOnAcceptEnrollmentDate()
-            waitToDebounce(5000)
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
@@ -60,6 +59,7 @@ class TeiFlowRobot : BaseRobot() {
         }
 
         enrollmentRobot {
+            waitToDebounce(1000)
             checkActiveAndPastEnrollmentDetails(enrollmentDetails)
         }
     }

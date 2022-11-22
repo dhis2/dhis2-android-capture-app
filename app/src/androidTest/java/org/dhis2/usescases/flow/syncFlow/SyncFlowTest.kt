@@ -1,5 +1,6 @@
 package org.dhis2.usescases.flow.syncFlow
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -36,6 +37,9 @@ class SyncFlowTest : BaseTest() {
     @get:Rule
     val ruleEventWithoutRegistration =
         ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     private lateinit var workInfoStatusLiveData: MutableLiveData<List<WorkInfo>>
 
@@ -97,7 +101,7 @@ class SyncFlowTest : BaseTest() {
         eventRobot {
             fillRadioButtonForm(4)
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
 
         teiDashboardRobot {
@@ -124,7 +128,7 @@ class SyncFlowTest : BaseTest() {
 
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
 
         syncFlowRobot {
@@ -147,7 +151,7 @@ class SyncFlowTest : BaseTest() {
 
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
 
         syncFlowRobot {

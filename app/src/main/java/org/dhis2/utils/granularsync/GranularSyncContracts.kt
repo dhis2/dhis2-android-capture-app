@@ -40,19 +40,19 @@ class GranularSyncContracts {
         fun closeDialog()
         fun setState(state: State, conflicts: MutableList<TrackerImportConflict>)
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
-        fun emptyEnrollmentError(): String
-        fun unsupportedTask(): String
+        fun setLastUpdated(result: SyncDate)
+        fun showRefreshTitle()
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
-        fun isSMSEnabled(isTrackerSync: Boolean): Boolean
+        fun isSMSEnabled(showSms: Boolean): Boolean
         fun configure(view: View)
         fun initGranularSync(): LiveData<List<WorkInfo>>
         fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>>
-        fun reportState(state: SmsSendingService.State, sent: Int, total: Int)
-        fun reportError(throwable: Throwable)
         fun sendSMS()
         fun syncErrors(): List<ErrorViewModel>
+        fun trackedEntityTypeNameFromEnrollment(enrollmentUid: String): String?
+        fun onSmsNotAccepted()
     }
 
     interface OnDismissListener {

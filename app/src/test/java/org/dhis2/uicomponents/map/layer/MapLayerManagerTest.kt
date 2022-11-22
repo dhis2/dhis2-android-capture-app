@@ -5,25 +5,25 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
-import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
-import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
-import org.dhis2.uicomponents.map.model.MapStyle
+import org.dhis2.maps.layer.LayerType
+import org.dhis2.maps.layer.types.HeatmapMapLayer
+import org.dhis2.maps.layer.types.RelationshipMapLayer
+import org.dhis2.maps.layer.types.TeiMapLayer
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 class MapLayerManagerTest {
 
-    private lateinit var mapLayerManager: MapLayerManager
+    private lateinit var mapLayerManager: org.dhis2.maps.layer.MapLayerManager
     private val sourceId = "sourceId"
     private val mapboxMap: MapboxMap = mock()
-    private val mapStyle: MapStyle = mock()
+    private val mapStyle: org.dhis2.maps.model.MapStyle = mock()
     private val style: Style = mock()
 
     @Before
     fun setup() {
-        mapLayerManager = MapLayerManager(mapboxMap)
+        mapLayerManager = org.dhis2.maps.layer.MapLayerManager(mapboxMap)
     }
 
     @Test
@@ -31,7 +31,7 @@ class MapLayerManagerTest {
     fun `Should add layer with sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
-            .addLayer(LayerType.TEI_LAYER, sourceId = sourceId)
+            .addLayer(org.dhis2.maps.layer.LayerType.TEI_LAYER, sourceId = sourceId)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
@@ -43,7 +43,7 @@ class MapLayerManagerTest {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
             .withMapStyle(mapStyle)
-            .addLayer(LayerType.HEATMAP_LAYER)
+            .addLayer(org.dhis2.maps.layer.LayerType.HEATMAP_LAYER)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is HeatmapMapLayer)

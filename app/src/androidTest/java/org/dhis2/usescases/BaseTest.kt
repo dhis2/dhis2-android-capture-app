@@ -1,13 +1,16 @@
 package org.dhis2.usescases
 
 import android.content.Context
-import android.os.Build
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
-import com.jakewharton.espresso.OkHttp3IdlingResource
+import androidx.test.rule.GrantPermissionRule
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
+import org.dhis2.common.BaseRobot
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -17,13 +20,17 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
-import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.arch.api.internal.ServerURLWrapper
+import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.rules.Timeout
+import java.util.concurrent.TimeUnit
 
 open class BaseTest {
 
@@ -36,22 +43,21 @@ open class BaseTest {
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
+    @get:Rule
+    val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
+
+    @get:Rule
+    var permissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
     @Before
     @Throws(Exception::class)
     open fun setUp() {
         injectDependencies()
-        allowPermissions()
         registerCountingIdlingResource()
-    }
-
-    private fun allowPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getPermissionsToBeAccepted().forEach {
-                InstrumentationRegistry.getInstrumentation()
-                    .uiAutomation
-                    .executeShellCommand("pm grant ${context.packageName} $it")
-            }
-        }
+        setupCredentials()
     }
 
     private fun injectDependencies() {
@@ -63,11 +69,22 @@ open class BaseTest {
     }
 
     private fun registerCountingIdlingResource() {
-        IdlingRegistry.getInstance().register(CountingIdlingResourceSingleton.countingIdlingResource)
+        IdlingRegistry.getInstance().register(
+            CountingIdlingResourceSingleton.countingIdlingResource,
+            FormCountingIdlingResource.countingIdlingResource,
+            SearchIdlingResourceSingleton.countingIdlingResource,
+            TeiDataIdlingResourceSingleton.countingIdlingResource
+        )
     }
 
-    private fun unregisterCountingIdlingResource(){
-        IdlingRegistry.getInstance().unregister(CountingIdlingResourceSingleton.countingIdlingResource)
+    private fun unregisterCountingIdlingResource() {
+        IdlingRegistry.getInstance()
+            .unregister(
+                CountingIdlingResourceSingleton.countingIdlingResource,
+                FormCountingIdlingResource.countingIdlingResource,
+                SearchIdlingResourceSingleton.countingIdlingResource,
+                TeiDataIdlingResourceSingleton.countingIdlingResource
+            )
     }
 
     fun setupMockServer() {
@@ -77,6 +94,7 @@ open class BaseTest {
     @After
     @Throws(Exception::class)
     open fun teardown() {
+        closeKeyboard()
         disableIntents()
         cleanPreferences()
         cleanKeystore()
@@ -103,12 +121,8 @@ open class BaseTest {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
-    fun turnOnConnectivityAfterLogin(){
-        ServerURLWrapper.setServerUrl("$MOCK_SERVER_URL/$API/")
-    }
-
-    fun turnOffConnectivityAfterLogin(){
-        ServerURLWrapper.setServerUrl("none")
+    private fun closeKeyboard(){
+        BaseRobot().closeKeyboard()
     }
 
     private fun disableIntents() {

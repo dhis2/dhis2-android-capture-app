@@ -53,4 +53,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void setFilters(List<FilterItem> filterItems);
 
     void hideFilters();
+
+    void showGranularSync();
 }

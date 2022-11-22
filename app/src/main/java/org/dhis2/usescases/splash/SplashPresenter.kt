@@ -58,7 +58,11 @@ class SplashPresenter internal constructor(
                         { Timber.d(it) }
                     )
             )
-        } ?: view.goToNextScreen(false, sessionLocked = false, initialSyncDone = false)
+        } ?: view.goToNextScreen(
+            false,
+            sessionLocked = false,
+            initialSyncDone = false
+        )
     }
 
     private fun trackUserInfo() {
@@ -67,5 +71,9 @@ class SplashPresenter internal constructor(
 
         crashReportController.trackServer(server)
         crashReportController.trackUser(username, server)
+    }
+
+    fun getAccounts(): Int {
+        return userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
     }
 }

@@ -1,20 +1,19 @@
 package org.dhis2.uicomponents.map.geometry
 
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.FROM_COORDINATES
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.TO_COORDINATES
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy.DISPLAY_NAME
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy.EMPTY
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy.UID
-import org.dhis2.uicomponents.map.model.RelationshipDirection
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 class MapRelationshipToRelationshipMapModelTest {
 
-    private val mapper = MapRelationshipToRelationshipMapModel()
+    private val mapper = org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel()
 
     @Test
     fun `Should map relationship view model to Ui component model`() {
