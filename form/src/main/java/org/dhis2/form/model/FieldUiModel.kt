@@ -73,6 +73,8 @@ interface FieldUiModel {
 
     val optionsToDisplay: List<Option>?
 
+    val url: String?
+
     fun setCallback(callback: Callback)
 
     fun equals(item: FieldUiModel): Boolean

@@ -28,7 +28,8 @@ interface FieldViewModelFactory {
         objectStyle: ObjectStyle = ObjectStyle.builder().build(),
         fieldMask: String? = null,
         options: List<Option>? = null,
-        featureType: FeatureType? = null
+        featureType: FeatureType? = null,
+        url: String?,
     ): FieldUiModel
 
     fun createForAttribute(

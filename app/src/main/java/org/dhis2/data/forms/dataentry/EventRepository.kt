@@ -177,6 +177,8 @@ class EventRepository(
             else -> null
         }
 
+        val url = de.url()
+
         val fieldViewModel = fieldFactory.create(
             uid,
             formName ?: displayName,
@@ -194,7 +196,8 @@ class EventRepository(
             objectStyle,
             de.fieldMask(),
             options,
-            featureType
+            featureType,
+            url
         )
         return if (error.isNotEmpty()) {
             fieldViewModel.setError(error)

@@ -51,7 +51,8 @@ class FieldViewModelFactoryImpl(
         objectStyle: ObjectStyle,
         fieldMask: String?,
         options: List<Option>?,
-        featureType: FeatureType?
+        featureType: FeatureType?,
+        url: String?,
     ): FieldUiModel {
         var isMandatory = mandatory
         isNull(valueType, "type must be supplied")
@@ -95,7 +96,8 @@ class FieldViewModelFactoryImpl(
             ),
             options,
             keyboardActionProvider.provideKeyboardAction(valueType),
-            fieldMask
+            fieldMask,
+            url,
         )
     }
 
@@ -127,7 +129,8 @@ class FieldViewModelFactoryImpl(
             options = options!!,
             featureType = if (trackedEntityAttribute.valueType() === ValueType.COORDINATE) {
                 FeatureType.POINT
-            } else null
+            } else null,
+            url = null
         )
     }
 
@@ -156,13 +159,14 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             null,
+            null,
             true,
             0,
             0,
             0,
             0,
             SectionRenderingType.LISTING.name,
-            currentSection
+            currentSection,
         )
     }
 
@@ -189,6 +193,7 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             description,
+            null,
             null,
             null,
             null,
@@ -228,6 +233,7 @@ class FieldViewModelFactoryImpl(
             null,
             null,
             false,
+            null,
             null,
             null,
             null,

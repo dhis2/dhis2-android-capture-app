@@ -136,8 +136,8 @@ class EnrollmentRepository(
                         .byProgram().eq(program.blockingGet().uid())
                         .byTrackedEntityAttribute().eq(attribute.uid())
                         .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                        fields.add(transform(programTrackedEntityAttribute, section.uid()))
-                    }
+                            fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                        }
                 }
             }
             return@fromCallable fields
@@ -247,7 +247,8 @@ class EnrollmentRepository(
             attribute.style(),
             attribute.fieldMask(),
             options,
-            if (valueType == ValueType.COORDINATE) FeatureType.POINT else null
+            if (valueType == ValueType.COORDINATE) FeatureType.POINT else null,
+            null
         )
 
         return if (!error.isNullOrEmpty()) {
@@ -372,6 +373,7 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
+            null,
             null
         )
     }
@@ -400,6 +402,7 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
+            null,
             null
         )
     }
@@ -420,6 +423,7 @@ class EnrollmentRepository(
             null,
             null,
             ObjectStyle.builder().build(),
+            null,
             null,
             null,
             null
@@ -452,7 +456,8 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            featureType
+            featureType,
+            null
         )
     }
 
@@ -480,7 +485,8 @@ class EnrollmentRepository(
             ObjectStyle.builder().build(),
             null,
             null,
-            featureType
+            featureType,
+            null
         )
     }
 

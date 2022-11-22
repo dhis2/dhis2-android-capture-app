@@ -31,7 +31,8 @@ data class FieldUiModelImpl(
     override val renderingType: UiRenderType? = null,
     override val options: List<Option>? = null,
     override val keyboardActionType: KeyboardActionType? = null,
-    override val fieldMask: String? = null
+    override val fieldMask: String? = null,
+    override val url: String? = null,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -63,7 +64,7 @@ data class FieldUiModelImpl(
         callback?.recyclerViewUiEvents(
             RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                 label,
-                description
+                if (url== null) description else description + "\n" + url
             )
         )
     }

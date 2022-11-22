@@ -176,7 +176,8 @@ class EventDetailsRepository(
             value = coordinatesValue,
             editable = accessDataWrite && !shouldBlockEdition,
             description = null,
-            featureType = featureType
+            featureType = featureType,
+            url = null
         )
     }
 

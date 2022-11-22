@@ -167,7 +167,8 @@ class EventCaptureFieldProvider(
                 de.style() ?: ObjectStyle.builder().build(),
                 de.fieldMask(),
                 options,
-                FeatureType.POINT
+                FeatureType.POINT,
+                de.url()
             )
 
         return if (error.isNotEmpty()) {
