@@ -172,7 +172,7 @@ class FormRepositoryImplTest {
             fieldsWithErrors = emptyList(),
             fieldsWithWarnings = emptyList(),
             unsupportedRules = emptyList(),
-            fieldsToUpdate = listOf("uid001"),
+            fieldsToUpdate = listOf(FieldWithNewValue("uid001", "newValue")),
             configurationErrors = emptyList(),
             stagesToHide = emptyList(),
             optionsToHide = emptyMap(),

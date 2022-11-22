@@ -879,6 +879,5 @@
     <string name="sms_sync_sent">تم إرسال الرسالة القصيرة. تحديث الحالة.</string>
     <string name="sms_sync_not_sent">لم يتم إرسال الرسالة القصيرة.</string>
     <string name="sms_sync_opening_app">فتح تطبيق الرسائل القصيرة. لا تعدل الرسالة من فضلك.</string>
-    <string name="sms_sync_is_sms_sent">هل قمت بإرسال الرسالة القصيرة؟</string>
     <string name="sms_sync_manual_confirmation">في انتظار التأكيد اليدوي</string>
-</resources>
+    </resources>
