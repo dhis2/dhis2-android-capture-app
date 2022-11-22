@@ -206,17 +206,10 @@ class NavigationBottomBar @JvmOverloads constructor(
         menu.forEach {
             it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
 
-            System.out.println("999999999999999999999999999999");
-            System.out.println(it.itemId);
-            System.out.println(it.isVisible);
-
             if (it.isVisible) {
                 visibleMenuItems.add(it)
             }
         }
-
-        System.out.println("prtttttttttttttttttttttttttttttttttttttttttttttttttt");
-        System.out.println(visibleMenuItems.size);
 
         when {
             visibleMenuItems.size < 2 && !isHidden() -> {

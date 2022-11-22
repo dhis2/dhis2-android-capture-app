@@ -5,7 +5,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.viewpager2.widget.ViewPager2;
@@ -56,6 +56,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -94,10 +95,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
-        System.out.println("ddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-        System.out.println("do i get run");
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
 
@@ -113,24 +116,61 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.setPresenter(presenter);
 
+
+        setUpNavigationBar();
+
         setUpViewPagerAdapter();
 
-        binding.navigationBar.pageConfiguration(pageConfigurator);
 
-        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+//        System.out.println("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
+//        System.out.println(binding.navigationBar.currentPage());
+//        if (OrientationUtilsKt.isPortrait(this)) {
+//            System.out.println(binding.eventViewPager.getCurrentItem());
+//            binding.navigationBar.selectItemAt(binding.eventViewPager.getCurrentItem());
+//        } else {
+//            System.out.println(binding.eventViewLandPager.getCurrentItem());
+//            binding.navigationBar.selectItemAt(binding.eventViewLandPager.getCurrentItem());
+//        }
 
-            if (adapter == null) return true;
 
-            int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
-            if (pagePosition != -1) {
-                if (OrientationUtilsKt.isLandscape(this)) {
-                    binding.eventViewPager.setCurrentItem(pagePosition);
-                } else {
-                    binding.eventViewPager.setCurrentItem(pagePosition);
-                }
-            }
-            return true;
-        });
+//        if (binding.navigationBar.currentPage() != -1) {
+//            if (OrientationUtilsKt.isLandscape(this)) {
+//                binding.eventViewLandPager.setCurrentItem(binding.navigationBar.currentPage());
+//                binding.navigationBar.selectItemAt(binding.navigationBar.currentPage());
+//            } else {
+//                binding.eventViewPager.setCurrentItem(binding.navigationBar.currentPage());
+//                binding.navigationBar.selectItemAt(binding.navigationBar.currentPage());
+//            }
+//        } else {
+//            if (OrientationUtilsKt.isLandscape(this)) {
+//                binding.eventViewLandPager.setCurrentItem(binding.navigationBar.getInitialPage());
+//                binding.navigationBar.selectItemAt(binding.navigationBar.getInitialPage());
+//            } else {
+//                binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage());
+//                binding.navigationBar.selectItemAt(binding.navigationBar.getInitialPage());
+//            }
+//        }
+//        binding.navigationBar.pageConfiguration(pageConfigurator);
+
+
+//        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+//
+//            if (adapter == null) return true;
+//
+//            int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
+//
+//            System.out.println("page position :::::::::::::: ");
+//            System.out.println(pagePosition);
+//
+//            if (pagePosition != -1) {
+//                if (OrientationUtilsKt.isLandscape(this)) {
+//                    binding.eventViewPager.setCurrentItem(pagePosition);
+//                } else {
+//                    binding.eventViewPager.setCurrentItem(pagePosition);
+//                }
+//            }
+//            return true;
+//        });
 
         if (OrientationUtilsKt.isLandscape(this)) {
 
@@ -148,67 +188,104 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         presenter.init();
 
         binding.syncButton.setOnClickListener(view -> showSyncDialog());
+
     }
 
     private void setUpViewPagerAdapter() {
 
-        binding.eventViewPager.setUserInputEnabled(false);
-        binding.eventViewPager.setAdapter(null);
+        if (OrientationUtilsKt.isLandscape(this)) {
+            binding.eventViewLandPager.setUserInputEnabled(false);
+            binding.eventViewLandPager.setAdapter(null);
 
+            System.out.println("landscape setting up page adapter");
+            System.out.println(binding.eventViewLandPager.getCurrentItem());
+            System.out.println(binding.navigationBar.currentPage());
 
-        int newOrientaation = this.getResources().getConfiguration().orientation;
+            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), false);
 
-        if (newOrientaation == 2) {
-            System.out.println("oooooooooooooooooooooooooooooo: landscape onrientation");
-            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), pageConfigurator.displayDataEntry());
+            binding.eventViewLandPager.setAdapter(this.adapter);
+
+            binding.eventViewLandPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
+
+            ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewLandPager, ExtensionsKt.getDp(16));
+
+            binding.eventViewLandPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    if (position == 0 && eventMode != EventMode.NEW) {
+                        binding.syncButton.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.syncButton.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    super.onPageScrollStateChanged(state);
+                }
+            });
         } else {
-            System.out.println("oooooooooooooooooooooooooooooo: portrait onrientation");
+            binding.eventViewPager.setUserInputEnabled(false);
+            binding.eventViewPager.setAdapter(null);
+
+            System.out.println("potrait setting up page adapter");
+            System.out.println(binding.eventViewPager.getCurrentItem());
+            System.out.println(binding.navigationBar.currentPage());
+
             this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true);
+
+            binding.eventViewPager.setAdapter(this.adapter);
+            binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
+
+            ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
+
+            binding.eventViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    if (position == 0 && eventMode != EventMode.NEW) {
+                        binding.syncButton.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.syncButton.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    super.onPageScrollStateChanged(state);
+                }
+            });
         }
 
-        System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-        System.out.println(this.adapter.getItemCount());
 
-        binding.eventViewPager.setAdapter(this.adapter);
-
-        System.out.println("#########################################");
-        System.out.println(binding.navigationBar.getInitialPage());
-
-        binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);
-        ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
-        binding.eventViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                if (position == 0 && eventMode != EventMode.NEW) {
-                    binding.syncButton.setVisibility(View.VISIBLE);
-                } else {
-                    binding.syncButton.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
-            }
-        });
     }
 
-//    private void setUpNavigationBar() {
-//
-//        binding.navigationBar.pageConfiguration(pageConfigurator);
-//
-//        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-//
-//            binding.eventViewPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
-//            return true;
-//        });
-//    }
+    private void setUpNavigationBar() {
+
+        binding.navigationBar.pageConfiguration(pageConfigurator);
+
+        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
+
+            if (OrientationUtilsKt.isLandscape(this)) {
+                binding.eventViewLandPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
+            } else {
+                binding.eventViewPager.setCurrentItem(adapter.getDynamicTabIndex(item.getItemId()));
+            }
+
+            return true;
+        });
+    }
 
     //    @Override
     public void restoreAdapter(String programUid, String eventUid) {
@@ -222,19 +299,19 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onResume() {
         super.onResume();
 
-        if (currentOrientation != -1) {
-            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
-            if (currentOrientation != nextOrientation && adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-        }
-        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
-
-        if (adapter == null) {
-            restoreAdapter(programUid, eventUid);
-        }
-
-        presenter.refreshTabCounters();
+//        if (currentOrientation != -1) {
+//            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
+//            if (currentOrientation != nextOrientation && adapter != null) {
+//                adapter.notifyDataSetChanged();
+//            }
+//        }
+//        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
+//
+//        if (adapter == null) {
+//            restoreAdapter(programUid, eventUid);
+//        }
+//
+//        presenter.refreshTabCounters();
     }
 
     @Override
@@ -246,9 +323,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-
-        System.out.println("on configuration change");
-
         super.onConfigurationChanged(newConfig);
     }
 

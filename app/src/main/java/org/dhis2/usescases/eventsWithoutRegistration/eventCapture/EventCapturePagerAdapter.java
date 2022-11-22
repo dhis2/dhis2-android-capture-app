@@ -43,10 +43,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                                 i == R.id.navigation_data_entry ? EventPageType.DATA_ENTRY :
                                                         null;
 
-        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        System.out.println(pages);
-        System.out.println(pages.indexOf(pageType));
-
         return pages.indexOf(pageType);
 
     }
@@ -85,15 +81,40 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     }
 
     public int getDynamicTabIndex(@IntegerRes int tabClicked) {
+
+
         if (tabClicked == R.id.navigation_details) {
+
+            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk1");
+            System.out.println(R.id.navigation_details);
+            System.out.println(tabClicked);
+
             return pages.indexOf(EventPageType.DETAILS);
         } else if (tabClicked == R.id.navigation_data_entry) {
+
+            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk2");
+            System.out.println(R.id.navigation_data_entry);
+            System.out.println(tabClicked);
             return pages.indexOf(EventPageType.DATA_ENTRY);
         } else if (tabClicked == R.id.navigation_analytics) {
+
+            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk3");
+            System.out.println(R.id.navigation_analytics);
+            System.out.println(tabClicked);
             return pages.indexOf(EventPageType.ANALYTICS);
         } else if (tabClicked == R.id.navigation_relationships) {
+
+
+            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk4");
+            System.out.println(R.id.navigation_relationships);
+            System.out.println(tabClicked);
             return pages.indexOf(EventPageType.RELATIONSHIPS);
         } else if (tabClicked == R.id.navigation_notes) {
+
+
+            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk5");
+            System.out.println(R.id.navigation_notes);
+            System.out.println(tabClicked);
             return pages.indexOf(EventPageType.NOTES);
         }
         return 0;
