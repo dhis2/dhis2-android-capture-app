@@ -12,7 +12,7 @@ class GroupAnalyticsViewModelFactory(
     private val charts: Charts,
     private val matomoAnalyticsController: MatomoAnalyticsController
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return GroupAnalyticsViewModel(
             mode,
             uid,

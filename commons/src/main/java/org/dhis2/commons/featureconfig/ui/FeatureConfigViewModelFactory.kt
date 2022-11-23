@@ -7,7 +7,7 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 @Suppress("UNCHECKED_CAST")
 class FeatureConfigViewModelFactory(val repository: FeatureConfigRepository) :
     ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return FeatureConfigViewModel(repository) as T
     }
 }

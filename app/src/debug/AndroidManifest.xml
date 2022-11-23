@@ -14,8 +14,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <!--<uses-permission android:name="android.permission.NFC"/>-->
-    <!--<uses-feature android:name="android.hardware.nfc" />-->
 
 
     <uses-feature
@@ -38,6 +36,7 @@
 
         <activity
             android:name=".usescases.splash.SplashActivity"
+            android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,7 +70,6 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
-        <!--<activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />-->
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
 
@@ -81,10 +79,12 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
-        <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
-        <receiver android:name=".widgets.DhisCustomLauncher">
+        <receiver android:name=".widgets.DhisCustomLauncher"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -95,19 +95,23 @@
         </receiver>
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
-        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
+        <activity
+            android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
+
         <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
-        <activity android:name=".usescases.enrollment.EnrollmentActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.enrollment.EnrollmentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
+
         <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
     </application>
 

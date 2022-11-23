@@ -391,14 +391,16 @@ class GranularSyncPresenterImpl(
     }
 
     override fun onConfirmationMessageStateChanged(messageReceived: Boolean?) {
-        when (messageReceived) {
-            true -> {
-                view.logSmsReachedServer()
-                updateStatusToSyncedWithSMS()
-            }
-            false -> {
-                view.logSmsReachedServerError()
-                updateStatusToSentBySMS()
+        messageReceived?.let {
+            when (it) {
+                true -> {
+                    view.logSmsReachedServer()
+                    updateStatusToSyncedWithSMS()
+                }
+                false -> {
+                    view.logSmsReachedServerError()
+                    updateStatusToSentBySMS()
+                }
             }
         }
         restartSmsSender()

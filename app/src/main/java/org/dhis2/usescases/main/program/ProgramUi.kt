@@ -23,10 +23,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -99,7 +99,7 @@ fun ProgramList(
         when (conf.orientation) {
             Configuration.ORIENTATION_LANDSCAPE ->
                 LazyVerticalGrid(
-                    cells = GridCells.Fixed(3),
+                    columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(bottom = 56.dp)
                 ) {
                     items(items = programs) { program ->
