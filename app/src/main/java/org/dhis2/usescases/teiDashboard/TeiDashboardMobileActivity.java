@@ -687,7 +687,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void startQRActivity() {
-        analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        analyticsHelper().trackMatomoEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
         Intent intent = new Intent(getContext(), QrActivity.class);
         intent.putExtra(TEI_UID, teiUid);
         startActivity(intent);
