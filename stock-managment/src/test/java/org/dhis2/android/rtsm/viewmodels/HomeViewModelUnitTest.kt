@@ -27,7 +27,6 @@ import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
-import org.dhis2.android.rtsm.services.SyncManager
 import org.dhis2.android.rtsm.services.UserManager
 import org.dhis2.android.rtsm.services.UserManagerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
@@ -46,8 +45,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
@@ -91,16 +88,6 @@ class HomeViewModelUnitTest {
     @Mock
     private lateinit var preferenceProvider: PreferenceProvider
 
-    @Mock
-    private lateinit var syncManager: SyncManager
-
-    @Captor
-    private lateinit var facilitiesArgumentCaptor:
-        ArgumentCaptor<OperationState<List<OrganisationUnit>>>
-
-    @Captor
-    private lateinit var destinationsArgumentCaptor: ArgumentCaptor<OperationState<List<Option>>>
-
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
@@ -139,7 +126,6 @@ class HomeViewModelUnitTest {
             schedulerProvider,
             preferenceProvider,
             metadataManager,
-            syncManager,
             getStateHandle()
         )
 

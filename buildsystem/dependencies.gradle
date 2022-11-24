@@ -138,6 +138,8 @@ ext {
             hilt_work                   : '1.0.0',
 
             //Kotlin metadata
-            kotlinmetadata             : "0.5.0"
+            kotlinmetadata             : "0.5.0",
+
+            coroutines_test            : "1.6.4"
     ]
 }

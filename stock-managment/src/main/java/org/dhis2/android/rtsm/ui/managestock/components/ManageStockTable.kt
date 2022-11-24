@@ -2,11 +2,10 @@ package org.dhis2.android.rtsm.ui.managestock.components
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
@@ -18,14 +17,11 @@ fun ManageStockTable(
     viewModel: ManageStockViewModel
 ) {
     val context = LocalContext.current
+    val screenState by viewModel.screenState.observeAsState()
 
     MdcTheme {
         DataSetTableScreen(
-            tableScreenState = viewModel.tableRowData(
-                viewModel.getStockItems().observeAsState(),
-                stringResource(R.string.stock),
-                stringResource(R.string.quantity)
-            ),
+            tableScreenState = screenState!!,
             onCellClick = { _, cell ->
                 onCellClick(cell)
             },
