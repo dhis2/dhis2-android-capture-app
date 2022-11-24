@@ -153,10 +153,6 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$libraries.hilt"
     kapt "com.google.dagger:hilt-compiler:$libraries.hilt"
 
-    implementation "androidx.hilt:hilt-compiler:$libraries.hilt_work"
-    implementation "androidx.hilt:hilt-work:$libraries.hilt_work"
-    kapt "androidx.hilt:hilt-compiler:$libraries.hilt_work"
-
     // Barcode scanner
     implementation "com.journeyapps:zxing-android-embedded:$libraries.zxingandroid"
 
