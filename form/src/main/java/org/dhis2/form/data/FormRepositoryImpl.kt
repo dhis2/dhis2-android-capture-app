@@ -202,7 +202,9 @@ class FormRepositoryImpl(
         } ?: emptyList()
     )
 
-    private fun List<FieldUiModel>.applyRuleEffects(skipProgramRules: Boolean = false): List<FieldUiModel> {
+    private fun List<FieldUiModel>.applyRuleEffects(
+        skipProgramRules: Boolean = false
+    ): List<FieldUiModel> {
         ruleEffects = if (skipProgramRules) {
             ruleEffects
         } else {
