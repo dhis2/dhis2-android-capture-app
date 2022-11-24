@@ -14,15 +14,12 @@ import org.dhis2.android.rtsm.services.OpenIdProvider
 import org.dhis2.android.rtsm.services.OpenIdProviderImpl
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
-import org.dhis2.android.rtsm.services.SyncManager
-import org.dhis2.android.rtsm.services.SyncManagerImpl
-import org.dhis2.android.rtsm.services.WorkManagerController
-import org.dhis2.android.rtsm.services.WorkManagerControllerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.preferences.PreferenceProviderImpl
 import org.dhis2.android.rtsm.services.rules.ExpressionEvaluatorImpl
 import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.Sdk
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.rules.RuleExpressionEvaluator
 
@@ -55,22 +52,6 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesWorkManagerController(workManager: WorkManager): WorkManagerController {
-        return WorkManagerControllerImpl(workManager)
-    }
-
-    @Provides
-    @Singleton
-    fun providesSyncManager(
-        d2: D2,
-        preferenceProvider: PreferenceProvider,
-        workManagerController: WorkManagerController
-    ): SyncManager {
-        return SyncManagerImpl(d2, preferenceProvider, workManagerController)
-    }
-
-    @Provides
-    @Singleton
     fun providesJexlEngine(): JexlEngine {
         return JexlEngine()
     }
@@ -92,5 +73,11 @@ class AppModule {
     @Singleton
     fun provideOpenIdProvider(@ApplicationContext appContext: Context): OpenIdProvider {
         return OpenIdProviderImpl(appContext.applicationContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideResourcesProvider(@ApplicationContext appContext: Context): ResourceManager {
+        return ResourceManager(appContext)
     }
 }

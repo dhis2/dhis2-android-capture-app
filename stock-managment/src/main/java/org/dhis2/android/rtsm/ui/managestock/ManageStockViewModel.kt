@@ -1,10 +1,11 @@
 package org.dhis2.android.rtsm.ui.managestock
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,8 @@ import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
 import org.dhis2.android.rtsm.data.AppConfig
@@ -30,6 +33,7 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -49,7 +53,8 @@ class ManageStockViewModel @Inject constructor(
     preferenceProvider: PreferenceProvider,
     private val stockManager: StockManager,
     private val ruleValidationHelper: RuleValidationHelper,
-    speechRecognitionManager: SpeechRecognitionManager
+    speechRecognitionManager: SpeechRecognitionManager,
+    private val resources: ResourceManager
 ) : SpeechRecognitionAwareViewModel(
     preferenceProvider,
     schedulerProvider,
@@ -65,26 +70,36 @@ class ManageStockViewModel @Inject constructor(
     private var search = MutableLiveData<SearchParametersModel>()
     private val searchRelay = PublishRelay.create<String>()
     private val entryRelay = PublishRelay.create<RowAction>()
-    private val stockItems = Transformations.switchMap(search) { q ->
-        _networkState.value = OperationState.Loading
-
-        val result = stockManager.search(q, transaction.value?.facility?.uid, config.value!!)
-        _itemsAvailableCount.value = result.totalCount
-
-        _networkState.postValue(OperationState.Completed)
-        result.items
-    }
     private val itemsCache = linkedMapOf<String, StockEntry>()
 
     private val _networkState = MutableLiveData<OperationState<LiveData<PagedList<StockItem>>>>()
     val operationState: LiveData<OperationState<LiveData<PagedList<StockItem>>>>
         get() = _networkState
 
+    private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
+        TableScreenState(emptyList(), false)
+    )
+    val screenState: LiveData<TableScreenState> = _screenState
+
     fun setup(transaction: Transaction) {
         _transaction.value = transaction
 
         configureRelays()
         loadStockItems()
+
+        refreshData()
+    }
+
+    fun refreshData() {
+        viewModelScope.launch {
+            getStockItems().asFlow().collect {
+                tableRowData(
+                    it,
+                    resources.getString(R.string.stock),
+                    resources.getString(R.string.quantity)
+                )
+            }
+        }
     }
 
     fun setConfig(config: AppConfig) {
@@ -100,7 +115,15 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    fun getStockItems() = stockItems
+    private fun getStockItems() = Transformations.switchMap(search) { q ->
+        _networkState.value = OperationState.Loading
+
+        val result = stockManager.search(q, transaction.value?.facility?.uid, config.value!!)
+        _itemsAvailableCount.value = result.totalCount
+
+        _networkState.postValue(OperationState.Completed)
+        result.items
+    }
 
     fun getAvailableCount(): LiveData<Int> = _itemsAvailableCount
 
@@ -155,14 +178,14 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    fun tableRowData(
-        stockItems: State<PagedList<StockItem>?>,
+    private fun tableRowData(
+        stockItems: PagedList<StockItem>?,
         stockLabel: String,
         qtdLabel: String
-    ): TableScreenState {
+    ) {
         val tableRowModels = mutableListOf<TableRowModel>()
 
-        stockItems.value?.forEachIndexed { index, item ->
+        stockItems?.forEachIndexed { index, item ->
             val tableRowModel = TableRowModel(
                 rowHeader = RowHeader(
                     id = item.id,
@@ -191,13 +214,13 @@ class ManageStockViewModel @Inject constructor(
             tableRowModels.add(tableRowModel)
         }
 
-        return TableScreenState(
+        _screenState.value = TableScreenState(
             tables = mapTableModel(
                 tableRowModels,
                 stockLabel,
                 qtdLabel
             ),
-            selectNext = true
+            selectNext = false
         )
     }
 

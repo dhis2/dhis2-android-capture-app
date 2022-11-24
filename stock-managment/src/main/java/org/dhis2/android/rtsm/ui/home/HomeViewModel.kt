@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.commons.Constants.INSTANT_DATA_SYNC
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.OperationState
@@ -22,7 +21,6 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
-import org.dhis2.android.rtsm.services.SyncManager
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
@@ -38,7 +36,6 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
-    private val syncManager: SyncManager,
     savedState: SavedStateHandle
 ) : BaseViewModel(preferenceProvider, schedulerProvider) {
 
@@ -223,12 +220,6 @@ class HomeViewModel @Inject constructor(
             _deliveryTo.value = UIText.StringRes(R.string.subtitle, to)
         }
     }
-
-    fun syncData() {
-        syncManager.dataSync()
-    }
-
-    fun getSyncDataStatus() = syncManager.getSyncStatus(INSTANT_DATA_SYNC)
 
     fun setSelectedText(text: String) {
         _orgUnitName.value = text
