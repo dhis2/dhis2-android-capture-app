@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.settings.SyncManagerContracts.Presenter" />
+            type="org.dhis2.usescases.settings.SyncManagerPresenter" />
 
         <variable
             name="dataSyncMessage"

@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.Constants.DATA_NOW
@@ -33,7 +34,7 @@ import org.mockito.Mockito
 
 class SyncManagerPresenterTest {
 
-    private lateinit var presenter: SyncManagerContracts.Presenter
+    private lateinit var presenter: SyncManagerPresenter
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val schedulers = TrampolineSchedulerProvider()
     private val gatewayValidator: GatewayValidator = mock()
@@ -313,5 +314,45 @@ class SyncManagerPresenterTest {
     fun `Should open clicked item`() {
         presenter.onItemClick(SettingItem.DATA_SYNC)
         verify(view).openItem(SettingItem.DATA_SYNC)
+    }
+
+    @Test
+    fun `Should enabled sms settings when gateway and timeout are correctly filled`() {
+        whenever(view.isGatewayValid) doReturn true
+        whenever(view.isResultTimeoutValid) doReturn true
+        presenter.setSmsSettingsViewModel(mockedSMSViewModel())
+
+        presenter.checkGatewayAndTimeoutAreValid()
+        verify(view).isGatewayValid
+        verify(view).isResultTimeoutValid
+        verify(view).enabledSMSSwitchAndSender(mockedSMSViewModel())
+    }
+
+    @Test
+    fun `Should not enabled sms settings when gateway and timeout are missing`() {
+        whenever(view.isGatewayValid) doReturn false
+        whenever(view.isResultTimeoutValid) doReturn false
+        presenter.checkGatewayAndTimeoutAreValid()
+        verify(view).isGatewayValid
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should not enabled sms settings when gateway has an error and timeout is filled`() {
+        whenever(view.isGatewayValid) doReturn false
+        whenever(view.isResultTimeoutValid) doReturn true
+        presenter.checkGatewayAndTimeoutAreValid()
+        verify(view).isGatewayValid
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should not enabled sms settings when gateway is correctly filled and timeout is empty`() {
+        whenever(view.isGatewayValid) doReturn true
+        whenever(view.isResultTimeoutValid) doReturn false
+        presenter.checkGatewayAndTimeoutAreValid()
+        verify(view).isGatewayValid
+        verify(view).isResultTimeoutValid
+        verifyNoMoreInteractions(view)
     }
 }

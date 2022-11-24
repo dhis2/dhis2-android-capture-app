@@ -65,68 +65,11 @@ public class SyncManagerContracts {
         void onDataSyncInProgress();
 
         void onDataFinished();
-    }
 
-    public interface Presenter {
+        boolean isGatewayValid();
 
-        int getMetadataPeriodSetting();
+        boolean isResultTimeoutValid();
 
-        int getDataPeriodSetting();
-
-        void validateGatewayObservable(String gateway);
-
-        void onItemClick(SettingItem settingItem);
-
-        void init();
-
-        void syncData(int seconds, String scheduleTag);
-
-        void syncMeta(int seconds, String scheduleTag);
-
-        void syncData();
-
-        void syncMeta();
-
-        void dispose();
-
-        void resetSyncParameters();
-
-        void wipeDb();
-
-        void onDeleteLocalData();
-
-        void deleteLocalData();
-
-        void onReservedValues();
-
-        void checkSyncErrors();
-
-        void checkData();
-
-        void cancelPendingWork(String meta);
-
-        boolean isGatewaySetAndValid(String gateway);
-
-        void saveLimitScope(LimitScope global);
-
-        void saveEventMaxCount(Integer eventCount);
-
-        void saveTeiMaxCount(Integer teiCount);
-
-        void saveReservedValues(Integer reservedValuesCount);
-
-        void saveGatewayNumber(String gatewayNumber);
-
-        void saveSmsResultSender(String smsResultSender);
-
-        void saveSmsResponseTimeout(Integer smsResponseTimeout);
-
-        void saveWaitForSmsResponse(boolean shouldWait);
-
-        void enableSmsModule(boolean enableSms);
-
-        void resetFilters();
-
-        void onWorkStatusesUpdate(@Nullable WorkInfo.State workState, String workerTag);
+        void enabledSMSSwitchAndSender(SMSSettingsViewModel settingsViewModel);
     }
 }

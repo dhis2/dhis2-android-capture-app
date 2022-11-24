@@ -74,7 +74,7 @@ import kotlin.Unit;
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
     @Inject
-    SyncManagerContracts.Presenter presenter;
+    SyncManagerPresenter presenter;
 
     @Inject
     WorkManagerController workManagerController;
@@ -777,11 +777,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         boolean hasNetwork = networkUtils.isOnline();
 
-        binding.settingsSms.settingsSmsSwitch.setEnabled(hasNetwork);
-        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(hasNetwork);
         binding.settingsSms.settingsSmsReceiver.setEnabled(hasNetwork && smsSettingsViewModel.isGatewayNumberEditable());
-        binding.settingsSms.settingsSmsResultSender.setEnabled(hasNetwork && smsSettingsViewModel.isResponseNumberEditable());
         binding.settingsSms.settingsSmsResultTimeout.setEnabled(hasNetwork);
+
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(false);
+        binding.settingsSms.settingsSmsSwitch.setEnabled(false);
+        binding.settingsSms.settingsSmsResultSender.setEnabled(false);
 
         setUpSmsListeners();
     }
@@ -793,16 +794,21 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsReceiver, () -> {
             presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
+            presenter.checkGatewayAndTimeoutAreValid();
             return Unit.INSTANCE;
         });
 
         ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultSender, () -> {
             presenter.saveSmsResultSender(binding.settingsSms.settingsSmsResultSender.getText().toString());
+            enabledResponseWaitSwitch();
             return Unit.INSTANCE;
         });
 
         ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultTimeout, () -> {
-            presenter.saveSmsResponseTimeout(Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
+            if (!binding.settingsSms.settingsSmsResultTimeout.getText().toString().isEmpty()) {
+                presenter.saveSmsResponseTimeout(Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
+                presenter.checkGatewayAndTimeoutAreValid();
+            }
             return Unit.INSTANCE;
         });
 
@@ -815,7 +821,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.settingsSms.settingsSmsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             clearSmsFocus();
-            if (binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
+            if (binding.settingsSms.settingsSmsReceiverLayout.getError() != null) {
                 binding.settingsSms.settingsSmsSwitch.setChecked(false);
                 requestNoEmptySMSGateway();
             }
@@ -926,5 +932,27 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         boolean canBeClicked = isOnline && !metadataInit;
         binding.buttonSyncMeta.setEnabled(canBeClicked);
         binding.buttonSyncMeta.setClickable(canBeClicked);
+    }
+
+    @Override
+    public boolean isGatewayValid() {
+        return binding.settingsSms.settingsSmsReceiverLayout.getError() == null &&
+                !binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty();
+    }
+
+    @Override
+    public boolean isResultTimeoutValid() {
+        return binding.settingsSms.settingsSmsResultTimeoutLayout.getError() == null &&
+                !binding.settingsSms.settingsSmsResultTimeout.getText().toString().isEmpty();
+    }
+
+    @Override
+    public void enabledSMSSwitchAndSender(SMSSettingsViewModel settingsViewModel) {
+        binding.settingsSms.settingsSmsSwitch.setEnabled(networkUtils.isOnline());
+        binding.settingsSms.settingsSmsResultSender.setEnabled(networkUtils.isOnline() && settingsViewModel.isResponseNumberEditable());
+    }
+
+    private void enabledResponseWaitSwitch() {
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(networkUtils.isOnline());
     }
 }
