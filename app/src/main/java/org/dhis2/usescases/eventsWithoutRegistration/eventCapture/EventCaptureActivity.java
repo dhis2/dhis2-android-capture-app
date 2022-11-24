@@ -121,17 +121,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         setUpViewPagerAdapter();
 
-
-//        System.out.println("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
-//        System.out.println(binding.navigationBar.currentPage());
-//        if (OrientationUtilsKt.isPortrait(this)) {
-//            System.out.println(binding.eventViewPager.getCurrentItem());
-//            binding.navigationBar.selectItemAt(binding.eventViewPager.getCurrentItem());
-//        } else {
-//            System.out.println(binding.eventViewLandPager.getCurrentItem());
-//            binding.navigationBar.selectItemAt(binding.eventViewLandPager.getCurrentItem());
-//        }
-
+        System.out.println("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
+        System.out.println(binding.navigationBar.currentPage());
 
 //        if (binding.navigationBar.currentPage() != -1) {
 //            if (OrientationUtilsKt.isLandscape(this)) {
@@ -150,8 +141,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 //                binding.navigationBar.selectItemAt(binding.navigationBar.getInitialPage());
 //            }
 //        }
-//        binding.navigationBar.pageConfiguration(pageConfigurator);
 
+        //        if (OrientationUtilsKt.isPortrait(this)) {
+//            System.out.println(binding.eventViewPager.getCurrentItem());
+//            binding.navigationBar.selectItemAt(binding.eventViewPager.getCurrentItem());
+//        } else {
+//            System.out.println(binding.eventViewLandPager.getCurrentItem());
+//            binding.navigationBar.selectItemAt(binding.eventViewLandPager.getCurrentItem());
+//        }
 
 //        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
 //

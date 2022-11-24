@@ -23,74 +23,74 @@ import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
 abstract class BaseIndicatorRepository(
-    open val d2: D2,
-    open val ruleEngineRepository: RuleEngineRepository,
-    open val programUid: String,
-    open val resourceManager: ResourceManager
+        open val d2: D2,
+        open val ruleEngineRepository: RuleEngineRepository,
+        open val programUid: String,
+        open val resourceManager: ResourceManager
 ) : IndicatorRepository {
 
     fun getIndicators(
-        filter: Boolean = true,
-        indicatorValueCalculator: (String) -> String
+            filter: Boolean = true,
+            indicatorValueCalculator: (String) -> String
     ): Flowable<List<AnalyticsModel>> {
         return d2.programModule().programIndicators()
-            .byDisplayInForm().isTrue
-            .byProgramUid().eq(programUid)
-            .withLegendSets()
-            .get()
-            .toFlowable()
-            .filter { filter }
-            .map { indicators ->
-                Observable.fromIterable(indicators)
-                    .filter { it.displayInForm() != null && it.displayInForm()!! }
-                    .map { indicator ->
-                        val indicatorValue = try {
-                            indicatorValueCalculator(indicator.uid())
-                        } catch (e: Exception) {
-                            Timber.e(e)
-                            null
-                        }
-                        Pair.create(indicator, indicatorValue ?: "")
-                    }.filter { it.val1().isNotEmpty() }
-                    .flatMap {
-                        getLegendColorForIndicator(it.val0(), it.val1())
-                    }.map {
-                        IndicatorModel(
-                            it.val0(),
-                            it.val1(),
-                            it.val2(),
-                            LOCATION_INDICATOR_WIDGET,
-                            resourceManager.defaultIndicatorLabel()
-                        )
-                    }
-                    .toList()
-            }.flatMap { it.toFlowable() }
+                .byDisplayInForm().isTrue
+                .byProgramUid().eq(programUid)
+                .withLegendSets()
+                .get()
+                .toFlowable()
+                .filter { filter }
+                .map { indicators ->
+                    Observable.fromIterable(indicators)
+                            .filter { it.displayInForm() != null && it.displayInForm()!! }
+                            .map { indicator ->
+                                val indicatorValue = try {
+                                    indicatorValueCalculator(indicator.uid())
+                                } catch (e: Exception) {
+                                    Timber.e(e)
+                                    null
+                                }
+                                Pair.create(indicator, indicatorValue ?: "")
+                            }.filter { it.val1().isNotEmpty() }
+                            .flatMap {
+                                getLegendColorForIndicator(it.val0(), it.val1())
+                            }.map {
+                                IndicatorModel(
+                                        it.val0(),
+                                        it.val1(),
+                                        it.val2(),
+                                        LOCATION_INDICATOR_WIDGET,
+                                        resourceManager.defaultIndicatorLabel()
+                                )
+                            }
+                            .toList()
+                }.flatMap { it.toFlowable() }
     }
 
     fun getRulesIndicators(): Flowable<List<AnalyticsModel>> =
-        d2.programModule().programRules().byProgramUid().eq(programUid).get()
-            .map { UidsHelper.getUidsList(it) }
-            .flatMap {
-                d2.programModule().programRuleActions()
-                    .byProgramRuleUid().`in`(it)
-                    .byProgramRuleActionType().`in`(
-                        ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                        ProgramRuleActionType.DISPLAYTEXT
-                    )
-                    .get()
-            }
-            .flatMapPublisher { ruleAction ->
-                if (ruleAction.isEmpty()) {
-                    return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
-                } else {
-                    return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
-                        .flatMap { ruleEngineRepository.reCalculate() }
-                        .map { effects ->
-                            // Restart rule engine to take into account value changes
-                            applyRuleEffectForIndicators(effects)
+            d2.programModule().programRules().byProgramUid().eq(programUid).get()
+                    .map { UidsHelper.getUidsList(it) }
+                    .flatMap {
+                        d2.programModule().programRuleActions()
+                                .byProgramRuleUid().`in`(it)
+                                .byProgramRuleActionType().`in`(
+                                        ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
+                                        ProgramRuleActionType.DISPLAYTEXT
+                                )
+                                .get()
+                    }
+                    .flatMapPublisher { ruleAction ->
+                        if (ruleAction.isEmpty()) {
+                            return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
+                        } else {
+                            return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
+                                    .flatMap { ruleEngineRepository.reCalculate() }
+                                    .map { effects ->
+                                        // Restart rule engine to take into account value changes
+                                        applyRuleEffectForIndicators(effects)
+                                    }
                         }
-                }
-            }
+                    }
 
     private fun applyRuleEffectForIndicators(calcResult: Result<RuleEffect>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
@@ -105,27 +105,27 @@ abstract class BaseIndicatorRepository(
             if (ruleEffect.data()?.contains("#{") == false) {
                 if (ruleAction is RuleActionDisplayKeyValuePair) {
                     val indicator = IndicatorModel(
-                        ProgramIndicator.builder()
-                            .uid((ruleAction).content())
-                            .displayName((ruleAction).content())
-                            .build(),
-                        ruleEffect.data(),
-                        "",
-                        ruleAction.location(),
-                        resourceManager.defaultIndicatorLabel()
+                            ProgramIndicator.builder()
+                                    .uid((ruleAction).content())
+                                    .displayName((ruleAction).content())
+                                    .build(),
+                            ruleEffect.data(),
+                            "",
+                            ruleAction.location(),
+                            resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
                 } else if (ruleAction is RuleActionDisplayText) {
                     val indicator = IndicatorModel(
-                        ProgramIndicator.builder()
-                            .uid(ruleAction.content())
-                            .displayName(resourceManager.defaultIndicatorLabel())
-                            .build(),
-                        ruleAction.content() + ruleEffect.data(),
-                        "",
-                        ruleAction.location(),
-                        resourceManager.defaultIndicatorLabel()
+                            ProgramIndicator.builder()
+                                    .uid(ruleAction.content())
+                                    .displayName(resourceManager.defaultIndicatorLabel())
+                                    .build(),
+                            ruleAction.content() + ruleEffect.data(),
+                            "",
+                            ruleAction.location(),
+                            resourceManager.defaultIndicatorLabel()
                     )
 
                     indicators.add(indicator)
@@ -137,8 +137,8 @@ abstract class BaseIndicatorRepository(
     }
 
     private fun getLegendColorForIndicator(
-        indicator: ProgramIndicator,
-        value: String?
+            indicator: ProgramIndicator,
+            value: String?
     ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
         var color: String
         try {
@@ -148,9 +148,9 @@ abstract class BaseIndicatorRepository(
                 indicator.legendSets()?.let {
                     if (it.isNotEmpty()) {
                         val legends = d2.legendSetModule().legends().byStartValue()
-                            .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
-                            .biggerThan(value?.toDouble() ?: 0.0)
-                            .byLegendSet().eq(it.first().uid()).blockingGet()
+                                .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
+                                .biggerThan(value?.toDouble() ?: 0.0)
+                                .byLegendSet().eq(it.first().uid()).blockingGet()
                         if (legends.isNotEmpty()) {
                             legends.first().color() ?: ""
                         } else {
@@ -166,33 +166,36 @@ abstract class BaseIndicatorRepository(
         }
 
         return Observable.just(
-            Trio.create<ProgramIndicator, String, String>(
-                indicator,
-                value,
-                color
-            )
+                Trio.create<ProgramIndicator, String, String>(
+                        indicator,
+                        value,
+                        color
+                )
         )
     }
 
     fun arrangeSections(
-        indicators: List<AnalyticsModel>,
-        ruleIndicators: List<AnalyticsModel>,
-        charts: List<AnalyticsModel> = emptyList()
+            indicators: List<AnalyticsModel>,
+            ruleIndicators: List<AnalyticsModel>,
+            charts: List<AnalyticsModel> = emptyList()
     ): List<AnalyticsModel> {
         return mutableListOf<AnalyticsModel>().apply {
             val feedbackList = ruleIndicators.filter {
                 it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
             if (feedbackList.isNotEmpty()) {
-                add(SectionTitle(resourceManager.sectionFeedback()))
+                add(SectionTitle(
+//                        resourceManager.sectionFeedback()
+                        (feedbackList.get(0) as IndicatorModel).location
+                ))
                 addAll(feedbackList)
             }
             val indicatorList = indicators.toMutableList().apply {
                 addAll(
-                    ruleIndicators.filter {
-                        it is IndicatorModel &&
-                            it.location == LOCATION_INDICATOR_WIDGET
-                    }
+                        ruleIndicators.filter {
+                            it is IndicatorModel &&
+                                    it.location == LOCATION_INDICATOR_WIDGET
+                        }
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
             if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {
@@ -201,7 +204,10 @@ abstract class BaseIndicatorRepository(
                 addAll(indicatorList)
                 addAll(charts)
             } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
-                add(SectionTitle(resourceManager.sectionIndicators()))
+                add(SectionTitle(
+//                        resourceManager.sectionIndicators()
+                        (indicatorList.get(0) as IndicatorModel).location
+                ))
                 addAll(indicatorList)
             } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionCharts()))

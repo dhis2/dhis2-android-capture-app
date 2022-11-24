@@ -12,9 +12,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
 
 class IndicatorsPresenter(
-    val schedulerProvider: SchedulerProvider,
-    val view: IndicatorsView,
-    val indicatorRepository: IndicatorRepository
+        val schedulerProvider: SchedulerProvider,
+        val view: IndicatorsView,
+        val indicatorRepository: IndicatorRepository
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -22,9 +22,9 @@ class IndicatorsPresenter(
 
     fun init() {
         compositeDisposable.add(
-            publishProcessor.startWith(Unit)
-                .flatMap { indicatorRepository.fetchData() }
-                .defaultSubscribe(schedulerProvider, { view.swapAnalytics(it) }, { Timber.d(it) })
+                publishProcessor.startWith(Unit)
+                        .flatMap { indicatorRepository.fetchData() }
+                        .defaultSubscribe(schedulerProvider, { System.out.println("Whataaaaaaaaaaaaaaaaaaaaaaa"); System.out.println(it); view.swapAnalytics(it) }, { Timber.d(it) })
         )
     }
 
@@ -37,9 +37,9 @@ class IndicatorsPresenter(
     }
 
     fun filterByOrgUnit(
-        chartModel: ChartModel,
-        selectedPeriods: List<OrganisationUnit>,
-        filterType: OrgUnitFilterType
+            chartModel: ChartModel,
+            selectedPeriods: List<OrganisationUnit>,
+            filterType: OrgUnitFilterType
     ) {
         indicatorRepository.filterByOrgUnit(chartModel, selectedPeriods, filterType)
         publishProcessor.onNext(Unit)
@@ -49,13 +49,13 @@ class IndicatorsPresenter(
         chartModel.graph.visualizationUid?.let { visualizationUid ->
             when (filterType) {
                 ChartFilter.PERIOD -> indicatorRepository.filterByPeriod(
-                    chartModel,
-                    emptyList()
+                        chartModel,
+                        emptyList()
                 )
                 ChartFilter.ORG_UNIT -> indicatorRepository.filterByOrgUnit(
-                    chartModel,
-                    emptyList(),
-                    OrgUnitFilterType.NONE
+                        chartModel,
+                        emptyList(),
+                        OrgUnitFilterType.NONE
                 )
             }
         }
