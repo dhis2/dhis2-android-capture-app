@@ -12,29 +12,29 @@ import androidx.compose.ui.unit.sp
 data class TableDimensions(
     val tableHorizontalPadding: Dp = 16.dp,
     val tableVerticalPadding: Dp = 16.dp,
-    val defaultCellWidth: Dp = 58.dp,
-    val defaultCellHeight: Dp = 36.dp,
-    val defaultRowHeaderWidth: Dp = 100.dp,
-    val defaultHeaderHeight: Dp = 30.dp,
+    val defaultCellWidth: Int = 160,
+    val defaultCellHeight: Int = 100,
+    val defaultRowHeaderWidth: Int = 275,
+    val defaultHeaderHeight: Int = 83,
     val defaultLegendCornerSize: Dp = 2.dp,
     val defaultLegendBorderWidth: Dp = 8.dp,
     val defaultHeaderTextSize: TextUnit = 12.sp,
     val defaultRowHeaderTextSize: TextUnit = 12.sp,
     val defaultCellTextSize: TextUnit = 12.sp,
-    val totalWidth: Dp = 0.dp
+    val totalWidth: Int = 0
 ) {
 
     fun defaultCellWidthWithExtraSize(
         totalColumns: Int,
         hasExtra: Boolean = false
-    ): Dp {
+    ): Int {
         return defaultCellWidth.withExtraSize(totalColumns, hasExtra)
     }
 
     fun defaultRowHeaderCellWidthWithExtraSize(
         totalColumns: Int,
         hasExtra: Boolean = false
-    ): Dp {
+    ): Int {
         return defaultRowHeaderWidth
     }
 
@@ -42,7 +42,7 @@ data class TableDimensions(
         headerRowColumns: Int,
         totalColumns: Int,
         hasTotal: Boolean = false
-    ): Dp {
+    ): Int {
         val fullWidth = defaultCellWidth * totalColumns
         val rowHeaderRatio = totalColumns / headerRowColumns
         return (fullWidth / headerRowColumns)
@@ -53,23 +53,23 @@ data class TableDimensions(
     fun headerCellWidth(
         headerRowColumns: Int,
         totalColumns: Int
-    ): Dp {
+    ): Int {
         val fullWidth = defaultCellWidth * totalColumns
         return fullWidth / headerRowColumns
     }
 
-    private fun Dp.withExtraSize(
+    private fun Int.withExtraSize(
         totalColumns: Int,
         hasExtra: Boolean = false,
         extraWidthRatio: Int = 1
-    ): Dp {
+    ): Int {
         return this + extraWidth(totalColumns, hasExtra) * extraWidthRatio
     }
 
     private fun extraWidth(
         totalColumns: Int,
         hasTotal: Boolean
-    ): Dp {
+    ): Int {
         val screenWidth = totalWidth
         val tableWidth = tableWidth(totalColumns, hasTotal)
 
@@ -78,7 +78,7 @@ data class TableDimensions(
             val columnsCount = totalColumns + totalColumnCount
             (screenWidth - tableWidth) / columnsCount
         } else {
-            0.dp
+            0
         }
     }
 
@@ -86,8 +86,8 @@ data class TableDimensions(
     fun tableWidth(
         totalColumns: Int,
         hasTotal: Boolean
-    ): Dp {
-        val totalCellWidth = defaultCellWidth.takeIf { hasTotal } ?: 0.dp
+    ): Int {
+        val totalCellWidth = defaultCellWidth.takeIf { hasTotal } ?: 0
 
         return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
