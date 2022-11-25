@@ -283,7 +283,9 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                defaultHeight = with(LocalDensity.current) { TableTheme.dimensions.defaultCellHeight.toDp() },
+                defaultHeight = with(LocalDensity.current) {
+                    TableTheme.dimensions.defaultCellHeight.toDp()
+                },
                 defaultWidth = with(LocalDensity.current) {
                     TableTheme.dimensions.defaultCellWidthWithExtraSize(
                         tableModel.tableHeaderModel.tableMaxColumns(),
@@ -312,10 +314,12 @@ fun TableCorner(
         modifier = modifier
             .width(
                 with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                        tableModel.tableHeaderModel.tableMaxColumns(),
-                        tableModel.tableHeaderModel.hasTotals
-                    ).toDp()
+                    TableTheme.dimensions
+                        .defaultRowHeaderCellWidthWithExtraSize(
+                            tableModel.tableHeaderModel.tableMaxColumns(),
+                            tableModel.tableHeaderModel.hasTotals
+                        )
+                        .toDp()
                 }
             )
             .clickable { onClick() },
@@ -342,7 +346,11 @@ fun ItemHeader(
 ) {
     Row(
         modifier = Modifier
-            .defaultMinSize(minHeight = with(LocalDensity.current) { TableTheme.dimensions.defaultCellHeight.toDp() })
+            .defaultMinSize(
+                minHeight = with(LocalDensity.current) {
+                    TableTheme.dimensions.defaultCellHeight.toDp()
+                }
+            )
             .width(width)
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
@@ -836,10 +844,12 @@ fun ExtendDivider(
             modifier = Modifier
                 .width(
                     with(LocalDensity.current) {
-                        TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                            tableModel.tableHeaderModel.tableMaxColumns(),
-                            tableModel.tableHeaderModel.hasTotals
-                        ).toDp()
+                        TableTheme.dimensions
+                            .defaultRowHeaderCellWidthWithExtraSize(
+                                tableModel.tableHeaderModel.tableMaxColumns(),
+                                tableModel.tableHeaderModel.hasTotals
+                            )
+                            .toDp()
                     }
                 )
                 .height(8.dp)
