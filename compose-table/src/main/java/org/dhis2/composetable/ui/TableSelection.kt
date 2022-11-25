@@ -1,5 +1,7 @@
 package org.dhis2.composetable.ui
 
+import androidx.compose.ui.geometry.Offset
+
 sealed class TableSelection(open val tableId: String) {
     data class Unselected(
         val previousSelectedTableId: String? = null
@@ -11,7 +13,8 @@ sealed class TableSelection(open val tableId: String) {
 
     data class RowSelection(
         override val tableId: String,
-        val rowIndex: Int
+        val rowIndex: Int,
+        val offset: Offset? = null
     ) : TableSelection(tableId)
 
     data class ColumnSelection(

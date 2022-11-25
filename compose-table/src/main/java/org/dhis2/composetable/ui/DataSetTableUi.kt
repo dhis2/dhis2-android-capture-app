@@ -5,6 +5,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -45,10 +48,17 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.semantics
@@ -57,10 +67,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
@@ -251,7 +263,7 @@ fun TableItemRow(
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
-    onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
+    onRowHeaderClick: (rowHeaderIndex: Int?, offset: Offset) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
@@ -341,9 +353,13 @@ fun ItemHeader(
     cellStyle: CellStyle,
     width: Dp,
     maxLines: Int,
-    onCellSelected: (Int?) -> Unit,
+    onCellSelected: (Int?, Offset) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit
 ) {
+    val localDensity = LocalDensity.current
+    var positionInRoot by remember {
+        mutableStateOf(Offset(0f, 0f))
+    }
     Row(
         modifier = Modifier
             .defaultMinSize(
@@ -362,7 +378,7 @@ fun ItemHeader(
             }
             .testTag("$tableId${rowHeader.row}")
             .clickable {
-                onCellSelected(rowHeader.row)
+                onCellSelected(rowHeader.row, positionInRoot)
                 if (rowHeader.showDecoration) {
                     onDecorationClick(
                         TableDialogModel(
@@ -370,6 +386,12 @@ fun ItemHeader(
                             rowHeader.description ?: ""
                         )
                     )
+                }
+            }
+            .onGloballyPositioned {
+                with(localDensity) {
+                    positionInRoot = it.positionInRoot()
+                        .copy(y = it.positionInRoot().y + it.size.height / 2 - 12.dp.toPx())
                 }
             },
         verticalAlignment = Alignment.CenterVertically
@@ -622,14 +644,18 @@ fun DataTable(
     var tableTotalWidth by remember {
         mutableStateOf(0)
     }
-
-    val onSizeChanged: (IntSize) -> Unit = {
-        tableTotalWidth = with(localDensity) {
-            it.width
-        }
+    var dimensions by remember {
+        mutableStateOf(tableDimensions)
     }
 
-    TableTheme(tableColors, tableDimensions.copy(totalWidth = tableTotalWidth)) {
+    val onSizeChanged: (IntSize) -> Unit = {
+        val tableTotalWidth = with(localDensity) {
+            it.width
+        }
+        dimensions = dimensions.copy(totalWidth = tableTotalWidth)
+    }
+
+    TableTheme(tableColors, dimensions) {
         if (!editable && !tableList.all { it.areAllValuesEmpty() }) {
             TableItem(
                 tableModel = tableList.first(),
@@ -642,7 +668,11 @@ fun DataTable(
                 tableSelection = tableSelection,
                 inputIsOpen = inputIsOpen,
                 tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged
+                onSizeChanged = onSizeChanged,
+                onHeaderResize = { newValue ->
+                    val newValueDp = newValue / localDensity.density
+                    dimensions = dimensions.copy(defaultRowHeaderWidth = newValueDp.dp - 15.dp)
+                }
             )
         }
     }
@@ -655,7 +685,8 @@ private fun TableList(
     tableSelection: TableSelection,
     inputIsOpen: Boolean,
     tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit
+    onSizeChanged: (IntSize) -> Unit,
+    onHeaderResize: (Float) -> Unit
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -675,163 +706,238 @@ private fun TableList(
         )
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .background(Color.White)
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(
-                horizontal = TableTheme.dimensions.tableHorizontalPadding,
-                vertical = TableTheme.dimensions.tableVerticalPadding
-            )
-            .onSizeChanged { onSizeChanged(it) },
-        contentPadding = PaddingValues(bottom = 200.dp),
-        state = verticalScrollState
-    ) {
-        tableList.forEachIndexed { index, currentTableModel ->
-            stickyHeader {
-                TableHeaderRow(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .onSizeChanged {
-                            calculatedHeaderSize[index] = it.height
-                        },
-                    cornerModifier = Modifier
-                        .cornerBackground(
-                            isSelected = tableSelection.isCornerSelected(
-                                currentTableModel.id ?: ""
-                            ),
-                            selectedColor = LocalTableColors.current.primaryLight,
-                            defaultColor = LocalTableColors.current.tableBackground
-                        ),
-                    tableModel = currentTableModel,
-                    horizontalScrollState = horizontalScrollStates[index],
-                    cellStyle = { columnIndex, rowIndex ->
-                        return@TableHeaderRow styleForColumnHeader(
-                            isSelected = tableSelection.isHeaderSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                columnIndex = columnIndex,
-                                columnHeaderRowIndex = rowIndex
-                            ),
-                            isParentSelected = tableSelection.isParentHeaderSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                columnIndex = columnIndex,
-                                columnHeaderRowIndex = rowIndex
-                            ),
-                            columnIndex = columnIndex
-                        )
-                    },
-                    onTableCornerClick = {
-                        tableInteractions.onSelectionChange(
-                            TableSelection.AllCellSelection(currentTableModel.id ?: "")
-                        )
-                    },
-                    onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
-                        tableInteractions.onSelectionChange(
-                            TableSelection.ColumnSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = headerColumnIndex,
-                                columnHeaderRow = headerRowIndex,
-                                childrenOfSelectedHeader =
-                                    currentTableModel.countChildrenOfSelectedHeader(
-                                        headerRowIndex,
-                                        headerColumnIndex
-                                    )
-                            )
-                        )
-                    }
+    Box {
+        LazyColumn(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(
+                    horizontal = TableTheme.dimensions.tableHorizontalPadding,
+                    vertical = TableTheme.dimensions.tableVerticalPadding
                 )
-            }
-            itemsIndexed(
-                items = currentTableModel.tableRows,
-                key = { _, item -> item.rowHeader.id!! }
-            ) { globalIndex, tableRowModel ->
-                TableItemRow(
-                    tableModel = currentTableModel,
-                    horizontalScrollState = horizontalScrollStates[index],
-                    rowModel = tableRowModel,
-                    nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
-                        addBackgroundNonEditableCellLayer(
-                            hasToApplyLightPrimary = tableSelection.isCellParentSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                columnIndex = columnIndex,
-                                rowIndex = rowIndex
+                .onSizeChanged { onSizeChanged(it) },
+            contentPadding = PaddingValues(bottom = 200.dp),
+            state = verticalScrollState
+        ) {
+            tableList.forEachIndexed { index, currentTableModel ->
+                stickyHeader {
+                    TableHeaderRow(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .onSizeChanged {
+                                calculatedHeaderSize[index] = it.height
+                            },
+                        cornerModifier = Modifier
+                            .cornerBackground(
+                                isSelected = tableSelection.isCornerSelected(
+                                    currentTableModel.id ?: ""
+                                ),
+                                selectedColor = LocalTableColors.current.primaryLight,
+                                defaultColor = LocalTableColors.current.tableBackground
                             ),
-                            cellIsEditable = isCellEditable
-                        )
-                    },
-                    rowHeaderCellStyle = { rowHeaderIndex ->
-                        styleForRowHeader(
-                            isSelected = tableSelection.isRowSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                rowHeaderIndex = rowHeaderIndex ?: -1
-                            ),
-                            isOtherRowSelected = tableSelection.isOtherRowSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                rowHeaderIndex = rowHeaderIndex ?: -1
-                            )
-                        )
-                    },
-                    cellStyle = { cellValue ->
-                        styleForCell(
-                            isSelected = tableSelection.isCellSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                columnIndex = cellValue.column ?: -1,
-                                rowIndex = cellValue.row ?: -1
-                            ),
-                            isParentSelected = tableSelection.isCellParentSelected(
-                                selectedTableId = currentTableModel.id ?: "",
-                                columnIndex = cellValue.column ?: -1,
-                                rowIndex = cellValue.row ?: -1
-                            ),
-                            hasError = cellValue.error != null,
-                            isEditable = cellValue.editable,
-                            legendColor = cellValue.legendColor
-                        )
-                    },
-                    onRowHeaderClick = { rowHeaderIndex ->
-                        tableInteractions.onSelectionChange(
-                            TableSelection.RowSelection(
-                                tableId = currentTableModel.id ?: "",
-                                rowIndex = rowHeaderIndex ?: -1
-                            )
-                        )
-                    },
-                    onDecorationClick = tableInteractions::onDecorationClick,
-                    onClick = { tableCell ->
-                        var prevIndex = 0
-                        repeat(index) { tableIndex ->
-                            prevIndex += tableList[tableIndex].tableRows.size + 2
-                        }
-                        val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
-
-                        tableInteractions.onSelectionChange(
-                            TableSelection.CellSelection(
-                                tableId = currentTableModel.id ?: "",
-                                columnIndex = tableCell.column ?: -1,
-                                rowIndex = tableCell.row ?: -1,
-                                globalIndex = mGlobalIndex
-                            )
-                        )
-                        tableInteractions.onClick(tableCell)
-                    }
-                )
-                if (tableRowModel.isLastRow) {
-                    ExtendDivider(
                         tableModel = currentTableModel,
-                        selected = tableSelection.isCornerSelected(
-                            currentTableModel.id ?: ""
+                        horizontalScrollState = horizontalScrollStates[index],
+                        cellStyle = { columnIndex, rowIndex ->
+                            return@TableHeaderRow styleForColumnHeader(
+                                isSelected = tableSelection.isHeaderSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    columnHeaderRowIndex = rowIndex
+                                ),
+                                isParentSelected = tableSelection.isParentHeaderSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    columnHeaderRowIndex = rowIndex
+                                ),
+                                columnIndex = columnIndex
+                            )
+                        },
+                        onTableCornerClick = {
+                            tableInteractions.onSelectionChange(
+                                TableSelection.AllCellSelection(currentTableModel.id ?: "")
+                            )
+                        },
+                        onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
+                            tableInteractions.onSelectionChange(
+                                TableSelection.ColumnSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = headerColumnIndex,
+                                    columnHeaderRow = headerRowIndex,
+                                    childrenOfSelectedHeader =
+                                        currentTableModel.countChildrenOfSelectedHeader(
+                                            headerRowIndex,
+                                            headerColumnIndex
+                                        )
+                                )
+                            )
+                        }
+                    )
+                }
+                itemsIndexed(
+                    items = currentTableModel.tableRows,
+                    key = { _, item -> item.rowHeader.id!! }
+                ) { globalIndex, tableRowModel ->
+                    TableItemRow(
+                        tableModel = currentTableModel,
+                        horizontalScrollState = horizontalScrollStates[index],
+                        rowModel = tableRowModel,
+                        nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
+                            addBackgroundNonEditableCellLayer(
+                                hasToApplyLightPrimary = tableSelection.isCellParentSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = columnIndex,
+                                    rowIndex = rowIndex
+                                ),
+                                cellIsEditable = isCellEditable
+                            )
+                        },
+                        rowHeaderCellStyle = { rowHeaderIndex ->
+                            styleForRowHeader(
+                                isSelected = tableSelection.isRowSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    rowHeaderIndex = rowHeaderIndex ?: -1
+                                ),
+                                isOtherRowSelected = tableSelection.isOtherRowSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    rowHeaderIndex = rowHeaderIndex ?: -1
+                                )
+                            )
+                        },
+                        cellStyle = { cellValue ->
+                            styleForCell(
+                                isSelected = tableSelection.isCellSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = cellValue.column ?: -1,
+                                    rowIndex = cellValue.row ?: -1
+                                ),
+                                isParentSelected = tableSelection.isCellParentSelected(
+                                    selectedTableId = currentTableModel.id ?: "",
+                                    columnIndex = cellValue.column ?: -1,
+                                    rowIndex = cellValue.row ?: -1
+                                ),
+                                hasError = cellValue.error != null,
+                                isEditable = cellValue.editable,
+                                legendColor = cellValue.legendColor
+                            )
+                        },
+                        onRowHeaderClick = { rowHeaderIndex, offset ->
+                            tableInteractions.onSelectionChange(
+                                TableSelection.RowSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    rowIndex = rowHeaderIndex ?: -1,
+                                    offset = offset
+                                )
+                            )
+                        },
+                        onDecorationClick = tableInteractions::onDecorationClick,
+                        onClick = { tableCell ->
+                            var prevIndex = 0
+                            repeat(index) { tableIndex ->
+                                prevIndex += tableList[tableIndex].tableRows.size + 2
+                            }
+                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
+
+                            tableInteractions.onSelectionChange(
+                                TableSelection.CellSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = tableCell.column ?: -1,
+                                    rowIndex = tableCell.row ?: -1,
+                                    globalIndex = mGlobalIndex
+                                )
+                            )
+                            tableInteractions.onClick(tableCell)
+                        }
+                    )
+                    if (tableRowModel.isLastRow) {
+                        ExtendDivider(
+                            tableModel = currentTableModel,
+                            selected = tableSelection.isCornerSelected(
+                                currentTableModel.id ?: ""
+                            )
                         )
+                    }
+                }
+                stickyHeader {
+                    Spacer(
+                        modifier = Modifier
+                            .height(16.dp)
+                            .background(color = Color.White)
                     )
                 }
             }
-            stickyHeader {
-                Spacer(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .background(color = Color.White)
-                )
-            }
+        }
+
+        val minOffset = with(LocalDensity.current) {
+            TableTheme.dimensions.defaultRowHeaderWidth.toPx() + 15.dp.toPx()
+        }
+        val maxOffset = with(LocalDensity.current) {
+            LocalConfiguration.current.screenWidthDp.dp.toPx() - 24.dp.toPx()
+        }
+        var offsetX by remember { mutableStateOf(minOffset) }
+
+        val colorPrimary = TableTheme.colors.primary
+
+        /*Box(
+            Modifier
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
+                .background(TableTheme.colors.primary)
+                .fillMaxHeight()
+                .width(2.dp)
+
+        )*/
+        Box(
+            Modifier
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
+                .fillMaxHeight()
+                .drawBehind {
+                    drawRect(
+                        color = colorPrimary,
+                        topLeft = Offset(0f, 0f),
+                        size = Size(2.dp.toPx(), size.height)
+                    )
+                }
+        ) {
+            Icon(
+                modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            -13.dp.value.toInt(),
+                            tableSelection.let {
+                                when (it) {
+                                    is TableSelection.RowSelection -> it.offset?.y?.toInt() ?: 0
+                                    else -> 0
+                                }
+                            }
+                        )
+                    }
+                    .background(
+                        color = colorPrimary,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .size(12.dp)
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragEnd = {
+                                onHeaderResize(
+                                    if (offsetX < minOffset) {
+                                        minOffset
+                                    } else if (offsetX > maxOffset) {
+                                        maxOffset
+                                    } else {
+                                        offsetX
+                                    }
+                                )
+                            }
+                        ) { change, dragAmount ->
+                            change.consumeAllChanges()
+                            offsetX += dragAmount.x
+                        }
+                    },
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
+                contentDescription = "",
+                tint = Color.White
+            )
         }
     }
 }
@@ -965,7 +1071,7 @@ fun TableItem(
                         cellIsEditable = isCellEditable
                     )
                 },
-                onRowHeaderClick = {},
+                onRowHeaderClick = { _, _ -> },
                 onDecorationClick = { tableInteractions.onDecorationClick(it) }
             ) {
                 tableInteractions.onClick(it)
@@ -1093,7 +1199,8 @@ fun TableListPreview() {
         tableSelection = TableSelection.Unselected(),
         inputIsOpen = false,
         tableInteractions = object : TableInteractions {},
-        onSizeChanged = {}
+        onSizeChanged = {},
+        onHeaderResize = {}
     )
 }
 
