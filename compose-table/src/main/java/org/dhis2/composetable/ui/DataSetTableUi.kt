@@ -491,7 +491,7 @@ fun TableCell(
                 .testTag(CELL_VALUE_TEST_TAG)
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 4.dp, vertical = 4.dp),
             text = cellValue.value ?: "",
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
