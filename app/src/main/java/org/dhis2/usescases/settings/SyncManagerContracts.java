@@ -1,8 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import androidx.annotation.Nullable;
-import androidx.work.WorkInfo;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
@@ -10,7 +7,6 @@ import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
-import org.hisp.dhis.android.core.settings.LimitScope;
 
 import java.util.List;
 
