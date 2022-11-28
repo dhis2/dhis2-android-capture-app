@@ -338,6 +338,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.programStageName.setText(stageName);
     }
 
+    public void refreshProgramStageName() {
+        presenter.refreshProgramStage();
+    }
+
     @Override
     public EventCaptureContract.Presenter getPresenter() {
         return presenter;

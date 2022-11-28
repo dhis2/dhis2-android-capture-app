@@ -65,11 +65,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        //return Flowable.just(getProgramStageName(d2, eventUid));
-        return d2.programModule().programStages().uid(getCurrentEvent().programStage()).get()
-                .map(BaseIdentifiableObject::displayName)
-                .toFlowable();
-
+        return Flowable.just(getProgramStageName(d2, eventUid));
     }
 
     @Override

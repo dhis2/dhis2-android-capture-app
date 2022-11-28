@@ -85,8 +85,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .onPercentageUpdate(percentage -> {
                     activity.updatePercentage(percentage);
                     return Unit.INSTANCE;
-                })
-                .onDataIntegrityResult(result -> {
+                }).onItemChangeListener(rowAction ->{
+                    activity.refreshProgramStageName();
+                    return Unit.INSTANCE;
+                }).onDataIntegrityResult(result -> {
                     presenter.handleDataIntegrityResult(result);
                     return Unit.INSTANCE;
                 })
