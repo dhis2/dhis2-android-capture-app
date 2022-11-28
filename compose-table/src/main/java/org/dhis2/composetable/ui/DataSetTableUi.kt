@@ -48,13 +48,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -70,6 +67,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import kotlin.math.roundToInt
@@ -263,9 +261,10 @@ fun TableItemRow(
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
-    onRowHeaderClick: (rowHeaderIndex: Int?, offset: Offset) -> Unit,
+    onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onHeaderResize: (Float) -> Unit
 ) {
     Column(
         Modifier
@@ -286,7 +285,8 @@ fun TableItemRow(
                     },
                     maxLines = rowModel.maxLines,
                     onCellSelected = onRowHeaderClick,
-                    onDecorationClick = onDecorationClick
+                    onDecorationClick = onDecorationClick,
+                    onHeaderResize = onHeaderResize
                 )
             }
             ItemValues(
@@ -353,82 +353,86 @@ fun ItemHeader(
     cellStyle: CellStyle,
     width: Dp,
     maxLines: Int,
-    onCellSelected: (Int?, Offset) -> Unit,
-    onDecorationClick: (dialogModel: TableDialogModel) -> Unit
+    onCellSelected: (Int?) -> Unit,
+    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
+    onHeaderResize: (Float) -> Unit
 ) {
-    val localDensity = LocalDensity.current
-    var positionInRoot by remember {
-        mutableStateOf(Offset(0f, 0f))
-    }
-    Row(
+    Box(
         modifier = Modifier
-            .defaultMinSize(
+            .zIndex(1f)
+    ) {
+        Row(
+            modifier = Modifier
+                .defaultMinSize(
                 minHeight = with(LocalDensity.current) {
                     TableTheme.dimensions.defaultCellHeight.toDp()
                 }
             )
-            .width(width)
-            .fillMaxHeight()
-            .background(cellStyle.backgroundColor())
-            .semantics {
-                tableIdSemantic = tableId
-                rowHeader.row?.let { rowIndexSemantic = rowHeader.row }
-                infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
-                rowBackground = cellStyle.backgroundColor()
-            }
-            .testTag("$tableId${rowHeader.row}")
-            .clickable {
-                onCellSelected(rowHeader.row, positionInRoot)
-                if (rowHeader.showDecoration) {
-                    onDecorationClick(
-                        TableDialogModel(
-                            rowHeader.title,
-                            rowHeader.description ?: ""
+                .width(width)
+                .fillMaxHeight()
+                .background(cellStyle.backgroundColor())
+                .semantics {
+                    tableIdSemantic = tableId
+                    rowHeader.row?.let { rowIndexSemantic = rowHeader.row }
+                    infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
+                    rowBackground = cellStyle.backgroundColor()
+                }
+                .testTag("$tableId${rowHeader.row}")
+                .clickable {
+                    onCellSelected(rowHeader.row)
+                    if (rowHeader.showDecoration) {
+                        onDecorationClick(
+                            TableDialogModel(
+                                rowHeader.title,
+                                rowHeader.description ?: ""
+                            )
                         )
+                    }
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = rowHeader.title,
+                    color = cellStyle.mainColor(),
+                    fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (rowHeader.showDecoration) {
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "info",
+                        modifier = Modifier
+                            .height(10.dp)
+                            .width(10.dp),
+                        tint = cellStyle.mainColor()
                     )
                 }
             }
-            .onGloballyPositioned {
-                with(localDensity) {
-                    positionInRoot = it.positionInRoot()
-                        .copy(y = it.positionInRoot().y + it.size.height / 2 - 12.dp.toPx())
-                }
-            },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
+            Divider(
                 modifier = Modifier
-                    .weight(1f),
-                text = rowHeader.title,
-                color = cellStyle.mainColor(),
-                fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = TableTheme.colors.primary
             )
-            if (rowHeader.showDecoration) {
-                Spacer(modifier = Modifier.size(4.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "info",
-                    modifier = Modifier
-                        .height(10.dp)
-                        .width(10.dp),
-                    tint = cellStyle.mainColor()
-                )
-            }
         }
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp),
-            color = TableTheme.colors.primary
-        )
+
+        if (cellStyle.mainColor() == Color.White) {
+            VerticalResizingRule(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd),
+                onHeaderResize = onHeaderResize
+            )
+        }
     }
 }
 
@@ -670,8 +674,9 @@ fun DataTable(
                 tableInteractions = tableInteractions,
                 onSizeChanged = onSizeChanged,
                 onHeaderResize = { newValue ->
-                    val newValueDp = newValue / localDensity.density
-                    dimensions = dimensions.copy(defaultRowHeaderWidth = newValueDp.dp - 15.dp)
+                    with(localDensity) {
+                        dimensions = dimensions.updateHeaderWidth(newValue.toDp())
+                    }
                 }
             )
         }
@@ -821,12 +826,11 @@ private fun TableList(
                                 legendColor = cellValue.legendColor
                             )
                         },
-                        onRowHeaderClick = { rowHeaderIndex, offset ->
+                        onRowHeaderClick = { rowHeaderIndex ->
                             tableInteractions.onSelectionChange(
                                 TableSelection.RowSelection(
                                     tableId = currentTableModel.id ?: "",
-                                    rowIndex = rowHeaderIndex ?: -1,
-                                    offset = offset
+                                    rowIndex = rowHeaderIndex ?: -1
                                 )
                             )
                         },
@@ -847,7 +851,8 @@ private fun TableList(
                                 )
                             )
                             tableInteractions.onClick(tableCell)
-                        }
+                        },
+                        onHeaderResize = onHeaderResize
                     )
                     if (tableRowModel.isLastRow) {
                         ExtendDivider(
@@ -867,78 +872,64 @@ private fun TableList(
                 }
             }
         }
+    }
+}
 
-        val minOffset = with(LocalDensity.current) {
-            TableTheme.dimensions.defaultRowHeaderWidth.toPx() + 15.dp.toPx()
-        }
-        val maxOffset = with(LocalDensity.current) {
-            LocalConfiguration.current.screenWidthDp.dp.toPx() - 24.dp.toPx()
-        }
-        var offsetX by remember { mutableStateOf(minOffset) }
+@Composable
+fun VerticalResizingRule(
+    modifier: Modifier = Modifier,
+    onHeaderResize: (Float) -> Unit
+) {
+    val localDensity = LocalDensity.current
+    val minOffset = with(localDensity) {
+        11.dp.toPx()
+    }
 
-        val colorPrimary = TableTheme.colors.primary
+    var offsetX by remember { mutableStateOf(minOffset) }
 
-        /*Box(
-            Modifier
-                .offset { IntOffset(offsetX.roundToInt(), 0) }
-                .background(TableTheme.colors.primary)
-                .fillMaxHeight()
-                .width(2.dp)
-
-        )*/
-        Box(
-            Modifier
-                .offset { IntOffset(offsetX.roundToInt(), 0) }
-                .fillMaxHeight()
-                .drawBehind {
-                    drawRect(
-                        color = colorPrimary,
-                        topLeft = Offset(0f, 0f),
-                        size = Size(2.dp.toPx(), size.height)
+    val colorPrimary = TableTheme.colors.primary
+    Box(
+        modifier
+            .offset { IntOffset(offsetX.roundToInt(), 0) }
+            .fillMaxHeight()
+            .drawBehind {
+                drawRect(
+                    color = colorPrimary,
+                    topLeft = Offset(0f, 0f),
+                    size = Size(2.dp.toPx(), size.height)
+                )
+            }
+            .graphicsLayer(clip = false)
+    ) {
+        Icon(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset {
+                    IntOffset(
+                        -13.dp.value.toInt(),
+                        0
                     )
                 }
-        ) {
-            Icon(
-                modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            -13.dp.value.toInt(),
-                            tableSelection.let {
-                                when (it) {
-                                    is TableSelection.RowSelection -> it.offset?.y?.toInt() ?: 0
-                                    else -> 0
-                                }
-                            }
-                        )
-                    }
-                    .background(
-                        color = colorPrimary,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .size(12.dp)
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragEnd = {
-                                onHeaderResize(
-                                    if (offsetX < minOffset) {
-                                        minOffset
-                                    } else if (offsetX > maxOffset) {
-                                        maxOffset
-                                    } else {
-                                        offsetX
-                                    }
-                                )
-                            }
-                        ) { change, dragAmount ->
-                            change.consumeAllChanges()
-                            offsetX += dragAmount.x
+                .background(
+                    color = colorPrimary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .size(12.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragEnd = {
+                            onHeaderResize(offsetX)
+                            offsetX = minOffset
                         }
-                    },
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
-                contentDescription = "",
-                tint = Color.White
-            )
-        }
+                    ) { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount.x
+                    }
+                },
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
+            contentDescription = "",
+            tint = Color.White
+        )
     }
 }
 
@@ -1071,11 +1062,11 @@ fun TableItem(
                         cellIsEditable = isCellEditable
                     )
                 },
-                onRowHeaderClick = { _, _ -> },
-                onDecorationClick = { tableInteractions.onDecorationClick(it) }
-            ) {
-                tableInteractions.onClick(it)
-            }
+                onRowHeaderClick = {},
+                onDecorationClick = { tableInteractions.onDecorationClick(it) },
+                onClick = { tableInteractions.onClick(it) },
+                onHeaderResize = {}
+            )
         }
     }
 }

@@ -93,6 +93,11 @@ data class TableDimensions(
 
         return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
+
+    fun updateHeaderWidth(widthOffset: Dp): TableDimensions {
+        val newWidth = defaultRowHeaderWidth + widthOffset - 11.dp
+        return copy(defaultRowHeaderWidth = newWidth)
+    }
 }
 
 val LocalTableDimensions = staticCompositionLocalOf { TableDimensions() }
