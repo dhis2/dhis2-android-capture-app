@@ -378,6 +378,7 @@
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ຂໍ້ຄວາມ</string>
     <string name="finish">ສີ້ນສຸດ</string>
+    <string name="error_fields_title">ຂໍ້ມູນມີຂໍ້ຜິດພາດ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
@@ -391,6 +392,7 @@
     <string name="resource_not_found">%s ບໍ່ພົບເຫັນ</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
     <string name="action_close">ປິດ</string>
     <string name="tuto_main_11">ຕອນນີ້ທ່ານສາມາດກວດສອບການຊິ້ງຂອງຂໍ້ມູນ ໂດຍການກົດໃສ່</string>
     <string name="data_set_complete">ສຳເລັດແລ້ວ</string>
