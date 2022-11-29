@@ -51,7 +51,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -74,6 +76,7 @@ import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
+import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -264,7 +267,8 @@ fun TableItemRow(
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit,
-    onHeaderResize: (Float) -> Unit
+    onHeaderResize: (Float) -> Unit,
+    onResizing: (ResizingCell?) -> Unit
 ) {
     Column(
         Modifier
@@ -286,7 +290,8 @@ fun TableItemRow(
                     maxLines = rowModel.maxLines,
                     onCellSelected = onRowHeaderClick,
                     onDecorationClick = onDecorationClick,
-                    onHeaderResize = onHeaderResize
+                    onHeaderResize = onHeaderResize,
+                    onResizing = onResizing
                 )
             }
             ItemValues(
@@ -355,7 +360,8 @@ fun ItemHeader(
     maxLines: Int,
     onCellSelected: (Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onHeaderResize: (Float) -> Unit
+    onHeaderResize: (Float) -> Unit,
+    onResizing: (ResizingCell?) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -430,7 +436,8 @@ fun ItemHeader(
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
-                onHeaderResize = onHeaderResize
+                onHeaderResize = onHeaderResize,
+                onResizing = onResizing
             )
         }
     }
@@ -596,7 +603,7 @@ private fun mandatoryIconAlignment(hasValue: Boolean) = when (hasValue) {
 }
 
 @Composable
-fun addBackgroundNonEditableCellLayer(
+fun AddBackgroundNonEditableCellLayer(
     hasToApplyLightPrimary: Boolean,
     cellIsEditable: Boolean
 ) {
@@ -698,6 +705,7 @@ private fun TableList(
     val calculatedHeaderSize by remember {
         mutableStateOf<MutableMap<Int, Int>>(mutableMapOf())
     }
+    var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
 
     tableList.indexOfFirst { it.id == tableSelection.tableId }
         .takeIf { tableSelection is TableSelection.CellSelection }?.let { selectedTableIndex ->
@@ -788,7 +796,7 @@ private fun TableList(
                         horizontalScrollState = horizontalScrollStates[index],
                         rowModel = tableRowModel,
                         nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
-                            addBackgroundNonEditableCellLayer(
+                            AddBackgroundNonEditableCellLayer(
                                 hasToApplyLightPrimary = tableSelection.isCellParentSelected(
                                     selectedTableId = currentTableModel.id ?: "",
                                     columnIndex = columnIndex,
@@ -852,7 +860,10 @@ private fun TableList(
                             )
                             tableInteractions.onClick(tableCell)
                         },
-                        onHeaderResize = onHeaderResize
+                        onHeaderResize = onHeaderResize,
+                        onResizing = {
+                            resizingCell = it
+                        }
                     )
                     if (tableRowModel.isLastRow) {
                         ExtendDivider(
@@ -872,13 +883,69 @@ private fun TableList(
                 }
             }
         }
+
+        VerticalResizingView(resizingCell = resizingCell)
+    }
+}
+
+@Composable
+fun VerticalResizingView(
+    modifier: Modifier = Modifier,
+    resizingCell: ResizingCell?
+) {
+    val colorPrimary = TableTheme.colors.primary
+    var currentPosition: Offset? by remember { mutableStateOf(null) }
+
+    // Store the initial position of the item
+    if (resizingCell == null) {
+        currentPosition = null
+    } else if (currentPosition == null) {
+        currentPosition = resizingCell.initialPosition
+    }
+
+    resizingCell?.let {
+        // Calculate the offset from the initial position of the object
+        val offset = currentPosition!!.x + it.draggingOffsetX
+        Box(
+            modifier
+                .offset { IntOffset(offset.roundToInt(), 0) }
+                .fillMaxHeight()
+                .drawBehind {
+                    drawRect(
+                        color = colorPrimary,
+                        topLeft = Offset(0f, 0f),
+                        size = Size(2.dp.toPx(), size.height)
+                    )
+                }
+                .graphicsLayer(clip = false)
+        ) {
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .offset {
+                        IntOffset(
+                            -13.dp.value.toInt(),
+                            currentPosition?.y?.roundToInt() ?: 0
+                        )
+                    }
+                    .background(
+                        color = colorPrimary,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .size(12.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
+                contentDescription = "",
+                tint = Color.White
+            )
+        }
     }
 }
 
 @Composable
 fun VerticalResizingRule(
     modifier: Modifier = Modifier,
-    onHeaderResize: (Float) -> Unit
+    onHeaderResize: (Float) -> Unit,
+    onResizing: (ResizingCell?) -> Unit
 ) {
     val localDensity = LocalDensity.current
     val minOffset = with(localDensity) {
@@ -886,27 +953,32 @@ fun VerticalResizingRule(
     }
 
     var offsetX by remember { mutableStateOf(minOffset) }
+    var positionInRoot by remember { mutableStateOf(Offset.Zero) }
 
     val colorPrimary = TableTheme.colors.primary
     Box(
         modifier
-            .offset { IntOffset(offsetX.roundToInt(), 0) }
             .fillMaxHeight()
-            .drawBehind {
-                drawRect(
-                    color = colorPrimary,
-                    topLeft = Offset(0f, 0f),
-                    size = Size(2.dp.toPx(), size.height)
-                )
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        onHeaderResize(offsetX)
+                        offsetX = minOffset
+                        onResizing(null)
+                    }
+                ) { change, dragAmount ->
+                    change.consume()
+                    offsetX += dragAmount.x
+                    onResizing(ResizingCell(positionInRoot, offsetX))
+                }
             }
-            .graphicsLayer(clip = false)
     ) {
         Icon(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset {
                     IntOffset(
-                        -13.dp.value.toInt(),
+                        13.dp.value.toInt(),
                         0
                     )
                 }
@@ -915,16 +987,8 @@ fun VerticalResizingRule(
                     shape = RoundedCornerShape(16.dp)
                 )
                 .size(12.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragEnd = {
-                            onHeaderResize(offsetX)
-                            offsetX = minOffset
-                        }
-                    ) { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                    }
+                .onGloballyPositioned { coordinates ->
+                    positionInRoot = coordinates.positionInRoot()
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
             contentDescription = "",
@@ -1054,7 +1118,7 @@ fun TableItem(
                     )
                 },
                 nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
-                    addBackgroundNonEditableCellLayer(
+                    AddBackgroundNonEditableCellLayer(
                         hasToApplyLightPrimary = selectionState.isParentSelection(
                             columnIndex,
                             rowIndex
@@ -1065,7 +1129,8 @@ fun TableItem(
                 onRowHeaderClick = {},
                 onDecorationClick = { tableInteractions.onDecorationClick(it) },
                 onClick = { tableInteractions.onClick(it) },
-                onHeaderResize = {}
+                onHeaderResize = {},
+                onResizing = {}
             )
         }
     }
