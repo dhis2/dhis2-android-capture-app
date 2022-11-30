@@ -77,7 +77,10 @@ fun Backdrop(
                 supportFragmentManager,
                 homeContext,
                 { hasFacilitySelected = it },
-                { hasDestinationSelected = it }
+                {
+                    hasDestinationSelected = it
+                    viewModel.setDestinationSelected(it)
+                }
             )
             if (height > 160.dp) {
                 scope.launch { backdropState.reveal() }

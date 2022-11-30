@@ -49,6 +49,14 @@ class HomeViewModel @Inject constructor(
     val isDistribution: StateFlow<Boolean>
         get() = _isDistribution
 
+    private val _hasFacilitySelected = MutableStateFlow(false)
+    val hasFacilitySelected: StateFlow<Boolean>
+        get() = _hasFacilitySelected
+
+    private val _hasDestinationSelected = MutableStateFlow(false)
+    val hasDestinationSelected: StateFlow<Boolean>
+        get() = _hasDestinationSelected
+
     private val _facility = MutableStateFlow<OrganisationUnit?>(null)
     val facility: StateFlow<OrganisationUnit?>
         get() = _facility
@@ -227,5 +235,13 @@ class HomeViewModel @Inject constructor(
 
     fun setScannedText(text: String) {
         _scanText.value = text
+    }
+
+    fun setFacilitySelected(status: Boolean) {
+        _hasFacilitySelected.value = status
+    }
+
+    fun setDestinationSelected(status: Boolean) {
+        _hasDestinationSelected.value = status
     }
 }
