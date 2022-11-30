@@ -27,6 +27,11 @@
     <color name="cyan">#FF62A3BB</color>
     <color name="grey_border">#FFC7C7C7</color>
 
+    <color name="button_proceed_background_color">#0000000f</color>
+    <color name="button_proceed_text_color">#00000061</color>
+    <color name="proceed_color">#E0E0E0</color>
+    <color name="proceed_text_color">#61000000</color>
+
     <!-- New -->
     <color name="gray_200">#EDEDED</color>
     <color name="gray_400">#BDBDBD</color>

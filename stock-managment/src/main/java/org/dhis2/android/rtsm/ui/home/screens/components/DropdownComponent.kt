@@ -484,6 +484,7 @@ fun openOrgUnitTreeSelector(
                 viewModel.fromFacilitiesLabel(orgUnitDialog.selectedOrgUnitName)
                 viewModel.setSelectedText(orgUnitDialog.selectedOrgUnitName)
                 orgUnitData = orgUnitDialog.selectedOrgUnitModel
+                viewModel.setFacilitySelected(true)
             }
             orgUnitDialog.dismiss()
         }
