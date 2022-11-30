@@ -24,7 +24,7 @@ class IndicatorsPresenter(
         compositeDisposable.add(
                 publishProcessor.startWith(Unit)
                         .flatMap { indicatorRepository.fetchData() }
-                        .defaultSubscribe(schedulerProvider, { System.out.println("Whataaaaaaaaaaaaaaaaaaaaaaa"); System.out.println(it); view.swapAnalytics(it) }, { Timber.d(it) })
+                        .defaultSubscribe(schedulerProvider, { view.swapAnalytics(it) }, { Timber.d(it) })
         )
     }
 

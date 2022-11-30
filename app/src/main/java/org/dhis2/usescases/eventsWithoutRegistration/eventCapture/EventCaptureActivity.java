@@ -121,34 +121,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         setUpViewPagerAdapter();
 
-        System.out.println("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
-        System.out.println(binding.navigationBar.currentPage());
-
-//        if (binding.navigationBar.currentPage() != -1) {
-//            if (OrientationUtilsKt.isLandscape(this)) {
-//                binding.eventViewLandPager.setCurrentItem(binding.navigationBar.currentPage());
-//                binding.navigationBar.selectItemAt(binding.navigationBar.currentPage());
-//            } else {
-//                binding.eventViewPager.setCurrentItem(binding.navigationBar.currentPage());
-//                binding.navigationBar.selectItemAt(binding.navigationBar.currentPage());
-//            }
-//        } else {
-//            if (OrientationUtilsKt.isLandscape(this)) {
-//                binding.eventViewLandPager.setCurrentItem(binding.navigationBar.getInitialPage());
-//                binding.navigationBar.selectItemAt(binding.navigationBar.getInitialPage());
-//            } else {
-//                binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage());
-//                binding.navigationBar.selectItemAt(binding.navigationBar.getInitialPage());
-//            }
-//        }
-
-        //        if (OrientationUtilsKt.isPortrait(this)) {
-//            System.out.println(binding.eventViewPager.getCurrentItem());
-//            binding.navigationBar.selectItemAt(binding.eventViewPager.getCurrentItem());
-//        } else {
-//            System.out.println(binding.eventViewLandPager.getCurrentItem());
-//            binding.navigationBar.selectItemAt(binding.eventViewLandPager.getCurrentItem());
-//        }
 
 //        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
 //
@@ -156,8 +128,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 //
 //            int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
 //
-//            System.out.println("page position :::::::::::::: ");
-//            System.out.println(pagePosition);
 //
 //            if (pagePosition != -1) {
 //                if (OrientationUtilsKt.isLandscape(this)) {
@@ -194,10 +164,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             binding.eventViewLandPager.setUserInputEnabled(false);
             binding.eventViewLandPager.setAdapter(null);
 
-            System.out.println("landscape setting up page adapter");
-            System.out.println(binding.eventViewLandPager.getCurrentItem());
-            System.out.println(binding.navigationBar.currentPage());
-
             this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), false);
 
             binding.eventViewLandPager.setAdapter(this.adapter);
@@ -231,9 +197,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             binding.eventViewPager.setUserInputEnabled(false);
             binding.eventViewPager.setAdapter(null);
 
-            System.out.println("potrait setting up page adapter");
-            System.out.println(binding.eventViewPager.getCurrentItem());
-            System.out.println(binding.navigationBar.currentPage());
 
             this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true);
 
@@ -296,19 +259,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onResume() {
         super.onResume();
 
-//        if (currentOrientation != -1) {
-//            int nextOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
-//            if (currentOrientation != nextOrientation && adapter != null) {
-//                adapter.notifyDataSetChanged();
-//            }
-//        }
-//        currentOrientation = OrientationUtilsKt.isLandscape(this) ? 1 : 0;
-//
-//        if (adapter == null) {
-//            restoreAdapter(programUid, eventUid);
-//        }
-//
-//        presenter.refreshTabCounters();
     }
 
     @Override

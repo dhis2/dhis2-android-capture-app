@@ -17,7 +17,6 @@ class EventIndicatorRepository(
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
 
-        System.out.println("in the event ind repo");
 
         return Flowable.zip<List<AnalyticsModel>?,
             List<AnalyticsModel>?,

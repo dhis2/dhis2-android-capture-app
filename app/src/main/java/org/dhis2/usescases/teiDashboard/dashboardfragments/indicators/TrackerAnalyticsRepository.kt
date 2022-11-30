@@ -40,8 +40,6 @@ class TrackerAnalyticsRepository(
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
 
-        System.out.println("in the trackre analytics repo");
-
         return Flowable.zip<List<AnalyticsModel>?,
                 List<AnalyticsModel>?,
                 List<AnalyticsModel>,
