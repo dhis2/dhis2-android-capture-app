@@ -1,5 +1,5 @@
 package dhis2.org.analytics.charts.di
-
+import android.content.Context
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.ChartsRepository
 import dhis2.org.analytics.charts.ChartsRepositoryImpl
 import dhis2.org.analytics.charts.DhisAnalyticCharts
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.mappers.AnalyticDataElementToDataElementData
 import dhis2.org.analytics.charts.mappers.AnalyticIndicatorToIndicatorData
 import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalyticsModel
@@ -21,7 +22,7 @@ import dhis2.org.analytics.charts.providers.PeriodStepProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
 import javax.inject.Singleton
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 
 @Singleton
@@ -43,7 +44,7 @@ class ChartsModule {
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
         dataElementToGraph: DataElementToGraph,
         indicatorToGraph: ProgramIndicatorToGraph,
-        featureConfigRepository: FeatureConfigRepository
+        analyticsResources: AnalyticResources
     ): ChartsRepository =
         ChartsRepositoryImpl(
             d2,
@@ -51,7 +52,7 @@ class ChartsModule {
             analyticsTeiSettingsToGraph,
             dataElementToGraph,
             indicatorToGraph,
-            featureConfigRepository
+            analyticsResources
         )
 
     @Provides
@@ -117,9 +118,22 @@ class ChartsModule {
     @Provides
     internal fun chartCoordinatesProvider(
         d2: D2,
-        periodStepProvider: PeriodStepProvider
+        periodStepProvider: PeriodStepProvider,
+        resourceManager: ResourceManager
     ): ChartCoordinatesProvider {
-        return ChartCoordinatesProviderImpl(d2, periodStepProvider)
+        return ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
+    }
+
+    @Provides
+    internal fun provideResourceManager(
+        context: Context
+    ): ResourceManager {
+        return ResourceManager(context)
+    }
+
+    @Provides
+    internal fun analyticResources(context: Context): AnalyticResources {
+        return AnalyticResources(context)
     }
 
     @Provides

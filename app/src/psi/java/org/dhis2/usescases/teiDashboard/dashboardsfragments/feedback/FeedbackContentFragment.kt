@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.core.types.Tree
 import org.dhis2.core.ui.tree.TreeAdapter
@@ -32,11 +34,14 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
     lateinit var presenter: FeedbackContentPresenter
     private lateinit var binding: FragmentFeedbackContentBinding
     private lateinit var activity: FeedbackActivity
+    private lateinit var language: String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         activity = context as FeedbackActivity
+
+        language = getCurrentLocale(context).language
 
         if (((context.applicationContext) as App).userComponent() != null) {
             ((context.applicationContext) as App).userComponent()!!
@@ -128,15 +133,26 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
         }
     }
 
+    private fun getCurrentLocale(context: FeedbackActivity): Locale {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.resources.configuration.locales[0]
+        } else {
+            context.resources.configuration.locale
+        }
+    }
+
     private fun shareFeedback(
         enrollmentInfo: EnrollmentInfo,
         serverUrl: String
     ) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
+
+            val url = if (BuildConfig.DEBUG ) "https://client-dev.psi-connect.org/hnqis_rdqa/assessment.html"
+            else "https://client.psi-connect.org/hnqis_rdqa/assessment.html"
             
             val feedbackUrl =
-                URL("https://client-dev.psi-connect.org/hnqis_rdqa/assessment.html?id=${enrollmentInfo.enrollmentUid}&server=$serverUrl")
+                URL("$url?id=${enrollmentInfo.enrollmentUid}&server=$serverUrl&lang=$language")
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
             val assessmentDateText =
@@ -295,7 +311,7 @@ class FeedbackContentFragment : FragmentGlobalAbstract(),
             val fragment = FeedbackContentFragment()
 
             val args = Bundle()
-            args.putSerializable(PROGRAM_TYPE, ProgramType.HNQIS)
+            args.putSerializable(PROGRAM_TYPE, ProgramType.HNQIS2)
             args.putSerializable(HNQIS_FILTER, HnqisFeedbackFilter)
             fragment.arguments = args
 

@@ -1,79 +1,188 @@
 package org.dhis2.data.forms.dataentry
 
 import android.Manifest
-import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.app.TimePickerDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
+import android.widget.TimePicker
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.journeyapps.barcodescanner.ScanOptions
+import java.io.File
 import java.util.Calendar
-import org.dhis2.Bindings.truncate
+import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.bindings.getFileFromGallery
+import org.dhis2.commons.bindings.rotateImage
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.data.forms.dataentry.fields.age.AgeDialogDelegate
-import org.dhis2.data.forms.dataentry.fields.age.negativeOrZero
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
-import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.extensions.truncate
+import org.dhis2.data.forms.ScanContract
 import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.ViewFormBinding
-import org.dhis2.form.Injector
+import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FormRepository
-import org.dhis2.form.data.FormRepositoryNonPersistenceImpl
+import org.dhis2.form.data.RulesUtilsProviderConfigurationError
+import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.data.toMessage
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
+import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.coroutine.FormDispatcher
+import org.dhis2.form.ui.DataEntryAdapter
+import org.dhis2.form.ui.DataEntryHeaderHelper
 import org.dhis2.form.ui.FormViewModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.DialogDelegate
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.uicomponents.map.views.MapSelectorActivity
-import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.DATA_EXTRA
-import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.FIELD_UID
-import org.dhis2.uicomponents.map.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
+import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
+import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
+import org.dhis2.utils.ActivityResultObservable
+import org.dhis2.utils.ActivityResultObserver
 import org.dhis2.utils.Constants
+import org.dhis2.utils.customviews.DataEntryBottomDialog
+import org.dhis2.utils.customviews.ImageDetailBottomDialog
+import org.dhis2.utils.customviews.OptionSetOnClickListener
+import org.dhis2.utils.customviews.QRDetailBottomDialog
+import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog
+import org.dhis2.utils.customviews.orgUnitCascade.OrgUnitCascadeDialog.CascadeOrgUnitCallbacks
+import org.dhis2.utils.optionset.OptionSetDialog
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 
-class FormView constructor(
-    formRepository: FormRepository,
-    private val onItemChangeListener: ((action: RowAction) -> Unit)?,
-    private val locationProvider: LocationProvider?,
-    private val onLoadingListener: ((loading: Boolean) -> Unit)?,
-    private val needToForceUpdate: Boolean = false,
-    dispatchers: DispatcherProvider
-) : Fragment() {
+class FormView : Fragment() {
 
-    private val viewModel: FormViewModel by viewModels {
-        Injector.provideFormViewModelFactory(formRepository, dispatchers)
+    private lateinit var formRepository: FormRepository
+    private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
+    private var locationProvider: LocationProvider? = null
+    private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
+    private var onFocused: (() -> Unit)? = null
+    private var onFinishDataEntry: (() -> Unit)? = null
+    private var onActivityForResult: (() -> Unit)? = null
+    private var needToForceUpdate: Boolean = false
+    private var completionListener: ((percentage: Float) -> Unit)? = null
+    private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
+    private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+    private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private lateinit var dispatchers: DispatcherProvider
+
+    private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
+        result.contents?.let { qrData ->
+            val intent = FormIntent.OnSave(
+                result.originalIntent.getStringExtra(Constants.UID)!!,
+                qrData,
+                ValueType.TEXT
+            )
+            intentHandler(intent)
+        }
     }
+
+    private val mapContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK && it.data?.extras != null
+            ) {
+                val uid = it.data?.getStringExtra(FIELD_UID)
+                val featureType = it.data?.getStringExtra(LOCATION_TYPE_EXTRA)
+                val coordinates = it.data?.getStringExtra(DATA_EXTRA)
+                if (uid != null && featureType != null) {
+                    val intent = FormIntent.SelectLocationFromMap(
+                        uid,
+                        featureType,
+                        coordinates
+                    )
+                    intentHandler(intent)
+                }
+            }
+        }
+
+    private val requestCameraPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            if (it.values.all { isGranted -> isGranted }) {
+                showAddImageOptions()
+                (context as ActivityResultObservable?)?.subscribe(object : ActivityResultObserver {
+                    override fun onActivityResult(
+                        requestCode: Int,
+                        resultCode: Int,
+                        data: Intent?
+                    ) {
+                        if (resultCode != RESULT_OK) {
+                            showAddImageOptions()
+                        }
+                    }
+                })
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.camera_permission_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+    private val takePicture =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                val imageFile = File(
+                    FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
+                    "tempFile.png"
+                ).rotateImage(requireContext())
+                onSavePicture?.invoke(imageFile.path)
+            }
+        }
+
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
+                    onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
+    private lateinit var viewModel: FormViewModel
 
     private lateinit var binding: ViewFormBinding
     private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
     private lateinit var adapter: DataEntryAdapter
     private lateinit var alertDialogView: View
-    private lateinit var ageDialogDelegate: AgeDialogDelegate
+    private lateinit var dialogDelegate: DialogDelegate
     var scrollCallback: ((Boolean) -> Unit)? = null
+    private var displayConfErrors = true
+    private var onSavePicture: ((String) -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,7 +193,7 @@ class FormView constructor(
         binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
         binding.lifecycleOwner = this
         dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
-        ageDialogDelegate = AgeDialogDelegate()
+        dialogDelegate = DialogDelegate()
         binding.recyclerView.layoutManager =
             object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
                 override fun onInterceptFocusSearch(focused: View, direction: Int): View {
@@ -97,11 +206,16 @@ class FormView constructor(
                 dataEntryHeaderHelper.checkSectionHeader(recyclerView)
             }
         })
+        if (needToForceUpdate) {
+            retainInstance = true
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FormCountingIdlingResource.increment()
+        viewModel = FormViewModel(formRepository, dispatchers)
         dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
         adapter = DataEntryAdapter(needToForceUpdate)
 
@@ -138,45 +252,123 @@ class FormView constructor(
 
         binding.recyclerView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                closeKeyboard()
+                view.closeKeyboard()
             }
         }
 
         viewModel.savedValue.observe(
-            viewLifecycleOwner,
-            Observer { rowAction ->
+            viewLifecycleOwner
+        ) { rowAction ->
+            onItemChangeListener?.let { it(rowAction) }
+        }
+
+        viewModel.queryData.observe(
+            viewLifecycleOwner
+        ) { rowAction ->
+            if (needToForceUpdate) {
                 onItemChangeListener?.let { it(rowAction) }
             }
-        )
+        }
 
         viewModel.items.observe(
-            viewLifecycleOwner,
-            Observer { items ->
-                render(items)
-            }
-        )
+            viewLifecycleOwner
+        ) { items ->
+            render(items)
+        }
 
         viewModel.loading.observe(
-            viewLifecycleOwner,
-            { loading ->
-                if (onLoadingListener != null) {
-                    onLoadingListener.invoke(loading)
+            viewLifecycleOwner
+        ) { loading ->
+            if (onLoadingListener != null) {
+                onLoadingListener?.invoke(loading)
+            } else {
+                if (loading) {
+                    binding.progress.show()
                 } else {
-                    if (loading) {
-                        binding.progress.show()
-                    } else {
-                        binding.progress.hide()
-                    }
+                    binding.progress.hide()
                 }
             }
-        )
+        }
+
+        viewModel.confError.observe(
+            viewLifecycleOwner
+        ) { confErrors ->
+            displayConfigurationErrors(confErrors)
+        }
 
         viewModel.showToast.observe(
-            viewLifecycleOwner,
-            { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewLifecycleOwner
+        ) { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.focused.observe(
+            viewLifecycleOwner
+        ) { onFocused?.invoke() }
+
+        viewModel.showInfo.observe(
+            viewLifecycleOwner
+        ) { infoUiModel ->
+            CustomDialog(
+                requireContext(),
+                requireContext().getString(infoUiModel.title),
+                requireContext().getString(infoUiModel.description),
+                requireContext().getString(R.string.action_close),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+            ).show()
+        }
+
+        viewModel.dataIntegrityResult.observe(
+            viewLifecycleOwner
+        ) { result ->
+            if (onDataIntegrityCheck != null) {
+                onDataIntegrityCheck?.invoke(result)
+            } else {
+                when (result) {
+                    is SuccessfulResult -> onFinishDataEntry?.invoke()
+                    else -> showDataEntryResultDialog(result)
+                }
             }
-        )
+        }
+
+        viewModel.completionPercentage.observe(
+            viewLifecycleOwner
+        ) { percentage ->
+            completionListener?.invoke(percentage)
+        }
+
+        viewModel.calculationLoop.observe(
+            viewLifecycleOwner
+        ) { displayLoopWarning ->
+            if (displayLoopWarning) {
+                showLoopWarning()
+            }
+        }
+    }
+
+    private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
+        resultDialogUiProvider?.provideDataEntryUiModel(result)?.let {
+            DataEntryBottomDialog(
+                dataEntryDialogUiModel = it,
+                onSecondaryButtonClicked = {
+                    if (result.allowDiscard) {
+                        viewModel.discardChanges()
+                    }
+                    onFinishDataEntry?.invoke()
+                }
+            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+        }
+    }
+
+    private fun showLoopWarning() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
+            .setTitle(getString(R.string.program_rules_loop_warning_title))
+            .setMessage(getString(R.string.program_rules_loop_warning_message))
+            .setPositiveButton(R.string.action_accept) { _, _ -> }
+            .setCancelable(false)
+            .show()
     }
 
     private fun scrollToPosition(position: Int) {
@@ -192,19 +384,46 @@ class FormView constructor(
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
-            is RecyclerViewUiEvents.OpenCustomAgeCalendar -> showCustomAgeCalendar(uiEvent)
+            is RecyclerViewUiEvents.OpenCustomCalendar -> showCustomCalendar(uiEvent)
             is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
                 uiEvent
             )
+            is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent
             )
             is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
+            is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
+            is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
+            is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
+            is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
+            is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
+            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
+            is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
         }
     }
 
-    fun render(items: List<FieldUiModel>) {
+    private fun copyToClipboard(value: String?) {
+        val clipboard =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        value?.let {
+            if (it.isNotEmpty()) {
+                val clip = ClipData.newPlainText("copy", it)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(
+                    context,
+                    requireContext().getString(R.string.copied_text),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun render(items: List<FieldUiModel>) {
+        viewModel.calculateCompletedFields()
+        viewModel.updateConfigurationErrors()
+        viewModel.displayLoopWarningIfNeeded()
         val layoutManager: LinearLayoutManager =
             binding.recyclerView.layoutManager as LinearLayoutManager
         val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
@@ -218,16 +437,14 @@ class FormView constructor(
         }
 
         adapter.swap(
-            items,
-            Runnable {
-                when (needToForceUpdate) {
-                    true -> adapter.notifyDataSetChanged()
-                    else -> dataEntryHeaderHelper.onItemsUpdatedCallback()
-                }
-                viewModel.onItemsRendered()
-            }
-        )
+            items
+        ) {
+            dataEntryHeaderHelper.onItemsUpdatedCallback()
+            viewModel.onItemsRendered()
+            onFieldItemsRendered?.invoke(items.isEmpty())
+        }
         layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        FormCountingIdlingResource.decrement()
     }
 
     private fun checkLastItem(): Boolean {
@@ -241,54 +458,77 @@ class FormView constructor(
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
-        items.firstOrNull { it.focused }?.let {
-            if (!doesItemNeedsKeyboard(it)) {
-                closeKeyboard()
+        items.firstOrNull { it.focused }?.let { fieldUiModel ->
+            fieldUiModel.valueType?.let { valueType ->
+                if (!viewModel.valueTypeIsTextField(valueType)) {
+                    view?.closeKeyboard()
+                }
             }
         }
-    }
-
-    private fun closeKeyboard() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(binding.recyclerView.windowToken, 0)
-    }
-
-    private fun doesItemNeedsKeyboard(item: FieldUiModel) = when (item) {
-        is EditTextViewModel,
-        is ScanTextViewModel,
-        is CoordinateViewModel -> true
-        else -> false
     }
 
     private fun intentHandler(intent: FormIntent) {
         viewModel.submitIntent(intent)
     }
 
-    private fun showCustomAgeCalendar(intent: RecyclerViewUiEvents.OpenCustomAgeCalendar) {
-        val date = Calendar.getInstance().time
-
-        val dialog = CalendarPicker(requireContext())
-        dialog.apply {
+    private fun showCustomCalendar(intent: RecyclerViewUiEvents.OpenCustomCalendar) {
+        val dialog = CalendarPicker(requireContext()).apply {
             setTitle(intent.label)
-            setInitialDate(date)
-            isFutureDatesAllowed(true)
+            setInitialDate(intent.date)
+            isFutureDatesAllowed(intent.allowFutureDates)
             setListener(object : OnDatePickerListener {
                 override fun onNegativeClick() {
-                    val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
-                    intentHandler(clearIntent)
+                    intentHandler(FormIntent.ClearValue(intent.uid))
                 }
 
                 override fun onPositiveClick(datePicker: DatePicker) {
-                    val dateIntent = ageDialogDelegate.handleDateInput(
-                        intent.uid,
-                        datePicker.year,
-                        datePicker.month,
-                        datePicker.dayOfMonth
-                    )
-                    intentHandler(dateIntent)
+                    when (intent.isDateTime) {
+                        true -> uiEventHandler(
+                            dialogDelegate.handleDateTimeInput(
+                                intent.uid,
+                                intent.label,
+                                intent.date,
+                                datePicker.year,
+                                datePicker.month,
+                                datePicker.dayOfMonth
+                            )
+                        )
+                        else -> intentHandler(
+                            dialogDelegate.handleDateInput(
+                                intent.uid,
+                                datePicker.year,
+                                datePicker.month,
+                                datePicker.dayOfMonth
+                            )
+                        )
+                    }
                 }
             })
         }
+        dialog.show()
+    }
+
+    private fun showTimePicker(intent: RecyclerViewUiEvents.OpenTimePicker) {
+        val calendar = Calendar.getInstance()
+        intent.date?.let { calendar.time = it }
+        val is24HourFormat = DateFormat.is24HourFormat(requireContext())
+        val dialog = TimePickerDialog(
+            requireContext(),
+            { _: TimePicker?, hourOfDay: Int, minutes: Int ->
+                intentHandler(
+                    dialogDelegate.handleTimeInput(
+                        intent.uid,
+                        if (intent.isDateTime == true) intent.date else null,
+                        hourOfDay,
+                        minutes
+                    )
+                )
+            },
+            calendar[Calendar.HOUR_OF_DAY],
+            calendar[Calendar.MINUTE],
+            is24HourFormat
+        )
+        dialog.setTitle(intent.label)
         dialog.show()
     }
 
@@ -307,7 +547,7 @@ class FormView constructor(
         AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(alertDialogView)
             .setPositiveButton(R.string.action_accept) { _, _ ->
-                val dateIntent = ageDialogDelegate.handleYearMonthDayInput(
+                val dateIntent = dialogDelegate.handleYearMonthDayInput(
                     intent.uid,
                     negativeOrZero(yearPicker.text.toString()),
                     negativeOrZero(monthPicker.text.toString()),
@@ -316,7 +556,7 @@ class FormView constructor(
                 intentHandler(dateIntent)
             }
             .setNegativeButton(R.string.clear) { _, _ ->
-                val clearIntent = FormIntent.ClearDateFromAgeCalendar(intent.uid)
+                val clearIntent = FormIntent.ClearValue(intent.uid)
                 intentHandler(clearIntent)
             }
             .create()
@@ -369,27 +609,175 @@ class FormView constructor(
     }
 
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
-        startActivityForResult(
-            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
-            Constants.RQ_MAP_LOCATION_VIEW
+        onActivityForResult?.invoke()
+        mapContent.launch(
+            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value)
         )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK &&
-            requestCode == Constants.RQ_MAP_LOCATION_VIEW && data?.extras != null
-        ) {
-            val uid = data.getStringExtra(FIELD_UID)
-            val featureType = data.getStringExtra(LOCATION_TYPE_EXTRA)
-            val coordinates = data.getStringExtra(DATA_EXTRA)
-            if (uid != null && featureType != null) {
-                val intent = FormIntent.SelectLocationFromMap(
-                    uid,
-                    featureType,
-                    coordinates
-                )
-                intentHandler(intent)
+    private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
+        onActivityForResult?.invoke()
+        val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
+            when (it) {
+                UiRenderType.QR_CODE -> ValueTypeRenderingType.QR_CODE
+                UiRenderType.BAR_CODE -> ValueTypeRenderingType.BAR_CODE
+                else -> ValueTypeRenderingType.DEFAULT
             }
+        }
+
+        qrScanContent.launch(
+            ScanOptions().apply {
+                setDesiredBarcodeFormats()
+                setPrompt("Hello there")
+                setBeepEnabled(true)
+                setBarcodeImageEnabled(false)
+                addExtra(Constants.UID, event.uid)
+                event.optionSet?.let { addExtra(Constants.OPTION_SET, event.optionSet) }
+                addExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
+            }
+        )
+    }
+
+    private fun requestAddImage(event: RecyclerViewUiEvents.AddImage) {
+        onSavePicture = { picture ->
+            intentHandler(
+                FormIntent.OnSave(
+                    event.uid,
+                    picture,
+                    ValueType.IMAGE
+                )
+            )
+        }
+        requestCameraPermissions.launch(
+            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        )
+    }
+
+    private fun showAddImageOptions() {
+        val options = arrayOf<CharSequence>(
+            requireContext().getString(R.string.take_photo),
+            requireContext().getString(R.string.from_gallery),
+            requireContext().getString(R.string.cancel)
+        )
+        AlertDialog.Builder(requireContext())
+            .setTitle(requireContext().getString(R.string.select_option))
+            .setItems(options) { dialog: DialogInterface, item: Int ->
+                run {
+                    when (options[item]) {
+                        requireContext().getString(R.string.take_photo) -> {
+                            val photoUri = FileProvider.getUriForFile(
+                                requireContext(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                File(
+                                    FileResourceDirectoryHelper.getFileResourceDirectory(
+                                        requireContext()
+                                    ),
+                                    "tempFile.png"
+                                )
+                            )
+                            takePicture.launch(photoUri)
+                        }
+                        requireContext().getString(R.string.from_gallery) -> {
+                            pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+                        }
+                    }
+                    dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
+        ImageDetailBottomDialog(event.label, File(event.value))
+            .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
+    }
+
+    private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
+        QRDetailBottomDialog(
+            event.value,
+            event.renderingType,
+            event.editable,
+            {
+                intentHandler(FormIntent.OnNext(event.uid, null))
+            },
+            {
+                requestQRScan(
+                    RecyclerViewUiEvents.ScanQRCode(
+                        event.uid,
+                        event.optionSet,
+                        event.renderingType
+                    )
+                )
+            }
+        ).show(
+            childFragmentManager,
+            QRDetailBottomDialog.TAG
+        )
+    }
+
+    private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
+        OrgUnitCascadeDialog(
+            uiEvent.label,
+            uiEvent.value,
+            object : CascadeOrgUnitCallbacks {
+                override fun textChangedConsumer(
+                    selectedOrgUnitUid: String,
+                    selectedOrgUnitName: String
+                ) {
+                    intentHandler(
+                        FormIntent.OnSave(
+                            uiEvent.uid,
+                            selectedOrgUnitUid,
+                            ValueType.ORGANISATION_UNIT
+                        )
+                    )
+                }
+
+                override fun onDialogCancelled() {}
+
+                override fun onClear() {
+                    intentHandler(FormIntent.ClearValue(uiEvent.uid))
+                }
+            },
+            OrgUnitCascadeDialog.OUSelectionType.SEARCH
+        ).show(childFragmentManager, uiEvent.label)
+    }
+
+    private fun displayConfigurationErrors(
+        configurationError: List<RulesUtilsProviderConfigurationError>
+    ) {
+        if (displayConfErrors && configurationError.isNotEmpty()) {
+            MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
+                .setTitle(R.string.warning_error_on_complete_title)
+                .setMessage(configurationError.toMessage(requireContext()))
+                .setPositiveButton(
+                    R.string.action_close
+                ) { _, _ -> }
+                .setNegativeButton(
+                    getString(R.string.action_do_not_show_again)
+                ) { _, _ -> displayConfErrors = false }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
+    private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
+        OptionSetDialog().apply {
+            create(this@FormView.requireContext())
+            optionSet = uiEvent.field
+            listener = OptionSetOnClickListener {
+                intentHandler(
+                    FormIntent.OnSave(
+                        uiEvent.field.uid,
+                        it.code(),
+                        uiEvent.field.valueType
+                    )
+                )
+            }
+            clearListener = View.OnClickListener {
+                intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
+            }
+            show(this@FormView.childFragmentManager, OptionSetDialog.TAG)
         }
     }
 
@@ -411,27 +799,93 @@ class FormView constructor(
         binding.recyclerView.requestFocus()
     }
 
+    private fun negativeOrZero(value: String): Int {
+        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
+    }
+
+    fun clearValues() {
+        intentHandler(FormIntent.OnClear())
+    }
+
+    fun onBackPressed() {
+        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    }
+
+    fun onSaveClick() {
+        onEditionFinish()
+        viewModel.saveDataEntry()
+    }
+
+    fun reload() {
+        viewModel.loadData()
+    }
+
+    internal fun setConfiguration(
+        locationProvider: LocationProvider?,
+        needToForceUpdate: Boolean,
+        completionListener: ((percentage: Float) -> Unit)?,
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+    ) {
+        this.locationProvider = locationProvider
+        this.needToForceUpdate = needToForceUpdate
+        this.completionListener = completionListener
+        this.resultDialogUiProvider = resultDialogUiProvider
+    }
+
+    internal fun setFormConfiguration(
+        formRepository: FormRepository,
+        dispatchers: DispatcherProvider
+    ) {
+        this.formRepository = formRepository
+        this.dispatchers = dispatchers
+    }
+
+    internal fun setCallbackConfiguration(
+        onItemChangeListener: ((action: RowAction) -> Unit)?,
+        onLoadingListener: ((loading: Boolean) -> Unit)?,
+        onFocused: (() -> Unit)?,
+        onFinishDataEntry: (() -> Unit)?,
+        onActivityForResult: (() -> Unit)?,
+        onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
+        onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?
+    ) {
+        this.onItemChangeListener = onItemChangeListener
+        this.onLoadingListener = onLoadingListener
+        this.onFocused = onFocused
+        this.onFinishDataEntry = onFinishDataEntry
+        this.onActivityForResult = onActivityForResult
+        this.onDataIntegrityCheck = onDataIntegrityCheck
+        this.onFieldItemsRendered = onFieldItemsRendered
+    }
+
     class Builder {
         private var fragmentManager: FragmentManager? = null
-        private var persistentRepository: FormRepository? = null
+        private var repository: FormRepository? = null
         private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
         private var locationProvider: LocationProvider? = null
         private var needToForceUpdate: Boolean = false
         private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
         private var dispatchers: DispatcherProvider? = null
+        private var onFocused: (() -> Unit)? = null
+        private var onActivityForResult: (() -> Unit)? = null
+        private var onFinishDataEntry: (() -> Unit)? = null
+        private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
+        private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
+        private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
+        private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
 
         /**
          * If you want to persist the items and it's changes in any sources, please provide an
-         * implementation of the repository that fits with your system.
+         * implementation of the repository with a valueStore.
          *
-         * IF you don't provide any repository implementation, data will be kept in memory.
+         * IF you don't provide any valueStore in repository constructor, it will be kept in memory.
          *
          * NOTE: This step is temporary in order to facilitate refactor, in the future will be
          * changed by some info like DataEntryStore.EntryMode and Event/Program uid. Then the
          * library will generate the implementation of the repository.
          */
-        fun persistence(repository: FormRepository) =
-            apply { this.persistentRepository = repository }
+        fun repository(repository: FormRepository) =
+            apply { this.repository = repository }
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -453,10 +907,16 @@ class FormView constructor(
             apply { this.needToForceUpdate = needToForceUpdate }
 
         /**
-         * If set,
+         * Sets if loading started or finished to handle loadingfeedback
          * */
         fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
             apply { this.onLoadingListener = callback }
+
+        /**
+         * It's triggered when form gets focus
+         */
+        fun onFocused(callback: () -> Unit) =
+            apply { this.onFocused = callback }
 
         /**
          * By default it uses Coroutine dispatcher IO, Computation, and Main but, you could also set
@@ -470,17 +930,52 @@ class FormView constructor(
         fun factory(manager: FragmentManager) =
             apply { fragmentManager = manager }
 
+        /**
+         *
+         */
+        fun resultDialogUiProvider(
+            resultDialogUiProvider: EnrollmentResultDialogUiProvider
+        ) = apply { this.resultDialogUiProvider = resultDialogUiProvider }
+
+        /**
+         * Listener for the current activity to know if a activityForResult is called
+         * */
+        fun activityForResultListener(callback: () -> Unit) =
+            apply { this.onActivityForResult = callback }
+
+        fun onFinishDataEntry(callback: () -> Unit) =
+            apply { this.onFinishDataEntry = callback }
+
+        fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
+            apply { this.onPercentageUpdate = callback }
+
+        fun onDataIntegrityResult(callback: (result: DataIntegrityCheckResult) -> Unit) =
+            apply { this.onDataIntegrityCheck = callback }
+
+        fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
+            apply { this.onFieldItemsRendered = callback }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
             }
+            if (repository == null) {
+                throw Exception("You need to call persistence method and pass a FormRepository")
+            }
             fragmentManager!!.fragmentFactory =
                 FormViewFragmentFactory(
-                    persistentRepository ?: FormRepositoryNonPersistenceImpl(),
+                    repository!!,
                     locationProvider,
                     onItemChangeListener,
                     needToForceUpdate,
                     onLoadingListener,
+                    onFocused,
+                    onFinishDataEntry,
+                    onActivityForResult,
+                    onPercentageUpdate,
+                    onDataIntegrityCheck,
+                    onFieldItemsRendered,
+                    resultDialogUiProvider,
                     dispatchers = dispatchers ?: FormDispatcher()
                 )
 

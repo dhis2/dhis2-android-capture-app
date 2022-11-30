@@ -2,17 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValuePresenter" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/white">
 
 
         <androidx.core.widget.NestedScrollView
@@ -20,7 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:paddingTop="5dp"
-            android:background="@color/white_faf"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -51,6 +44,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerContainer"
             app:progressColor="@{@color/colorPrimary}" />

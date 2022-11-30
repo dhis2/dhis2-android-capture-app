@@ -1,7 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -42,6 +42,7 @@ class GeometryController(private val geometryParser: GeometryParser) {
             override fun intent(intent: FormIntent) {
                 when (intent) {
                     is FormIntent.SaveCurrentLocation -> updateCoordinates(intent.value)
+                    is FormIntent.ClearValue -> updateCoordinates(null)
                     else -> {
                     }
                 }

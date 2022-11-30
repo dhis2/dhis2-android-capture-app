@@ -39,7 +39,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription" />
 
 
             <org.dhis2.utils.customviews.CircularCompletionView
@@ -68,7 +68,7 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toTopOf="@+id/eventSecundaryInfo"
-                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Program Stage Name" />
@@ -83,9 +83,23 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toBottomOf="@+id/programStageName"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
+
+            <ImageView
+                android:id="@+id/syncButton"
+                style="@style/ActionIcon"
+                android:onClick="showMoreOptions"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/completion"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"/>
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -101,9 +115,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:padding="0dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/guideline"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toBottomOf="@id/guideline"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View

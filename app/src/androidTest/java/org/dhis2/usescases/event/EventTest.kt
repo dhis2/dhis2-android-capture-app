@@ -1,5 +1,6 @@
 package org.dhis2.usescases.event
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -12,6 +13,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +29,9 @@ class EventTest: BaseTest() {
 
     @get:Rule
     val ruleEventDetail = ActivityTestRule(EventInitialActivity::class.java, false, false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     fun shouldDeleteEventWhenClickOnDeleteInsideSpecificEvent() {
@@ -72,12 +77,14 @@ class EventTest: BaseTest() {
         prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
 
         eventRegistrationRobot {
+            openMenuMoreOptions()
             clickOnShare()
             clickOnAllQR(qrList)
         }
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyUpdateAndSaveEvent() {
         val labMonitoring = "Lab monitoring"
         val eventDate = "1/6/2020"
@@ -93,7 +100,7 @@ class EventTest: BaseTest() {
         eventRobot {
             fillRadioButtonForm(radioFormLength)
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
         }
 
         teiDashboardRobot {

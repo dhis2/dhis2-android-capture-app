@@ -7,19 +7,27 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import java.util.ArrayList
-import org.dhis2.data.forms.dataentry.ValueStore
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
-import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel
+import org.dhis2.form.data.FormValueStore
+import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.style.FormUiColorFactory
+import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.form.ui.FieldViewModelFactoryImpl
+import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.form.ui.provider.HintProvider
+import org.dhis2.form.ui.provider.KeyboardActionProvider
+import org.dhis2.form.ui.provider.LayoutProvider
+import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.form.ui.provider.UiEventTypesProvider
+import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
+import org.hisp.dhis.android.core.option.OptionGroup
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
 import org.hisp.dhis.rules.models.RuleActionDisplayText
@@ -47,8 +55,14 @@ class RulesUtilsProviderImplTest {
     private lateinit var testFieldViewModels: MutableMap<String, FieldUiModel>
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val valueStore: ValueStore = mock()
-    private val colorFactory: FormUiColorFactory = mock()
+    private val valueStore: FormValueStore = mock()
+    private val uiStyleProvider: UiStyleProvider = mock()
+    private val layoutProvider: LayoutProvider = mock()
+    private val hintProvider: HintProvider = mock()
+    private val displayNameProvider: DisplayNameProvider = mock()
+    private val uiEventTypesProvider: UiEventTypesProvider = mock()
+    private val keyboardActionProvider: KeyboardActionProvider = mock()
+    private val legendValueProvider: LegendValueProvider = mock()
 
     private val testRuleEffects = ArrayList<RuleEffect>()
 
@@ -56,9 +70,14 @@ class RulesUtilsProviderImplTest {
     fun setUp() {
         ruleUtils = RulesUtilsProviderImpl(d2)
         fieldFactory = FieldViewModelFactoryImpl(
-            ValueType.values().map { it to it.name }.toMap(),
             false,
-            colorFactory
+            uiStyleProvider,
+            layoutProvider,
+            hintProvider,
+            displayNameProvider,
+            uiEventTypesProvider,
+            keyboardActionProvider,
+            legendValueProvider
         )
         testFieldViewModels = getTestingFieldViewModels().associateBy { it.uid }.toMutableMap()
     }
@@ -98,8 +117,6 @@ class RulesUtilsProviderImplTest {
             ObjectStyle.builder().build(),
             "",
             null,
-            null,
-            null,
             null
         )
     }
@@ -119,9 +136,9 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         Assert.assertNotNull(testFieldViewModels["uid1"]!!.warning)
         Assert.assertEquals(testFieldViewModels["uid1"]!!.warning, "content data")
@@ -144,9 +161,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         Assert.assertNotNull(testFieldViewModels[testingUid]!!.error)
         Assert.assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
@@ -175,9 +192,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
@@ -185,7 +202,7 @@ class RulesUtilsProviderImplTest {
     }
 
     @Test
-    fun `RuleActionDisplayText Should not add new DisplayViewModel`() {
+    fun `RuleActionDisplayText Should not add new FieldUIModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
@@ -199,16 +216,16 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         assertTrue(testFieldViewModels.size == testFieldViewModelSize)
         assertTrue(!testFieldViewModels.containsKey("content"))
     }
 
     @Test
-    fun `RuleActionDisplayKeyValuePair should not add new DisplayViewModel`() {
+    fun `RuleActionDisplayKeyValuePair should not add new FieldUIModel`() {
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
@@ -222,9 +239,9 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         assertTrue(testFieldViewModels.size == testFieldViewModelSize)
         assertTrue(!testFieldViewModels.containsKey("content"))
@@ -249,9 +266,9 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         assertTrue(testFieldViewModels[mandatoryFieldUid] != null)
         assertTrue(testFieldViewModels["uid4"] == null)
@@ -273,9 +290,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
         assertTrue(testFieldViewModels[testingUid]!!.value.equals("data"))
@@ -312,9 +329,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, "data")
         verify(valueStore, times(0)).saveWithTypeCheck(testingUid2, "test")
@@ -339,11 +356,10 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
-        verify(valueStore, times(0)).saveWithTypeCheck(any(), any())
         assertTrue(result.fieldsToUpdate.isEmpty())
     }
 
@@ -362,9 +378,9 @@ class RulesUtilsProviderImplTest {
         ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         assertTrue(testFieldViewModels[testingUid]!!.mandatory)
     }
@@ -384,9 +400,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         Assert.assertEquals(testFieldViewModels[testingUid]!!.warning, "content data")
         assertTrue(result.messageOnComplete == "content data")
@@ -408,9 +424,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         Assert.assertEquals(testFieldViewModels[testingUid]!!.error, "content data")
         assertTrue(result.messageOnComplete == "content data")
@@ -431,9 +447,9 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
     }
 
     @Test
@@ -450,21 +466,29 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
+            1,
             "label",
             false,
-            "optionSetUid",
-            null,
             null,
             true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
+            true,
+            "label",
+            "section",
             null,
-            emptyList(),
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
+            "optionSetUid",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null
         )
 
@@ -476,12 +500,12 @@ class RulesUtilsProviderImplTest {
         val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { emptyList() }
+        )
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel).optionsToHide.contains("optionUid")
+            result.optionsToHide.isNotEmpty()
         )
 
         verify(valueStore).deleteOptionValueIfSelected("field", "optionUid")
@@ -497,21 +521,29 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
+            1,
             "label",
             false,
-            "optionSetUid",
-            null,
             null,
             true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
+            true,
+            "label",
+            "section",
             null,
-            emptyList(),
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
+            "optionSetUid",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null
         )
 
@@ -526,20 +558,20 @@ class RulesUtilsProviderImplTest {
             ValueStoreResult.VALUE_HAS_NOT_CHANGED
         )
 
-        ruleUtils.applyRuleEffects(
+        mockD2OptionGroupCalls(
+            "optionGroupUid",
+            "optionToHide1", "optionToHide2"
+        )
+
+        val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { optionGroupUids -> listOf("optionToHide1", "optionToHide2") }
+        )
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToHide.contains("optionToHide1")
-        )
-        assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToHide.contains("optionToHide2")
+            result.optionGroupsToHide.isNotEmpty()
         )
 
         verify(
@@ -549,6 +581,10 @@ class RulesUtilsProviderImplTest {
 
     @Test
     fun `RuleActionShowOptionGroup should execute callback action`() {
+        mockD2OptionGroupCalls(
+            "optionGroupUid",
+            "optionToShow1", "optionToShow2"
+        )
         testRuleEffects.add(
             RuleEffect.create(
                 "ruleUid",
@@ -557,39 +593,113 @@ class RulesUtilsProviderImplTest {
             )
         )
 
-        testFieldViewModels["field"] = OptionSetViewModel.create(
+        testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
+            1,
             "label",
             false,
+            null,
+            true,
+            null,
+            true,
+            "label",
+            "section",
+            null,
+            null,
+            "description",
+            ValueType.TEXT,
+            null,
             "optionSetUid",
             null,
             null,
-            true,
             null,
-            ObjectStyle.builder().build(),
-            false,
-            "",
-            ValueTypeDeviceRendering.builder().build(),
             null,
-            emptyList(),
+            null,
+            null,
             null
         )
 
-        ruleUtils.applyRuleEffects(
+        val result = ruleUtils.applyRuleEffects(
             true,
             testFieldViewModels,
-            Result.success(testRuleEffects),
+            testRuleEffects,
             valueStore
-        ) { optionGroupUids -> listOf("optionToShow1", "optionToShow2") }
+        )
 
         assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToShow.contains("optionToShow1")
-        )
-        assertTrue(
-            (testFieldViewModels["field"] as OptionSetViewModel)
-                .optionsToShow.contains("optionToShow2")
+            result.optionGroupsToShow.isNotEmpty()
         )
         verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupUid", false)
+    }
+
+    @Test
+    fun `Should not assign value to a hidden field`() {
+        val testingUid = "uid3"
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid",
+                RuleActionHideField.create("content", testingUid),
+                "data"
+            )
+        )
+        testRuleEffects.add(
+            RuleEffect.create(
+                "ruleUid2",
+                RuleActionAssign.create("content", "data", testingUid),
+                "data"
+            )
+        )
+
+        whenever(valueStore.saveWithTypeCheck(testingUid, null)) doReturn Flowable.just(
+            StoreResult(
+                testingUid,
+                ValueStoreResult.VALUE_CHANGED
+            )
+        )
+
+        val result = ruleUtils.applyRuleEffects(
+            true,
+            testFieldViewModels,
+            testRuleEffects,
+            valueStore
+        )
+
+        Assert.assertFalse(testFieldViewModels.contains(testingUid))
+        verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
+        verify(valueStore, times(0)).saveWithTypeCheck(testingUid, "data")
+        assertTrue(result.fieldsToUpdate.contains(testingUid))
+    }
+
+    private fun mockD2OptionGroupCalls(optionGroupUid: String, vararg optionUidsToReturn: String) {
+        whenever(
+            d2.optionModule().optionGroups()
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions()
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions()
+                .byUid()
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions()
+                .byUid().`in`(listOf(optionGroupUid))
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions()
+                .byUid().`in`(listOf(optionGroupUid))
+                .blockingGet()
+        ) doReturn listOf(
+            OptionGroup.builder()
+                .uid(optionGroupUid)
+                .options(
+                    optionUidsToReturn.map { ObjectWithUid.create(it) }.toList()
+                )
+                .build()
+        )
     }
 }

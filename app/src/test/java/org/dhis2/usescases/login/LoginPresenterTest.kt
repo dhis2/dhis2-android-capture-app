@@ -27,9 +27,6 @@ import org.dhis2.utils.Constants.PREFS_URLS
 import org.dhis2.utils.Constants.PREFS_USERS
 import org.dhis2.utils.Constants.USER_ASKED_CRASHLYTICS
 import org.dhis2.utils.Constants.USER_TEST_ANDROID
-import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.SECURE_SERVER_URL
-import org.dhis2.utils.Constants.SECURE_USER_NAME
 import org.dhis2.utils.DEFAULT_URL
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper

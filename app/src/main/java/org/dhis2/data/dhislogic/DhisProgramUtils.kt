@@ -13,6 +13,25 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionR
 
 class DhisProgramUtils @Inject constructor(val d2: D2) {
 
+    fun getServerState(): State {
+        val states = d2.programModule().programs().blockingGet().map {
+            getProgramState(it)
+        }.plus(
+            d2.dataSetModule().dataSetInstanceSummaries().blockingGet().map {
+                it.state()
+            }
+        ).distinct()
+
+        return when {
+            states.contains(State.ERROR) or states.contains(State.WARNING) -> State.WARNING
+            states.contains(State.TO_POST) -> State.TO_POST
+            states.contains(State.TO_UPDATE) -> State.TO_UPDATE
+            states.contains(State.SENT_VIA_SMS) or states.contains(State.SYNCED_VIA_SMS) ->
+                State.SENT_VIA_SMS
+            else -> State.SYNCED
+        }
+    }
+
     fun getProgramState(program: Program): State {
         return when (program.programType()) {
             ProgramType.WITH_REGISTRATION -> getTrackerProgramState(program)
@@ -54,9 +73,9 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
             .blockingGet().isNotEmpty() ||
-            enrollmentRepository.byState().`in`(State.ERROR, State.WARNING)
+            enrollmentRepository.byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
                 .blockingGet().isNotEmpty()
     }
 
@@ -65,7 +84,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            .byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
             .blockingGet().isNotEmpty()
     }
 
@@ -74,7 +93,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return teiRepository
             .byDeleted().isFalse
-            .byState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
+            .byAggregatedSyncState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
             .blockingGet().isNotEmpty() ||
             teiRepository
                 .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -94,14 +113,14 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     private fun hasEventWithErrorState(eventRepository: EventCollectionRepository): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.ERROR, State.WARNING)
+            .byAggregatedSyncState().`in`(State.ERROR, State.WARNING)
             .blockingGet().isNotEmpty()
     }
 
     private fun hasEventWithSMSState(eventRepository: EventCollectionRepository): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
+            .byAggregatedSyncState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
             .blockingGet().isNotEmpty()
     }
 
@@ -110,7 +129,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
     ): Boolean {
         return eventRepository
             .byDeleted().isFalse
-            .byState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
+            .byAggregatedSyncState().`in`(State.TO_UPDATE, State.TO_POST, State.UPLOADING)
             .blockingGet().isNotEmpty() ||
             eventRepository
                 .byDeleted().isTrue

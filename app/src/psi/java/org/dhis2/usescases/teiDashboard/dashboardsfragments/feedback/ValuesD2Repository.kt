@@ -14,31 +14,34 @@ import org.hisp.dhis.android.core.attribute.AttributeValue
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.legendset.Legend
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import timber.log.Timber
 import java.util.Locale
 
-class ValuesD2Repository(private val d2: D2, private val context: Context) : ValuesRepository {
+class ValuesD2Repository(
+    private val d2: D2,
+    private val context: Context
+) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
 
     override fun getByEvent(eventUid: String): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
         val feedbackTextAttributeCode = "FeedbackText"
+        val hnqis2MetadataAttributeCode = "HNQIS2 Metadata"
         val failLegendSuffix = "FAIL"
 
         val teiDataValues =
             d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid)
-                .get().blockingGet()
+                .get().blockingGet().filter { it.value() != null }
 
         val dataElementsWithFeedbackOrder =
-            getDataElementsWithFeedbackOrder( feedbackOrderAttributeCode)
-
-        val dataElementsWithMandatory =
-            getDataElementsWithMandatoryFilter(eventUid, dataElementsWithFeedbackOrder)
+            getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode)
 
         return teiDataValues.filter { dataElementsWithFeedbackOrder.keys.contains(it.dataElement()) }
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
-                val assignedLegend = getAssignedLegend(teiValue.value()!!, teiValue.dataElement()!!)
+                val assignedLegend =
+                    getAssignedLegend(teiValue.value() ?: "", teiValue.dataElement()!!)
                 val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
 
                 val deFeedbackHelpRaw = deAttributeValues.firstOrNull {
@@ -47,23 +50,28 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
 
                 val deFeedbackHelp = parseFeedbackHelp(deFeedbackHelpRaw, dataElement.uid())
 
+                val deName: String =
+                    if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
+
                 val deFeedbackOrder = deAttributeValues.firstOrNull {
                     it.attribute().code() == feedbackOrderAttributeCode
                 }
 
-                val deName: String =
-                    if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
+                val dataElementMetadataRaw = deAttributeValues.firstOrNull {
+                    it.attribute().code() == hnqis2MetadataAttributeCode
+                }
 
+                val critical = parseCriticalMetadata(dataElementMetadataRaw, dataElement.uid())
 
                 Value(
                     teiValue.dataElement()!!,
                     deName,
-                    teiValue.userFriendlyValue(d2)!!,
+                    teiValue.userFriendlyValue(d2) ?: "",
                     FeedbackOrder(deFeedbackOrder!!.value()),
                     assignedLegend?.color(),
                     deFeedbackHelp,
                     assignedLegend?.name()?.split("_")?.last() != failLegendSuffix,
-                    dataElementsWithMandatory.contains(teiValue.dataElement()!!),
+                    critical,
                     eventUid,
                     isNumeric(teiValue)
                 )
@@ -112,6 +120,21 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
         }
     }
 
+    private fun parseCriticalMetadata(metadataRaw: AttributeValue?, dataElement: String): Boolean {
+        if (metadataRaw == null) return false
+        val gson = Gson()
+
+        return try {
+            val dataElementMetadata =
+                gson.fromJson(metadataRaw.value(), Hnqis2Metadata::class.java)
+
+            dataElementMetadata.isCritical.toLowerCase(Locale.getDefault()) == "yes"
+        } catch (e: Exception) {
+            Timber.e(e)
+            false
+        }
+    }
+
     private fun getDataElementsWithFeedbackOrder(feedbackOrderAttributeCode: String): Map<String, String> {
         var result = mutableMapOf<String, String>()
 
@@ -129,25 +152,6 @@ class ValuesD2Repository(private val d2: D2, private val context: Context) : Val
             }
 
         return result
-    }
-
-    private fun getDataElementsWithMandatoryFilter(
-        eventUid: String,
-        dataElementsWithFeedbackOrder:  Map<String, String>
-    ): List<String> {
-        val event = d2.eventModule().events().byUid().eq(eventUid)
-            .one().blockingGet()
-
-        val stageDataElements = d2.programModule().programStageDataElements()
-            .byProgramStage().eq(event.programStage()).byCompulsory().eq(true)
-            .blockingGet()
-
-        return stageDataElements.map { programStageDE ->
-            d2.dataElementModule().dataElements()
-                .uid(programStageDE.dataElement()?.uid()).blockingGet().uid()
-        }.filter { deUid ->
-            dataElementsWithFeedbackOrder.keys.contains(deUid)
-        }
     }
 
     private fun getAssignedLegend(value: String, dataElementUid: String): Legend? {

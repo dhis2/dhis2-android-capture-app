@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--DEFAULT THEME-->
-    <color name="colorPrimary">#215e8c</color>
-    <color name="colorPrimaryDark">#16507C</color>
-    <color name="colorPrimaryLight">#BACFFF</color>
+    <color name="colorPrimary">#2C98F0</color>
+    <color name="colorPrimaryDark">#006BBD</color>
+    <color name="colorPrimaryLight">#72C8FF</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentAlpha">#7fffffff</color>
+    <color name="primaryBgTextColor">@color/white</color>
+    <color name="primaryLightBgTextColor">@color/white</color>
+    <color name="primaryDarkBgTextColor">@color/white</color>
+    <color name="whiteBgTextColor">@color/colorPrimary</color>
     <color name="ic_launcher_background">#FFFFFF</color>
 
     <!--RED THEME-->
@@ -23,15 +27,18 @@
     <color name="colorPrimaryDarkOrange">#CF4500</color>
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
-    <color name="colorGreyDefault">#4d4d4d</color>x
+    <color name="colorGreyDefault">#4d4d4d</color>
     <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
     <!--BACKEND 64 COLOR THEMES-->
     <!--region 1 TO 10-->
     <color name="colorPrimary_Pink">#ffcdd2</color>
-    <color name="colorPrimaryDark_Pink">#cb9ca1</color>
-    <color name="colorPrimaryLight_Pink">#ffffff</color>
+    <color name="colorPrimaryDark_Pink">#CB9CA1</color>
+    <color name="colorPrimaryLight_Pink">#FFE8EA</color>
+    <color name="primaryBgTextColor_Pink">#98575D</color>
+    <color name="primaryLightBgTextColor_Pink">#CB9CA1</color>
+    <color name="whiteBgTextColor_Pink">#F37784</color>
 
     <color name="colorPrimary_e57">#e57373</color>
     <color name="colorPrimaryDark_e57">#af4448</color>
@@ -58,8 +65,11 @@
     <color name="colorPrimaryLight_f50">#ff5983</color>
 
     <color name="colorPrimary_elb">#e1bee7</color>
-    <color name="colorPrimaryDark_elb">#af8eb5</color>
-    <color name="colorPrimaryLight_elb">#883997</color>
+    <color name="colorPrimaryDark_elb">#AF8EB5</color>
+    <color name="colorPrimaryLight_elb">#FFE2FF</color>
+    <color name="primaryBgTextColor_elb">#624168</color>
+    <color name="primaryLightBgTextColor_elb">#AF8EB5</color>
+    <color name="whiteBgTextColor_elb">#BC44D0</color>
 
     <color name="colorPrimary_ba6">#ba68c8</color>
     <color name="colorPrimaryDark_ba6">#883997</color>
@@ -91,8 +101,11 @@
     <color name="colorPrimaryLight_620">#9d46ff</color>
 
     <color name="colorPrimary_c5c">#c5cae9</color>
-    <color name="colorPrimaryDark_c5c">#9499b7</color>
-    <color name="colorPrimaryLight_c5c">#f8fdff</color>
+    <color name="colorPrimaryDark_c5c">#9499B7</color>
+    <color name="colorPrimaryLight_c5c">#DDEBFF</color>
+    <color name="primaryBgTextColor_c5c">#60637B</color>
+    <color name="primaryLightBgTextColor_c5c">#9499B7</color>
+    <color name="whiteBgTextColor_c5c">#57619C</color>
 
     <color name="colorPrimary_798">#7986cb</color>
     <color name="colorPrimaryDark_798">#49599a</color>
@@ -108,12 +121,17 @@
 
     <color name="colorPrimary_e3f">#e3f2fd</color>
     <color name="colorPrimaryDark_e3f">#b1bfca</color>
-    <color name="colorPrimaryLight_e3f">#ffffff</color>
+    <color name="colorPrimaryLight_e3f">#D9EFFF</color>
+    <color name="primaryBgTextColor_e3f">#658297</color>
+    <color name="primaryLightBgTextColor_e3f">#86AAC7</color>
+    <color name="whiteBgTextColor_e3f">#669AC0</color>
     <!--endregion-->
     <!--region 21 TO 30-->
     <color name="colorPrimary_64b">#64b5f6</color>
     <color name="colorPrimaryDark_64b">#2286c3</color>
     <color name="colorPrimaryLight_64b">#9be7ff</color>
+    <color name="primaryLightBgTextColor_64b">#4591BF</color>
+    <color name="whiteBgTextColor_64b">#298CDC</color>
 
     <color name="colorPrimary_197">#1976d2</color>
     <color name="colorPrimaryDark_197">#004ba0</color>
@@ -126,6 +144,8 @@
     <color name="colorPrimary_40c">#40c4ff</color>
     <color name="colorPrimaryDark_40c">#0094cc</color>
     <color name="colorPrimaryLight_40c">#82f7ff</color>
+    <color name="primaryLightBgTextColor_40c">#0094CC</color>
+    <color name="whiteBgTextColor_40c">#00A7F2</color>
 
     <color name="colorPrimary_00b">#00b0ff</color>
     <color name="colorPrimaryDark_00b">#0081cb</color>
@@ -134,6 +154,9 @@
     <color name="colorPrimary_80d">#80deea</color>
     <color name="colorPrimaryDark_80d">#4bacb8</color>
     <color name="colorPrimaryLight_80d">#b4ffff</color>
+    <color name="primaryBgTextColor_80d">#108C9C</color>
+    <color name="primaryLightBgTextColor_80d">#4BACB8</color>
+    <color name="whiteBgTextColor_80d">#29C1D4</color>
 
     <color name="colorPrimary_00a">#00acc1</color>
     <color name="colorPrimaryDark_00a">#007c91</color>
@@ -149,12 +172,17 @@
 
     <color name="colorPrimary_e0f">#e0f2f1</color>
     <color name="colorPrimaryDark_e0f">#aebfbe</color>
-    <color name="colorPrimaryLight_e0f">#ffffff</color>
+    <color name="colorPrimaryLight_e0f">#B5F0ED</color>
+    <color name="primaryBgTextColor_e0f">#59B0AC</color>
+    <color name="primaryLightBgTextColor_e0f">#6E9F9D</color>
+    <color name="whiteBgTextColor_e0f">#33A9A2</color>
     <!--endregion-->
     <!--region 31 TO 40-->
     <color name="colorPrimary_80c">#80cbc4</color>
     <color name="colorPrimaryDark_80c">#4f9a94</color>
     <color name="colorPrimaryLight_80c">#b2fef7</color>
+    <color name="primaryLightBgTextColor_80c">#4F9A94</color>
+    <color name="whiteBgTextColor_80c">#30ADA2</color>
 
     <color name="colorPrimary_0069">#00695c</color>
     <color name="colorPrimaryDark_0069">#003d33</color>
@@ -163,10 +191,16 @@
     <color name="colorPrimary_64f">#64ffda</color>
     <color name="colorPrimaryDark_64f">#14cba8</color>
     <color name="colorPrimaryLight_64f">#9effff</color>
+    <color name="primaryBgTextColor_64f">#2B6A5B</color>
+    <color name="primaryLightBgTextColor_64f">#10B08A</color>
+    <color name="whiteBgTextColor_64f">#05C698</color>
 
     <color name="colorPrimary_c8e">#c8e6c9</color>
     <color name="colorPrimaryDark_c8e">#97b498</color>
-    <color name="colorPrimaryLight_c8e">#fbfffc</color>
+    <color name="colorPrimaryLight_c8e">#BDF3BE</color>
+    <color name="primaryBgTextColor_c8e">#667767</color>
+    <color name="primaryLightBgTextColor_c8e">#97B498</color>
+    <color name="whiteBgTextColor_c8e">#649566</color>
 
     <color name="colorPrimary_66b">#66bb6a</color>
     <color name="colorPrimaryDark_66b">#338a3e</color>
@@ -183,10 +217,13 @@
     <color name="colorPrimary_00e">#00e676</color>
     <color name="colorPrimaryDark_00e">#00b248</color>
     <color name="colorPrimaryLight_00e">#66ffa6</color>
+    <color name="whiteBgTextColor_00e">#00C565</color>
 
     <color name="colorPrimary_aed">#aed581</color>
     <color name="colorPrimaryDark_aed">#7da453</color>
     <color name="colorPrimaryLight_aed">#e1ffb1</color>
+    <color name="primaryLightBgTextColor_aed">#87C144</color>
+    <color name="whiteBgTextColor_aed">#7CB53B</color>
 
     <color name="colorPrimary_689">#689f38</color>
     <color name="colorPrimaryDark_689">#387002</color>
@@ -200,10 +237,15 @@
     <color name="colorPrimary_76f">#76ff03</color>
     <color name="colorPrimaryDark_76f">#32cb00</color>
     <color name="colorPrimaryLight_76f">#b0ff57</color>
+    <color name="primaryBgTextColor_76f">#3D8500</color>
+    <color name="primaryLightBgTextColor_76f">#59C300</color>
+    <color name="whiteBgTextColor_76f">#58C100</color>
 
     <color name="colorPrimary_64d">#64dd17</color>
     <color name="colorPrimaryDark_64d">#1faa00</color>
     <color name="colorPrimaryLight_64d">#9cff57</color>
+    <color name="primaryLightBgTextColor_64d">#4DC700</color>
+    <color name="whiteBgTextColor_64d">#4CC200</color>
 
     <color name="colorPrimary_9e9">#9e9d24</color>
     <color name="colorPrimaryDark_9e9">#6c6f00</color>
@@ -212,6 +254,8 @@
     <color name="colorPrimary_cdd">#cddc39</color>
     <color name="colorPrimaryDark_cdd">#99aa00</color>
     <color name="colorPrimaryLight_cdd">#ffff6e</color>
+    <color name="primaryLightBgTextColor_cdd">#C0D023</color>
+    <color name="whiteBgTextColor_cdd">#B9CB04</color>
 
     <color name="colorPrimary_827">#827717</color>
     <color name="colorPrimaryDark_827">#524c00</color>
@@ -219,11 +263,16 @@
 
     <color name="colorPrimary_fff">#fff9c4</color>
     <color name="colorPrimaryDark_fff">#cbc693</color>
-    <color name="colorPrimaryLight_fff">#fffff7</color>
+    <color name="colorPrimaryLight_fff">#FFFFAC</color>
+    <color name="primaryBgTextColor_fff">#98925D</color>
+    <color name="primaryLightBgTextColor_fff">#C8C079</color>
+    <color name="whiteBgTextColor_fff">#C8B61C</color>
 
-    <color name="colorPrimary_fbc">#fbc02d</color>
-    <color name="colorPrimaryDark_fbc">#c49000</color>
-    <color name="colorPrimaryLight_fbc">#fff263</color>
+    <color name="colorPrimary_fbc">#FBC02D</color>
+    <color name="colorPrimaryDark_fbc">#FAA11B</color>
+    <color name="colorPrimaryLight_fbc">#FFF171</color>
+    <color name="primaryLightBgTextColor_fbc">#FAA11B</color>
+    <color name="whiteBgTextColor_fbc">#FB842D</color>
 
     <color name="colorPrimary_f57">#f57f17</color>
     <color name="colorPrimaryDark_f57">#bc5100</color>
@@ -232,19 +281,29 @@
     <color name="colorPrimary_ffff">#ffff00</color>
     <color name="colorPrimaryDark_ffff">#c7cc00</color>
     <color name="colorPrimaryLight_ffff">#ffff5a</color>
+    <color name="primaryBgTextColor_ffff">#939300</color>
+    <color name="primaryLightBgTextColor_ffff">#B4B400</color>
+    <color name="whiteBgTextColor_ffff">#B2B200</color>
     <!--endregion-->
     <!--region 51 TO 64-->
     <color name="colorPrimary_ffc">#ffcc80</color>
     <color name="colorPrimaryDark_ffc">#ca9b52</color>
-    <color name="colorPrimaryLight_ffc">#ffffb0</color>
+    <color name="colorPrimaryLight_ffc">#FFEAB2</color>
+    <color name="primaryLightBgTextColor_ffc">#D6B254</color>
+    <color name="whiteBgTextColor_ffc">#EDA232</color>
 
     <color name="colorPrimary_ffcc">#ffccbc</color>
     <color name="colorPrimaryDark_ffcc">#cb9b8c</color>
-    <color name="colorPrimaryLight_ffcc">#ffffee</color>
+    <color name="colorPrimaryLight_ffcc">#FFE7DF</color>
+    <color name="primaryBgTextColor_ffcc">#A16957</color>
+    <color name="primaryLightBgTextColor_ffcc">#EEA38B</color>
+    <color name="whiteBgTextColor_ffcc">#EE9377</color>
 
     <color name="colorPrimary_ffa">#ffab91</color>
     <color name="colorPrimaryDark_ffa">#c97b63</color>
     <color name="colorPrimaryLight_ffa">#ffddc1</color>
+    <color name="primaryLightBgTextColor_ffa">#DA9D6B</color>
+    <color name="whiteBgTextColor_ffa">#EC8E71</color>
 
     <color name="colorPrimary_bca">#bcaaa4</color>
     <color name="colorPrimaryDark_bca">#8c7b75</color>
@@ -260,11 +319,16 @@
 
     <color name="colorPrimary_faf">#fafafa</color>
     <color name="colorPrimaryDark_faf">#c7c7c7</color>
-    <color name="colorPrimaryLight_faf">#ffffff</color>
+    <color name="colorPrimaryLight_faf">#F1F1F1</color>
+    <color name="primaryBgTextColor_faf">#8F8F8F</color>
+    <color name="primaryLightBgTextColor_faf">#BBBBBB</color>
+    <color name="whiteBgTextColor_faf">#808080</color>
 
     <color name="colorPrimary_bdb">#bdbdbd</color>
     <color name="colorPrimaryDark_bdb">#8d8d8d</color>
     <color name="colorPrimaryLight_bdb">#efefef</color>
+    <color name="primaryLightBgTextColor_bdb">#ACACAC</color>
+    <color name="whiteBgTextColor_bdb">#9C9C9C</color>
 
     <color name="colorPrimary_757">#757575</color>
     <color name="colorPrimaryDark_757">#494949</color>
@@ -276,11 +340,11 @@
 
     <color name="colorPrimary_cfd">#cfd8dc</color>
     <color name="colorPrimaryDark_cfd">#9ea7aa</color>
-    <color name="colorPrimaryLight_cfd">#ffffff</color>
+    <color name="colorPrimaryLight_cfd">#BECDD2</color>
 
     <color name="colorPrimary_b0b">#b0bec5</color>
     <color name="colorPrimaryDark_b0b">#808e95</color>
-    <color name="colorPrimaryLight_b0b">#e2f1f8</color>
+    <color name="colorPrimaryLight_b0b">#B3CFDC</color>
 
     <color name="colorPrimary_607">#607d8b</color>
     <color name="colorPrimaryDark_607">#34515e</color>
@@ -310,7 +374,7 @@
     <color name="yellow_f5c">#f5c641</color>
     <color name="yellow_ffe">#ffeaad</color>
     <color name="yellow_fdd_alpha">#85fdd35d</color>
-    <color name="primaryAlpha">#ba215e8c</color>
+    <color name="primaryAlpha">#ba2C98F0</color>
 
     <color name="defaultColor_1">#a3c5df</color>
     <color name="defaultColor_2">#a2dec2</color>
@@ -383,11 +447,11 @@
     <color name="dots_error_selected">#E91E63</color>
     <color name="dots_error_unselected">#F8BBD0</color>
 
-    <color name="state_by_sms">#26215E8C</color>
+    <color name="state_by_sms">#262C98F0</color>
     <color name="state_error">#26FF0000</color>
     <color name="state_to_post">#26000000</color>
     <color name="state_warning">#26FF8A00</color>
-    <color name="state_synced">#26168646</color>
+    <color name="state_synced">#0D000000</color>
 
     <color name="sms_sync_last_event">#504eba</color>
     <color name="sms_sync_title_bar">#dee7ee</color>
@@ -415,5 +479,7 @@
 
     <color name="unselected_tab_badge_color">#B3FFFFFF</color>
     <color name="pink_500">#E91E63</color>
+
+    <color name="light_shadow">#1F000000</color>
 
 </resources>

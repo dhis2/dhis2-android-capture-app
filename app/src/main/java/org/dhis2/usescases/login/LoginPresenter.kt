@@ -42,6 +42,8 @@ import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
 
+const val VERSION = "version"
+
 class LoginPresenter(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
@@ -95,6 +97,11 @@ class LoginPresenter(
                     )
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+    }
+
+    fun trackServerVersion() {
+        userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()
+            ?.let { analyticsHelper.trackMatomoEvent(SERVER, VERSION, it) }
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -312,6 +319,7 @@ class LoginPresenter(
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
+            trackServerVersion()
             if (view.isNetworkAvailable()) {
                 preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
             }
@@ -437,6 +445,15 @@ class LoginPresenter(
         preferenceProvider.setValue(PREFS_USERS, HashSet(users))
 
         return Pair(urls, users)
+    }
+
+    fun displayManageAccount(): Boolean {
+        val users = userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+        return users >= 1
+    }
+
+    fun onManageAccountClicked() {
+        view.openAccountsActivity()
     }
 
     // TODO Remove this when we remove the userManager from the presenter

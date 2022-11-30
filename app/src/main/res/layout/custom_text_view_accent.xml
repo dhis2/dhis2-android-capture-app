@@ -102,7 +102,7 @@
                 android:theme="@style/loginInputTextAccent"
                 tools:hint="this is the hint">
 
-                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
+                <org.dhis2.commons.customviews.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -111,7 +111,6 @@
                     android:textColor="?colorAccent"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/form_edit_text_size"
-                    app:requestFocus="@{focus}"
                     app:setImeOption="@{keyboardActionType}"
                     tools:text="@string/lorem" />
 

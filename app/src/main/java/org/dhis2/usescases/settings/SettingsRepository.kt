@@ -119,25 +119,25 @@ class SettingsRepository(
 
     private fun dataHasErrors(): Boolean {
         return d2.eventModule().events()
-            .byState().`in`(State.ERROR)
+            .byAggregatedSyncState().`in`(State.ERROR)
             .blockingGet().isNotEmpty() ||
             d2.trackedEntityModule().trackedEntityInstances()
-                .byState().`in`(State.ERROR)
+                .byAggregatedSyncState().`in`(State.ERROR)
                 .blockingGet().isNotEmpty() ||
             d2.dataValueModule().dataValues()
-                .byState().`in`(State.ERROR)
+                .bySyncState().`in`(State.ERROR)
                 .blockingGet().isNotEmpty()
     }
 
     private fun dataHasWarning(): Boolean {
         return d2.eventModule().events()
-            .byState().`in`(State.WARNING)
+            .byAggregatedSyncState().`in`(State.WARNING)
             .blockingGet().isNotEmpty() ||
             d2.trackedEntityModule().trackedEntityInstances()
-                .byState().`in`(State.WARNING)
+                .byAggregatedSyncState().`in`(State.WARNING)
                 .blockingGet().isNotEmpty() ||
             d2.dataValueModule().dataValues()
-                .byState().`in`(State.WARNING)
+                .bySyncState().`in`(State.WARNING)
                 .blockingGet().isNotEmpty()
     }
 
@@ -164,7 +164,7 @@ class SettingsRepository(
 
     private fun currentTeiCount(): Int {
         return d2.trackedEntityModule().trackedEntityInstances()
-            .byState().neq(State.RELATIONSHIP)
+            .byAggregatedSyncState().neq(State.RELATIONSHIP)
             .byDeleted().isFalse
             .blockingCount()
     }
@@ -173,6 +173,7 @@ class SettingsRepository(
         return d2.eventModule().events()
             .byEnrollmentUid().isNull
             .byDeleted().isFalse
+            .bySyncState().neq(State.RELATIONSHIP)
             .blockingCount()
     }
 

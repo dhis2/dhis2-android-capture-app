@@ -11,7 +11,7 @@ class GraphToBarData {
     private val coordinateToBarEntryMapper by lazy { GraphCoordinatesToBarEntry() }
     private val serieColors = SerieColors.getColors()
 
-    fun map(graph: Graph): BarData {
+    fun map(graph: Graph, serieToHighlight: String? = null): BarData {
         val series = if (graph.chartType == ChartType.NUTRITION) {
             listOf(graph.series.last())
         } else {
@@ -20,11 +20,22 @@ class GraphToBarData {
         return BarData(
             series.mapIndexed { index: Int, serie: SerieData ->
                 BarDataSet(
-                    coordinateToBarEntryMapper.map(graph, serie.coordinates),
+                    coordinateToBarEntryMapper.map(
+                        graph,
+                        serie.coordinates,
+                        index,
+                        series.size,
+                        serie.fieldName
+                    ),
                     serie.fieldName
                 ).apply {
                     val colorIndex = index % serieColors.size
-                    color = serieColors[colorIndex]
+                    val isHighlighted = serieToHighlight == null || label == serieToHighlight
+                    val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
+                    val singleSerie =
+                        graph.series.filter { !it.coordinates.isNullOrEmpty() }.size == 1
+                    setDrawValues(singleSerie || label == serieToHighlight)
+                    color = serieColor
                 }
             }
         ).withGlobalStyle()

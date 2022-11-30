@@ -6,8 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -17,34 +15,27 @@ import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.data.forms.dataentry.FormView
-import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.location.LocationProvider
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.DispatcherProvider
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.uicomponents.map.views.MapSelectorActivity
+import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.ui.DataEntryDialogUiModel
+import org.dhis2.ui.DialogButtonStyle
+import org.dhis2.usescases.enrollment.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
-import org.dhis2.utils.Constants.CAMERA_REQUEST
 import org.dhis2.utils.Constants.ENROLLMENT_UID
-import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
-import org.dhis2.utils.FileResourcesUtil
-import org.dhis2.utils.ImageUtils
-import org.dhis2.utils.RulesUtilsProviderConfigurationError
+import org.dhis2.utils.customviews.DataEntryBottomDialog
 import org.dhis2.utils.customviews.ImageDetailBottomDialog
-import org.dhis2.utils.toMessage
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
@@ -62,7 +53,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var formRepository: FormRepository
 
     @Inject
-    lateinit var locationProvider: LocationProvider
+    lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
 
     @Inject
     lateinit var dispatchers: DispatcherProvider
@@ -117,17 +108,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         ).inject(this)
 
         formView = FormView.Builder()
-            .persistence(formRepository)
+            .repository(formRepository)
             .locationProvider(locationProvider)
             .dispatcher(dispatchers)
-            .onItemChangeListener { presenter.updateFields() }
+            .onItemChangeListener { action -> presenter.updateFields(action) }
             .onLoadingListener { loading ->
                 if (loading) {
                     showProgress()
                 } else {
                     hideProgress()
+                    presenter.showOrHideSaveButton()
                 }
             }
+            .onFinishDataEntry { presenter.finish(mode) }
+            .resultDialogUiProvider(enrollmentResultDialogUiProvider)
             .factory(supportFragmentManager)
             .build()
 
@@ -177,39 +171,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             ),
                             data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!, requestCode
                         )
-                    }
-                }
-                GALLERY_REQUEST -> {
-                    try {
-                        val imageUri = data?.data
-                        presenter.saveFile(
-                            uuid,
-                            FileResourcesUtil.getFileFromGallery(this, imageUri).path
-                        )
-                        presenter.updateFields()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(
-                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-                CAMERA_REQUEST -> {
-                    val imageFile = File(
-                        FileResourceDirectoryHelper.getFileResourceDirectory(this),
-                        "tempFile.png"
-                    )
-
-                    val file = ImageUtils().rotateImage(this, imageFile)
-
-                    try {
-                        presenter.saveFile(uuid, if (file.exists()) file.path else null)
-                        presenter.updateFields()
-                    } catch (e: Exception) {
-                        crashReportController.logException(e)
-                        Toast.makeText(
-                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
                 RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)
@@ -267,24 +228,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    override fun showMissingMandatoryFieldsMessage(
-        emptyMandatoryFields: MutableMap<String, String>
-    ) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_complete))
-            .setMessage(getString(R.string.missing_mandatory_fields))
-            .setEmptyMandatoryFields(emptyMandatoryFields.keys.toList())
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
-    override fun showErrorFieldsMessage(errorFields: List<String>) {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.unable_to_complete))
-            .setMessage(getString(R.string.field_errors))
-            .setEmptyMandatoryFields(errorFields)
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-    }
-
     override fun goBack() {
         onBackPressed()
     }
@@ -296,22 +239,26 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun attemptFinish() {
         if (mode == EnrollmentMode.CHECK) {
-            presenter.backIsClicked()
+            formView.onBackPressed()
         } else {
             showDeleteDialog()
         }
     }
 
     private fun showDeleteDialog() {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.title_delete_go_back))
-            .setMessage(getString(R.string.delete_go_back))
-            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+        DataEntryBottomDialog(
+            dataEntryDialogUiModel = DataEntryDialogUiModel(
+                title = getString(R.string.not_saved),
+                subtitle = getString(R.string.discard_go_back),
+                iconResource = R.drawable.ic_alert,
+                mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
+                secondaryButton = DialogButtonStyle.DiscardButton()
+            ),
+            onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
                 finish()
             }
-            .setNegativeButton()
-            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+        ).show(supportFragmentManager, DataEntryDialogUiModel::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
@@ -412,16 +359,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     /*endregion*/
 
-    /*region DATA ENTRY*/
-    override fun showFields(fields: List<FieldUiModel>) {
-        fields.filter {
-            it !is DisplayViewModel
-        }
-
-        formView.render(fields)
-    }
-
-    /*endregion*/
     override fun requestFocus() {
         binding.root.requestFocus()
     }
@@ -435,14 +372,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun performSaveClick() {
-        if (currentFocus is EditText) {
-            presenter.setFinishing()
-            currentFocus?.apply { clearFocus() }
-        } else {
-            if (!presenter.hasAccess() || presenter.dataIntegrityCheck()) {
-                presenter.finish(mode)
-            }
-        }
+        formView.onSaveClick()
     }
 
     override fun showProgress() {
@@ -462,21 +392,5 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setMessage(R.string.enrollment_date_edition_warning)
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
-    }
-
-    override fun displayConfigurationErrors(
-        configurationError: List<RulesUtilsProviderConfigurationError>
-    ) {
-        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.warning_error_on_complete_title)
-            .setMessage(configurationError.toMessage(this))
-            .setPositiveButton(
-                R.string.action_close
-            ) { _, _ -> }
-            .setNegativeButton(
-                getString(R.string.action_do_not_show_again)
-            ) { _, _ -> presenter.disableConfErrorMessage() }
-            .setCancelable(false)
-            .show()
     }
 }

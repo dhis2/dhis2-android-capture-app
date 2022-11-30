@@ -1,13 +1,19 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class SearchPageConfigurator(
-    val searchRepository: SearchRepository,
-    val featureConfigRepository: FeatureConfigRepository
+    val searchRepository: SearchRepository
 ) : NavigationPageConfigurator {
+
+    private var canDisplayMap: Boolean = false
+    private var canDisplayAnalytics: Boolean = false
+
+    fun initVariables(): SearchPageConfigurator {
+        canDisplayMap = searchRepository.programHasCoordinates()
+        canDisplayAnalytics = searchRepository.programHasAnalytics()
+        return this
+    }
 
     override fun displayListView(): Boolean {
         return true
@@ -18,12 +24,10 @@ class SearchPageConfigurator(
     }
 
     override fun displayMapView(): Boolean {
-        return searchRepository.programHasCoordinates()
+        return canDisplayMap
     }
 
     override fun displayAnalytics(): Boolean {
-        return searchRepository.programHasAnalytics() && featureConfigRepository.isFeatureEnable(
-            Feature.ANDROAPP_2557
-        ) || featureConfigRepository.isFeatureEnable(Feature.ANDROAPP_2557_VG)
+        return canDisplayAnalytics
     }
 }

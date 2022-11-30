@@ -9,21 +9,21 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
-import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.maps.geometry.bound.BoundsGeometry
+import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
+import org.dhis2.maps.geometry.point.MapPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonPointToFeature
+import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
+import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy
 import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.FeatureType
@@ -92,7 +92,7 @@ class MapTeisToFeatureCollectionTest {
         val relationshipModels = listOf(RelationshipUiCompomentDummy.relationshipUiComponentModel())
         whenever(
             mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships)
-        )doReturn relationshipModels
+        ) doReturn relationshipModels
         whenever(mapRelationshipsToFeatureCollection.map(relationshipModels)) doReturn Pair(
             mapOf(relationshipModels[0].displayName to FeatureCollection.fromFeature(feature)),
             boundingBox.getEnclosingBoundingBox(listOf())

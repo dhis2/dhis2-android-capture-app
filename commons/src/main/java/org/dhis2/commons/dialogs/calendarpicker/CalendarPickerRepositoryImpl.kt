@@ -5,7 +5,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 
 class CalendarPickerRepositoryImpl(
     private val preferences: PreferenceProvider
-): CalendarPickerRepository {
+) : CalendarPickerRepository {
 
     override fun isDatePickerStyle(): Boolean {
         return if (preferences.contains(Preference.DATE_PICKER)) {

@@ -1,34 +1,38 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.Bindings.addEnrollmentIcons
 import org.dhis2.Bindings.hasFollowUp
 import org.dhis2.Bindings.setAttributeList
 import org.dhis2.Bindings.setStatusText
 import org.dhis2.Bindings.setTeiImage
-import org.dhis2.Bindings.toDateSpan
+import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
-import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 
 abstract class BaseTeiViewHolder(
     private val binding: ItemSearchTrackedEntityBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    lateinit var presenter: SearchTEContractsModule.Presenter
     lateinit var teiModel: SearchTeiModel
 
     abstract fun itemViewClick()
 
     abstract fun itemConfiguration()
 
+    init {
+        binding.composeProgramList.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
+
     fun bind(
-        presenter: SearchTEContractsModule.Presenter,
         teiModel: SearchTeiModel,
         attributeVisibilityCallback: () -> Unit,
         profileImagePreviewCallback: (String) -> Unit
     ) {
-        this.presenter = presenter
         this.teiModel = teiModel
         if (teiModel.isAttributeListOpen) {
             showAttributeList()
@@ -52,7 +56,7 @@ abstract class BaseTeiViewHolder(
             binding.setFollowUp(enrollments.hasFollowUp())
             programInfo.addEnrollmentIcons(
                 itemView.context,
-                binding.programList,
+                binding.composeProgramList,
                 if (selectedEnrollment != null) selectedEnrollment.program() else null
             )
             if (selectedEnrollment != null) {

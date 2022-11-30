@@ -189,9 +189,6 @@
     <string name="log_out">Log Out</string>
     <string name="block_session">Block Session</string>
 
-    <!--MAP SELECTION-->
-    <string name="select_location">Select location</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
     <string name="fifteen_minute">15 Minutes</string>
@@ -268,9 +265,10 @@
     <string name="missing_mandatory_fields_title">Mandatory fields are missing</string>
     <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
     <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>
-    <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
+    <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="title_delete_go_back">Your data is not saved</string>
     <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
+    <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
@@ -459,6 +457,10 @@
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>
+    <string name="unable_to_save">Unable to save</string>
+    <string name="warnings_in_form">There are warnings in the form</string>
+    <string name="what_to_do">What do yo want to do?</string>
+    <string name="review">Review</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
     <string name="unselect_enrollment">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
@@ -469,7 +471,6 @@
     <string name="sectionSelectorPrev">PREV</string>
     <string name="sectionSelectorNext">NEXT</string>
     <string name="event_overview">Details</string>
-    <string name="event_event">Event</string>
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>
     <string name="complete_add_new"><![CDATA[Complete & add new]]></string>
@@ -543,10 +544,9 @@
     <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
-    <string name="dashboard_menu_delete_tei">Delete TEI</string>
+    <string name="dashboard_menu_delete_tei_v2">Delete %s</string>
     <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
-    <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
     <string name="validation_url">This is not a valid url</string>
     <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
     <string name="adjusting_form">Adjusting form…</string>
@@ -600,10 +600,8 @@
     <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
     <string name="polygon_captured">Polygon captured</string>
     <string name="polygon">Polygon</string>
-    <string name="map_layers">Map layers</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">It is not a correct format.</string>
     <string name="fingerprint_title">Fingerprint</string>
     <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
     <string name="security_title">Security</string>
@@ -701,13 +699,6 @@
     <string name="syncing_period_not_editable">Syncing period is not editable</string>
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
-    <string name="dialog_layer_satellite">Show satellite view</string>
-    <string name="dialog_layer_satellite_base_map">Satellite view</string>
-    <string name="dialog_layer_street_base_map">Street view</string>
-    <string name="dialog_layer_event">Show events</string>
-    <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
-    <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
-    <string name="dialog_layer_heatmap">Show heatmap layer</string>
     <string name="downloading">Downloading</string>
     <string name="filter_sync_synced">Synced</string>
     <string name="filter_sync_not_synced">Not Synced</string>
@@ -727,7 +718,6 @@
     <string name="filters_title_event_status">Event status</string>
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
-    <string name="action_apply">Apply</string>
     <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
     <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
     <string name="validation_rules_empty_description">No description or instruction provided</string>
@@ -738,8 +728,6 @@
     <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
-    <string name="no_data">No data</string>
-    <string name="no_coordinates_item">This %s has no coordinates.</string>
     <string name="event_data">Data</string>
     <string name="download_tei_error">The selected %s could not be downloaded.</string>
     <string name="completed_by">Completed by %s: %s</string>
@@ -758,7 +746,7 @@
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
     <string name="coordinates_error">Coordinates values are not valid</string>
     <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
-    <string name="add_image">Add Image</string>
+    <string name="break_glass_error_v2">You cannot enroll a %s from other org units in this program because it is protected.\nContact your administrator.</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
 
@@ -827,7 +815,6 @@
     <string name="section_indicators">Indicators</string>
     <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
     <string name="value">Value</string>
-    <string name="enrolled_in">Enrolled in:</string>
     <string name="section_charts_indicators">Charts and indicators</string>
     <string name="take_photo">Take Photo</string>
     <string name="from_gallery">Choose from gallery</string>
@@ -838,6 +825,8 @@
     <string name="break_glass_hint">Describe the reason here</string>
     <string name="authenticating">Authenticating</string>
     <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
+    <string name="login_error_bad_credentials">Wrong credentials</string>
+    <string name="login_error_unknown_host">Unknown server</string>
     <string name="invalid_integer">Value must be an integer</string>
     <string name="openid_session_expired">The session has expired</string>
     <string name="openid_session_expired_message">Your current session has expired. For security reasons you will need to provide your credentials again</string>
@@ -845,9 +834,6 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
-    <string name="unsupported_field_description">This field is not available for mobile capture</string>
-    <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
-    <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="show_radar_graph">Show as Radar</string>
@@ -855,4 +841,64 @@
     <string name="filter_follow_up_label">Followed up %s</string>
     <string name="wrong_date_format">%s can\'t be parsed as a date</string>
     <string name="update_field_error">This field could not be updated. Please try again</string>
+    <string name="edition">Edition</string>
+    <string name="available">Available</string>
+    <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
+    <string name="edition_expired">This data is not editable because its edition time is expired</string>
+    <string name="edition_no_write_access">You do not have permission to edit this data</string>
+    <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
+    <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
+    <string name="edition_enrollment_is_no_open">This data is not editable because the enrollment is completed or cancelled</string>
+    <string name="edition_orgunit_capture_scope">You cannot edit data from this organisation unit</string>
+    <string name="reload_list">Reset search</string>
+    <string name="error_tei_online_search_title">The online search returned the following message:</string>
+    <string name="program_rules_loop_warning_title">Program rules warning</string>
+    <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
+    <string name="granular_sync_refresh">REFRESH</string>
+    <string name="unknown_date">Unknown</string>
+    <string name="granular_sync_refresh_title">Refresh all data</string>
+    <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
+    <string name="add_accout">Add Account</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="manage_accounts">Manage Accounts</string>
+    <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
+    <string name="troubleshooting_language_title">Language</string>
+    <string name="troubleshooting_language_description">Tap here to change the language of the application</string>
+    <string name="troubleshooting_rules_title">Program rule validation</string>
+    <string name="troubleshooting_rules_description">This action will check all the rules configured and display bad configurations if any</string>
+    <string name="troubleshooting_ongoing_rule_validation">Validating program rules…</string>
+    <string name="troubleshooting_pass_rule_validation">No warnings found</string>
+    <string name="troobleshooting_pass_rule_validation_title">Everything looks great</string>
+    <string name="not_saved">Not saved</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
+    <string name="not_now">Not now</string>
+    <string name="search_loading_more">Loading more results</string>
+    <string name="search_no_results_in_program">No more results for %s</string>
+    <string name="search_outside_action">Search outside this program</string>
+    <string name="string_no_more_results">No more results</string>
+    <string name="search_no_more_results_offline">Search for more results</string>
+    <string name="search_no_results">There are no results for this search</string>
+    <string name="search_too_many_results">Too many results</string>
+    <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>
+    <string name="search_create_new">Create new</string>
+    <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
+    <string name="action_ok">Ok</string>
+    <string name="init_search">Start a search to find any %s</string>
+    <string name="search_or_create">You can search or create a new %s</string>
+    <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
+    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
+    <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
+    <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
+    <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
+    <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
+    <string name="fields_mandatory_missing">Some mandatory fields are missing and the form cannot be saved.</string>
+    <string name="fields_mandatory_missing_discard">Some mandatory fields are missing and the form cannot be saved. \nIf you exit now the changes will be discarded.</string>
+    <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
+    <string name="re_opened">Re-opened</string>
+    <string name="account_disable_title">Account disabled</string>
+    <string name="account_disable_message">Your account has been disabled by an administrator.</string>
+    <string name="search_unable_search_outside">To search outside this program open the search form and fill one of the following %s fields:</string>
+    <string name="enrollment_org_unit">Enrollment Org Unit</string>
 </resources>

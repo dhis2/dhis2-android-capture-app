@@ -28,12 +28,9 @@
 
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.filters.FilterItem;
-import org.dhis2.utils.filters.FilterManager;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.dhis2.commons.filters.FilterItem;
+import org.dhis2.commons.filters.FilterManager;
 
 import java.util.List;
 
@@ -56,4 +53,6 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
     void setFilters(List<FilterItem> filterItems);
 
     void hideFilters();
+
+    void showGranularSync();
 }

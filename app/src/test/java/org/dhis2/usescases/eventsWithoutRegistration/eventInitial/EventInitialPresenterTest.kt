@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
-import android.app.DatePickerDialog
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -8,27 +7,22 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import java.util.Date
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventCreationType
 import org.dhis2.utils.Result
-import org.dhis2.utils.RulesUtilsProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
-import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.category.CategoryOption
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
+import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
+import org.hisp.dhis.android.core.event.EventNonEditableReason.BLOCKED_BY_COMPLETION
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -64,30 +58,23 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should initialize when creating a new event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", null, "stageUid", catCombo)
+        initMocks("uid", null, "stageUid")
 
         presenter.init("uid", null, "orgUnit", "stageUid")
         verify(view).setAccessDataWrite(true)
         verify(view).setProgram(any())
-        verify(view).setCatComboOptions(catCombo, listOf(), null)
         verify(view).setProgramStage(any())
-        verify(view).setOrgUnit(any(), any())
     }
 
     @Test
     fun `Should initialize when opening an event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", "eventId", "stageUid", catCombo)
+        initMocks("uid", "eventId", "stageUid")
 
         presenter.init("uid", "eventId", "orgUnit", "stageUid")
         verify(view).setAccessDataWrite(true)
         verify(view).setProgram(any())
         verify(view).setProgramStage(any())
-        verify(view).setEvent(any())
-        verify(view).setCatComboOptions(catCombo, listOf(), null)
         verify(view).updatePercentage(any())
-        verify(view).setOrgUnit(any(), any())
     }
 
     @Test
@@ -124,8 +111,7 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should delete event when the delete option is clicked`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", "event", "stageUid", catCombo)
+        initMocks("uid", "event", "stageUid")
 
         presenter.init("uid", "event", "orgUnit", "stage")
         presenter.deleteEvent("tei_uid")
@@ -155,15 +141,6 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should get the programStage ObjectStyle`() {
-        val style = ObjectStyle.builder().color("color").icon("icon").build()
-        whenever(eventInitialRepository.getObjectStyle("stage")) doReturn Observable.just(style)
-
-        presenter.getStageObjectStyle("stage")
-        verify(view).renderObjectStyle(style)
-    }
-
-    @Test
     fun `Should get programStage`() {
         val programStage = ProgramStage.builder().uid("stage").build()
         whenever(
@@ -176,8 +153,7 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should go back on closing a previously saved event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", "event", "stageUid", catCombo)
+        initMocks("uid", "event", "stageUid")
 
         presenter.init("uid", "event", "orgUnit", "stage")
         presenter.onBackClick()
@@ -195,10 +171,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should create an event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.createEvent(
                 "enrollment",
@@ -223,10 +198,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should show error when there is an error creating an event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.createEvent(
                 "enrollment",
@@ -251,10 +225,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should create an schedule event permanent`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.scheduleEvent(
                 "enrollment",
@@ -279,10 +252,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should how error when there is an problem creating a scheduled event permanent`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.scheduleEvent(
                 "enrollment",
@@ -307,10 +279,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should create an schedule event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.scheduleEvent(
                 "enrollment",
@@ -335,10 +306,9 @@ class EventInitialPresenterTest {
 
     @Test
     fun `Should how error when there is an problem creating a scheduled event`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
         val geometry = Geometry.builder().type(FeatureType.POINT).build()
         val date = Date()
-        initMocks("uid", null, "stage", catCombo)
+        initMocks("uid", null, "stage")
         whenever(
             eventInitialRepository.scheduleEvent(
                 "enrollment",
@@ -362,190 +332,10 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should successfully edit event`() {
-        val event = Event.builder().uid("event_uid").build()
-        val geometry = Geometry.builder().type(FeatureType.POINT).build()
-        whenever(
-            eventInitialRepository.editEvent(
-                "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
-            )
-        ) doReturn Observable.just(event)
-
-        presenter.editEvent(
-            "tei",
-            "stage",
-            "event_uid",
-            "date",
-            "orgUnit",
-            "catCombo",
-            "catOptionCombo",
-            geometry
-        )
-
-        verify(view).onEventUpdated("event_uid")
-    }
-
-    @Test
-    fun `Should display message when there is a problem editing event`() {
-        val event = Event.builder().uid("event_uid").build()
-        val geometry = Geometry.builder().type(FeatureType.POINT).build()
-        whenever(
-            eventInitialRepository.editEvent(
-                "tei", "event_uid", "date", "orgUnit", "catCombo", "catOptionCombo", geometry
-            )
-        ) doReturn Observable.error(Throwable("Error"))
-
-        presenter.editEvent(
-            "tei",
-            "stage",
-            "event_uid",
-            "date",
-            "orgUnit",
-            "catCombo",
-            "catOptionCombo",
-            geometry
-        )
-
-        verify(view).displayMessage("Error")
-    }
-
-    @Test
-    fun `Should show date dialog`() {
-        val listener: DatePickerDialog.OnDateSetListener = mock()
-        presenter.onDateClick(listener)
-        verify(view).showDateDialog(listener)
-    }
-
-    @Test
-    fun `Should show orgUnit selector`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        initMocks("uid", null, "stageUid", catCombo, true)
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.onOrgUnitButtonClick()
-        verify(view).showOrgUnitSelector(any())
-    }
-
-    @Test
-    fun `Should check fab button visibility on field changes`() {
-        presenter.onFieldChanged("", 0, 1, 1)
-        verify(view).checkActionButtonVisibility()
-    }
-
-    @Test
     fun `Should clear disposable`() {
         val size = presenter.compositeDisposable.size()
         presenter.onDettach()
         assert(size == 0)
-    }
-
-    @Test
-    fun `Should display message`() {
-        presenter.displayMessage("message")
-        verify(view).displayMessage("message")
-    }
-
-    @Test
-    fun `Should get the CategoryOptionCombo uid`() {
-        val uid = "uid"
-        whenever(eventInitialRepository.getCategoryOptionCombo("catCombo", listOf())) doReturn uid
-
-        val catOptionCombo = presenter.getCatOptionCombo("catCombo", listOf(), listOf())
-        assertTrue(uid == catOptionCombo)
-    }
-
-    @Test
-    fun `Should get the stage last date`() {
-        val date = Date()
-        whenever(eventInitialRepository.getStageLastDate("stageUid", "enrollment")) doReturn date
-
-        val result = presenter.getStageLastDate("stageUid", "enrollment")
-        assertTrue(date == result)
-    }
-
-    @Test
-    fun `Should get event orgUnit`() {
-        val orgUnit = OrganisationUnit.builder().uid("uid").displayName("name").build()
-        whenever(
-            eventInitialRepository.getOrganisationUnit("uid")
-        ) doReturn Observable.just(orgUnit)
-
-        presenter.getEventOrgUnit("uid")
-        verify(view).setOrgUnit(orgUnit.uid(), orgUnit.displayName())
-    }
-
-    @Test
-    fun `Should initialize orgUnit when there is only one orgUnit`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-
-        initMocks("uid", null, "stageUid", catCombo)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf())
-        whenever(view.eventcreateionType()) doReturn EventCreationType.ADDNEW
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(any())
-    }
-
-    @Test
-    fun `Should initialize orgUnit when there are more than one orgUnit`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-        val filteredOrgUnit =
-            OrganisationUnit.builder().uid("orgUnit").displayName("name").build()
-
-        initMocks("uid", null, "stageUid", catCombo, true)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.just(listOf(filteredOrgUnit))
-        whenever(preferences.contains(Preference.CURRENT_ORG_UNIT)) doReturn true
-        whenever(preferences.getString(Preference.CURRENT_ORG_UNIT)) doReturn "orgUnit"
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(any())
-    }
-
-    @Test
-    fun `Should initialize orgUnits when there are not any orgUnit available`() {
-        val catCombo = CategoryCombo.builder().uid("catCombo").build()
-        val selectedDate = Date()
-        val date = DateUtils.databaseDateFormat().format(selectedDate)
-
-        initMocks("uid", null, "stageUid", catCombo, true)
-        whenever(
-            eventInitialRepository.filteredOrgUnits(date, "uid", null)
-        ) doReturn Observable.error(Throwable("Error"))
-
-        presenter.init("uid", null, "orgUnit", "stageUid")
-        presenter.initOrgunit(selectedDate)
-
-        verify(view).setInitialOrgUnit(null)
-    }
-
-    @Test
-    fun `Should get CategoryOption`() {
-        val categoryOption = CategoryOption.builder().uid("uid").build()
-        whenever(eventInitialRepository.getCatOption("uid")) doReturn categoryOption
-
-        val result = presenter.getCatOption("uid")
-        assert(categoryOption.uid() == result.uid())
-    }
-
-    @Test
-    fun `Should get the CategoryOptions size`() {
-        val size = 2
-        whenever(eventInitialRepository.getCatOptionSize("uid")) doReturn size
-
-        val result = presenter.catOptionSize("uid")
-        assert(result == size)
     }
 
     @Test
@@ -558,19 +348,6 @@ class EventInitialPresenterTest {
     fun `Should clear changing coordinates`() {
         presenter.setChangingCoordinates(false)
         verify(preferences).removeValue(Preference.EVENT_COORDINATE_CHANGED)
-    }
-
-    @Test
-    fun `Should get the list of the categoryOptions`() {
-        val catOptions = listOf<CategoryOption>(
-            CategoryOption.builder().uid("uid1").build(),
-            CategoryOption.builder().uid("uid2").build()
-        )
-        whenever(eventInitialRepository.getCategoryOptions("catUid")) doReturn catOptions
-
-        val result = presenter.getCatOptions("catUid")
-        assert(result.size == 2)
-        assert(result[1].uid() == "uid2")
     }
 
     @Test
@@ -592,17 +369,36 @@ class EventInitialPresenterTest {
     }
 
     @Test
-    fun `Should track event analitycs`() {
+    fun `Should track event analytics`() {
         presenter.onEventCreated()
 
         verify(matomoAnalyticsController).trackEvent(any(), any(), any())
+    }
+
+    @Test
+    fun `Should return true if event is editable`() {
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(Editable())
+
+        val isEditable = presenter.isEventEditable
+        assert(isEditable)
+    }
+
+    @Test
+    fun `Should return false if event is not editable`() {
+        whenever(
+            eventInitialRepository.editableStatus
+        ) doReturn Flowable.just(NonEditable(BLOCKED_BY_COMPLETION))
+
+        val isEditable = presenter.isEventEditable
+        assert(!isEditable)
     }
 
     private fun initMocks(
         uid: String?,
         eventId: String?,
         programStageUid: String?,
-        catCombo: CategoryCombo,
         moreOrgUnits: Boolean = false
     ) {
         val program = Program.builder().uid(uid).build()
@@ -615,22 +411,7 @@ class EventInitialPresenterTest {
         }
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)
-        whenever(eventInitialRepository.getGeometryModel(uid, null)) doReturn Single.just(
-            CoordinateViewModel.create(
-                "id", "", false, null, null,
-                true, null, ObjectStyle.builder().build(), null, false,
-                false, null, null, null
-            )
-        )
         whenever(eventInitialRepository.getProgramWithId(uid)) doReturn Observable.just(program)
-        whenever(eventInitialRepository.catCombo(uid)) doReturn Observable.just(catCombo)
-        whenever(eventInitialRepository.orgUnits(uid)) doReturn Observable.just(orgUnits.toList())
-        whenever(
-            eventInitialRepository.catOptionCombos(catCombo.uid())
-        ) doReturn Observable.just(listOf<CategoryOptionCombo>())
-        whenever(
-            eventInitialRepository.getOrganisationUnit("orgUnit")
-        ) doReturn Observable.just(orgUnits[0])
 
         if (eventId != null) {
             eventMocks(eventId)
@@ -644,15 +425,12 @@ class EventInitialPresenterTest {
     private fun eventMocks(eventId: String) {
         val event = Event.builder().uid(eventId).build()
         val programStage = ProgramStage.builder().uid(eventId).build()
-        val stringCategoryOptionMap = mutableMapOf<String, CategoryOption>()
+        val editionStatus = NonEditable(BLOCKED_BY_COMPLETION)
 
         whenever(eventInitialRepository.event(eventId)) doReturn Observable.just(event)
         whenever(
             eventInitialRepository.programStageForEvent(eventId)
         ) doReturn Flowable.just(programStage)
-        whenever(
-            eventInitialRepository.getOptionsFromCatOptionCombo(eventId)
-        ) doReturn Flowable.just(stringCategoryOptionMap)
 
         whenever(eventInitialRepository.list()) doReturn Flowable.just(listOf())
         whenever(
@@ -666,8 +444,12 @@ class EventInitialPresenterTest {
                 "",
                 mutableMapOf(),
                 mutableMapOf(),
+                mutableMapOf(),
                 false to false
             )
         ) doReturn Pair(mutableListOf(), mutableListOf())
+        whenever(eventInitialRepository.editableStatus) doReturn Flowable.just(editionStatus)
+        whenever(view.context) doReturn mock()
+        whenever(view.context.getString(any())) doReturn "reason"
     }
 }

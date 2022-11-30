@@ -1,8 +1,9 @@
 package org.dhis2.uicomponents.map.mocks
 
-import org.dhis2.uicomponents.map.model.RelationshipDirection
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
-import org.dhis2.uicomponents.map.model.TeiMap
+import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.maps.model.RelationshipDirection
+import org.dhis2.maps.model.RelationshipUiComponentModel
+import org.dhis2.maps.model.TeiMap
 
 object RelationshipUiCompomentDummy {
 
@@ -29,7 +30,8 @@ object RelationshipUiCompomentDummy {
                 "",
                 -1,
                 ""
-            )
+            ),
+            RelationshipOwnerType.TEI
         )
     }
 
@@ -56,7 +58,8 @@ object RelationshipUiCompomentDummy {
                 "",
                 -1,
                 ""
-            )
+            ),
+            RelationshipOwnerType.TEI
         )
     }
 
@@ -71,7 +74,8 @@ object RelationshipUiCompomentDummy {
             RelationshipDirection.FROM,
             false,
             TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
-            TeiMap(TEIUID_TO, geometryTo, "", -1, "")
+            TeiMap(TEIUID_TO, geometryTo, "", -1, ""),
+            RelationshipOwnerType.TEI
         )
     }
 

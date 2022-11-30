@@ -19,6 +19,8 @@ import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -35,14 +37,18 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
-import org.dhis2.Bindings.closeKeyboard
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
@@ -50,10 +56,12 @@ import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
-import org.dhis2.utils.Constants.RQ_QR_SCANNER
-import org.dhis2.utils.D2ErrorUtils
+import org.dhis2.utils.Constants.ACCOUNT_USED
+import org.dhis2.utils.Constants.EXTRA_DATA
+import org.dhis2.utils.Constants.SERVER
+import org.dhis2.utils.Constants.SESSION_DIALOG_RQ
+import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
@@ -65,6 +73,10 @@ import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
+const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
+const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
+const val IS_DELETION = "IS_DELETION"
+const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -77,17 +89,35 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     @Inject
     lateinit var openIdProviders: OpenIdProviders
 
+    @Inject
+    lateinit var resourceManager: ResourceManager
+
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
     var userManager: UserManager? = null
     private var skipSync = false
+    private var openIDRequestCode = -1
 
     companion object {
-        fun bundle(skipSync: Boolean = false): Bundle {
+        fun bundle(
+            skipSync: Boolean = false,
+            accountsCount: Int = -1,
+            isDeletion: Boolean = false,
+            logOutReason: OpenIdSession.LogOutReason? = null
+        ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
+                putBoolean(IS_DELETION, isDeletion)
+                putInt(ACCOUNTS_COUNT, accountsCount)
+                when (logOutReason) {
+                    OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
+                    OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
+                        EXTRA_ACCOUNT_DISABLED,
+                        true
+                    )
+                }
             }
         }
     }
@@ -108,6 +138,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+        val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
+        val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
+
+        if ((isDeletion && accountsCount >= 1) || (!isDeletion && accountsCount > 1)) {
+            openAccountsActivity()
+        }
+
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -164,10 +201,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpLoginInfo()
-
+        checkMessage()
         presenter.apply {
             init(userManager)
             checkServerInfoAndShowBiometricButton()
+        }
+
+        if (!isDeletion && accountsCount == 1) {
+            blockLoginInfo()
         }
     }
 
@@ -244,7 +285,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun renderError(throwable: Throwable) {
         showInfoDialog(
             getString(R.string.login_error),
-            D2ErrorUtils.getErrorMessage(this, throwable)
+            resourceManager.parseD2Error(throwable)
         )
     }
 
@@ -291,6 +332,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             override fun onClick(p0: View) {
                 navigateToPrivacyPolicy()
             }
+
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = ContextCompat.getColor(context, R.color.colorPrimary)
                 ds.isUnderlineText = true
@@ -368,7 +410,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.text.toString()
         )
         ) {
-            if (presenter.canHandleBiometrics() == true) {
+            // This is commented until fingerprint login for multiuser is supported
+            /* if (presenter.canHandleBiometrics() == true) {
                 showInfoDialog(
                     getString(R.string.biometrics_security_title),
                     getString(R.string.biometrics_security_text),
@@ -387,6 +430,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         }
                     }
                 )
+               goToNextScreen()
             } else {
                 presenter.saveUserCredentials(
                     binding.serverUrlEdit.text.toString(),
@@ -394,7 +438,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     ""
                 )
                 goToNextScreen()
-            }
+            } */
+            presenter.saveUserCredentials(
+                binding.serverUrlEdit.text.toString(),
+                binding.userNameEdit.text.toString(),
+                ""
+            )
+            goToNextScreen()
         } else {
             goToNextScreen()
         }
@@ -411,10 +461,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
-            qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
-            qrUrl?.let { setUrl(it) }
-        } else if (resultCode == Activity.RESULT_OK) {
+        if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 presenter.handleAuthResponseData(
                     binding.serverUrlEdit.text.toString(),
@@ -427,7 +474,67 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showBiometricButton() {
-        binding.biometricButton.visibility = View.VISIBLE
+        // This is commented until fingerprint login for multiuser is supported
+        // binding.biometricButton.visibility = View.VISIBLE
+    }
+
+    private val requestQRScanner = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == RESULT_OK) {
+            qrUrl = it.data?.getStringExtra(EXTRA_DATA)
+            qrUrl?.let { setUrl(it) }
+        }
+    }
+
+    private val requestAccount = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val wasAccountClicked = result.data?.extras?.getBoolean(ACCOUNT_USED) ?: false
+            setAccount(
+                result.data?.extras?.getString(SERVER) ?: getDefaultServerProtocol(),
+                result.data?.extras?.getString(USER),
+                wasAccountClicked
+            )
+        }
+        if (result.resultCode == RESULT_CANCELED) {
+            resetLoginInfo()
+        }
+    }
+
+    private fun resetLoginInfo() {
+        binding.serverUrlEdit.alpha = 1f
+        binding.userNameEdit.alpha = 1f
+        binding.serverUrlEdit.isEnabled = true
+        binding.userNameEdit.isEnabled = true
+        binding.clearUrl.visibility = View.VISIBLE
+        binding.clearUserNameButton.visibility = View.VISIBLE
+    }
+
+    private fun blockLoginInfo() {
+        binding.serverUrlEdit.alpha = 0.5f
+        binding.userNameEdit.alpha = 0.5f
+        binding.serverUrlEdit.isEnabled = false
+        binding.userNameEdit.isEnabled = false
+        binding.clearUrl.visibility = View.GONE
+        binding.clearUserNameButton.visibility = View.GONE
+    }
+
+    /*
+    * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
+    * */
+    private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
+        serverUrl?.let { binding.serverUrlEdit.setText(it) }
+        binding.userNameEdit.setText(userName ?: "")
+        loginViewModel.setAccountInfo(serverUrl, userName)
+        binding.userPassEdit.text = null
+//        skipSync = wasAccountClicked
+        if (wasAccountClicked) {
+            blockLoginInfo()
+        } else {
+            resetLoginInfo()
+        }
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
@@ -455,9 +562,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun navigateToQRActivity() {
-        Intent(context, ScanActivity::class.java).apply {
-            startActivityForResult(this, RQ_QR_SCANNER)
-        }
+        requestQRScanner.launch(Intent(context, ScanActivity::class.java))
     }
 
     private fun setUpLoginInfo() {
@@ -486,6 +591,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
         intentData?.let {
+            openIDRequestCode = intentData.requestCode
             startActivityForResult(intentData.intent, intentData.requestCode)
         }
     }
@@ -494,5 +600,45 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         activity?.let {
             startActivity(Intent(it, PolicyView::class.java))
         }
+    }
+
+    override fun openAccountsActivity() {
+        requestAccount.launch(Intent(this, AccountsActivity::class.java))
+    }
+
+    private fun checkMessage() {
+        if (intent.getBooleanExtra(EXTRA_SESSION_EXPIRED, false)) {
+            showSessionExpired()
+        } else if (intent.getBooleanExtra(EXTRA_ACCOUNT_DISABLED, false)) {
+            showAccountDisabled()
+        }
+    }
+
+    private fun showSessionExpired() {
+        val sessionDialog = CustomDialog(
+            this,
+            getString(R.string.openid_session_expired),
+            getString(R.string.openid_session_expired_message),
+            getString(R.string.action_accept),
+            null,
+            SESSION_DIALOG_RQ,
+            null
+        )
+        sessionDialog.setCancelable(false)
+        sessionDialog.show()
+    }
+
+    private fun showAccountDisabled() {
+        val sessionDialog = CustomDialog(
+            this,
+            getString(R.string.account_disable_title),
+            getString(R.string.account_disable_message),
+            getString(R.string.action_accept),
+            null,
+            SESSION_DIALOG_RQ,
+            null
+        )
+        sessionDialog.setCancelable(false)
+        sessionDialog.show()
     }
 }

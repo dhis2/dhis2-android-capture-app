@@ -4,15 +4,16 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.filter.FilterRepository
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.filters.FiltersAdapter
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -27,7 +28,9 @@ class MainModule(val view: MainView) {
         workManagerController: WorkManagerController,
         filterManager: FilterManager,
         filterRepository: FilterRepository,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
+        userManager: UserManager,
+        deleteUserData: DeleteUserData
     ): MainPresenter {
         return MainPresenter(
             view,
@@ -37,7 +40,9 @@ class MainModule(val view: MainView) {
             workManagerController,
             filterManager,
             filterRepository,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            userManager,
+            deleteUserData
         )
     }
 
@@ -49,16 +54,26 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun providePageConfigurator(
-        homeRepository: HomeRepository,
-        featureConfigRepository: FeatureConfigRepository
-    ): NavigationPageConfigurator {
-        return HomePageConfigurator(homeRepository, featureConfigRepository)
+    fun providePageConfigurator(homeRepository: HomeRepository): NavigationPageConfigurator {
+        return HomePageConfigurator(homeRepository)
     }
 
     @Provides
     @PerActivity
     fun providesNewFilterAdapter(): FiltersAdapter {
         return FiltersAdapter()
+    }
+
+    @Provides
+    @PerActivity
+    fun provideDeleteUserData(
+        workManagerController: WorkManagerController,
+        preferencesProvider: PreferenceProvider
+    ): DeleteUserData {
+        return DeleteUserData(
+            workManagerController,
+            FilterManager.getInstance(),
+            preferencesProvider
+        )
     }
 }

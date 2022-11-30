@@ -1,6 +1,8 @@
 This is a patch version that fixes:
-- [ANDROAPP-4274](https://jira.dhis2.org/browse/ANDROAPP-4274) Wrong behavior of the selector of org units with open/close dates
-- [ANDROAPP-4273](https://jira.dhis2.org/browse/ANDROAPP-4273) App displays incorrect screen in "Notes" tab
-- [ANDROAPP-4269](https://jira.dhis2.org/browse/ANDROAPP-4269) Unable to select future dates when scheduling an event
+- [ANDROAPP-4824] Attribute option combo set to null in auto generated events
+- [ANDROAPP-4823] Dropdown for type Number/Integer are displayed as normal input
+- [ANDROAPP-4814] Infinite login with wrong url/username/password
+- [ANDROAPP-4795] SMS Sync Unable to Send
 ....
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=12099).
+General system stability improvements to enhance the user's experience.
+You can find all the details on Jira and Github.

@@ -16,11 +16,9 @@ import java.util.ArrayList;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by ppajuelo on 12/06/2018.
- */
-
 public class ColorUtils {
+
+    public static final int ALPHA_20_PERCENT = 51;
 
     public static int parseColor(@NonNull String hexColor) {
         if (hexColor.length() == 4) {//Color is formatted as #fff
@@ -100,7 +98,6 @@ public class ColorUtils {
         double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
 
         return (L > 0.179d) ? Color.parseColor("#b3000000") : Color.parseColor("#e6ffffff");
-//        return (L > 0.179d) ? Color.BLACK : Color.WHITE;
     }
 
     public static int getAlphaContrastColor(int color) {
@@ -130,7 +127,7 @@ public class ColorUtils {
         double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
 
 
-        return (L > 0.179d) ? Color.parseColor("#b3000000") : Color.parseColor("#e6ffffff");
+        return (L > 0.500d) ? Color.parseColor("#b3000000") : Color.parseColor("#e6ffffff");
     }
 
     public static int getThemeFromColor(String color) {

@@ -4,14 +4,14 @@ import com.google.gson.GsonBuilder
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.core.functional.Either
 import org.dhis2.core.types.Tree
 import org.dhis2.core.types.leaf
 import org.dhis2.core.types.node
 import org.dhis2.core.types.root
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert
@@ -80,35 +80,42 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
-                                "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true,false),
+                                "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "DE 1_UID"
                             ),
+                            2,
                             children = listOf(
                                 leaf(FeedbackHelpItem("Feedback DE 1")),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, true,false),
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", true, true, false),
                                         "DE 1.1_UID"
                                     ),
+                                    3,
                                     children = listOf(leaf(FeedbackHelpItem("Feedback DE 1.1")))
                                 ),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.2", FeedbackItemValue("56%", "#c80f26", true, true,false),
+                                        "DE 1.2",
+                                        FeedbackItemValue("56%", "#c80f26", true, true, false),
                                         "DE 1.2_UID"
                                     ),
+                                    3,
                                     children = listOf(leaf(FeedbackHelpItem("Feedback DE 1.2")))
                                 )
                             )
                         ),
                         node(
                             FeedbackItem(
-                                "DE 2", FeedbackItemValue("100%", "#0CE922", true, true,false),
+                                "DE 2", FeedbackItemValue("100%", "#0CE922", true, true, false),
                                 "DE 2_UID"
                             ),
+                            2,
                             children = listOf(leaf(FeedbackHelpItem("Feedback DE 2")))
                         )
                     )
@@ -162,12 +169,14 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", false, true, false),
                                 "DE 1_UID"
                             ),
+                            2,
                             children = listOf(leaf(FeedbackHelpItem("Feedback DE 1")))
                         ),
                         node(
@@ -175,6 +184,7 @@ class GetFeedbackTest {
                                 "DE 4", FeedbackItemValue("56%", "#c80f26", false, true, false),
                                 "DE 4_UID"
                             ),
+                            2,
                             children = listOf(leaf(FeedbackHelpItem("Feedback DE 4")))
                         )
                     )
@@ -206,29 +216,40 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "DE 1_UID"
                             ),
+                            2,
                             children = listOf(
 
                                 leaf(FeedbackHelpItem("Feedback DE 1")),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, true, false),
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", true, true, false),
                                         "DE 1.1_UID"
                                     ),
+                                    3,
                                     children = listOf(
 
                                         leaf(FeedbackHelpItem("Feedback DE 1.1")),
                                         node(
                                             FeedbackItem(
                                                 "DE 1.1.1",
-                                                FeedbackItemValue("56%", "#c80", false, true, false),
+                                                FeedbackItemValue(
+                                                    "56%",
+                                                    "#c80",
+                                                    false,
+                                                    true,
+                                                    false
+                                                ),
                                                 "DE 1.1.1_UID"
                                             ),
+                                            4,
                                             children = listOf(
                                                 leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
                                             )
@@ -299,6 +320,7 @@ class GetFeedbackTest {
         givenOneEventWithValues(
             "ART New", listOf(
                 listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "FAIL", "CRITICAL"),
                 listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "NON CRITICAL"),
                 listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "NON CRITICAL"),
                 listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "CRITICAL")
@@ -313,23 +335,29 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "DE 1_UID"
                             ),
+                            2,
                             children = listOf(
-                                leaf(FeedbackHelpItem("Feedback DE 1"))
-                            )
-                        ),
-                        node(
-                            FeedbackItem(
-                                "DE 4", FeedbackItemValue("56%", "#c80f26", false, true, false),
-                                "DE 4_UID"
-                            ), children = listOf(
-                                leaf(FeedbackHelpItem("Feedback DE 4"))
-                            )
+                                leaf(FeedbackHelpItem("Feedback DE 1")),
+                                node(
+                                    FeedbackItem(
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", false, true, false),
+                                        "DE 1.1_UID"
+                                    ),
+                                    3,
+                                    children = listOf(
+                                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
+                                    )
+                                ),
+
+                                )
                         )
                     )
                 )
@@ -346,6 +374,7 @@ class GetFeedbackTest {
         givenOneEventWithValues(
             "ART New", listOf(
                 listOf("1", "DE 1", "Partly", "#FFC700", "Feedback DE 1", "OK", "NON CRITICAL"),
+                listOf("1.1", "DE 1.1", "86%", "#FFC700", "Feedback DE 1.1", "OK", "NON CRITICAL"),
                 listOf("2", "DE 2", "100%", "#0CE922", "Feedback DE 2", "OK", "CRITICAL"),
                 listOf("3", "DE 3", "86%", "#FFC700", "Feedback DE 3", "OK", "CRITICAL"),
                 listOf("4", "DE 4", "56%", "#c80f26", "Feedback DE 4", "FAIL", "NON CRITICAL")
@@ -360,21 +389,26 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", true, false, false),
                                 "DE 1_UID"
-                            ), children = listOf(
-                                leaf(FeedbackHelpItem("Feedback DE 1"))
-                            )
-                        ),
-                        node(
-                            FeedbackItem(
-                                "DE 4", FeedbackItemValue("56%", "#c80f26", false, false, false),
-                                "DE 4_UID"
-                            ), children = listOf(
-                                leaf(FeedbackHelpItem("Feedback DE 4"))
+                            ),
+                            2,
+                            children = listOf(
+                                leaf(FeedbackHelpItem("Feedback DE 1")),
+                                node(
+                                    FeedbackItem(
+                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, false, false),
+                                        "DE 1.1_UID"
+                                    ),
+                                    3,
+                                    children = listOf(
+                                        leaf(FeedbackHelpItem("Feedback DE 1.1"))
+                                    )
+                                )
                             )
                         )
                     )
@@ -407,25 +441,39 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", true, false, false),
                                 "DE 1_UID"
-                            ), children = listOf(
+                            ),
+                            2,
+                            children = listOf(
                                 leaf(FeedbackHelpItem("Feedback DE 1")),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", false, false, false),
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", false, false, false),
                                         "DE 1.1_UID"
-                                    ), children = listOf(
+                                    ),
+                                    3,
+                                    children = listOf(
                                         leaf(FeedbackHelpItem("Feedback 1.1")),
                                         node(
                                             FeedbackItem(
                                                 "DE 1.1.1",
-                                                FeedbackItemValue("56%", "#c80", false, true, false),
+                                                FeedbackItemValue(
+                                                    "56%",
+                                                    "#c80",
+                                                    false,
+                                                    true,
+                                                    false
+                                                ),
                                                 "DE 1.1.1_UID"
-                                            ), children = listOf(
+                                            ),
+                                            4,
+                                            children = listOf(
                                                 leaf(FeedbackHelpItem("Feedback DE 1.1.1"))
                                             )
                                         )
@@ -463,25 +511,39 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("ART New", null, "ART New UID"),
+                    1,
                     children = listOf(
                         node(
                             FeedbackItem(
                                 "DE 1", FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "DE 1_UID"
-                            ), children = listOf(
+                            ),
+                            2,
+                            children = listOf(
                                 leaf(FeedbackHelpItem("Feedback DE 1")),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", false, true, false),
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", false, true, false),
                                         "DE 1.1_UID"
-                                    ), children = listOf(
+                                    ),
+                                    3,
+                                    children = listOf(
                                         leaf(FeedbackHelpItem("Feedback DE 1.1")),
                                         node(
                                             FeedbackItem(
                                                 "DE 1.1.1",
-                                                FeedbackItemValue("56%", "#c80", false, false, false),
+                                                FeedbackItemValue(
+                                                    "56%",
+                                                    "#c80",
+                                                    false,
+                                                    false,
+                                                    false
+                                                ),
                                                 "DE 1.1.1_UID"
-                                            ), children = listOf(
+                                            ),
+                                            4,
+                                            children = listOf(
                                                 leaf(FeedbackHelpItem("Feedback 1.1.1"))
                                             )
                                         )
@@ -548,6 +610,7 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("DE 1", null, "DE 1_UID"),
+                    1,
                     children = listOf(
                         leaf(FeedbackHelpItem("Feedback DE 1")),
                         node(
@@ -555,13 +618,13 @@ class GetFeedbackTest {
                                 "ART New",
                                 FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "ART New UID"
-                            ), children = listOf(
+                            ), 2, children = listOf(
                                 node(
                                     FeedbackItem(
                                         "DE 1.1",
                                         FeedbackItemValue("86%", "#FFC700", true, true, false),
                                         "DE 1.1_UID"
-                                    ),
+                                    ), 3,
                                     children = listOf(
                                         leaf(FeedbackHelpItem("Feedback DE 1.1"))
                                     )
@@ -571,7 +634,7 @@ class GetFeedbackTest {
                                         "DE 1.2",
                                         FeedbackItemValue("56%", "#c80f26", true, true, false),
                                         "DE 1.2_UID"
-                                    ),
+                                    ), 3,
                                     children = listOf(
                                         leaf(FeedbackHelpItem("Feedback DE 1.2"))
                                     )
@@ -582,6 +645,7 @@ class GetFeedbackTest {
                 ),
                 node(
                     FeedbackItem("DE 2", null, "DE 2_UID"),
+                    1,
                     children = listOf(
                         leaf(FeedbackHelpItem("Feedback DE 2")),
                         node(
@@ -589,7 +653,7 @@ class GetFeedbackTest {
                                 "ART New",
                                 FeedbackItemValue("100%", "#0CE922", true, true, false),
                                 "ART New UID"
-                            )
+                            ), 2
                         )
                     )
                 )
@@ -643,6 +707,7 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("DE 1", null, "DE 1_UID"),
+                    1,
                     children = listOf(
                         leaf(FeedbackHelpItem("Feedback DE 1")),
                         node(
@@ -650,12 +715,13 @@ class GetFeedbackTest {
                                 "ART New",
                                 FeedbackItemValue("Partly", "#FFC700", false, true, false),
                                 "ART New UID"
-                            )
+                            ), 2
                         )
                     )
                 ),
                 node(
                     FeedbackItem("DE 4", null, "DE 4_UID"),
+                    1,
                     children = listOf(
                         leaf(FeedbackHelpItem("Feedback DE 4")),
                         node(
@@ -663,7 +729,7 @@ class GetFeedbackTest {
                                 "ART New",
                                 FeedbackItemValue("56%", "#c80f26", false, true, false),
                                 "ART New UID"
-                            )
+                            ), 2
                         )
                     )
                 )
@@ -694,6 +760,7 @@ class GetFeedbackTest {
             null, listOf(
                 node(
                     FeedbackItem("DE 1", null, "DE 1_UID"),
+                    1,
                     children = listOf(
                         leaf(FeedbackHelpItem("Feedback DE 1")),
                         node(
@@ -701,13 +768,14 @@ class GetFeedbackTest {
                                 "ART New",
                                 FeedbackItemValue("Partly", "#FFC700", true, true, false),
                                 "ART New UID"
-                            ), children = listOf(
+                            ), 2, children = listOf(
                                 node(
                                     FeedbackItem(
                                         "DE 1.1",
                                         FeedbackItemValue("86%", "#FFC700", false, true, false),
                                         "DE 1.1_UID"
                                     ),
+                                    3,
                                     children = listOf(
                                         leaf(FeedbackHelpItem("Feedback DE 1.1"))
                                     )
@@ -742,7 +810,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
             )
         ).thenReturn(Single.just(listOf()))
     }
@@ -756,18 +824,43 @@ class GetFeedbackTest {
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT1").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT1_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false,""),
+                Event.builder().uid("EVENT1_UID").build(),
+                0,
+                null,
+                true,
+                true,
+                "",
+                "",
+                listOf(),
+                null,
+                false,
+                false,
+                false,
+                ""
+            ),
             EventViewModel(
                 EventViewModelType.EVENT,
                 ProgramStage.builder().displayName("EVENT2").uid("STAGE_UID").build(),
-                Event.builder().uid("EVENT2_UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false,""
+                Event.builder().uid("EVENT2_UID").build(),
+                0,
+                null,
+                true,
+                true,
+                "",
+                "",
+                listOf(),
+                null,
+                false,
+                false,
+                false,
+                ""
             )
         )
 
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
             )
         ).thenReturn(Single.just(events))
 
@@ -784,7 +877,7 @@ class GetFeedbackTest {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
                 null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null
+                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
             )
         ).thenReturn(
             Single.just(
@@ -792,7 +885,19 @@ class GetFeedbackTest {
                     EventViewModel(
                         EventViewModelType.EVENT,
                         ProgramStage.builder().displayName(stageName).uid("STAGE_UID").build(),
-                        Event.builder().uid("$stageName UID").build(), 0, null, true, true, "","", listOf(),null,false,false,false, ""
+                        Event.builder().uid("$stageName UID").build(),
+                        0,
+                        null,
+                        true,
+                        true,
+                        "",
+                        "",
+                        listOf(),
+                        null,
+                        false,
+                        false,
+                        false,
+                        ""
                     )
                 )
             )

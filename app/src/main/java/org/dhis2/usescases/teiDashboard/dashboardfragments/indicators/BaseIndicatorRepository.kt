@@ -8,11 +8,11 @@ import dhis2.org.analytics.charts.ui.SectionTitle
 import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.data.tuples.Trio
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
-import org.dhis2.data.tuples.Pair
-import org.dhis2.data.tuples.Trio
 import org.dhis2.utils.Result
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -118,7 +118,10 @@ abstract class BaseIndicatorRepository(
                     indicators.add(indicator)
                 } else if (ruleAction is RuleActionDisplayText) {
                     val indicator = IndicatorModel(
-                        null,
+                        ProgramIndicator.builder()
+                            .uid(ruleAction.content())
+                            .displayName(resourceManager.defaultIndicatorLabel())
+                            .build(),
                         ruleAction.content() + ruleEffect.data(),
                         "",
                         ruleAction.location(),

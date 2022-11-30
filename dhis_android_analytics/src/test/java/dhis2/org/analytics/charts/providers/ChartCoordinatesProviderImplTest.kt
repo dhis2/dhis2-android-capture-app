@@ -4,7 +4,9 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import java.util.Date
+import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.analytics.AnalyticsLegendStrategy
 import org.hisp.dhis.android.core.analytics.linelist.LineListResponse
 import org.hisp.dhis.android.core.analytics.linelist.LineListResponseValue
 import org.hisp.dhis.android.core.period.Period
@@ -15,7 +17,9 @@ import org.mockito.Mockito
 class ChartCoordinatesProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val periodStepProvider: PeriodStepProvider = mock()
-    private val coordinatesProvider = ChartCoordinatesProviderImpl(d2, periodStepProvider)
+    private val resourceManager: ResourceManager = mock()
+    private val coordinatesProvider =
+        ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
 
     @Test
     fun `Should get coordinates for data elements`() {
@@ -23,7 +27,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.dataElementCoordinates(
             "stageUid",
             "teiUid",
-            "dataElementUid"
+            "dataElementUid",
+            null,
+            null
         )
         assertTrue(
             result.isNotEmpty()
@@ -36,7 +42,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.dataElementCoordinates(
             "stageUid",
             "teiUid",
-            "dataElementUid"
+            "dataElementUid",
+            null,
+            null
         )
         assertTrue(
             result.isEmpty()
@@ -49,7 +57,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            null,
+            null
         )
         assertTrue(
             result.isNotEmpty()
@@ -62,7 +72,9 @@ class ChartCoordinatesProviderImplTest {
         val result = coordinatesProvider.indicatorCoordinates(
             "stageUid",
             "teiUid",
-            "indicatorUid"
+            "indicatorUid",
+            null,
+            null
         )
         assertTrue(
             result.isEmpty()
@@ -90,12 +102,22 @@ class ChartCoordinatesProviderImplTest {
                 .byTrackedEntityInstance().eq("teiUid")
                 .withDataElement("dataElementUid")
         ) doReturn mock()
+
+        whenever(
+            d2.analyticsModule().eventLineList()
+                .byProgramStage().eq("stageUid")
+                .byTrackedEntityInstance().eq("teiUid")
+                .withDataElement("dataElementUid")
+                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
+        ) doReturn mock()
+
         if (emptyList) {
             whenever(
                 d2.analyticsModule().eventLineList()
                     .byProgramStage().eq("stageUid")
                     .byTrackedEntityInstance().eq("teiUid")
                     .withDataElement("dataElementUid")
+                    .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
                     .blockingEvaluate()
             ) doReturn emptyList()
         } else {
@@ -104,6 +126,7 @@ class ChartCoordinatesProviderImplTest {
                     .byProgramStage().eq("stageUid")
                     .byTrackedEntityInstance().eq("teiUid")
                     .withDataElement("dataElementUid")
+                    .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
                     .blockingEvaluate()
             ) doReturn listOf(
                 LineListResponse(
@@ -113,7 +136,7 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125")
+                        LineListResponseValue("uid", "field", "125", null)
                     )
                 )
             )
@@ -141,12 +164,20 @@ class ChartCoordinatesProviderImplTest {
                 .byTrackedEntityInstance().eq("teiUid")
                 .withProgramIndicator("indicatorUid")
         ) doReturn mock()
+        whenever(
+            d2.analyticsModule().eventLineList()
+                .byProgramStage().eq("stageUid")
+                .byTrackedEntityInstance().eq("teiUid")
+                .withProgramIndicator("indicatorUid")
+                .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
+        ) doReturn mock()
         if (emptyList) {
             whenever(
                 d2.analyticsModule().eventLineList()
                     .byProgramStage().eq("stageUid")
                     .byTrackedEntityInstance().eq("teiUid")
                     .withProgramIndicator("indicatorUid")
+                    .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
                     .blockingEvaluate()
             ) doReturn emptyList()
         } else {
@@ -155,6 +186,7 @@ class ChartCoordinatesProviderImplTest {
                     .byProgramStage().eq("stageUid")
                     .byTrackedEntityInstance().eq("teiUid")
                     .withProgramIndicator("indicatorUid")
+                    .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
                     .blockingEvaluate()
             ) doReturn listOf(
                 LineListResponse(
@@ -164,7 +196,7 @@ class ChartCoordinatesProviderImplTest {
                     "orgUnit",
                     "orgUnitUid",
                     listOf(
-                        LineListResponseValue("uid", "field", "125")
+                        LineListResponseValue("uid", "field", "125", null)
                     )
                 )
             )

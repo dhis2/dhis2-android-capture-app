@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="item"
+            type="org.dhis2.form.model.FieldUiModel" />
+
+        <variable
+            name="option"
+            type="org.hisp.dhis.android.core.option.Option" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/optionCard"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:clickable="@{item.editable}"
+        android:onClick="@{() -> item.onSaveOption(option)}"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:optionSelectionModel="@{item}"
+        app:optionSelectionOption="@{option}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/selectionBadge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{item.displayName == option.displayName ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:optionSelectionModel="@{item}"
+                app:optionSelectionOption="@{option}"
+                app:srcCompat="@drawable/ic_check_border"
+                tools:tint="@color/red_060" />
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/ImageFieldLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="@{option.displayName()}"
+                app:layout_constraintBottom_toBottomOf="@id/icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/icon"
+                app:layout_constraintTop_toTopOf="@id/icon"
+                tools:text="Microscope" />
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:optionImage="@{option}"
+                tools:background="@color/red_060"
+                tools:src="@drawable/ic_microscope_positive" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

@@ -1,5 +1,9 @@
 package org.dhis2.data.service;
 
+import static org.dhis2.data.service.SyncOutputKt.METADATA_MESSAGE;
+import static org.dhis2.data.service.SyncOutputKt.METADATA_STATE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,14 +14,15 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
+import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.prefs.PreferenceProvider;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.D2ErrorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -31,10 +36,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-import static org.dhis2.data.service.SyncOutputKt.METADATA_MESSAGE;
-import static org.dhis2.data.service.SyncOutputKt.METADATA_STATE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
-
 public class SyncMetadataWorker extends Worker {
 
     private static final String METADATA_CHANNEL = "sync_metadata_notification";
@@ -45,6 +46,9 @@ public class SyncMetadataWorker extends Worker {
 
     @Inject
     PreferenceProvider prefs;
+
+    @Inject
+    ResourceManager resourceManager;
 
     public SyncMetadataWorker(
             @NonNull Context context,
@@ -111,6 +115,12 @@ public class SyncMetadataWorker extends Worker {
         }
     }
 
+    @Override
+    public void onStopped() {
+        cancelNotification();
+        super.onStopped();
+    }
+
     private Data createOutputData(boolean state, String message) {
         return new Data.Builder()
                 .putBoolean(METADATA_STATE, state)
@@ -128,7 +138,7 @@ public class SyncMetadataWorker extends Worker {
 
     private StringBuilder composeErrorMessageInfo(D2Error error) {
         StringBuilder builder = new StringBuilder("Cause: ")
-                .append(D2ErrorUtils.getErrorMessage(getApplicationContext(), error))
+                .append(resourceManager.parseD2Error(error))
                 .append("\n\n")
                 .append("Exception: ")
                 .append(errorStackTrace((error).originalException()).split("\n\t")[0])
@@ -182,7 +192,7 @@ public class SyncMetadataWorker extends Worker {
                         .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        notificationManager.notify(SyncMetadataWorker.SYNC_METADATA_ID, notificationBuilder.build());
+        setForegroundAsync(new ForegroundInfo(SyncMetadataWorker.SYNC_METADATA_ID, notificationBuilder.build()));
     }
 
     private void cancelNotification() {

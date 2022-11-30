@@ -1,11 +1,13 @@
 package org.dhis2.usescases.main
 
-import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.common.filters.filterRobotCommon
+import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
+import org.dhis2.usescases.settings.settingsRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,10 +17,6 @@ class MainTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
-
-    override fun getPermissionsToBeAccepted(): Array<String> {
-        return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    }
 
     @Throws(Exception::class)
     override fun setUp() {
@@ -30,19 +28,6 @@ class MainTest : BaseTest() {
         startActivity()
         homeRobot {
             checkViewIsNotEmpty()
-        }
-    }
-
-    @Test
-    fun shouldRedirectToLoginIfClickOnLogOut() {
-        setupCredentials()
-        startActivity()
-        enableIntents()
-
-        homeRobot {
-            clickOnNavigationDrawerMenu()
-            clickOnLogout()
-            checkLogInIsLaunched()
         }
     }
 
@@ -101,6 +86,28 @@ class MainTest : BaseTest() {
 
         homeRobot {
             pressBack()
+        }
+    }
+
+    @Test
+    @Ignore
+    fun shouldShowDialogToDeleteAccount() {
+        setupCredentials()
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickDeleteAccount()
+        }
+
+        settingsRobot {
+            Thread.sleep(1000)
+            clickOnAcceptDialog()
+        }
+
+        loginRobot {
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
         }
     }
 

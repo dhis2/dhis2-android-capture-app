@@ -10,12 +10,12 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
+import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.filter.FilterPresenter
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -183,8 +184,20 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredEventProgram(any(), any())
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredEventProgram(any()).blockingCount()
-        ) doReturn 10
+            filterPresenter.filteredEventProgram(any()).blockingGet()
+        ) doReturn listOf(
+            Event.builder().uid("0").syncState(State.SYNCED).build(),
+            Event.builder().uid("1").syncState(State.SYNCED).build(),
+            Event.builder().uid("2").syncState(State.SYNCED).build(),
+            Event.builder().uid("3").syncState(State.SYNCED).build(),
+            Event.builder().uid("4").syncState(State.SYNCED).build(),
+            Event.builder().uid("5").syncState(State.SYNCED).build(),
+            Event.builder().uid("6").syncState(State.SYNCED).build(),
+            Event.builder().uid("7").syncState(State.SYNCED).build(),
+            Event.builder().uid("8").syncState(State.SYNCED).build(),
+            Event.builder().uid("9").syncState(State.SYNCED).build(),
+            Event.builder().uid("10").syncState(State.RELATIONSHIP).build()
+        )
         whenever(
             filterPresenter.filteredTrackerProgram(any())
         ) doReturn mock()

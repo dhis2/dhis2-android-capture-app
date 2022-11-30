@@ -4,11 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.processors.FlowableProcessor;
 

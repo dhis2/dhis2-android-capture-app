@@ -5,8 +5,8 @@ import androidx.paging.LivePagedListBuilder
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
+import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import timber.log.Timber
@@ -19,14 +19,14 @@ class OptionSetPresenter(
 
     private lateinit var optionSetOptionHandler: OptionSetOptionsHandler
     var disposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var optionSetUid: String
+    private var optionSetUid: String? = null
 
-    fun init(optionSet: SpinnerViewModel) {
-        this.optionSetUid = optionSet.optionSet()
+    fun init(optionSet: FieldUiModel) {
+        this.optionSetUid = optionSet.optionSet
         this.optionSetOptionHandler = OptionSetOptionsHandler(
             optionSet.optionsToHide,
-            optionSet.optionGroupsToShow,
-            optionSet.optionGroupsToHide
+            optionSet.optionsToShow,
+            null
         )
         getOptions()
     }

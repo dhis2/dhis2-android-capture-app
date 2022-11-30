@@ -13,6 +13,7 @@ sealed class Tree<T>(val content: T) {
 
     data class Node<N>(
         private val nodeContent: N,
+        val level: Int,
         val children: List<Tree<*>> = listOf(),
         val expanded: Boolean = false
     ) : Tree<N>(nodeContent)

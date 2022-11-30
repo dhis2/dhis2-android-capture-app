@@ -1,5 +1,6 @@
 package org.dhis2.usescases.development;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -20,7 +21,6 @@ import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
-import org.dhis2.utils.dialFloatingActionButton.DialItem;
 import org.hisp.dhis.android.core.D2Manager;
 
 import java.io.BufferedReader;
@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,16 +50,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadLocaleDevTools();
         loadIconsDevTools();
         loadBreakTheGlass();
-        loadProgramRuleCheck();
         loadFeatureConfig();
-    }
-
-    private void loadProgramRuleCheck() {
-        binding.ruleActionQualityButton.setOnClickListener(view -> {
-            binding.ruleActionQualityResult.setText("Checking...");
-            String result = new ProgramRulesValidations(D2Manager.getD2()).validateRules();
-            binding.ruleActionQualityResult.setText(result);
-        });
     }
 
     private void loadAnalyticsDevTools() {

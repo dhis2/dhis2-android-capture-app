@@ -1,9 +1,11 @@
 package dhis2.org.analytics.charts
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
@@ -12,7 +14,6 @@ import dhis2.org.analytics.charts.mappers.DataElementToGraph
 import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import java.util.Date
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -34,14 +35,14 @@ class ChartsRepositoryTest {
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph = mock()
     private val dataElementToGraph: DataElementToGraph = mock()
     private val programIndicatorToGraph: ProgramIndicatorToGraph = mock()
-    private val featureConfRepository: FeatureConfigRepository = mock()
+    private val analyticsResources: AnalyticResources = mock()
     private val repository = ChartsRepositoryImpl(
         d2,
         visualizationToGraph,
         analyticsTeiSettingsToGraph,
         dataElementToGraph,
         programIndicatorToGraph,
-        featureConfRepository
+        analyticsResources
     )
 
     @Test
@@ -67,7 +68,7 @@ class ChartsRepositoryTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(mockedAnalyticsSettings())
         whenever(
-            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any())
+            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any(), any(), any())
         ) doReturn mockedSettingsGraphs()
 
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
@@ -84,12 +85,15 @@ class ChartsRepositoryTest {
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
         mockNumericDataElements(false)
+        mockedVisualizationOrgUnitFilter()
+        mockedVisualizationOrgUnitFilterType()
+        mockedVisualizationPeriodFilter()
         whenever(
-            dataElementToGraph.map(any(), any(), any(), any())
+            dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedDataElementGraph()
         mockIndicators(false)
         whenever(
-            programIndicatorToGraph.map(any(), any(), any(), any())
+            programIndicatorToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -107,7 +111,7 @@ class ChartsRepositoryTest {
         mockRepeatableStagesCall()
         mockNumericDataElements(false)
         whenever(
-            dataElementToGraph.map(any(), any(), any(), any())
+            dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedDataElementGraph()
         mockIndicators(true)
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
@@ -123,10 +127,13 @@ class ChartsRepositoryTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
+        mockedVisualizationOrgUnitFilter()
+        mockedVisualizationOrgUnitFilterType()
+        mockedVisualizationPeriodFilter()
         mockNumericDataElements(true)
         mockIndicators(false)
         whenever(
-            programIndicatorToGraph.map(any(), any(), any(), any())
+            programIndicatorToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull())
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -327,5 +334,23 @@ class ChartsRepositoryTest {
             0L,
             dhis2.org.analytics.charts.data.ChartType.LINE_CHART
         )
+    }
+
+    private fun mockedVisualizationPeriodFilter() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
+    }
+
+    private fun mockedVisualizationOrgUnitFilterType() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
+    }
+
+    private fun mockedVisualizationOrgUnitFilter() {
+        whenever(
+            d2.dataStoreModule().localDataStore().value(any()).blockingExists()
+        ) doReturn false
     }
 }

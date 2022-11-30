@@ -16,7 +16,6 @@ import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInf
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.systemInfo.SystemInfoRepository
 import org.hisp.dhis.android.core.D2
 
-@PerActivity
 @Module
 class FeedbackModule(
     private val programUid: String,
@@ -30,7 +29,7 @@ class FeedbackModule(
         feedbackProgramRepository: FeedbackProgramRepository,
         preferenceProvider: PreferenceProvider
     ): FeedbackPresenter {
-        return FeedbackPresenter(feedbackProgramRepository,preferenceProvider)
+        return FeedbackPresenter(feedbackProgramRepository, preferenceProvider)
     }
 
     @Provides

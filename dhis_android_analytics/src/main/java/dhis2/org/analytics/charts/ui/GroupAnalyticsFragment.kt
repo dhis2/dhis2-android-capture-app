@@ -2,7 +2,6 @@ package dhis2.org.analytics.charts.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.github.mikephil.charting.utils.Utils
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
@@ -19,8 +19,12 @@ import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
 import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
+import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -79,6 +83,7 @@ class GroupAnalyticsFragment : Fragment() {
         (context.applicationContext as AnalyticsComponentProvider)
             .provideAnalyticsFragmentComponent(AnalyticsFragmentModule(mode, uid))
             ?.inject(this)
+        Utils.init(context)
     }
 
     override fun onCreateView(
@@ -104,13 +109,17 @@ class GroupAnalyticsFragment : Fragment() {
 
         adapter.onOrgUnitCallback =
             { chartModel: ChartModel, orgUnitFilterType: OrgUnitFilterType ->
-                if (orgUnitFilterType == OrgUnitFilterType.SELECTION) {
-                    Log.d("GroupAnalyticsFrag", "onOrgUnitCallback")
-                    groupViewModel.filterByOrgUnit()
+                when (orgUnitFilterType) {
+                    OrgUnitFilterType.SELECTION -> showOUTreeSelector(chartModel)
+                    else -> groupViewModel.filterByOrgUnit(
+                        chartModel,
+                        emptyList(),
+                        orgUnitFilterType
+                    )
                 }
             }
-        adapter.onResetFilterCallback = {
-            groupViewModel.resetFilter()
+        adapter.onResetFilterCallback = { chartModel, filterType ->
+            groupViewModel.resetFilter(chartModel, filterType)
         }
         binding.visualizationContainer.clipWithRoundedCorners()
         return binding.root
@@ -121,33 +130,62 @@ class GroupAnalyticsFragment : Fragment() {
         relativePeriod: RelativePeriod?,
         current: RelativePeriod?
     ) {
-        val periodList = mutableListOf<RelativePeriod?>()
+        val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
             .setTitle(getString(R.string.include_this_period_title))
             .setMessage(getString(R.string.include_this_period_body))
             .setNegativeButton(getString(R.string.no)) {
-                periodList.add(relativePeriod)
+                relativePeriod?.let { periodList.add(relativePeriod) }
                 groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .setPositiveButton(getString(R.string.yes)) {
-                periodList.add(relativePeriod)
-                periodList.add(current)
+                relativePeriod?.let { periodList.add(relativePeriod) }
+                current?.let { periodList.add(current) }
                 groupViewModel.filterByPeriod(chartModel, periodList)
             }
             .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
+    }
+
+    private fun showOUTreeSelector(chartModel: ChartModel) {
+        val ouTreeFragment =
+            OUTreeFragment.newInstance(
+                true,
+                chartModel.graph.orgUnitsSelected.toMutableList()
+            )
+        ouTreeFragment.selectionCallback = object : OnOrgUnitSelectionFinished {
+            override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+                groupViewModel.filterByOrgUnit(
+                    chartModel, selectedOrgUnits,
+                    OrgUnitFilterType.SELECTION
+                )
+            }
+        }
+        ouTreeFragment.show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         groupViewModel.chipItems.observe(
             viewLifecycleOwner,
-            {
-                if (it.isEmpty() || it.size < MIN_SIZE_TO_SHOW) {
-                    binding.analyticChipGroup.visibility = View.GONE
-                } else {
-                    binding.analyticChipGroup.visibility = View.VISIBLE
-                    disableToolbarElevation?.invoke()
-                    addChips(it)
+            { chipResult ->
+                when {
+                    chipResult.isSuccess -> {
+                        val chips = chipResult.getOrDefault(emptyList())
+                        if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
+                            binding.analyticChipGroup.visibility = View.GONE
+                        } else {
+                            binding.analyticChipGroup.visibility = View.VISIBLE
+                            disableToolbarElevation?.invoke()
+                            addChips(chips)
+                        }
+                    }
+                    chipResult.isFailure -> {
+                        binding.progressLayout.visibility = View.GONE
+                        binding.emptyAnalytics.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_groups_failure)
+                        }
+                    }
                 }
                 startPostponedEnterTransition()
             }
@@ -155,8 +193,17 @@ class GroupAnalyticsFragment : Fragment() {
         groupViewModel.analytics.observe(
             viewLifecycleOwner,
             { analytics ->
-                adapter.submitList(analytics) {
-                    binding.progress.visibility = View.GONE
+                when {
+                    analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
+                        binding.progressLayout.visibility = View.GONE
+                    }
+                    analytics.isFailure -> {
+                        binding.progressLayout.visibility = View.GONE
+                        binding.emptyAnalytics.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_failure)
+                        }
+                    }
                 }
             }
         )
@@ -176,7 +223,8 @@ class GroupAnalyticsFragment : Fragment() {
                     chip.tag = analyticGroup.uid
                     chip.setOnCheckedChangeListener { buttonView, isChecked ->
                         if (isChecked) {
-                            binding.progress.visibility = View.VISIBLE
+                            binding.analyticChipGroupContainer.scrollToPosition(chip.tag as String)
+                            binding.progressLayout.visibility = View.VISIBLE
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
                     }

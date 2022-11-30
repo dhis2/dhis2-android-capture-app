@@ -1,6 +1,7 @@
 package org.dhis2.commons.popupmenu
 
 import android.content.Context
+import android.os.Build
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
@@ -25,7 +26,11 @@ class AppMenuHelper private constructor(
 
     fun show() {
         val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
-        popupMenu = PopupMenu(contextWrapper, anchor, Gravity.END)
+        popupMenu = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
+        }else{
+            PopupMenu(contextWrapper, anchor, Gravity.END)
+        }
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {
@@ -52,24 +57,29 @@ class AppMenuHelper private constructor(
         popupMenu.show()
     }
 
-    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int){
-        popupMenu.menu.findItem(id).icon = ContextCompat.getDrawable(this.context, icon)
+    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int) {
+        popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
     }
 
-    fun changeItemText(@IdRes id: Int, text: String){
-        popupMenu.menu.findItem(id).title = text
+    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int){
+        popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
+        popupMenu.menu.findItem(id)?.icon?.alpha = 0
     }
 
-    fun getItemText(@IdRes id: Int): String{
-        return popupMenu.menu.findItem(id).title.toString()
+    fun changeItemText(@IdRes id: Int, text: String) {
+        popupMenu.menu.findItem(id)?.title = text
     }
 
-    fun hideItem(@IdRes id:Int){
-        popupMenu.menu.findItem(id).isVisible = false
+    fun getItemText(@IdRes id: Int): String {
+        return popupMenu.menu.findItem(id)?.title.toString()
     }
 
-    fun showItem(@IdRes id: Int){
-        popupMenu.menu.findItem(id).isVisible = true
+    fun hideItem(@IdRes id: Int) {
+        popupMenu.menu.findItem(id)?.isVisible = false
+    }
+
+    fun showItem(@IdRes id: Int) {
+        popupMenu.menu.findItem(id)?.isVisible = true
     }
 
     data class Builder(

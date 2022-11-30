@@ -1,5 +1,10 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.utils.Constants.NO_SECTION;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -15,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.shape.CornerFamily;
@@ -29,12 +35,16 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.AlertBottomDialog;
+import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionKt;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.utils.Constants;
-import org.dhis2.commons.dialogs.AlertBottomDialog;
+import org.dhis2.utils.granularsync.GranularSyncContracts;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.dhis2.utils.validationrules.Violation;
 import org.hisp.dhis.android.core.dataset.DataSet;
@@ -50,10 +60,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Unit;
 
-import static org.dhis2.utils.Constants.NO_SECTION;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
     String orgUnitUid;
@@ -65,7 +71,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodId;
 
     boolean accessDataWrite;
-    private List<String> sections;
 
     @Inject
     DataSetTableContract.Presenter presenter;
@@ -80,6 +85,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private BottomSheetBehavior<View> behavior;
     private FlowableProcessor<Boolean> reopenProcessor;
     private boolean isKeyboardOpened = false;
+
+    private static final int MAX_ITEM_CACHED_VIEWPAGER2 = 2;
+    private static final String DATAVALUE_SYNC = "DATAVALUE_SYNC";
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -136,6 +144,23 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             }, 100);
             return true;
         });
+
+        binding.syncButton.setOnClickListener(view-> showGranularSync());
+    }
+
+    private void showGranularSync(){
+        presenter.onClickSyncStatus();
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setPeriodId(periodId)
+                .setOrgUnit(orgUnitUid)
+                .setAttributeOptionCombo(catOptCombo)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged) presenter.updateData();
+                })
+                .build();
+        syncDialog.show(getSupportFragmentManager(), DATAVALUE_SYNC);
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -186,9 +211,26 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        viewPagerAdapter = new DataSetSectionAdapter(this,
+                accessDataWrite,
+                getIntent().getStringExtra(Constants.DATA_SET_UID),
+                orgUnitUid,
+                periodId,
+                catOptCombo);
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.setAdapter(viewPagerAdapter);
+        binding.viewPager.setOffscreenPageLimit(MAX_ITEM_CACHED_VIEWPAGER2);
+        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    binding.syncButton.setVisibility(View.VISIBLE);
+                } else {
+                    binding.syncButton.setVisibility(View.GONE);
+                }
+            }
+        });
+
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);
@@ -200,24 +242,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setSections(List<String> sections) {
-        this.sections = sections;
-        if (sections.contains(NO_SECTION) && sections.size() > 1) {
-            sections.remove(NO_SECTION);
-            sections.add(getString(R.string.dataset_data));
-        }
-        viewPagerAdapter.swapData(sections);
+    public void setSections(List<DataSetSection> sections) {
+        viewPagerAdapter.swapData(
+                DataSetSectionKt.replaceNoSection(sections,getString(R.string.dataset_data))
+        );
         binding.navigationView.selectItemAt(1);
         binding.viewPager.setCurrentItem(1);
     }
 
-    public void updateTabLayout(String section, int numTables) {
-        if (sections.get(0).equals(NO_SECTION)) {
-            sections.remove(NO_SECTION);
-            sections.add(getString(R.string.dataset_data));
-            viewPagerAdapter.swapData(sections);
-            binding.viewPager.setCurrentItem(1);
-        }
+    public void updateTabLayout() {
+
     }
 
     public DataSetTableContract.Presenter getPresenter() {
@@ -288,7 +322,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             if (getCurrentFocus() != null) {
                 View currentFocus = getCurrentFocus();
                 currentFocus.clearFocus();
-                ViewExtensionsKt.closeKeyboard(currentFocus);
+                closeKeyboard(currentFocus);
             }
         });
     }

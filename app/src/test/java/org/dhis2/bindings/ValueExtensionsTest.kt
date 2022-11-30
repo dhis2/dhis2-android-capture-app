@@ -47,9 +47,9 @@ class ValueExtensionsTest {
 
         val expectedResults = arrayListOf(
             "",
-            "0.0",
+            "0",
             "0.2233",
-            "1.0",
+            "1",
             null
         )
 

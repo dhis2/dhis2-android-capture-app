@@ -4,17 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
-import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -24,7 +25,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.Legend;
-import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -141,7 +141,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                                                                          String value) {
         String color = "";
         if (indicator.legendSets() != null && !indicator.legendSets().isEmpty()) {
-            LegendSet legendSet = indicator.legendSets().get(0);
+            ObjectWithUid legendSet = null;
             List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
                     .byLegendSet().eq(legendSet.uid()).blockingGet();
             color = legends.get(0).color();
@@ -508,5 +508,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String getTETypeName() {
+        return getTrackedEntityInstance(teiUid).flatMap(tei ->
+                d2.trackedEntityModule().trackedEntityTypes()
+                        .uid(tei.trackedEntityType())
+                        .get()
+                        .toObservable()
+        ).blockingFirst().displayName();
     }
 }

@@ -5,8 +5,8 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.RulesRepository
-import org.dhis2.utils.RulesUtilsProvider
+import org.dhis2.form.data.RulesRepository
+import org.dhis2.form.data.RulesUtilsProvider
 import org.hisp.dhis.android.core.D2
 
 @PerActivity
@@ -15,7 +15,6 @@ interface ProgramStageSelectionInjector {
     fun inject(programStageSelectionActivity: ProgramStageSelectionActivity?)
 }
 
-@PerActivity
 @Module
 class ProgramStageSelectionModule(
     private val view: ProgramStageSelectionView,

@@ -3,11 +3,11 @@ package org.dhis2.uicomponents.map.geometry
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import org.dhis2.data.dhislogic.CoordinateAttributeInfo
-import org.dhis2.data.dhislogic.CoordinateDataElementInfo
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapAttributeToFeature
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapDataElementToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapAttributeToFeature
+import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
+import org.dhis2.maps.utils.CoordinateAttributeInfo
+import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -28,10 +28,11 @@ class MapCoordinateFieldToFeatureCollectionTest {
 
     @Before
     fun setUp() {
-        mapper = MapCoordinateFieldToFeatureCollection(
-            dataElementToFeatureMapper,
-            attributeToFeatureMapper
-        )
+        mapper =
+            MapCoordinateFieldToFeatureCollection(
+                dataElementToFeatureMapper,
+                attributeToFeatureMapper
+            )
     }
 
     @Test

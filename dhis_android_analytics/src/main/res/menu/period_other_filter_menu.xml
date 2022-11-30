@@ -9,15 +9,19 @@
     <group android:id="@+id/filters">
         <item
             android:id="@+id/thisquarter"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/thisquarter" />
         <item
             android:id="@+id/lastquarter"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/lastquarter" />
         <item
             android:id="@+id/last4quarter"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/last4quarters" />
         <item
             android:id="@+id/quarterthisyear"
+            android:icon="@drawable/ic_check_chart_white"
             android:title="@string/quartersthisyear" />
     </group>
 </menu>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_data">No data</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">View as Line</string>
     <string name="show_table_graph">View as Table</string>
@@ -44,4 +43,26 @@
     <string name="reset">Reset</string>
     <string name="include_this_period_title">Do you want to include the current period?</string>
     <string name="include_this_period_body">It will display the current period in the chart.</string>
+    <string name="no_data_for_selected_filters">The filters you applied do not return any data</string>
+    <string name="no_data_to_display">You do not have any data to be displayed</string>
+    <string name="visualization_error">Something is wrong with this visualization</string>
+    <string name="visualization_failure">Something is wrong with the visualizations</string>
+    <string name="visualization_groups_failure">Something is wrong with the visualization groups</string>
+    <string name="pie_chart_no_data">All data is zero</string>
+    <string name="error_invalid_arguments">This visualization is not well configured, please contact your admin.</string>
+    <string name="error_invalid_category">You don\'t have access to category %s</string>
+    <string name="error_invalid_category_option">You don\'t have access to category option %s</string>
+    <string name="error_invalid_data_element">You don\'t have access to data element %s</string>
+    <string name="error_invalid_data_element_operand">You don\'t have access to data element operand %s</string>
+    <string name="error_invalid_indicator">You don\'t have access to indicator %s</string>
+    <string name="error_invalid_org_unit">You don\'t have access to organisation unit %s</string>
+    <string name="error_invalid_org_unit_group">You don\'t have access to organisation unit group %s</string>
+    <string name="error_invalid_org_unit_level">You don\'t have access to organisation unit level %s</string>
+    <string name="error_invalid_program_indicator">You don\'t have access to program indicator %s</string>
+    <string name="error_invalid_visualization">The visualization %s is missing</string>
+    <string name="error_parsing_visualization">This visualization is not well configured, please contact your admin.</string>
+    <string name="error_invalid_custom_boundaries">Custom boundaries are not supported for program indicator %s</string>
+    <string name="error_database">Can\'t access database. Please contact your administrator.</string>
+    <string name="error_invalid_program">You do not have access to program %s</string>
+    <string name="error_invalid_attribute">You do not have access to attribute %s</string>
 </resources>

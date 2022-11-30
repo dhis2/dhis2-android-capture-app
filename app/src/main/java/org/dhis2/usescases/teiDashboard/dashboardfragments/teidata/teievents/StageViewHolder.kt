@@ -1,14 +1,18 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
-import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.commons.ui.setUpMetadataIcon
 import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
-import org.dhis2.utils.resources.ResourceManager
 
 internal class StageViewHolder(
     private val binding: ItemStageSectionBinding,
@@ -16,6 +20,12 @@ internal class StageViewHolder(
     private val presenter: TEIDataContracts.Presenter
 ) :
     RecyclerView.ViewHolder(binding.root) {
+
+    init {
+        binding.composeProgramStageIcon.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+    }
 
     fun bind(eventItem: EventViewModel) {
         val stage = eventItem.stage!!
@@ -26,19 +36,23 @@ internal class StageViewHolder(
             stage.style().color(),
             ColorUtils.getPrimaryColor(
                 itemView.context,
-                ColorUtils.ColorType.PRIMARY
+                ColorUtils.ColorType.PRIMARY_LIGHT
             )
         )
 
-        binding.programStageIcon.background =
-            ColorUtils.tintDrawableWithColor(binding.programStageIcon.background, color)
-        binding.programStageIcon.setImageResource(
-            ResourceManager(itemView.context).getObjectStyleDrawableResource(
-                stage.style().icon(),
-                R.drawable.ic_program_default
-            )
+        val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
+            stage.style().icon(),
+            R.drawable.ic_default_outline
         )
-        binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color))
+
+        binding.composeProgramStageIcon.setUpMetadataIcon(
+            MetadataIconData(
+                programColor = color,
+                iconResource = iconResource,
+                sizeInDp = 40
+            ),
+            false
+        )
 
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
 

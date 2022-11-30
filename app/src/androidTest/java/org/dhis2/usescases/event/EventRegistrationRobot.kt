@@ -26,10 +26,14 @@ class EventRegistrationRobot : BaseRobot() {
     fun checkEventFormDetails(eventDetails: EventDetailsUIModel) {
         onView(withId(R.id.programStageName)).check(matches(withText(eventDetails.programStage)))
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
-        onView(withId(R.id.eventSecundaryInfo)).check(matches(allOf(
-            withSubstring(eventDetails.eventDate),
-            withSubstring(eventDetails.orgUnit)
-        )))
+        onView(withId(R.id.eventSecundaryInfo)).check(
+            matches(
+                allOf(
+                    withSubstring(eventDetails.eventDate),
+                    withSubstring(eventDetails.orgUnit)
+                )
+            )
+        )
     }
 
     fun openMenuMoreOptions() {
@@ -44,15 +48,29 @@ class EventRegistrationRobot : BaseRobot() {
         onView(withId(R.id.navigation_details)).perform(click())
     }
 
-   fun checkEventDetails(eventDetails: EventDetailsUIModel) {
-       onView(withId(R.id.programStageName)).check(matches(withText(eventDetails.programStage)))
-       onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
-       onView(withId(R.id.date_layout)).check(matches(allOf(isEnabled(),hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate))))))
-       onView(withId(R.id.org_unit_layout)).check(matches(allOf(not(isEnabled()), hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit))))))
-   }
+    fun checkEventDetails(eventDetails: EventDetailsUIModel) {
+        onView(withId(R.id.detailsStageName)).check(matches(withText(eventDetails.programStage)))
+        onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(eventDetails.completedPercentage)))
+        onView(withId(R.id.date_layout)).check(
+            matches(
+                allOf(
+                    isEnabled(),
+                    hasDescendant(allOf(withId(R.id.date), withText(eventDetails.eventDate)))
+                )
+            )
+        )
+        onView(withId(R.id.org_unit_layout)).check(
+            matches(
+                allOf(
+                    not(isEnabled()),
+                    hasDescendant(allOf(withId(R.id.org_unit), withText(eventDetails.orgUnit)))
+                )
+            )
+        )
+    }
 
     fun clickOnShare() {
-        onView(withId(R.id.shareContainer)).perform(click())
+        onView(withText(R.string.share)).perform(click())
     }
 
     private fun clickOnNextQR() {
@@ -76,7 +94,12 @@ class EventRegistrationRobot : BaseRobot() {
         onView(withId(R.id.location1)).perform(click())
     }
 
+    fun selectOrgUnit(orgUnitName: String) {
+        onView(withId(R.id.org_unit)).perform(click())
+        onView(withText(orgUnitName)).perform(click())
+    }
+
     fun clickNextButton() {
-        onView(withId(R.id.action_button)).perform(click())
+        waitForView(withId(R.id.action_button)).perform(click())
     }
 }

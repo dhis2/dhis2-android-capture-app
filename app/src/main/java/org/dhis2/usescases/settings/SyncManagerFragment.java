@@ -1,5 +1,21 @@
 package org.dhis2.usescases.settings;
 
+import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+import static android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.utils.Constants.DATA_NOW;
+import static org.dhis2.utils.Constants.META_NOW;
+import static org.dhis2.utils.Constants.TIME_MANUAL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -33,6 +49,7 @@ import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
 import org.dhis2.data.server.ServerComponent;
@@ -46,7 +63,6 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
@@ -59,21 +75,6 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 
-import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
-import static android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_MANUAL;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
-
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
     @Inject
@@ -85,7 +86,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private FragmentSettingsBinding binding;
     private Context context;
 
-    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             presenter.checkData();
@@ -97,7 +98,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean metadataInit;
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
-    private int theme;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -131,25 +131,19 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
-                binding.syncMetaLayout.message.setText(metaText);
-            } else {
-                presenter.checkData();
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
             }
+            presenter.onWorkStatusesUpdate(workState, META_NOW);
             checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
-                String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
-                binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncDataLayout.message.setText(dataText);
-                dataWorkRunning = true;
-            } else {
-                dataWorkRunning = false;
-                presenter.checkData();
+            WorkInfo.State workState = null;
+            if(workStatuses!=null && !workStatuses.isEmpty()){
+                workState = workStatuses.get(0).getState();
             }
+            presenter.onWorkStatusesUpdate(workState, DATA_NOW);
             checkSyncDataButtonStatus();
         });
         presenter.init();
@@ -207,6 +201,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setMessage(getString(R.string.wipe_data_meesage))
                 .setView(R.layout.warning_layout)
                 .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    presenter.resetFilters();
                     analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
                     showDeleteProgress();
                 })
@@ -245,7 +240,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         notificationManager.notify(123456, notificationBuilder.build());
         presenter.wipeDb();
-
     }
 
     @Override
@@ -685,7 +679,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.eventsEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                ViewExtensionsKt.closeKeyboard(view);
+                closeKeyboard(view);
                 if (!binding.eventsEditText.getText().toString().isEmpty()) {
                     presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
                 }
@@ -698,7 +692,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.teiEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (!binding.teiEditText.getText().toString().isEmpty()) {
-                    ViewExtensionsKt.closeKeyboard(view);
+                    closeKeyboard(view);
                     presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
                 }
                 return true;
@@ -804,7 +798,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         binding.reservedValueEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
-            ViewExtensionsKt.closeKeyboard(view);
+            closeKeyboard(view);
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (!binding.reservedValueEditText.getText().toString().isEmpty()) {
                     presenter.saveReservedValues(Integer.valueOf(binding.reservedValueEditText.getText().toString()));
@@ -841,6 +835,32 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void displaySmsEnableError() {
         binding.settingsSms.settingsSmsSwitch.setChecked(false);
+    }
+
+    @Override
+    public void onMetadataSyncInProgress() {
+        binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+        binding.syncMetaLayout.message.setText(metaText);
+    }
+
+    @Override
+    public void onMetadataFinished() {
+        presenter.checkData();
+    }
+
+    @Override
+    public void onDataSyncInProgress() {
+        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+        binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        binding.syncDataLayout.message.setText(dataText);
+        dataWorkRunning = true;
+    }
+
+    @Override
+    public void onDataFinished() {
+        dataWorkRunning = false;
+        presenter.checkData();
     }
 
     private void checkSyncDataButtonStatus() {

@@ -1,139 +1,145 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.subjects.BehaviorSubject
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.data.FormRepository
-import org.dhis2.form.model.ActionType
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.StoreResult
-import org.dhis2.form.model.ValueStoreResult
+import io.reactivex.Single
+import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.commons.data.IssueType
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.times
 
 class EventCaptureFormPresenterTest {
     private lateinit var presenter: EventCaptureFormPresenter
     private val activityPresenter: EventCaptureContract.Presenter = mock()
     private val view: EventCaptureFormView = mock()
-    private val schedulerProvider = TrampolineSchedulerProvider()
-    private val onRowActionProcessor: FlowableProcessor<RowAction> = mock()
-    private val formRepository: FormRepository = mock()
+    private val d2: D2 = mock()
+    private val eventUid: String = "random_ID"
 
     @Before
     fun setUp() {
-        presenter = EventCaptureFormPresenter(
-            view,
-            activityPresenter,
-            schedulerProvider,
-            onRowActionProcessor,
-            formRepository
+        presenter = EventCaptureFormPresenter(view, activityPresenter, d2, eventUid)
+    }
+
+    @Test
+    fun `Should try to finish with fields with errors`() {
+        val errorFields = listOf(
+            FieldWithIssue(
+                "Uid",
+                "field1",
+                IssueType.ERROR,
+                "message"
+            )
+        )
+        presenter.handleDataIntegrityResult(
+            FieldsWithErrorResult(
+                emptyMap(),
+                errorFields,
+                emptyList(),
+                false,
+                null,
+                false
+            )
+        )
+        verify(activityPresenter).attemptFinish(
+            false,
+            null,
+            errorFields,
+            emptyMap(),
+            emptyList()
         )
     }
 
     @Test
-    fun `Should listen to data entry, sections and field changes`() {
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
-        presenter.init()
-
-        assert(
-            onRowActionProcessor
-                .onBackpressureBuffer()
-                .distinctUntilChanged()
-                .test()
-                .hasSubscription()
+    fun `Should try to finish with fields with warning`() {
+        val warningFields = listOf(
+            FieldWithIssue(
+                "Uid",
+                "field1",
+                IssueType.WARNING,
+                "message"
+            )
         )
-        assert(activityPresenter.formFieldsFlowable().hasObservers())
+        presenter.handleDataIntegrityResult(
+            FieldsWithWarningResult(
+                warningFields,
+                true,
+                null
+            )
+        )
+        verify(activityPresenter).attemptFinish(
+            true,
+            null,
+            emptyList(),
+            emptyMap(),
+            warningFields
+        )
     }
 
     @Test
-    fun `Should save new value`() {
-        val action = RowAction("testUid", "testValue", type = ActionType.ON_SAVE)
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(action)
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
-        presenter.init()
-
-        verify(formRepository, times(1)).processUserAction(action)
+    fun `Should try to finish with empty mandatory fields`() {
+        presenter.handleDataIntegrityResult(
+            MissingMandatoryResult(
+                mapOf(Pair("field1", "section")),
+                emptyList(),
+                emptyList(),
+                false,
+                null,
+                false
+            )
+        )
+        verify(activityPresenter).attemptFinish(
+            false,
+            null,
+            emptyList(),
+            mapOf(Pair("field1", "section")),
+            emptyList()
+        )
     }
 
     @Test
-    fun `Should ask for new calculation if value saved changed`() {
-        val action = RowAction("testUid", "testValue", type = ActionType.ON_SAVE)
-
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(action)
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
-        whenever(
-            formRepository.processUserAction(action)
-        ) doReturn StoreResult("testUid", ValueStoreResult.VALUE_CHANGED)
-
-        presenter.init()
-
-        verify(activityPresenter, times(1)).nextCalculation(true)
+    fun `Should try to finish  successfully`() {
+        presenter.handleDataIntegrityResult(
+            SuccessfulResult(null, true, null)
+        )
+        verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
     }
 
     @Test
-    fun `Should not ask for new calculation if value saved did not changed`() {
-        val action = RowAction("testUid", "testValue", type = ActionType.ON_SAVE)
+    fun `Should show save button when event is editable`() {
+        val editableStatus = EventEditableStatus.Editable()
+        whenever(d2.eventModule()) doReturn mock()
+        whenever(d2.eventModule().eventService()) doReturn mock()
+        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
+            editableStatus
+        )
 
-        val subject = BehaviorSubject.create<List<FieldUiModel>>()
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(action)
-        whenever(activityPresenter.formFieldsFlowable()) doReturn subject
-        whenever(
-            formRepository.processUserAction(action)
-        ) doReturn StoreResult("testUid", ValueStoreResult.VALUE_HAS_NOT_CHANGED)
-        presenter.init()
+        presenter.showOrHideSaveButton()
 
-        verify(activityPresenter, times(0)).nextCalculation(true)
+        verify(view).showSaveButton()
     }
 
     @Test
-    fun `Should show fields`() {
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
-        presenter.init()
-        activityPresenter.formFieldsFlowable().onNext(mutableListOf())
-        verify(view, times(1)).showFields(any())
-    }
+    fun `Should hide save button when event is not editable`() {
+        val editableStatus =
+            EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
+        whenever(d2.eventModule()) doReturn mock()
+        whenever(d2.eventModule().eventService()) doReturn mock()
+        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
+            editableStatus
+        )
 
-    @Test
-    fun `Should clear disposable`() {
-        whenever(onRowActionProcessor.onBackpressureBuffer()) doReturn mock()
-        whenever(
-            onRowActionProcessor.onBackpressureBuffer().distinctUntilChanged()
-        ) doReturn Flowable.just(RowAction("", "", type = ActionType.ON_SAVE))
-        whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
-        presenter.init()
-        presenter.onDetach()
-        assert(presenter.disposable.size() == 0)
-    }
+        presenter.showOrHideSaveButton()
 
-    @Test
-    fun `Should try to finish`() {
-        presenter.onActionButtonClick()
-        verify(activityPresenter).attemptFinish()
+        verify(view).hideSaveButton()
     }
 }

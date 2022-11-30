@@ -1,14 +1,13 @@
 package org.dhis2.usescases.filters
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.form.FormTest
 import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
-import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -19,6 +18,8 @@ class FilterTest: BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Test
     fun checkFromToDateFilter() {
@@ -84,7 +85,7 @@ class FilterTest: BaseTest() {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
             selectTreeOrgUnit("OU TEST PARENT")
-            returnToSearch()
+            confirmSelection()
         }
         homeRobot {
             openFilters()
@@ -108,7 +109,7 @@ class FilterTest: BaseTest() {
         }
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinishAndComplete()
+            clickOnCompleteButton(composeTestRule)
             pressBack()
         }
         homeRobot {
@@ -119,6 +120,7 @@ class FilterTest: BaseTest() {
             selectNotSyncedState()
         }
         homeRobot {
+            openFilters()
             checkItemsInProgram(0,"Antenatal care visit", "1")
             checkItemsInProgram(4,"Child Programme", "0")
         }

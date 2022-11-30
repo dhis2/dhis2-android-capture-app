@@ -14,13 +14,24 @@ data class Graph(
     val categories: List<String> = emptyList(),
     val orgUnitsDefault: List<String> = emptyList(),
     val orgUnitsSelected: List<String> = emptyList(),
-    val periodToDisplaySelected: RelativePeriod? = null
+    val periodToDisplaySelected: RelativePeriod? = null,
+    val visualizationUid: String? = null,
+    val hasError: Boolean = false,
+    val errorMessage: String? = null
 ) {
     fun xAxixMaximun(): Float {
         return if (categories.isNotEmpty()) {
-            categories.size.toFloat()
+            categories.size.toFloat() - 1
+        } else if (series.isNotEmpty()) {
+            series.maxOf { serie ->
+                try {
+                    serie.coordinates.maxOf { point -> point.position ?: 0f }
+                } catch (e: NoSuchElementException) {
+                    0f
+                }
+            }
         } else {
-            series.maxOf { serie -> serie.coordinates.maxOf { point -> point.position ?: 0f } }
+            0f
         }
     }
 
@@ -55,12 +66,17 @@ data class Graph(
     }
 
     fun maxValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.max() ?: 0f }.max()
+        return series.map {
+            it.coordinates.map { points -> points.fieldValue }.maxOrNull() ?: 0f
+        }.maxOrNull()
             ?: 0f
     }
 
     fun minValue(): Float {
-        return series.map { it.coordinates.map { points -> points.fieldValue }.min() ?: 0f }.min()
+        return series.map {
+            it.coordinates.map { points -> points.fieldValue }.minOrNull() ?: 0f
+        }
+            .minOrNull()
             ?: 0f
     }
 
@@ -69,6 +85,14 @@ data class Graph(
     } else {
         series
     }
+
+    fun canBeShown(): Boolean {
+        return if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
+            true
+        } else {
+            series.isNotEmpty()
+        }
+    }
 }
 
 data class SerieData(
@@ -76,11 +100,14 @@ data class SerieData(
     val coordinates: List<GraphPoint>
 )
 
+data class LegendValue(val color: Int, val label: String?)
+
 data class GraphPoint(
     val eventDate: Date,
     val position: Float? = -1f,
     val fieldValue: Float,
-    val legend: String? = null
+    val legend: String? = null,
+    val legendValue: LegendValue? = null
 )
 
 fun Graph.toChartBuilder(): Chart.ChartBuilder {

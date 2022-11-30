@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
-enum class ProgramType { HNQIS, RDQA }
+enum class ProgramType { HNQIS2, RDQA }
 
 data class FeedbackProgram(val uid: String, val programType: ProgramType)
 

@@ -53,6 +53,14 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="ActionIconSmallPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="ActionIconNoPadding" parent="Widget.AppCompat.ImageButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -66,7 +74,7 @@
     </style>
 
     <style name="PopupMenuMarginStyle" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
         <item name="android:dropDownVerticalOffset">4dp</item>
     </style>
 
@@ -80,7 +88,8 @@
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
     </style>
-    <style name="BreakTheGlassBottomSheetDialogTheme"  parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+
+    <style name="BreakTheGlassBottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
@@ -90,5 +99,42 @@
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="filterPeriodRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">11sp</item>
+        <item name="buttonTint">@color/white</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+    </style>
+
+    <style name="filterCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/white</item>
+    </style>
+
+    <style name="inputText">
+        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="colorControlNormal">@color/textPrimary</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="colorControlActivated">?colorPrimary</item>
+    </style>
+
+    <style name="primaryOUCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">?colorPrimary</item>
+    </style>
+
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/error_color</item>
+    </style>
+
+    <style name="warning_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/warning_color</item>
+    </style>
+
+    <style name="ImageFieldLabel">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/textPrimary</item>
     </style>
 </resources>

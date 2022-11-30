@@ -9,16 +9,22 @@ import dhis2.org.analytics.charts.data.SerieData
 class GraphToLineData {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
     private val serieColors = SerieColors.getColors()
-    fun map(graph: Graph): LineData {
+
+    fun map(graph: Graph, serieToHighlight: String? = null): LineData {
         return LineData(
             graph.series.mapIndexed { index: Int, serie: SerieData ->
                 LineDataSet(
-                    coordinateToEntryMapper.map(graph, serie.coordinates),
+                    coordinateToEntryMapper.map(graph, serie.coordinates, serie.fieldName),
                     serie.fieldName
                 ).apply {
                     val colorIndex = index % serieColors.size
-                    color = serieColors[colorIndex]
-                    setCircleColor(serieColors[colorIndex])
+                    val isHighlighted = serieToHighlight == null || label == serieToHighlight
+                    val serieColor = SerieColors.getSerieColor(colorIndex, isHighlighted)
+                    val singleSerie =
+                        graph.series.filter { !it.coordinates.isNullOrEmpty() }.size == 1
+                    setDrawValues(singleSerie || label == serieToHighlight)
+                    color = serieColor
+                    setCircleColor(serieColor)
                 }.withGlobalStyle()
             }
         )

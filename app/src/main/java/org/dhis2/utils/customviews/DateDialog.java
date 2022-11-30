@@ -13,12 +13,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.commons.date.Period;
+import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.DialogDateBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
-import org.dhis2.utils.filters.FilterManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;

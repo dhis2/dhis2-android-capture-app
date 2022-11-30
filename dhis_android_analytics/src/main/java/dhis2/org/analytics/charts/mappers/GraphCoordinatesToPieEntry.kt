@@ -10,6 +10,7 @@ class GraphCoordinatesToPieEntry {
         return coordinates.map { graphPoint ->
             PieEntry(
                 graphPoint.fieldValue,
+                graphPoint.legend,
                 graphPoint.legend
             )
         }

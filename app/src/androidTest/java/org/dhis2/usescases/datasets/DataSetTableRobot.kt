@@ -3,14 +3,16 @@ package org.dhis2.usescases.datasets
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder
+import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.hamcrest.Matchers.allOf
 import org.junit.Assert.assertTrue
 
 
@@ -41,7 +43,7 @@ class DataSetTableRobot : BaseRobot() {
     }
 
     fun typeOnEditTextCell(text: String, column: Int, row: Int) {
-        onView(withId(row))
+        onView(allOf(withId(row), isDisplayed()))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
                     column, typeChildViewWithId(text, R.id.input_editText)

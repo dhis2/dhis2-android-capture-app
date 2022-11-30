@@ -84,6 +84,18 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
+                        android:id="@+id/syncActionButton"
+                        style="@style/ActionIcon"
+                        android:onClick="@{()->presenter.onSyncAllClick()}"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/filterActionButton"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_sync"
+                        app:tint="?colorOnPrimary"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageView
                         android:id="@+id/filterActionButton"
                         style="@style/ActionIcon"
                         android:onClick="@{()->presenter.showFilter()}"
@@ -172,6 +184,7 @@
                 android:background="@color/bg_white_fdf"
                 app:headerLayout="@layout/header_menu"
                 app:itemIconTint="@color/icon_color_989"
+                app:itemMaxLines="2"
                 app:itemTextColor="@color/text_black_333"
                 app:menu="@menu/main_menu" />
 

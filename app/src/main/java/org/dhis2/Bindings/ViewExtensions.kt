@@ -1,25 +1,19 @@
 package org.dhis2.Bindings
 
-import android.app.Activity
 import android.graphics.Outline
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ListPopupWindow
+import android.widget.Spinner
 import android.widget.TextView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tbuonomo.viewpagerdotsindicator.R
-
-fun View.closeKeyboard() {
-    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
-}
-
-fun View.openKeyboard() {
-    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this.findFocus(), InputMethodManager.SHOW_FORCED)
-}
+import java.lang.Exception
+import org.dhis2.commons.extensions.closeKeyboard
 
 fun View.getThemePrimaryColor(): Int {
     val value = TypedValue()
@@ -30,7 +24,7 @@ fun View.getThemePrimaryColor(): Int {
 fun View.onFocusRemoved(onFocusRemovedCallback: () -> Unit) {
     setOnFocusChangeListener { view, hasFocus ->
         if (!hasFocus) {
-            view.closeKeyboard()
+            closeKeyboard()
             onFocusRemovedCallback.invoke()
         }
     }
@@ -78,5 +72,45 @@ fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
             }
         }
         clipToOutline = true
+    }
+}
+
+fun Spinner.overrideHeight(desiredHeight: Int) {
+    try {
+        val popup = Spinner::class.java.getDeclaredField("mPopup")
+        popup.isAccessible = true
+
+        // Get private mPopup member variable and try cast to ListPopupWindow
+        val popupWindow = popup[this] as ListPopupWindow
+
+        // Set popupWindow height
+        popupWindow.height = desiredHeight
+    } catch (e: Exception) {
+        // silently fail...
+    }
+}
+
+fun Spinner.doOnItemSelected(onItemSelected: (selectedIndex: Int) -> Unit) {
+    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            adapterView: AdapterView<*>?,
+            view: View?,
+            selectedIndex: Int,
+            id: Long
+        ) {
+            onItemSelected(selectedIndex)
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            // Don't do anything
+        }
+    }
+}
+
+fun FloatingActionButton.display(shouldBeDisplayed: Boolean) {
+    if (shouldBeDisplayed) {
+        show()
+    } else {
+        hide()
     }
 }

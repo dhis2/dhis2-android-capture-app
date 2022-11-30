@@ -36,11 +36,14 @@ class NavigationBottomBar @JvmOverloads constructor(
     private val itemIndicatorSize: Float
     private val itemIndicatorDrawable: Drawable?
     private var currentItemId: Int = -1
-    private var initialPage: Int
+    var initialPage: Int
     private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
     private var forceShowAnalytics = false
 
+    var onConfigurationFinishListener: (() -> Unit)? = null
+
     init {
+        hidden = visibility == View.GONE
         labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
         this.clipWithRoundedCorners()
         context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {
@@ -62,6 +65,10 @@ class NavigationBottomBar @JvmOverloads constructor(
         setIconsColor(currentItemIndicatorColor)
     }
 
+    fun onResume() {
+        selectedItemId = selectedItemId
+    }
+
     fun hide() {
         hidden = true
         animations.hide {
@@ -73,6 +80,9 @@ class NavigationBottomBar @JvmOverloads constructor(
         if (visibleItemCount().size > 1) {
             visibility = View.VISIBLE
             animations.show {
+                if (visibility != View.VISIBLE) {
+                    visibility = View.VISIBLE
+                }
                 hidden = false
             }
         }
@@ -200,10 +210,13 @@ class NavigationBottomBar @JvmOverloads constructor(
             }
         }
         when {
-            visibleMenuItems.size < 2 && !isHidden() -> hide()
+            visibleMenuItems.size < 2 && !isHidden() -> {
+                hidden = true
+                visibility = View.GONE
+            }
             visibleMenuItems.size > 1 && isHidden() -> {
                 initSelection(visibleMenuItems)
-                show()
+                onConfigurationFinishListener?.invoke() ?: show()
             }
             else -> initSelection(visibleMenuItems)
         }

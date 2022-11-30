@@ -1,5 +1,6 @@
 package org.dhis2.usescases.form
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -10,6 +11,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,36 +28,20 @@ class FormTest: BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    @After
+    override fun teardown() {
+        cleanLocalDatabase()
+        super.teardown()
+    }
+
     @Test
     fun shouldSuccessfullyUseForm() {
         val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
         val firstSectionPosition = 1
-        startSearchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnSearchFilter()
-            typeAttributeAtPosition("abc", 1)
-            clickOnFab()
-            clickOnFab()
-            selectAnOrgUnit("Ngelehun CHC")
-            clickOnAcceptButton()
-            acceptDate()
-        }
-
-        enrollmentRobot {
-            clickOnPersonAttributes("Attributes - Person")
-            scrollToBottomProgramForm()
-            clickOnDatePicker()
-            clickOnAcceptEnrollmentDate()
-            clickOnInputDate("DD TEST DATE *")
-            clickOnAcceptEnrollmentDate()
-            clickOnSaveEnrollment()
-        }
-
-        eventRobot {
-            clickOnUpdate()
-            waitToDebounce(3000)
-        }
+        initTest()
 
         formRobot {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, HIDE_FIELD, HIDE_FIELD_POSITION)
@@ -70,12 +56,6 @@ class FormTest: BaseTest() {
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
-            checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_WARNING, SHOW_WARNING_POSITION)
             checkWarningIsShown()
         }
@@ -84,24 +64,6 @@ class FormTest: BaseTest() {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_ERROR, SHOW_ERROR_POSITION)
             checkErrorIsShown()
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
-            scrollToBottomForm()
-            clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Warning")
-            pressBack()
-        }
-
-        formRobot {
-            resetToNoAction(rulesFirstSection, firstSectionPosition)
-            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
-            scrollToBottomForm()
-            clickOnSaveForm()
-            checkPopUpWithMessageOnCompleteIsShown("Error")
-            pressBack()
         }
 
         formRobot {
@@ -130,15 +92,36 @@ class FormTest: BaseTest() {
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, SHOW_OPTION_GROUP, SHOW_OPTION_POSITION)
-            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION)
-            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION)
+            checkDisplayedOption("North", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
+            checkDisplayedOption("West", OPTION_SET_FIELD_POSITION, ruleSearch.activity)
         }
+    }
+
+    @Test
+    fun shouldApplyAssignAction(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ASSIGN_VALUE, ASSIGN_VALUE_POSITION)
+            checkValueWasAssigned(ASSIGNED_VALUE_TEXT)
+        }
+    }
+
+    @Test
+    fun shouldApplyIndicatorRelatedActions(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_TEXT, DISPLAY_TEXT_POSITION)
             pressBack()
             goToAnalytics()
+            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Info", "Current Option Selected: DT")
             goToDataEntry()
         }
@@ -148,18 +131,53 @@ class FormTest: BaseTest() {
             clickOnSelectOption(rulesFirstSection, firstSectionPosition, DISPLAY_KEY, DISPLAY_KEY_POSITION)
             pressBack()
             goToAnalytics()
-            waitToDebounce(1000)
+            waitToDebounce(3000)
             checkIndicatorIsDisplayed("Current Option", "DKVP")
             goToDataEntry()
         }
+    }
+
+    @Test
+    fun shouldApplyWarningAndErrorOnComplete(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, WARNING_COMPLETE, WARNING_COMPLETE_POSITION)
+            scrollToBottomForm()
+            waitToDebounce(1000)
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("WARNING_ON_COMPLETE", composeTestRule)
+            pressBack()
+        }
+
+        formRobot {
+            resetToNoAction(rulesFirstSection, firstSectionPosition)
+            clickOnSelectOption(rulesFirstSection, firstSectionPosition, ERROR_COMPLETE, ERROR_COMPLETE_POSITION)
+            scrollToBottomForm()
+            waitToDebounce(1000)
+            clickOnSaveForm()
+            checkPopUpWithMessageOnCompleteIsShown("ERROR_ON_COMPLETE", composeTestRule)
+            pressBack()
+        }
+    }
+
+    @Test
+    fun shouldApplyHideProgramStage(){
+        val rulesFirstSection = "ZZ TEST RULE ACTIONS A"
+        val firstSectionPosition = 1
+        initTest()
 
         formRobot {
             resetToNoAction(rulesFirstSection, firstSectionPosition)
             clickOnSelectOption("ZZ TEST RULE ACTIONS C", 7, HIDE_PROGRAM_STAGE, HIDE_PROGRAM_STAGE_POSITION)
             scrollToPositionForm(0)
             scrollToBottomForm()
+            waitToDebounce(1000)
             clickOnSaveForm()
-            clickOnFinish()
+            clickOnNotNow(composeTestRule)
         }
         teiDashboardRobot {
             checkProgramStageIsHidden("Delta")
@@ -175,10 +193,10 @@ class FormTest: BaseTest() {
         startSearchActivity(ruleSearch)
 
         searchTeiRobot {
-            clickOnSearchFilter()
+            clickOnOpenSearch()
             typeAttributeAtPosition("optionGroup", 1)
-            clickOnFab()
-            clickOnFab()
+            clickOnSearch()
+            clickOnEnroll()
             selectAnOrgUnit("Ngelehun CHC")
             clickOnAcceptButton()
             acceptDate()
@@ -207,6 +225,36 @@ class FormTest: BaseTest() {
         }
     }
 
+    private fun initTest(){
+
+        startSearchActivity(ruleSearch)
+
+        searchTeiRobot {
+            clickOnOpenSearch()
+            typeAttributeAtPosition("abc", 1)
+            clickOnSearch()
+            clickOnEnroll()
+            selectAnOrgUnit("Ngelehun CHC")
+            clickOnAcceptButton()
+            acceptDate()
+        }
+
+        enrollmentRobot {
+            waitToDebounce(500)
+            clickOnPersonAttributes("Attributes - Person")
+            scrollToBottomProgramForm()
+            clickOnDatePicker()
+            clickOnAcceptEnrollmentDate()
+            clickOnInputDate("DD TEST DATE *")
+            clickOnAcceptEnrollmentDate()
+            clickOnSaveEnrollment()
+        }
+
+        eventRobot {
+            clickOnUpdate()
+            waitToDebounce(3000)
+        }
+    }
 
     companion object {
         const val NO_ACTION = "No Action"

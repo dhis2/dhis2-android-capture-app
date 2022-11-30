@@ -8,17 +8,16 @@ import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.SectionRenderingType;
 
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Preconditions.isNull;
+import static org.dhis2.commons.extensions.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
@@ -41,13 +40,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
-                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
+                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable SectionRenderingType renderingType,
                                  @Nullable String description, @Nullable String dataElement, @Nullable List<String> listCategoryOption, @Nullable String storeBy,
                                  @Nullable int row, @Nullable int column, @Nullable String categoryOptionCombo, String catCombo) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
-            if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
+            if (renderingType == null || renderingType == SectionRenderingType.LISTING)
                 return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description,dataElement,listCategoryOption,storeBy, row, column, categoryOptionCombo, catCombo);
             else
                 return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory, description,dataElement,listCategoryOption,storeBy, row, column, categoryOptionCombo, catCombo); //transforms option set into image option selector

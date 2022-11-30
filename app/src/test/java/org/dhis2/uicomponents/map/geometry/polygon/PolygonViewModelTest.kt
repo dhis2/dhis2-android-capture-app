@@ -12,11 +12,11 @@ class PolygonViewModelTest {
     @JvmField
     val rule = InstantTaskExecutorRule()
 
-    private lateinit var polygonViewModel: PolygonViewModel
+    private lateinit var polygonViewModel: org.dhis2.maps.geometry.polygon.PolygonViewModel
 
     @Before
     fun setup() {
-        polygonViewModel = PolygonViewModel()
+        polygonViewModel = org.dhis2.maps.geometry.polygon.PolygonViewModel()
         polygonViewModel.onMessage = {}
     }
 

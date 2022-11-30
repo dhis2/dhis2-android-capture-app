@@ -9,12 +9,15 @@ import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 
 class DataSetIndicatorAdapter(
-    context: Context
+    private val context: Context
 ) : AbstractTableAdapter<String, String, String>(context) {
 
     override fun getCellItemViewType(columnPosition: Int, rowPosition: Int): Int = 0
 
-    override fun onCreateCornerView(): View? = null
+    override fun onCreateCornerView(): View? {
+        val layout = R.layout.default_cornerview_layout
+        return LayoutInflater.from(context).inflate(layout, null)
+    }
 
     override fun getColumnHeaderItemViewType(position: Int): Int = 0
 
@@ -39,7 +42,7 @@ class DataSetIndicatorAdapter(
         parent: ViewGroup,
         viewType: Int
     ): AbstractViewHolder = DataSetIndicatorHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_table_header, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_table_row, parent, false)
     )
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder?,

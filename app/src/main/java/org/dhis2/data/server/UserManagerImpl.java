@@ -81,6 +81,11 @@ public class UserManagerImpl implements UserManager {
         return d2;
     }
 
+    @Override
+    public Boolean hasMultipleAccounts() {
+        return d2.userModule().accountManager().getAccounts().size() > 1;
+    }
+
     @NonNull
     @Override
     public Single<Pair<String, Integer>> getTheme() {
@@ -89,5 +94,10 @@ public class UserManagerImpl implements UserManager {
 
     public Completable logout() {
         return d2.userModule().logOut();
+    }
+
+    @Override
+    public boolean allowScreenShare() {
+        return repository.allowScreenShare();
     }
 }

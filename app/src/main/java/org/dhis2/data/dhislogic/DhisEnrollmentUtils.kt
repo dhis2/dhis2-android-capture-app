@@ -95,7 +95,13 @@ class DhisEnrollmentUtils @Inject constructor(val d2: D2) {
         }
     }
 
-    private fun getOrgUnit(teiUid: String): String? {
+    fun generateEnrollmentEvents(enrollmentUid: String): Pair<String, String?> {
+        return EnrollmentEventGenerator(
+            EnrollmentEventGeneratorRepositoryImpl(d2)
+        ).generateEnrollmentEvents(enrollmentUid)
+    }
+
+    fun getOrgUnit(teiUid: String): String? {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
             .organisationUnit()
     }

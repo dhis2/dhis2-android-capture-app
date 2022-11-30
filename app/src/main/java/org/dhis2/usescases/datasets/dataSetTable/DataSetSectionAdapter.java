@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 
 import java.util.ArrayList;
@@ -14,18 +15,29 @@ import java.util.List;
 
 public final class DataSetSectionAdapter extends FragmentStateAdapter {
 
-    private List<String> sections;
-    private boolean accessDataWrite;
-    private String dataSetUid;
+    private List<DataSetSection> sections;
+    private final boolean accessDataWrite;
+    private final String dataSetUid;
+    private final String orgUnitUid;
+    private final String periodId;
+    private final String attrOptComboUid;
 
-    DataSetSectionAdapter(FragmentActivity fragmentActivity, boolean accessDataWrite, String dataSetUid) {
+    DataSetSectionAdapter(FragmentActivity fragmentActivity,
+                          boolean accessDataWrite,
+                          String dataSetUid,
+                          String orgUnitUid,
+                          String periodId,
+                          String attrOptionComboUid) {
         super(fragmentActivity);
         sections = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;
         this.dataSetUid = dataSetUid;
+        this.orgUnitUid = orgUnitUid;
+        this.periodId = periodId;
+        this.attrOptComboUid = attrOptionComboUid;
     }
 
-    void swapData(List<String> sections) {
+    void swapData(List<DataSetSection> sections) {
         this.sections = sections;
         notifyDataSetChanged();
     }
@@ -37,7 +49,13 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
         if (position == 0) {
             fragment = DataSetDetailFragment.create(dataSetUid, accessDataWrite);
         } else {
-            fragment = DataSetSectionFragment.create(sections.get(position - 1), accessDataWrite, dataSetUid);
+            fragment = DataSetSectionFragment.create(
+                    sections.get(position - 1).getUid(),
+                    accessDataWrite,
+                    dataSetUid,
+                    orgUnitUid,
+                    periodId,
+                    attrOptComboUid);
         }
         return fragment;
     }
@@ -49,7 +67,7 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
 
     String getSectionTitle(int position) {
         if (sections != null && sections.size() > position - 1) {
-            return sections.get(position - 1);
+            return sections.get(position - 1).title();
         } else {
             return "";
         }

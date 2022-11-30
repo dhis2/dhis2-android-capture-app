@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="org.dhis2.utils.DateUtils" />
+        <import type="org.dhis2.commons.date.DateUtils" />
 
         <variable
             name="event"
@@ -61,30 +61,25 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:id="@+id/stageIconImage"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/composeStageIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/rounded_square"
-                        android:padding="4dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:backgroundTint="@color/blue_4fa"
-                        tools:ignore="ContentDescription"
-                        tools:src="@drawable/ic_mosquito_positive" />
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <ImageView
                         android:id="@+id/eventStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         app:enrollmentStatusIcon="@{enrollment}"
                         app:eventProgram="@{program}"
                         app:eventProgramStage="@{stage}"
                         app:eventStatusIcon="@{event}"
+                        android:layout_marginStart="16dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_event_status_open"
@@ -98,7 +93,8 @@
                     android:layout_marginStart="38dp"
                     android:layout_marginTop="30dp"
                     app:cardBackgroundColor="@color/white"
-                    app:cardElevation="9dp"
+                    app:cardElevation="1dp"
+                    android:shadowColor="@color/light_shadow"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 

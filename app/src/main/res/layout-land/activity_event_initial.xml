@@ -41,11 +41,11 @@
             <ImageView
                 android:id="@+id/menu"
                 style="@style/ActionIcon"
+                android:layout_marginStart="4dp"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginStart="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -57,6 +57,7 @@
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
+                android:maxLines="1"
                 app:layout_constraintEnd_toStartOf="@+id/completion"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
@@ -107,200 +108,11 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="false">
 
-            <RelativeLayout
+            <FrameLayout
+                android:id="@+id/fragmentDetailsContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-                <androidx.core.widget.NestedScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/programStageIcon"
-                                android:layout_width="80dp"
-                                android:layout_height="80dp"
-                                android:contentDescription='@{name}'
-                                android:padding="7dp"
-                                app:tint="?colorPrimaryDark"
-                                app:imageBackground="@{ @drawable/photo_temp }"
-                                app:srcCompat="@drawable/ic_clinical_f_outline" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:padding="5dp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text='@{programStage.displayName()}'
-                                    android:textColor="?colorPrimary"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="Program Stage Name" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{programStage.description()}"
-                                    android:textSize="12sp"
-                                    android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
-
-                                <LinearLayout
-                                    android:id="@+id/shareContainer"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="end"
-                                    android:layout_marginTop="30dp"
-                                    android:onClick="@{()->presenter.onShareClick()}">
-
-                                    <ImageView
-                                        android:id="@+id/shareIcon"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        app:tint="@color/text_black_333"
-                                        app:srcCompat="@drawable/ic_share" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:layout_marginTop="2dp"
-                                        android:layout_marginEnd="8dp"
-                                        android:text="@string/share"
-                                        android:textColor="@color/text_black_4d4d4d"
-                                        android:textSize="16sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_marginTop="8dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/date_layout"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textColorHint="@color/text_black_808"
-                                tools:hint="executionDateLabel">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/date"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
-                                    android:textSize="15sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/org_unit_layout"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="@string/org_unit"
-                                android:textColorHint="@color/text_black_808">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/org_unit"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
-                                    android:textSize="15sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/catComboLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
-
-                        <include
-                            android:id="@+id/geometry"
-                            layout="@layout/form_coordinates"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="@{programStage.featureType()!=null &amp;&amp; programStage.featureType() != FeatureType.NONE ?View.VISIBLE:View.GONE}" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal">
-
-                            <RadioGroup
-                                android:id="@+id/temp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="40dp"
-                                android:layout_weight="1"
-                                android:orientation="horizontal">
-
-                                <androidx.appcompat.widget.AppCompatRadioButton
-                                    android:id="@+id/one_time"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/one_time"
-                                    app:buttonTint="?colorPrimary" />
-
-                                <androidx.appcompat.widget.AppCompatRadioButton
-                                    android:id="@+id/permanent"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/permanent"
-                                    app:buttonTint="?colorPrimary" />
-                            </RadioGroup>
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="80dp" />
-                    </LinearLayout>
-                </androidx.core.widget.NestedScrollView>
-
-            </RelativeLayout>
-
-
-            <Button
-                android:id="@+id/action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="?attr/selector_button_round_7"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/next"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

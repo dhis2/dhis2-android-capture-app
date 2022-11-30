@@ -10,13 +10,15 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.data.filter.FilterRepository;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.form.data.FormValueStore;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -24,13 +26,14 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
-import org.dhis2.utils.EventCreationType;
+import org.dhis2.commons.data.EventViewModelType;
+import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
+import org.dhis2.form.data.RuleUtilsProviderResult;
+import org.dhis2.form.data.RulesUtilsProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -38,10 +41,8 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +78,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final TEIDataContracts.View view;
     private final CompositeDisposable compositeDisposable;
     private final FilterRepository filterRepository;
+    private final FormValueStore valueStore;
 
     private String programUid;
     private DashboardProgramModel dashboardModel;
@@ -92,7 +94,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 PreferenceProvider preferenceProvider,
                                 AnalyticsHelper analyticsHelper,
                                 FilterManager filterManager,
-                                FilterRepository filterRepository) {
+                                FilterRepository filterRepository,
+                                FormValueStore valueStore) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -108,6 +111,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
         this.filterRepository = filterRepository;
+        this.valueStore = valueStore;
     }
 
     @Override
@@ -174,6 +178,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             sectionFlowable,
                             groupingFlowable,
                             Trio::create)
+                            .doOnNext(data-> TeiDataIdlingResourceSingleton.INSTANCE.increment())
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
@@ -195,11 +200,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    events ->
-                                            view.setEvents(
-                                                    events,
-                                                    canAddNewEvents()
-                                            ),
+                                    events -> {
+                                        view.setEvents(
+                                                events,
+                                                canAddNewEvents()
+                                        );
+                                        TeiDataIdlingResourceSingleton.INSTANCE.decrement();
+                                    },
                                     Timber::d
                             )
             );
@@ -266,14 +273,13 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             return events;
         }
 
-        stagesToHide = new ArrayList<>();
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            if (ruleEffect.ruleAction() instanceof RuleActionHideProgramStage) {
-                RuleActionHideProgramStage hideStageAction =
-                        (RuleActionHideProgramStage) ruleEffect.ruleAction();
-                stagesToHide.add(hideStageAction.programStage());
-            }
-        }
+        RuleUtilsProviderResult rulesResult = new RulesUtilsProviderImpl(d2).applyRuleEffects(
+                false,
+                new HashMap<>(),
+                calcResult.items(),
+                valueStore);
+
+        stagesToHide = rulesResult.getStagesToHide();
 
         Iterator<EventViewModel> iterator = events.iterator();
         while (iterator.hasNext()) {
@@ -495,8 +501,8 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void onSyncDialogClick(String eventUid) {
-        view.showSyncDialog(teiUid);
+    public void onSyncDialogClick() {
+        view.showSyncDialog(enrollmentUid);
     }
 
     @Override
@@ -510,6 +516,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void setOpeningFilterToNone() {
         filterRepository.collapseAllFilters();
+    }
+
+    @Override
+    public void setOrgUnitFilters(List<OrganisationUnit> selectedOrgUnits) {
+        FilterManager.getInstance().addOrgUnits(selectedOrgUnits);
     }
 
     private boolean canAddNewEvents() {
