@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
                         supportFragmentManager,
                         this@HomeActivity,
                         barcodeLauncher,
-                        { scope, scaffold -> navigateToReviewStock(scope, scaffold) }
+                        ::navigateToReviewStock
                     ) { scope, scaffold ->
                         synchronizeData(
                             scope,
