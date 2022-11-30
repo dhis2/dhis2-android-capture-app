@@ -1,5 +1,6 @@
 package org.dhis2.composetable.ui
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -437,7 +438,8 @@ fun ItemHeader(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
                 onHeaderResize = onHeaderResize,
-                onResizing = onResizing
+                onResizing = onResizing,
+                cellWidth = width
             )
         }
     }
@@ -895,6 +897,7 @@ fun VerticalResizingView(
 ) {
     val colorPrimary = TableTheme.colors.primary
     var currentPosition: Offset? by remember { mutableStateOf(null) }
+    var minWidthPosition: Float? by remember { mutableStateOf(null) }
 
     // Store the initial position of the item
     if (resizingCell == null) {
@@ -904,11 +907,18 @@ fun VerticalResizingView(
     }
 
     resizingCell?.let {
-        // Calculate the offset from the initial position of the object
-        val offset = currentPosition!!.x + it.draggingOffsetX
+        val newPosition = currentPosition!!.x + it.draggingOffsetX
+        val offsetX: Float
+        if (MIN_CELL_WIDTH < it.cellWidth + it.draggingOffsetX.dp) {
+            minWidthPosition = newPosition
+            offsetX = newPosition
+        } else {
+            offsetX = minWidthPosition ?: 0F
+        }
+
         Box(
             modifier
-                .offset { IntOffset(offset.roundToInt(), 0) }
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .fillMaxHeight()
                 .drawBehind {
                     drawRect(
@@ -924,7 +934,7 @@ fun VerticalResizingView(
                     .align(Alignment.TopCenter)
                     .offset {
                         IntOffset(
-                            -13.dp.value.toInt(),
+                            -15.dp.value.toInt(),
                             currentPosition?.y?.roundToInt() ?: 0
                         )
                     }
@@ -932,7 +942,7 @@ fun VerticalResizingView(
                         color = colorPrimary,
                         shape = RoundedCornerShape(16.dp)
                     )
-                    .size(12.dp),
+                    .size(14.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
                 contentDescription = "",
                 tint = Color.White
@@ -945,7 +955,8 @@ fun VerticalResizingView(
 fun VerticalResizingRule(
     modifier: Modifier = Modifier,
     onHeaderResize: (Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit
+    onResizing: (ResizingCell?) -> Unit,
+    cellWidth: Dp
 ) {
     val localDensity = LocalDensity.current
     val minOffset = with(localDensity) {
@@ -969,7 +980,7 @@ fun VerticalResizingRule(
                 ) { change, dragAmount ->
                     change.consume()
                     offsetX += dragAmount.x
-                    onResizing(ResizingCell(positionInRoot, offsetX))
+                    onResizing(ResizingCell(cellWidth, positionInRoot, offsetX))
                 }
             }
     ) {
@@ -978,7 +989,7 @@ fun VerticalResizingRule(
                 .align(Alignment.Center)
                 .offset {
                     IntOffset(
-                        13.dp.value.toInt(),
+                        15.dp.value.toInt(),
                         0
                     )
                 }
@@ -986,7 +997,7 @@ fun VerticalResizingRule(
                     color = colorPrimary,
                     shape = RoundedCornerShape(16.dp)
                 )
-                .size(12.dp)
+                .size(14.dp)
                 .onGloballyPositioned { coordinates ->
                     positionInRoot = coordinates.positionInRoot()
                 },
@@ -1268,6 +1279,7 @@ const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
 const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
 const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
+val MIN_CELL_WIDTH = 24.dp
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
