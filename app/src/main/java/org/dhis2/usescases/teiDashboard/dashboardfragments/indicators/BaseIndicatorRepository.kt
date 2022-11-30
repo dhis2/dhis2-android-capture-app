@@ -185,8 +185,8 @@ abstract class BaseIndicatorRepository(
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
             if (feedbackList.isNotEmpty()) {
                 add(SectionTitle(
-//                        resourceManager.sectionFeedback()
-                        (feedbackList.get(0) as IndicatorModel).location
+                        resourceManager.sectionFeedback()
+//                        (feedbackList.get(0) as IndicatorModel).location
                 ))
                 addAll(feedbackList)
             }
@@ -205,8 +205,8 @@ abstract class BaseIndicatorRepository(
                 addAll(charts)
             } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
                 add(SectionTitle(
-//                        resourceManager.sectionIndicators()
-                        (indicatorList.get(0) as IndicatorModel).location
+                        resourceManager.sectionIndicators()
+//                        (indicatorList.get(0) as IndicatorModel).location
                 ))
                 addAll(indicatorList)
             } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
