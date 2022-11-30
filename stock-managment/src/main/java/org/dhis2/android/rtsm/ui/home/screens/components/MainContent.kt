@@ -47,7 +47,6 @@ import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
@@ -63,7 +62,6 @@ fun MainContent(
     manageStockViewModel: ManageStockViewModel,
     hasFacilitySelected: Boolean,
     hasDestinationSelected: Boolean?,
-    homeContext: HomeActivity,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>
 ) {
     val scope = rememberCoroutineScope()
@@ -206,21 +204,27 @@ fun MainContent(
             ) {
                 if (hasFacilitySelected && hasDestinationSelected == true) {
                     updateTableState(manageStockViewModel, viewModel)
-                    ManageStockTable(manageStockViewModel)
+                    ManageStockTable(manageStockViewModel) {
+                        scope.launch { backdropState.conceal() }
+                    }
                 }
             } else if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.CORRECTION.name
             ) {
                 if (hasFacilitySelected) {
                     updateTableState(manageStockViewModel, viewModel)
-                    ManageStockTable(manageStockViewModel)
+                    ManageStockTable(manageStockViewModel) {
+                        scope.launch { backdropState.conceal() }
+                    }
                 }
             } else if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.DISCARD.name
             ) {
                 if (hasFacilitySelected) {
                     updateTableState(manageStockViewModel, viewModel)
-                    ManageStockTable(manageStockViewModel)
+                    ManageStockTable(manageStockViewModel) {
+                        scope.launch { backdropState.conceal() }
+                    }
                 }
             }
         }

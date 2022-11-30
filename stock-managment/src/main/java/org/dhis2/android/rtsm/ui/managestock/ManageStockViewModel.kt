@@ -2,7 +2,6 @@ package org.dhis2.android.rtsm.ui.managestock
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
@@ -14,6 +13,8 @@ import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
@@ -33,8 +34,10 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
+import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
@@ -42,12 +45,13 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.dhis2.composetable.model.TextInputModel
+import org.hisp.dhis.rules.models.RuleActionAssign
+import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
-    savedState: SavedStateHandle,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
@@ -76,23 +80,29 @@ class ManageStockViewModel @Inject constructor(
     val operationState: LiveData<OperationState<LiveData<PagedList<StockItem>>>>
         get() = _networkState
 
+    private val _allTableState = MutableStateFlow<List<TableModel>>(mutableListOf())
+    private val allTableState: StateFlow<List<TableModel>> = _allTableState
+
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(emptyList(), false)
     )
     val screenState: LiveData<TableScreenState> = _screenState
+
+    private val _stockItems: MutableLiveData<PagedList<StockItem>> =
+        MutableLiveData<PagedList<StockItem>>()
 
     fun setup(transaction: Transaction) {
         _transaction.value = transaction
 
         configureRelays()
         loadStockItems()
-
         refreshData()
     }
 
     fun refreshData() {
         viewModelScope.launch {
             getStockItems().asFlow().collect {
+                _stockItems.value = it
                 tableRowData(
                     it,
                     resources.getString(R.string.stock),
@@ -193,19 +203,25 @@ class ManageStockViewModel @Inject constructor(
                     row = index
                 ),
                 values = mapOf(
-                    0 to TableCell(
-                        id = item.id,
-                        row = index,
-                        column = 0,
-                        editable = false,
-                        value = item.stockOnHand
+                    Pair(
+                        0,
+                        TableCell(
+                            id = item.id,
+                            row = index,
+                            column = 0,
+                            editable = false,
+                            value = item.stockOnHand
+                        )
                     ),
-                    1 to TableCell(
-                        id = item.id,
-                        row = index,
-                        column = 1,
-                        value = null,
-                        editable = true
+                    Pair(
+                        1,
+                        TableCell(
+                            id = item.id,
+                            row = index,
+                            column = 1,
+                            value = null,
+                            editable = true
+                        )
                     )
                 ),
                 maxLines = 3
@@ -214,12 +230,14 @@ class ManageStockViewModel @Inject constructor(
             tableRowModels.add(tableRowModel)
         }
 
+        _allTableState.value = mapTableModel(
+            tableRowModels,
+            stockLabel,
+            qtdLabel
+        )
+
         _screenState.value = TableScreenState(
-            tables = mapTableModel(
-                tableRowModels,
-                stockLabel,
-                qtdLabel
-            ),
+            tables = allTableState.value,
             selectNext = false
         )
     }
@@ -245,6 +263,128 @@ class ManageStockViewModel @Inject constructor(
         )
     )
 
+    fun onCellValueChanged(tableCell: TableCell) {
+        val updatedData = screenState.value?.tables?.map { tableModel ->
+            if (tableModel.hasCellWithId(tableCell.id)) {
+                tableModel.copy(
+                    overwrittenValues = mapOf(
+                        Pair(tableCell.column!!, tableCell)
+                    )
+                )
+            } else {
+                tableModel
+            }
+        } ?: emptyList()
+
+        _screenState.postValue(
+            TableScreenState(
+                tables = updatedData,
+                selectNext = false
+            )
+        )
+    }
+
+    fun onCellClick(cell: TableCell): TextInputModel {
+        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        val itemName = stockItem?.name ?: ""
+        return TextInputModel(
+            id = cell.id ?: "",
+            mainLabel = itemName,
+            secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
+            currentValue = cell.value,
+            keyboardInputType = KeyboardInputType.NumericInput(
+                allowDecimal = false,
+                allowSigned = false
+            )
+        )
+    }
+
+    fun onSaveValueChange(
+        cell: TableCell,
+        selectNext: Boolean
+    ) {
+        // When user taps on done or next. We should apply program rules here
+        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        stockItem?.let {
+            cell.value?.let { value ->
+                setQuantity(
+                    it, 0, value,
+                    object : ItemWatcher.OnQuantityValidated {
+                        override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                            // Update fields
+                            ruleEffects.forEach { ruleEffect ->
+                                if (ruleEffect.ruleAction() is RuleActionAssign &&
+                                    (
+                                        (ruleEffect.ruleAction() as RuleActionAssign).field()
+                                            == config.value?.stockOnHand
+                                        )
+                                ) {
+                                    val data = ruleEffect.data()
+                                    val isValid: Boolean = isValidStockOnHand(data)
+                                    val stockOnHand = if (isValid) data else it.stockOnHand
+                                    addItem(it, cell.value, stockOnHand, !isValid)
+
+                                    _allTableState.value = _allTableState.value.map { tableModel ->
+                                        tableModel.copy(
+                                            tableRows = updateTableRows(tableModel.tableRows, cell)
+                                        )
+                                    }
+                                }
+                            }
+
+                            _screenState.postValue(
+                                TableScreenState(
+                                    tables = allTableState.value,
+                                    selectNext = selectNext
+                                )
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    private fun updateTableRows(
+        tableRowModels: List<TableRowModel>,
+        cell: TableCell
+    ): List<TableRowModel> {
+        return tableRowModels.map { tableRowModel ->
+            if (tableRowModel.values.values.find { tableCell ->
+                tableCell.id == cell.id
+            } != null
+            ) {
+                tableRowModel.copy(
+                    values = updateTableCells(tableRowModel.values, cell)
+                )
+            } else {
+                tableRowModel
+            }
+        }
+    }
+
+    private fun updateTableCells(
+        tableCells: Map<Int, TableCell>,
+        cell: TableCell
+    ): Map<Int, TableCell> {
+        val stockEntry = getPopulatedEntries().find { it.item.id == cell.id }
+        return tableCells.mapValues { (index, tableCell) ->
+            when (index) {
+                0 -> tableCell.copy(
+                    value = stockEntry?.stockOnHand
+                )
+                else -> tableCell.copy(
+                    value = stockEntry?.qty,
+                    error = if (stockEntry?.hasError == true) {
+                        resources.getString(R.string.stock_on_hand_exceeded_message)
+                    } else {
+                        null
+                    }
+                )
+            }
+        }
+    }
+
     fun onSearchQueryChanged(query: String) {
         searchRelay.accept(query)
     }
@@ -257,7 +397,7 @@ class ManageStockViewModel @Inject constructor(
         item: @NotNull StockItem,
         position: @NotNull Int,
         qty: @NotNull String,
-        callback: @Nullable ItemWatcher.OnQuantityValidated?
+        callback: ItemWatcher.OnQuantityValidated?
     ) {
         entryRelay.accept(RowAction(StockEntry(item, qty), position, callback))
     }

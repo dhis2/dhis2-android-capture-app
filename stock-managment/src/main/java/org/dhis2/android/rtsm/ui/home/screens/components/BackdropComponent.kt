@@ -96,7 +96,6 @@ fun Backdrop(
                 manageStockViewModel,
                 hasFacilitySelected,
                 hasDestinationSelected,
-                homeContext,
                 barcodeLauncher
             )
         },

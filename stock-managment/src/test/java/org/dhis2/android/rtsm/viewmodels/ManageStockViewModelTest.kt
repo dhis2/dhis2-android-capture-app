@@ -1,14 +1,11 @@
 package org.dhis2.android.rtsm.viewmodels
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import com.github.javafaker.Faker
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.dhis2.android.rtsm.MainDispatcherRule
-import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
-import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_TRANSACTION
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
@@ -72,25 +69,15 @@ class ManageStockViewModelTest {
 
     private val resourceManager: ResourceManager = mock()
 
-    private fun getStateHandle(transaction: Transaction): SavedStateHandle {
-        val state = hashMapOf<String, Any>(
-            INTENT_EXTRA_TRANSACTION to transaction,
-            INTENT_EXTRA_APP_CONFIG to appConfig
-        )
-        return SavedStateHandle(state)
-    }
-
-    private fun getModel(transaction: Transaction) =
-        ManageStockViewModel(
-            getStateHandle(transaction),
-            disposable,
-            schedulerProvider,
-            preferenceProvider,
-            stockManager,
-            ruleValidationHelperImpl,
-            speechRecognitionManagerImpl,
-            resourceManager
-        )
+    private fun getModel() = ManageStockViewModel(
+        disposable,
+        schedulerProvider,
+        preferenceProvider,
+        stockManager,
+        ruleValidationHelperImpl,
+        speechRecognitionManagerImpl,
+        resourceManager
+    )
 
     private fun createStockEntry(uid: String) = StockItem(
         uid, faker.name().name(), faker.number().numberBetween(1, 800).toString()
@@ -142,7 +129,7 @@ class ManageStockViewModelTest {
             transactionDate = transactionDate,
             distributedTo = distributedTo
         )
-        val viewModel = getModel(transaction)
+        val viewModel = getModel()
         viewModel.setup(transaction)
 
         viewModel.transaction.let {
@@ -161,7 +148,7 @@ class ManageStockViewModelTest {
             transactionDate = transactionDate,
             distributedTo = null
         )
-        val viewModel = getModel(transaction)
+        val viewModel = getModel()
         viewModel.setup(transaction)
 
         viewModel.transaction.let {
@@ -180,7 +167,7 @@ class ManageStockViewModelTest {
             transactionDate = transactionDate,
             distributedTo = null
         )
-        val viewModel = getModel(transaction)
+        val viewModel = getModel()
         viewModel.setup(transaction)
 
         viewModel.transaction.let {
@@ -193,13 +180,7 @@ class ManageStockViewModelTest {
 
     @Test
     fun canSetAndGetItemQuantityForSelectedItem() {
-        val transaction = Transaction(
-            transactionType = TransactionType.DISTRIBUTION,
-            facility = facility,
-            transactionDate = transactionDate,
-            distributedTo = distributedTo
-        )
-        val viewModel = getModel(transaction)
+        val viewModel = getModel()
 
         val qty = 319L
         val item = createStockEntry("someUid", viewModel, qty.toString())
@@ -218,13 +199,7 @@ class ManageStockViewModelTest {
 
     @Test
     fun canUpdateExistingItemQuantityForSelectedItem() {
-        val transaction = Transaction(
-            transactionType = TransactionType.DISTRIBUTION,
-            facility = facility,
-            transactionDate = transactionDate,
-            distributedTo = distributedTo
-        )
-        val viewModel = getModel(transaction)
+        val viewModel = getModel()
         val qty2 = 95L
 
         val item = createStockEntry("someUid", viewModel, qty2.toString())

@@ -29,16 +29,11 @@
     <application android:supportsRtl="true">
         <activity
             android:name=".ui.home.HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.managestock.ManageStockActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.home.HomeActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.reviewstock.ReviewStockActivity"
             android:exported="false"
-            android:parentActivityName=".ui.managestock.ManageStockActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.scanner.ScannerActivity"
