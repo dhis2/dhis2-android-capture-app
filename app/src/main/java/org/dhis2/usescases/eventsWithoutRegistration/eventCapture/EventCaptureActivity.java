@@ -121,24 +121,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         setUpViewPagerAdapter();
 
-
-//        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-//
-//            if (adapter == null) return true;
-//
-//            int pagePosition = adapter.getNavigationPagePosition(item.getItemId());
-//
-//
-//            if (pagePosition != -1) {
-//                if (OrientationUtilsKt.isLandscape(this)) {
-//                    binding.eventViewPager.setCurrentItem(pagePosition);
-//                } else {
-//                    binding.eventViewPager.setCurrentItem(pagePosition);
-//                }
-//            }
-//            return true;
-//        });
-
         if (OrientationUtilsKt.isLandscape(this)) {
 
             getSupportFragmentManager().beginTransaction()
