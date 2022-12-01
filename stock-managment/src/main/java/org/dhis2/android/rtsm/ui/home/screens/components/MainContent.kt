@@ -202,7 +202,9 @@ fun MainContent(
             if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.DISTRIBUTION.name
             ) {
-                if (hasFacilitySelected && hasDestinationSelected == true) {
+                if (viewModel.hasFacilitySelected.collectAsState().value &&
+                    hasDestinationSelected == true
+                ) {
                     updateTableState(manageStockViewModel, viewModel)
                     ManageStockTable(manageStockViewModel) {
                         scope.launch { backdropState.conceal() }
@@ -211,7 +213,7 @@ fun MainContent(
             } else if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.CORRECTION.name
             ) {
-                if (hasFacilitySelected) {
+                if (viewModel.hasFacilitySelected.collectAsState().value) {
                     updateTableState(manageStockViewModel, viewModel)
                     ManageStockTable(manageStockViewModel) {
                         scope.launch { backdropState.conceal() }
@@ -220,7 +222,7 @@ fun MainContent(
             } else if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.DISCARD.name
             ) {
-                if (hasFacilitySelected) {
+                if (viewModel.hasFacilitySelected.collectAsState().value) {
                     updateTableState(manageStockViewModel, viewModel)
                     ManageStockTable(manageStockViewModel) {
                         scope.launch { backdropState.conceal() }

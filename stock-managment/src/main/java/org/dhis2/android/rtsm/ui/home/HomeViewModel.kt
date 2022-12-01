@@ -64,6 +64,9 @@ class HomeViewModel @Inject constructor(
     private val _scanText = MutableStateFlow("")
     val scanText = _scanText.asStateFlow()
 
+    private val _oldSelectedFacility = MutableStateFlow("")
+    val oldSelectedFacility = _oldSelectedFacility.asStateFlow()
+
     private val _transactionDate = MutableStateFlow(LocalDateTime.now())
     val transactionDate: StateFlow<LocalDateTime>
         get() = _transactionDate
@@ -243,5 +246,8 @@ class HomeViewModel @Inject constructor(
 
     fun setDestinationSelected(status: Boolean) {
         _hasDestinationSelected.value = status
+    }
+    fun setOldSelectedFacility(text: String) {
+        _oldSelectedFacility.value = text
     }
 }
