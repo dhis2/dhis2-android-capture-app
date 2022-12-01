@@ -1,7 +1,7 @@
 ext {
     versions = [
             ndk   : "21.4.7075529",
-            sdk   : 32,
+            sdk   : 33,
             tools : "32.0.0",
             minSdk: 21,
             vCode : 117,
@@ -29,7 +29,7 @@ ext {
             dynamicanimation          : "1.0.0",
             viewpager2                : "1.0.0",
             recyclerview              : "1.2.1",
-            compose                   : "1.2.1",
+            compose                   : "1.3.1",
             composeTheme              : "1.1.16",
             composeConstraintLayout   : "1.0.1",
             activityCompose           : "1.5.1",
