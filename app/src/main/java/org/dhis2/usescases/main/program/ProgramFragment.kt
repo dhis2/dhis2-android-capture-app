@@ -27,6 +27,8 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
+import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -36,7 +38,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
-import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
@@ -242,14 +243,14 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
                 if (program.programType.isNotEmpty()) {
-                    SyncStatusDialog.ConflictType.PROGRAM
+                    ConflictType.PROGRAM
                 } else {
-                    SyncStatusDialog.ConflictType.DATA_SET
+                    ConflictType.DATA_SET
                 }
             )
             .setUid(program.uid)
             .onDismissListener(
-                object : GranularSyncContracts.OnDismissListener {
+                object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
                         if (hasChanged) {
                             presenter.updateProgramQueries()

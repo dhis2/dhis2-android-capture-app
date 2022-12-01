@@ -8,6 +8,8 @@ import androidx.fragment.app.viewModels
 import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.FragmentDataSetListBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -15,7 +17,6 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.ActionObserver
-import org.dhis2.utils.granularsync.GranularSyncContracts
 import org.dhis2.utils.granularsync.SyncStatusDialog
 
 class DataSetListFragment : FragmentGlobalAbstract() {
@@ -111,12 +112,12 @@ class DataSetListFragment : FragmentGlobalAbstract() {
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {
         val dialog = SyncStatusDialog.Builder()
-            .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+            .setConflictType(ConflictType.DATA_VALUES)
             .setUid(dataSetUid)
             .setOrgUnit(dataSet.orgUnitUid())
             .setAttributeOptionCombo(dataSet.catOptionComboUid())
             .setPeriodId(dataSet.periodId())
-            .onDismissListener(object : GranularSyncContracts.OnDismissListener {
+            .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) {
                         viewModel.updateData()

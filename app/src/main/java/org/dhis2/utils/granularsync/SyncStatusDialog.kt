@@ -28,6 +28,8 @@ import org.dhis2.R
 import org.dhis2.commons.bindings.setStateIcon
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.databinding.SyncBottomDialogBinding
 import org.dhis2.usescases.settings.ErrorDialog
 import org.dhis2.usescases.sms.InputArguments
@@ -61,7 +63,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private var orgUnitDataValue: String? = null
     private var attributeComboDataValue: String? = null
     private var periodIdDataValue: String? = null
-    var dismissListenerDialog: GranularSyncContracts.OnDismissListener? = null
+    var dismissListenerDialog: OnDismissListener? = null
 
     private var binding: SyncBottomDialogBinding? = null
     private var adapter: SyncConflictAdapter? = null
@@ -72,10 +74,6 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     private var smsSenderHelper: SMSSenderHelper? = null
-
-    enum class ConflictType {
-        ALL, PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
-    }
 
     companion object {
         private const val RECORD_UID = "RECORD_UID"
@@ -108,7 +106,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         private var orgUnitDataValue: String? = null
         private var attributeComboDataValue: String? = null
         private var periodIdDataValue: String? = null
-        private var dismissListener: GranularSyncContracts.OnDismissListener? = null
+        private var dismissListener: OnDismissListener? = null
 
         fun setUid(uid: String): Builder {
             this.recordUid = uid
@@ -135,7 +133,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
-        fun onDismissListener(dismissListener: GranularSyncContracts.OnDismissListener): Builder {
+        fun onDismissListener(dismissListener: OnDismissListener): Builder {
             this.dismissListener = dismissListener
             return this
         }
@@ -541,7 +539,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 binding!!.noConflictMessage.text = getString(R.string.no_conflicts_synced_message)
                 updateState(State.SYNCED)
                 setLastUpdated(SyncDate(Date()))
-                dismissListenerDialog!!.onDismiss(true)
+                dismissListenerDialog?.onDismiss(true)
             }
             WorkInfo.State.FAILED -> {
                 if (workInfo.outputData.keyValueMap["incomplete"] != null) {
@@ -575,7 +573,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     logMessage(getString(R.string.error_sync_check_logs), true)
                 }
                 updateState(State.ERROR)
-                dismissListenerDialog!!.onDismiss(false)
+                dismissListenerDialog?.onDismiss(false)
             }
             WorkInfo.State.CANCELLED ->
                 logMessage(getString(R.string.cancel_sync), true)

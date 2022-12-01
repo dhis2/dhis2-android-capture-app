@@ -28,6 +28,7 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
@@ -504,8 +505,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void showSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder().setConflictType(SyncStatusDialog.ConflictType.EVENT).setUid(eventUid).onDismissListener(hasChanged -> {
-        }).build();
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
+                .setConflictType(ConflictType.EVENT)
+                .setUid(eventUid)
+                .onDismissListener(hasChanged -> {
+                })
+                .build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
 }

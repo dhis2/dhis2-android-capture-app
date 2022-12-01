@@ -16,6 +16,7 @@ import java.time.Instant
 import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -71,7 +72,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -100,7 +101,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -143,7 +144,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.DATA_SET,
+            ConflictType.DATA_SET,
             "data_set_uid",
             null,
             null,
@@ -181,7 +182,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.DATA_SET,
+            ConflictType.DATA_SET,
             "data_set_uid",
             null,
             null,
@@ -219,7 +220,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.DATA_SET,
+            ConflictType.DATA_SET,
             "data_set_uid",
             null,
             null,
@@ -241,7 +242,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -298,7 +299,7 @@ class GranularSyncPresenterTest {
         whenever(
             smsSyncProvider.isSMSEnabled(any())
         ) doReturn true
-        val result = SyncStatusDialog.ConflictType.values().associate {
+        val result = ConflictType.values().associate {
             val enable = GranularSyncPresenterImpl(
                 d2,
                 programUtils,
@@ -315,12 +316,12 @@ class GranularSyncPresenterTest {
             ).canSendSMS()
             it to enable
         }
-        assertTrue(result[SyncStatusDialog.ConflictType.PROGRAM] == false)
-        assertTrue(result[SyncStatusDialog.ConflictType.ALL] == false)
-        assertTrue(result[SyncStatusDialog.ConflictType.DATA_SET] == false)
-        assertTrue(result[SyncStatusDialog.ConflictType.TEI] == true)
-        assertTrue(result[SyncStatusDialog.ConflictType.EVENT] == true)
-        assertTrue(result[SyncStatusDialog.ConflictType.DATA_VALUES] == true)
+        assertTrue(result[ConflictType.PROGRAM] == false)
+        assertTrue(result[ConflictType.ALL] == false)
+        assertTrue(result[ConflictType.DATA_SET] == false)
+        assertTrue(result[ConflictType.TEI] == true)
+        assertTrue(result[ConflictType.EVENT] == true)
+        assertTrue(result[ConflictType.DATA_VALUES] == true)
     }
 
     @Test
@@ -329,7 +330,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -361,7 +362,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -384,7 +385,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -422,7 +423,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -450,7 +451,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -475,7 +476,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,
@@ -501,7 +502,7 @@ class GranularSyncPresenterTest {
             d2,
             programUtils,
             trampolineSchedulerProvider,
-            SyncStatusDialog.ConflictType.PROGRAM,
+            ConflictType.PROGRAM,
             "test_uid",
             null,
             null,

@@ -217,4 +217,6 @@
     <string name="default_table_header_label">Value</string>
     <string name="discard_changes">Discard changes</string>
     <string name="default_empty_dataset_section_label">Data</string>
+    <string name="title_network_connection_unavailable">Network connection unavailable</string>
+    <string name="msg_network_connection_maps">An internet connection is required in order to use maps.</string>
 </resources>

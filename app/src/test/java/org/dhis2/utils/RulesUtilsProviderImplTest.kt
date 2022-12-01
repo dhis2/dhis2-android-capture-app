@@ -197,7 +197,7 @@ class RulesUtilsProviderImplTest {
 
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
-        assertTrue(result.fieldsToUpdate.contains(testingUid))
+        assertTrue(result.fieldsToUpdate.any { it.fieldUid == testingUid })
     }
 
     @Test
@@ -339,7 +339,7 @@ class RulesUtilsProviderImplTest {
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
         assertTrue(!testFieldViewModels[testingUid]!!.editable)
         assertTrue(result.fieldsToUpdate.size == 1)
-        assertTrue(result.fieldsToUpdate.contains(testingUid))
+        assertTrue(result.fieldsToUpdate.any { it.fieldUid == testingUid })
     }
 
     @Test
@@ -669,7 +669,7 @@ class RulesUtilsProviderImplTest {
         Assert.assertFalse(testFieldViewModels.contains(testingUid))
         verify(valueStore, times(1)).saveWithTypeCheck(testingUid, null)
         verify(valueStore, times(0)).saveWithTypeCheck(testingUid, "data")
-        assertTrue(result.fieldsToUpdate.contains(testingUid))
+        assertTrue(result.fieldsToUpdate.any { it.fieldUid == testingUid })
     }
 
     private fun mockD2OptionGroupCalls(optionGroupUid: String, vararg optionUidsToReturn: String) {

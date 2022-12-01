@@ -58,10 +58,10 @@
     <string name="error_invalid_org_unit">您无权访问组织单位 %s</string>
     <string name="error_invalid_org_unit_group">您无权访问组织单位组 %s</string>
     <string name="error_invalid_org_unit_level">您无权访问组织单位级别 %s</string>
-    <string name="error_invalid_program_indicator">您无权访问程序指示器 %s</string>
+    <string name="error_invalid_program_indicator">您无权访问项目指标 %s</string>
     <string name="error_invalid_visualization">缺少可视化 %s</string>
     <string name="error_parsing_visualization">此可视化未正确配置，请联系您的管理员。</string>
-    <string name="error_invalid_custom_boundaries">程序指标 %s 不支持自定义边界</string>
+    <string name="error_invalid_custom_boundaries">项目指标 %s 不支持自定义边界</string>
     <string name="error_database">无法访问数据库。请联系您的管理员。</string>
     <string name="error_invalid_program">您无权访问项目%s</string>
     <string name="error_invalid_attribute">您无权访问属性 %s</string>

@@ -1,12 +1,12 @@
 package org.dhis2.usescases.teiDashboard;
 
+import static org.dhis2.commons.Constants.ENROLLMENT_UID;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
+import static org.dhis2.commons.Constants.TEI_UID;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.CHANGE_PROGRAM_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT;
 import static org.dhis2.usescases.teiDashboard.DataConstantsKt.GO_TO_ENROLLMENT_PROGRAM;
-import static org.dhis2.commons.Constants.ENROLLMENT_UID;
-import static org.dhis2.commons.Constants.PROGRAM_UID;
-import static org.dhis2.commons.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -39,9 +39,12 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
+import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -51,7 +54,6 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -81,6 +83,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Inject
     public ThemeManager themeManager;
+
+    @Inject
+    public NetworkUtils networkUtils;
 
     protected DashboardProgramModel programModel;
 
@@ -166,7 +171,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 if (OrientationUtilsKt.isLandscape(this)) {
                     binding.teiTablePager.setCurrentItem(pagePosition);
                 } else {
-                    binding.syncButton.setVisibility(pagePosition == 0 ? View.VISIBLE : View.GONE);
+                    binding.syncButton.setVisibility(pagePosition == 0 && programUid != null ? View.VISIBLE : View.GONE);
                     binding.teiPager.setCurrentItem(pagePosition);
                 }
             }
@@ -187,17 +192,26 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         elevation = ViewCompat.getElevation(binding.toolbar);
 
         binding.relationshipMapIcon.setOnClickListener(v -> {
-                    if (!relationshipMap.getValue()) {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
-                    } else {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
-                    }
-                    boolean showMap = !relationshipMap.getValue();
-                    if (showMap) {
-                        binding.toolbarProgress.setVisibility(View.VISIBLE);
-                        binding.toolbarProgress.hide();
-                    }
-                    relationshipMap.setValue(showMap);
+                    networkUtils.performIfOnline(
+                            this,
+                            () -> {
+                                if (!relationshipMap.getValue()) {
+                                    binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
+                                } else {
+                                    binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
+                                }
+                                boolean showMap = !relationshipMap.getValue();
+                                if (showMap) {
+                                    binding.toolbarProgress.setVisibility(View.VISIBLE);
+                                    binding.toolbarProgress.hide();
+                                }
+                                relationshipMap.setValue(showMap);
+                                return null;
+                            },
+                            () -> null,
+                            getString(R.string.msg_network_connection_maps)
+                    );
+
                 }
         );
 
@@ -244,7 +258,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setConflictType(ConflictType.TEI)
                 .setUid(enrollmentUid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged && !restartingActivity) {
@@ -674,7 +688,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void startQRActivity() {
-        analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        analyticsHelper().trackMatomoEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
         Intent intent = new Intent(getContext(), QrActivity.class);
         intent.putExtra(TEI_UID, teiUid);
         startActivity(intent);

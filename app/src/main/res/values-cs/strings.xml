@@ -894,6 +894,5 @@
     <string name="sms_sync_not_sent">SMS nebyla odeslána.</string>
     <string name="sms_sync_opening_app">Otevření aplikace SMS. Zprávu prosím neupravujte.</string>
     <string name="sms_sync_sms_app_chooser_title">Poslat SMS s</string>
-    <string name="sms_sync_is_sms_sent">Poslal jsi sms?</string>
     <string name="sms_sync_manual_confirmation">Čeká se na ruční potvrzení</string>
-</resources>
+    </resources>

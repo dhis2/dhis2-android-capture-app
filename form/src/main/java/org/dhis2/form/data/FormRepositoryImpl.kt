@@ -209,6 +209,12 @@ class FormRepositoryImpl(
             ruleEffects,
             valueStore = formValueStore
         )
+        ruleEffectsResult?.fieldsToUpdate?.takeIf { it.isNotEmpty() }
+            ?.forEach { fieldWithNewValue ->
+                itemList.find { it.uid == fieldWithNewValue.fieldUid }?.let { field ->
+                    updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
+                }
+            }
         return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true ||
             calculationLoop == loopThreshold
         ) {

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import javax.inject.Inject
@@ -39,9 +39,7 @@ class EventMapFragment :
 
     private val fragmentLifeCycle = lifecycle
 
-    private val programEventsViewModel by lazy {
-        ViewModelProviders.of(requireActivity())[ProgramEventDetailViewModel::class.java]
-    }
+    private val programEventsViewModel: ProgramEventDetailViewModel by activityViewModels()
 
     @Inject
     lateinit var presenter: EventMapPresenter
@@ -50,8 +48,10 @@ class EventMapFragment :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        (activity as ProgramEventDetailActivity).component.plus(EventMapModule(this)).inject(this)
+    ): View {
+        (activity as ProgramEventDetailActivity).component
+            ?.plus(EventMapModule(this))
+            ?.inject(this)
         programEventsViewModel.setProgress(true)
         binding = FragmentProgramEventDetailMapBinding.inflate(inflater, container, false)
         binding.apply {
@@ -74,7 +74,7 @@ class EventMapFragment :
             )
             mapLayerButton.setOnClickListener {
                 eventMapManager?.let {
-                    org.dhis2.maps.layer.MapLayerDialog(it)
+                    MapLayerDialog(it)
                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                 }
             }
