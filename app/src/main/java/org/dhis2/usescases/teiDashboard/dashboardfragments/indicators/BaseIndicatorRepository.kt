@@ -187,7 +187,6 @@ abstract class BaseIndicatorRepository(
                 add(
                     SectionTitle(
                         resourceManager.sectionFeedback()
-//                        (feedbackList.get(0) as IndicatorModel).location
                     )
                 )
                 addAll(feedbackList)
@@ -209,7 +208,6 @@ abstract class BaseIndicatorRepository(
                 add(
                     SectionTitle(
                         resourceManager.sectionIndicators()
-//                        (indicatorList.get(0) as IndicatorModel).location
                     )
                 )
                 addAll(indicatorList)

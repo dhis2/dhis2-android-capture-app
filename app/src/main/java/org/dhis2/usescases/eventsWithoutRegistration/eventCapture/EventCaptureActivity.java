@@ -15,7 +15,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.viewpager2.widget.ViewPager2;
@@ -47,7 +46,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.FormBottomDialog;
@@ -57,7 +55,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -67,8 +64,6 @@ import kotlin.Unit;
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, MapButtonObservable, EventDetailsComponentProvider {
 
     private static final String SHOW_OPTIONS = "SHOW_OPTIONS";
-
-    private int currentOrientation = -1;
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -156,10 +151,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewLandPager, ExtensionsKt.getDp(16));
 
             binding.eventViewLandPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                }
 
                 @Override
                 public void onPageSelected(int position) {
@@ -239,21 +230,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     protected void onPause() {
         presenter.onDettach();
         super.onPause();
-    }
-
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
     }
 
     @Override

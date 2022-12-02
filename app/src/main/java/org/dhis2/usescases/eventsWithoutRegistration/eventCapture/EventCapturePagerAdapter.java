@@ -35,13 +35,24 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     public int getNavigationPagePosition(int navigationId) {
 
         int i = navigationId;
-        EventPageType pageType =
-                i == R.id.navigation_details ? EventPageType.DETAILS :
-                        i == R.id.navigation_analytics ? EventPageType.ANALYTICS :
-                                i == R.id.navigation_relationships ? EventPageType.RELATIONSHIPS :
-                                        i == R.id.navigation_notes ? EventPageType.NOTES :
-                                                i == R.id.navigation_data_entry ? EventPageType.DATA_ENTRY :
-                                                        null;
+
+        EventPageType pageType = null;
+
+        if (i == R.id.navigation_details) {
+            pageType = EventPageType.DETAILS;
+        }
+        if (i == R.id.navigation_analytics) {
+            pageType = EventPageType.ANALYTICS;
+        }
+        if (i == R.id.navigation_relationships) {
+            pageType = EventPageType.RELATIONSHIPS;
+        }
+        if (i == R.id.navigation_notes) {
+            pageType = EventPageType.NOTES;
+        }
+        if (i == R.id.navigation_data_entry) {
+            pageType = EventPageType.DATA_ENTRY;
+        }
 
         return pages.indexOf(pageType);
 
