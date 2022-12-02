@@ -3,8 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 class EventPageConfigurator(
-        private val eventCaptureRepository: EventCaptureContract.EventCaptureRepository,
-        val isPortrait: Boolean
+    private val eventCaptureRepository: EventCaptureContract.EventCaptureRepository,
+    val isPortrait: Boolean
 ) : NavigationPageConfigurator {
     override fun displayDetails(): Boolean {
         return true

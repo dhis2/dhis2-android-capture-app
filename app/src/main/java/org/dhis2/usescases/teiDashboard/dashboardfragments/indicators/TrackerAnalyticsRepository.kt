@@ -14,19 +14,19 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class TrackerAnalyticsRepository(
-        d2: D2,
-        ruleEngineRepository: RuleEngineRepository,
-        val charts: Charts?,
-        programUid: String,
-        val teiUid: String,
-        resourceManager: ResourceManager
+    d2: D2,
+    ruleEngineRepository: RuleEngineRepository,
+    val charts: Charts?,
+    programUid: String,
+    val teiUid: String,
+    resourceManager: ResourceManager
 ) : BaseIndicatorRepository(d2, ruleEngineRepository, programUid, resourceManager) {
 
     val enrollmentUid: String
 
     init {
         var enrollmentRepository = d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
+            .byTrackedEntityInstance().eq(teiUid)
         if (!DhisTextUtils.isEmpty(programUid)) {
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
         }
@@ -39,27 +39,26 @@ class TrackerAnalyticsRepository(
     }
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
-
         return Flowable.zip<List<AnalyticsModel>?,
-                List<AnalyticsModel>?,
-                List<AnalyticsModel>,
-                List<AnalyticsModel>>(
-                getIndicators(
-                        !DhisTextUtils.isEmpty(enrollmentUid)
-                ) { indicatorUid ->
-                    d2.programModule()
-                            .programIndicatorEngine().getEnrollmentProgramIndicatorValue(
-                                    enrollmentUid,
-                                    indicatorUid
-                            )
-                },
-                getRulesIndicators(),
-                Flowable.just(
-                        charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) }
-                ),
-                Function3 { indicators, ruleIndicators, charts ->
-                    arrangeSections(indicators, ruleIndicators, charts)
-                }
+            List<AnalyticsModel>?,
+            List<AnalyticsModel>,
+            List<AnalyticsModel>>(
+            getIndicators(
+                !DhisTextUtils.isEmpty(enrollmentUid)
+            ) { indicatorUid ->
+                d2.programModule()
+                    .programIndicatorEngine().getEnrollmentProgramIndicatorValue(
+                        enrollmentUid,
+                        indicatorUid
+                    )
+            },
+            getRulesIndicators(),
+            Flowable.just(
+                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) }
+            ),
+            Function3 { indicators, ruleIndicators, charts ->
+                arrangeSections(indicators, ruleIndicators, charts)
+            }
         )
     }
 
@@ -70,9 +69,9 @@ class TrackerAnalyticsRepository(
     }
 
     override fun filterByOrgUnit(
-            chartModel: ChartModel,
-            selectedOrgUnits: List<OrganisationUnit>,
-            filterType: OrgUnitFilterType
+        chartModel: ChartModel,
+        selectedOrgUnits: List<OrganisationUnit>,
+        filterType: OrgUnitFilterType
     ) {
         chartModel.graph.visualizationUid?.let { visualizationUid ->
             charts?.setVisualizationOrgUnits(visualizationUid, selectedOrgUnits, filterType)
