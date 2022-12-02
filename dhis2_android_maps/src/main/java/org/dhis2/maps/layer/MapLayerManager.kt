@@ -7,6 +7,7 @@ import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.maps.R
+import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
 import org.dhis2.maps.layer.types.FieldMapLayer
@@ -26,7 +27,7 @@ class MapLayerManager(
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private var mapStyle: MapStyle? = null
     var styleChangeCallback: ((Style) -> Unit)? = null
-    var currentStyle = BaseMapType.OSM_LIGHT
+    var currentStylePosition = 0
 
     private val relationShipColors =
         mutableListOf(
@@ -181,9 +182,11 @@ class MapLayerManager(
         mapLayers.clear()
     }
 
-    fun changeStyle(baseMapType: BaseMapType) {
-        currentStyle = baseMapType
-        mapboxMap.setStyle(BaseMapManager.loadStyle(assetManager, baseMapType)) {
+    fun changeStyle(basemapPosition: Int) {
+        currentStylePosition = basemapPosition
+        mapboxMap.setStyle(
+            BaseMapManager.styleJson(BaseMapManager.getBaseMaps()[basemapPosition].baseMapStyle)
+        ) {
             styleChangeCallback?.invoke(it)
         }
     }

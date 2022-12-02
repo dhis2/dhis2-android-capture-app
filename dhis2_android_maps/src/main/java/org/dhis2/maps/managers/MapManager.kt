@@ -24,9 +24,9 @@ import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
-import org.dhis2.maps.layer.BaseMapManager
-import org.dhis2.maps.layer.BaseMapType
 import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
@@ -47,6 +47,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     val defaultUiIconSize = 40.dp
 
     fun init(
+        mapStyles: List<BaseMapStyle>,
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
@@ -57,7 +58,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 setUi()
                 val assets = mapView.context.assets
                 map?.setStyle(
-                    BaseMapManager.loadStyle(assets, BaseMapType.OSM_LIGHT)
+                    BaseMapManager.styleJson(mapStyles.first())
                 ) { styleLoaded ->
                     this.style = styleLoaded
                     mapLayerManager = MapLayerManager(mapLoaded, assets).apply {
@@ -84,10 +85,17 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     private fun setUi() {
         map?.apply {
+            uiSettings.isLogoEnabled = false
+            uiSettings.setAttributionMargins(
+                defaultUiIconLeftMargin,
+                uiSettings.attributionMarginTop,
+                uiSettings.attributionMarginRight,
+                uiSettings.attributionMarginBottom
+            )
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
                 uiSettings.setCompassImage(it)
                 uiSettings.setCompassMargins(
-                    defaultUiIconLeftMargin,
+                    0,
                     numberOfUiIcons * defaultUiIconSize +
                         (numberOfUiIcons + 1) * defaultUiIconTopMargin,
                     defaultUiIconRightMargin,

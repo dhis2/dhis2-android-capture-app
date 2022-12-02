@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 
 class ProgramEventDetailViewModel : ViewModel() {
     private val progress = MutableLiveData(true)
@@ -46,5 +48,11 @@ class ProgramEventDetailViewModel : ViewModel() {
 
     fun updateBackdrop(isActive: Boolean) {
         _backdropActive.value = isActive
+    }
+
+    fun fetchMapStyles(): List<BaseMapStyle> {
+        return BaseMapManager.getBaseMaps().map {
+            it.baseMapStyle
+        }
     }
 }

@@ -1,11 +1,12 @@
-package org.dhis2.maps.layer
+package org.dhis2.maps.layer.basemaps
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.maps.databinding.BasemapItemBinding
+import org.dhis2.maps.layer.MapLayerManager
 
 class BasemapAdapter(val mapLayerManager: MapLayerManager) :
     ListAdapter<BaseMap, BaseMapHolder>(object : DiffUtil.ItemCallback<BaseMap>() {
@@ -17,11 +18,10 @@ class BasemapAdapter(val mapLayerManager: MapLayerManager) :
             return oldItem == newItem
         }
     }) {
-    private val currentStyle = ObservableField(BaseMapType.OSM_LIGHT)
+    private val currentStyle = ObservableInt(mapLayerManager.currentStylePosition)
 
     init {
         submitList(BaseMapManager.getBaseMaps())
-        currentStyle.set(mapLayerManager.currentStyle)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMapHolder {

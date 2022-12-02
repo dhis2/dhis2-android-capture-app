@@ -15,6 +15,8 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
+import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -610,5 +612,11 @@ class SearchTEIViewModel(
 
     fun onClearFilters() {
         presenter.clearFilterClick()
+    }
+
+    fun fetchMapStyles(): List<BaseMapStyle> {
+        return BaseMapManager.getBaseMaps().map {
+            it.baseMapStyle
+        }
     }
 }
