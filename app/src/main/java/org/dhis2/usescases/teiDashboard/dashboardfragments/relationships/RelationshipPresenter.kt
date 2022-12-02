@@ -7,6 +7,8 @@ import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -198,6 +200,12 @@ class RelationshipPresenter internal constructor(
                 relationshipRepository.getEventProgram(ownerUid)
             )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
+        }
+    }
+
+    fun fetchMapStyles(): List<BaseMapStyle> {
+        return BaseMapManager.getBaseMaps().map {
+            it.baseMapStyle
         }
     }
 }

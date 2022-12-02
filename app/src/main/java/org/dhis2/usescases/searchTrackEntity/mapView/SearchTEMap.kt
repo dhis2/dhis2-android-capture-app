@@ -135,6 +135,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             )
         initializeCarousel()
         teiMapManager?.init(
+            viewModel.fetchMapStyles(),
             onInitializationFinished = {
                 presenter.getMapData()
 

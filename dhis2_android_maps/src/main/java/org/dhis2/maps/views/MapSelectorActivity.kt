@@ -44,8 +44,7 @@ import org.dhis2.maps.geometry.point.PointAdapter
 import org.dhis2.maps.geometry.point.PointViewModel
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.geometry.polygon.PolygonViewModel
-import org.dhis2.maps.layer.BaseMapManager
-import org.dhis2.maps.layer.BaseMapType
+import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.location.MapActivityLocationCallback
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -90,7 +89,11 @@ class MapSelectorActivity :
         mapView.getMapAsync { mapboxMap ->
             mapView.contentDescription = "LOADED"
             map = mapboxMap
-            mapboxMap.setStyle(BaseMapManager.loadStyle(assets, BaseMapType.OSM_LIGHT)) { style ->
+            mapboxMap.setStyle(
+                BaseMapManager.styleJson(
+                    BaseMapManager.getBaseMaps().first().baseMapStyle
+                )
+            ) { style ->
                 this.style = style
                 enableLocationComponent()
                 centerMapOnCurrentLocation()

@@ -61,6 +61,7 @@ class EventMapFragment :
             eventMapManager?.featureType = presenter.programFeatureType()
             eventMapManager?.onMapClickListener = this@EventMapFragment
             eventMapManager?.init(
+                mapStyles = programEventsViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     presenter.init()
                 },
