@@ -424,7 +424,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void hideProgress() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> runOnUiThread(() -> binding.toolbarProgress.hide()), 1000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> runOnUiThread( binding.toolbarProgress::hide), 1000);
     }
 
     @Override
