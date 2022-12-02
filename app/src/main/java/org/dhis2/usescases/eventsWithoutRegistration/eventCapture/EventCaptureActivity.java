@@ -6,7 +6,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -150,27 +149,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewLandPager, ExtensionsKt.getDp(16));
 
-            binding.eventViewLandPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-
-                @Override
-                public void onPageSelected(int position) {
-                    super.onPageSelected(position);
-                    if (position == 0 && eventMode != EventMode.NEW) {
-                        binding.syncButton.setVisibility(View.VISIBLE);
-                    } else {
-                        binding.syncButton.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    super.onPageScrollStateChanged(state);
-                }
-            });
+            registerOnPageChangeCallback(binding.eventViewLandPager);
         } else {
             binding.eventViewPager.setUserInputEnabled(false);
             binding.eventViewPager.setAdapter(null);
-
 
             this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true);
 
@@ -179,29 +161,27 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             ViewExtensionsKt.clipWithRoundedCorners(binding.eventViewPager, ExtensionsKt.getDp(16));
 
-            binding.eventViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    super.onPageSelected(position);
-                    if (position == 0 && eventMode != EventMode.NEW) {
-                        binding.syncButton.setVisibility(View.VISIBLE);
-                    } else {
-                        binding.syncButton.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    super.onPageScrollStateChanged(state);
-                }
-            });
+            registerOnPageChangeCallback(binding.eventViewPager);
         }
 
+
+    }
+
+    private void registerOnPageChangeCallback(ViewPager2 viewPager) {
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 0 && eventMode != EventMode.NEW) {
+                    binding.syncButton.setVisibility(View.VISIBLE);
+                } else {
+                    binding.syncButton.setVisibility(View.GONE);
+                }
+            }
+
+        });
 
     }
 
