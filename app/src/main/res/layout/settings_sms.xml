@@ -11,6 +11,7 @@
             android:id="@+id/settings_sms_receiver_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:hint="@string/settings_sms_receiver_number"
             android:theme="@style/TextInputLayoutAppearance">
 
@@ -56,6 +57,7 @@
             android:id="@+id/settings_sms_result_sender_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:hint="@string/settings_sms_result_sender_number"
             android:theme="@style/TextInputLayoutAppearance">
 
