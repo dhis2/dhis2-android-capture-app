@@ -11,6 +11,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.metadata.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -44,6 +45,7 @@ class RelationshipPresenterTest {
     private val relationshipType: RelationshipType = mock {
         on { fromConstraint() } doReturn relationshipConstrain
     }
+    private val mapStyleConfiguration: MapStyleConfiguration = mock()
 
     @Before
     fun setup() {
@@ -67,8 +69,8 @@ class RelationshipPresenterTest {
             schedulerProvider,
             analyticsHelper,
             mapRelationshipToRelationshipMapModel,
-            mapRelationshipsToFeatureCollection
-
+            mapRelationshipsToFeatureCollection,
+            mapStyleConfiguration
         )
     }
 
