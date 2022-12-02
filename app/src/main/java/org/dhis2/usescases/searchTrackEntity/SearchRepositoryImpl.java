@@ -37,6 +37,8 @@ import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.model.StoreResult;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
+import org.dhis2.maps.layer.basemaps.BaseMapStyle;
+import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
@@ -60,6 +62,8 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.map.layer.MapLayer;
+import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -620,6 +624,59 @@ public class SearchRepositoryImpl implements SearchRepository {
         return FilterManager.getInstance().getTotalFilters() == 0 ||
                 !FilterManager.getInstance().getOrgUnitFilters().isEmpty() ||
                 !FilterManager.getInstance().getStateFilters().isEmpty();
+    }
+
+    @Override
+    public @NotNull List<BaseMapStyle> fetchMapStyles() {
+        return d2.mapsModule().mapLayers().withImageryProviders().get().map(mapLayers ->
+                {
+                    List<BaseMapStyle> basemapStyles = new ArrayList<>();
+                    for (MapLayer mapLayer : mapLayers) {
+                        List<String> tileUrls = mapTileUrls(
+                                mapLayer.imageUrl(),
+                                mapLayer.subdomainPlaceholder(),
+                                mapLayer.subdomains()
+                        );
+                        String attribution = mapAttribution(
+                                mapLayer.imageryProviders()
+                        );
+                        basemapStyles.add(
+                                BaseMapStyleBuilder.INSTANCE.build(
+                                        tileUrls,
+                                        attribution
+                                )
+                        );
+                    }
+                    return basemapStyles;
+                }
+        ).blockingGet();
+    }
+
+    private String mapAttribution(@Nullable List<MapLayerImageryProvider> imageryProviders) {
+        if(imageryProviders == null) return "";
+        StringBuilder attribution = new StringBuilder();
+        for (MapLayerImageryProvider imageryProvider : imageryProviders) {
+            if (!attribution.toString().isEmpty()) {
+                attribution.append(", ");
+            }
+            attribution.append(imageryProvider.attribution());
+        }
+        return attribution.toString();
+    }
+
+    private List<String> mapTileUrls(String imageUrl, String subdomainPlaceholder, @Nullable List<String> subdomains) {
+        List<String> tileUrls = new ArrayList<>();
+        if(subdomains == null){
+            tileUrls.add(imageUrl);
+
+        }else {
+            for (String subdomain : subdomains) {
+                tileUrls.add(
+                        imageUrl.replace(subdomainPlaceholder, subdomain)
+                );
+            }
+        }
+        return tileUrls;
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
+import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
@@ -38,6 +39,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
+    private var mapStyles: List<BaseMapStyle> = emptyList()
 
     var numberOfUiIcons: Int = 2
     val defaultUiIconLeftMargin = 8.dp
@@ -51,6 +53,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
+        this.mapStyles = mapStyles
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
                 mapView.contentDescription = "LOADED"
@@ -61,7 +64,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                     BaseMapManager.styleJson(mapStyles.first())
                 ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded, assets).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, mapStyles).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()
@@ -85,6 +88,13 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     private fun setUi() {
         map?.apply {
+            uiSettings.setAttributionDialogManager(
+                AttributionManager(
+                    mapView.context,
+                    this,
+                    mapStyles.first()
+                )
+            )
             uiSettings.isLogoEnabled = false
             uiSettings.setAttributionMargins(
                 defaultUiIconLeftMargin,

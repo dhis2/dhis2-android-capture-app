@@ -615,6 +615,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
+        return searchRepository.fetchMapStyles()
         return BaseMapManager.getBaseMaps().map {
             it.baseMapStyle
         }

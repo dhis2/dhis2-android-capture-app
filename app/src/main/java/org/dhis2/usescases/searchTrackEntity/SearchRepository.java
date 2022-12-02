@@ -10,6 +10,7 @@ import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.filters.sorting.SortingItem;
+import org.dhis2.maps.layer.basemaps.BaseMapStyle;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -73,4 +74,6 @@ public interface SearchRepository {
     List<String> trackedEntityTypeFields();
 
     boolean filtersApplyOnGlobalSearch();
+
+    @NotNull List<BaseMapStyle> fetchMapStyles();
 }
