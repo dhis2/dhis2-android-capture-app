@@ -65,7 +65,6 @@ class AnalyticsAdapter :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         when (holder) {
             is IndicatorViewHolder -> holder.bind(getItem(position) as IndicatorModel)
             is ChartViewHolder -> holder.bind(getItem(position) as ChartModel, this)
