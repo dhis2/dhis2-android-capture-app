@@ -91,4 +91,3 @@ def custom_msg(){
   def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
   return JENKINS_LOG
 }
-
