@@ -21,7 +21,7 @@ class BasemapAdapter(val mapLayerManager: MapLayerManager) :
     private val currentStyle = ObservableInt(mapLayerManager.currentStylePosition)
 
     init {
-        submitList(BaseMapManager.getBaseMaps())
+        submitList(mapLayerManager.baseMapManager.getBaseMaps())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMapHolder {

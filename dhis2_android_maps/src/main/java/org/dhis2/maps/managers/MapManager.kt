@@ -58,13 +58,13 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             mapView.getMapAsync { mapLoaded ->
                 mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
+                val baseMapManager = BaseMapManager(mapView.context, mapStyles)
                 setUi()
-                val assets = mapView.context.assets
                 map?.setStyle(
-                    BaseMapManager.styleJson(mapStyles.first())
+                    baseMapManager.styleJson(mapStyles.first())
                 ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded, mapStyles).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()

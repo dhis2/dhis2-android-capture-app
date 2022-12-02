@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.metadata.usecases.MapStyleConfiguration
 
-class ProgramEventDetailViewModel : ViewModel() {
+class ProgramEventDetailViewModel(
+    private val mapStyleConfig: MapStyleConfiguration
+) : ViewModel() {
     private val progress = MutableLiveData(true)
     val writePermission = MutableLiveData(false)
     val eventSyncClicked = MutableLiveData<String?>(null)
@@ -51,8 +53,6 @@ class ProgramEventDetailViewModel : ViewModel() {
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
-        return BaseMapManager.getBaseMaps().map {
-            it.baseMapStyle
-        }
+        return mapStyleConfig.fetchMapStyles()
     }
 }

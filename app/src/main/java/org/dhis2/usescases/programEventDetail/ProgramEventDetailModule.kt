@@ -23,6 +23,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollect
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.metadata.usecases.MapStyleConfiguration
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -57,6 +58,12 @@ class ProgramEventDetailModule(
             DisableHomeFiltersFromSettingsApp(),
             matomoAnalyticsController
         )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideViewModelFactory(d2: D2): ProgramEventDetailViewModelFactory {
+        return ProgramEventDetailViewModelFactory(MapStyleConfiguration(d2))
     }
 
     @Provides

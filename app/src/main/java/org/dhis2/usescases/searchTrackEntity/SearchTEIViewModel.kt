@@ -15,8 +15,8 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
-import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.metadata.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -33,7 +33,8 @@ class SearchTEIViewModel(
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
+    private val mapStyleConfig: MapStyleConfiguration
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -615,9 +616,6 @@ class SearchTEIViewModel(
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
-        return searchRepository.fetchMapStyles()
-        return BaseMapManager.getBaseMaps().map {
-            it.baseMapStyle
-        }
+        return mapStyleConfig.fetchMapStyles()
     }
 }
