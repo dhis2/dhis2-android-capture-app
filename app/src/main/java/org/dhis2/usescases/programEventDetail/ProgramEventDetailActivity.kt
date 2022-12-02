@@ -71,7 +71,9 @@ class ProgramEventDetailActivity :
     private var backDropActive = false
     private var programUid: String = ""
 
-    private val programEventsViewModel: ProgramEventDetailViewModel by viewModels { viewModelFactory }
+    private val programEventsViewModel: ProgramEventDetailViewModel by viewModels {
+        viewModelFactory
+    }
 
     var component: ProgramEventDetailComponent? = null
 
