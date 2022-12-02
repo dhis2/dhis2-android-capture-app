@@ -56,6 +56,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.EventToEventUiComponent;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.metadata.usecases.MapStyleConfiguration;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -239,7 +240,8 @@ public class SearchTEModule {
             SearchTEContractsModule.Presenter presenter,
             SearchRepository searchRepository,
             MapDataRepository mapDataRepository,
-            NetworkUtils networkUtils) {
+            NetworkUtils networkUtils,
+            D2 d2) {
         return new SearchTeiViewModelFactory(
                 presenter,
                 searchRepository,
@@ -248,7 +250,8 @@ public class SearchTEModule {
                 initialQuery,
                 mapDataRepository,
                 networkUtils,
-                new SearchDispatchers()
+                new SearchDispatchers(),
+                new MapStyleConfiguration(d2)
         );
     }
 

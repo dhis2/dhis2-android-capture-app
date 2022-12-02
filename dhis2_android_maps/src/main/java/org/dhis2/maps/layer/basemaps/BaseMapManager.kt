@@ -1,122 +1,84 @@
 package org.dhis2.maps.layer.basemaps
 
+import android.content.Context
+import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.maps.R
 
-object BaseMapManager {
-    fun getBaseMaps() = listOf(
+const val OSM_LIGHT = "OSM Light"
+const val OSM_DETAILED = "OSM Detailed"
+const val BING_ROAD = "Bing Road"
+const val BING_DARK = "Bing Dark"
+const val BING_AERIAL = "Bing Aerial"
+const val BING_AERIAL_LABELS = "Bing Aerial Labels"
+const val DEFAULT_TILE_URL =
+    "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
+const val DEFAULT_ATTRIBUTION = "© OpenStreetMap contributors, © Carto"
+
+class BaseMapManager(
+    private val context: Context,
+    val baseMapStyles: List<BaseMapStyle>
+) {
+    fun getBaseMaps() = baseMapStyles.map {
         BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png",
-                    "https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png",
-                    "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png",
-                    "https://cartodb-basemaps-d.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
-                ),
-                "osm light"
-            ),
-            R.string.dialog_layer_base_map_osm_light,
-            R.drawable.basemap_osm_light
-        ),
-        BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    "https://d.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                ),
-                "osm detailed"
-            ),
-            R.string.dialog_layer_base_map_osm_detailed,
-            R.drawable.basemap_osm_detailed
-        ),
-        BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
-                    "https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
-                    "https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z",
-                    "https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WL&og=2056&n=z"
-                ),
-                "bing road"
-            ),
-            R.string.dialog_layer_base_map_bing_road,
-            R.drawable.basemap_bing_road
-        ),
-        BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WD&og=2056&n=z",
-                    "https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WD&og=2056&n=z",
-                    "https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WD&og=2056&n=z",
-                    "https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=G,L&cstl=WD&og=2056&n=z"
-                ),
-                "bing dark"
-            ),
-            R.string.dialog_layer_base_map_bing_dark,
-            R.drawable.basemap_bing_dark
-        ),
-        BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019",
-                    "https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019",
-                    "https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019",
-                    "https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019"
-                ),
-                "bing aerial"
-            ),
-            R.string.dialog_layer_base_map_bing_aerial,
-            R.drawable.basemap_bing_aerial
-        ),
-        BaseMap(
-            BaseMapStyleBuilder.build(
-                listOf(
-                    "https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=A,G,L&og=2056&n=z",
-                    "https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=A,G,L&og=2056&n=z",
-                    "https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=A,G,L&og=2056&n=z",
-                    "https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-GB&it=A,G,L&og=2056&n=z"
-                ),
-                "bing aerial labels"
-            ),
-            R.string.dialog_layer_base_map_bing_aerial_label,
-            R.drawable.basemap_bing_aerial_labels
+            baseMapStyle = it,
+            basemapName = baseMapName(it.id),
+            basemapImage = baseMapImage(it.id)
         )
-    )
+    }
+
+    private fun baseMapName(basemapId: String): String {
+        val id = when (basemapId) {
+            OSM_LIGHT -> R.string.dialog_layer_base_map_osm_light
+            OSM_DETAILED -> R.string.dialog_layer_base_map_osm_detailed
+            BING_ROAD -> R.string.dialog_layer_base_map_bing_road
+            BING_DARK -> R.string.dialog_layer_base_map_bing_dark
+            BING_AERIAL -> R.string.dialog_layer_base_map_bing_aerial
+            BING_AERIAL_LABELS -> R.string.dialog_layer_base_map_bing_aerial_label
+            else -> null
+        }
+        return id?.let {
+            context.getString(it)
+        } ?: basemapId
+    }
+
+    private fun baseMapImage(basemapId: String): Drawable? {
+        val id = when (basemapId) {
+            OSM_LIGHT -> R.drawable.basemap_osm_light
+            OSM_DETAILED -> R.drawable.basemap_osm_detailed
+            BING_ROAD -> R.drawable.basemap_bing_road
+            BING_DARK -> R.drawable.basemap_bing_dark
+            BING_AERIAL -> R.drawable.basemap_bing_aerial
+            BING_AERIAL_LABELS -> R.drawable.basemap_bing_aerial_labels
+            else -> null
+        }
+        return id?.let {
+            AppCompatResources.getDrawable(context, it)
+        }
+    }
 
     fun styleJson(
         baseMapStyle: BaseMapStyle
     ): Style.Builder {
         return Style.Builder().fromJson(Gson().toJson(baseMapStyle))
-        /*return Style.Builder().fromJson(
-            "" +
-                    "{\n" +
-                    "  \"version\": 8,\n" +
-                    "  \"sources\": {\n" +
-                    "    \"raster-tiles\": {\n" +
-                    "      \"type\": \"raster\",\n" +
-                    "      \"tiles\": [\n" +
-                    "        \"https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019\",\n" +
-                    "        \"https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019\",\n" +
-                    "        \"https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019\",\n" +
-                    "        \"https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=13019\"\n" +
-                    "      ],\n" +
-                    "      \"tileSize\": 256\n" +
-                    "    }\n" +
-                    "  },\n" +
-                    "  \"layers\": [\n" +
-                    "    {\n" +
-                    "      \"id\": \"simple-tiles\",\n" +
-                    "      \"type\": \"raster\",\n" +
-                    "      \"source\": \"raster-tiles\",\n" +
-                    "      \"minzoom\": 0,\n" +
-                    "      \"maxzoom\": 22\n" +
-                    "    }\n" +
-                    "  ],\n" +
-                    "  \"id\": \"test\"\n" +
-                    "}"
-        )*/
+    }
+
+    fun getDefaultBasemap(): BaseMapStyle {
+        return baseMapStyles.firstOrNull() ?: internalBaseMap()
+    }
+
+    private fun internalBaseMap(): BaseMapStyle {
+        return BaseMapStyleBuilder.build(
+            OSM_LIGHT,
+            listOf(
+                DEFAULT_TILE_URL.replace("{s}", "a"),
+                DEFAULT_TILE_URL.replace("{s}", "b"),
+                DEFAULT_TILE_URL.replace("{s}", "c"),
+                DEFAULT_TILE_URL.replace("{s}", "d")
+            ),
+            DEFAULT_ATTRIBUTION
+        )
     }
 }

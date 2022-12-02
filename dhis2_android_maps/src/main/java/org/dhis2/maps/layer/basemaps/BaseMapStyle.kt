@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 object BaseMapStyleBuilder {
     fun build(
+        id: String,
         tileUrls: List<String>,
         attribution: String
     ) = BaseMapStyle(
@@ -25,7 +26,7 @@ object BaseMapStyleBuilder {
                 maxZoom = 22
             )
         ),
-        id = "basemap"
+        id = id
     )
 }
 

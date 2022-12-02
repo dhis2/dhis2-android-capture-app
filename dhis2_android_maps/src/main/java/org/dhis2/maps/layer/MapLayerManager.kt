@@ -8,7 +8,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
-import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
 import org.dhis2.maps.layer.types.FieldMapLayer
@@ -21,7 +20,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager(
     val mapboxMap: MapboxMap,
-    val baseMapStyles: List<BaseMapStyle>
+    val baseMapManager: BaseMapManager
 ) {
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
@@ -184,11 +183,10 @@ class MapLayerManager(
 
     fun changeStyle(basemapPosition: Int) {
         currentStylePosition = basemapPosition
+        val newStyle = baseMapManager.baseMapStyles[basemapPosition]
         (mapboxMap.uiSettings.attributionDialogManager as AttributionManager)
-            .updateCurrentBaseMap(baseMapStyles[basemapPosition])
-        mapboxMap.setStyle(
-            BaseMapManager.styleJson(baseMapStyles[basemapPosition])
-        ) {
+            .updateCurrentBaseMap(newStyle)
+        mapboxMap.setStyle(baseMapManager.styleJson(newStyle)) {
             styleChangeCallback?.invoke(it)
         }
     }

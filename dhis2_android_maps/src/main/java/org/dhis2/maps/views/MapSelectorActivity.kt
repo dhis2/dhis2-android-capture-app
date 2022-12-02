@@ -74,6 +74,10 @@ class MapSelectorActivity :
 
     private var initialCoordinates: String? = null
 
+    private val baseMapManager by lazy {
+        BaseMapManager(this, emptyList())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
@@ -90,8 +94,8 @@ class MapSelectorActivity :
             mapView.contentDescription = "LOADED"
             map = mapboxMap
             mapboxMap.setStyle(
-                BaseMapManager.styleJson(
-                    BaseMapManager.getBaseMaps().first().baseMapStyle
+                baseMapManager.styleJson(
+                    baseMapManager.getDefaultBasemap()
                 )
             ) { style ->
                 this.style = style

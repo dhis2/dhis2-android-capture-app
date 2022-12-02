@@ -74,6 +74,4 @@ public interface SearchRepository {
     List<String> trackedEntityTypeFields();
 
     boolean filtersApplyOnGlobalSearch();
-
-    @NotNull List<BaseMapStyle> fetchMapStyles();
 }
