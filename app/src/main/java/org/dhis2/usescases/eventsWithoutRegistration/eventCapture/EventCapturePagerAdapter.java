@@ -35,7 +35,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     public int getNavigationPagePosition(int navigationId) {
 
         int i = navigationId;
-
         EventPageType pageType = null;
 
         if (i == R.id.navigation_details) {
@@ -55,7 +54,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         }
 
         return pages.indexOf(pageType);
-
     }
 
 
