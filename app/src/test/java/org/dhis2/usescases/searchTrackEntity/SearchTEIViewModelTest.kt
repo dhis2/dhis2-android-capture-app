@@ -20,6 +20,7 @@ import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.model.RowAction
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
+import org.dhis2.metadata.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -41,6 +42,7 @@ class SearchTEIViewModelTest {
     private val pageConfigurator: SearchPageConfigurator = mock()
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
+    private val mapStyleConfiguration: MapStyleConfiguration = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -74,7 +76,8 @@ class SearchTEIViewModelTest {
                 override fun ui(): CoroutineDispatcher {
                     return testingDispatcher
                 }
-            }
+            },
+            mapStyleConfiguration
         )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
