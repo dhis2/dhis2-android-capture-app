@@ -1,6 +1,5 @@
 package org.dhis2.composetable.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -54,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -73,7 +73,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
@@ -87,6 +86,7 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.model.areAllValuesEmpty
+import kotlin.math.roundToInt
 
 @Composable
 fun TableHeader(
@@ -438,8 +438,7 @@ fun ItemHeader(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
                 onHeaderResize = onHeaderResize,
-                onResizing = onResizing,
-                cellWidth = width
+                onResizing = onResizing
             )
         }
     }
@@ -897,7 +896,6 @@ fun VerticalResizingView(
 ) {
     val colorPrimary = TableTheme.colors.primary
     var currentPosition: Offset? by remember { mutableStateOf(null) }
-    var minWidthPosition: Float? by remember { mutableStateOf(null) }
 
     // Store the initial position of the item
     if (resizingCell == null) {
@@ -907,15 +905,7 @@ fun VerticalResizingView(
     }
 
     resizingCell?.let {
-        val newPosition = currentPosition!!.x + it.draggingOffsetX
-        val offsetX: Float
-        if (MIN_CELL_WIDTH < it.cellWidth + it.draggingOffsetX.dp) {
-            minWidthPosition = newPosition
-            offsetX = newPosition
-        } else {
-            offsetX = minWidthPosition ?: 0F
-        }
-
+        val offsetX = currentPosition!!.x + it.draggingOffsetX
         Box(
             modifier
                 .offset { IntOffset(offsetX.roundToInt(), 0) }
@@ -955,16 +945,19 @@ fun VerticalResizingView(
 fun VerticalResizingRule(
     modifier: Modifier = Modifier,
     onHeaderResize: (Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit,
-    cellWidth: Dp
+    onResizing: (ResizingCell?) -> Unit
 ) {
     val localDensity = LocalDensity.current
     val minOffset = with(localDensity) {
         11.dp.toPx()
     }
+    val minCellWidth = with(localDensity) {
+        MIN_CELL_WIDTH.toPx()
+    }
 
     var offsetX by remember { mutableStateOf(minOffset) }
     var positionInRoot by remember { mutableStateOf(Offset.Zero) }
+    var positionInParent by remember { mutableStateOf(Offset.Zero) }
 
     val colorPrimary = TableTheme.colors.primary
     Box(
@@ -979,8 +972,12 @@ fun VerticalResizingRule(
                     }
                 ) { change, dragAmount ->
                     change.consume()
-                    offsetX += dragAmount.x
-                    onResizing(ResizingCell(cellWidth, positionInRoot, offsetX))
+
+                    if (minCellWidth < (positionInRoot.x + offsetX) - positionInParent.x) {
+                        offsetX += dragAmount.x
+                    }
+
+                    onResizing(ResizingCell(positionInRoot, offsetX))
                 }
             }
     ) {
@@ -1000,6 +997,7 @@ fun VerticalResizingRule(
                 .size(14.dp)
                 .onGloballyPositioned { coordinates ->
                     positionInRoot = coordinates.positionInRoot()
+                    positionInParent = coordinates.positionInParent()
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
             contentDescription = "",
@@ -1279,7 +1277,7 @@ const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
 const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
 const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
-val MIN_CELL_WIDTH = 24.dp
+val MIN_CELL_WIDTH = 48.dp
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
