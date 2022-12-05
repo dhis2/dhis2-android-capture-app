@@ -28,16 +28,16 @@ pipeline {
                 }
             }
         }
-        stage('Sonnarqube') {
+        stage('Sonarqube') {
             environment {
                 BITRISE_GIT_BRANCH = "$env.GIT_BRANCH"
                 BITRISEIO_GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? env.GIT_BRANCH : env.CHANGE_TARGET}"
-                BITRISE_PULL_REQUEST = "$env.CHANGE_ID"
+                BITRISE_PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID}"
                 SONAR_TOKEN = credentials('android-sonarcloud-token')
             }
             steps {
                 script {
-                    echo 'Running sonnarqube'
+                    echo 'Running sonarqube'
                     sh 'echo $BITRISE_GIT_BRANCH'
                     sh 'echo $BITRISEIO_GIT_BRANCH_DEST'
                     sh 'echo $BITRISE_PULL_REQUEST'
@@ -91,4 +91,3 @@ def custom_msg(){
   def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
   return JENKINS_LOG
 }
-
