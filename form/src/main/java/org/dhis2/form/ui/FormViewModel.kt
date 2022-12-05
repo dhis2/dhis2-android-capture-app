@@ -108,7 +108,7 @@ class FormViewModel(
                     processCalculatedItems()
                 }
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
-                    processCalculatedItems()
+                    processCalculatedItems(true)
                 }
                 ValueStoreResult.TEXT_CHANGING -> {
                     result.first.let {
@@ -440,11 +440,11 @@ class FormViewModel(
         return items.value?.first { it.focused }?.uid
     }
 
-    private fun processCalculatedItems() {
+    private fun processCalculatedItems(skipProgramRules: Boolean = false) {
         FormCountingIdlingResource.increment()
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
-                repository.composeList()
+                repository.composeList(skipProgramRules)
             }
             _items.postValue(result.await())
         }
