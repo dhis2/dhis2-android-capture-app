@@ -66,7 +66,7 @@ fun HomeScreen(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             AnimatedVisibility(
-                visible = checkVisibility(viewModel = viewModel),
+                visible = checkVisibility(viewModel = viewModel, manageStockViewModel),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -140,26 +140,29 @@ fun HomeScreen(
     }
 }
 @Composable
-fun checkVisibility(viewModel: HomeViewModel): Boolean {
+fun checkVisibility(viewModel: HomeViewModel, manageStockViewModel: ManageStockViewModel): Boolean {
     return if ((
         viewModel.toolbarTitle.collectAsState().value.name ==
             TransactionType.DISCARD.name
         )
     ) {
-        return viewModel.hasFacilitySelected.collectAsState().value
+        return viewModel.hasFacilitySelected.collectAsState().value &&
+            manageStockViewModel.sizeTableData.collectAsState().value > 0
     } else if ((
         viewModel.toolbarTitle.collectAsState().value.name ==
             TransactionType.CORRECTION.name
         )
     ) {
-        return viewModel.hasFacilitySelected.collectAsState().value
+        return viewModel.hasFacilitySelected.collectAsState().value &&
+            manageStockViewModel.sizeTableData.collectAsState().value > 0
     } else (
         (
             viewModel.toolbarTitle.collectAsState().value.name ==
                 TransactionType.DISTRIBUTION.name
             ) &&
             viewModel.hasFacilitySelected.collectAsState().value &&
-            viewModel.hasDestinationSelected.collectAsState().value
+            viewModel.hasDestinationSelected.collectAsState().value &&
+            manageStockViewModel.sizeTableData.collectAsState().value > 0
         )
 }
 private object NoRippleTheme : RippleTheme {
