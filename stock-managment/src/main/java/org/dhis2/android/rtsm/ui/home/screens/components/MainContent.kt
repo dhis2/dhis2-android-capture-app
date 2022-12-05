@@ -95,8 +95,7 @@ fun MainContent(
                     .padding(horizontal = 5.dp)
                     .background(Color.White, shape = CircleShape)
                     .shadow(
-                        elevation = 8.dp,
-                        ambientColor = Color.Black.copy(alpha = 0.1f),
+                        elevation = 3.dp,
                         shape = RoundedCornerShape(30.dp),
                         clip = false
                     )
@@ -157,7 +156,8 @@ fun MainContent(
                 },
                 modifier = Modifier
                     .weight(weightValue)
-                    .alignBy(FirstBaseline)
+                    .alignBy(FirstBaseline),
+                enabled = isFrontLayerDisabled != true
             ) {
                 Icon(
                     painter = qrcodeResource,

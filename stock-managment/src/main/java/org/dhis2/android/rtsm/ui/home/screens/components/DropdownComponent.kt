@@ -92,7 +92,7 @@ fun DropdownComponent(
         isExpanded = !isExpanded
     }
 
-    Column(Modifier.padding(horizontal = 8.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
             value = selectedText,
             onValueChange = { selectedText = it },
@@ -229,7 +229,7 @@ fun DropdownComponentFacilities(
 
     isFacilitySelected(viewModel.orgUnitName.collectAsState().value)
 
-    Column(Modifier.padding(horizontal = 8.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
             value = viewModel.orgUnitName.collectAsState().value,
             onValueChange = { selectedText = it },
@@ -364,7 +364,7 @@ fun DropdownComponentDistributedTo(
 
     isDestinationSelected(selectedText)
 
-    Column(Modifier.padding(horizontal = 8.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
             value = selectedText,
             onValueChange = { selectedText = it },
