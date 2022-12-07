@@ -482,9 +482,14 @@ fun ItemValues(
                     onClick = onClick
                 )
                 if (isSelected) {
-                    val circleCoordinates = Rect(0f, 0f, 240f, 240f)
+                    val marginCoordinates = Rect(
+                        0f,
+                        0f,
+                        BRING_INTO_VIEW_MARGIN,
+                        BRING_INTO_VIEW_MARGIN
+                    )
                     coroutineScope.launch {
-                        bringIntoViewRequester.bringIntoView(circleCoordinates)
+                        bringIntoViewRequester.bringIntoView(marginCoordinates)
                     }
                 }
             }
@@ -1111,6 +1116,8 @@ const val MANDATORY_ICON_TEST_TAG = "MANDATORY_ICON_TEST_TAG"
 const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
 const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
+
+const val BRING_INTO_VIEW_MARGIN = 240f
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
