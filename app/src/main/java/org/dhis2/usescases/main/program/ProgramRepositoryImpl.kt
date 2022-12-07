@@ -49,6 +49,10 @@ internal class ProgramRepositoryImpl(
         }
     }
 
+    override fun clearCache() {
+        baseProgramCache = emptyList()
+    }
+
     private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
         return filterPresenter.filteredDataSetInstances().get()
             .toFlowable()

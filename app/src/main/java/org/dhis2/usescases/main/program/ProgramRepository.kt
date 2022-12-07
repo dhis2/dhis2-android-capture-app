@@ -7,4 +7,5 @@ internal interface ProgramRepository {
     fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>>
     fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>>
     fun aggregatesModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>>
+    fun clearCache()
 }
