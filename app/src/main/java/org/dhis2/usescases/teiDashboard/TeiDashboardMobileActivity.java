@@ -215,6 +215,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 }
         );
 
+        binding.syncButton.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
         binding.syncButton.setOnClickListener(v -> {
             openSyncDialog();
         });
