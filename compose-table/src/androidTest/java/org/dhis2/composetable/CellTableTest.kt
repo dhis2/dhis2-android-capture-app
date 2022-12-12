@@ -6,6 +6,7 @@ import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.ui.TableColors
 import org.junit.Rule
 import org.junit.Test
 
@@ -169,4 +170,38 @@ class CellTableTest {
             assertSelectedCellErrorStyle(firstId, 2, 0)
         }
     }
+    @Test
+    fun shouldNotDisplayError() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+
+            val firstId = fakeModel.first().id!!
+            val cellColor = TableColors()
+            clickOnCell(firstId, 2, 2)
+            assertInputComponentIsDisplayed()
+            assertSelectedCellWithoutErrorStyle(firstId,2,2)
+        }
+    }
+
+    @Test
+    fun shouldSetCorrectColorIfNotError() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+
+            val firstId = fakeModel.first().id!!
+            val cellColor = TableColors()
+            clickOnCell(firstId, 2, 2)
+            assertInputComponentIsDisplayed()
+            assertSelectedCellWithoutErrorStyle(firstId,2,2)
+
+        }
+    }
+
+
 }

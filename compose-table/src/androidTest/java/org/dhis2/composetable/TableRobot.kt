@@ -60,6 +60,7 @@ import org.dhis2.composetable.ui.TableId
 import org.dhis2.composetable.ui.TableIdColumnHeader
 import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.utils.KeyboardHelper
+import org.dhis2.composetable.ui.*
 import org.junit.Assert
 
 fun tableRobot(
@@ -396,5 +397,13 @@ class TableRobot(
 
     fun hideKeyboard() {
         keyboardHelper.hideKeyboardIfShown()
+    }
+
+    fun assertSelectedCellWithoutErrorStyle(tableId: String, rowIndex: Int, columnIndex: Int) {
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(HasError, false), true
+        ).assertIsDisplayed()
     }
 }
