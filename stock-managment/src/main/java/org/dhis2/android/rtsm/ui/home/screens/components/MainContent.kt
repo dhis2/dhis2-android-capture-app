@@ -6,11 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -82,27 +83,31 @@ fun MainContent(
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .absolutePadding(
+                    left = 16.dp,
+                    top = 16.dp,
+                    right = 16.dp
+                )
                 .fillMaxWidth()
-                .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+                .size(60.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top
         ) {
             OutlinedTextField(
                 value = search,
                 onValueChange = viewModel::setScannedText,
                 modifier = Modifier
-                    .padding(horizontal = 5.dp)
                     .background(Color.White, shape = CircleShape)
                     .shadow(
-                        elevation = 3.dp,
+                        elevation = 4.dp,
                         shape = RoundedCornerShape(30.dp),
                         clip = false
                     )
                     .offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp))
                     .weight(1 - (weightValue + weightValueArrow))
-                    .alignBy(FirstBaseline),
+                    .alignBy(FirstBaseline)
+                    .align(alignment = Alignment.CenterVertically),
                 shape = RoundedCornerShape(30.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
@@ -156,7 +161,8 @@ fun MainContent(
                 },
                 modifier = Modifier
                     .weight(weightValue)
-                    .alignBy(FirstBaseline),
+                    .alignBy(FirstBaseline)
+                    .align(alignment = Alignment.CenterVertically),
                 enabled = isFrontLayerDisabled != true
             ) {
                 Icon(
@@ -175,6 +181,7 @@ fun MainContent(
                     modifier = Modifier
                         .weight(weightValueArrow, weightValueArrowStatus)
                         .alignBy(FirstBaseline)
+                        .align(alignment = Alignment.CenterVertically)
                 ) {
                     if (isFrontLayerDisabled == true) {
                         Icon(
@@ -198,7 +205,10 @@ fun MainContent(
             manageStockViewModel.onSearchQueryChanged(search)
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(vertical = 0.dp)
+        ) {
             if (viewModel.toolbarTitle.collectAsState().value.name
                 == TransactionType.DISTRIBUTION.name
             ) {
