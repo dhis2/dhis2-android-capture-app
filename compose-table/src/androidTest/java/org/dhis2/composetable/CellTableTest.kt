@@ -1,5 +1,6 @@
 package org.dhis2.composetable
 
+import android.util.Log
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.data.InputRowOption
@@ -7,6 +8,7 @@ import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableTheme
 import org.junit.Rule
 import org.junit.Test
 
@@ -197,9 +199,8 @@ class CellTableTest {
             val firstId = fakeModel.first().id!!
             val cellColor = TableColors()
             clickOnCell(firstId, 2, 2)
-            assertInputComponentIsDisplayed()
-            assertSelectedCellWithoutErrorStyle(firstId,2,2)
-
+            Log.d("color123",cellColor.primary.toString())
+            assertSelectedCellBorderStyle(firstId,2,2, cellColor.primary)
         }
     }
 

@@ -437,6 +437,7 @@ fun ItemValues(
                             cellSelected = style.mainColor() != Color.Transparent
                             hasError = cellValue.error != null
                             isBlocked = style.backgroundColor() == backgroundColor
+                            borderColor = style.mainColor()
                         }
                         .cellBorder(
                             borderColor = style.mainColor(),
@@ -1123,3 +1124,8 @@ val HasError = SemanticsPropertyKey<Boolean>("HasError")
 var SemanticsPropertyReceiver.hasError by HasError
 val IsBlocked = SemanticsPropertyKey<Boolean>("IsBlocked")
 var SemanticsPropertyReceiver.isBlocked by IsBlocked
+val BorderColor = SemanticsPropertyKey<Color>("BorderColor")
+var SemanticsPropertyReceiver.borderColor by BorderColor
+
+
+

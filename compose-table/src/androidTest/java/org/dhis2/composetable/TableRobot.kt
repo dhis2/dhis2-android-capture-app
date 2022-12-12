@@ -1,6 +1,7 @@
 package org.dhis2.composetable
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -404,6 +405,15 @@ class TableRobot(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
                     and
                     SemanticsMatcher.expectValue(HasError, false), true
+        ).assertIsDisplayed()
+    }
+
+    fun assertSelectedCellBorderStyle(tableId: String, rowIndex: Int, columnIndex: Int, color: Color) {
+        Log.d("color123", BorderColor.getValue().toString())
+        composeTestRule.onNode(
+            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
+                    and
+                    SemanticsMatcher.expectValue(BorderColor, color), true
         ).assertIsDisplayed()
     }
 }
