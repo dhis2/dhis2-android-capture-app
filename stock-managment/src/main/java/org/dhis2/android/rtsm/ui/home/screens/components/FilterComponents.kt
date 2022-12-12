@@ -41,7 +41,6 @@ fun filterList(
     val facilities = viewModel.facilities.collectAsState().value
     val destinations = viewModel.destinationsList.collectAsState().value
     val showDestination = viewModel.isDistribution.collectAsState().value
-    val toolbarTitle = viewModel.toolbarTitle.collectAsState().value.name
 
     // get local density from composable
     val localDensity = LocalDensity.current
@@ -53,31 +52,17 @@ fun filterList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
         modifier = Modifier
+            .animateContentSize(
+                animationSpec = tween(
+                    delayMillis = 180,
+                    easing = LinearOutSlowInEasing
+                )
+            )
             .onSizeChanged { coordinates ->
                 heightIs = with(localDensity) { coordinates.height.toDp() }
-            }.onGloballyPositioned { coordinates ->
+            }
+            .onGloballyPositioned { coordinates ->
                 heightIs = with(localDensity) { coordinates.size.height.toDp() }
-            }.apply {
-                val condition: Boolean = toolbarTitle == TransactionType.DISTRIBUTION.name
-                this.conditional(
-                    condition,
-                    ifFalse = {
-                        this.animateContentSize(
-                            animationSpec = tween(
-                                delayMillis = 400,
-                                easing = LinearOutSlowInEasing
-                            )
-                        )
-                    },
-                    ifTrue = {
-                        this.animateContentSize(
-                            animationSpec = tween(
-                                delayMillis = 300,
-                                easing = LinearOutSlowInEasing
-                            )
-                        )
-                    }
-                )
             }
     ) {
         item {
@@ -116,20 +101,6 @@ fun filterList(
         }
     }
     return heightIs
-}
-
-fun Modifier.conditional(
-    condition: Boolean,
-    ifTrue: Modifier.() -> Modifier,
-    ifFalse: (Modifier.() -> Modifier)? = null
-): Modifier {
-    return if (condition) {
-        then(ifTrue(Modifier))
-    } else if (ifFalse != null) {
-        then(ifFalse(Modifier))
-    } else {
-        this
-    }
 }
 
 private fun mapTransaction(): MutableList<TransactionItem> {
