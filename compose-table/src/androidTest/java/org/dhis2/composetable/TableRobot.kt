@@ -409,11 +409,71 @@ class TableRobot(
     }
 
     fun assertSelectedCellBorderStyle(tableId: String, rowIndex: Int, columnIndex: Int, color: Color) {
-        Log.d("color123", BorderColor.getValue().toString())
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
                     and
                     SemanticsMatcher.expectValue(BorderColor, color), true
         ).assertIsDisplayed()
+    }
+
+    fun initTableAppScreen2(
+        context: Context,
+        fakeModelType: FakeModelType,
+        tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
+        onSave: (TableCell) -> Unit = {}
+    ): Pair<Color, List<TableModel>>  {
+        var primaryColor:Color = Color(0xFF2C98F0)
+        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        val screenState = TableScreenState(fakeModel, false)
+        composeTestRule.setContent {
+            primaryColor = TableTheme.colors.primary
+            keyboardHelper.view = LocalView.current
+            var model by remember { mutableStateOf(screenState) }
+            DataSetTableScreen(
+                tableScreenState = model,
+                onCellClick = { tableId, cell ->
+                    if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
+                        TextInputModel(
+                            id = cell.id ?: "",
+                            mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
+                                cell.id?.contains(it.rowHeader.id!!) == true
+                            }?.rowHeader?.title ?: "",
+                            secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
+                                it.cells[cell.column!! % it.cells.size].value
+                            } ?: emptyList(),
+                            currentValue = cell.value,
+                            keyboardInputType = KeyboardInputType.TextInput(),
+                            error = null
+                        )
+                    } else {
+                        null
+                    }
+                },
+                onEdition = {},
+                onCellValueChange = { tableCell ->
+                    val updatedData = fakeModel.map { tableModel ->
+                        val hasRowWithDataElement = tableModel.tableRows.find {
+                            tableCell.id?.contains(it.rowHeader.id.toString()) == true
+                        }
+                        if (hasRowWithDataElement != null) {
+                            tableModel.copy(
+                                overwrittenValues = mapOf(
+                                    Pair(tableCell.column!!, tableCell)
+                                )
+                            )
+                        } else {
+                            tableModel
+                        }
+                    }
+                    model = TableScreenState(updatedData, false)
+                },
+                onSaveValue = { tableCell, selectNext ->
+                    onSaveTableCell = tableCell
+                    onSave(tableCell)
+                    model = TableScreenState(fakeModel, selectNext)
+                }
+            )
+        }
+        return Pair(primaryColor, fakeModel)
     }
 }

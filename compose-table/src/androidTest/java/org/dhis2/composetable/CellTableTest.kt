@@ -172,6 +172,9 @@ class CellTableTest {
             assertSelectedCellErrorStyle(firstId, 2, 0)
         }
     }
+
+    //tests  - examples
+    // omprobar que cuando haces click en una celda no hay error
     @Test
     fun shouldNotDisplayError() {
         tableRobot(composeTestRule) {
@@ -187,9 +190,10 @@ class CellTableTest {
             assertSelectedCellWithoutErrorStyle(firstId,2,2)
         }
     }
+    // Hacer que falle el test anterior, si el valor de column fuese 0, entonces si pasaria el test
 
     @Test
-    fun shouldSetCorrectColorIfNotError() {
+    fun shouldDisplayError() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
                 composeTestRule.activity.applicationContext,
@@ -199,7 +203,22 @@ class CellTableTest {
             val firstId = fakeModel.first().id!!
             val cellColor = TableColors()
             clickOnCell(firstId, 2, 2)
-            Log.d("color123",cellColor.primary.toString())
+            assertInputComponentIsDisplayed()
+            assertSelectedCellErrorStyle(firstId,2,2)
+        }
+    }
+// Comprobar que cuando haces click en una celda, el background cambia a color azul y el bottom bar sea visible
+    @Test
+    fun shouldSetCorrectColorIfNotError() {
+        tableRobot(composeTestRule) {
+            val fakeModel = initTableAppScreen2(
+                composeTestRule.activity.applicationContext,
+                FakeModelType.MANDATORY_TABLE
+            )
+
+            val firstId = fakeModel.second.first().id!!
+            val cellColor = TableColors()
+            clickOnCell(firstId, 2, 2)
             assertSelectedCellBorderStyle(firstId,2,2, cellColor.primary)
         }
     }
