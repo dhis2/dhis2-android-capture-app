@@ -55,6 +55,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -955,9 +956,16 @@ fun VerticalResizingRule(
         MIN_CELL_WIDTH.toPx()
     }
 
+    val maxCellWithSpace = with(localDensity) {
+        MAX_CELL_WIDTH_SPACE.toPx()
+    }
+
     var offsetX by remember { mutableStateOf(minOffset) }
     var positionInRoot by remember { mutableStateOf(Offset.Zero) }
     var positionInParent by remember { mutableStateOf(Offset.Zero) }
+    val screenWidth = with(localDensity) {
+        LocalConfiguration.current.screenWidthDp.dp.toPx()
+    }
 
     val colorPrimary = TableTheme.colors.primary
     Box(
@@ -973,7 +981,11 @@ fun VerticalResizingRule(
                 ) { change, dragAmount ->
                     change.consume()
 
-                    if (minCellWidth < (positionInRoot.x + offsetX) - positionInParent.x) {
+                    val position = positionInRoot.x + offsetX - positionInParent.x
+                    if (
+                        minCellWidth < position + dragAmount.x &&
+                        screenWidth - maxCellWithSpace > position + dragAmount.x
+                    ) {
                         offsetX += dragAmount.x
                     }
 
@@ -1278,6 +1290,7 @@ const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
 const val CELL_NON_EDITABLE_LAYER_TEST_TAG = "CELL_NON_EDITABLE_LAYER_TEST_TAG"
 val MIN_CELL_WIDTH = 48.dp
+val MAX_CELL_WIDTH_SPACE = 96.dp
 
 /* Row Header Cell */
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
