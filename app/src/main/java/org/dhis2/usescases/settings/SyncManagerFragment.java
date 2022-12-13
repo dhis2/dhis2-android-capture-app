@@ -771,18 +771,27 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.settingsSms.settingsSmsResponseWaitSwitch.setChecked(smsSettingsViewModel.getWaitingForResponse());
         binding.settingsSms.settingsSmsResultSender.setText(smsSettingsViewModel.getResponseNumber());
         binding.settingsSms.settingsSmsResultTimeout.setText(String.format("%s", smsSettingsViewModel.getResponseTimeout()));
+
+        boolean smsSwitchEnabled = false;
+        boolean smsResponseEnabled = false;
+
         if (!binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
             presenter.validateGatewayObservable(binding.settingsSms.settingsSmsReceiver.getText().toString());
+            smsSwitchEnabled = true;
+        }
+
+        if (!binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
+            smsResponseEnabled = true;
         }
 
         boolean hasNetwork = networkUtils.isOnline();
 
         binding.settingsSms.settingsSmsReceiver.setEnabled(hasNetwork && smsSettingsViewModel.isGatewayNumberEditable());
         binding.settingsSms.settingsSmsResultTimeout.setEnabled(hasNetwork);
+        binding.settingsSms.settingsSmsSwitch.setEnabled(smsSwitchEnabled);
 
-        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(false);
-        binding.settingsSms.settingsSmsSwitch.setEnabled(false);
-        binding.settingsSms.settingsSmsResultSender.setEnabled(false);
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(smsResponseEnabled);
+        binding.settingsSms.settingsSmsResultSender.setEnabled(smsResponseEnabled);
 
         setUpSmsListeners();
     }
