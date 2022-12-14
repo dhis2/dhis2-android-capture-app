@@ -1,11 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.runBlocking
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.TableScreenState
@@ -29,14 +33,19 @@ class DataValuePresenter(
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
-) {
+) : CoroutineScope {
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val screenState: MutableLiveData<TableScreenState> = MutableLiveData(
+    private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
         TableScreenState(emptyList(), false)
     )
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
+
+    private var job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
 
     fun init() {
         disposable.add(
@@ -52,9 +61,9 @@ class DataValuePresenter(
                 .observeOn(schedulerProvider.io())
                 .subscribe(
                     {
-                        screenState.postValue(
-                            TableScreenState(it, false)
-                        )
+                        screenState.update { currentScreenState ->
+                            currentScreenState.copy(tables = it)
+                        }
                     },
                     { Timber.e(it) }
                 )
@@ -85,7 +94,7 @@ class DataValuePresenter(
 
         val updatedIndicators = indicatorTables()
 
-        val updatedTables = screenState.value?.tables?.map { tableModel ->
+        val updatedTables = screenState.value.tables.map { tableModel ->
             if (tableModel.id == catComboUid) {
                 updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
             } else if (tableModel.id == null && updatedIndicators != null) {
@@ -93,18 +102,18 @@ class DataValuePresenter(
             } else {
                 tableModel
             }
-        } ?: emptyList()
+        }
 
-        screenState.postValue(
-            TableScreenState(updatedTables, selectNext)
-        )
+        screenState.update { currentScreenState ->
+            currentScreenState.copy(tables = updatedTables, selectNext = selectNext)
+        }
     }
 
     fun onDettach() {
         disposable.clear()
     }
 
-    fun currentState(): LiveData<TableScreenState> = screenState
+    fun currentState(): StateFlow<TableScreenState> = screenState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun mutableTableData() = screenState
@@ -113,20 +122,23 @@ class DataValuePresenter(
     fun errors() = errors
 
     fun onCellValueChanged(tableCell: TableCell) {
-        val updatedData = screenState.value?.tables?.map { tableModel ->
-            if (tableModel.hasCellWithId(tableCell.id)) {
-                tableModel.copy(
-                    overwrittenValues = mapOf(
-                        Pair(tableCell.column!!, tableCell)
+        launch(dispatcherProvider.ui()) {
+            val updatedData = screenState.value.tables.map { tableModel ->
+                if (tableModel.hasCellWithId(tableCell.id)) {
+                    tableModel.copy(
+                        overwrittenValues = mapOf(
+                            Pair(tableCell.column!!, tableCell)
+                        )
                     )
-                )
-            } else {
-                tableModel
+                } else {
+                    tableModel
+                }
             }
-        } ?: emptyList()
-        screenState.postValue(
-            TableScreenState(updatedData, false)
-        )
+
+            screenState.update { currentScreenState ->
+                currentScreenState.copy(tables = updatedData, false)
+            }
+        }
     }
 
     /**
@@ -182,19 +194,20 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) =
-        runBlocking {
+    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) {
+        launch(dispatcherProvider.io()) {
             saveValue(cell, selectNext)
             view.onValueProcessed()
         }
+    }
 
     private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
         withContext(dispatcherProvider.io()) {
             val ids = cell.id?.split("_")
             val dataElementUid = ids!![0]
             val catOptCombUid = ids[1]
-            val catComboUid = screenState.value?.tables
-                ?.find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
+            val catComboUid = screenState.value.tables
+                .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
 
             val result = valueStore.save(
                 dataSetInfo.second,
