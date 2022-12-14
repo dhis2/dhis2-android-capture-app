@@ -834,7 +834,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onTextChanged(CharSequence text, int start, int before, int count) {
-                enabledResponseWaitSwitch();
+                if (text != null && !text.toString().isEmpty()) {
+                    enabledResponseWaitSwitch();
+                } else {
+                    binding.settingsSms.settingsSmsResponseWaitSwitch.setChecked(false);
+                    binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(false);
+                }
             }
 
             @Override

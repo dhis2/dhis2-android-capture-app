@@ -76,6 +76,7 @@
             android:id="@+id/settings_sms_response_wait_switch"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:paddingBottom="16dp"
             android:text="@string/settings_sms_response_wait_switch"
             android:textSize="12sp"
             app:switchPadding="15dp" />
