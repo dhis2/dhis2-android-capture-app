@@ -10,7 +10,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatur
 import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
-import org.dhis2.metadata.usecases.MapStyleConfiguration;
+import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;

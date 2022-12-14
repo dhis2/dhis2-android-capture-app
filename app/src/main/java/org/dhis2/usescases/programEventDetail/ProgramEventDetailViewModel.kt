@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
-import org.dhis2.metadata.usecases.MapStyleConfiguration
+import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModel(
     private val mapStyleConfig: MapStyleConfiguration

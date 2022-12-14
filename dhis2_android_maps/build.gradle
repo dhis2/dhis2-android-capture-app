@@ -65,4 +65,11 @@ dependencies {
     implementation("com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:${libraries.mapboxannotation}") {
         exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-sdk'
     }
+
+    //TEST
+    androidTestImplementation "org.mockito:mockito-android:$libraries.mockito_android"
+    androidTestImplementation "org.mockito:mockito-core:$libraries.mockito"
+    testImplementation "org.mockito:mockito-core:$libraries.mockito"
+    testImplementation "org.mockito:mockito-inline:$libraries.mockito_inline"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$libraries.mockito_kotlin"
 }

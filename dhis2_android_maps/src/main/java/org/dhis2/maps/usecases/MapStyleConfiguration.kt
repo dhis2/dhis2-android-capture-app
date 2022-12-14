@@ -1,4 +1,4 @@
-package org.dhis2.metadata.usecases
+package org.dhis2.maps.usecases
 
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
