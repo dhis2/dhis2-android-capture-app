@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
@@ -87,7 +88,6 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.model.areAllValuesEmpty
-import kotlin.math.roundToInt
 
 @Composable
 fun TableHeader(
@@ -411,7 +411,7 @@ fun ItemHeader(
                     text = rowHeader.title,
                     color = cellStyle.mainColor(),
                     fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
-                    maxLines = 3,
+                    maxLines = maxLines,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (rowHeader.showDecoration) {
