@@ -73,11 +73,12 @@ class EnrollmentEventGenerator(
             val generateByEnrollmentDate = programStage.generatedByEnrollmentDate() ?: false
 
             val now = Calendar.getInstance().time
-            val generationDate = if (!generateByEnrollmentDate && enrollment.incidentDate() != null) {
-                enrollment.incidentDate()
-            } else {
-                enrollment.enrollmentDate()
-            }
+            val generationDate =
+                if (!generateByEnrollmentDate && enrollment.incidentDate() != null) {
+                    enrollment.incidentDate()
+                } else {
+                    enrollment.enrollmentDate()
+                }
             generationDate?.let { date -> calendar.time = date }
 
             calendar.set(Calendar.HOUR_OF_DAY, 0)
