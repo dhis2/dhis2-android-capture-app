@@ -22,7 +22,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
@@ -801,10 +803,44 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         ViewExtensionsKt.clearFocusOnDone(binding.settingsSms.settingsSmsResultSender);
         ViewExtensionsKt.clearFocusOnDone(binding.settingsSms.settingsSmsResultTimeout);
 
+        binding.settingsSms.settingsSmsReceiver.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+                presenter.checkGatewayAndTimeoutAreValid();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsReceiver, () -> {
             presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
             presenter.checkGatewayAndTimeoutAreValid();
             return Unit.INSTANCE;
+        });
+
+        binding.settingsSms.settingsSmsResultSender.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+                enabledResponseWaitSwitch();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
 
         ViewExtensionsKt.onFocusRemoved(binding.settingsSms.settingsSmsResultSender, () -> {
