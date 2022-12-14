@@ -29,7 +29,7 @@ public final class SyncManagerModule {
 
     @Provides
     @PerFragment
-    SyncManagerContracts.Presenter providePresenter(
+    SyncManagerPresenter providePresenter(
             D2 d2,
             SchedulerProvider schedulerProvider,
             GatewayValidator gatewayValidator,

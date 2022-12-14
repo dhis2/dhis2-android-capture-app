@@ -215,7 +215,7 @@
     <string name="settings_sms_module_title">SMS module:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
     <string name="settings_sms_result_sender_number">SMS result sender</string>
-    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout">SMS result timeout (sec)</string>
     <string name="settings_sms_result_timeout_hint">seconds</string>
     <string name="settings_sms_result_sender_hint">number</string>
     <string name="settings_sms_receiver_number_hint">number</string>
