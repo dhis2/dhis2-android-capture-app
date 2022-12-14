@@ -21,7 +21,9 @@ data class TableDimensions(
     val defaultHeaderTextSize: TextUnit = 12.sp,
     val defaultRowHeaderTextSize: TextUnit = 12.sp,
     val defaultCellTextSize: TextUnit = 12.sp,
-    val totalWidth: Int = 0
+    val totalWidth: Int = 0,
+    val cellVerticalPadding: Dp = 4.dp,
+    val cellHorizontalPadding: Dp = 4.dp
 ) {
 
     fun defaultCellWidthWithExtraSize(
