@@ -90,6 +90,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun updateProgramQueries() {
+        programRepository.clearCache()
         filterManager.publishData()
     }
 
