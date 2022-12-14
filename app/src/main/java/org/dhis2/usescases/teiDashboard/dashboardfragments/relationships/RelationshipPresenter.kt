@@ -9,7 +9,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
-import org.dhis2.metadata.usecases.MapStyleConfiguration
+import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP

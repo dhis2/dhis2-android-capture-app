@@ -2,7 +2,7 @@ package org.dhis2.usescases.programEventDetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.metadata.usecases.MapStyleConfiguration
+import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModelFactory(
     private val mapStyleConfiguration: MapStyleConfiguration

@@ -1,4 +1,4 @@
-package org.dhis2.metadata.usecases
+package org.dhis2.maps.usecases
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
