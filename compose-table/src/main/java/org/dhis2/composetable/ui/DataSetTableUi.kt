@@ -78,6 +78,7 @@ import kotlin.math.roundToInt
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
+import org.dhis2.composetable.model.ItemHeaderUiState
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -280,20 +281,20 @@ fun TableItemRow(
         Row(Modifier.height(IntrinsicSize.Min)) {
             Box(modifier = Modifier.fillMaxHeight()) {
                 ItemHeader(
-                    tableModel.id ?: "",
-                    rowHeader = rowModel.rowHeader,
-                    cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-                    width = with(LocalDensity.current) {
-                        TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
+                    ItemHeaderUiState(
+                        tableId = tableModel.id ?: "",
+                        rowHeader = rowModel.rowHeader,
+                        cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
+                        width = with(LocalDensity.current) {TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
                             tableModel.tableHeaderModel.tableMaxColumns(),
-                            tableModel.tableHeaderModel.hasTotals
-                        ).toDp()
-                    },
-                    maxLines = rowModel.maxLines,
-                    onCellSelected = onRowHeaderClick,
-                    onDecorationClick = onDecorationClick,
-                    onHeaderResize = onHeaderResize,
-                    onResizing = onResizing
+                            tableModel.tableHeaderModel.hasTotals).toDp()
+                        },
+                        maxLines = rowModel.maxLines,
+                        onCellSelected = onRowHeaderClick,
+                        onDecorationClick = onDecorationClick,
+                        onHeaderResize = onHeaderResize,
+                        onResizing = onResizing
+                    )
                 )
             }
             ItemValues(
@@ -354,17 +355,7 @@ fun TableCorner(
 }
 
 @Composable
-fun ItemHeader(
-    tableId: String,
-    rowHeader: RowHeader,
-    cellStyle: CellStyle,
-    width: Dp,
-    maxLines: Int,
-    onCellSelected: (Int?) -> Unit,
-    onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onHeaderResize: (Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit
-) {
+fun ItemHeader(uiState: ItemHeaderUiState) {
     Box(
         modifier = Modifier
             .zIndex(1f)
@@ -376,23 +367,23 @@ fun ItemHeader(
                     TableTheme.dimensions.defaultCellHeight.toDp()
                 }
             )
-                .width(width)
+                .width(uiState.width)
                 .fillMaxHeight()
-                .background(cellStyle.backgroundColor())
+                .background(uiState.cellStyle.backgroundColor())
                 .semantics {
-                    tableIdSemantic = tableId
-                    rowHeader.row?.let { rowIndexSemantic = rowHeader.row }
-                    infoIconId = if (rowHeader.showDecoration) INFO_ICON else ""
-                    rowBackground = cellStyle.backgroundColor()
+                    tableIdSemantic = uiState.tableId
+                    uiState.rowHeader.row?.let { rowIndexSemantic = uiState.rowHeader.row }
+                    infoIconId = if (uiState.rowHeader.showDecoration) INFO_ICON else ""
+                    rowBackground = uiState.cellStyle.backgroundColor()
                 }
-                .testTag("$tableId${rowHeader.row}")
+                .testTag("$uiState.tableId${uiState.rowHeader.row}")
                 .clickable {
-                    onCellSelected(rowHeader.row)
-                    if (rowHeader.showDecoration) {
-                        onDecorationClick(
+                    uiState.onCellSelected(uiState.rowHeader.row)
+                    if (uiState.rowHeader.showDecoration) {
+                        uiState.onDecorationClick(
                             TableDialogModel(
-                                rowHeader.title,
-                                rowHeader.description ?: ""
+                                uiState.rowHeader.title,
+                                uiState.rowHeader.description ?: ""
                             )
                         )
                     }
@@ -408,13 +399,13 @@ fun ItemHeader(
                 Text(
                     modifier = Modifier
                         .weight(1f),
-                    text = rowHeader.title,
-                    color = cellStyle.mainColor(),
+                    text = uiState.rowHeader.title,
+                    color = uiState.cellStyle.mainColor(),
                     fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
-                    maxLines = maxLines,
+                    maxLines = uiState.maxLines,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (rowHeader.showDecoration) {
+                if (uiState.rowHeader.showDecoration) {
                     Spacer(modifier = Modifier.size(4.dp))
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -422,7 +413,7 @@ fun ItemHeader(
                         modifier = Modifier
                             .height(10.dp)
                             .width(10.dp),
-                        tint = cellStyle.mainColor()
+                        tint = uiState.cellStyle.mainColor()
                     )
                 }
             }
@@ -434,12 +425,12 @@ fun ItemHeader(
             )
         }
 
-        if (cellStyle.mainColor() == Color.White) {
+        if (uiState.cellStyle.mainColor() == Color.White) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
-                onHeaderResize = onHeaderResize,
-                onResizing = onResizing
+                onHeaderResize = uiState.onHeaderResize,
+                onResizing = uiState.onResizing
             )
         }
     }
