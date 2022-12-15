@@ -121,14 +121,16 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(
                 presenter.fetchMapStyles(),
-                () -> Unit.INSTANCE, (permissionManager) -> {
+                () -> Unit.INSTANCE,
+                permissionManager -> {
                     if (locationProvider.hasLocationEnabled()) {
                         permissionManager.requestLocationPermissions(getActivity());
                     } else {
                         LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), null, () -> null);
                     }
                     return Unit.INSTANCE;
-                });
+                }
+        );
 
         mapButtonObservable.relationshipMap().observe(getViewLifecycleOwner(), showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
