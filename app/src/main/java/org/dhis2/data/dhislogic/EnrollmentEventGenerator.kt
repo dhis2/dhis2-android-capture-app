@@ -66,7 +66,6 @@ class EnrollmentEventGenerator(
                 enrollment.organisationUnit()!!
             )
 
-            val hideDueDate = programStage.hideDueDate() ?: false
             val periodType = programStage.periodType()
             val minDaysFromStart = programStage.minDaysFromStart() ?: 0
             val calendar = DateUtils.getInstance().calendar
