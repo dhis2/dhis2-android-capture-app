@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
@@ -87,7 +86,7 @@ fun TableHeader(
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
 ) {
     Row(
@@ -207,7 +206,7 @@ fun TableHeaderRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     cellStyle: @Composable
-        (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
 ) {
@@ -252,11 +251,11 @@ fun TableItemRow(
     horizontalScrollState: ScrollState,
     rowModel: TableRowModel,
     rowHeaderCellStyle: @Composable
-        (rowHeaderIndex: Int?) -> CellStyle,
+    (rowHeaderIndex: Int?) -> CellStyle,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit
@@ -428,9 +427,9 @@ fun ItemValues(
     defaultWidth: Dp,
     options: List<String>,
     cellStyle: @Composable
-        (cellValue: TableCell) -> CellStyle,
+    (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
-        (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
+    (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     Row(
@@ -486,8 +485,8 @@ fun ItemValues(
                         val marginCoordinates = Rect(
                             0f,
                             0f,
-                            TableTheme.dimensions.defaultCellWidth.toPx() * 2,
-                            TableTheme.dimensions.defaultCellHeight.toPx() * 3
+                            TableTheme.dimensions.defaultCellWidth.dp.toPx() * 2,
+                            TableTheme.dimensions.defaultCellHeight.dp.toPx() * 3
                         )
                         coroutineScope.launch {
                             bringIntoViewRequester.bringIntoView(marginCoordinates)
@@ -506,7 +505,7 @@ fun TableCell(
     maxLines: Int,
     options: List<String>,
     nonEditableCellLayer: @Composable
-        () -> Unit,
+    () -> Unit,
     onClick: (TableCell) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -743,10 +742,10 @@ private fun TableList(
                                 columnIndex = headerColumnIndex,
                                 columnHeaderRow = headerRowIndex,
                                 childrenOfSelectedHeader =
-                                currentTableModel.countChildrenOfSelectedHeader(
-                                    headerRowIndex,
-                                    headerColumnIndex
-                                )
+                                    currentTableModel.countChildrenOfSelectedHeader(
+                                        headerRowIndex,
+                                        headerColumnIndex
+                                    )
                             )
                         )
                     }
@@ -979,39 +978,6 @@ fun TableItem(
                 onDecorationClick = { tableInteractions.onDecorationClick(it) }
             ) {
                 tableInteractions.onClick(it)
-            }
-        }
-    }
-}
-
-@Composable
-fun SelectionScrollEffect(
-    tableSelection: TableSelection,
-    selectedTable: TableModel,
-    selectedScrollState: ScrollState,
-    verticalScrollState: LazyListState,
-    inputIsOpen: Boolean,
-    calculatedHeaderSize: Int?
-) {
-    val localDimensions = LocalTableDimensions.current
-    val localDensity = LocalDensity.current
-
-    LaunchedEffect(tableSelection) {
-        if (tableSelection is TableSelection.CellSelection) {
-            val cellWidth =
-                localDimensions.defaultCellWidthWithExtraSize(
-                    selectedTable.tableHeaderModel.tableMaxColumns(),
-                    selectedTable.tableHeaderModel.hasTotals
-                )
-
-            selectedScrollState.animateScrollTo(
-                cellWidth * tableSelection.columnIndex
-            )
-            if (inputIsOpen) {
-                verticalScrollState.scrollToItem(
-                    (tableSelection.globalIndex).takeIf { it >= 0 } ?: 0
-                )
-                verticalScrollState.scrollBy(-(calculatedHeaderSize ?: 0).toFloat())
             }
         }
     }
