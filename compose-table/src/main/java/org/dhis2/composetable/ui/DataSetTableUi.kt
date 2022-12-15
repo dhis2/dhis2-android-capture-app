@@ -285,9 +285,11 @@ fun TableItemRow(
                         tableId = tableModel.id ?: "",
                         rowHeader = rowModel.rowHeader,
                         cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-                        width = with(LocalDensity.current) {TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                            tableModel.tableHeaderModel.tableMaxColumns(),
-                            tableModel.tableHeaderModel.hasTotals).toDp()
+                        width = with(LocalDensity.current) {
+                            TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
+                                tableModel.tableHeaderModel.tableMaxColumns(),
+                                tableModel.tableHeaderModel.hasTotals
+                            ).toDp()
                         },
                         maxLines = rowModel.maxLines,
                         onCellSelected = onRowHeaderClick,
@@ -363,10 +365,10 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
         Row(
             modifier = Modifier
                 .defaultMinSize(
-                minHeight = with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultCellHeight.toDp()
-                }
-            )
+                    minHeight = with(LocalDensity.current) {
+                        TableTheme.dimensions.defaultCellHeight.toDp()
+                    }
+                )
                 .width(uiState.width)
                 .fillMaxHeight()
                 .background(uiState.cellStyle.backgroundColor())
@@ -675,7 +677,7 @@ fun DataTable(
                 onSizeChanged = onSizeChanged,
                 onHeaderResize = { newValue ->
                     with(localDensity) {
-                        dimensions = dimensions.updateHeaderWidth(newValue.toDp())
+                        dimensions = dimensions.updateHeaderWidth(newValue)
                     }
                 }
             )
