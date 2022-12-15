@@ -1,7 +1,5 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -10,16 +8,16 @@ class TableDimensionsTest {
     @Test
     fun `Should calculate default cell width for different tables`() {
         val expectedExtraWidth = listOf(
-            100.dp,
-            210.dp / 2,
-            60.dp / 3,
-            60.dp / 4
+            100,
+            210 / 2,
+            60 / 3,
+            60 / 4
         )
         listOf(
-            TestScenario(extraSpacing = 100.dp, totalColumns = 1, hasTotal = false),
-            TestScenario(extraSpacing = 210.dp, totalColumns = 1, hasTotal = true),
-            TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = false),
-            TestScenario(extraSpacing = 60.dp, totalColumns = 3, hasTotal = true)
+            TestScenario(extraSpacing = 100, totalColumns = 1, hasTotal = false),
+            TestScenario(extraSpacing = 210, totalColumns = 1, hasTotal = true),
+            TestScenario(extraSpacing = 60, totalColumns = 3, hasTotal = false),
+            TestScenario(extraSpacing = 60, totalColumns = 3, hasTotal = true)
         ).forEachIndexed { index, testScenario ->
             val tableDimensions = TableDimensions()
 
@@ -52,7 +50,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100.dp)
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100)
         calculateWidth(
             tableDimensions = updatedTableDimensions,
             totalColumns = totalColumns,
@@ -76,7 +74,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100.dp)
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth + 100)
 
         calculateWidth(
             tableDimensions = updatedTableDimensions,
@@ -101,7 +99,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100.dp)
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100)
 
         calculateWidth(
             tableDimensions = updatedTableDimensions,
@@ -131,7 +129,7 @@ class TableDimensionsTest {
             tableDimensions.tableWidth(totalColumns = totalColumns, hasTotal = hasTotal)
         val headerRowColumns = intArrayOf(2, totalColumns)
 
-        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100.dp)
+        val updatedTableDimensions = tableDimensions.copy(totalWidth = tableWidth - 100)
 
         calculateWidth(
             tableDimensions = updatedTableDimensions,
@@ -183,13 +181,13 @@ class TableDimensionsTest {
 }
 
 private data class TestScenario(
-    val extraSpacing: Dp,
+    val extraSpacing: Int,
     val totalColumns: Int,
     val hasTotal: Boolean
 )
 
 private data class WidthCalculationResult(
-    val cellWidth: Dp,
-    val rowHeaderCellWidth: Dp,
-    val headerCellWidth: List<Dp>
+    val cellWidth: Int,
+    val rowHeaderCellWidth: Int,
+    val headerCellWidth: List<Int>
 )

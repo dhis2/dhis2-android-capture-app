@@ -157,7 +157,7 @@ fun HeaderCell(
 ) {
     Box(
         modifier = Modifier
-            .width(headerMeasures.width)
+            .width(with(LocalDensity.current) { headerMeasures.width.toDp() })
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
             .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
@@ -266,10 +266,12 @@ fun TableItemRow(
                     tableModel.id ?: "",
                     rowHeader = rowModel.rowHeader,
                     cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-                    width = TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                        tableModel.tableHeaderModel.tableMaxColumns(),
-                        tableModel.tableHeaderModel.hasTotals
-                    ),
+                    width = with(LocalDensity.current) {
+                        TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
+                            tableModel.tableHeaderModel.tableMaxColumns(),
+                            tableModel.tableHeaderModel.hasTotals
+                        ).toDp()
+                    },
                     maxLines = rowModel.maxLines,
                     onCellSelected = onRowHeaderClick,
                     onDecorationClick = onDecorationClick
@@ -281,11 +283,15 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                defaultHeight = TableTheme.dimensions.defaultCellHeight,
-                defaultWidth = TableTheme.dimensions.defaultCellWidthWithExtraSize(
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                ),
+                defaultHeight = with(LocalDensity.current) {
+                    TableTheme.dimensions.defaultCellHeight.toDp()
+                },
+                defaultWidth = with(LocalDensity.current) {
+                    TableTheme.dimensions.defaultCellWidthWithExtraSize(
+                        tableModel.tableHeaderModel.tableMaxColumns(),
+                        tableModel.tableHeaderModel.hasTotals
+                    ).toDp()
+                },
                 options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
@@ -307,10 +313,14 @@ fun TableCorner(
     Box(
         modifier = modifier
             .width(
-                TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals
-                )
+                with(LocalDensity.current) {
+                    TableTheme.dimensions
+                        .defaultRowHeaderCellWidthWithExtraSize(
+                            tableModel.tableHeaderModel.tableMaxColumns(),
+                            tableModel.tableHeaderModel.hasTotals
+                        )
+                        .toDp()
+                }
             )
             .clickable { onClick() },
         contentAlignment = Alignment.CenterEnd
@@ -336,7 +346,11 @@ fun ItemHeader(
 ) {
     Row(
         modifier = Modifier
-            .defaultMinSize(minHeight = TableTheme.dimensions.defaultCellHeight)
+            .defaultMinSize(
+                minHeight = with(LocalDensity.current) {
+                    TableTheme.dimensions.defaultCellHeight.toDp()
+                }
+            )
             .width(width)
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
@@ -491,7 +505,10 @@ fun TableCell(
                 .testTag(CELL_VALUE_TEST_TAG)
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(
+                    horizontal = TableTheme.dimensions.cellHorizontalPadding,
+                    vertical = TableTheme.dimensions.cellVerticalPadding
+                ),
             text = cellValue.value ?: "",
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
@@ -603,12 +620,12 @@ fun DataTable(
 ) {
     val localDensity = LocalDensity.current
     var tableTotalWidth by remember {
-        mutableStateOf(0.dp)
+        mutableStateOf(0)
     }
 
     val onSizeChanged: (IntSize) -> Unit = {
         tableTotalWidth = with(localDensity) {
-            it.width.toDp()
+            it.width
         }
     }
 
@@ -829,10 +846,14 @@ fun ExtendDivider(
         Box(
             modifier = Modifier
                 .width(
-                    TableTheme.dimensions.defaultRowHeaderCellWidthWithExtraSize(
-                        tableModel.tableHeaderModel.tableMaxColumns(),
-                        tableModel.tableHeaderModel.hasTotals
-                    )
+                    with(LocalDensity.current) {
+                        TableTheme.dimensions
+                            .defaultRowHeaderCellWidthWithExtraSize(
+                                tableModel.tableHeaderModel.tableMaxColumns(),
+                                tableModel.tableHeaderModel.hasTotals
+                            )
+                            .toDp()
+                    }
                 )
                 .height(8.dp)
                 .background(
@@ -967,15 +988,14 @@ fun SelectionScrollEffect(
 
     LaunchedEffect(tableSelection) {
         if (tableSelection is TableSelection.CellSelection) {
-            val cellWidth = with(localDensity) {
+            val cellWidth =
                 localDimensions.defaultCellWidthWithExtraSize(
                     selectedTable.tableHeaderModel.tableMaxColumns(),
                     selectedTable.tableHeaderModel.hasTotals
-                ).toPx()
-            }
+                )
 
             selectedScrollState.animateScrollTo(
-                cellWidth.toInt() * tableSelection.columnIndex
+                cellWidth * tableSelection.columnIndex
             )
             if (inputIsOpen) {
                 verticalScrollState.scrollToItem(
