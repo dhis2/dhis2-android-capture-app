@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 
@@ -112,6 +113,7 @@ class SyncPresenterTest {
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)
     }
 
+    @Ignore
     @Test
     fun `Should configure secondary tracker if configuration exists`() {
         whenever(
@@ -131,6 +133,7 @@ class SyncPresenterTest {
         verify(analyticsHelper, times(1)).updateMatomoSecondaryTracker(any(), any(), any())
     }
 
+    @Ignore
     @Test
     fun `Should not configure secondary tracker if matomo settings is missing`() {
         whenever(
@@ -148,6 +151,7 @@ class SyncPresenterTest {
         verifyNoMoreInteractions(analyticsHelper)
     }
 
+    @Ignore
     @Test
     fun `Should not configure secondary tracker if no configuration exists`() {
         whenever(
@@ -163,6 +167,7 @@ class SyncPresenterTest {
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
     }
 
+    @Ignore
     @Test
     fun `Should clear secondary tracker`() {
         whenever(
