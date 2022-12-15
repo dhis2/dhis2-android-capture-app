@@ -6,6 +6,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.maps.R
+import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 
 const val OSM_LIGHT = "OSM Light"
 const val OSM_DETAILED = "OSM Detailed"
@@ -67,18 +68,5 @@ class BaseMapManager(
 
     fun getDefaultBasemap(): BaseMapStyle {
         return baseMapStyles.firstOrNull() ?: internalBaseMap()
-    }
-
-    private fun internalBaseMap(): BaseMapStyle {
-        return BaseMapStyleBuilder.build(
-            OSM_LIGHT,
-            listOf(
-                DEFAULT_TILE_URL.replace("{s}", "a"),
-                DEFAULT_TILE_URL.replace("{s}", "b"),
-                DEFAULT_TILE_URL.replace("{s}", "c"),
-                DEFAULT_TILE_URL.replace("{s}", "d")
-            ),
-            DEFAULT_ATTRIBUTION
-        )
     }
 }

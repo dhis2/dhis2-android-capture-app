@@ -28,6 +28,7 @@ import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
@@ -53,15 +54,15 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
-        this.mapStyles = mapStyles
+        this.mapStyles = mapStyles.ifEmpty { listOf(internalBaseMap()) }
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
                 mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
-                val baseMapManager = BaseMapManager(mapView.context, mapStyles)
+                val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
                 map?.setStyle(
-                    baseMapManager.styleJson(mapStyles.first())
+                    baseMapManager.styleJson(this.mapStyles.first())
                 ) { styleLoaded ->
                     this.style = styleLoaded
                     mapLayerManager = MapLayerManager(mapLoaded, baseMapManager).apply {

@@ -28,6 +28,19 @@ object BaseMapStyleBuilder {
         ),
         id = id
     )
+
+    fun internalBaseMap(): BaseMapStyle {
+        return build(
+            OSM_LIGHT,
+            listOf(
+                DEFAULT_TILE_URL.replace("{s}", "a"),
+                DEFAULT_TILE_URL.replace("{s}", "b"),
+                DEFAULT_TILE_URL.replace("{s}", "c"),
+                DEFAULT_TILE_URL.replace("{s}", "d")
+            ),
+            DEFAULT_ATTRIBUTION
+        )
+    }
 }
 
 data class BaseMapStyle(
