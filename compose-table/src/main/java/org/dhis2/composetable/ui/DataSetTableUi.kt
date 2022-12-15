@@ -647,9 +647,7 @@ fun DataTable(
     tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
     val localDensity = LocalDensity.current
-    var tableTotalWidth by remember {
-        mutableStateOf(0)
-    }
+
     var dimensions by remember {
         mutableStateOf(tableDimensions)
     }
