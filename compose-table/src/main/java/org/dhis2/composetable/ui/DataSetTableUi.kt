@@ -378,7 +378,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                     infoIconId = if (uiState.rowHeader.showDecoration) INFO_ICON else ""
                     rowBackground = uiState.cellStyle.backgroundColor()
                 }
-                .testTag("$uiState.tableId${uiState.rowHeader.row}")
+                .testTag("${uiState.tableId}${uiState.rowHeader.row}")
                 .clickable {
                     uiState.onCellSelected(uiState.rowHeader.row)
                     if (uiState.rowHeader.showDecoration) {
