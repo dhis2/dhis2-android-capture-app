@@ -233,10 +233,13 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     }
 
     override fun openFormActivity() {
+        // TODO: remove empty strings
         val bundle = EventCaptureActivity.getActivityBundle(
             event.uid(),
             program.uid(),
-            EventMode.CHECK
+            EventMode.CHECK,
+                "",
+                ""
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

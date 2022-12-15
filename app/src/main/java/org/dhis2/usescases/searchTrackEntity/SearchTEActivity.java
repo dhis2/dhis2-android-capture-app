@@ -196,6 +196,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void inject() {
+
         searchComponent = ((App) getApplicationContext()).userComponent().plus(
                 new SearchTEModule(this,
                         tEType,

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -43,7 +44,10 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventTEIDetails.EventTeiDetailsFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -77,15 +81,20 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public EventCaptureComponent eventCaptureComponent;
     public String programUid;
     public String eventUid;
+    public String enrollmentUid;
+    public String teiUid;
     private LiveData<Boolean> relationshipMapButton = new MutableLiveData<>(false);
     private OnEditionListener onEditionListener;
     private EventCapturePagerAdapter adapter;
+    private DashboardViewModel dashboardViewModel;
 
-    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
+    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode, @NonNull String teiUid, @NonNull String enrollmentUid) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.PROGRAM_UID, programUid);
         bundle.putSerializable(Constants.EVENT_MODE, eventMode);
+        bundle.putString(Constants.TEI_UID, teiUid);
+        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         return bundle;
     }
 
@@ -98,6 +107,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
+
+        teiUid = getIntent().getStringExtra(Constants.TEI_UID);
+
+        enrollmentUid = getIntent().getStringExtra(Constants.ENROLLMENT_UID);
+
+        programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
+
+        System.out.println("#######################################################");
+        System.out.println(teiUid);
+        System.out.println(enrollmentUid);
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
 
@@ -118,9 +137,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         if (OrientationUtilsKt.isLandscape(this)) {
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid))
-                    .commitAllowingStateLoss();
+            System.out.println("helloooosssss::::::");
+            dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid)).commitAllowingStateLoss();
 
         }
 
@@ -265,8 +287,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete, Map<
-            String, String> emptyMandatoryFields, EventCompletionDialog eventCompletionDialog) {
+    public void showCompleteActions(boolean canComplete, Map<String, String> emptyMandatoryFields, EventCompletionDialog eventCompletionDialog) {
         if (binding.navigationBar.getSelectedItemId() == R.id.navigation_data_entry) {
             BottomSheetDialog dialog = new BottomSheetDialog(eventCompletionDialog.getBottomSheetDialogUiModel(), () -> {
                 setAction(eventCompletionDialog.getMainButtonAction());
@@ -350,8 +371,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String
-            catOption) {
+    public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
         binding.programStageName.setText(stageName);
         StringBuilder eventDataString = new StringBuilder(String.format("%s | %s", eventDate, orgUnit));
         if (catOption != null && !catOption.isEmpty()) {
@@ -424,12 +444,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void hideProgress() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> runOnUiThread( binding.toolbarProgress::hide), 1000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> runOnUiThread(binding.toolbarProgress::hide), 1000);
     }
 
     @Override
     public void showNavigationBar() {
         binding.navigationBar.show();
+    }
+
+    @Override
+    public void setData(DashboardProgramModel program) {
+
     }
 
     @Override
@@ -458,18 +483,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Nullable
     @Override
-    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule
-                                                                      module) {
+    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule module) {
         return eventCaptureComponent.plus(module);
     }
 
     private void showSyncDialog() {
-        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(ConflictType.EVENT)
-                .setUid(eventUid)
-                .onDismissListener(hasChanged -> {
-                })
-                .build();
+        SyncStatusDialog syncDialog = new SyncStatusDialog.Builder().setConflictType(ConflictType.EVENT).setUid(eventUid).onDismissListener(hasChanged -> {
+        }).build();
         syncDialog.show(getSupportFragmentManager(), "EVENT_SYNC");
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
+package org.dhis2.usescases.eventsWithoutRegistration.eventTEIDetails;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,7 +28,8 @@ import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.databinding.FragmentTeiDataBinding;
+import org.dhis2.databinding.FragmentEventTeiDetailsBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
@@ -37,6 +38,9 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramAdapter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.usescases.teiDashboard.ui.DetailsButtonKt;
@@ -86,7 +90,7 @@ import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT_TEI;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
+public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, OnOrgUnitSelectionFinished {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -100,7 +104,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private static final String PREF_COMPLETED_EVENT = "COMPLETED_EVENT";
 
-    private FragmentTeiDataBinding binding;
+    private FragmentEventTeiDetailsBinding binding;
 
     @Inject
     TEIDataContracts.Presenter presenter;
@@ -122,24 +126,33 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private Context context;
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
-    private TeiDashboardMobileActivity activity;
+    private EventCaptureActivity activity;
     private PopupMenu popupMenu;
 
-    public static TEIDataFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
-        TEIDataFragment fragment = new TEIDataFragment();
+    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
+        EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
         Bundle args = new Bundle();
         args.putString("PROGRAM_UID", programUid);
         args.putString("TEI_UID", teiUid);
         args.putString("ENROLLMENT_UID", enrollmentUid);
         fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onAttach(@NotNull Context context) {
+
+        System.out.println("this component???????? :::::");
+        System.out.println(getArguments().getString("PROGRAM_UID"));
+        System.out.println(getArguments().getString("TEI_UID"));
+        System.out.println(getArguments().getString("ENROLLMENT_UID"));
+        System.out.println(((App) context.getApplicationContext())
+                .dashboardComponent());
+
         super.onAttach(context);
         this.context = context;
-        activity = (TeiDashboardMobileActivity) context;
+        activity = (EventCaptureActivity) context;
         ((App) context.getApplicationContext())
                 .dashboardComponent()
                 .plus(new TEIDataModule(this,
@@ -160,19 +173,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        System.out.println("TEI DATA : onCreate()");
+        System.out.println("EVENT TEI DATA : onCreate()");
         System.out.println(presenter);
 
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_tei_details, container, false);
         binding.setPresenter(presenter);
-        activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
-            showLoadingProgress(true);
-            binding.setIsGrouping(group);
-            presenter.onGroupingChanged(group);
-        });
-        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
-        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
+//        activity.observeGrouping().observe(getViewLifecycleOwner(), group -> {
+//            showLoadingProgress(true);
+//            binding.setIsGrouping(group);
+//            presenter.onGroupingChanged(group);
+//        });
+//        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
+//        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -181,6 +194,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         }
 
         return binding.getRoot();
+
     }
 
     private void updateEnrollment(String enrollmentUid) {
@@ -229,15 +243,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void onResume() {
         super.onResume();
 
-        System.out.println("TEI DATA : onResume()");
+        System.out.println("EVENT TEI DATA : onResume()");
+
+        presenter.init();
         System.out.println(dashboardModel);
         System.out.println(dashboardViewModel);
         System.out.println(dashboardViewModel.dashboardModel());
         System.out.println(dashboardViewModel.eventUid());
 
-        presenter.init();
+
         dashboardViewModel.dashboardModel().observe(this, this::setData);
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
+
     }
 
     @Override
@@ -269,7 +286,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
 
-        System.out.println("00000000000000000000000000000000000000000");
+        System.out.println("1111111111111111111111111111111111111111111111");
         System.out.println(nprogram);
         System.out.println(nprogram.getCurrentEnrollment());
 
@@ -288,14 +305,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             showLoadingProgress(false);
         }
 
-        DetailsButtonKt.setButtonContent(
-                binding.cardFront.detailsButton,
-                activity.presenter.getTEType(),
-                () -> {
-                    presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
-                    return Unit.INSTANCE;
-                }
-        );
+//        DetailsButtonKt.setButtonContent(
+//                binding.cardFront.detailsButton,
+//                activity.presenter.getTEType(),
+//                () -> {
+//                    presenter.seeDetails(binding.cardFront.cardData, dashboardModel);
+//                    return Unit.INSTANCE;
+//                }
+//        );
 
         binding.executePendingBindings();
 
@@ -303,7 +320,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.displayGenerateEvent(getSharedPreferences().getString(PREF_COMPLETED_EVENT, null));
             getSharedPreferences().edit().remove(PREF_COMPLETED_EVENT).apply();
         }
-
 
     }
 
@@ -325,7 +341,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void hideFilters() {
-        activity.hideFilter();
+//        activity.hideFilter();
     }
 
     @Override
@@ -462,8 +478,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
-            if (enrollmentStatus == EnrollmentStatus.COMPLETED)
-                activity.updateStatus();
+            if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
+            }
+//                activity.updateStatus();
         };
     }
 
@@ -508,6 +525,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void displayGenerateEvent(String eventUid) {
+        System.out.println("on display general evend");
+
         if (eventUid != null) {
             presenter.displayGenerateEvent(eventUid);
             dashboardViewModel.updateEventUid(null);
@@ -537,9 +556,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openEventCapture(Intent intent) {
-
-        System.out.println("event capture to open");
-
         this.startActivityForResult(intent, REQ_EVENT, null);
     }
 
@@ -555,17 +571,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                             ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
                     )
                     .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.cardFront.teiImage);
-            binding.cardFront.teiImage.setOnClickListener(view -> {
-                File fileToShow = new File(filePath);
-                if (fileToShow.exists()) {
-                    new ImageDetailBottomDialog(
-                            null,
-                            fileToShow
-                    ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
-                }
-            });
+                    .transform(new CircleCrop());
+//                    .into(binding.cardFront.teiImage);
+//            binding.cardFront.teiImage.setOnClickListener(view -> {
+//                File fileToShow = new File(filePath);
+//                if (fileToShow.exists()) {
+//                    new ImageDetailBottomDialog(
+//                            null,
+//                            fileToShow
+//                    ).show(getChildFragmentManager(), ImageDetailBottomDialog.TAG);
+//                }
+//            });
         }
     }
 
@@ -598,9 +614,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
-
-        System.out.println("event initial class");
-
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());

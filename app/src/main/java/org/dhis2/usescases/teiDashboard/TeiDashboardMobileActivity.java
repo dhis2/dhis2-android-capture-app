@@ -350,6 +350,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setData(DashboardProgramModel program) {
 
+        System.out.println("step 1");
+        System.out.println(program);
+
         dashboardViewModel.updateDashboard(program);
         themeManager.setProgramTheme(program.getCurrentProgram().uid());
         setProgramColor(program.getCurrentProgram().uid());
@@ -416,6 +419,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
+
+        System.out.println("step 2");
+        System.out.println(program);
+
         dashboardViewModel.updateDashboard(program);
         themeManager.clearProgramTheme();
         setProgramColor(null);

@@ -91,7 +91,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         return bundle;
     }
 
-    private String programUid(){
+    private String programUid() {
         return getArguments().getString("ARG_PROGRAM_UID");
     }
 
@@ -121,10 +121,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         relationshipMapManager.onCreate(savedInstanceState);
         relationshipMapManager.setOnMapClickListener(this);
         relationshipMapManager.init(() -> Unit.INSTANCE, (permissionManager) -> {
-            if(locationProvider.hasLocationEnabled()) {
+            if (locationProvider.hasLocationEnabled()) {
                 permissionManager.requestLocationPermissions(getActivity());
-            }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
+            } else {
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), null, () -> null);
             }
             return Unit.INSTANCE;
         });
@@ -144,13 +144,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
 
         binding.mapPositionButton.setOnClickListener(view -> {
-            if(locationProvider.hasLocationEnabled()) {
+            if (locationProvider.hasLocationEnabled()) {
                 relationshipMapManager.centerCameraOnMyPosition((permissionManager) -> {
                     permissionManager.requestLocationPermissions(getActivity());
                     return Unit.INSTANCE;
                 });
-            }else{
-                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(),null, () -> null);
+            } else {
+                LocationSettingLauncher.INSTANCE.requestEnableLocationSetting(requireContext(), null, () -> null);
             }
         });
 
@@ -214,7 +214,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         extras.putString("PROGRAM_UID", null);
         intent.putExtras(extras);
 
-        if(getActivity() instanceof TeiDashboardMobileActivity) {
+        if (getActivity() instanceof TeiDashboardMobileActivity) {
             ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         }
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
@@ -274,13 +274,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void openEventFor(@NonNull String eventUid, @NonNull String programUid){
+    public void openEventFor(@NonNull String eventUid, @NonNull String programUid) {
+        // TODO: remove empty strings
         Bundle bundle = EventCaptureActivity.getActivityBundle(
                 eventUid,
                 programUid,
-                EventMode.CHECK
+                EventMode.CHECK, "", ""
         );
-        Intent intent = new Intent(getContext(),EventCaptureActivity.class);
+        Intent intent = new Intent(getContext(), EventCaptureActivity.class);
         intent.putExtras(bundle);
         getActivity().startActivity(intent);
     }

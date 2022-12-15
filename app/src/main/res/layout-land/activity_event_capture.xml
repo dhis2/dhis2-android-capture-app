@@ -139,10 +139,17 @@
             app:layout_constraintTop_toBottomOf="@+id/activityToolbar">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tei_column"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="30">
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/form_column"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="60">
+                android:layout_weight="40">
 
 
                 <FrameLayout
@@ -160,7 +167,7 @@
                 android:id="@+id/stats_column"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="40"
+                android:layout_weight="30"
                 app:layout_constraintTop_toBottomOf="@+id/calculationIndicator">
 
                 <androidx.viewpager2.widget.ViewPager2

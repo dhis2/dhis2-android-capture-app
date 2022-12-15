@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
+
+
+        <variable
+            name="dashboardModel"
+            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.Program" />
+
+        <variable
+            name="followup"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="isGrouping"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="canAddEvents"
+            type="java.lang.Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/cardLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tei_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <include
+                    android:id="@+id/card_front"
+                    layout="@layout/fragment_tei_data_card_front"
+                    app:dashboardModel="@{dashboardModel}"
+                    app:enrollment="@{enrollment}"
+                    app:followup="@{followup}"
+                    app:presenter="@{presenter}"
+                    app:program="@{program}"
+                    app:trackEntity="@{trackEntity}" />
+
+                <!--                <include-->
+                <!--                    android:id="@+id/card_front"-->
+                <!--                    layout="@layout/item_search_tracked_entity"-->
+                <!--                    app:followUp="@{true}"-->
+                <!--                    app:isOnline="@{true}"-->
+                <!--                    app:teiSyncState="@{trackEntity.syncState()}"-->
+                <!--                    app:attribute="@{trackEntity.trackedEntityAttributeValues()}"-->
+                <!--                    app:attributeNames="@{}"-->
+                <!--                    app:overdue="@{true}"-->
+                <!--                    app:sortingValue="@{}"-->
+                <!--                    app:attributeListOpened="@{true}"-->
+                <!--                    app:orgUnit="Cardinal Hospital Gatewey PHC"/>-->
+<!--                <include-->
+                <!--                    android:id="@+id/card_front"-->
+                <!--                    layout="@layout/item_search_tracked_entity" />-->
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_header_filter" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tei_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="200dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
+            tools:listitem="@layout/item_event" />
+
+        <TextView
+            android:id="@+id/empty_teis"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:padding="42dp"
+            android:text="@string/empty_tei_add"
+            android:textSize="@dimen/primaryTextSize"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+
+        <include
+            android:id="@+id/loading_progress"
+            layout="@layout/progress_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+
+        <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+            android:id="@+id/dialFabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_extra_bottom_margin="@{52}"
+            app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

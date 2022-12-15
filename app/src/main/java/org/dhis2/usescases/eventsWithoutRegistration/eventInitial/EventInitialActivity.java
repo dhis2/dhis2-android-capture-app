@@ -206,8 +206,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         geometry,
                         getTrackedEntityInstance);
             }
-        }else{
-            startFormActivity(eventUid,false);
+        } else {
+            startFormActivity(eventUid, false);
         }
     }
 
@@ -262,7 +262,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void startFormActivity(String eventUid, boolean isNew) {
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK));
+        // TODO: remove empty strings
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, "", ""));
         startActivity(intent);
         finish();
     }

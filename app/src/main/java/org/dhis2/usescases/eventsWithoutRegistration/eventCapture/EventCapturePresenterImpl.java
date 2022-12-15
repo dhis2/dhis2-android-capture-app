@@ -8,6 +8,7 @@ import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -34,6 +36,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final PublishProcessor<Unit> notesCounterProcessor;
     private final PreferenceProvider preferences;
     private final ConfigureEventCompletionDialog configureEventCompletionDialog;
+    public DashboardProgramModel dashboardProgramModel;
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
@@ -66,18 +69,21 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
+
         compositeDisposable.add(
                 Flowable.zip(
-                        eventCaptureRepository.programStageName(),
-                        eventCaptureRepository.eventDate(),
-                        eventCaptureRepository.orgUnit(),
-                        eventCaptureRepository.catOption(),
-                        Quartet::create
-                )
+                                eventCaptureRepository.programStageName(),
+                                eventCaptureRepository.eventDate(),
+                                eventCaptureRepository.orgUnit(),
+                                eventCaptureRepository.catOption(),
+                                Quartet::create
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
+
+
                                     preferences.setValue(Preference.CURRENT_ORG_UNIT, data.val2().uid());
                                     view.renderInitialInfo(data.val0(), data.val1(), data.val2().displayName(), data.val3());
                                 },
@@ -85,6 +91,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
 
         );
+
+//        compositeDisposable.add(Observable.zip(
+//                        eventCaptureRepository.getTrackedEntityInstance(),
+//                        eventCaptureRepository.getEnrollmentObject(),
+//                        eventCaptureRepository.programStageObject(),
+//                        eventCaptureRepository.getTEIEnrollmentEvents(),
+//                        eventCaptureRepository.getProgramTrackedEntityAttributes(),
+//                        eventCaptureRepository.getTEIAttributeValues(),
+//                        eventCaptureRepository.getTeiOrgUnits(),
+//                        eventCaptureRepository.getTeiActivePrograms(),
+//                        DashboardProgramModel::new)
+//                .subscribeOn(schedulerProvider.io())
+//                .observeOn(schedulerProvider.ui())
+//                .subscribe(
+//                        dashboardModel -> {
+//                            this.dashboardProgramModel = (DashboardProgramModel) dashboardModel;
+//                            view.setData(dashboardModel);
+//                        },
+//                        Timber::e
+//                )
+//        );
 
         checkExpiration();
     }

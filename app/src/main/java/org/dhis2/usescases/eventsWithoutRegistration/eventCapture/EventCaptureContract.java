@@ -3,8 +3,16 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import org.dhis2.commons.data.FieldWithIssue;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.Date;
 import java.util.List;
@@ -55,6 +63,8 @@ public class EventCaptureContract {
 
         void showNavigationBar();
 
+        void setData(DashboardProgramModel program);
+
         void hideNavigationBar();
     }
 
@@ -104,6 +114,22 @@ public class EventCaptureContract {
         Flowable<String> eventDate();
 
         Flowable<OrganisationUnit> orgUnit();
+
+        Flowable<ProgramStage> programStageObject();
+
+        Observable<Enrollment> getEnrollmentObject();
+
+        Observable<TrackedEntityInstance> getTrackedEntityInstance();
+
+        Observable<List<Event>> getTEIEnrollmentEvents();
+
+        Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes();
+
+//        Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues();
+
+        Observable<List<OrganisationUnit>> getTeiOrgUnits();
+
+        Observable<List<Program>> getTeiActivePrograms();
 
         Flowable<String> catOption();
 
