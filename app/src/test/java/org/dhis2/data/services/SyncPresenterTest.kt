@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -26,7 +27,6 @@ import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 
@@ -113,7 +113,6 @@ class SyncPresenterTest {
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)
     }
 
-    @Ignore
     @Test
     fun `Should configure secondary tracker if configuration exists`() {
         whenever(
@@ -128,12 +127,14 @@ class SyncPresenterTest {
             .matomoID(11111)
             .matomoURL("MatomoURL")
             .build()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        ) doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(1)).updateMatomoSecondaryTracker(any(), any(), any())
     }
 
-    @Ignore
     @Test
     fun `Should not configure secondary tracker if matomo settings is missing`() {
         whenever(
@@ -146,12 +147,14 @@ class SyncPresenterTest {
         ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .build()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verifyNoMoreInteractions(analyticsHelper)
     }
 
-    @Ignore
     @Test
     fun `Should not configure secondary tracker if no configuration exists`() {
         whenever(
@@ -162,12 +165,17 @@ class SyncPresenterTest {
         whenever(
             d2.settingModule().generalSetting().blockingGet()
         ) doReturn null
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
     }
 
-    @Ignore
     @Test
     fun `Should clear secondary tracker`() {
         whenever(
@@ -178,6 +186,9 @@ class SyncPresenterTest {
         whenever(
             d2.settingModule().generalSetting().blockingGet()
         ) doReturn null
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
