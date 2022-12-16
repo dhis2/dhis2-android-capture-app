@@ -8,10 +8,10 @@ import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
-import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.commons.Constants.DATA_NOW;
 import static org.dhis2.commons.Constants.META_NOW;
 import static org.dhis2.commons.Constants.TIME_MANUAL;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
 
@@ -47,6 +47,7 @@ import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ColorUtils;
@@ -62,7 +63,6 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
 import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.settings.LimitScope;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +134,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
             WorkInfo.State workState = null;
-            if(workStatuses!=null && !workStatuses.isEmpty()){
+            if (workStatuses != null && !workStatuses.isEmpty()) {
                 workState = workStatuses.get(0).getState();
             }
             presenter.onWorkStatusesUpdate(workState, META_NOW);
@@ -142,7 +142,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             WorkInfo.State workState = null;
-            if(workStatuses!=null && !workStatuses.isEmpty()){
+            if (workStatuses != null && !workStatuses.isEmpty()) {
                 workState = workStatuses.get(0).getState();
             }
             presenter.onWorkStatusesUpdate(workState, DATA_NOW);

@@ -210,6 +210,8 @@ class SyncPresenterImpl(
                     setUpSMS()
                 }
 
+        ).andThen(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
         ).blockingAwait()
     }
 

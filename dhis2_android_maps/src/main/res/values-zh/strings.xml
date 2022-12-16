@@ -2,8 +2,6 @@
 <resources>
     <string name="select_location">选择位置</string>
     <string name="map_layers">地图层</string>
-    <string name="dialog_layer_street_base_map">街景</string>
-    <string name="dialog_layer_satellite_base_map">卫星视图</string>
     <string name="action_apply">应用</string>
     <string name="dialog_layer_satellite">显示卫星视图</string>
     <string name="dialog_layer_event">显示事件</string>

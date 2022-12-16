@@ -2,8 +2,6 @@
 <resources>
     <string name="select_location">Selecionar local</string>
     <string name="map_layers">Camadas do mapa</string>
-    <string name="dialog_layer_street_base_map">Vista da rua</string>
-    <string name="dialog_layer_satellite_base_map">Visualização de satélite</string>
     <string name="action_apply">Aplicar</string>
     <string name="dialog_layer_satellite">Mostrar vista de satélite</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
