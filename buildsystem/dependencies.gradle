@@ -13,7 +13,7 @@ ext {
             ruleEngine                : "2.0.43.1",
 
             //androidX
-            appcompat                 : "1.5.0",
+            appcompat                 : "1.5.1",
             annotation                : "1.4.0",
             cardview                  : "1.0.0",
             legacysupport             : "1.0.0", //can be removed?
@@ -38,7 +38,7 @@ ext {
             compose_ui_test           : "1.2.1",
 
             //Google
-            material                  : "1.6.1",
+            material                  : "1.7.0",
             flexbox                   : "3.0.0",
 
             //UI
