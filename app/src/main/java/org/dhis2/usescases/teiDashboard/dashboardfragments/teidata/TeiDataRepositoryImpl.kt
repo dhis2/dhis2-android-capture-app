@@ -113,7 +113,10 @@ class TeiDataRepositoryImpl(
                         .byEnrollmentUid().eq(enrollmentUid)
                         .byAttributeOptionComboUid().isNull
                         .get()
-                    val eventSource = Single.zip(eventsWithDefaultCatCombo, eventsWithNoCatCombo) { sourceA, sourceB ->
+                    val eventSource = Single.zip(
+                        eventsWithDefaultCatCombo,
+                        eventsWithNoCatCombo
+                    ) { sourceA, sourceB ->
                         mutableListOf<Event>().apply {
                             addAll(sourceA)
                             addAll(sourceB)
