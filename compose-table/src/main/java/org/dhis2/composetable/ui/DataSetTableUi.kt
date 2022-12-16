@@ -481,16 +481,14 @@ fun ItemValues(
                     onClick = onClick
                 )
                 if (isSelected) {
-                    with(LocalDensity.current) {
-                        val marginCoordinates = Rect(
-                            0f,
-                            0f,
-                            TableTheme.dimensions.defaultCellWidth.dp.toPx() * 2,
-                            TableTheme.dimensions.defaultCellHeight.dp.toPx() * 3
-                        )
-                        coroutineScope.launch {
-                            bringIntoViewRequester.bringIntoView(marginCoordinates)
-                        }
+                    val marginCoordinates = Rect(
+                        0f,
+                        0f,
+                        TableTheme.dimensions.defaultCellWidth * 2f,
+                        TableTheme.dimensions.defaultCellHeight * 3f
+                    )
+                    coroutineScope.launch {
+                        bringIntoViewRequester.bringIntoView(marginCoordinates)
                     }
                 }
             }
