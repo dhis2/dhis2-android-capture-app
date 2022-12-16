@@ -16,6 +16,7 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.DialogMapLayerBinding
 import org.dhis2.maps.databinding.ItemLayerBinding
+import org.dhis2.maps.layer.basemaps.BasemapAdapter
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
 import org.dhis2.maps.layer.types.FieldMapLayer

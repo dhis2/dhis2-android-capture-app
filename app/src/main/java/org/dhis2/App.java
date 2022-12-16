@@ -107,7 +107,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         appInspector = new AppInspector(this).init();
 
-        MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
+        MapController.Companion.init(this);
 
         setUpAppComponent();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree(appComponent.injectCrashReportController()));

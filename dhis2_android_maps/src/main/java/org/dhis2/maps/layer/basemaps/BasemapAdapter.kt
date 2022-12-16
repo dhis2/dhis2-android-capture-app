@@ -1,13 +1,12 @@
-package org.dhis2.maps.layer
+package org.dhis2.maps.layer.basemaps
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.mapbox.mapboxsdk.maps.Style
-import org.dhis2.maps.R
 import org.dhis2.maps.databinding.BasemapItemBinding
+import org.dhis2.maps.layer.MapLayerManager
 
 class BasemapAdapter(val mapLayerManager: MapLayerManager) :
     ListAdapter<BaseMap, BaseMapHolder>(object : DiffUtil.ItemCallback<BaseMap>() {
@@ -19,28 +18,10 @@ class BasemapAdapter(val mapLayerManager: MapLayerManager) :
             return oldItem == newItem
         }
     }) {
-    private val currentStyle = ObservableField<BaseMapType>(BaseMapType.STREET)
+    private val currentStyle = ObservableInt(mapLayerManager.currentStylePosition)
 
     init {
-        submitList(
-            arrayListOf(
-                BaseMap(
-                    BaseMapType.STREET,
-                    R.string.dialog_layer_street_base_map,
-                    R.drawable.street_map_preview
-                ),
-                BaseMap(
-                    BaseMapType.SATELLITE,
-                    R.string.dialog_layer_satellite_base_map,
-                    R.drawable.satellite_map_preview
-                )
-            )
-        )
-
-        when (mapLayerManager.currentStyle) {
-            Style.MAPBOX_STREETS -> currentStyle.set(BaseMapType.STREET)
-            Style.SATELLITE_STREETS -> currentStyle.set(BaseMapType.SATELLITE)
-        }
+        submitList(mapLayerManager.baseMapManager.getBaseMaps())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMapHolder {
