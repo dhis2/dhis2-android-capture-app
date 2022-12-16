@@ -40,6 +40,9 @@ abstract class BaseTeiViewHolder(
             hideAttributeList()
         }
 
+        System.out.println("what what what ||||| ");
+        System.out.println(teiModel.attributeValues.keys);
+
         binding.apply {
             overdue = teiModel.isHasOverdue
             isOnline = teiModel.isOnline

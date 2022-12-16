@@ -346,7 +346,7 @@ class ProgramEventDetailActivity :
                 EventCaptureActivity::class.java,
 
                 // TODO: remove empty strings
-                EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK, "", ""),
+                EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK, "", "", null),
                 false, false, null
         )
     }

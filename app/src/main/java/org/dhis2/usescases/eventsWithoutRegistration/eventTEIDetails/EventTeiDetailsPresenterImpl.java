@@ -222,6 +222,7 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
             view.setEnrollmentData(null, null);
         }
 
+
         compositeDisposable.add(
                 Single.zip(
                                 teiDataRepository.getTrackedEntityInstance(),
@@ -231,6 +232,7 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 teiAndOrgUnit ->
+
                                         view.setTrackedEntityInstance(
                                                 teiAndOrgUnit.val0(),
                                                 teiAndOrgUnit.val1()),
@@ -396,7 +398,7 @@ public class EventTeiDetailsPresenterImpl implements EventTeiDetailsContracts.Pr
 
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
-            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid));
+            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid, null));
             view.openEventCapture(intent);
         } else {
             Event event = d2.eventModule().events().uid(uid).blockingGet();

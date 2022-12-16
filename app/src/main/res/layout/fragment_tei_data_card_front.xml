@@ -61,17 +61,10 @@
             android:id="@+id/detailsButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/data_layout">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_person" />
-        </androidx.compose.ui.platform.ComposeView>
+            app:layout_constraintTop_toBottomOf="@id/data_layout"
+            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/follow_up"
@@ -153,26 +146,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) + " "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
+                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                 android:textColor="@color/text_black_4d4d4d"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/tei_image"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Sarah Thompson" />
-
-            <!--            <TextView-->
-            <!--                android:id="@+id/secundary_attribute"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginStart="10dp"-->
-            <!--                android:text='@{enrollment.uid == "v1jyKHLihZH"? "Joe" : enrollment.uid == "zoXYkDFPRFc"? "knut" : enrollment.uid == "jc1ji9YHIXF"? "25" : dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'-->
-            <!--                android:textColor="@color/text_black_333"-->
-            <!--                android:textSize="12sp"-->
-            <!--                android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"-->
-            <!--                app:layout_constraintStart_toEndOf="@id/tei_image"-->
-            <!--                app:layout_constraintTop_toBottomOf="@id/main_attributes"-->
-            <!--                tools:text="26dp" />-->
 
             <TextView
                 android:id="@+id/secundary_attribute"

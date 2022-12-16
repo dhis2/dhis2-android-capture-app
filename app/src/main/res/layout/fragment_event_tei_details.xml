@@ -18,6 +18,10 @@
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
         <variable
+            name="attributeValues"
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
+
+        <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
 
@@ -33,6 +37,10 @@
         <variable
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="attributeNames"
+            type="java.util.Set&lt;String&gt;" />
 
         <variable
             name="isGrouping"
@@ -64,31 +72,38 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <include
-                    android:id="@+id/card_front"
-                    layout="@layout/fragment_tei_data_card_front"
-                    app:dashboardModel="@{dashboardModel}"
-                    app:enrollment="@{enrollment}"
-                    app:followup="@{followup}"
-                    app:presenter="@{presenter}"
-                    app:program="@{program}"
-                    app:trackEntity="@{trackEntity}" />
-
                 <!--                <include-->
                 <!--                    android:id="@+id/card_front"-->
-                <!--                    layout="@layout/item_search_tracked_entity"-->
-                <!--                    app:followUp="@{true}"-->
-                <!--                    app:isOnline="@{true}"-->
-                <!--                    app:teiSyncState="@{trackEntity.syncState()}"-->
-                <!--                    app:attribute="@{trackEntity.trackedEntityAttributeValues()}"-->
-                <!--                    app:attributeNames="@{}"-->
-                <!--                    app:overdue="@{true}"-->
-                <!--                    app:sortingValue="@{}"-->
-                <!--                    app:attributeListOpened="@{true}"-->
-                <!--                    app:orgUnit="Cardinal Hospital Gatewey PHC"/>-->
-<!--                <include-->
-                <!--                    android:id="@+id/card_front"-->
-                <!--                    layout="@layout/item_search_tracked_entity" />-->
+                <!--                    layout="@layout/fragment_tei_data_card_front"-->
+                <!--                    app:dashboardModel="@{dashboardModel}"-->
+                <!--                    app:enrollment="@{enrollment}"-->
+                <!--                    app:followup="@{followup}"-->
+                <!--                    app:presenter="@{presenter}"-->
+                <!--                    app:program="@{program}"-->
+                <!--                    app:trackEntity="@{trackEntity}" />-->
+
+                <!--                                <include-->
+                <!--                                    android:id="@+id/card_front"-->
+                <!--                                    layout="@layout/item_search_tracked_entity"-->
+                <!--                                    app:followUp="@{true}"-->
+                <!--                                    app:isOnline="@{true}"-->
+                <!--                                    app:teiSyncState="@{trackEntity.syncState()}"-->
+                <!--                                    app:attribute="@{trackEntity.trackedEntityAttributeValues()}"-->
+                <!--                                    app:attributeNames="@{}"-->
+                <!--                                    app:overdue="@{true}"-->
+                <!--                                    app:sortingValue="@{}"-->
+                <!--                                    app:attributeListOpened="@{true}"-->
+                <!--                                    app:orgUnit="Cardinal Hospital Gatewey PHC"/>-->
+                <include
+                    android:id="@+id/card_front"
+                    layout="@layout/item_search_tracked_entity"
+                    app:followUp="@{enrollment.followUp()}"
+                    app:overdue="@{false}"
+                    app:teiSyncState="@{trackEntity.syncState()}"
+                    app:attribute="@{attributeValues}"
+                    app:attributeListOpened="@{false}"
+                    app:attributeNames="@{attributeNames}"
+                    app:orgUnit='@{"Cardinal Hospital Gatewey PHC"}'/>
             </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView

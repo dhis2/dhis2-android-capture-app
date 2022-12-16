@@ -46,7 +46,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-         <LinearLayout
+        <LinearLayout
             android:id="@+id/cardLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,15 +126,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
-    <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
-        android:id="@+id/dialFabLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_extra_bottom_margin="@{16}"
-        app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
+            android:id="@+id/dialFabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_extra_bottom_margin="@{16}"
+            app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
+        </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

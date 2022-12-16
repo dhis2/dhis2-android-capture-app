@@ -204,7 +204,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             eventUid,
                             presenter.getProgram().uid(),
                             EventMode.CHECK,
-                            "", ""
+                            "", "", null
                     )
             )
             eventCreationIntent.putExtra(

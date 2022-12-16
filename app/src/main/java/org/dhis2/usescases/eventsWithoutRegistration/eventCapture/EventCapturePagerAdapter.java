@@ -29,6 +29,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private final String programUid;
     private final String eventUid;
+    private final String teiUid;
+    private final String enrollmentUid;
+
+
     private final List<EventPageType> pages;
     private EventCaptureFormFragment formFragment;
 
@@ -66,12 +70,16 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String eventUid,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
-                                    boolean displayDataEntryScreen
+                                    boolean displayDataEntryScreen,
+                                    String teiUid,
+                                    String enrollmentUid
 
     ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
+        this.enrollmentUid = enrollmentUid;
+        this.teiUid = teiUid;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
 

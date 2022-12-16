@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.Date;
@@ -73,6 +74,8 @@ public class TEIDataContracts {
         void setEnrollmentData(Program program, Enrollment enrollment);
 
         void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit);
+
+        void setAttributeValues (List<TrackedEntityAttributeValue> attributeValues);
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 

@@ -24,6 +24,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class TeiDataRepositoryImpl(
@@ -77,6 +78,10 @@ class TeiDataRepositoryImpl(
 
     override fun getTrackedEntityInstance(): Single<TrackedEntityInstance> {
         return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
+    }
+
+    override fun getAttributeValues(teiUid: String): List<TrackedEntityAttributeValue> {
+        return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).blockingGet()
     }
 
     override fun enrollingOrgUnit(): Single<OrganisationUnit> {

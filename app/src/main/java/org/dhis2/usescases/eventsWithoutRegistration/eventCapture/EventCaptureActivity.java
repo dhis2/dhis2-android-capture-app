@@ -57,8 +57,11 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -87,14 +90,29 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private OnEditionListener onEditionListener;
     private EventCapturePagerAdapter adapter;
     private DashboardViewModel dashboardViewModel;
+    private Set<String> setOfAttributeNames;
 
-    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode, @NonNull String teiUid, @NonNull String enrollmentUid) {
+    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode, @Nullable String teiUid, @Nullable String enrollmentUid, @Nullable Set<String> attributeNames) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.PROGRAM_UID, programUid);
         bundle.putSerializable(Constants.EVENT_MODE, eventMode);
-        bundle.putString(Constants.TEI_UID, teiUid);
-        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+        if (teiUid != null) {
+            bundle.putString(Constants.TEI_UID, teiUid);
+        }
+
+        if (enrollmentUid != null) {
+
+            bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+        }
+
+        if (attributeNames != null) {
+
+            ArrayList<String> x = new ArrayList<>(attributeNames);
+
+            bundle.putStringArrayList("ATTRIBUTE_NAMES", x);
+        }
+
         return bundle;
     }
 
@@ -114,9 +132,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
 
+        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+
+
         System.out.println("#######################################################");
         System.out.println(teiUid);
         System.out.println(enrollmentUid);
+
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
 
@@ -142,7 +164,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
             getSupportFragmentManager().beginTransaction().replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid)).commitAllowingStateLoss();
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid)).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().replace(R.id.tei_column, EventTeiDetailsFragment.newInstance(programUid, teiUid, enrollmentUid, setOfAttributeNames)).commitAllowingStateLoss();
 
         }
 
@@ -163,7 +185,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             binding.eventViewLandPager.setUserInputEnabled(false);
             binding.eventViewLandPager.setAdapter(null);
 
-            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), false);
+            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), false, teiUid, enrollmentUid);
 
             binding.eventViewLandPager.setAdapter(this.adapter);
 
@@ -176,7 +198,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             binding.eventViewPager.setUserInputEnabled(false);
             binding.eventViewPager.setAdapter(null);
 
-            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true);
+            // TODO: refactor the null parameters passed
+            this.adapter = new EventCapturePagerAdapter(this, getIntent().getStringExtra(PROGRAM_UID), getIntent().getStringExtra(Constants.EVENT_UID), pageConfigurator.displayAnalytics(), pageConfigurator.displayRelationships(), true, null, null);
 
             binding.eventViewPager.setAdapter(this.adapter);
             binding.eventViewPager.setCurrentItem(binding.navigationBar.getInitialPage(), false);

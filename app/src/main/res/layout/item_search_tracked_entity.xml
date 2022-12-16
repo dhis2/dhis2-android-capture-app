@@ -42,6 +42,11 @@
         <variable
             name="orgUnit"
             type="String" />
+
+        <!--        TODO: remove custom implementation-->
+        <variable
+            name="customImplementation"
+            type="java.lang.Boolean" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -144,11 +149,11 @@
                 android:textColor="@color/textPrimary"
                 android:textSize="14sp"
                 android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@+id/infoLayout"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
-                app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
                 tools:text="Attribute 1:" />
@@ -166,15 +171,130 @@
                 android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@+id/infoLayout"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
-                app:layout_constrainedWidth="true"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
                 tools:text="Attribute 2:" />
+
+            <TextView
+                android:id="@+id/attribute_c_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="Family name"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 2 &amp;&amp; attributeListOpened &amp;&amp; customImplementation ? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.2"
+                tools:text="Attribute 3:" />
+
+            <TextView
+                android:id="@+id/attribute_d_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="Date of birth"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 3 &amp;&amp; attributeListOpened &amp;&amp; customImplementation? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.2"
+                tools:text="Attribute 4:" />
+
+            <TextView
+                android:id="@+id/attribute_e_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="Age"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 4 &amp;&amp; attributeListOpened &amp;&amp; customImplementation ? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_d_name"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.2"
+                tools:text="Attribute 5:" />
+
+            <TextView
+                android:id="@+id/attribute_f_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="Mobile number"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 5 &amp;&amp; attributeListOpened &amp;&amp; customImplementation ? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_e_name"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.2"
+                tools:text="Attribute 6:" />
+
+            <TextView
+                android:id="@+id/attribute_g_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text="Woman wants to receive reminders during pregnancy"
+                android:textColor="@color/textPrimary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 6 &amp;&amp; attributeListOpened &amp;&amp; customImplementation? View.VISIBLE : View.GONE}'
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/infoLayout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_f_name"
+                app:layout_constraintWidth_max="wrap"
+                app:layout_constraintWidth_percent="0.2"
+                tools:text="Attribute 7:" />
 
             <TextView
                 android:id="@+id/enrolled_orgUnit"
@@ -188,7 +308,7 @@
                 android:textColor="@color/textPrimary"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                app:layout_constraintTop_toBottomOf="@id/attribute_g_name"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.2"
                 tools:text="Attribute 3:" />
@@ -239,11 +359,106 @@
                 android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                 android:textColor="@color/textSecondary"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 2 &amp;&amp; attribute.get(2) != null ? attribute.get(2).value() : "" , default="attribute 3"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 2 &amp;&amp; attributeListOpened &amp;&amp; customImplementation? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_c_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
+            <TextView
+                android:id="@+id/entity_attribute_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 3 &amp;&amp; attribute.get(3) != null ? attribute.get(3).value() : "" , default="attribute 4"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:visibility='@{customImplementation &amp;&amp; attribute.size() > 3 &amp;&amp; attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_d_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3" />
+
+            <TextView
+                android:id="@+id/entity_attribute_5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 4 &amp;&amp; attribute.get(4) != null ? attribute.get(4).value() : "" , default="attribute 5"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:visibility='@{customImplementation &amp;&amp; attribute.size() > 4 &amp;&amp; attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_e_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_4" />
+
+            <TextView
+                android:id="@+id/entity_attribute_6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 5 &amp;&amp; attribute.get(5) != null ? attribute.get(5).value() : "" , default="attribute 6"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:visibility='@{customImplementation &amp;&amp; attribute.size() > 5 &amp;&amp; attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_f_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_5" />
+
+            <TextView
+                android:id="@+id/entity_attribute_7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
+                android:text='@{attribute.size() > 6 &amp;&amp; attribute.get(6) != null ? attribute.get(6).value() : "" , default="attribute 7"}'
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:visibility='@{customImplementation &amp;&amp; attribute.size() > 6 &amp;&amp; attributeListOpened ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/attribute_g_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_6" />
+
 
             <TextView
                 android:id="@+id/entity_orgUnit"
@@ -259,7 +474,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/infoLayout"
                 app:layout_constraintStart_toEndOf="@id/enrolled_orgUnit"
-                app:layout_constraintTop_toBottomOf="@id/entity_attribute_2"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_7"
                 tools:text="attribute 3" />
 
             <TextView
@@ -353,9 +568,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                app:layout_constraintTop_toBottomOf="@id/attributeList"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/attributeList">
 
                 <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/compose_program_list"
@@ -364,7 +579,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/showAttributesButton"/>
+                    app:layout_constraintEnd_toStartOf="@id/showAttributesButton" />
 
                 <ImageView
                     android:id="@+id/showAttributesButton"
@@ -372,10 +587,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginTop="2dp"
-                    android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="@{attributeNames.size()>3 ? View.VISIBLE:View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_arrow_down"
                     app:tint="#61333333" />
             </androidx.constraintlayout.widget.ConstraintLayout>

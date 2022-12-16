@@ -61,13 +61,16 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -128,13 +131,17 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     private DashboardProgramModel dashboardModel;
     private EventCaptureActivity activity;
     private PopupMenu popupMenu;
+    private Set<String> attributeNames;
 
-    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
+    public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, Set<String> attributeNames) {
         EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
         Bundle args = new Bundle();
         args.putString("PROGRAM_UID", programUid);
         args.putString("TEI_UID", teiUid);
         args.putString("ENROLLMENT_UID", enrollmentUid);
+        ArrayList<String> x = new ArrayList<>(attributeNames);
+        args.putStringArrayList("ATTRIBUTE_NAMES", x);
+
         fragment.setArguments(args);
 
         return fragment;
@@ -143,12 +150,15 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void onAttach(@NotNull Context context) {
 
+        this.attributeNames = new HashSet<>(getArguments().getStringArrayList("ATTRIBUTE_NAMES"));
+
         System.out.println("this component???????? :::::");
         System.out.println(getArguments().getString("PROGRAM_UID"));
         System.out.println(getArguments().getString("TEI_UID"));
         System.out.println(getArguments().getString("ENROLLMENT_UID"));
         System.out.println(((App) context.getApplicationContext())
                 .dashboardComponent());
+        System.out.println(this.attributeNames);
 
         super.onAttach(context);
         this.context = context;
@@ -186,6 +196,22 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //        });
 //        activity.observeFilters().observe(getViewLifecycleOwner(), this::showHideFilters);
 //        activity.updatedEnrollment().observe(getViewLifecycleOwner(), this::updateEnrollment);
+
+        binding.cardFront.showAttributesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("i got clicked");
+
+
+                binding.cardFront.setAttributeListOpened(!binding.cardFront.getAttributeListOpened());
+
+                if (binding.cardFront.getAttributeListOpened() == true) {
+                    binding.cardFront.showAttributesButton.setImageResource(R.drawable.ic_arrow_up);
+                } else {
+                    binding.cardFront.showAttributesButton.setImageResource(R.drawable.ic_arrow_down);
+                }
+            }
+        });
 
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -265,6 +291,48 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
     @Override
+    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
+
+        System.out.println("setting attr vals");
+        System.out.println(attributeValues);
+
+        binding.cardFront.setCustomImplementation(true);
+
+        List<TrackedEntityAttributeValue> attributeValuesToSet = new ArrayList<>();
+
+        // TODO:
+        List<String> attributesUids = new ArrayList<>();
+        attributesUids.add("PpEGiQurAll");
+        attributesUids.add("TfdH5KvFmMy");
+        attributesUids.add("aW66s2QSosT");
+        attributesUids.add("gHGyrwKPzej");
+        attributesUids.add("Rv8WM2mTuS5");
+        attributesUids.add("ciCR6BBvIT4");
+        attributesUids.add("qJdyXIggXXJ");
+
+
+        for (String attributeUid : attributesUids) {
+            attributeValuesToSet.add(getMatchingAttriburteValue(attributeValues, attributeUid));
+        }
+
+        binding.setAttributeValues(attributeValuesToSet);
+
+
+    }
+
+    public TrackedEntityAttributeValue getMatchingAttriburteValue(List<TrackedEntityAttributeValue> attributeValues, String attributeUid) {
+        for (TrackedEntityAttributeValue attributeValue : attributeValues) {
+            if (attributeValue.trackedEntityAttribute().equals(attributeUid)) {
+                return attributeValue;
+            }
+        }
+        return null;
+    }
+
+    ;
+
+
+    @Override
     public void setEnrollmentData(Program program, Enrollment enrollment) {
         if (adapter != null) {
             adapter.setEnrollment(enrollment);
@@ -279,8 +347,14 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit) {
+
+        System.out.println("checking for tei attr values");
+        System.out.println(trackedEntityInstance);
+        System.out.println(trackedEntityInstance.trackedEntityAttributeValues());
+
         binding.setTrackEntity(trackedEntityInstance);
-        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
+        binding.setAttributeNames(attributeNames);
+//        binding.cardFront.orgUnit.setText(organisationUnit.displayName());
     }
 
     public void setData(DashboardProgramModel nprogram) {
@@ -315,6 +389,8 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 //        );
 
         binding.executePendingBindings();
+
+        System.out.println(dashboardModel.getTrackedEntityAttributeValues());
 
         if (getSharedPreferences().getString(PREF_COMPLETED_EVENT, null) != null) {
             presenter.displayGenerateEvent(getSharedPreferences().getString(PREF_COMPLETED_EVENT, null));
@@ -562,9 +638,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     @Override
     public void showTeiImage(String filePath, String defaultIcon) {
         if (filePath.isEmpty() && defaultIcon.isEmpty()) {
-            binding.cardFront.teiImage.setVisibility(View.GONE);
+//            binding.cardFront.teiImage.setVisibility(View.GONE);
         } else {
-            binding.cardFront.teiImage.setVisibility(View.VISIBLE);
+//            binding.cardFront.teiImage.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(new File(filePath))
                     .error(

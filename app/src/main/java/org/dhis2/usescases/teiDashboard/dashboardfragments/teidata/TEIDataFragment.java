@@ -57,6 +57,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.jetbrains.annotations.NotNull;
 
@@ -264,6 +265,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit) {
         binding.setTrackEntity(trackedEntityInstance);
         binding.cardFront.orgUnit.setText(organisationUnit.displayName());
+    }
+
+    @Override
+    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
+
     }
 
     public void setData(DashboardProgramModel nprogram) {

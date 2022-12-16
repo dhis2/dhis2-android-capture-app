@@ -263,7 +263,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         // TODO: remove empty strings
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, "", ""));
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, "", "", null));
         startActivity(intent);
         finish();
     }

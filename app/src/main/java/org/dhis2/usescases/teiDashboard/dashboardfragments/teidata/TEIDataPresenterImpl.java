@@ -41,12 +41,16 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.rules.models.RuleEffect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -152,9 +156,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         if (programUid != null) {
 
             Flowable<StageSection> sectionFlowable = view.observeStageSelection(
-                    d2.programModule().programs().uid(programUid).blockingGet(),
-                    d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-            )
+                            d2.programModule().programs().uid(programUid).blockingGet(),
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+                    )
                     .startWith(new StageSection("", false))
                     .map(selectedStage -> {
                         currentStage = selectedStage.getStageUid().equals(currentStage) && !selectedStage.getShowOptions() ? "" : selectedStage.getStageUid();
@@ -166,11 +170,11 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             compositeDisposable.add(
                     Flowable.combineLatest(
-                            filterManager.asFlowable().startWith(filterManager),
-                            sectionFlowable,
-                            groupingFlowable,
-                            Trio::create)
-                            .doOnNext(data-> TeiDataIdlingResourceSingleton.INSTANCE.increment())
+                                    filterManager.asFlowable().startWith(filterManager),
+                                    sectionFlowable,
+                                    groupingFlowable,
+                                    Trio::create)
+                            .doOnNext(data -> TeiDataIdlingResourceSingleton.INSTANCE.increment())
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
@@ -204,9 +208,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             compositeDisposable.add(
                     Single.zip(
-                            teiDataRepository.getEnrollment(),
-                            teiDataRepository.getEnrollmentProgram(),
-                            Pair::create)
+                                    teiDataRepository.getEnrollment(),
+                                    teiDataRepository.getEnrollmentProgram(),
+                                    Pair::create)
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
@@ -218,18 +222,25 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             view.setEnrollmentData(null, null);
         }
 
+        System.out.println("this gets executed??");
+
+        view.setAttributeValues(teiDataRepository.getAttributeValues(teiUid));
+
         compositeDisposable.add(
                 Single.zip(
-                        teiDataRepository.getTrackedEntityInstance(),
-                        teiDataRepository.enrollingOrgUnit(),
-                        Pair::create)
+                                teiDataRepository.getTrackedEntityInstance(),
+                                teiDataRepository.enrollingOrgUnit(),
+//                                teiDataRepository.getAttributeValues(teiUid),
+                                Pair::create)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 teiAndOrgUnit ->
                                         view.setTrackedEntityInstance(
                                                 teiAndOrgUnit.val0(),
-                                                teiAndOrgUnit.val1()),
+                                                teiAndOrgUnit.val1()
+//                                                teiAndOrgUnit.val2()
+                                        ),
                                 Timber::e
                         )
         );
@@ -387,12 +398,57 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
 
-        System.out.println("############### what is happening");
-        System.out.println(enrollmentUid);
+        List<ProgramTrackedEntityAttribute> attributes = dashboardRepository.getProgramTrackedEntityAttributes(programUid).blockingFirst();
+
+        System.out.println("attribures hereree???");
+        System.out.println(attributes);
+
+        List<String> listOfAttributeNames = new ArrayList<>();
+
+        for (ProgramTrackedEntityAttribute attribute : attributes) {
+            String[] x = attribute.displayName().split("Mother program ");
+            String y;
+
+            if(x.length > 1){
+                y = x[1];
+            }else{
+                y = x[0];
+            }
+
+            x = y.split("ANC.A7. ");
+
+            if(x.length > 1){
+                y = x[1];
+            }else{
+                y = x[0];
+            }
+
+            listOfAttributeNames.add(y);
+        }
+
+        revlist(listOfAttributeNames);
+
+        // TODO: Softcode arrangement of attribute names to use fetched attributenames
+        List<String> f = new ArrayList<>();
+        f.add("Unique ID");
+        f.add("Given name");
+        f.add("Family name");
+        f.add("Date of birth");
+        f.add("Age");
+        f.add("Mobile number");
+        f.add("Woman wants to receive reminders during pregnancy");
+
+
+
+//        Set<String> attributeNames = new HashSet<>(listOfAttributeNames);
+        Set<String> attributeNames = new HashSet<>(f);
+
+        System.out.println("do i get the attributes?");
+        System.out.println(attributeNames);
 
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
-            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid));
+            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid, EventMode.CHECK, teiUid, enrollmentUid, attributeNames));
             view.openEventCapture(intent);
         } else {
             Event event = d2.eventModule().events().uid(uid).blockingGet();
@@ -403,6 +459,26 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             view.openEventInitial(intent);
         }
     }
+
+    public static <T> void revlist(List<T> list)
+    {
+        // base condition when the list size is 0
+        if (list.size() <= 1 || list == null)
+            return;
+
+
+        T value = list.remove(0);
+
+        // call the recursive function to reverse
+        // the list after removing the first element
+        revlist(list);
+
+        // now after the rest of the list has been
+        // reversed by the upper recursive call,
+        // add the first value at the end
+        list.add(value);
+    }
+
 
     @Override
     public void setDashboardProgram(DashboardProgramModel dashboardModel) {
