@@ -92,6 +92,57 @@ class TeiDataRepositoryImpl(
             }
     }
 
+    override fun eventsWithoutCatCombo(): Single<List<EventViewModel>> {
+        return getEnrollmentProgram()
+            .flatMap { program ->
+                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get()
+            }
+            .flatMap { categoryCombo ->
+                if (categoryCombo.isDefault == true) {
+                    Single.just(emptyList())
+                } else {
+                    val defaultCatOptCombo = d2.categoryModule().categoryOptionCombos()
+                        .byDisplayName().eq("default")
+                        .one()
+                        .blockingGet()
+                    val eventsWithDefaultCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().eq(defaultCatOptCombo.uid())
+                        .get()
+                    val eventsWithNoCatCombo = d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollmentUid)
+                        .byAttributeOptionComboUid().isNull
+                        .get()
+                    val eventSource = Single.zip(eventsWithDefaultCatCombo, eventsWithNoCatCombo) { sourceA, sourceB ->
+                        mutableListOf<Event>().apply {
+                            addAll(sourceA)
+                            addAll(sourceB)
+                        }
+                    }
+                    return@flatMap eventSource.map { events ->
+                        events.map {
+                            val stage = d2.programModule().programStages()
+                                .uid(it.programStage())
+                                .blockingGet()
+                            EventViewModel(
+                                type = EventViewModelType.EVENT,
+                                stage = stage,
+                                event = it,
+                                eventCount = 0,
+                                lastUpdate = null,
+                                isSelected = false,
+                                canAddNewEvent = false,
+                                orgUnitName = it.organisationUnit()!!,
+                                catComboName = null,
+                                dataElementValues = null,
+                                displayDate = null
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
