@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
@@ -975,7 +976,9 @@ fun VerticalResizingRule(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
-                        onHeaderResize(offsetX)
+                        if (abs(offsetX) > minOffset) {
+                            onHeaderResize(offsetX)
+                        }
                         offsetX = minOffset
                         onResizing(null)
                     }
