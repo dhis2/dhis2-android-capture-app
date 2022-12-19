@@ -64,7 +64,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -605,7 +607,23 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
 
+        // TODO: fetch and softcode thw attribute names
+
+        ArrayList<String> f = new ArrayList<>();
+        f.add("Unique ID");
+        f.add("Given name");
+        f.add("Family name");
+        f.add("Date of birth");
+        f.add("Age");
+        f.add("Mobile number");
+        f.add("Woman wants to receive reminders during pregnancy");
+
+//        Set<String> attributeNames = new HashSet<>(listOfAttributeNames);
+        Set<String> attributeNames = new HashSet<>(f);
+
         System.out.println("event initial class");
+        System.out.println("enr :: " + dashboardModel.getCurrentEnrollment().uid());
+        System.out.println("tei :: " + dashboardModel.getTei().uid());
 
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
@@ -614,6 +632,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
             bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
         }
+
+        bundle.putStringArrayList("ATTRIBUTE_NAMES", f);
         bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());

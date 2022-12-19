@@ -226,8 +226,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 stage.uid(),
                 event.enrollment(),
                 stage.standardInterval() ?: 0,
-                presenter.getEnrollment().status()
-        )
+                presenter.getEnrollment().status(),
+        null)
         startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
         finish()
     }

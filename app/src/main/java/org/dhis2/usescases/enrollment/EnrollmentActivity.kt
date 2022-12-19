@@ -179,6 +179,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
+
+        // TODO: crosscheck passing null attribute names
         if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
                     presenter.getProgram().uid(),
@@ -190,7 +192,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     presenter.getEventStage(eventUid),
                     presenter.getEnrollment()!!.uid(),
                     0,
-                    presenter.getEnrollment()!!.status()
+                    presenter.getEnrollment()!!.status(),
+                    null
             )
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)

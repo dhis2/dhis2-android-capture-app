@@ -48,7 +48,10 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -78,6 +81,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Program program;
     private Boolean accessData;
     private EventDetails eventDetails = new EventDetails();
+    private Set<String> setOfAttributeNames;
 
     private final CompositeDisposable disposable = new CompositeDisposable();
 
@@ -85,7 +89,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
-                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
+                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus, @Nullable ArrayList<String> attributeNames) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventUid);
@@ -97,10 +101,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
         bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
+        System.out.println("hiiiiiii");
+        if (attributeNames != null) {
+            bundle.putStringArrayList("ATTRIBUTE_NAMES", attributeNames);
+        }
+
         return bundle;
     }
 
     private void initVariables() {
+        System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeeee");
+        System.out.println(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
+
         programUid = getIntent().getStringExtra(PROGRAM_UID);
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
@@ -113,6 +125,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
     }
 
     @Override
@@ -263,7 +276,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         // TODO: remove empty strings
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, "", "", null));
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK, getTrackedEntityInstance, enrollmentUid, setOfAttributeNames));
         startActivity(intent);
         finish();
     }

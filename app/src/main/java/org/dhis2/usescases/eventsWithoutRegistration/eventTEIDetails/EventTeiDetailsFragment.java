@@ -132,6 +132,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     private EventCaptureActivity activity;
     private PopupMenu popupMenu;
     private Set<String> attributeNames;
+    String teiUid;
+    String programUid;
+    String enrollmentUid;
 
     public static EventTeiDetailsFragment newInstance(String programUid, String teiUid, String enrollmentUid, Set<String> attributeNames) {
         EventTeiDetailsFragment fragment = new EventTeiDetailsFragment();
@@ -151,14 +154,9 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void onAttach(@NotNull Context context) {
 
         this.attributeNames = new HashSet<>(getArguments().getStringArrayList("ATTRIBUTE_NAMES"));
-
-        System.out.println("this component???????? :::::");
-        System.out.println(getArguments().getString("PROGRAM_UID"));
-        System.out.println(getArguments().getString("TEI_UID"));
-        System.out.println(getArguments().getString("ENROLLMENT_UID"));
-        System.out.println(((App) context.getApplicationContext())
-                .dashboardComponent());
-        System.out.println(this.attributeNames);
+        this.teiUid = getArguments().getString("TEI_UID");
+        this.enrollmentUid = getArguments().getString("ENROLLMENT_UID");
+        this.programUid = getArguments().getString("PROGRAM_UID");
 
         super.onAttach(context);
         this.context = context;
@@ -269,14 +267,7 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     public void onResume() {
         super.onResume();
 
-        System.out.println("EVENT TEI DATA : onResume()");
-
         presenter.init();
-        System.out.println(dashboardModel);
-        System.out.println(dashboardViewModel);
-        System.out.println(dashboardViewModel.dashboardModel());
-        System.out.println(dashboardViewModel.eventUid());
-
 
         dashboardViewModel.dashboardModel().observe(this, this::setData);
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
@@ -292,9 +283,6 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
 
     @Override
     public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
-
-        System.out.println("setting attr vals");
-        System.out.println(attributeValues);
 
         binding.cardFront.setCustomImplementation(true);
 
@@ -690,14 +678,29 @@ public class EventTeiDetailsFragment extends FragmentGlobalAbstract implements T
     }
 
     private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
+
+        System.out.println("event initial class on new fragment");
+
         Intent intent = new Intent(activity, EventInitialActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());
-        bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
-        if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
-            bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+        bundle.putString(PROGRAM_UID, this.programUid);
+        bundle.putString(TRACKED_ENTITY_INSTANCE, this.teiUid);
+        //        if (presenter.enrollmentOrgUnitInCaptureScope(dashboardModel.getCurrentOrgUnit().uid())) {
+        //            bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+        //        }
+        // TODO: remove hardcoded ous
+        if (presenter.enrollmentOrgUnitInCaptureScope("V5XvX1wr1kF")) {
+            bundle.putString(ORG_UNIT, "V5XvX1wr1kF");
         }
-        bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
+        if (attributeNames != null) {
+
+            System.out.println("hellooooooo");
+            System.out.println(attributeNames);
+            ArrayList<String> x = new ArrayList<>(attributeNames);
+
+            bundle.putStringArrayList("ATTRIBUTE_NAMES", x);
+        }
+        bundle.putString(ENROLLMENT_UID, this.enrollmentUid);
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());
         bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType());

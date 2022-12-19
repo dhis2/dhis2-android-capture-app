@@ -276,6 +276,7 @@ class ProgramEventDetailActivity :
     override fun startNewEvent() {
         analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
         binding.addEventButton.isEnabled = false
+        // TODO: check passing attribute names null
         val bundle = EventInitialActivity.getBundle(
                 programUid,
                 null,
@@ -286,6 +287,7 @@ class ProgramEventDetailActivity :
                 presenter.stageUid,
                 null,
                 0,
+                null,
                 null
         )
         startActivity(

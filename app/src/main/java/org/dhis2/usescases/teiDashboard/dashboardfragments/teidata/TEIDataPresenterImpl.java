@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -409,17 +410,17 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             String[] x = attribute.displayName().split("Mother program ");
             String y;
 
-            if(x.length > 1){
+            if (x.length > 1) {
                 y = x[1];
-            }else{
+            } else {
                 y = x[0];
             }
 
             x = y.split("ANC.A7. ");
 
-            if(x.length > 1){
+            if (x.length > 1) {
                 y = x[1];
-            }else{
+            } else {
                 y = x[0];
             }
 
@@ -439,7 +440,6 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         f.add("Woman wants to receive reminders during pregnancy");
 
 
-
 //        Set<String> attributeNames = new HashSet<>(listOfAttributeNames);
         Set<String> attributeNames = new HashSet<>(f);
 
@@ -453,15 +453,25 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         } else {
             Event event = d2.eventModule().events().uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
+
+            ArrayList<String> x = null;
+            if (attributeNames != null) {
+
+                System.out.println("hellooooooo");
+                System.out.println(attributeNames);
+                x = new ArrayList<>(attributeNames);
+
+            }
+
+
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()
+                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status(), x
             ));
             view.openEventInitial(intent);
         }
     }
 
-    public static <T> void revlist(List<T> list)
-    {
+    public static <T> void revlist(List<T> list) {
         // base condition when the list size is 0
         if (list.size() <= 1 || list == null)
             return;

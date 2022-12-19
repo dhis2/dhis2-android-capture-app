@@ -468,7 +468,7 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="5dp"
                 android:ellipsize="end"
-                android:singleLine="true"
+                android:singleLine="false"
                 android:text='@{orgUnit}'
                 android:textColor="@color/textSecondary"
                 android:textSize="12sp"
@@ -561,7 +561,7 @@
                 app:layout_constraintBottom_toTopOf="@id/actionLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+                app:layout_constraintTop_toBottomOf="@id/sorting_field_name" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/actionLayout"

@@ -132,12 +132,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         programUid = getIntent().getStringExtra(Constants.PROGRAM_UID);
 
-        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
-
-
         System.out.println("#######################################################");
         System.out.println(teiUid);
         System.out.println(enrollmentUid);
+
+        setOfAttributeNames = new HashSet<>(getIntent().getStringArrayListExtra("ATTRIBUTE_NAMES"));
 
 
         eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(new EventCaptureModule(this, eventUid, OrientationUtilsKt.isPortrait(this)));
