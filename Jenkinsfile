@@ -74,13 +74,19 @@ pipeline {
     }
     post {
         success {
-            slackSend channel: '#android-capture-app-ci', color: 'good', message: '*Build Succeeded*\n'+ custom_msg()
+            sendNotification(env.GIT_BRANCH, '*Build Succeeded*\n', 'good')
         }
 
         failure {
-            slackSend channel: '#android-capture-app-ci', color:'bad', failOnError:true, message:'*Build Failed*\n'+ custom_msg()
+            sendNotification(env.GIT_BRANCH, '*Build Failed*\n', 'bad')
         }
     }
+}
+
+def sendNotification(String branch, String messagePrefix, String color){
+    if( !branch.startsWith('PR') ){
+       slackSend channel: '#android-capture-app-ci', color: color, message: messagePrefix+ custom_msg()
+   }
 }
 
 def custom_msg(){
