@@ -1,6 +1,7 @@
 package org.dhis2.maps.layer
 
 import android.graphics.Color
+import com.mapbox.mapboxsdk.constants.MapboxConstants.DEFAULT_FONT
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
@@ -52,6 +53,8 @@ fun SymbolLayer.withInitialVisibility(@VISIBILITY visibility: String): SymbolLay
 fun SymbolLayer.withDEIconAndTextProperties(): SymbolLayer = withProperties(
     PropertyFactory.iconImage("${EventMapManager.DE_ICON_ID}_$sourceId"),
     PropertyFactory.iconAllowOverlap(true),
+    PropertyFactory.textFont(arrayOf(DEFAULT_FONT)),
+    PropertyFactory.textColor(Color.BLACK),
     PropertyFactory.textField(Expression.get(MapCoordinateFieldToFeatureCollection.FIELD_NAME)),
     PropertyFactory.textAllowOverlap(false),
     PropertyFactory.textIgnorePlacement(true),
