@@ -698,6 +698,9 @@ fun DataTable(
                 onHeaderResize = { newValue ->
                     with(localDensity) {
                         dimensions = dimensions.updateHeaderWidth(newValue)
+                        tableInteractions.onRowHeaderSizeChanged(
+                            dimensions.defaultRowHeaderWidth.toDp().value
+                        )
                     }
                 }
             )
