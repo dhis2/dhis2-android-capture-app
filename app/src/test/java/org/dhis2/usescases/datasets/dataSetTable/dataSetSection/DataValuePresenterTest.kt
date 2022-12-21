@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.SortedMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -31,7 +32,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.SortedMap
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DataValuePresenterTest {
