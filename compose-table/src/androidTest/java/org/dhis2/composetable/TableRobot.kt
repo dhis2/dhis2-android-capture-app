@@ -165,6 +165,7 @@ class TableRobot(
 
     fun assertClickOnCellShouldOpenInputComponent(tableId: String,rowIndex: Int, columnIndex: Int) {
         clickOnCell(tableId, rowIndex, columnIndex)
+        composeTestRule.waitForIdle()
         assertInputComponentIsDisplayed()
     }
 
@@ -182,7 +183,9 @@ class TableRobot(
 
     fun assertClickOnSaveHidesKeyboardAndSaveValue(valueToType: String) {
         clearInput()
+        composeTestRule.waitForIdle()
         typeInput(valueToType)
+        composeTestRule.waitForIdle()
         clickOnAccept()
     }
 

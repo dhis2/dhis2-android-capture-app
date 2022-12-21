@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.maps.usecases.MapStyleConfiguration
 
 @Suppress("UNCHECKED_CAST")
 class SearchTeiViewModelFactory(
@@ -14,7 +15,8 @@ class SearchTeiViewModelFactory(
     private val initialQuery: MutableMap<String, String>?,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
+    private val mapStyleConfig: MapStyleConfiguration
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SearchTEIViewModel(
@@ -25,7 +27,8 @@ class SearchTeiViewModelFactory(
             searchNavPageConfigurator,
             mapDataRepository,
             networkUtils,
-            dispatchers
+            dispatchers,
+            mapStyleConfig
         ) as T
     }
 }

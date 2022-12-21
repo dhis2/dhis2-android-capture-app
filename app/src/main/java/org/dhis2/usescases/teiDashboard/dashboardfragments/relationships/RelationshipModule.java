@@ -1,17 +1,18 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
+import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
-import org.dhis2.animations.CarouselViewAnimations;
-import org.dhis2.commons.di.dagger.PerFragment;
-import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -45,7 +46,17 @@ public class RelationshipModule {
                                             SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
                                             MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection) {
-        return new RelationshipPresenter(view, d2, programUid, teiUid, eventUid, relationshipRepository, schedulerProvider, analyticsHelper, new MapRelationshipToRelationshipMapModel(), mapRelationshipsToFeatureCollection);
+        return new RelationshipPresenter(view,
+                d2,
+                programUid,
+                teiUid,
+                eventUid,
+                relationshipRepository,
+                schedulerProvider,
+                analyticsHelper,
+                new MapRelationshipToRelationshipMapModel(),
+                mapRelationshipsToFeatureCollection,
+                new MapStyleConfiguration(d2));
     }
 
     @Provides

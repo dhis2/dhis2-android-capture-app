@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_location">Pilih lokasi</string>
-    <string name="dialog_layer_street_base_map">Tampilan jalan</string>
-    <string name="dialog_layer_satellite_base_map">Citra satelit</string>
     <string name="action_apply">Terapkan</string>
     <string name="dialog_layer_satellite">Tampilkan citra satelit</string>
     <string name="dialog_layer_event">Tampilkan even</string>

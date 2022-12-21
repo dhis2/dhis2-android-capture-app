@@ -2,8 +2,12 @@
 <resources>
     <string name="select_location">Select location</string>
     <string name="map_layers">Map layers</string>
-    <string name="dialog_layer_street_base_map">Street view</string>
-    <string name="dialog_layer_satellite_base_map">Satellite view</string>
+    <string name="dialog_layer_base_map_osm_light">OSM Light</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Detailed</string>
+    <string name="dialog_layer_base_map_bing_road">Bing Road</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing Dark</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing Aerial</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Bing Aerial Labels</string>
     <string name="action_apply">Apply</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
     <string name="dialog_layer_event">Show events</string>

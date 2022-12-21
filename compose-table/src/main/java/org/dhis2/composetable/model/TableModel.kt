@@ -1,6 +1,5 @@
 package org.dhis2.composetable.model
 
-import androidx.compose.ui.unit.Dp
 import kotlinx.serialization.Serializable
 import org.dhis2.composetable.ui.SelectionState
 import org.dhis2.composetable.ui.TableSelection
@@ -121,7 +120,7 @@ data class RowHeader(
     val description: String? = null
 )
 
-data class HeaderMeasures(val width: Dp, val height: Dp)
+data class HeaderMeasures(val width: Int, val height: Int)
 
 fun TableModel.areAllValuesEmpty(): Boolean {
     this.tableRows.forEach { it ->

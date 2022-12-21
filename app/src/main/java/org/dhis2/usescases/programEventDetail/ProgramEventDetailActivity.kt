@@ -65,9 +65,15 @@ class ProgramEventDetailActivity :
     @Inject
     lateinit var networkUtils: NetworkUtils
 
+    @Inject
+    lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
+
     private var backDropActive = false
     private var programUid: String = ""
-    private val programEventsViewModel: ProgramEventDetailViewModel by viewModels()
+
+    private val programEventsViewModel: ProgramEventDetailViewModel by viewModels {
+        viewModelFactory
+    }
 
     var component: ProgramEventDetailComponent? = null
 

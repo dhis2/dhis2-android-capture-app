@@ -224,8 +224,10 @@ fun DataSetTableScreen(
             tableList = tableScreenState.tables,
             editable = true,
             tableColors = tableColors,
+            tableDimensions = TableTheme.dimensions.copy(
+                cellVerticalPadding = 11.dp
+            ),
             tableSelection = tableSelection,
-            inputIsOpen = bottomSheetState.bottomSheetState.isExpanded,
             tableInteractions = object : TableInteractions {
                 override fun onSelectionChange(newTableSelection: TableSelection) {
                     tableSelection = newTableSelection
