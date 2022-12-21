@@ -288,9 +288,7 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                defaultHeight = with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultCellHeight.toDp()
-                },
+                defaultHeight = TableTheme.dimensions.defaultCellHeight,
                 defaultWidth = with(LocalDensity.current) {
                     TableTheme.dimensions.defaultCellWidthWithExtraSize(
                         tableModel.tableHeaderModel.tableMaxColumns(),
@@ -351,11 +349,7 @@ fun ItemHeader(
 ) {
     Row(
         modifier = Modifier
-            .defaultMinSize(
-                minHeight = with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultCellHeight.toDp()
-                }
-            )
+            .defaultMinSize(minHeight = TableTheme.dimensions.defaultCellHeight)
             .width(width)
             .fillMaxHeight()
             .background(cellStyle.backgroundColor())
@@ -485,7 +479,9 @@ fun ItemValues(
                         0f,
                         0f,
                         TableTheme.dimensions.defaultCellWidth * 2f,
-                        TableTheme.dimensions.defaultCellHeight * 3f
+                        with(LocalDensity.current) {
+                            TableTheme.dimensions.defaultCellHeight.toPx() * 3
+                        }
                     )
                     coroutineScope.launch {
                         bringIntoViewRequester.bringIntoView(marginCoordinates)
