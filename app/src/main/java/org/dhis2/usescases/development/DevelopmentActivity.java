@@ -217,7 +217,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                                 BreakTheGlassBottomDialog.class.getName()));
     }
 
-    private void loadCrashControl(){
+    private void loadCrashControl() {
         binding.crashButton.setOnClickListener(view -> {
             throw new IllegalArgumentException("KA BOOOOOM!");
         });
@@ -230,9 +230,8 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
     }
 
     private void loadTable() {
-        binding.tableButton.setOnClickListener(view -> {
-            startActivity(TableTestActivity.class, null, false, false, null);
-        });
+        binding.tableButton.setOnClickListener(view ->
+                startActivity(TableTestActivity.class, null, false, false, null));
     }
 
     @Override
