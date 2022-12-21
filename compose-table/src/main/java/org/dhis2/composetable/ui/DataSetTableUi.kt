@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
+import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
@@ -258,8 +259,7 @@ fun TableItemRow(
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onClick: (TableCell) -> Unit,
-    onTextChange: (() -> String?)?
+    onClick: (TableCell) -> Unit
 ) {
     Column(
         Modifier
@@ -301,8 +301,7 @@ fun TableItemRow(
                 options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
-                onClick = onClick,
-                onTextChange = onTextChange
+                onClick = onClick
             )
         }
         if (!rowModel.isLastRow) {
@@ -432,8 +431,7 @@ fun ItemValues(
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
-    onClick: (TableCell) -> Unit,
-    onTextChange: (() -> String?)?
+    onClick: (TableCell) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -482,7 +480,7 @@ fun ItemValues(
                         )
                     },
                     onClick = onClick,
-                    onTextChange = if (isSelected) onTextChange else null
+                    onTextChange = if (isSelected) OnTextChange.current else null
                 )
                 if (isSelected) {
                     val marginCoordinates = Rect(
@@ -645,8 +643,7 @@ fun DataTable(
     tableColors: TableColors? = null,
     tableDimensions: TableDimensions = TableTheme.dimensions,
     tableSelection: TableSelection = TableSelection.Unselected(),
-    tableInteractions: TableInteractions = object : TableInteractions {},
-    onTextChange: (() -> String?)? = null
+    tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
     val localDensity = LocalDensity.current
     var tableTotalWidth by remember {
@@ -664,16 +661,14 @@ fun DataTable(
             TableItem(
                 tableModel = tableList.first(),
                 tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged,
-                onTextChange = onTextChange
+                onSizeChanged = onSizeChanged
             )
         } else if (editable) {
             TableList(
                 tableList = tableList,
                 tableSelection = tableSelection,
                 tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged,
-                onTextChange = onTextChange
+                onSizeChanged = onSizeChanged
             )
         }
     }
@@ -685,8 +680,7 @@ private fun TableList(
     tableList: List<TableModel>,
     tableSelection: TableSelection,
     tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit,
-    onTextChange: (() -> String?)?
+    onSizeChanged: (IntSize) -> Unit
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -834,8 +828,7 @@ private fun TableList(
                             )
                         )
                         tableInteractions.onClick(tableCell)
-                    },
-                    onTextChange = onTextChange
+                    }
                 )
                 if (tableRowModel.isLastRow) {
                     ExtendDivider(
@@ -911,8 +904,7 @@ fun ExtendDivider(
 fun TableItem(
     tableModel: TableModel,
     tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit,
-    onTextChange: (() -> String?)?
+    onSizeChanged: (IntSize) -> Unit
 ) {
     Column(
         Modifier
@@ -989,8 +981,7 @@ fun TableItem(
                 },
                 onRowHeaderClick = {},
                 onDecorationClick = { tableInteractions.onDecorationClick(it) },
-                onClick = { tableInteractions.onClick(it) },
-                onTextChange = onTextChange
+                onClick = { tableInteractions.onClick(it) }
             )
         }
     }
@@ -1085,8 +1076,7 @@ fun TableListPreview() {
         tableList = tableList,
         tableSelection = TableSelection.Unselected(),
         tableInteractions = object : TableInteractions {},
-        onSizeChanged = {},
-        onTextChange = null
+        onSizeChanged = {}
     )
 }
 

@@ -1,5 +1,6 @@
 package org.dhis2.composetable.model
 
+import androidx.compose.runtime.compositionLocalOf
 import kotlinx.serialization.Serializable
 import org.dhis2.composetable.ui.SelectionState
 import org.dhis2.composetable.ui.TableSelection
@@ -131,3 +132,5 @@ fun TableModel.areAllValuesEmpty(): Boolean {
     }
     return true
 }
+
+val OnTextChange = compositionLocalOf<() -> String?> { { "" } }
