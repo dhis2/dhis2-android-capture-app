@@ -1,6 +1,5 @@
 package org.dhis2.usescases.development;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -16,12 +15,11 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.commons.featureconfig.ui.FeatureConfigView;
+import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
-import org.hisp.dhis.android.core.D2Manager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,6 +50,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         loadBreakTheGlass();
         loadCrashControl();
         loadFeatureConfig();
+        loadTable();
     }
 
     private void loadAnalyticsDevTools() {
@@ -227,6 +226,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
     private void loadFeatureConfig() {
         binding.featureConfigButton.setOnClickListener(view -> {
             startActivity(FeatureConfigView.class, null, false, false, null);
+        });
+    }
+
+    private void loadTable() {
+        binding.tableButton.setOnClickListener(view -> {
+            startActivity(TableTestActivity.class, null, false, false, null);
         });
     }
 
