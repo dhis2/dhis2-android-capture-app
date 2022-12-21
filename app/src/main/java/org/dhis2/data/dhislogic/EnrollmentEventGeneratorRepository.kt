@@ -22,5 +22,6 @@ interface EnrollmentEventGeneratorRepository {
     ): String
 
     fun periodStartingDate(periodType: PeriodType, date: Date): Date
-    fun setEventDate(eventUid: String, isScheduled: Boolean, date: Date)
+    fun setEventDate(eventUid: String, date: Date)
+    fun setDueDate(eventUid: String, date: Date, isOverdue: Boolean)
 }

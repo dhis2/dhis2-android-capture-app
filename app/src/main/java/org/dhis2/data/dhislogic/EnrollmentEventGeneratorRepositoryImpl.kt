@@ -95,14 +95,20 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .startDate()!!
     }
 
-    override fun setEventDate(eventUid: String, isScheduled: Boolean, date: Date) {
+    override fun setEventDate(eventUid: String, date: Date) {
         val eventRepository = d2.eventModule().events().uid(eventUid)
+        eventRepository.setEventDate(date)
+    }
 
-        if (isScheduled) {
-            eventRepository.setDueDate(date)
-            eventRepository.setStatus(EventStatus.SCHEDULE)
-        } else {
-            eventRepository.setEventDate(date)
-        }
+    override fun setDueDate(eventUid: String, date: Date, isOverdue: Boolean) {
+        val eventRepository = d2.eventModule().events().uid(eventUid)
+        eventRepository.setDueDate(date)
+        eventRepository.setStatus(
+            if (isOverdue) {
+                EventStatus.OVERDUE
+            } else {
+                EventStatus.SCHEDULE
+            }
+        )
     }
 }
