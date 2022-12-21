@@ -4,17 +4,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.SortedMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.TableScreenState
@@ -34,6 +31,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.SortedMap
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DataValuePresenterTest {
@@ -93,40 +91,6 @@ class DataValuePresenterTest {
         val tableStateValue = presenter.currentState().value
         assertTrue(tableStateValue.tables.isNotEmpty())
         assertTrue(tableStateValue.tables.size == 2)
-    }
-
-    @Test
-    fun shouldUpdateStateOnValueChanged() = runTest {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn true
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
-    }
-
-    @Test
-    fun shouldNotUpdateStateOnValueChanged() {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn false
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel, times(0)).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
     }
 
     @Test

@@ -121,26 +121,6 @@ class DataValuePresenter(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun errors() = errors
 
-    fun onCellValueChanged(tableCell: TableCell) {
-        launch(dispatcherProvider.ui()) {
-            val updatedData = screenState.value.tables.map { tableModel ->
-                if (tableModel.hasCellWithId(tableCell.id)) {
-                    tableModel.copy(
-                        overwrittenValues = mapOf(
-                            Pair(tableCell.column!!, tableCell)
-                        )
-                    )
-                } else {
-                    tableModel
-                }
-            }
-
-            screenState.update { currentScreenState ->
-                currentScreenState.copy(tables = updatedData, false)
-            }
-        }
-    }
-
     /**
      * Returns an TextInputModel if the current cell requires text input, null otherwise.
      * TODO: Refactor once we migrate all other value types inputs to compose.

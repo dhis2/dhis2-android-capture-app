@@ -258,7 +258,8 @@ fun TableItemRow(
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onTextChange: (() -> String?)?
 ) {
     Column(
         Modifier
@@ -300,7 +301,8 @@ fun TableItemRow(
                 options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
-                onClick = onClick
+                onClick = onClick,
+                onTextChange = onTextChange
             )
         }
         if (!rowModel.isLastRow) {
@@ -430,7 +432,8 @@ fun ItemValues(
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onTextChange: (() -> String?)?
 ) {
     Row(
         modifier = Modifier
@@ -468,7 +471,7 @@ fun ItemValues(
                         )
                         .bringIntoViewRequester(bringIntoViewRequester)
                         .focusable(),
-                    cellValue = cellValue,
+                    cell = cellValue,
                     maxLines = maxLines,
                     options = options,
                     nonEditableCellLayer = {
@@ -478,7 +481,8 @@ fun ItemValues(
                             isCellEditable = cellValue.editable
                         )
                     },
-                    onClick = onClick
+                    onClick = onClick,
+                    onTextChange = if (isSelected) onTextChange else null
                 )
                 if (isSelected) {
                     val marginCoordinates = Rect(
@@ -499,26 +503,31 @@ fun ItemValues(
 @Composable
 fun TableCell(
     modifier: Modifier,
-    cellValue: TableCell,
+    cell: TableCell,
     maxLines: Int,
     options: List<String>,
     nonEditableCellLayer: @Composable
     () -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onTextChange: (() -> String?)? = null
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val cellValue = remember { mutableStateOf(cell.value) }
+    onTextChange?.let {
+        cellValue.value = it()
+    }
 
     CellLegendBox(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .clickable(cellValue.editable) {
+            .clickable(cell.editable) {
                 when {
                     options.isNotEmpty() -> setExpanded(true)
-                    else -> onClick(cellValue)
+                    else -> onClick(cell)
                 }
             },
-        legendColor = cellValue.legendColor?.let { Color(it) }
+        legendColor = cell.legendColor?.let { Color(it) }
     ) {
         nonEditableCellLayer()
         Text(
@@ -537,8 +546,8 @@ fun TableCell(
                 fontSize = TableTheme.dimensions.defaultCellTextSize,
                 textAlign = TextAlign.End,
                 color = LocalTableColors.current.cellTextColor(
-                    hasError = cellValue.error != null,
-                    isEditable = cellValue.editable
+                    hasError = cell.error != null,
+                    isEditable = cell.editable
                 )
             )
         )
@@ -549,12 +558,12 @@ fun TableCell(
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
-                    onClick(cellValue.copy(value = it))
+                    onClick(cell.copy(value = it))
                 }
             )
         }
 
-        if (cellValue.mandatory == true) {
+        if (cell.mandatory == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_mandatory),
                 contentDescription = "mandatory",
@@ -565,15 +574,15 @@ fun TableCell(
                     .height(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cellValue.value?.isNotEmpty() == true
+                            cell.value?.isNotEmpty() == true
                         )
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue.value?.isNotEmpty() == true
+                    cell.value?.isNotEmpty() == true
                 )
             )
         }
-        if (cellValue.error != null) {
+        if (cell.error != null) {
             Divider(
                 modifier = Modifier
                     .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
@@ -636,7 +645,8 @@ fun DataTable(
     tableColors: TableColors? = null,
     tableDimensions: TableDimensions = TableTheme.dimensions,
     tableSelection: TableSelection = TableSelection.Unselected(),
-    tableInteractions: TableInteractions = object : TableInteractions {}
+    tableInteractions: TableInteractions = object : TableInteractions {},
+    onTextChange: (() -> String?)? = null
 ) {
     val localDensity = LocalDensity.current
     var tableTotalWidth by remember {
@@ -654,14 +664,16 @@ fun DataTable(
             TableItem(
                 tableModel = tableList.first(),
                 tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged
+                onSizeChanged = onSizeChanged,
+                onTextChange = onTextChange
             )
         } else if (editable) {
             TableList(
                 tableList = tableList,
                 tableSelection = tableSelection,
                 tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged
+                onSizeChanged = onSizeChanged,
+                onTextChange = onTextChange
             )
         }
     }
@@ -673,7 +685,8 @@ private fun TableList(
     tableList: List<TableModel>,
     tableSelection: TableSelection,
     tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit
+    onSizeChanged: (IntSize) -> Unit,
+    onTextChange: (() -> String?)?
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -821,7 +834,8 @@ private fun TableList(
                             )
                         )
                         tableInteractions.onClick(tableCell)
-                    }
+                    },
+                    onTextChange = onTextChange
                 )
                 if (tableRowModel.isLastRow) {
                     ExtendDivider(
@@ -897,7 +911,8 @@ fun ExtendDivider(
 fun TableItem(
     tableModel: TableModel,
     tableInteractions: TableInteractions,
-    onSizeChanged: (IntSize) -> Unit
+    onSizeChanged: (IntSize) -> Unit,
+    onTextChange: (() -> String?)?
 ) {
     Column(
         Modifier
@@ -973,10 +988,10 @@ fun TableItem(
                     )
                 },
                 onRowHeaderClick = {},
-                onDecorationClick = { tableInteractions.onDecorationClick(it) }
-            ) {
-                tableInteractions.onClick(it)
-            }
+                onDecorationClick = { tableInteractions.onDecorationClick(it) },
+                onClick = { tableInteractions.onClick(it) },
+                onTextChange = onTextChange
+            )
         }
     }
 }
@@ -1070,7 +1085,8 @@ fun TableListPreview() {
         tableList = tableList,
         tableSelection = TableSelection.Unselected(),
         tableInteractions = object : TableInteractions {},
-        onSizeChanged = {}
+        onSizeChanged = {},
+        onTextChange = null
     )
 }
 

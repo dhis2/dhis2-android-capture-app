@@ -248,7 +248,8 @@ fun DataSetTableScreen(
                         focusRequester.requestFocus()
                     } ?: collapseBottomSheet()
                 }
-            }
+            },
+            onTextChange = { currentCell?.value }
         )
         displayDescription?.let {
             TableDialog(

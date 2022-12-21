@@ -7,7 +7,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.dhis2.composetable.TableScreenState
@@ -35,7 +34,6 @@ class TableTestActivity : ComponentActivity() {
                 DataSetTableScreen(
                     tableScreenState = collectedState,
                     onCellClick = { _, cell ->
-//                        dataValuePresenter.onCellClick(cell = cell)
                         TextInputModel(
                             id = cell.id ?: "",
                             mainLabel = "-",
@@ -45,29 +43,9 @@ class TableTestActivity : ComponentActivity() {
                             error = null
                         )
                     },
-                    onEdition = { isEditing ->
-//                        presenter.editingCellValue(isEditing)
-                    },
-                    onCellValueChange = { cell ->
-                        /*val updatedData = screenState.value.tables.map { tableModel ->
-                            if (tableModel.hasCellWithId(cell.id)) {
-                                tableModel.copy(
-                                    overwrittenValues = mapOf(
-                                        Pair(cell.column!!, cell)
-                                    )
-                                )
-                            } else {
-                                tableModel
-                            }
-                        }
-
-                        screenState.update { currentScreenState ->
-                            currentScreenState.copy(tables = updatedData, false)
-                        }*/
-                    },
-                    onSaveValue = { cell, selectNext ->
-//                        dataValuePresenter.onSaveValueChange(cell, selectNext)
-                    }
+                    onEdition = { },
+                    onCellValueChange = { },
+                    onSaveValue = { _, _ -> }
                 )
             }
         }
