@@ -29,7 +29,6 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
@@ -96,7 +95,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setContent {
                 MdcTheme {
                     val screenState by presenterFragment.currentState().observeAsState(
-                        initial = TableScreenState(emptyList(), false)
+                        initial = presenterFragment.initialScreecState
                     )
 
                     DataSetTableScreen(
@@ -112,6 +111,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         },
                         onSaveValue = { cell, selectNext ->
                             presenterFragment.onSaveValueChange(cell, selectNext)
+                        },
+                        onRowHeaderResize = { widthDpValue ->
+                            presenterFragment.saveWidth(widthDpValue)
                         }
                     )
                 }

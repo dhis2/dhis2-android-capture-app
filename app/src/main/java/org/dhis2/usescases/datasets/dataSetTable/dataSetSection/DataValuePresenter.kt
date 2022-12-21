@@ -31,9 +31,12 @@ class DataValuePresenter(
     private val dispatcherProvider: DispatcherProvider
 ) {
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val screenState: MutableLiveData<TableScreenState> = MutableLiveData(
-        TableScreenState(emptyList(), false)
+    val initialScreecState = TableScreenState(
+        emptyList(),
+        false,
+        overwrittenRowHeaderWidth = repository.getWidthForSection()
     )
+    private val screenState: MutableLiveData<TableScreenState> = MutableLiveData(initialScreecState)
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
@@ -47,15 +50,17 @@ class DataValuePresenter(
                 tables.toMutableList().also { list ->
                     indicators?.let { list.add(indicators) }
                 }
+            }.map {
+                TableScreenState(
+                    tables = it,
+                    selectNext = false,
+                    overwrittenRowHeaderWidth = repository.getWidthForSection()
+                )
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribe(
-                    {
-                        screenState.postValue(
-                            TableScreenState(it, false)
-                        )
-                    },
+                    { screenState.postValue(it) },
                     { Timber.e(it) }
                 )
         )
@@ -219,4 +224,8 @@ class DataValuePresenter(
                 updateData(catComboUid!!, selectNext)
             }
         }
+
+    fun saveWidth(widthDpValue: Float) {
+        repository.saveWidthForSection(widthDpValue)
+    }
 }
