@@ -44,8 +44,6 @@ public class TEIDataContracts {
 
         Consumer<EnrollmentStatus> enrollmentCompleted();
 
-        void showCatComboDialog(String eventUid, Date eventDate, String categoryComboUid);
-
         void switchFollowUp(boolean followUp);
 
         void displayGenerateEvent(String eventUid);
@@ -81,15 +79,13 @@ public class TEIDataContracts {
         void setEnrollment(Enrollment enrollment);
 
         void showSyncDialog(String uid);
+
+        void displayCatComboOptionSelectorForEvents(List<EventViewModel> data);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init();
-
-        void getCatComboOptions(Event event);
-
-        void setDefaultCatOptCombToEvent(String eventUid);
 
         void changeCatOption(String eventUid, String catOptionComboUid);
 
