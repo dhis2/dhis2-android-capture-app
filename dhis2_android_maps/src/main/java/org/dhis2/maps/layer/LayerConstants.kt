@@ -1,7 +1,6 @@
 package org.dhis2.maps.layer
 
 import android.graphics.Color
-import com.mapbox.mapboxsdk.constants.MapboxConstants.DEFAULT_FONT
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
@@ -10,6 +9,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import org.dhis2.maps.geometry.TEI_UID
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.basemaps.DEFAULT_FONT
 import org.dhis2.maps.managers.EventMapManager
 
 val TEI_ICON_OFFSET = arrayOf(0f, -14.5f)
