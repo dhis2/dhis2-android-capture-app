@@ -36,8 +36,11 @@ class EventCatComboOptionSelectorTest {
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(prevList)
         assertTrue(eventCatComboOptionSelector.pollEvent() == prevList.first())
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
-        assertTrue(eventCatComboOptionSelector.pollEvent() != prevList.first())
-        assertTrue(eventCatComboOptionSelector.pollEvent() == list.first())
+        eventCatComboOptionSelector.pollEvent().let {
+            assertTrue(it != null)
+            assertTrue(it != prevList.first())
+            assertTrue(it == list.first())
+        }
     }
 
     @Test
