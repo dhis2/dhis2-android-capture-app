@@ -132,7 +132,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void performSaveClick() {
+
         formView.onSaveClick();
+
+        System.out.println("what what whataaaa??? ");
+        this.activity.executeRules();
+
     }
 
     @Override

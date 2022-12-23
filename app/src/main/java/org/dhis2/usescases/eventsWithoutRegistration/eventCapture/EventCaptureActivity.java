@@ -334,6 +334,18 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         FormBottomDialog.getInstance().setAccessDataWrite(presenter.canWrite()).setIsExpired(presenter.hasExpired()).setSkip(true).setListener(this::setAction).show(getSupportFragmentManager(), SHOW_OPTIONS);
     }
 
+
+    public void executeRules(){
+//        System.out.println("executing rules");
+//
+//        EventTeiDetailsFragment fragement = (EventTeiDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.tei_column);
+//
+//        System.out.println(fragement);
+//
+//        fragement.onResume();
+
+    }
+
     @Override
     public void attemptToReschedule() {
         FormBottomDialog.getInstance().setAccessDataWrite(presenter.canWrite()).setIsExpired(presenter.hasExpired()).setReschedule(true).setListener(this::setAction).show(getSupportFragmentManager(), SHOW_OPTIONS);

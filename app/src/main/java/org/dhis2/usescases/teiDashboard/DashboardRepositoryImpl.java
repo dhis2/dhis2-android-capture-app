@@ -263,7 +263,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             String teType = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet().trackedEntityType();
             List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
 
-            for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)) {
+            for (TrackedEntityAttributeValue attributeValue : teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)) {
                 if (attributeValue != null) {
                     TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
                     if (attribute.valueType() != ValueType.IMAGE && attributeValue.value() != null) {
@@ -275,7 +275,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             }
 
             if (attributeValues.isEmpty()) {
-                for (TrackedEntityAttributeValue attributeValue: teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)) {
+                for (TrackedEntityAttributeValue attributeValue : teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)) {
                     if (attributeValue != null) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
                         attributeValues.add(
@@ -305,6 +305,33 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
             return followUp;
+        }
+    }
+
+    @Override
+    public boolean setSpecificFollowupStatus(Boolean followUp, String enrollmentUid) {
+        try {
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(followUp);
+            return !followUp;
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
+            return followUp;
+        }
+    }
+
+    @Override
+    public boolean getFollowupStatus(String enrollmentUid) {
+        Boolean followUp = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().followUp();
+
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        System.out.println(followUp);
+
+        if (followUp == null) {
+            return false;
+        } else if (followUp == true || followUp == false) {
+            return followUp;
+        } else {
+            return false;
         }
     }
 

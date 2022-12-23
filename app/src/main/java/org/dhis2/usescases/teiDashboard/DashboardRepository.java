@@ -42,6 +42,10 @@ public interface DashboardRepository {
 
     boolean setFollowUp(String enrollmentUid);
 
+    boolean setSpecificFollowupStatus(Boolean followUp, String enrollmentUid);
+
+    boolean getFollowupStatus(String enrollmentUid);
+
     Event updateState(Event event, EventStatus newStatus);
 
     Flowable<Enrollment> completeEnrollment(@NonNull String enrollmentUid);
