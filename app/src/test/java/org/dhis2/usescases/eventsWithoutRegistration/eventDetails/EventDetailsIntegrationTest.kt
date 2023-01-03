@@ -129,6 +129,7 @@ class EventDetailsIntegrationTest {
         configureEventCatCombo = createConfigureEventCatCombo(),
         configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
+        eventUid = EVENT_UID,
         geometryController = createGeometryController(),
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
@@ -190,6 +191,7 @@ class EventDetailsIntegrationTest {
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
         const val PROGRAM_UID = "programUid"
+        const val EVENT_UID = "eventUid"
         const val INITIAL_ORG_UNIT_UID = "initialOrgUnitUid"
         const val PROGRAM_STAGE_NAME = "Marvellous Program Stage"
         const val EXECUTION_DATE = "Date of Marvellous Program Stage"
