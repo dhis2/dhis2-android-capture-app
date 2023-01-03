@@ -227,13 +227,13 @@ fun DataSetTableScreen(
             editable = true,
             tableColors = tableColors,
             tableDimensions = tableScreenState.overwrittenRowHeaderWidth?.let {
-                TableTheme.dimensions.copy(
+                TableDimensions(
                     cellVerticalPadding = 11.dp,
                     defaultRowHeaderWidth = with(LocalDensity.current) {
                         tableScreenState.overwrittenRowHeaderWidth.dp.roundToPx()
                     }
                 )
-            } ?: TableTheme.dimensions.copy(
+            } ?: TableDimensions(
                 cellVerticalPadding = 11.dp
             ),
             tableSelection = tableSelection,

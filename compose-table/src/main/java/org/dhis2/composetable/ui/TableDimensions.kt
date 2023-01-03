@@ -2,7 +2,7 @@ package org.dhis2.composetable.ui
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -31,13 +31,6 @@ data class TableDimensions(
         hasExtra: Boolean = false
     ): Int {
         return defaultCellWidth.withExtraSize(totalColumns, hasExtra)
-    }
-
-    fun defaultRowHeaderCellWidthWithExtraSize(
-        totalColumns: Int,
-        hasExtra: Boolean = false
-    ): Int {
-        return defaultRowHeaderWidth
     }
 
     fun headerCellWidth(
@@ -100,4 +93,4 @@ data class TableDimensions(
     }
 }
 
-val LocalTableDimensions = staticCompositionLocalOf { TableDimensions() }
+val LocalTableDimensions = compositionLocalOf { TableDimensions() }
