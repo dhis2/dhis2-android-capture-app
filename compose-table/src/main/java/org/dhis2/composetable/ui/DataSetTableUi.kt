@@ -1057,7 +1057,7 @@ fun TableItem(
     tableModel: TableModel,
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
-    onHeaderResize: (Float) -> Unit,
+    onHeaderResize: (Float) -> Unit
 ) {
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
     var tableHeight by remember { mutableStateOf(0) }
