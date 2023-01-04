@@ -26,7 +26,8 @@ object BaseMapStyleBuilder {
                 maxZoom = 22
             )
         ),
-        id = id
+        id = id,
+        glyphs = DEFAULT_GLYPH_URL
     )
 
     fun internalBaseMap(): BaseMapStyle {
@@ -47,7 +48,8 @@ data class BaseMapStyle(
     val version: Int,
     val sources: StyleSources,
     val layers: List<StyleLayers>,
-    val id: String
+    val id: String,
+    var glyphs: String
 )
 
 data class StyleSources(
