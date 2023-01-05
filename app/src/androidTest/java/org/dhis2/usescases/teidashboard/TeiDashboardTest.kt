@@ -16,7 +16,6 @@ import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
-import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -334,7 +333,7 @@ class TeiDashboardTest : BaseTest() {
             checkEventWasScheduled(visitPNCEvent, 0)
             checkEventWasScheduled(deliveryEvent, 1)
             checkEventWasScheduled(visitANCEvent, 2)
-            checkEventWasCreatedAndOpen(firstANCVisitEvent, 3)
+            checkEventWasScheduled(firstANCVisitEvent, 3)
         }
     }
 
