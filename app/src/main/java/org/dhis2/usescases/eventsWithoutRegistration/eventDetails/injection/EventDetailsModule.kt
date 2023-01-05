@@ -141,6 +141,7 @@ class EventDetailsModule(
                 creationType = eventCreationType
             ),
             periodType = periodType,
+            eventUid = eventUid,
             geometryController = geometryController,
             locationProvider = locationProvider,
             createOrUpdateEventDetails = CreateOrUpdateEventDetails(

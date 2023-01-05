@@ -48,7 +48,8 @@ class EnrollmentEventGenerator(
             generateOpenEvent(enrollment, programStage)
         }
         val eventUidToOpen = generatorRepository.eventUidInEnrollment(
-            enrollment.uid(), programStage.uid()
+            enrollment.uid(),
+            programStage.uid()
         )
         return Pair(enrollment.uid(), eventUidToOpen)
     }
@@ -71,7 +72,12 @@ class EnrollmentEventGenerator(
             val calendar = DateUtils.getInstance().calendar
             val generateByEnrollmentDate = programStage.generatedByEnrollmentDate() ?: false
 
-            val now = Calendar.getInstance().time
+            val now = Calendar.getInstance()
+            now.set(Calendar.HOUR_OF_DAY, 0)
+            now.set(Calendar.MINUTE, 0)
+            now.set(Calendar.SECOND, 0)
+            now.set(Calendar.MILLISECOND, 0)
+
             val generationDate =
                 if (!generateByEnrollmentDate && enrollment.incidentDate() != null) {
                     enrollment.incidentDate()
@@ -88,7 +94,7 @@ class EnrollmentEventGenerator(
             var dueDate = calendar.time
 
             periodType?.let { dueDate = generatorRepository.periodStartingDate(it, dueDate) }
-            val isOverdue = dueDate.before(now)
+            val isOverdue = dueDate.before(now.time)
             generatorRepository.setDueDate(eventUid, dueDate, isOverdue)
         } catch (d2Error: D2Error) {
             Timber.e(d2Error)
