@@ -32,6 +32,11 @@ data class EventViewModel(
             true
         }
     }
+
+    fun isAfterToday(today: Date): Boolean {
+        return type == EventViewModelType.EVENT && event?.eventDate() != null &&
+            event.eventDate()?.after(today) == true
+    }
 }
 
 fun List<EventViewModel>.uids(): List<String> {

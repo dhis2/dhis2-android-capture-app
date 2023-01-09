@@ -11,8 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -94,7 +95,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val screenState by presenterFragment.currentState().observeAsState(
+                    val screenState by presenterFragment.currentState().collectAsState(
                         initial = presenterFragment.initialScreecState
                     )
 
@@ -106,9 +107,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         onEdition = { isEditing ->
                             presenter.editingCellValue(isEditing)
                         },
-                        onCellValueChange = { cell ->
-                            presenterFragment.onCellValueChanged(cell)
-                        },
+                        onCellValueChange = { },
                         onSaveValue = { cell, selectNext ->
                             presenterFragment.onSaveValueChange(cell, selectNext)
                         },

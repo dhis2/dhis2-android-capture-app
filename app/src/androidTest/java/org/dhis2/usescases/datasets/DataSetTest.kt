@@ -159,6 +159,7 @@ class DataSetTest : BaseTest() {
             composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             composeTestRule.waitForIdle()
+            waitToDebounce(500)
             assertCellSelected("bjDvmb4bfuf", 1, 0)
         }
     }

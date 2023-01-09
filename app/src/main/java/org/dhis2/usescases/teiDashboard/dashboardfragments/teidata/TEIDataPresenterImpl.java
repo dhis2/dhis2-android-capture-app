@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
 import com.google.gson.reflect.TypeToken;
@@ -214,6 +215,9 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                     Timber::e
                             )
             );
+
+            getEventsWithoutCatCombo();
+
         } else {
             view.setEnrollmentData(null, null);
         }
@@ -285,25 +289,17 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         return events;
     }
 
-    @Override
-    public void getCatComboOptions(Event event) {
-        if (dashboardRepository.isStageFromProgram(event.programStage())) {
-            compositeDisposable.add(
-                    dashboardRepository.catComboForProgram(event.program())
-                            .filter(categoryCombo -> categoryCombo.isDefault() != Boolean.TRUE && !categoryCombo.name().equals("default"))
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(categoryCombo ->
-                                            view.showCatComboDialog(event.uid(),
-                                                    event.eventDate() == null ? event.dueDate() : event.eventDate(),
-                                                    categoryCombo.uid()),
-                                    Timber::e));
-        }
-    }
-
-    @Override
-    public void setDefaultCatOptCombToEvent(String eventUid) {
-        dashboardRepository.setDefaultCatOptCombToEvent(eventUid);
+    @VisibleForTesting()
+    public void getEventsWithoutCatCombo(){
+        compositeDisposable.add(
+                teiDataRepository.eventsWithoutCatCombo()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::displayCatComboOptionSelectorForEvents,
+                                Timber::e
+                        )
+        );
     }
 
     @Override

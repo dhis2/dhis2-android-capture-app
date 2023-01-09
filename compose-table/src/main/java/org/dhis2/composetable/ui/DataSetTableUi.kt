@@ -84,6 +84,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
+import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.ItemHeaderUiState
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
@@ -307,9 +308,7 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                defaultHeight = with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultCellHeight.toDp()
-                },
+                defaultHeight = TableTheme.dimensions.defaultCellHeight,
                 defaultWidth = with(LocalDensity.current) {
                     TableTheme.dimensions.defaultCellWidthWithExtraSize(
                         tableModel.tableHeaderModel.tableMaxColumns(),
@@ -487,7 +486,7 @@ fun ItemValues(
                         )
                         .bringIntoViewRequester(bringIntoViewRequester)
                         .focusable(),
-                    cellValue = cellValue,
+                    cell = cellValue,
                     maxLines = maxLines,
                     options = options,
                     nonEditableCellLayer = {
@@ -497,19 +496,20 @@ fun ItemValues(
                             isCellEditable = cellValue.editable
                         )
                     },
-                    onClick = onClick
+                    onClick = onClick,
+                    onTextChange = if (isSelected) OnTextChange.current else null
                 )
                 if (isSelected) {
-                    with(LocalDensity.current) {
-                        val marginCoordinates = Rect(
-                            0f,
-                            0f,
-                            TableTheme.dimensions.defaultCellWidth.dp.toPx() * 2,
-                            TableTheme.dimensions.defaultCellHeight.dp.toPx() * 3
-                        )
-                        coroutineScope.launch {
-                            bringIntoViewRequester.bringIntoView(marginCoordinates)
+                    val marginCoordinates = Rect(
+                        0f,
+                        0f,
+                        TableTheme.dimensions.defaultCellWidth * 2f,
+                        with(LocalDensity.current) {
+                            TableTheme.dimensions.defaultCellHeight.toPx() * 3
                         }
+                    )
+                    coroutineScope.launch {
+                        bringIntoViewRequester.bringIntoView(marginCoordinates)
                     }
                 }
             }
@@ -520,26 +520,31 @@ fun ItemValues(
 @Composable
 fun TableCell(
     modifier: Modifier,
-    cellValue: TableCell,
+    cell: TableCell,
     maxLines: Int,
     options: List<String>,
     nonEditableCellLayer: @Composable
     () -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onTextChange: (() -> String?)? = null
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val cellValue = remember { mutableStateOf(cell.value) }
+    onTextChange?.let {
+        cellValue.value = it()
+    }
 
     CellLegendBox(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .clickable(cellValue.editable) {
+            .clickable(cell.editable) {
                 when {
                     options.isNotEmpty() -> setExpanded(true)
-                    else -> onClick(cellValue)
+                    else -> onClick(cell)
                 }
             },
-        legendColor = cellValue.legendColor?.let { Color(it) }
+        legendColor = cell.legendColor?.let { Color(it) }
     ) {
         nonEditableCellLayer()
         Text(
@@ -558,8 +563,8 @@ fun TableCell(
                 fontSize = TableTheme.dimensions.defaultCellTextSize,
                 textAlign = TextAlign.End,
                 color = LocalTableColors.current.cellTextColor(
-                    hasError = cellValue.error != null,
-                    isEditable = cellValue.editable
+                    hasError = cell.error != null,
+                    isEditable = cell.editable
                 )
             )
         )
@@ -570,12 +575,12 @@ fun TableCell(
                 onDismiss = { setExpanded(false) },
                 onSelected = {
                     setExpanded(false)
-                    onClick(cellValue.copy(value = it))
+                    onClick(cell.copy(value = it))
                 }
             )
         }
 
-        if (cellValue.mandatory == true) {
+        if (cell.mandatory == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_mandatory),
                 contentDescription = "mandatory",
@@ -586,15 +591,15 @@ fun TableCell(
                     .height(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cellValue.value?.isNotEmpty() == true
+                            cell.value?.isNotEmpty() == true
                         )
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue.value?.isNotEmpty() == true
+                    cell.value?.isNotEmpty() == true
                 )
             )
         }
-        if (cellValue.error != null) {
+        if (cell.error != null) {
             Divider(
                 modifier = Modifier
                     .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)

@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
@@ -12,6 +11,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.SortedMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
@@ -31,6 +33,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DataValuePresenterTest {
 
     @Rule
@@ -43,13 +46,16 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
+        on { io() } doReturn testingDispatcher
+        on { ui() } doReturn testingDispatcher
     }
     private val mapper: TableDataToTableModelMapper = mock()
 
     @Before
     fun setup() {
+        Dispatchers.setMain(testingDispatcher)
         whenever(dataValueRepository.getDataSetInfo()) doReturn Triple(
             "periodId",
             "orgUnitId",
@@ -83,42 +89,8 @@ class DataValuePresenterTest {
         presenter.init()
 
         val tableStateValue = presenter.currentState().value
-        assertTrue(tableStateValue!!.tables.isNotEmpty())
+        assertTrue(tableStateValue.tables.isNotEmpty())
         assertTrue(tableStateValue.tables.size == 2)
-    }
-
-    @Test
-    fun shouldUpdateStateOnValueChanged() {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn true
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
-    }
-
-    @Test
-    fun shouldNotUpdateStateOnValueChanged() {
-        val mockedTableModel = mock<TableModel> {
-            on { hasCellWithId(any()) } doReturn false
-        }
-
-        val mockedTableCell = mock<TableCell> {
-            on { id } doReturn ""
-            on { column } doReturn 1
-        }
-
-        val tableStateValue = presenter.mutableTableData()
-        tableStateValue.value = TableScreenState(listOf(mockedTableModel), false)
-        presenter.onCellValueChanged(mockedTableCell)
-        verify(mockedTableModel, times(0)).copy(overwrittenValues = mapOf(Pair(1, mockedTableCell)))
     }
 
     @Test
@@ -368,8 +340,8 @@ class DataValuePresenterTest {
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.mutableTableData().value!!.tables.size == 1)
-        assertTrue(presenter.mutableTableData().value!!.tables[0].id == "tableId_updated")
+        assertTrue(presenter.mutableTableData().value.tables.size == 1)
+        assertTrue(presenter.mutableTableData().value.tables[0].id == "tableId_updated")
         verify(view).onValueProcessed()
     }
 
@@ -427,9 +399,9 @@ class DataValuePresenterTest {
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.currentState().value!!.tables.size == 2)
-        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
-        assertTrue(presenter.currentState().value!!.tables.last().id == "updated_indicator")
+        assertTrue(presenter.currentState().value.tables.size == 2)
+        assertTrue(presenter.currentState().value.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value.tables.last().id == "updated_indicator")
         verify(view).onValueProcessed()
     }
 
@@ -475,8 +447,8 @@ class DataValuePresenterTest {
 
         presenter.onSaveValueChange(mockedTableCell)
 
-        assertTrue(presenter.currentState().value!!.tables.size == 1)
-        assertTrue(presenter.currentState().value!!.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value.tables.size == 1)
+        assertTrue(presenter.currentState().value.tables[0].id == "tableId_updated")
         assertTrue(presenter.errors().isNotEmpty())
         verify(view).onValueProcessed()
     }

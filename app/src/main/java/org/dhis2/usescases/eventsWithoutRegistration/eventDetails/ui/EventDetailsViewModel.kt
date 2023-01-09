@@ -7,7 +7,6 @@ import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
@@ -43,6 +42,7 @@ class EventDetailsViewModel(
     private val configureEventCatCombo: ConfigureEventCatCombo,
     private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
+    private val eventUid: String?,
     private val geometryController: GeometryController,
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
@@ -294,10 +294,13 @@ class EventDetailsViewModel(
     }
 
     fun onButtonClick() {
+        if (eventUid != null) {
+            updateEventDetails()
+        }
         onButtonClickCallback?.invoke()
     }
 
-    fun onActionButtonClick() {
+    fun updateEventDetails() {
         viewModelScope.launch {
             eventDetails.value.apply {
                 selectedDate?.let { date ->
