@@ -244,19 +244,6 @@ fun DataSetTableScreen(
                     override fun onSelectionChange(newTableSelection: TableSelection) {
                         tableSelection = newTableSelection
                     }
-        CompositionLocalProvider(OnTextChange provides { currentCell?.value }) {
-            DataTable(
-                tableList = tableScreenState.tables,
-                editable = true,
-                tableColors = tableColors,
-                tableDimensions = TableTheme.dimensions.copy(
-                    cellVerticalPadding = 11.dp
-                ),
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
 
                     override fun onDecorationClick(dialogModel: TableDialogModel) {
                         displayDescription = dialogModel

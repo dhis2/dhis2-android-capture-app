@@ -84,8 +84,8 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
-import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.ItemHeaderUiState
+import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
@@ -285,7 +285,7 @@ fun TableItemRow(
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight()) {
+            Box(modifier = Modifier.fillMaxHeight().zIndex(1f)) {
                 ItemHeader(
                     ItemHeaderUiState(
                         tableId = tableModel.id ?: "",
@@ -353,16 +353,11 @@ fun TableCorner(
 
 @Composable
 fun ItemHeader(uiState: ItemHeaderUiState) {
-    Box(
-        modifier = Modifier
-            .zIndex(1f)
-    ) {
+    Box {
         Row(
             modifier = Modifier
                 .defaultMinSize(
-                    minHeight = with(LocalDensity.current) {
-                        TableTheme.dimensions.defaultCellHeight.toDp()
-                    }
+                    minHeight = TableTheme.dimensions.defaultCellHeight
                 )
                 .width(uiState.width)
                 .fillMaxHeight()

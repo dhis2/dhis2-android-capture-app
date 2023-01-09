@@ -35,11 +35,13 @@ class DataValuePresenter(
     private val dispatcherProvider: DispatcherProvider
 ) : CoroutineScope {
     var disposable: CompositeDisposable = CompositeDisposable()
-    val screenState = MutableStateFlow(TableScreenState(
-        emptyList(),
-        false,
-        overwrittenRowHeaderWidth = repository.getWidthForSection()
-    ))
+    private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
+        TableScreenState(
+            emptyList(),
+            false,
+            overwrittenRowHeaderWidth = repository.getWidthForSection()
+        )
+    )
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
@@ -70,7 +72,7 @@ class DataValuePresenter(
                 .subscribe(
                     {
                         screenState.update { currentScreenState ->
-                            currentScreenState.copy(tables = it)
+                            currentScreenState.copy(tables = it.tables)
                         }
                     },
                     { Timber.e(it) }

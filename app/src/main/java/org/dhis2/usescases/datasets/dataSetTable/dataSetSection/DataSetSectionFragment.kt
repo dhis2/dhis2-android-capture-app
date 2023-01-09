@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -95,9 +94,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val screenState by presenterFragment.currentState().collectAsState(
-                        initial = presenterFragment.initialScreecState
-                    )
+                    val screenState by presenterFragment.currentState().collectAsState()
 
                     DataSetTableScreen(
                         tableScreenState = screenState,
