@@ -19,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
@@ -220,36 +222,38 @@ fun DataSetTableScreen(
                 CircularProgressIndicator()
             }
         }
-        DataTable(
-            tableList = tableScreenState.tables,
-            editable = true,
-            tableColors = tableColors,
-            tableDimensions = TableTheme.dimensions.copy(
-                cellVerticalPadding = 11.dp
-            ),
-            tableSelection = tableSelection,
-            tableInteractions = object : TableInteractions {
-                override fun onSelectionChange(newTableSelection: TableSelection) {
-                    tableSelection = newTableSelection
-                }
-
-                override fun onDecorationClick(dialogModel: TableDialogModel) {
-                    displayDescription = dialogModel
-                }
-
-                override fun onClick(tableCell: TableCell) {
-                    currentCell?.takeIf { it != tableCell }?.let {
-                        onSaveValue(it, false)
+        CompositionLocalProvider(OnTextChange provides { currentCell?.value }) {
+            DataTable(
+                tableList = tableScreenState.tables,
+                editable = true,
+                tableColors = tableColors,
+                tableDimensions = TableTheme.dimensions.copy(
+                    cellVerticalPadding = 11.dp
+                ),
+                tableSelection = tableSelection,
+                tableInteractions = object : TableInteractions {
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        tableSelection = newTableSelection
                     }
-                    onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
-                        currentCell = tableCell
-                        currentInputType = inputModel.copy(currentValue = currentCell?.value)
-                        startEdition()
-                        focusRequester.requestFocus()
-                    } ?: collapseBottomSheet()
+
+                    override fun onDecorationClick(dialogModel: TableDialogModel) {
+                        displayDescription = dialogModel
+                    }
+
+                    override fun onClick(tableCell: TableCell) {
+                        currentCell?.takeIf { it != tableCell }?.let {
+                            onSaveValue(it, false)
+                        }
+                        onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
+                            currentCell = tableCell
+                            currentInputType = inputModel.copy(currentValue = currentCell?.value)
+                            startEdition()
+                            focusRequester.requestFocus()
+                        } ?: collapseBottomSheet()
+                    }
                 }
-            }
-        )
+            )
+        }
         displayDescription?.let {
             TableDialog(
                 dialogModel = it,
