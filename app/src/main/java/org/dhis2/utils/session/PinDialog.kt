@@ -88,7 +88,7 @@ class PinDialog(
                 Mode.ASK ->
                     if (presenter.unlockSession(it)) {
                         unlockCallback.invoke(true)
-                    } else if (pinAttempts < 2){
+                    } else if (pinAttempts < 2) {
                         pinAttempts += 1
                         Toast.makeText(
                             context,
