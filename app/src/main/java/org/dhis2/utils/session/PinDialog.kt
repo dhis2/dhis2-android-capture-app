@@ -34,6 +34,8 @@ class PinDialog(
         SET, ASK
     }
 
+    private var pinAttempts = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar)
@@ -86,8 +88,16 @@ class PinDialog(
                 Mode.ASK ->
                     if (presenter.unlockSession(it)) {
                         unlockCallback.invoke(true)
+                    } else if (pinAttempts < 2){
+                        pinAttempts += 1
+                        Toast.makeText(
+                            context,
+                            getString(R.string.wrong_pin),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        binding.pinLockView.resetPinLockView()
                     } else {
-                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_LONG).show()
+                        recoverPin()
                     }
             }
         }
