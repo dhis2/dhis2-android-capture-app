@@ -23,12 +23,48 @@ class LayoutProviderImpl : LayoutProvider {
         sectionRenderingType: SectionRenderingType?
     ): Int {
         return when (valueType) {
-            ValueType.AGE -> R.layout.form_age_custom
-            ValueType.DATE, ValueType.TIME, ValueType.DATETIME -> R.layout.form_date_time
-            ValueType.LONG_TEXT -> R.layout.form_long_text_custom
-            ValueType.ORGANISATION_UNIT -> R.layout.form_org_unit
-            ValueType.COORDINATE -> R.layout.form_coordinate_custom
-            ValueType.IMAGE -> R.layout.form_picture
+            ValueType.AGE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_age_custom
+                )
+            ValueType.DATE, ValueType.TIME, ValueType.DATETIME ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_date_time
+                )
+            ValueType.LONG_TEXT ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_long_text_custom
+                )
+            ValueType.ORGANISATION_UNIT ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_org_unit
+                )
+            ValueType.COORDINATE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_coordinate_custom
+                )
+            ValueType.IMAGE ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_picture
+                )
             ValueType.TEXT ->
                 getLayoutForOptionSet(
                     optionSet,
@@ -40,18 +76,66 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.BOOLEAN -> return when (renderingType) {
                 ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
                 ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                ValueTypeRenderingType.DEFAULT -> R.layout.form_radio_button
+                ValueTypeRenderingType.DEFAULT ->
+                    getLayoutForOptionSet(
+                        optionSet,
+                        sectionRenderingType,
+                        renderingType,
+                        R.layout.form_radio_button
+                    )
                 ValueTypeRenderingType.TOGGLE -> when (valueType) {
-                    ValueType.TRUE_ONLY -> R.layout.form_toggle
-                    else -> R.layout.form_radio_button
+                    ValueType.TRUE_ONLY ->
+                        getLayoutForOptionSet(
+                            optionSet,
+                            sectionRenderingType,
+                            renderingType,
+                            R.layout.form_toggle
+                        )
+                    else ->
+                        getLayoutForOptionSet(
+                            optionSet,
+                            sectionRenderingType,
+                            renderingType,
+                            R.layout.form_radio_button
+                        )
                 }
                 ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_check_button
-                else -> R.layout.form_radio_button
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES ->
+                    getLayoutForOptionSet(
+                        optionSet,
+                        sectionRenderingType,
+                        renderingType,
+                        R.layout.form_check_button
+                    )
+                else ->
+                    getLayoutForOptionSet(
+                        optionSet,
+                        sectionRenderingType,
+                        renderingType,
+                        R.layout.form_radio_button
+                    )
             }
-            ValueType.LETTER -> R.layout.form_letter
-            ValueType.PHONE_NUMBER -> R.layout.form_phone_number
-            ValueType.EMAIL -> R.layout.form_email
+            ValueType.LETTER ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_letter
+                )
+            ValueType.PHONE_NUMBER ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_phone_number
+                )
+            ValueType.EMAIL ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_email
+                )
             ValueType.NUMBER ->
                 getLayoutForOptionSet(
                     optionSet,
@@ -101,13 +185,25 @@ class LayoutProviderImpl : LayoutProvider {
                     renderingType,
                     R.layout.form_integer_zero_positive
                 )
-            ValueType.URL -> R.layout.form_url
+            ValueType.URL ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_url
+                )
+            ValueType.FILE_RESOURCE -> R.layout.form_unsupported
             ValueType.REFERENCE,
             ValueType.GEOJSON,
-            ValueType.FILE_RESOURCE,
             ValueType.USERNAME,
             ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
-            else -> R.layout.form_edit_text_custom
+            else ->
+                getLayoutForOptionSet(
+                    optionSet,
+                    sectionRenderingType,
+                    renderingType,
+                    R.layout.form_edit_text_custom
+                )
         }
     }
 
