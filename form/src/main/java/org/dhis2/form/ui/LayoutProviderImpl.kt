@@ -65,24 +65,8 @@ class LayoutProviderImpl : LayoutProvider {
                     renderingType,
                     R.layout.form_picture
                 )
-            ValueType.TEXT ->
-                getLayoutForOptionSet(
-                    optionSet,
-                    sectionRenderingType,
-                    renderingType,
-                    R.layout.form_edit_text_custom
-                )
             ValueType.TRUE_ONLY,
             ValueType.BOOLEAN -> return when (renderingType) {
-                ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
-                ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
-                ValueTypeRenderingType.DEFAULT ->
-                    getLayoutForOptionSet(
-                        optionSet,
-                        sectionRenderingType,
-                        renderingType,
-                        R.layout.form_radio_button
-                    )
                 ValueTypeRenderingType.TOGGLE -> when (valueType) {
                     ValueType.TRUE_ONLY ->
                         getLayoutForOptionSet(
