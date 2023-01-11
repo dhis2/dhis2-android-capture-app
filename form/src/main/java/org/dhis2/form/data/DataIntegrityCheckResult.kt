@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.data.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 
 sealed class DataIntegrityCheckResult(
     open val canComplete: Boolean = false,

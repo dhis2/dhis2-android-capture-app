@@ -1,39 +1,41 @@
-package org.dhis2.commons.dialogs.bottomsheet
+package org.dhis2.ui.dialogs.bottomsheet
 
-import androidx.annotation.ColorRes
-import org.dhis2.commons.R
+import androidx.compose.ui.graphics.Color
+import org.dhis2.ui.R
+import org.dhis2.ui.theme.colorPrimary
+import org.dhis2.ui.theme.warningColor
 
 sealed class DialogButtonStyle(
     open val textResource: Int,
-    val colorResource: Int? = null,
+    val colorResource: Color? = null,
     val iconResource: Int? = null,
-    @ColorRes val backgroundColor: Int? = null
+    val backgroundColor: Color? = null
 ) {
 
     data class MainButton(override val textResource: Int) : DialogButtonStyle(
         textResource = textResource,
-        colorResource = R.color.white
+        colorResource = Color.White
     )
 
     data class SecondaryButton(override val textResource: Int) : DialogButtonStyle(
         textResource = textResource,
-        colorResource = R.color.colorPrimary
+        colorResource = colorPrimary
     )
 
     class CompleteButton : DialogButtonStyle(
         textResource = R.string.complete,
-        colorResource = R.color.white,
+        colorResource = Color.White,
         iconResource = R.drawable.ic_event_status_complete
     )
 
     class DiscardButton : DialogButtonStyle(
         textResource = R.string.discard_changes,
-        colorResource = R.color.section_warning_color
+        colorResource = warningColor
     )
 
     class NeutralButton(override val textResource: Int) : DialogButtonStyle(
         textResource = textResource,
-        colorResource = R.color.colorPrimary,
-        backgroundColor = R.color.white
+        colorResource = colorPrimary,
+        backgroundColor = Color.White
     )
 }
