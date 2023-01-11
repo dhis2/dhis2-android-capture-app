@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
@@ -35,6 +35,8 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
+import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
+import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
@@ -77,8 +79,8 @@ class ManageStockViewModel @Inject constructor(
     private val entryRelay = PublishRelay.create<RowAction>()
     private val itemsCache = linkedMapOf<String, StockEntry>()
 
-    private val _sizeTableData = MutableStateFlow(0)
-    val sizeTableData = _sizeTableData.asStateFlow()
+    private val _hasData = MutableStateFlow(false)
+    val hasData = _hasData
 
     private val _networkState = MutableLiveData<OperationState<LiveData<PagedList<StockItem>>>>()
     val operationState: LiveData<OperationState<LiveData<PagedList<StockItem>>>>
@@ -94,6 +96,9 @@ class ManageStockViewModel @Inject constructor(
 
     private val _stockItems: MutableLiveData<PagedList<StockItem>> =
         MutableLiveData<PagedList<StockItem>>()
+
+    private val _reviewButtonUiState = MutableStateFlow(ButtonUiState())
+    val reviewButtonUiState: StateFlow<ButtonUiState> = _reviewButtonUiState
 
     fun setup(transaction: Transaction) {
         _transaction.value = transaction
@@ -199,7 +204,7 @@ class ManageStockViewModel @Inject constructor(
     ) {
         val tableRowModels = mutableListOf<TableRowModel>()
 
-        _sizeTableData.value = stockItems!!.size
+        _hasData.value = stockItems!!.size > 0
 
         stockItems?.forEachIndexed { index, item ->
             val tableRowModel = TableRowModel(
@@ -282,9 +287,11 @@ class ManageStockViewModel @Inject constructor(
             }
         } ?: emptyList()
 
+        _allTableState.value = updatedData
+
         _screenState.postValue(
             TableScreenState(
-                tables = updatedData,
+                tables = allTableState.value,
                 selectNext = false
             )
         )
@@ -417,7 +424,7 @@ class ManageStockViewModel @Inject constructor(
 
     fun addItem(item: StockItem, qty: String?, stockOnHand: String?, hasError: Boolean) {
         // Remove from cache any item whose quantity has been cleared
-        if (qty == null) {
+        if (qty.isNullOrEmpty()) {
             itemsCache.remove(item.id)
             return
         }
@@ -429,11 +436,33 @@ class ManageStockViewModel @Inject constructor(
 
     fun hasError(item: StockItem) = itemsCache[item.id]?.hasError ?: false
 
-    fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
+    private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
 
     fun getData(): ReviewStockData = ReviewStockData(transaction.value!!, getPopulatedEntries())
 
     fun getItemCount(): Int = itemsCache.size
+    fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
+        updateReviewButton(isEditing)
+        if (isEditing) {
+            onEditionStart.invoke()
+        }
+    }
+
+    private fun updateReviewButton(isEditing: Boolean = false) {
+        val buttonState: ButtonVisibilityState = if (isEditing || !hasData.value) {
+            ButtonVisibilityState.HIDDEN
+        } else {
+            if (canReview()) {
+                ButtonVisibilityState.ENABLED
+            } else {
+                ButtonVisibilityState.DISABLED
+            }
+        }
+
+        _reviewButtonUiState.update { currentUiState ->
+            currentUiState.copy(visibility = buttonState)
+        }
+    }
 }

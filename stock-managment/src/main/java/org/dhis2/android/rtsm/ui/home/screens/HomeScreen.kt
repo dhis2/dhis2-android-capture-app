@@ -23,10 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -39,9 +36,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.TransactionType
-import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 
@@ -53,27 +49,29 @@ fun HomeScreen(
     manageStockViewModel: ManageStockViewModel = viewModel(),
     themeColor: Color,
     supportFragmentManager: FragmentManager,
-    homeContext: HomeActivity,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     proceedAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    var enabled by remember { mutableStateOf(false) }
+    val buttonUiState by manageStockViewModel.reviewButtonUiState.collectAsState()
 
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             AnimatedVisibility(
-                visible = checkVisibility(viewModel = viewModel, manageStockViewModel),
+                visible = buttonUiState.visibility != ButtonVisibilityState.HIDDEN,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 CompositionLocalProvider(
                     LocalRippleTheme provides
-                        if (enabled) LocalRippleTheme.current
-                        else NoRippleTheme
+                        if (buttonUiState.visibility == ButtonVisibilityState.ENABLED) {
+                            LocalRippleTheme.current
+                        } else {
+                            NoRippleTheme
+                        }
                 ) {
                     ExtendedFloatingActionButton(
                         modifier = Modifier
@@ -88,29 +86,41 @@ fun HomeScreen(
                             ),
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.proceed_icon),
-                                contentDescription = stringResource(R.string.review),
-                                tint = if (enabled) themeColor
-                                else colorResource(id = R.color.proceed_text_color)
+                                painter = painterResource(buttonUiState.icon),
+                                contentDescription = stringResource(buttonUiState.text),
+                                tint = if (
+                                    buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                                ) {
+                                    themeColor
+                                } else {
+                                    colorResource(id = R.color.proceed_text_color)
+                                }
                             )
                         },
                         text = {
                             Text(
-                                stringResource(R.string.review),
-                                color = if (enabled) themeColor
-                                else colorResource(id = R.color.proceed_text_color)
+                                stringResource(buttonUiState.text),
+                                color = if (
+                                    buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                                ) {
+                                    themeColor
+                                } else {
+                                    colorResource(id = R.color.proceed_text_color)
+                                }
                             )
                         },
                         onClick = {
-                            if (enabled) {
-                                enabled = !enabled
+                            if (buttonUiState.visibility == ButtonVisibilityState.ENABLED) {
                                 proceedAction(scope, scaffoldState)
-                            } else {
-                                enabled = !enabled
                             }
                         },
-                        backgroundColor = if (enabled) Color.White
-                        else colorResource(id = R.color.proceed_color),
+                        backgroundColor = if (
+                            buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                        ) {
+                            Color.White
+                        } else {
+                            colorResource(id = R.color.proceed_color)
+                        },
                         shape = RoundedCornerShape(16.dp)
                     )
                 }
@@ -131,7 +141,6 @@ fun HomeScreen(
             manageStockViewModel,
             themeColor,
             supportFragmentManager,
-            homeContext,
             barcodeLauncher,
             scaffoldState
         ) { coroutineScope, scaffold ->
@@ -139,32 +148,7 @@ fun HomeScreen(
         }
     }
 }
-@Composable
-fun checkVisibility(viewModel: HomeViewModel, manageStockViewModel: ManageStockViewModel): Boolean {
-    return if ((
-        viewModel.toolbarTitle.collectAsState().value.name ==
-            TransactionType.DISCARD.name
-        )
-    ) {
-        return viewModel.hasFacilitySelected.collectAsState().value &&
-            manageStockViewModel.sizeTableData.collectAsState().value > 0
-    } else if ((
-        viewModel.toolbarTitle.collectAsState().value.name ==
-            TransactionType.CORRECTION.name
-        )
-    ) {
-        return viewModel.hasFacilitySelected.collectAsState().value &&
-            manageStockViewModel.sizeTableData.collectAsState().value > 0
-    } else (
-        (
-            viewModel.toolbarTitle.collectAsState().value.name ==
-                TransactionType.DISTRIBUTION.name
-            ) &&
-            viewModel.hasFacilitySelected.collectAsState().value &&
-            viewModel.hasDestinationSelected.collectAsState().value &&
-            manageStockViewModel.sizeTableData.collectAsState().value > 0
-        )
-}
+
 private object NoRippleTheme : RippleTheme {
     @Composable
     override fun defaultColor() = Color.Unspecified

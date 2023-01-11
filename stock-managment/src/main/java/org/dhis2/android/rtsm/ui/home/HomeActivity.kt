@@ -65,7 +65,8 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
             ?.let { manageStockViewModel.setConfig(it) }
 
         setContent {
-            updateTheme(viewModel.transactionType.collectAsState().value)
+            val settingsUiState by viewModel.settingsUiState.collectAsState()
+            updateTheme(settingsUiState.transactionType)
             MdcTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -77,14 +78,13 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
                         manageStockViewModel,
                         Color(colorResource(themeColor).toArgb()),
                         supportFragmentManager,
-                        this@HomeActivity,
                         barcodeLauncher,
                         ::navigateToReviewStock
                     ) { scope, scaffold ->
                         synchronizeData(
                             scope,
                             scaffold,
-                            viewModel.config.program
+                            settingsUiState.programUid
                         )
                     }
                 }
@@ -198,8 +198,6 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
 
     override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
         viewModel.setFacility(selectedOrgUnits[0])
-        viewModel.fromFacilitiesLabel(selectedOrgUnits[0].displayName().toString())
-        viewModel.setSelectedText(selectedOrgUnits[0].displayName().toString())
         setOrgUnitFilters(selectedOrgUnits)
     }
 

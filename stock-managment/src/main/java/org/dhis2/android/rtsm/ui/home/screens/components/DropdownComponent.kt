@@ -48,8 +48,8 @@ import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.TransactionItem
-import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.dhis2.commons.orgunitdialog.CommonOrgUnitDialog
 import org.hisp.dhis.android.core.option.Option
@@ -155,7 +155,6 @@ fun DropdownComponent(
                     DropdownMenuItem(
                         onClick = {
                             viewModel.selectTransaction(item.transactionType)
-                            viewModel.setToolbarTitle(item.transactionType)
                             selectedIndex = index
 
                             itemIcon = item.icon
@@ -198,9 +197,7 @@ fun DropdownComponentFacilities(
     viewModel: HomeViewModel,
     themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
-    homeContext: HomeActivity,
-    data: List<OrganisationUnit>,
-    isFacilitySelected: (value: String) -> Unit = { }
+    data: List<OrganisationUnit>
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -221,17 +218,16 @@ fun DropdownComponentFacilities(
         painterResource(id = R.drawable.ic_arrow_drop_down)
     }
 
+    val settingsUiState by viewModel.settingsUiState.collectAsState()
+
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
-        viewModel.setFacilitySelected(false)
-        openOrgUnitTreeSelector(supportFragmentManager, homeContext, data, viewModel)
+        openOrgUnitTreeSelector(supportFragmentManager, data, viewModel, settingsUiState)
     }
-
-    isFacilitySelected(viewModel.orgUnitName.collectAsState().value)
 
     Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
-            value = viewModel.orgUnitName.collectAsState().value,
+            value = settingsUiState.facilityName(),
             onValueChange = { selectedText = it },
             modifier = Modifier
                 .fillMaxWidth()
@@ -261,12 +257,11 @@ fun DropdownComponentFacilities(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        viewModel.setFacilitySelected(false)
                         openOrgUnitTreeSelector(
                             supportFragmentManager,
-                            homeContext,
                             data,
-                            viewModel
+                            viewModel,
+                            settingsUiState
                         )
                     }
                 ) {
@@ -301,7 +296,6 @@ fun DropdownComponentFacilities(
                             selectedIndex = index
 
                             viewModel.setFacility(item)
-                            viewModel.fromFacilitiesLabel(selectedText)
                         }
                     ) {
                         Row(
@@ -433,7 +427,6 @@ fun DropdownComponentDistributedTo(
                             selectedIndex = index
 
                             viewModel.setDestination(item)
-                            viewModel.deliveryToLabel(selectedText)
                         }
                     ) {
                         Row(
@@ -465,40 +458,32 @@ fun DropdownComponentDistributedTo(
 
 fun openOrgUnitTreeSelector(
     supportFragmentManager: FragmentManager,
-    homeContext: HomeActivity,
     data: List<OrganisationUnit>,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    settingsUiState: SettingsUiState
 ) {
-    val programUid = "F5ijs28K4s8"
     val orgUnitDialog = CommonOrgUnitDialog()
 
     orgUnitDialog
         .setTitle("Facilities")
         .setMultiSelection(false)
         .setOrgUnits(data)
-        .setProgram(programUid)
+        .setProgram(settingsUiState.programUid)
         .setPossitiveListener {
             if (orgUnitDialog.selectedOrgUnitModel != null) {
                 viewModel.setFacility(orgUnitDialog.selectedOrgUnitModel)
-                viewModel.fromFacilitiesLabel(orgUnitDialog.selectedOrgUnitName)
-                viewModel.setSelectedText(orgUnitDialog.selectedOrgUnitName)
-                viewModel.setOldSelectedFacility(orgUnitDialog.selectedOrgUnitName)
                 orgUnitData = orgUnitDialog.selectedOrgUnitModel
-                viewModel.setFacilitySelected(true)
             }
             orgUnitDialog.dismiss()
         }
         .setNegativeListener {
-            if (viewModel.oldSelectedFacility.value != "") {
-                viewModel.setFacilitySelected(true)
-            }
             orgUnitDialog.dismiss()
         }
 
     orgUnitData?.let {
         orgUnitDialog.setOrgUnit(orgUnitData)
     }
-    orgUnitName = viewModel.orgUnitName.value
+    orgUnitName = settingsUiState.facilityName()
     orgUnitDialog.setOrgUnitName(orgUnitName)
 
     if (!orgUnitDialog.isAdded) {
