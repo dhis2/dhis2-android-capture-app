@@ -21,6 +21,7 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.android.rtsm.ui.managestock.TableModelMapper
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.rules.models.RuleEffect
@@ -68,6 +69,7 @@ class ManageStockViewModelTest {
     private lateinit var stockManager: StockManager
 
     private val resourceManager: ResourceManager = mock()
+    private val tableModelMapper: TableModelMapper = mock()
 
     private fun getModel() = ManageStockViewModel(
         disposable,
@@ -76,7 +78,8 @@ class ManageStockViewModelTest {
         stockManager,
         ruleValidationHelperImpl,
         speechRecognitionManagerImpl,
-        resourceManager
+        resourceManager,
+        tableModelMapper
     )
 
     private fun createStockEntry(uid: String) = StockItem(

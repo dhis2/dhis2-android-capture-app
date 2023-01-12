@@ -37,7 +37,8 @@ import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
-import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState
+import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState.ENABLED
+import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState.HIDDEN
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 
@@ -55,19 +56,19 @@ fun HomeScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val buttonUiState by manageStockViewModel.reviewButtonUiState.collectAsState()
+    val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
 
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             AnimatedVisibility(
-                visible = buttonUiState.visibility != ButtonVisibilityState.HIDDEN,
+                visible = dataEntryUiState.button.visibility != HIDDEN,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 CompositionLocalProvider(
                     LocalRippleTheme provides
-                        if (buttonUiState.visibility == ButtonVisibilityState.ENABLED) {
+                        if (dataEntryUiState.button.visibility == ENABLED) {
                             LocalRippleTheme.current
                         } else {
                             NoRippleTheme
@@ -86,10 +87,10 @@ fun HomeScreen(
                             ),
                         icon = {
                             Icon(
-                                painter = painterResource(buttonUiState.icon),
-                                contentDescription = stringResource(buttonUiState.text),
+                                painter = painterResource(dataEntryUiState.button.icon),
+                                contentDescription = stringResource(dataEntryUiState.button.text),
                                 tint = if (
-                                    buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                                    dataEntryUiState.button.visibility == ENABLED
                                 ) {
                                     themeColor
                                 } else {
@@ -99,9 +100,9 @@ fun HomeScreen(
                         },
                         text = {
                             Text(
-                                stringResource(buttonUiState.text),
+                                stringResource(dataEntryUiState.button.text),
                                 color = if (
-                                    buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                                    dataEntryUiState.button.visibility == ENABLED
                                 ) {
                                     themeColor
                                 } else {
@@ -110,12 +111,12 @@ fun HomeScreen(
                             )
                         },
                         onClick = {
-                            if (buttonUiState.visibility == ButtonVisibilityState.ENABLED) {
+                            if (dataEntryUiState.button.visibility == ENABLED) {
                                 proceedAction(scope, scaffoldState)
                             }
                         },
                         backgroundColor = if (
-                            buttonUiState.visibility == ButtonVisibilityState.ENABLED
+                            dataEntryUiState.button.visibility == ENABLED
                         ) {
                             Color.White
                         } else {

@@ -79,7 +79,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
                         Color(colorResource(themeColor).toArgb()),
                         supportFragmentManager,
                         barcodeLauncher,
-                        ::navigateToReviewStock
+                        { _, _ -> manageStockViewModel.onButtonClick() }
                     ) { scope, scaffold ->
                         synchronizeData(
                             scope,

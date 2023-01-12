@@ -37,17 +37,13 @@ import org.dhis2.android.rtsm.ui.base.ItemWatcher
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
 import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState
+import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
+import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.KeyboardInputType
-import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
@@ -58,10 +54,11 @@ class ManageStockViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     preferenceProvider: PreferenceProvider,
-    private val stockManager: StockManager,
+    private val stockManagerRepository: StockManager,
     private val ruleValidationHelper: RuleValidationHelper,
     speechRecognitionManager: SpeechRecognitionManager,
-    private val resources: ResourceManager
+    private val resources: ResourceManager,
+    private val tableModelMapper: TableModelMapper
 ) : SpeechRecognitionAwareViewModel(
     preferenceProvider,
     schedulerProvider,
@@ -86,19 +83,16 @@ class ManageStockViewModel @Inject constructor(
     val operationState: LiveData<OperationState<LiveData<PagedList<StockItem>>>>
         get() = _networkState
 
-    private val _allTableState = MutableStateFlow<List<TableModel>>(mutableListOf())
-    private val allTableState: StateFlow<List<TableModel>> = _allTableState
-
-    private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
+    private val _screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
         TableScreenState(emptyList(), false)
     )
-    val screenState: LiveData<TableScreenState> = _screenState
+    val screenState: StateFlow<TableScreenState> = _screenState
 
-    private val _stockItems: MutableLiveData<PagedList<StockItem>> =
-        MutableLiveData<PagedList<StockItem>>()
+    private val _stockItems: MutableLiveData<List<StockItem>> =
+        MutableLiveData<List<StockItem>>()
 
-    private val _reviewButtonUiState = MutableStateFlow(ButtonUiState())
-    val reviewButtonUiState: StateFlow<ButtonUiState> = _reviewButtonUiState
+    private val _dataEntryUiState = MutableStateFlow(DataEntryUiState())
+    val dataEntryUiState: StateFlow<DataEntryUiState> = _dataEntryUiState
 
     fun setup(transaction: Transaction) {
         _transaction.value = transaction
@@ -110,13 +104,9 @@ class ManageStockViewModel @Inject constructor(
 
     fun refreshData() {
         viewModelScope.launch {
-            getStockItems().asFlow().collect {
-                _stockItems.value = it
-                tableRowData(
-                    it,
-                    resources.getString(R.string.stock),
-                    resources.getString(R.string.quantity)
-                )
+            getStockItems().asFlow().collect { stockItems ->
+                _stockItems.value = stockItems
+                populateTable()
             }
         }
     }
@@ -137,7 +127,8 @@ class ManageStockViewModel @Inject constructor(
     private fun getStockItems() = Transformations.switchMap(search) { q ->
         _networkState.value = OperationState.Loading
 
-        val result = stockManager.search(q, transaction.value?.facility?.uid, config.value!!)
+        val result =
+            stockManagerRepository.search(q, transaction.value?.facility?.uid, config.value!!)
         _itemsAvailableCount.value = result.totalCount
 
         _networkState.postValue(OperationState.Completed)
@@ -197,104 +188,33 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    private fun tableRowData(
-        stockItems: PagedList<StockItem>?,
-        stockLabel: String,
-        qtdLabel: String
-    ) {
-        val tableRowModels = mutableListOf<TableRowModel>()
-
-        _hasData.value = stockItems!!.size > 0
-
-        stockItems?.forEachIndexed { index, item ->
-            val tableRowModel = TableRowModel(
-                rowHeader = RowHeader(
-                    id = item.id,
-                    title = item.name,
-                    row = index
-                ),
-                values = mapOf(
-                    Pair(
-                        0,
-                        TableCell(
-                            id = item.id,
-                            row = index,
-                            column = 0,
-                            editable = false,
-                            value = item.stockOnHand
-                        )
-                    ),
-                    Pair(
-                        1,
-                        TableCell(
-                            id = item.id,
-                            row = index,
-                            column = 1,
-                            value = null,
-                            editable = true
-                        )
-                    )
-                ),
-                maxLines = 3
-            )
-
-            tableRowModels.add(tableRowModel)
-        }
-
-        _allTableState.value = mapTableModel(
-            tableRowModels,
-            stockLabel,
-            qtdLabel
-        )
-
-        _screenState.value = TableScreenState(
-            tables = allTableState.value,
-            selectNext = false
-        )
-    }
-
-    private fun mapTableModel(
-        stocks: List<TableRowModel>,
-        stockLabel: String,
-        qtdLabel: String
-    ) = mutableListOf(
-        TableModel(
-            id = "STOCK",
-            tableHeaderModel = TableHeader(
-                rows = mutableListOf(
-                    TableHeaderRow(
-                        mutableListOf(
-                            TableHeaderCell(stockLabel),
-                            TableHeaderCell(qtdLabel)
-                        )
-                    )
-                )
-            ),
-            tableRows = stocks
-        )
-    )
-
-    fun onCellValueChanged(tableCell: TableCell) {
-        val updatedData = screenState.value?.tables?.map { tableModel ->
-            if (tableModel.hasCellWithId(tableCell.id)) {
-                tableModel.copy(
-                    overwrittenValues = mapOf(
-                        Pair(tableCell.column!!, tableCell)
-                    )
-                )
-            } else {
-                tableModel
-            }
+    private fun populateTable(selectNext: Boolean = false) {
+        val entries: List<StockEntry> = _stockItems.value?.map {
+            itemsCache[it.id] ?: StockEntry(it)
         } ?: emptyList()
 
-        _allTableState.value = updatedData
+        _hasData.value = entries.isNotEmpty()
 
-        _screenState.postValue(
-            TableScreenState(
-                tables = allTableState.value,
-                selectNext = false
-            )
+        val tables = tableModelMapper.map(
+            entries = entries,
+            stockLabel = resources.getString(R.string.stock),
+            qtdLabel = resources.getString(R.string.quantity)
         )
+
+        _screenState.update { currentScreenState ->
+            currentScreenState.copy(
+                tables = tables,
+                selectNext = selectNext
+            )
+        }
+    }
+
+    fun onCellValueChanged(cell: TableCell) {
+        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        stockItem?.let {
+            addItem(it, cell.value, it.stockOnHand, false)
+        }
+        populateTable()
     }
 
     fun onCellClick(cell: TableCell): TextInputModel {
@@ -336,62 +256,10 @@ class ManageStockViewModel @Inject constructor(
                                     val isValid: Boolean = isValidStockOnHand(data)
                                     val stockOnHand = if (isValid) data else it.stockOnHand
                                     addItem(it, cell.value, stockOnHand, !isValid)
-
-                                    _allTableState.value = _allTableState.value.map { tableModel ->
-                                        tableModel.copy(
-                                            tableRows = updateTableRows(tableModel.tableRows, cell)
-                                        )
-                                    }
                                 }
                             }
-
-                            _screenState.postValue(
-                                TableScreenState(
-                                    tables = allTableState.value,
-                                    selectNext = selectNext
-                                )
-                            )
+                            populateTable(selectNext)
                         }
-                    }
-                )
-            }
-        }
-    }
-
-    private fun updateTableRows(
-        tableRowModels: List<TableRowModel>,
-        cell: TableCell
-    ): List<TableRowModel> {
-        return tableRowModels.map { tableRowModel ->
-            if (tableRowModel.values.values.find { tableCell ->
-                tableCell.id == cell.id
-            } != null
-            ) {
-                tableRowModel.copy(
-                    values = updateTableCells(tableRowModel.values, cell)
-                )
-            } else {
-                tableRowModel
-            }
-        }
-    }
-
-    private fun updateTableCells(
-        tableCells: Map<Int, TableCell>,
-        cell: TableCell
-    ): Map<Int, TableCell> {
-        val stockEntry = getPopulatedEntries().find { it.item.id == cell.id }
-        return tableCells.mapValues { (index, tableCell) ->
-            when (index) {
-                0 -> tableCell.copy(
-                    value = stockEntry?.stockOnHand
-                )
-                else -> tableCell.copy(
-                    value = stockEntry?.qty,
-                    error = if (stockEntry?.hasError == true) {
-                        resources.getString(R.string.stock_on_hand_exceeded_message)
-                    } else {
-                        null
                     }
                 )
             }
@@ -444,25 +312,64 @@ class ManageStockViewModel @Inject constructor(
 
     fun getItemCount(): Int = itemsCache.size
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
-        updateReviewButton(isEditing)
+        val step = if (isEditing) DataEntryStep.EDITING else DataEntryStep.LISTING
+        _dataEntryUiState.update { currentUiState ->
+            currentUiState.copy(step = step)
+        }
+        updateReviewButton()
         if (isEditing) {
             onEditionStart.invoke()
         }
     }
 
-    private fun updateReviewButton(isEditing: Boolean = false) {
-        val buttonState: ButtonVisibilityState = if (isEditing || !hasData.value) {
-            ButtonVisibilityState.HIDDEN
-        } else {
-            if (canReview()) {
-                ButtonVisibilityState.ENABLED
-            } else {
-                ButtonVisibilityState.DISABLED
+    private fun updateReviewButton() {
+        val button: ButtonUiState = when (dataEntryUiState.value.step) {
+            DataEntryStep.LISTING -> {
+                val buttonVisibility = if (!hasData.value) {
+                    ButtonVisibilityState.HIDDEN
+                } else if (canReview()) {
+                    ButtonVisibilityState.ENABLED
+                } else {
+                    ButtonVisibilityState.DISABLED
+                }
+                ButtonUiState(visibility = buttonVisibility)
+            }
+            DataEntryStep.EDITING -> {
+                ButtonUiState(visibility = ButtonVisibilityState.HIDDEN)
+            }
+            DataEntryStep.REVIEWING -> {
+                ButtonUiState(
+                    text = R.string.confirm_transaction_label,
+                    icon = R.drawable.search,
+                    visibility = ButtonVisibilityState.ENABLED
+                )
+            }
+            DataEntryStep.COMPLETED -> {
+                ButtonUiState(visibility = ButtonVisibilityState.HIDDEN)
             }
         }
 
-        _reviewButtonUiState.update { currentUiState ->
-            currentUiState.copy(visibility = buttonState)
+        _dataEntryUiState.update { currentUiState ->
+            currentUiState.copy(button = button)
         }
+    }
+
+    fun onButtonClick() {
+        when (dataEntryUiState.value.step) {
+            DataEntryStep.LISTING -> {
+                _dataEntryUiState.update { currentUiState ->
+                    currentUiState.copy(step = DataEntryStep.REVIEWING)
+                }
+                _stockItems.value = _stockItems.value?.filter { itemsCache[it.id] != null }
+                populateTable()
+            }
+            DataEntryStep.REVIEWING -> {
+                // TODO("Should go to complete")
+            }
+            else -> {
+                // Nothing will happen given that the button is hidden
+            }
+        }
+        updateReviewButton()
     }
 }
