@@ -959,6 +959,8 @@ fun VerticalResizingRule(
     Box(
         modifier
             .fillMaxHeight()
+            .width(48.dp)
+            .offset(24.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
@@ -986,12 +988,6 @@ fun VerticalResizingRule(
         Icon(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset {
-                    IntOffset(
-                        15.dp.value.toInt(),
-                        0
-                    )
-                }
                 .background(
                     color = colorPrimary,
                     shape = RoundedCornerShape(16.dp)
