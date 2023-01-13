@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.R
-import org.dhis2.commons.Constants.MAX_ACCOUNTS
 import org.dhis2.usescases.login.accounts.AccountModel
 
 @ExperimentalMaterialApi
@@ -69,13 +67,6 @@ fun AccountsScreen(
                     }
                 }
                 Column(Modifier.padding(16.dp)) {
-                    if (accounts.size == MAX_ACCOUNTS) {
-                        Text(
-                            text = stringResource(R.string.max_accounts_text).format(MAX_ACCOUNTS),
-                            textAlign = TextAlign.Center,
-                            color = colorResource(id = R.color.secondaryColor)
-                        )
-                    }
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -90,7 +81,6 @@ fun AccountsScreen(
                             pressedElevation = 15.dp,
                             disabledElevation = 0.dp
                         ),
-                        enabled = accounts.size < MAX_ACCOUNTS,
                         onClick = { onAddAccountClicked() }
                     ) {
                         Text(

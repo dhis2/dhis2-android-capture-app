@@ -258,7 +258,7 @@ class SMSSyncProviderTest {
 
     private fun mockTrackerSMSVersion(version: SMSVersion) {
         val dhisVersionManager: DHISVersionManager = mock {
-            on { smsVersion } doReturn version
+            on { getSmsVersion() } doReturn version
         }
         whenever(
             d2.systemInfoModule().versionManager()

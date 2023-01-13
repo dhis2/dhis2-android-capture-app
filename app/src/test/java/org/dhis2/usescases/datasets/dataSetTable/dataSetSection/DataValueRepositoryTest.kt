@@ -168,15 +168,11 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .get()
         ) doReturn Single.just(categoryCombos)
 
@@ -264,15 +260,11 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .get()
         ) doReturn Single.just(categoryCombos)
 
@@ -346,15 +338,11 @@ class DataValueRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .get()
         ) doReturn Single.just(categoryCombos)
 
