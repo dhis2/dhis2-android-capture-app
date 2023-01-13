@@ -248,7 +248,6 @@ class EventDetailsRepository(
             .flatMap { program: Program ->
                 d2.categoryModule().categoryCombos()
                     .withCategories()
-                    .withCategoryOptionCombos()
                     .uid(program.categoryComboUid())
                     .get()
             }.blockingGet()
