@@ -172,6 +172,7 @@ class TableRobot(
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
         composeTestRule.waitForIdle()
+        assertKeyBoardVisibility(true)
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 

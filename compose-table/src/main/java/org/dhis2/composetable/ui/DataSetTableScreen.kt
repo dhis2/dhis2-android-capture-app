@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -46,7 +47,8 @@ fun DataSetTableScreen(
     onCellClick: (tableId: String, TableCell) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
-    onSaveValue: (TableCell, selectNext: Boolean) -> Unit
+    onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
+    onRowHeaderResize: (widthDpValue: Float) -> Unit = {}
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -227,7 +229,14 @@ fun DataSetTableScreen(
                 tableList = tableScreenState.tables,
                 editable = true,
                 tableColors = tableColors,
-                tableDimensions = TableTheme.dimensions.copy(
+                tableDimensions = tableScreenState.overwrittenRowHeaderWidth?.let {
+                    TableDimensions(
+                        cellVerticalPadding = 11.dp,
+                        defaultRowHeaderWidth = with(LocalDensity.current) {
+                            tableScreenState.overwrittenRowHeaderWidth.dp.roundToPx()
+                        }
+                    )
+                } ?: TableDimensions(
                     cellVerticalPadding = 11.dp
                 ),
                 tableSelection = tableSelection,
@@ -250,6 +259,10 @@ fun DataSetTableScreen(
                             startEdition()
                             focusRequester.requestFocus()
                         } ?: collapseBottomSheet()
+                    }
+
+                    override fun onRowHeaderSizeChanged(widthDpValue: Float) {
+                        onRowHeaderResize(widthDpValue)
                     }
                 }
             )
