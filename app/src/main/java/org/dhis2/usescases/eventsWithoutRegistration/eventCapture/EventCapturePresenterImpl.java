@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.FieldWithIssue;
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue;
 import org.dhis2.commons.data.tuples.Quartet;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;

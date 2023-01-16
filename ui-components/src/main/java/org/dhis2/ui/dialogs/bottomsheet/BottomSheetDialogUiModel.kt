@@ -1,6 +1,4 @@
-package org.dhis2.commons.dialogs.bottomsheet
-
-import org.dhis2.commons.data.FieldWithIssue
+package org.dhis2.ui.dialogs.bottomsheet
 
 data class BottomSheetDialogUiModel(
     var title: String,

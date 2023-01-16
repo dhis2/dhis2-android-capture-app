@@ -1,4 +1,4 @@
-package org.dhis2.commons.dialogs.bottomsheet
+package org.dhis2.ui.dialogs.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.commons.R
+import org.dhis2.ui.R
 
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,

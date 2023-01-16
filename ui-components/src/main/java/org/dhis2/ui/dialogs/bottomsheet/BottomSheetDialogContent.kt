@@ -1,4 +1,4 @@
-package org.dhis2.commons.dialogs.bottomsheet
+package org.dhis2.ui.dialogs.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,16 +25,16 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.commons.R
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
+import org.dhis2.ui.R
+import org.dhis2.ui.theme.colorPrimary
+import org.dhis2.ui.theme.textPrimary
+import org.dhis2.ui.theme.textSecondary
 
 @Composable
 fun BottomSheetDialogContent(
@@ -63,13 +63,13 @@ fun BottomSheetDialogContent(
             Text(
                 text = bottomSheetDialogUiModel.title,
                 style = MaterialTheme.typography.h5,
-                color = colorResource(id = R.color.textPrimary),
+                color = textPrimary,
                 modifier = Modifier.padding(16.dp)
             )
             Text(
                 text = bottomSheetDialogUiModel.subtitle,
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.textSecondary),
+                color = textSecondary,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -118,9 +118,8 @@ fun BottomSheetDialogContent(
                 modifier = Modifier.testTag(MAIN_BUTTON_TAG),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = bottomSheetDialogUiModel.mainButton.backgroundColor?.let {
-                        colorResource(it)
-                    } ?: colorResource(id = R.color.colorPrimary),
+                    backgroundColor = bottomSheetDialogUiModel.mainButton.backgroundColor
+                        ?: colorPrimary,
                     contentColor = Color.White
                 ),
                 onClick = { onMainButtonClicked() },
@@ -139,13 +138,13 @@ private fun provideButtonContent(
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = "",
-                tint = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified,
+                tint = style.colorResource ?: Color.Unspecified,
                 modifier = Modifier.padding(end = 8.dp)
             )
         }
         Text(
             text = stringResource(id = style.textResource),
-            color = style.colorResource?.let { colorResource(id = it) } ?: Color.Unspecified
+            color = style.colorResource ?: Color.Unspecified
         )
     }
 }
@@ -175,12 +174,12 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
         Column(Modifier.padding(start = 11.dp)) {
             Text(
                 text = fieldWithIssue.fieldName,
-                color = colorResource(id = R.color.textPrimary),
+                color = textPrimary,
                 fontSize = 14.sp
             )
             Text(
                 text = fieldWithIssue.message,
-                color = colorResource(id = R.color.textSecondary),
+                color = textSecondary,
                 fontSize = 14.sp
             )
         }

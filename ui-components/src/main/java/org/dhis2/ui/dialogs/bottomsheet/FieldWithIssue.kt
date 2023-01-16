@@ -1,4 +1,4 @@
-package org.dhis2.commons.data
+package org.dhis2.ui.dialogs.bottomsheet
 
 data class FieldWithIssue(
     val fieldUid: String,
