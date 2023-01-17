@@ -48,7 +48,7 @@ interface SMSSyncProvider {
 
     fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
         val hasCorrectSmsVersion = if (isTrackerSync) {
-            d2.systemInfoModule().versionManager().smsVersion == SMSVersion.V2
+            d2.systemInfoModule().versionManager().getSmsVersion() == SMSVersion.V2
         } else {
             true
         }

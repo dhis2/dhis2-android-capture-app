@@ -82,7 +82,6 @@ class DataValueRepository(
         return d2.categoryModule().categoryCombos()
             .byUid().`in`(categoryCombos)
             .withCategories()
-            .withCategoryOptionCombos()
             .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
             .get().toFlowable()
     }
@@ -106,7 +105,6 @@ class DataValueRepository(
         val finalList = mutableListOf<MutableList<Pair<CategoryOption, Category>>>()
         val categories = d2.categoryModule().categoryCombos()
             .withCategories()
-            .withCategoryOptionCombos()
             .uid(catCombo)
             .blockingGet()
             .categories()

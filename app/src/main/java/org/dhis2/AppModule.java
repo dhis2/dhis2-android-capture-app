@@ -4,10 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.apache.commons.jexl2.JexlEngine;
-import org.dhis2.utils.ExpressionEvaluatorImpl;
 import org.dhis2.commons.resources.ResourceManager;
-import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import javax.inject.Singleton;
 
@@ -27,18 +24,6 @@ public class AppModule {
     @Singleton
     Context context() {
         return application;
-    }
-
-    @Provides
-    @Singleton
-    JexlEngine jexlEngine() {
-        return new JexlEngine();
-    }
-
-    @Provides
-    @Singleton
-    RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull JexlEngine jexlEngine) {
-        return new ExpressionEvaluatorImpl(jexlEngine);
     }
 
     @Provides
