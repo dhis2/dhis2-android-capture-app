@@ -1,22 +1,11 @@
-package org.dhis2.data.user;
-import androidx.annotation.NonNull;
+package org.dhis2.data.user
 
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.user.UserCredentials;
+import io.reactivex.Flowable
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.user.User
 
-import io.reactivex.Flowable;
-
-public class UserRepositoryImpl implements UserRepository {
-
-    private final D2 d2;
-
-    UserRepositoryImpl(D2 d2) {
-        this.d2 = d2;
-    }
-
-    @NonNull
-    @Override
-    public Flowable<UserCredentials> credentials() {
-        return Flowable.fromCallable(() -> d2.userModule().userCredentials().blockingGet());
+class UserRepositoryImpl(private val d2: D2) : UserRepository {
+    override fun credentials(): Flowable<User> {
+        return Flowable.fromCallable { d2.userModule().user().blockingGet() }
     }
 }

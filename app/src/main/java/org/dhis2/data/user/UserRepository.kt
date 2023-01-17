@@ -1,12 +1,8 @@
-package org.dhis2.data.user;
+package org.dhis2.data.user
 
-import androidx.annotation.NonNull;
+import io.reactivex.Flowable
+import org.hisp.dhis.android.core.user.User
 
-import org.hisp.dhis.android.core.user.UserCredentials;
-
-import io.reactivex.Flowable;
-
-public interface UserRepository {
-    @NonNull
-    Flowable<UserCredentials> credentials();
+interface UserRepository {
+    fun credentials(): Flowable<User>
 }

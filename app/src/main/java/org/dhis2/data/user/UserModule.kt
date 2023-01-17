@@ -1,19 +1,15 @@
-package org.dhis2.data.user;
+package org.dhis2.data.user
 
-
-import org.dhis2.commons.di.dagger.PerUser;
-import org.hisp.dhis.android.core.D2;
-
-import dagger.Module;
-import dagger.Provides;
+import dagger.Module
+import dagger.Provides
+import org.dhis2.commons.di.dagger.PerUser
+import org.hisp.dhis.android.core.D2
 
 @Module
-public class UserModule {
-
+class UserModule {
     @Provides
     @PerUser
-    UserRepository userRepository(D2 d2) {
-        return new UserRepositoryImpl(d2);
+    fun userRepository(d2: D2?): UserRepository {
+        return UserRepositoryImpl(d2!!)
     }
-
 }
