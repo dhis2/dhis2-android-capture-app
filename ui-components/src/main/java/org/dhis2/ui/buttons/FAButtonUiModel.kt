@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 
 data class FAButtonUiModel(
     val text: Int,
-    val textColor: Color,
     val icon: Int,
-    val iconTint: Color,
-    val extended: Boolean = true,
+    val contentColor: Color,
+    val containerColor: Color,
+    val expanded: Boolean = true,
     val enabled: Boolean = true
 )

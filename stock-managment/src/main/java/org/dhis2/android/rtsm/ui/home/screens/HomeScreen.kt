@@ -25,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState.ENABLED
-import org.dhis2.android.rtsm.ui.home.model.ButtonVisibilityState.HIDDEN
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.buttons.FAButton
@@ -51,7 +50,7 @@ fun HomeScreen(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             AnimatedVisibility(
-                visible = dataEntryUiState.button.visibility != HIDDEN,
+                visible = dataEntryUiState.button.visibility == ENABLED,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -59,9 +58,9 @@ fun HomeScreen(
                     modifier = Modifier,
                     uiModel = FAButtonUiModel(
                         text = dataEntryUiState.button.text,
-                        textColor = themeColor,
                         icon = dataEntryUiState.button.icon,
-                        iconTint = themeColor,
+                        contentColor = themeColor,
+                        containerColor = Color.White,
                         enabled = dataEntryUiState.button.visibility == ENABLED
                     )
                 ) {
