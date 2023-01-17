@@ -32,7 +32,7 @@ class HomeRepositoryImpl(
     }
 
     override fun hasProgramWithAssignment(): Boolean {
-        return if (d2.userModule().isLogged.blockingGet()) {
+        return if (d2.userModule().isLogged().blockingGet()) {
             !d2.programModule().programStages().byEnableUserAssignment()
                 .isTrue.blockingIsEmpty()
         } else {
