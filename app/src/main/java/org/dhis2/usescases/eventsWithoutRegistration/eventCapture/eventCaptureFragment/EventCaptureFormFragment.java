@@ -21,6 +21,10 @@ import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
@@ -34,6 +38,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     EventCaptureFormPresenter presenter;
 
     private EventCaptureActivity activity;
+    private TeiDashboardMobileActivity teiDashboardMobileActivity;
     private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
@@ -48,44 +53,88 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        this.activity = (EventCaptureActivity) context;
-        activity.eventCaptureComponent.plus(
-                new EventCaptureFormModule(
-                        this,
-                        getArguments().getString(Constants.EVENT_UID))
-        ).inject(this);
-        setRetainInstance(true);
+
+        if (context instanceof EventCaptureActivity) {
+            this.activity = (EventCaptureActivity) context;
+            activity.eventCaptureComponent.plus(
+                    new EventCaptureFormModule(
+                            this,
+                            getArguments().getString(Constants.EVENT_UID))
+            ).inject(this);
+            setRetainInstance(true);
+        }
+
+        if (context instanceof TeiDashboardMobileActivity) {
+            this.teiDashboardMobileActivity = (TeiDashboardMobileActivity) context;
+//            teiDashboardMobileActivity.teiDashboardComponent.plus(
+//                    new TEIDataModule(
+//                            this.teiDashboardMobileActivity ,((TeiDashboardMobileActivity) context).getTeiUid(), ((TeiDashboardMobileActivity) context).getProgramUid(), ((TeiDashboardMobileActivity) context).getEnrollmentUid())
+//            ).inject(this);
+//            setRetainInstance(true);
+        }
+
     }
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        formView = new FormView.Builder()
-                .locationProvider(locationProvider)
-                .onLoadingListener(loading -> {
-                    if (loading) {
-                        activity.showProgress();
-                    } else {
-                        activity.hideProgress();
-                    }
-                    return Unit.INSTANCE;
-                })
-                .onFocused(() -> {
-                    activity.hideNavigationBar();
-                    return Unit.INSTANCE;
-                })
-                .onPercentageUpdate(percentage -> {
-                    activity.updatePercentage(percentage);
-                    return Unit.INSTANCE;
-                })
-                .onDataIntegrityResult(result -> {
-                    presenter.handleDataIntegrityResult(result);
-                    return Unit.INSTANCE;
-                })
-                .factory(activity.getSupportFragmentManager())
-                .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
-                .build();
-        activity.setFormEditionListener(this);
-        super.onCreate(savedInstanceState);
+
+        if (activity != null) {
+            formView = new FormView.Builder()
+                    .locationProvider(locationProvider)
+                    .onLoadingListener(loading -> {
+                        if (loading) {
+                            activity.showProgress();
+                        } else {
+                            activity.hideProgress();
+                        }
+                        return Unit.INSTANCE;
+                    })
+                    .onFocused(() -> {
+                        activity.hideNavigationBar();
+                        return Unit.INSTANCE;
+                    })
+                    .onPercentageUpdate(percentage -> {
+                        activity.updatePercentage(percentage);
+                        return Unit.INSTANCE;
+                    })
+                    .onDataIntegrityResult(result -> {
+                        presenter.handleDataIntegrityResult(result);
+                        return Unit.INSTANCE;
+                    })
+                    .factory(activity.getSupportFragmentManager())
+                    .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
+                    .build();
+            activity.setFormEditionListener(this);
+            super.onCreate(savedInstanceState);
+        } else if (teiDashboardMobileActivity != null) {
+            formView = new FormView.Builder()
+//                    .locationProvider(locationProvider)
+                    .onLoadingListener(loading -> {
+                        if (loading) {
+                            teiDashboardMobileActivity.showProgress();
+                        } else {
+                            teiDashboardMobileActivity.hideProgress();
+                        }
+                        return Unit.INSTANCE;
+                    })
+                    .onFocused(() -> {
+                        teiDashboardMobileActivity.hideNavigationBar();
+                        return Unit.INSTANCE;
+                    })
+                    .onPercentageUpdate(percentage -> {
+                        teiDashboardMobileActivity.updatePercentage(percentage);
+                        return Unit.INSTANCE;
+                    })
+                    .onDataIntegrityResult(result -> {
+                        presenter.handleDataIntegrityResult(result);
+                        return Unit.INSTANCE;
+                    })
+                    .factory(teiDashboardMobileActivity.getSupportFragmentManager())
+                    .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
+                    .build();
+            teiDashboardMobileActivity.setFormEditionListener(this);
+            super.onCreate(savedInstanceState);
+        }
     }
 
     @Nullable
@@ -135,8 +184,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         formView.onSaveClick();
 
-        System.out.println("what what whataaaa??? ");
-        this.activity.executeRules();
+//        if (activity != null) {
+//            this.activity.executeRules();
+//        } else {
+//            this.teiDashboardMobileActivity.executeRules();
+//        }
 
     }
 

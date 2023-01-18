@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.form.model.RowAction;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.commons.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -149,6 +150,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void trackDashboardNotes() {
         matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_NOTES, CLICK);
+    }
+
+    @Override
+    public kotlin.Unit updateEnrollmentFields(RowAction action) {
+        return null;
+    }
+
+    @Override
+    public kotlin.Unit fininshEnrollmentDataEntry() {
+        return null;
     }
 
     @Override

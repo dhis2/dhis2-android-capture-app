@@ -143,9 +143,7 @@ public class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         view.setAttributeValues(teiDataRepository.getAttributeValues(teiUid));
 
         compositeDisposable.add(Single.zip(teiDataRepository.getTrackedEntityInstance(), teiDataRepository.enrollingOrgUnit(),
-//                                teiDataRepository.getAttributeValues(teiUid),
                 Pair::create).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(teiAndOrgUnit -> view.setTrackedEntityInstance(teiAndOrgUnit.val0(), teiAndOrgUnit.val1()
-//                                                teiAndOrgUnit.val2()
         ), Timber::e));
 
         compositeDisposable.add(filterManager.getPeriodRequest().subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(periodRequest -> view.showPeriodRequest(periodRequest.getFirst()), Timber::e));

@@ -16,15 +16,15 @@ import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 
 internal class StageViewHolder(
-    private val binding: ItemStageSectionBinding,
-    private val stageSelector: FlowableProcessor<StageSection>,
-    private val presenter: TEIDataContracts.Presenter
+        private val binding: ItemStageSectionBinding,
+        private val stageSelector: FlowableProcessor<StageSection>,
+        private val presenter: TEIDataContracts.Presenter
 ) :
-    RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
         )
     }
 
@@ -34,35 +34,35 @@ internal class StageViewHolder(
         binding.programStageName.text = stage.displayName()
 
         val color = ColorUtils.getColorFrom(
-            stage.style().color(),
-            ColorUtils.getPrimaryColor(
-                itemView.context,
-                ColorUtils.ColorType.PRIMARY_LIGHT
-            )
+                stage.style().color(),
+                ColorUtils.getPrimaryColor(
+                        itemView.context,
+                        ColorUtils.ColorType.PRIMARY_LIGHT
+                )
         )
 
         val iconResource = ResourceManager(itemView.context).getObjectStyleDrawableResource(
-            stage.style().icon(),
-            R.drawable.ic_default_outline
+                stage.style().icon(),
+                R.drawable.ic_default_outline
         )
 
         binding.composeProgramStageIcon.setUpMetadataIcon(
-            MetadataIconData(
-                programColor = color,
-                iconResource = iconResource,
-                sizeInDp = 40
-            ),
-            false
+                MetadataIconData(
+                        programColor = color,
+                        iconResource = iconResource,
+                        sizeInDp = 40
+                ),
+                false
         )
 
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
 
         binding.addStageButton.visibility =
-            if (eventItem.canShowAddButton()) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+                if (eventItem.canShowAddButton()) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
         binding.lastUpdatedEvent.visibility = when (binding.addStageButton.visibility) {
             View.VISIBLE -> View.GONE
             else -> View.VISIBLE
@@ -71,9 +71,13 @@ internal class StageViewHolder(
             stageSelector.onNext(StageSection(stage.uid(), true))
         }
         binding.programStageCount.text =
-            "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"
+                "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"
 
-        itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
+        itemView.setOnClickListener {
+
+            System.out.println("stage selection called " + stage.displayName())
+            stageSelector.onNext(StageSection(stage.uid(), false))
+        }
 
         if (eventItem.isSelected) {
             binding.addStageButton.post {

@@ -29,6 +29,7 @@ import org.dhis2.commons.data.StageSection;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.databinding.FragmentTeiDataBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
@@ -44,6 +45,7 @@ import org.dhis2.commons.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.resources.ObjectStyleUtils;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog;
 import org.dhis2.utils.dialFloatingActionButton.DialItem;
@@ -67,6 +69,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -277,10 +280,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
 
-        System.out.println("00000000000000000000000000000000000000000");
-        System.out.println(nprogram);
-        System.out.println(nprogram.getCurrentEnrollment());
-
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             binding.dialFabLayout.setFabVisible(true);
             presenter.setDashboardProgram(this.dashboardModel);
@@ -338,6 +337,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public Flowable<StageSection> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
+
+        System.out.println("observing stage selector :: ");
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram);
             adapter.setEnrollment(currentEnrollment);
@@ -349,9 +352,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void setEvents(List<EventViewModel> events, boolean canAddEvents) {
 
+        System.out.println("setting events ::: ");
+
         binding.setCanAddEvents(canAddEvents);
 
         if (events.isEmpty()) {
+
+            System.out.println("empty events");
             binding.emptyTeis.setVisibility(View.VISIBLE);
             if (binding.dialFabLayout.isFabVisible()) {
                 binding.emptyTeis.setText(R.string.empty_tei_add);
@@ -359,12 +366,31 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 binding.emptyTeis.setText(R.string.empty_tei_no_add);
             }
         } else {
+
+            System.out.println("there is events");
+            System.out.println(events.size());
+            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvv");
+
             binding.emptyTeis.setVisibility(View.GONE);
             adapter.submitList(events);
+
+            List<Event> currentSectionEvents = events.stream()
+                    .filter(eventViewModel -> eventViewModel.getType() == EventViewModelType.EVENT)
+                    .map(EventViewModel::getEvent)
+                    .collect(Collectors.toList());
+
+            if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
+                ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
+            }
 
             for (EventViewModel eventViewModel : events) {
                 if (eventViewModel.getType() == EventViewModelType.EVENT) {
                     Event event = eventViewModel.getEvent();
+
+                    System.out.println(event.eventDate());
+                    System.out.println(event.completedDate());
+                    System.out.println("ddddddddddddddddddddddddddd");
+
                     if (event.eventDate() != null) {
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));

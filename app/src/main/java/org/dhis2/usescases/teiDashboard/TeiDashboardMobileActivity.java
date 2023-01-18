@@ -20,6 +20,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -32,12 +33,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterManager;
@@ -46,8 +49,13 @@ import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
 import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.form.model.EnrollmentMode;
+import org.dhis2.form.model.EnrollmentRecords;
+import org.dhis2.form.ui.FormView;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
@@ -61,6 +69,8 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import kotlin.Unit;
@@ -71,6 +81,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final int OVERVIEW_POS = 0;
 
     private int currentOrientation = -1;
+
+    private FormView formView;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
@@ -95,14 +107,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
-
+    public TeiDashboardComponent teiDashboardComponent;
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
-
     private MutableLiveData<Boolean> groupByStage;
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
     private MutableLiveData<Boolean> relationshipMap;
+    private OnEditionListener onEditionListener;
     private float elevation = 0f;
     private static final String TEI_SYNC = "SYNC_TEI";
     private boolean restartingActivity = false;
@@ -124,6 +136,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(PROGRAM_UID);
@@ -133,7 +146,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this))).inject(this);
+        teiDashboardComponent = ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid, OrientationUtilsKt.isPortrait(this)));
+        teiDashboardComponent.inject(this);
         setTheme(themeManager.getProgramTheme());
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -219,6 +233,30 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.syncButton.setOnClickListener(v -> {
             openSyncDialog();
         });
+
+        if (OrientationUtilsKt.isLandscape()) {
+            formView = new FormView.Builder().locationProvider(locationProvider).onItemChangeListener(action -> {
+                        presenter.updateEnrollmentFields(action);
+
+                        // TODO : investigate the return
+                        return Unit.INSTANCE;
+                    }).onLoadingListener(loading -> {
+                        if (loading) {
+                            // TODO : activity.showProgress();
+                        } else {// TODO : activity.hideProgress();
+                        }
+                        return Unit.INSTANCE;
+                    }).onFinishDataEntry(
+                            () -> presenter.fininshEnrollmentDataEntry()
+                    )
+//                    .resultDialogUiProvider()
+                    .factory(getSupportFragmentManager()).setRecords(new EnrollmentRecords(enrollmentUid, EnrollmentMode.NEW)).build();
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.tei_form_view, formView)
+                    .commitAllowingStateLoss();
+        }
     }
 
     @Override
@@ -379,6 +417,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
+
+
         } else {
             if (binding.teiPager.getAdapter() == null) {
                 setViewpagerAdapter();
@@ -507,12 +547,57 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
     }
 
+    public void showProgress() {
+    }
+
+    public void hideProgress() {
+    }
+
+    public void hideNavigationBar() {
+    }
+
+    public void updatePercentage(float primaryValue) {
+    }
+
+    public void setFormEditionListener(OnEditionListener onEditionListener) {
+        this.onEditionListener = onEditionListener;
+    }
+
+
     public String getTeiUid() {
         return teiUid;
     }
 
+    public String getEnrollmentUid() {
+        return enrollmentUid;
+    }
+
     public String getProgramUid() {
         return programUid;
+    }
+
+    public void openEventForm(String eventUidFromFragment) {
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof FormView) {
+                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), EventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+            }
+        }
+
+//        if(fragments.size() > 0){
+//            System.out.println("fragmentsssss ::::: ");
+//            System.out.println(fragments.get(0).getTag());
+//            System.out.println(fragments.get(0).getId());
+//            System.out.println(fragments.get(0).getContext());
+//            System.out.println(fragments.get(0).getActivity());
+//            System.out.println(fragments.get(0).getView());
+//            System.out.println(fragments.get(0).getClass());
+//            System.out.println(fragments.size());
+//        }
+
+
     }
 
     public void toRelationships() {

@@ -66,6 +66,24 @@
             android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+<!--        <androidx.compose.ui.platform.ComposeView-->
+<!--            android:id="@+id/followupButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/data_layout"-->
+<!--            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/lockButton"/>-->
+
+<!--        <androidx.compose.ui.platform.ComposeView-->
+<!--            android:id="@+id/lockButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/data_layout"-->
+<!--            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
+
         <ImageView
             android:id="@+id/follow_up"
             android:layout_width="24dp"

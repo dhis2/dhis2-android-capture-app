@@ -161,6 +161,13 @@
             app:layout_constraintGuide_percent=".50" />
 
         <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline625"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".625" />
+
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline75"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -172,8 +179,17 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintEnd_toStartOf="@id/guideline25"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <FrameLayout
+            android:id="@+id/tei_form_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline625"
+            app:layout_constraintStart_toEndOf="@id/guideline25"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <androidx.viewpager2.widget.ViewPager2
@@ -182,7 +198,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/navigationBar"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintStart_toEndOf="@id/guideline625"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
@@ -191,8 +207,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guideline75"
-            app:layout_constraintStart_toStartOf="@id/guideline25"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline625"
             app:forceShowAnalytics="true"
             app:menu="@menu/navigation_dashboard_landscape_menu" />
     </androidx.constraintlayout.widget.ConstraintLayout>

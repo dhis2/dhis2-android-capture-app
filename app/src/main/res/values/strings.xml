@@ -894,7 +894,7 @@
     <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
     <string name="customactivityoncrash_error_activity_device">Device: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
-    <string name="open_details">Open %s details</string>
+    <string name="open_details">%s details</string>
     <string name="syncing_resource">Syncing %s…</string>
     <string name="sms_sync_waiting_for_response">SMS sent. Waiting for server response.</string>
     <string name="sms_sync_sms_reached_server">SMS confirmed to reach server. Updating Status</string>

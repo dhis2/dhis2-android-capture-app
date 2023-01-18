@@ -1,8 +1,11 @@
 package org.dhis2.usescases.teiDashboard;
 
+import org.dhis2.form.model.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+
+import kotlin.Unit;
 
 public class TeiDashboardContracts {
 
@@ -82,5 +85,9 @@ public class TeiDashboardContracts {
         void trackDashboardRelationships();
 
         void trackDashboardNotes();
+
+        Unit updateEnrollmentFields(RowAction action);
+
+        Unit fininshEnrollmentDataEntry();
     }
 }

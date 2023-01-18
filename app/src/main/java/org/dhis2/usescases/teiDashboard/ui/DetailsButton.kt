@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -29,10 +30,13 @@ fun DetailsButton(
 ) {
     OutlinedButton(
         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(20.dp),
         onClick = onButtonClicked,
         modifier = Modifier.fillMaxWidth()
     ) {
+
+        trackedEntityName.replaceFirstChar { it.uppercase() };
+
         Icon(
             painter = painterResource(id = R.drawable.ic_navigation_details),
             contentDescription = "details",
@@ -40,8 +44,7 @@ fun DetailsButton(
         )
         Text(
             text = stringResource(id = R.string.open_details)
-                .format(trackedEntityName)
-                .toUpperCase(Locale.current),
+                .format(trackedEntityName),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.primary,
