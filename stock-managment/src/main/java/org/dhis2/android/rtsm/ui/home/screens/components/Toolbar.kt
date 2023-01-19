@@ -40,7 +40,7 @@ fun Toolbar(
     from: String,
     to: String?,
     themeColor: Color,
-    navigationAction: () -> Unit,
+    launchBottomSheet: () -> Unit,
     backdropState: BackdropScaffoldState,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
@@ -110,7 +110,11 @@ fun Toolbar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = { navigationAction() }) {
+            IconButton(
+                onClick = {
+                    launchBottomSheet.invoke()
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back)

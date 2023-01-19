@@ -24,7 +24,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +46,9 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
+import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
-import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.dhis2.commons.orgunitdialog.CommonOrgUnitDialog
@@ -60,10 +60,12 @@ var orgUnitName: String? = null
 
 @Preview
 @Composable
-fun DropdownComponent(
-    viewModel: HomeViewModel,
+fun DropdownComponentTransactions(
+    onTransitionSelected: (transition: TransactionType) -> Unit,
+    hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
-    data: MutableList<TransactionItem>
+    data: MutableList<TransactionItem>,
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -154,12 +156,30 @@ fun DropdownComponent(
                 data.forEachIndexed { index, item ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.selectTransaction(item.transactionType)
-                            selectedIndex = index
-
-                            itemIcon = item.icon
-                            selectedText = capitalizeText(item.transactionType.name)
-                            isExpanded = false
+                            if (selectedIndex != index && hasUnsavedData) {
+                                launchDialog.invoke(R.string.transaction_discarted) { result ->
+                                    when (result) {
+                                        EditionDialogResult.DISCARD -> {
+                                            // Perform the transaction change and clear data
+                                            onTransitionSelected.invoke(item.transactionType)
+                                            selectedIndex = index
+                                            itemIcon = item.icon
+                                            selectedText = capitalizeText(item.transactionType.name)
+                                            isExpanded = false
+                                        }
+                                        EditionDialogResult.KEEP -> {
+                                            // Leave it as it was
+                                            isExpanded = false
+                                        }
+                                    }
+                                }
+                            } else {
+                                onTransitionSelected.invoke(item.transactionType)
+                                selectedIndex = index
+                                itemIcon = item.icon
+                                selectedText = capitalizeText(item.transactionType.name)
+                                isExpanded = false
+                            }
                         }
                     ) {
                         Row(
@@ -194,35 +214,28 @@ fun DropdownComponent(
 
 @Composable
 fun DropdownComponentFacilities(
-    viewModel: HomeViewModel,
+    settingsUiState: SettingsUiState,
+    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
+    hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
-    data: List<OrganisationUnit>
+    data: List<OrganisationUnit>,
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
-
     var selectedText by remember { mutableStateOf("") }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    var selectedIndex by remember { mutableStateOf(-1) }
-    val paddingValue = if (selectedIndex >= 0) {
-        4.dp
-    } else {
-        0.dp
-    }
-
-    val icon = if (isExpanded) {
-        painterResource(id = R.drawable.ic_arrow_drop_up)
-    } else {
-        painterResource(id = R.drawable.ic_arrow_drop_down)
-    }
-
-    val settingsUiState by viewModel.settingsUiState.collectAsState()
-
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
-        openOrgUnitTreeSelector(supportFragmentManager, data, viewModel, settingsUiState)
+        openOrgUnitTreeSelector(
+            supportFragmentManager,
+            data,
+            settingsUiState,
+            hasUnsavedData,
+            onFacilitySelected,
+            launchDialog
+        )
     }
 
     Column(Modifier.padding(horizontal = 16.dp)) {
@@ -260,12 +273,18 @@ fun DropdownComponentFacilities(
                         openOrgUnitTreeSelector(
                             supportFragmentManager,
                             data,
-                            viewModel,
-                            settingsUiState
+                            settingsUiState,
+                            hasUnsavedData,
+                            onFacilitySelected,
+                            launchDialog
                         )
                     }
                 ) {
-                    Icon(icon, contentDescription = null, tint = themeColor)
+                    Icon(
+                        painterResource(id = R.drawable.ic_arrow_drop_down),
+                        contentDescription = null,
+                        tint = themeColor
+                    )
                 }
             },
             shape = RoundedCornerShape(30.dp),
@@ -279,58 +298,17 @@ fun DropdownComponentFacilities(
             interactionSource = interactionSource,
             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black)
         )
-
-        MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
-            DropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
-                offset = DpOffset(x = 0.dp, y = 2.dp)
-            ) {
-                data.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedText = capitalizeText(item.displayName().toString())
-                            isExpanded = false
-                            selectedIndex = index
-
-                            viewModel.setFacility(item)
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    color = if (selectedIndex == index) {
-                                        colorResource(R.color.bg_gray_f1f)
-                                    } else {
-                                        Color.White
-                                    },
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(
-                                    start = 8.dp, top = paddingValue,
-                                    end = 8.dp, bottom = paddingValue
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Text(text = capitalizeText(item.displayName().toString()))
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
 @Composable
 fun DropdownComponentDistributedTo(
-    viewModel: HomeViewModel,
+    onDestinationSelected: (destination: Option) -> Unit,
+    hasUnsavedData: Boolean,
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
-    isDestinationSelected: (value: String) -> Unit = { }
+    isDestinationSelected: (value: String) -> Unit = { },
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -421,12 +399,29 @@ fun DropdownComponentDistributedTo(
                 data.forEachIndexed { index, item ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedText = capitalizeText(item.displayName().toString())
-                            isExpanded = false
-
-                            selectedIndex = index
-
-                            viewModel.setDestination(item)
+                            if (selectedIndex != index && hasUnsavedData) {
+                                launchDialog.invoke(R.string.transaction_discarted) { result ->
+                                    when (result) {
+                                        EditionDialogResult.DISCARD -> {
+                                            // Perform the transaction change and clear data
+                                            selectedText =
+                                                capitalizeText(item.displayName().toString())
+                                            isExpanded = false
+                                            selectedIndex = index
+                                            onDestinationSelected.invoke(item)
+                                        }
+                                        EditionDialogResult.KEEP -> {
+                                            // Leave it as it was
+                                            isExpanded = false
+                                        }
+                                    }
+                                }
+                            } else {
+                                selectedText = capitalizeText(item.displayName().toString())
+                                isExpanded = false
+                                selectedIndex = index
+                                onDestinationSelected.invoke(item)
+                            }
                         }
                     ) {
                         Row(
@@ -459,8 +454,10 @@ fun DropdownComponentDistributedTo(
 fun openOrgUnitTreeSelector(
     supportFragmentManager: FragmentManager,
     data: List<OrganisationUnit>,
-    viewModel: HomeViewModel,
-    settingsUiState: SettingsUiState
+    settingsUiState: SettingsUiState,
+    hasUnsavedData: Boolean,
+    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit
 ) {
     val orgUnitDialog = CommonOrgUnitDialog()
 
@@ -471,10 +468,27 @@ fun openOrgUnitTreeSelector(
         .setProgram(settingsUiState.programUid)
         .setPossitiveListener {
             if (orgUnitDialog.selectedOrgUnitModel != null) {
-                viewModel.setFacility(orgUnitDialog.selectedOrgUnitModel)
-                orgUnitData = orgUnitDialog.selectedOrgUnitModel
+                if (orgUnitData != orgUnitDialog.selectedOrgUnitModel && hasUnsavedData) {
+                    launchDialog.invoke(R.string.transaction_discarted) { result ->
+                        when (result) {
+                            EditionDialogResult.DISCARD -> {
+                                // Perform the transaction change and clear data
+                                onFacilitySelected.invoke(orgUnitDialog.selectedOrgUnitModel)
+                                orgUnitData = orgUnitDialog.selectedOrgUnitModel
+                                orgUnitDialog.dismiss()
+                            }
+                            EditionDialogResult.KEEP -> {
+                                // Leave it as it was
+                                orgUnitDialog.dismiss()
+                            }
+                        }
+                    }
+                } else {
+                    onFacilitySelected.invoke(orgUnitDialog.selectedOrgUnitModel)
+                    orgUnitData = orgUnitDialog.selectedOrgUnitModel
+                    orgUnitDialog.dismiss()
+                }
             }
-            orgUnitDialog.dismiss()
         }
         .setNegativeListener {
             orgUnitDialog.dismiss()

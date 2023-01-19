@@ -9,15 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
@@ -26,25 +19,25 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 @Composable
-fun filterList(
+fun FilterList(
     viewModel: HomeViewModel,
+    hasUnsavedData: Boolean,
     themeColor: Color,
-    supportFragmentManager: FragmentManager
-): Dp {
+    supportFragmentManager: FragmentManager,
+    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
+    onTransitionSelected: (transition: TransactionType) -> Unit,
+    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
+    onDestinationSelected: (destination: Option) -> Unit
+) {
     val facilities = viewModel.facilities.collectAsState().value
     val destinations = viewModel.destinationsList.collectAsState().value
-    val showDestination =
-        viewModel.settingsUiState.collectAsState().value.transactionType == DISTRIBUTION
-
-    // get local density from composable
-    val localDensity = LocalDensity.current
-    var heightIs by remember {
-        mutableStateOf(0.dp)
-    }
+    val settingsUiState by viewModel.settingsUiState.collectAsState()
+    val showDestination = settingsUiState.transactionType == DISTRIBUTION
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -56,27 +49,26 @@ fun filterList(
                     easing = LinearOutSlowInEasing
                 )
             )
-            .onSizeChanged { coordinates ->
-                heightIs = with(localDensity) { coordinates.height.toDp() }
-            }
-            .onGloballyPositioned { coordinates ->
-                heightIs = with(localDensity) { coordinates.size.height.toDp() }
-            }
     ) {
         item {
-            DropdownComponent(
-                viewModel,
+            DropdownComponentTransactions(
+                onTransitionSelected,
+                hasUnsavedData,
                 themeColor,
-                mapTransaction()
+                mapTransaction(),
+                launchDialog
             )
         }
 
         item {
             DropdownComponentFacilities(
-                viewModel,
+                settingsUiState,
+                onFacilitySelected,
+                hasUnsavedData,
                 themeColor,
                 supportFragmentManager,
-                getFacilities(facilities)
+                getFacilities(facilities),
+                launchDialog
             )
         }
 
@@ -85,15 +77,16 @@ fun filterList(
                 val result = destinations.result as List<Option>
                 item {
                     DropdownComponentDistributedTo(
-                        viewModel,
+                        onDestinationSelected,
+                        hasUnsavedData,
                         themeColor,
-                        result
+                        result,
+                        launchDialog = launchDialog
                     )
                 }
             }
         }
     }
-    return heightIs
 }
 
 private fun mapTransaction(): MutableList<TransactionItem> {

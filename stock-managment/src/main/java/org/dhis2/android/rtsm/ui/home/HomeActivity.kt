@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
@@ -49,17 +50,19 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
     private val manageStockViewModel: ManageStockViewModel by viewModels()
     private var themeColor = R.color.colorPrimary
     private lateinit var filterManager: FilterManager
-    private var orgUnitList = listOf<OrganisationUnit>()
     private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
+    var onBackPressed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.orgUnitList.observe(
-            this
-        ) {
-            orgUnitList = it
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPressed?.invoke()
+            }
         }
+        onBackPressedDispatcher.addCallback(this, callback)
+
         filterManager = FilterManager.getInstance()
         intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
             ?.let { manageStockViewModel.setConfig(it) }
@@ -210,7 +213,7 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
             registerForActivityResult(
                 ScanContract()
             ) { scanIntentResult ->
-                if (scanIntentResult.getContents() == null) {
+                if (scanIntentResult.contents == null) {
                     Toast.makeText(this, "Scan cancelled!", Toast.LENGTH_SHORT).show()
                 } else {
                     onScanCompleted(

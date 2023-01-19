@@ -280,4 +280,7 @@
     <string name="from_facility">From facility</string>
     <string name="to_facility">To facility</string>
     <string name="stock">Stock</string>
+    <string name="not_saved">Not saved</string>
+    <string name="transaction_not_confirmed">The transaction has not been confirmed. If you exit now the data entered will be discarded.</string>
+    <string name="transaction_discarted">This transaction has not been confirmed. If you change the settings, the data entered will be discarted.</string>
 </resources>
