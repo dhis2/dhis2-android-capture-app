@@ -1,5 +1,6 @@
 package org.dhis2.ui.buttons
 
+import androidx.annotation.StringRes
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -13,23 +14,24 @@ import org.dhis2.ui.R
 
 @Composable
 fun FAButton(
-    modifier: Modifier,
-    uiModel: FAButtonUiModel,
+    modifier: Modifier = Modifier,
+    @StringRes text: Int,
+    contentColor: Color,
+    containerColor: Color,
+    expanded: Boolean = true,
+    enabled: Boolean = true,
+    icon: @Composable
+    () -> Unit,
     onClick: () -> Unit
 ) {
     ExtendedFloatingActionButton(
         onClick = onClick,
         modifier = modifier,
-        expanded = uiModel.expanded,
-        icon = {
-            Icon(
-                painter = painterResource(id = uiModel.icon),
-                contentDescription = stringResource(uiModel.text)
-            )
-        },
-        text = { Text(text = stringResource(uiModel.text)) },
-        contentColor = uiModel.contentColor,
-        containerColor = uiModel.containerColor
+        expanded = expanded,
+        icon = icon,
+        text = { Text(text = stringResource(text)) },
+        contentColor = contentColor,
+        containerColor = containerColor
     )
 }
 
@@ -38,13 +40,16 @@ fun FAButton(
 fun ExtendedFAButtonPreview() {
     FAButton(
         modifier = Modifier,
-        uiModel = FAButtonUiModel(
-            text = R.string.button_extended,
-            icon = R.drawable.ic_home_positive,
-            contentColor = Color.DarkGray,
-            containerColor = Color.LightGray,
-            expanded = true
-        )
+        text = R.string.button_extended,
+        contentColor = Color.DarkGray,
+        containerColor = Color.LightGray,
+        expanded = true,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_home_positive),
+                contentDescription = null
+            )
+        }
     ) {
     }
 }
