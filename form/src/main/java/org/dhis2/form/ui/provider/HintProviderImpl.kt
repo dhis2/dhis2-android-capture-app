@@ -36,5 +36,6 @@ class HintProviderImpl(val context: Context) : HintProvider {
             ValueType.DATE -> context.getString(R.string.choose_date)
             ValueType.REFERENCE -> ""
             ValueType.GEOJSON -> ""
+            ValueType.MULTI_TEXT -> ""
         }
 }
