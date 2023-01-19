@@ -441,3 +441,13 @@ fun saveListToPreference(context: Context, uid: String, list: List<String>) {
     )
         .edit().putString(uid, json).apply()
 }
+
+@BindingAdapter("iconIsClickable")
+fun setDescriptionIconVisibility(imageView: View, item: FieldUiModel) {
+    imageView.isClickable = false
+    if (item.style?.getDescriptionIcon() != null) {
+        if (!item.value.isNullOrEmpty() && item.error.isNullOrEmpty()) {
+            imageView.isClickable = true
+        }
+    }
+}

@@ -3,6 +3,7 @@ package org.dhis2.form.ui
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.app.TimePickerDialog
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -97,6 +98,7 @@ class FormView : Fragment() {
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
     private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private var actionIconsActivate: Boolean = true
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -501,6 +503,31 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
+            is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
+        }
+    }
+
+    private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {
+        if (actionIconsActivate) {
+            val intent = Intent(uiEvent.action).apply {
+                when (uiEvent.action) {
+                    Intent.ACTION_DIAL -> {
+                        data = Uri.parse("tel:${uiEvent.value}")
+                    }
+                    Intent.ACTION_SENDTO -> {
+                        data = Uri.parse("mailto:${uiEvent.value}")
+                    }
+                }
+            }
+
+            val title = resources.getString(R.string.open_with)
+            val chooser = Intent.createChooser(intent, title)
+
+            try {
+                startActivity(chooser)
+            } catch (e: ActivityNotFoundException) {
+                Timber.e("No activity found that can handle this action")
+            }
         }
     }
 
@@ -967,12 +994,14 @@ class FormView : Fragment() {
         locationProvider: LocationProvider?,
         needToForceUpdate: Boolean,
         completionListener: ((percentage: Float) -> Unit)?,
-        resultDialogUiProvider: EnrollmentResultDialogUiProvider?
+        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+        actionIconsActivate: Boolean
     ) {
         this.locationProvider = locationProvider
         this.needToForceUpdate = needToForceUpdate
         this.completionListener = completionListener
         this.resultDialogUiProvider = resultDialogUiProvider
+        this.actionIconsActivate = actionIconsActivate
     }
 
     internal fun setCallbackConfiguration(
@@ -1007,6 +1036,7 @@ class FormView : Fragment() {
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
         private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+        private var actionIconsActive: Boolean = true
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -1073,6 +1103,9 @@ class FormView : Fragment() {
         fun setRecords(records: FormRepositoryRecords) =
             apply { this.records = records }
 
+        fun setActionIconsActivation(activate: Boolean) =
+            apply { this.actionIconsActive = activate }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
@@ -1092,7 +1125,8 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    resultDialogUiProvider
+                    resultDialogUiProvider,
+                    actionIconsActive
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(
