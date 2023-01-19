@@ -198,7 +198,15 @@ class ManageStockViewModel @Inject constructor(
     }
 
     private fun populateTable(selectNext: Boolean = false) {
-        val entries: List<StockEntry> = _stockItems.value?.map {
+        val items = when (dataEntryUiState.value.step) {
+            DataEntryStep.REVIEWING ->
+                _stockItems.value?.filter {
+                    itemsCache[it.id] != null
+                }
+            else -> _stockItems.value
+        }
+
+        val entries: List<StockEntry> = items?.map {
             itemsCache[it.id] ?: StockEntry(it)
         } ?: emptyList()
 
@@ -247,47 +255,42 @@ class ManageStockViewModel @Inject constructor(
     ) {
         populateTable(selectNext)
         viewModelScope.launch {
-            saveValue(cell, selectNext)
+            saveValue(cell)
         }
     }
 
-    private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
-        withContext(Dispatchers.IO) {
-            val stockItem = _stockItems.value?.find { it.id == cell.id }
-            stockItem?.let {
-                cell.value?.let { value ->
-                    setQuantity(
-                        it, 0, value,
-                        object : ItemWatcher.OnQuantityValidated {
-                            override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                                // When user taps on done or next. We should apply program rules here
-                                ruleEffects.forEach { ruleEffect ->
-                                    if (ruleEffect.ruleAction() is RuleActionAssign &&
-                                        (
-                                            (ruleEffect.ruleAction() as RuleActionAssign).field()
-                                                == config.value?.stockOnHand
-                                            )
-                                    ) {
-                                        val data = ruleEffect.data()
-                                        val isValid: Boolean = isValidStockOnHand(data)
-                                        val stockOnHand = if (isValid) data else it.stockOnHand
-                                        addItem(it, cell.value, stockOnHand, !isValid)
-                                    }
+    private suspend fun saveValue(cell: TableCell) = withContext(Dispatchers.IO) {
+        val stockItem = _stockItems.value?.find { it.id == cell.id }
+        stockItem?.let {
+            cell.value?.let { value ->
+                setQuantity(
+                    it, 0, value,
+                    object : ItemWatcher.OnQuantityValidated {
+                        override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                            // When user taps on done or next. We should apply program rules here
+                            ruleEffects.forEach { ruleEffect ->
+                                if (ruleEffect.ruleAction() is RuleActionAssign &&
+                                    (
+                                        (ruleEffect.ruleAction() as RuleActionAssign).field()
+                                            == config.value?.stockOnHand
+                                        )
+                                ) {
+                                    val data = ruleEffect.data()
+                                    val isValid: Boolean = isValidStockOnHand(data)
+                                    val stockOnHand = if (isValid) data else it.stockOnHand
+                                    addItem(it, cell.value, stockOnHand, !isValid)
                                 }
-                                populateTable()
                             }
+                            populateTable()
                         }
-                    )
-                }
+                    }
+                )
             }
         }
+    }
 
     fun onSearchQueryChanged(query: String) {
         searchRelay.accept(query)
-    }
-
-    fun onScanCompleted(itemCode: String) {
-        search.postValue(SearchParametersModel(null, itemCode, transaction.value?.facility?.uid!!))
     }
 
     fun setQuantity(
@@ -314,8 +317,6 @@ class ManageStockViewModel @Inject constructor(
         hasUnsavedData(true)
     }
 
-    fun removeItemFromCache(item: StockItem) = itemsCache.remove(item.id) != null
-
     fun cleanItemsFromCache() {
         hasUnsavedData(false)
         itemsCache.clear()
@@ -327,28 +328,34 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    fun hasError(item: StockItem) = itemsCache[item.id]?.hasError ?: false
-
     private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.hasError }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
 
     fun getData(): ReviewStockData = ReviewStockData(transaction.value!!, getPopulatedEntries())
 
-    fun getItemCount(): Int = itemsCache.size
     fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
-        val step = if (isEditing) DataEntryStep.EDITING else DataEntryStep.LISTING
-        _dataEntryUiState.update { currentUiState ->
-            currentUiState.copy(step = step)
+        val step = when (dataEntryUiState.value.step) {
+            DataEntryStep.LISTING -> if (isEditing) DataEntryStep.EDITING else null
+            DataEntryStep.EDITING -> if (!isEditing) DataEntryStep.LISTING else null
+            else -> null
         }
-        updateReviewButton()
+        step?.let { updateStep(it) }
         if (isEditing) {
             onEditionStart.invoke()
         }
     }
 
-    private fun updateReviewButton() {
-        val button: ButtonUiState = when (dataEntryUiState.value.step) {
+    private fun updateStep(step: DataEntryStep) {
+        _dataEntryUiState.update { currentUiState ->
+            currentUiState.copy(step = step)
+        }
+        updateReviewButton(step)
+        populateTable()
+    }
+
+    private fun updateReviewButton(step: DataEntryStep) {
+        val button: ButtonUiState = when (step) {
             DataEntryStep.LISTING -> {
                 val buttonVisibility = hasData.value && canReview()
                 ButtonUiState(
@@ -384,11 +391,7 @@ class ManageStockViewModel @Inject constructor(
     fun onButtonClick() {
         when (dataEntryUiState.value.step) {
             DataEntryStep.LISTING -> {
-                _dataEntryUiState.update { currentUiState ->
-                    currentUiState.copy(step = DataEntryStep.REVIEWING)
-                }
-                _stockItems.value = _stockItems.value?.filter { itemsCache[it.id] != null }
-                populateTable()
+                updateStep(DataEntryStep.REVIEWING)
             }
             DataEntryStep.REVIEWING -> {
                 // TODO("Should go to complete")
@@ -397,6 +400,16 @@ class ManageStockViewModel @Inject constructor(
                 // Nothing will happen given that the button is hidden
             }
         }
-        updateReviewButton()
+    }
+
+    fun onHandleBackNavigation() {
+        val backStep = when (dataEntryUiState.value.step) {
+            DataEntryStep.REVIEWING -> DataEntryStep.LISTING
+            else -> null
+        }
+
+        backStep?.let {
+            updateStep(it)
+        }
     }
 }

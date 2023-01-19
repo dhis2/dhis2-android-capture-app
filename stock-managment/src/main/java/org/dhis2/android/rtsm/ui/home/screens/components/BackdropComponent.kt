@@ -51,7 +51,12 @@ fun Backdrop(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
 
     (activity as HomeActivity).onBackPressed = {
-        handleBackNavigation(activity, dataEntryUiState, supportFragmentManager)
+        handleBackNavigation(
+            activity,
+            dataEntryUiState,
+            supportFragmentManager,
+            manageStockViewModel
+        )
     }
 
     BackdropScaffold(
@@ -153,7 +158,8 @@ fun Backdrop(
 fun handleBackNavigation(
     activity: HomeActivity,
     dataEntryUiState: DataEntryUiState,
-    supportFragmentManager: FragmentManager
+    supportFragmentManager: FragmentManager,
+    viewModel: ManageStockViewModel
 ) {
     when (dataEntryUiState.step) {
         DataEntryStep.LISTING -> {
@@ -171,6 +177,7 @@ fun handleBackNavigation(
                 activity.finish()
             }
         }
+        DataEntryStep.REVIEWING -> viewModel.onHandleBackNavigation()
         else -> {
             // TODO Implement next steps back behaviour
         }
