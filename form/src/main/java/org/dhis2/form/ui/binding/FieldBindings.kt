@@ -445,9 +445,10 @@ fun saveListToPreference(context: Context, uid: String, list: List<String>) {
 @BindingAdapter("iconIsClickable")
 fun setDescriptionIconVisibility(imageView: View, item: FieldUiModel) {
     imageView.isClickable = false
-    if (item.style?.getDescriptionIcon() != null) {
-        if (!item.value.isNullOrEmpty() && item.error.isNullOrEmpty()) {
-            imageView.isClickable = true
-        }
+    if (item.style?.getDescriptionIcon() != null &&
+        !item.value.isNullOrEmpty() &&
+        item.error.isNullOrEmpty()
+    ) {
+        imageView.isClickable = true
     }
 }
