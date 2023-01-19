@@ -7,6 +7,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,7 +48,8 @@ fun DataSetTableScreen(
     onCellClick: (tableId: String, TableCell) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
-    onSaveValue: (TableCell, selectNext: Boolean) -> Unit
+    onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
+    bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -223,36 +226,42 @@ fun DataSetTableScreen(
             }
         }
         CompositionLocalProvider(OnTextChange provides { currentCell?.value }) {
-            DataTable(
-                tableList = tableScreenState.tables,
-                editable = true,
-                tableColors = tableColors,
-                tableDimensions = TableTheme.dimensions.copy(
-                    cellVerticalPadding = 11.dp
-                ),
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
-
-                    override fun onDecorationClick(dialogModel: TableDialogModel) {
-                        displayDescription = dialogModel
-                    }
-
-                    override fun onClick(tableCell: TableCell) {
-                        currentCell?.takeIf { it != tableCell }?.let {
-                            onSaveValue(it, false)
+            Column {
+                DataTable(
+                    tableList = tableScreenState.tables,
+                    editable = true,
+                    tableColors = tableColors,
+                    tableDimensions = TableTheme.dimensions.copy(
+                        cellVerticalPadding = 11.dp
+                    ),
+                    tableSelection = tableSelection,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
                         }
-                        onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
-                            currentCell = tableCell
-                            currentInputType = inputModel.copy(currentValue = currentCell?.value)
-                            startEdition()
-                            focusRequester.requestFocus()
-                        } ?: collapseBottomSheet()
+
+                        override fun onDecorationClick(dialogModel: TableDialogModel) {
+                            displayDescription = dialogModel
+                        }
+
+                        override fun onClick(tableCell: TableCell) {
+                            currentCell?.takeIf { it != tableCell }?.let {
+                                onSaveValue(it, false)
+                            }
+                            onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
+                                currentCell = tableCell
+                                currentInputType =
+                                    inputModel.copy(currentValue = currentCell?.value)
+                                startEdition()
+                                focusRequester.requestFocus()
+                            } ?: collapseBottomSheet()
+                        }
                     }
+                )
+                if (bottomContent != null) {
+                    Column(content = bottomContent)
                 }
-            )
+            }
         }
         displayDescription?.let {
             TableDialog(
