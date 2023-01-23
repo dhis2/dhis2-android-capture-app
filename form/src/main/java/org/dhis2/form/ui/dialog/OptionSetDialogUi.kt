@@ -88,7 +88,10 @@ fun OptionSetDialogScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                when (searchValue.isNotEmpty()) {
+                    true -> Text(stringResource(R.string.no_option_found))
+                    else -> CircularProgressIndicator()
+                }
             }
         }
         DialogButtonActions(
