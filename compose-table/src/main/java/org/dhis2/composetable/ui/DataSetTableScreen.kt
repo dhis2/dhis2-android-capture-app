@@ -44,7 +44,11 @@ import org.dhis2.composetable.model.TextInputModel
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
-    onCellClick: (tableId: String, TableCell, updateCellValue: (TableCell) -> Unit) -> TextInputModel?,
+    onCellClick: (
+        tableId: String,
+        TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
@@ -123,7 +127,10 @@ fun DataSetTableScreen(
     ) -> Unit = { (tableCell, nextCell), cellSelected ->
         if (nextCell != cellSelected) {
             tableSelection = nextCell
-            onCellClick(tableSelection.tableId, tableCell) { updateCellValue(it) }?.let { inputModel ->
+            onCellClick(
+                tableSelection.tableId,
+                tableCell
+            ) { updateCellValue(it) }?.let { inputModel ->
                 currentCell = tableCell
                 currentInputType = inputModel
                 focusRequester.requestFocus()
@@ -257,7 +264,10 @@ fun DataSetTableScreen(
                         currentCell?.takeIf { it != tableCell }?.let {
                             onSaveValue(it, false)
                         }
-                        onCellClick(tableSelection.tableId, tableCell) { updateCellValue(it) }?.let { inputModel ->
+                        onCellClick(
+                            tableSelection.tableId,
+                            tableCell
+                        ) { updateCellValue(it) }?.let { inputModel ->
                             currentCell = tableCell
                             currentInputType = inputModel.copy(currentValue = currentCell?.value)
                             startEdition()

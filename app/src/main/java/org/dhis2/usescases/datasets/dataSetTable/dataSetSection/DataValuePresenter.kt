@@ -159,7 +159,12 @@ class DataValuePresenter(
         updateCellValue: (TableCell) -> Unit
     ) {
         if (dataElement.optionSetUid() != null) {
-            view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell), updateCellValue)
+            view.showOptionSetDialog(
+                dataElement,
+                cell,
+                getSpinnerViewModel(dataElement, cell),
+                updateCellValue
+            )
         } else when (dataElement.valueType()) {
             ValueType.BOOLEAN,
             ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
