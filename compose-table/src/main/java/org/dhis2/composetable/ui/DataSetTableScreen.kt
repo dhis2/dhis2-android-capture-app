@@ -44,7 +44,7 @@ import org.dhis2.composetable.model.TextInputModel
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
-    onCellClick: (tableId: String, TableCell) -> TextInputModel?,
+    onCellClick: (tableId: String, TableCell, updateCellValue: (TableCell) -> Unit) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
@@ -113,13 +113,17 @@ fun DataSetTableScreen(
         }
     }
 
+    fun updateCellValue(tableCell: TableCell?) {
+        currentCell = tableCell
+    }
+
     val selectNextCell: (
         Pair<TableCell, TableSelection.CellSelection>,
         TableSelection.CellSelection
     ) -> Unit = { (tableCell, nextCell), cellSelected ->
         if (nextCell != cellSelected) {
             tableSelection = nextCell
-            onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
+            onCellClick(tableSelection.tableId, tableCell) { updateCellValue(it) }?.let { inputModel ->
                 currentCell = tableCell
                 currentInputType = inputModel
                 focusRequester.requestFocus()
@@ -224,7 +228,7 @@ fun DataSetTableScreen(
                 CircularProgressIndicator()
             }
         }
-        CompositionLocalProvider(OnTextChange provides { currentCell?.value }) {
+        CompositionLocalProvider(OnTextChange provides { currentCell }) {
             DataTable(
                 tableList = tableScreenState.tables,
                 editable = true,
@@ -253,7 +257,7 @@ fun DataSetTableScreen(
                         currentCell?.takeIf { it != tableCell }?.let {
                             onSaveValue(it, false)
                         }
-                        onCellClick(tableSelection.tableId, tableCell)?.let { inputModel ->
+                        onCellClick(tableSelection.tableId, tableCell) { updateCellValue(it) }?.let { inputModel ->
                             currentCell = tableCell
                             currentInputType = inputModel.copy(currentValue = currentCell?.value)
                             startEdition()
@@ -263,6 +267,16 @@ fun DataSetTableScreen(
 
                     override fun onRowHeaderSizeChanged(widthDpValue: Float) {
                         onRowHeaderResize(widthDpValue)
+                    }
+
+                    override fun onOptionSelected(cell: TableCell, code: String, label: String) {
+                        currentCell = cell.copy(
+                            value = label,
+                            error = null
+                        ).also {
+                            onCellValueChange(it)
+                            onSaveValue(cell.copy(value = code), false)
+                        }
                     }
                 }
             )

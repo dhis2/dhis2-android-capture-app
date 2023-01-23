@@ -1,33 +1,58 @@
-package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
+package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.composetable.model.TableCell;
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
-import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.jetbrains.annotations.NotNull;
+import org.dhis2.composetable.model.TableCell
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
+import org.dhis2.usescases.general.AbstractActivityContracts
+import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-import java.util.List;
+class DataValueContract {
+    interface View : AbstractActivityContracts.View {
+        fun update(modified: Boolean)
+        fun onValueProcessed()
+        fun showCalendar(
+            dataElement: DataElement,
+            cell: TableCell,
+            showTimePicker: Boolean,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-public class DataValueContract {
+        fun showTimePicker(
+            dataElement: DataElement,
+            cell: TableCell,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-    public interface View extends AbstractActivityContracts.View {
-        void update(boolean modified);
+        fun showBooleanDialog(
+            dataElement: DataElement,
+            cell: TableCell,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-        void onValueProcessed();
+        fun showAgeDialog(
+            dataElement: DataElement,
+            cell: TableCell,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-        void showCalendar(DataElement dataElement, TableCell cell, Boolean showTimePicker);
+        fun showCoordinatesDialog(
+            dataElement: DataElement,
+            cell: TableCell,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-        void showTimePicker(DataElement dataElement, TableCell cell);
+        fun showOtgUnitDialog(
+            dataElement: DataElement,
+            cell: TableCell,
+            orgUnits: List<OrganisationUnit>,
+            updateCellValue: (TableCell) -> Unit
+        )
 
-        void showBooleanDialog(DataElement dataElement, TableCell cell);
-
-        void showAgeDialog(DataElement dataElement, TableCell cell);
-
-        void showCoordinatesDialog(DataElement dataElement, TableCell cell);
-
-        void showOtgUnitDialog(DataElement dataElement, TableCell cell, List<OrganisationUnit> orgUnits);
-
-        void showOptionSetDialog(@NotNull DataElement dataElement, @NotNull TableCell cell, SpinnerViewModel spinnerViewModel);
+        fun showOptionSetDialog(
+            dataElement: DataElement,
+            cell: TableCell,
+            spinnerViewModel: SpinnerViewModel,
+            updateCellValue: (TableCell) -> Unit
+        )
     }
 }

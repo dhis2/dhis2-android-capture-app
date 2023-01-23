@@ -277,7 +277,8 @@ fun TableItemRow(
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onClick: (TableCell) -> Unit,
     onHeaderResize: (Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit
+    onResizing: (ResizingCell?) -> Unit,
+    onOptionSelected: (TableCell, String, String) -> Unit
 ) {
     Column(
         Modifier
@@ -318,7 +319,8 @@ fun TableItemRow(
                 options = rowModel.dropDownOptions ?: emptyList(),
                 cellStyle = cellStyle,
                 nonEditableCellLayer = nonEditableCellLayer,
-                onClick = onClick
+                onClick = onClick,
+                onOptionSelected = onOptionSelected
             )
         }
         if (!rowModel.isLastRow) {
@@ -443,7 +445,8 @@ fun ItemValues(
     (cellValue: TableCell) -> CellStyle,
     nonEditableCellLayer: @Composable
     (columnIndex: Int, rowIndex: Int, isCellEditable: Boolean) -> Unit,
-    onClick: (TableCell) -> Unit
+    onClick: (TableCell) -> Unit,
+    onOptionSelected: (TableCell, String, String) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -492,7 +495,8 @@ fun ItemValues(
                         )
                     },
                     onClick = onClick,
-                    onTextChange = if (isSelected) OnTextChange.current else null
+                    onTextChange = if (isSelected) OnTextChange.current else null,
+                    onOptionSelected = onOptionSelected
                 )
                 if (isSelected) {
                     val marginCoordinates = Rect(
@@ -521,12 +525,15 @@ fun TableCell(
     nonEditableCellLayer: @Composable
     () -> Unit,
     onClick: (TableCell) -> Unit,
-    onTextChange: (() -> String?)? = null
+    onTextChange: (() -> TableCell?)? = null,
+    onOptionSelected: (TableCell, String, String) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
     val cellValue = remember { mutableStateOf(cell.value) }
     onTextChange?.let {
-        cellValue.value = it()
+        it()?.takeIf { it.id == cell.id }?.let {
+            cellValue.value = it.value
+        }
     }
 
     CellLegendBox(
@@ -568,9 +575,14 @@ fun TableCell(
                 expanded = dropDownExpanded,
                 options = options,
                 onDismiss = { setExpanded(false) },
-                onSelected = {
+                onSelected = { code, label ->
                     setExpanded(false)
-                    onClick(cell.copy(value = it))
+                    onOptionSelected(cell, code, label)
+                    onTextChange?.let {
+                        it()?.takeIf { it.id == cell.id }?.let {
+                            cellValue.value = it.value
+                        }
+                    }
                 }
             )
         }
@@ -630,7 +642,7 @@ fun DropDownOptions(
     expanded: Boolean,
     options: List<String>,
     onDismiss: () -> Unit,
-    onSelected: (String) -> Unit
+    onSelected: (code: String, label: String) -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -641,7 +653,7 @@ fun DropDownOptions(
             val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
-                    onSelected.invoke(code)
+                    onSelected.invoke(code, label)
                 }
             ) {
                 Text(text = label)
@@ -863,6 +875,23 @@ private fun TableList(
                         onHeaderResize = onHeaderResize,
                         onResizing = {
                             resizingCell = it
+                        },
+                        onOptionSelected = { tableCell, code, label ->
+                            var prevIndex = 0
+                            repeat(index) { tableIndex ->
+                                prevIndex += tableList[tableIndex].tableRows.size + 2
+                            }
+                            val mGlobalIndex = (tableCell.row ?: 0) + prevIndex + 1
+
+                            tableInteractions.onSelectionChange(
+                                TableSelection.CellSelection(
+                                    tableId = currentTableModel.id ?: "",
+                                    columnIndex = tableCell.column ?: -1,
+                                    rowIndex = tableCell.row ?: -1,
+                                    globalIndex = mGlobalIndex
+                                )
+                            )
+                            tableInteractions.onOptionSelected(tableCell, code, label)
                         }
                     )
                     if (tableRowModel.isLastRow) {
@@ -1145,7 +1174,10 @@ fun TableItem(
                     onDecorationClick = { tableInteractions.onDecorationClick(it) },
                     onClick = { tableInteractions.onClick(it) },
                     onHeaderResize = onHeaderResize,
-                    onResizing = { resizingCell = it }
+                    onResizing = { resizingCell = it },
+                    onOptionSelected = { cell, code, label ->
+                        tableInteractions.onOptionSelected(cell, code, label)
+                    }
                 )
             }
         }
