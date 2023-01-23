@@ -285,13 +285,11 @@ class FormRepositoryImpl(
             mandatory.value == sectionFieldUiModel.uid
         }?.size ?: 0
 
-        val errorCount = getFieldsWithError().associate {
-            it.fieldUid to it.message
-        }.filter { error ->
+        val errorCount = ruleEffectsResult?.errorMap()?.filter { error ->
             fields.firstOrNull { field ->
                 field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
             } != null
-        }.size
+        }?.size ?: 0
 
         return dataEntryRepository?.updateSection(
             sectionFieldUiModel,
