@@ -286,7 +286,11 @@ fun TableItemRow(
             .width(IntrinsicSize.Min)
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight().zIndex(1f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .zIndex(1f)
+            ) {
                 ItemHeader(
                     ItemHeaderUiState(
                         tableId = tableModel.id ?: "",
@@ -529,7 +533,8 @@ fun TableCell(
     onOptionSelected: (TableCell, String, String) -> Unit
 ) {
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
-    val cellValue = remember { mutableStateOf(cell.value) }
+    val cellValue = remember { mutableStateOf<String?>(null) }
+    cellValue.value = cell.value
     onTextChange?.let {
         it()?.takeIf { it.id == cell.id }?.let {
             cellValue.value = it.value

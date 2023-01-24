@@ -58,22 +58,11 @@ fun DataSetTableScreen(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     )
 
-    var currentCell by remember {
-        mutableStateOf<TableCell?>(
-            null
-        )
-    }
-    var currentInputType by remember {
-        mutableStateOf(
-            TextInputModel()
-        )
-    }
+    var currentCell by remember { mutableStateOf<TableCell?>(null) }
+    var currentInputType by remember { mutableStateOf(TextInputModel()) }
     var displayDescription by remember { mutableStateOf<TableDialogModel?>(null) }
     val coroutineScope = rememberCoroutineScope()
-
-    var tableSelection by remember {
-        mutableStateOf<TableSelection>(TableSelection.Unselected())
-    }
+    var tableSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
 
     val tableColors = TableColors(
         primary = MaterialTheme.colors.primary,
