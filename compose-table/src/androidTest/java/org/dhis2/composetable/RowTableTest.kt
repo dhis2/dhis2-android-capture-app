@@ -109,7 +109,7 @@ class RowTableTest {
                     tables = fakeModel,
                     selectNext = false
                 ),
-                onCellClick = { _, _ -> null },
+                onCellClick = { _, _, _-> null },
                 onEdition = {},
                 onCellValueChange = {},
                 onSaveValue = { _, _ -> }
