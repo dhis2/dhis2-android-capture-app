@@ -13,5 +13,7 @@ enum class UiEventType {
     COPY_TO_CLIPBOARD,
     QR_CODE,
     OPTION_SET,
-    ADD_SIGNATURE
+    ADD_SIGNATURE,
+    ADD_FILE,
+    OPEN_FILE
 }

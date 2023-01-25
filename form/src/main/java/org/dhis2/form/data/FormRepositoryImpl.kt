@@ -97,7 +97,6 @@ class FormRepositoryImpl(
 
     private fun calculateCompletionPercentage(list: List<FieldUiModel>) {
         val unsupportedValueTypes = listOf(
-            ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.USERNAME
         )
