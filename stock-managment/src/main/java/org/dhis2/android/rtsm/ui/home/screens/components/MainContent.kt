@@ -73,7 +73,7 @@ fun MainContent(
     val weightValueArrow = if (backdropState.isRevealed) 0.10f else 0.05f
     val weightValueArrowStatus = backdropState.isRevealed
     val focusManager = LocalFocusManager.current
-    val search by viewModel.scanText.collectAsState()
+    val search by manageStockViewModel.scanText.collectAsState()
     val settingsUiState by viewModel.settingsUiState.collectAsState()
 
     Column(
@@ -94,7 +94,7 @@ fun MainContent(
         ) {
             OutlinedTextField(
                 value = search,
-                onValueChange = viewModel::setScannedText,
+                onValueChange = manageStockViewModel::onSearchQueryChanged,
                 modifier = Modifier
                     .background(Color.White, shape = CircleShape)
                     .shadow(
@@ -127,7 +127,7 @@ fun MainContent(
                         modifier = Modifier
                             .alpha(closeButtonVisibility),
                         onClick = {
-                            viewModel.setScannedText("")
+                            manageStockViewModel.onSearchQueryChanged("")
                             closeButtonVisibility = 0f
                         }
                     ) {
@@ -201,7 +201,6 @@ fun MainContent(
                 "" -> 0f
                 else -> 1f
             }
-            manageStockViewModel.onSearchQueryChanged(search)
         }
 
         Column(

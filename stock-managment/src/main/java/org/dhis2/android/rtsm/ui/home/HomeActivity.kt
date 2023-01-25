@@ -229,6 +229,6 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
         result: ScanIntentResult
     ) {
         val data = result.contents
-        viewModel.setScannedText(data)
+        manageStockViewModel.onSearchQueryChanged(data)
     }
 }
