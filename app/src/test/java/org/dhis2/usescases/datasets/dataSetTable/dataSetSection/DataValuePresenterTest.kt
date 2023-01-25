@@ -111,7 +111,12 @@ class DataValuePresenterTest {
 
         presenter.onCellClick(mockedTableCell, updateCellValueMocked)
 
-        verify(view).showOptionSetDialog(mockedDataElement, mockedTableCell, mockedSpinnerModel, updateCellValueMocked)
+        verify(view).showOptionSetDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedSpinnerModel,
+            updateCellValueMocked
+        )
     }
 
     @Test
@@ -219,7 +224,11 @@ class DataValuePresenterTest {
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
         presenter.onCellClick(mockedTableCell, updateCellValueMocked)
-        verify(view).showCoordinatesDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
+        verify(view).showCoordinatesDialog(
+            mockedDataElement,
+            mockedTableCell,
+            updateCellValueMocked
+        )
     }
 
     @Test
@@ -238,7 +247,12 @@ class DataValuePresenterTest {
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(dataValueRepository.orgUnits()) doReturn mockedOrgUnits
         presenter.onCellClick(mockedTableCell, updateCellValueMocked)
-        verify(view).showOtgUnitDialog(mockedDataElement, mockedTableCell, mockedOrgUnits, updateCellValueMocked)
+        verify(view).showOtgUnitDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedOrgUnits,
+            updateCellValueMocked
+        )
     }
 
     @Test
