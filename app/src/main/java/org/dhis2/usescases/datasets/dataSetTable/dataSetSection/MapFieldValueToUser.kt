@@ -35,7 +35,6 @@ class MapFieldValueToUser(
                 }
             }
             ValueType.IMAGE,
-            ValueType.FILE_RESOURCE,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.REFERENCE,
             ValueType.USERNAME,
