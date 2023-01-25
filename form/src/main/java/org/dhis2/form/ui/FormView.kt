@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -75,6 +76,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -163,7 +165,7 @@ class FormView : Fragment() {
             if (success) {
                 val imageFile = File(
                     FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                    "tempFile.png"
+                    TEMP_FILE
                 ).rotateImage(requireContext())
                 onSavePicture?.invoke(imageFile.path)
             }
@@ -486,6 +488,7 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
             is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
+            is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
         }
     }
 
@@ -764,7 +767,7 @@ class FormView : Fragment() {
                                     FileResourceDirectoryHelper.getFileResourceDirectory(
                                         requireContext()
                                     ),
-                                    "tempFile.png"
+                                    TEMP_FILE
                                 )
                             )
                             takePicture.launch(photoUri)
@@ -869,6 +872,26 @@ class FormView : Fragment() {
                     uiEvent.field.uid,
                     code,
                     uiEvent.field.valueType
+                )
+            )
+        }.show(this@FormView.childFragmentManager)
+    }
+
+    private fun showSignatureDialog(uiEvent: RecyclerViewUiEvents.AddSignature) {
+        SignatureDialog(uiEvent.label) {
+            val file = File(
+                FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
+                TEMP_FILE
+            )
+            file.outputStream().use { out ->
+                it.compress(Bitmap.CompressFormat.PNG, 85, out)
+                out.flush()
+            }
+            intentHandler(
+                FormIntent.OnSave(
+                    uiEvent.uid,
+                    file.path,
+                    ValueType.IMAGE
                 )
             )
         }.show(this@FormView.childFragmentManager)
@@ -1046,5 +1069,6 @@ class FormView : Fragment() {
 
     companion object {
         const val RECORDS = "RECORDS"
+        const val TEMP_FILE = "tempFile.png"
     }
 }

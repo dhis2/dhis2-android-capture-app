@@ -68,6 +68,11 @@ sealed class RecyclerViewUiEvents {
         val uid: String
     ) : RecyclerViewUiEvents()
 
+    data class AddSignature(
+        val uid: String,
+        val label: String
+    ) : RecyclerViewUiEvents()
+
     data class ShowImage(
         val label: String,
         val value: String
