@@ -47,7 +47,7 @@ fun ComposeView.setButton(fieldUiModel: FieldUiModel) {
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
         )
         MdcTheme {
-            when (fieldUiModel.renderingType == UiRenderType.SIGNATURE){
+            when (fieldUiModel.renderingType != UiRenderType.SIGNATURE) {
                 true -> IconTextButton(
                     onClick = { fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE) },
                     painter = painterResource(id = R.drawable.ic_add_image),
