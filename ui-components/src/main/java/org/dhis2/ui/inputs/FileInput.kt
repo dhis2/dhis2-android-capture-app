@@ -125,6 +125,7 @@ fun FileDescription(modifier: Modifier, fileInputData: InputData.FileInputData) 
 fun FileInput(
     fileInputData: InputData.FileInputData?,
     addFileLabel: String,
+    enabled: Boolean = true,
     onAddFile: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onDeleteFile: () -> Unit = {}
@@ -132,6 +133,7 @@ fun FileInput(
     if (fileInputData != null) {
         FileInputWithValue(
             fileInputData = fileInputData,
+            enabled = enabled,
             onDownloadClick = onDownloadClick,
             onDeleteFile = onDeleteFile
 
@@ -140,17 +142,22 @@ fun FileInput(
         FileInputWithoutValue(
             modifier = Modifier.fillMaxWidth(),
             label = addFileLabel,
-            onAddFile = {
-                onAddFile()
-            }
+            enabled = enabled,
+            onAddFile = onAddFile
         )
     }
 }
 
 @Composable
-fun FileInputWithoutValue(modifier: Modifier, label: String, onAddFile: () -> Unit) {
+fun FileInputWithoutValue(
+    modifier: Modifier,
+    label: String,
+    enabled: Boolean,
+    onAddFile: () -> Unit
+) {
     IconTextButton(
         modifier = modifier,
+        enabled = enabled,
         onClick = onAddFile,
         painter = painterResource(id = R.drawable.ic_file),
         text = label
@@ -160,6 +167,7 @@ fun FileInputWithoutValue(modifier: Modifier, label: String, onAddFile: () -> Un
 @Composable
 fun FileInputWithValue(
     fileInputData: InputData.FileInputData,
+    enabled: Boolean,
     onDownloadClick: () -> Unit,
     onDeleteFile: () -> Unit
 ) {
@@ -178,7 +186,7 @@ fun FileInputWithValue(
             }
         },
         trailingIcons = {
-            IconButton(onClick = onDownloadClick) {
+            IconButton(enabled = enabled, onClick = onDownloadClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_download),
                     contentDescription = "",
@@ -186,7 +194,7 @@ fun FileInputWithValue(
                 )
             }
 
-            IconButton(onClick = { onDeleteFile() }) {
+            IconButton(enabled= enabled, onClick = { onDeleteFile() }) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
                     contentDescription = "",

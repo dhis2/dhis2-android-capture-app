@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -36,16 +37,19 @@ import org.dhis2.ui.dialogs.alert.DescriptionDialog
 @Composable
 fun FormInputBox(
     labelText: String?,
-    helperText: String?,
-    descriptionText: String?,
-    selected: Boolean,
+    helperText: String? = null,
+    descriptionText: String? = null,
+    selected: Boolean = false,
+    enabled:Boolean = true,
     labelTextColor: Color,
-    helperTextColor: Color,
+    helperTextColor: Color = Color.Black.copy(alpha = 0.38f),
     content: @Composable () -> Unit
 ) {
     val openDescriptionDialog = remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier.wrapContentHeight()
+        modifier = Modifier
+            .wrapContentHeight()
+            .alpha(1.0f.takeIf { enabled }?:0.5f)
     ) {
         Column(
             modifier = Modifier

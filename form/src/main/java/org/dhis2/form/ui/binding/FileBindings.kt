@@ -27,6 +27,7 @@ fun ComposeView.addFile(fieldUiModel: FieldUiModel) {
                 helperText = fieldUiModel.error ?: fieldUiModel.warning,
                 descriptionText = fieldUiModel.description,
                 selected = fieldUiModel.focused,
+                enabled = fieldUiModel.editable,
                 labelTextColor = Color.Black.copy(alpha = 0.54f),
                 helperTextColor = when {
                     fieldUiModel.error != null -> Color("#E91E63".toColorInt())
@@ -45,6 +46,7 @@ fun ComposeView.addFile(fieldUiModel: FieldUiModel) {
                 FileInput(
                     fileInputData = fileInputData,
                     addFileLabel = stringResource(id = R.string.add_file),
+                    enabled = fieldUiModel.editable,
                     onAddFile = {
                         fieldUiModel.invokeUiEvent(UiEventType.ADD_FILE)
                     },
