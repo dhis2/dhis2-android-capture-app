@@ -124,7 +124,9 @@ class UiEventFactoryImpl(
                 }
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
                 ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
-                else -> null
+                UiEventType.ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
+                UiEventType.OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
+                null -> null
             }
         } catch (e: Exception) {
             Timber.d("wrong format")

@@ -85,4 +85,12 @@ sealed class RecyclerViewUiEvents {
     data class OpenOptionSetDialog(
         val field: FieldUiModel
     ) : RecyclerViewUiEvents()
+
+    data class OpenFileSelector(
+        val field: FieldUiModel
+    ) : RecyclerViewUiEvents()
+
+    data class OpenFile(
+        val field: FieldUiModel
+    ) : RecyclerViewUiEvents()
 }

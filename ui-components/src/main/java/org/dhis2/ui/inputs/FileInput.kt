@@ -1,13 +1,5 @@
 package org.dhis2.ui.inputs
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,10 +17,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,15 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import java.io.File
+import androidx.core.graphics.toColorInt
 import org.dhis2.ui.IconTextButton
 import org.dhis2.ui.R
+import org.dhis2.ui.model.InputData
 import org.dhis2.ui.theme.defaultFontFamily
 
 @Composable
@@ -102,23 +91,25 @@ fun BoxedInput(
 }
 
 @Composable
-fun FileDescription(modifier: Modifier) {
+fun FileDescription(modifier: Modifier, fileInputData: InputData.FileInputData) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "file_name.extension",
+            text = fileInputData.fileName,
             style = TextStyle(
                 color = Color.Black.copy(alpha = 0.87f),
                 fontSize = 12.sp,
                 fontFamily = defaultFontFamily,
                 fontWeight = FontWeight(400),
                 lineHeight = 20.sp
-            )
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = "1.2MB",
+            text = fileInputData.fileSizeLabel,
             style = TextStyle(
                 color = Color.Black.copy(alpha = 0.38f),
                 fontSize = 10.sp,
@@ -130,49 +121,29 @@ fun FileDescription(modifier: Modifier) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FileInput(
-    file: File?,
+    fileInputData: InputData.FileInputData?,
     addFileLabel: String,
     onAddFile: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onDeleteFile: () -> Unit = {}
 ) {
-    var hasValue by remember { mutableStateOf(file != null) }
+    if (fileInputData != null) {
+        FileInputWithValue(
+            fileInputData = fileInputData,
+            onDownloadClick = onDownloadClick,
+            onDeleteFile = onDeleteFile
 
-    AnimatedContent(
-        targetState = hasValue,
-        transitionSpec = {
-            fadeIn(animationSpec = tween(150, 150)) with
-                    fadeOut(animationSpec = tween(150)) using
-                    SizeTransform { initialSize, targetSize ->
-                        keyframes {
-                            // Expand horizontally first.
-                            IntSize(initialSize.width, targetSize.height) at 150
-                            durationMillis = 300
-                        }
-                    }
-        }
-    ) { targetHasValue ->
-        if (targetHasValue) {
-            FileInputWithValue(
-                onDownloadClick = onDownloadClick,
-                onDeleteFile = {
-                    onDeleteFile()
-                    hasValue = false
-                }
-            )
-        } else {
-            FileInputWithoutValue(
-                modifier = Modifier.fillMaxWidth(),
-                label = addFileLabel,
-                onAddFile = {
-                    onAddFile()
-                    hasValue = true
-                }
-            )
-        }
+        )
+    } else {
+        FileInputWithoutValue(
+            modifier = Modifier.fillMaxWidth(),
+            label = addFileLabel,
+            onAddFile = {
+                onAddFile()
+            }
+        )
     }
 }
 
@@ -188,6 +159,7 @@ fun FileInputWithoutValue(modifier: Modifier, label: String, onAddFile: () -> Un
 
 @Composable
 fun FileInputWithValue(
+    fileInputData: InputData.FileInputData,
     onDownloadClick: () -> Unit,
     onDeleteFile: () -> Unit
 ) {
@@ -223,12 +195,58 @@ fun FileInputWithValue(
             }
         }
     ) { modifier ->
-        FileDescription(modifier = modifier)
+        FileDescription(modifier = modifier, fileInputData = fileInputData)
     }
 }
 
 @Composable
 @Preview
-fun FileInputTest() {
-    FileInput("addFile")
+fun FileWithoutValueInputTest() {
+    FileInput(fileInputData = null, addFileLabel = "addFile")
+}
+
+@Composable
+@Preview
+fun FileWithValueInputTest() {
+    FileInput(fileInputData = null, addFileLabel = "addFile")
+}
+
+@Composable
+@Preview
+fun FileInputWithMessageTest() {
+    FormInputBox(
+        labelText = "This is the label",
+        helperText = "This is a messsage",
+        descriptionText = "This is a description",
+        selected = true,
+        labelTextColor = Color.Black.copy(alpha = 0.54f),
+        helperTextColor = Color("#E91E63".toColorInt())
+    ) {
+        FileInput(
+            fileInputData = InputData.FileInputData(
+                fileName = "file.txt",
+                fileSize = 1234,
+                filePath = "/file.txt"
+            ),
+            addFileLabel = "addFile"
+        )
+    }
+}
+
+@Composable
+@Preview
+fun FileInputNoValueWithMessageTest() {
+    FormInputBox(
+        labelText = "This is the label",
+        helperText = "This is a messsage",
+        descriptionText = "This is a description",
+        selected = true,
+        labelTextColor = Color.Black.copy(alpha = 0.54f),
+        helperTextColor = Color("#E91E63".toColorInt())
+    ) {
+        FileInput(
+            fileInputData = null,
+            addFileLabel = "addFile"
+        )
+    }
 }
