@@ -32,6 +32,7 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
+import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
