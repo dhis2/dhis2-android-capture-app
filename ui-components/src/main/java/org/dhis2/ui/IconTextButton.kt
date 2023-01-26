@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun IconTextButton(
+    enabled:Boolean = true,
     onClick: () -> Unit,
     painter: Painter,
     text: String,
@@ -28,6 +29,7 @@ fun IconTextButton(
 ) {
     Button(
         modifier = modifier,
+        enabled = enabled,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White
@@ -55,6 +57,7 @@ fun IconTextButton(
 @Composable
 fun ReopenButtonPreview() {
     IconTextButton(
+        enabled = true,
         onClick = {},
         painterResource(id = R.drawable.ic_add_image),
         "Add image",

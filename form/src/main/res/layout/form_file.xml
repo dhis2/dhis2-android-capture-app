@@ -6,13 +6,10 @@
         <variable
             name="item"
             type="org.dhis2.form.model.FieldUiModel" />
-
     </data>
 
     <androidx.compose.ui.platform.ComposeView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="@{item.editable? 1f : 0.5f}"
-        android:enabled="@{item.editable}"
         app:add_file="@{item}" />
 </layout>
