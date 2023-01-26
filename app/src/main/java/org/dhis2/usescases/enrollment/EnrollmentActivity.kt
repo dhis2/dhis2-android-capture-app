@@ -181,7 +181,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        if (presenter.openInitial(eventUid)) {
+        if (presenter.isEventScheduleOrSkipped(eventUid)) {
+            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
+            openEventForResult.launch(scheduleEventIntent)
+        } else if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
                 presenter.getProgram().uid(),
                 eventUid,
@@ -197,9 +200,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
             startActivityForResult(eventInitialIntent, RQ_EVENT)
-        } else if (presenter.isEventScheduleOrSkipped(eventUid)) {
-            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
-            openEventForResult.launch(scheduleEventIntent)
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
