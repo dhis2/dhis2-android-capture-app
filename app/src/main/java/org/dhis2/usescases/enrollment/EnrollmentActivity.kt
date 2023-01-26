@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -30,6 +31,7 @@ import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -195,6 +197,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
             startActivityForResult(eventInitialIntent, RQ_EVENT)
+        } else if (presenter.isEventScheduleOrSkipped(eventUid)) {
+            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
+            openEventForResult.launch(scheduleEventIntent)
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
@@ -209,6 +214,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getEnrollment()!!.trackedEntityInstance()
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
+        }
+    }
+
+    private val openEventForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            openDashboard(presenter.getEnrollment()!!.uid()!!)
         }
     }
 

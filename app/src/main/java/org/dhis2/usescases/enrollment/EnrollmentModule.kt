@@ -41,6 +41,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 
@@ -99,6 +100,12 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
+    fun provideEventRepository(d2: D2): EventCollectionRepository {
+        return d2.eventModule().events()
+    }
+
+    @Provides
+    @PerActivity
     fun fieldFactory(
         context: Context,
         d2: D2,
@@ -133,7 +140,8 @@ class EnrollmentModule(
         schedulerProvider: SchedulerProvider,
         enrollmentFormRepository: EnrollmentFormRepository,
         analyticsHelper: AnalyticsHelper,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
+        eventCollectionRepository: EventCollectionRepository
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -145,7 +153,8 @@ class EnrollmentModule(
             schedulerProvider,
             enrollmentFormRepository,
             analyticsHelper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            eventCollectionRepository
         )
     }
 

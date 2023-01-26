@@ -23,6 +23,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -44,6 +46,7 @@ class EnrollmentPresenterImplTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val eventCollectionRepository: EventCollectionRepository = mock()
 
     @Before
     fun setUp() {
@@ -57,7 +60,8 @@ class EnrollmentPresenterImplTest {
             schedulers,
             enrollmentFormRepository,
             analyticsHelper,
-            matomoAnalyticsController
+            matomoAnalyticsController,
+            eventCollectionRepository
         )
     }
 
@@ -197,6 +201,33 @@ class EnrollmentPresenterImplTest {
         presenter.showOrHideSaveButton()
 
         verify(enrollmentView).setSaveButtonVisible(false)
+    }
+
+    @Test
+    fun `Should return true if event status is SCHEDULE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SCHEDULE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return true if event status is SKIPPED`() {
+        val event = Event.builder().uid("uid").status(EventStatus.SKIPPED).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(presenter.isEventScheduleOrSkipped("uid"))
+    }
+
+    @Test
+    fun `Should return false if event status is ACTIVE`() {
+        val event = Event.builder().uid("uid").status(EventStatus.ACTIVE).build()
+
+        whenever(eventCollectionRepository.uid("uid")) doReturn mock()
+        whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
+        assert(!presenter.isEventScheduleOrSkipped("uid"))
     }
 
     private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
