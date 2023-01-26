@@ -27,7 +27,7 @@ fun IconTextButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        modifier = modifier.padding(4.dp),
+        modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White

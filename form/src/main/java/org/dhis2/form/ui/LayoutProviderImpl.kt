@@ -50,7 +50,7 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.INTEGER_NEGATIVE -> R.layout.form_integer_negative
             ValueType.INTEGER_ZERO_OR_POSITIVE -> R.layout.form_integer_zero_positive
             ValueType.URL -> R.layout.form_url
-            ValueType.FILE_RESOURCE -> R.layout.form_unsupported
+            ValueType.FILE_RESOURCE -> R.layout.form_file
             ValueType.REFERENCE,
             ValueType.GEOJSON,
             ValueType.USERNAME,

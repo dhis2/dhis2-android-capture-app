@@ -37,6 +37,7 @@ import java.util.Calendar
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
+import org.dhis2.commons.bindings.getFileFrom
 import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.dialogs.AlertBottomDialog
@@ -175,6 +176,15 @@ class FormView : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
                 getFileFromGallery(requireContext(), it.data?.data)?.also { file ->
+                    onSavePicture?.invoke(file.path)
+                }
+            }
+        }
+
+    private val pickFile =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                getFileFrom(requireContext(), uri)?.also { file ->
                     onSavePicture?.invoke(file.path)
                 }
             }
@@ -489,6 +499,8 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
             is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
             is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
+            is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
+            is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
         }
     }
 
@@ -785,6 +797,35 @@ class FormView : Fragment() {
     private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
         ImageDetailBottomDialog(event.label, File(event.value))
             .show(parentFragmentManager, ImageDetailBottomDialog.TAG)
+    }
+
+    private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
+        onSavePicture = { file ->
+            intentHandler(
+                FormIntent.OnSave(
+                    event.field.uid,
+                    file,
+                    event.field.valueType
+                )
+            )
+        }
+        pickFile.launch("*/*")
+    }
+
+    private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
+        event.field.value?.let { filePath ->
+            val file = File(filePath)
+            val fileUri = FileProvider.getUriForFile(
+                requireContext(),
+                FormFileProvider.fileProviderAuthority,
+                file
+            )
+            startActivity(
+                Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(fileUri, "*/*")
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            )
+        }
     }
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
