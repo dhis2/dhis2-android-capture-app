@@ -30,6 +30,7 @@ import org.dhis2.Bindings.app
 import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
 import org.dhis2.commons.Constants.ACCOUNT_USED
 import org.dhis2.commons.Constants.EXTRA_DATA
@@ -329,15 +330,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no)
             ),
             onMainButtonClicked = {
-                presenter.updateAnalytics(true)
+                onAnalyticsPermission(true)
             },
             onSecondaryButtonClicked = {
-                presenter.updateAnalytics(false)
+                onAnalyticsPermission(false)
             },
             onMessageClick = {
                 navigateToPrivacyPolicy()
             }
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
+    }
+
+    private fun onAnalyticsPermission(granted: Boolean) {
+        presenter.updateAnalytics(granted)
+        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
+            .apply()
+        sharedPreferences.edit()
+            .putString(USER, binding.userName.editText?.text.toString())
+            .apply()
+        showLoginProgress(true)
     }
 
     override fun onUnlockClick(android: View) {

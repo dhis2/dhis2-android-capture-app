@@ -32,6 +32,7 @@ import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -464,7 +465,7 @@ class LoginPresenter(
 
     fun updateAnalytics(activate: Boolean) {
         userManager?.d2?.dataStoreModule()?.localDataStore()
-            ?.value("analytics")
+            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
             ?.set(activate.toString())
     }
 
