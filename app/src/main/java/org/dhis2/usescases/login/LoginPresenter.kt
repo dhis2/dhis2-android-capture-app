@@ -462,6 +462,10 @@ class LoginPresenter(
         this.userManager = userManager
     }
 
+    fun updateAnalytics(activate: Boolean) {
+        userManager?.d2?.dataStoreModule()?.localDataStore()?.value("analytics")?.set(activate.toString())
+    }
+
     companion object {
         const val EMPTY_CREDENTIALS = "Empty credentials"
         const val AUTH_ERROR = "AUTH ERROR"

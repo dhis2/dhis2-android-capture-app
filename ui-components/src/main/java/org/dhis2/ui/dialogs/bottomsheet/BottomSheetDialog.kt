@@ -16,7 +16,8 @@ import org.dhis2.ui.R
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     var onMainButtonClicked: () -> Unit = {},
-    var onSecondaryButtonClicked: () -> Unit = {}
+    var onSecondaryButtonClicked: () -> Unit = {},
+    var onMessageClick:()->Unit = {}
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +44,8 @@ class BottomSheetDialog(
                             onSecondaryButtonClicked.invoke()
                             dismiss()
                         },
-                        onIssueItemClicked = { dismiss() }
+                        onIssueItemClicked = { dismiss() },
+                        onMessageClick = onMessageClick
                     )
                 }
             }
