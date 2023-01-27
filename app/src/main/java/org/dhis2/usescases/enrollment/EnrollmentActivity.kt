@@ -200,9 +200,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
             startActivityForResult(eventInitialIntent, RQ_EVENT)
-        } else if (presenter.isEventScheduleOrSkipped(eventUid)) {
-            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
-            openEventForResult.launch(scheduleEventIntent)
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
