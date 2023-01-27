@@ -40,16 +40,17 @@ fun FormInputBox(
     helperText: String? = null,
     descriptionText: String? = null,
     selected: Boolean = false,
-    enabled:Boolean = true,
+    enabled: Boolean = true,
     labelTextColor: Color,
     helperTextColor: Color = Color.Black.copy(alpha = 0.38f),
-    content: @Composable () -> Unit
+    content: @Composable
+    () -> Unit
 ) {
     val openDescriptionDialog = remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .wrapContentHeight()
-            .alpha(1.0f.takeIf { enabled }?:0.5f)
+            .alpha(1.0f.takeIf { enabled } ?: 0.5f)
     ) {
         Column(
             modifier = Modifier
@@ -94,7 +95,6 @@ fun FormInputBox(
                         )
                     }
                 }
-
             }
             content()
             helperText?.let {
@@ -124,7 +124,6 @@ fun HelperText(helperText: String, textStyle: TextStyle) {
         style = textStyle
     )
 }
-
 
 fun Modifier.drawInputSelector(
     selected: Boolean,

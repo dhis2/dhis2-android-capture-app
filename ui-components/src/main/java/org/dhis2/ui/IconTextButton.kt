@@ -3,7 +3,6 @@ package org.dhis2.ui
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -21,7 +20,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun IconTextButton(
-    enabled:Boolean = true,
+    enabled: Boolean = true,
     onClick: () -> Unit,
     painter: Painter,
     text: String,

@@ -4,12 +4,18 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,9 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -36,10 +42,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.utils.dashedBorder
-import kotlin.math.roundToInt
 
 @ExperimentalComposeUiApi
 @Composable
@@ -48,14 +54,12 @@ fun SignatureDialogUi(
     onSave: (Bitmap) -> Unit,
     onCancel: () -> Unit
 ) {
-
     var capturingViewBounds: Rect? = null
     val view = LocalView.current
 
     var capturing by remember { mutableStateOf(false) }
     val drawing = remember { mutableStateOf<Offset?>(null) }
     val isSigned by remember { derivedStateOf { drawing.value != null } }
-
 
     Column(
         modifier = Modifier
@@ -105,7 +109,8 @@ fun SignatureDialogUi(
                     enabled = isSigned,
                     onClick = {
                         drawing.value = null
-                    }) {
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = stringResource(R.string.clear),
@@ -145,7 +150,6 @@ fun SignatureDialogUi(
             ?.takeIf { capturing }
             ?.captureBitmap(view)
             ?.let { onSave(it) }
-
     }
 }
 
@@ -170,9 +174,3 @@ fun Rect.captureBitmap(view: View): Bitmap? {
 fun PreviewSignatureUI() {
     SignatureDialogUi(title = "Form name", onSave = {}, onCancel = {})
 }
-
-
-
-
-
-
