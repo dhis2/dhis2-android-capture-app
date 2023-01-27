@@ -31,7 +31,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.fileresource.FileResourceValueType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.GeneralSettings
@@ -242,7 +241,6 @@ class SyncPresenterImpl(
             syncStatusController.initDownloadMedia()
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
-                    .byValueType().eq(FileResourceValueType.IMAGE)
                     .download()
             ).blockingAwait()
         }
