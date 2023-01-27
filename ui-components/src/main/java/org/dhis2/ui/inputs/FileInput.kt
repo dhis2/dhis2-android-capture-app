@@ -40,9 +40,12 @@ import org.dhis2.ui.theme.defaultFontFamily
 
 @Composable
 fun BoxedInput(
-    leadingIcon: @Composable (modifier: Modifier) -> Unit,
-    trailingIcons: @Composable RowScope.() -> Unit,
-    content: @Composable (modifier: Modifier) -> Unit
+    leadingIcon: @Composable
+    (modifier: Modifier) -> Unit,
+    trailingIcons: @Composable
+    RowScope.() -> Unit,
+    content: @Composable
+    (modifier: Modifier) -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -194,7 +197,7 @@ fun FileInputWithValue(
                 )
             }
 
-            IconButton(enabled= enabled, onClick = { onDeleteFile() }) {
+            IconButton(enabled = enabled, onClick = { onDeleteFile() }) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
                     contentDescription = "",
