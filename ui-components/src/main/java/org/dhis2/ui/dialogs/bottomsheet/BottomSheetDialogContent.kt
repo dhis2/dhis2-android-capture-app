@@ -25,12 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -48,7 +46,7 @@ fun BottomSheetDialogContent(
     onMainButtonClicked: () -> Unit,
     onSecondaryButtonClicked: () -> Unit = {},
     onIssueItemClicked: () -> Unit = {},
-    onMessageClick:()->Unit = {}
+    onMessageClick: () -> Unit = {}
 ) {
     val modifier = Modifier
         .padding(24.dp)
@@ -97,7 +95,6 @@ fun BottomSheetDialogContent(
                             start = clickableWordIndex,
                             end = clickableWordIndex + clickableWord.length
                         )
-
                     },
                     style = MaterialTheme.typography.body2.copy(
                         color = textSecondary,
@@ -277,7 +274,7 @@ fun DialogPreview4() {
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = "Not saved",
             subtitle = "Some fields have errors and they are not saved." +
-                    "If you exit now the changes will be discarded.",
+                "If you exit now the changes will be discarded.",
             iconResource = R.drawable.ic_error_outline,
             fieldsWithIssues = listOf(
                 FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),

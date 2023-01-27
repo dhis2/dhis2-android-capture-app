@@ -42,8 +42,8 @@ class MatomoAnalyticsControllerImpl(
     private fun isAnalyticsPermissionGranted(): Boolean {
         return D2Manager.isD2Instantiated() &&
             D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
-                ?.toBoolean() == true
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
+            ?.toBoolean() == true
     }
 
     private fun updateDhisImplementationTrackerFirstTime() {

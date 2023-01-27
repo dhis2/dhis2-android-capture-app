@@ -17,7 +17,7 @@ class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     var onMainButtonClicked: () -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
-    var onMessageClick:()->Unit = {}
+    var onMessageClick: () -> Unit = {}
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
