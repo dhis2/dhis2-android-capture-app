@@ -463,7 +463,9 @@ class LoginPresenter(
     }
 
     fun updateAnalytics(activate: Boolean) {
-        userManager?.d2?.dataStoreModule()?.localDataStore()?.value("analytics")?.set(activate.toString())
+        userManager?.d2?.dataStoreModule()?.localDataStore()
+            ?.value("analytics")
+            ?.set(activate.toString())
     }
 
     companion object {
