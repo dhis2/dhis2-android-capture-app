@@ -36,7 +36,11 @@ class DataValuePresenter(
 ) : CoroutineScope {
     var disposable: CompositeDisposable = CompositeDisposable()
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
-        TableScreenState(emptyList(), false)
+        TableScreenState(
+            emptyList(),
+            false,
+            overwrittenRowHeaderWidth = repository.getWidthForSection()
+        )
     )
     private val errors: MutableMap<String, String> = mutableMapOf()
 
@@ -56,13 +60,19 @@ class DataValuePresenter(
                 tables.toMutableList().also { list ->
                     indicators?.let { list.add(indicators) }
                 }
+            }.map {
+                TableScreenState(
+                    tables = it,
+                    selectNext = false,
+                    overwrittenRowHeaderWidth = repository.getWidthForSection()
+                )
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribe(
                     {
                         screenState.update { currentScreenState ->
-                            currentScreenState.copy(tables = it)
+                            currentScreenState.copy(tables = it.tables)
                         }
                     },
                     { Timber.e(it) }
@@ -125,11 +135,11 @@ class DataValuePresenter(
      * Returns an TextInputModel if the current cell requires text input, null otherwise.
      * TODO: Refactor once we migrate all other value types inputs to compose.
      * */
-    fun onCellClick(cell: TableCell): TextInputModel? {
+    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel? {
         val ids = cell.id?.split("_") ?: return null
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
-        handleElementInteraction(dataElement, cell)
+        handleElementInteraction(dataElement, cell, updateCellValue)
         return dataElement.takeIf { it.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
             TextInputModel(
@@ -145,23 +155,30 @@ class DataValuePresenter(
 
     private fun handleElementInteraction(
         dataElement: DataElement,
-        cell: TableCell
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
     ) {
         if (dataElement.optionSetUid() != null) {
-            view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
+            view.showOptionSetDialog(
+                dataElement,
+                cell,
+                getSpinnerViewModel(dataElement, cell),
+                updateCellValue
+            )
         } else when (dataElement.valueType()) {
             ValueType.BOOLEAN,
-            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
-            ValueType.DATE -> view.showCalendar(dataElement, cell, false)
-            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
-            ValueType.TIME -> view.showTimePicker(dataElement, cell)
-            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
+            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
+            ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
+            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
+            ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
+            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell, updateCellValue)
             ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
                 dataElement,
                 cell,
-                repository.orgUnits()
+                repository.orgUnits(),
+                updateCellValue
             )
-            ValueType.AGE -> view.showAgeDialog(dataElement, cell)
+            ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
             else -> {}
         }
     }
@@ -212,4 +229,8 @@ class DataValuePresenter(
                 updateData(catComboUid!!, selectNext)
             }
         }
+
+    fun saveWidth(widthDpValue: Float) {
+        repository.saveWidthForSection(widthDpValue)
+    }
 }

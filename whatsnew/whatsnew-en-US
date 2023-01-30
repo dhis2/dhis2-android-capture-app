@@ -1,10 +1,7 @@
-This new version includes the following features:
-- Tables has a new design which ensures good contrast and visibility.
-- Sync process improvements: not full sync after user is logged in.
-- Tracker: manage ownership in permanent referrals.
-- SMS functionality.
-- Simplify steps to create a program stage.
-- More intuitive navigation for event sections.
-
-General system stability improvements to enhance the user's experience.
+This is a patch version that fixes:
+- ANDROAPP-5084 Data set table header resizing
+- ANDROAPP-5061 Opensource map engine
+- ANDROAPP-5014 Allow long click in form fields to copy value
+- Improvements on stability and user experience.
+....
 You can find all the details on Jira and Github.

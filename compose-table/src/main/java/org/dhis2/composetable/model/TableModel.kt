@@ -133,4 +133,4 @@ fun TableModel.areAllValuesEmpty(): Boolean {
     return true
 }
 
-val OnTextChange = compositionLocalOf<() -> String?> { { "" } }
+val OnTextChange = compositionLocalOf<() -> TableCell?> { { null } }

@@ -24,6 +24,8 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
@@ -41,7 +43,8 @@ class EnrollmentPresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val enrollmentFormRepository: EnrollmentFormRepository,
     private val analyticsHelper: AnalyticsHelper,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val eventCollectionRepository: EventCollectionRepository
 ) {
     private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
@@ -263,5 +266,10 @@ class EnrollmentPresenterImpl(
         } else {
             view.setSaveButtonVisible(visible = false)
         }
+    }
+
+    fun isEventScheduleOrSkipped(eventUid: String): Boolean {
+        val event = eventCollectionRepository.uid(eventUid).blockingGet()
+        return event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.SKIPPED
     }
 }
