@@ -749,7 +749,7 @@ private fun TableList(
                     vertical = TableTheme.dimensions.tableVerticalPadding
                 )
                 .onSizeChanged { onSizeChanged(it) },
-            contentPadding = PaddingValues(bottom = 200.dp),
+            contentPadding = PaddingValues(bottom = TableTheme.dimensions.tableBottomPadding),
             state = verticalScrollState
         ) {
             tableList.forEachIndexed { index, currentTableModel ->

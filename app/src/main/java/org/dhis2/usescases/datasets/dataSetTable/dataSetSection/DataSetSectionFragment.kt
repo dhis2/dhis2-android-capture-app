@@ -94,9 +94,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val screenState by presenterFragment.currentState().collectAsState(
-                        initial = TableScreenState(emptyList(), false)
-                    )
+                    val screenState by presenterFragment.currentState().collectAsState()
 
                     DataSetTableScreen(
                         tableScreenState = screenState,
