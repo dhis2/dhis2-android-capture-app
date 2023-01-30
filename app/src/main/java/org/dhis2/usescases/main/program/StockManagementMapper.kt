@@ -2,10 +2,10 @@ package org.dhis2.usescases.main.program
 
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.exceptions.InitializationException
-import org.hisp.dhis.android.core.programtheme.stock.StockThemeTransaction
-import org.hisp.dhis.android.core.programtheme.stock.StockThemeTransaction.Companion.TransactionType.CORRECTED
-import org.hisp.dhis.android.core.programtheme.stock.StockThemeTransaction.Companion.TransactionType.DISCARDED
-import org.hisp.dhis.android.core.programtheme.stock.StockThemeTransaction.Companion.TransactionType.DISTRIBUTED
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.CORRECTED
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.DISCARDED
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED
 
 internal class StockManagementMapper(
     val repository: ProgramThemeRepository
@@ -22,21 +22,21 @@ internal class StockManagementMapper(
             stockTheme.itemCode,
             stockTheme.itemDescription,
             stockTheme.stockOnHand,
-            (stockTheme.transactions.get(0) as StockThemeTransaction.Distributed).distributedTo,
+            (stockTheme.transactions[0] as StockUseCaseTransaction.Distributed).distributedTo,
             (
                 stockTheme.transactions.find {
                     it.transactionType == DISTRIBUTED
-                } as StockThemeTransaction.Distributed
+                } as StockUseCaseTransaction.Distributed
                 ).stockDistributed,
             (
                 stockTheme.transactions.find {
                     it.transactionType == CORRECTED
-                } as StockThemeTransaction.Correction
+                } as StockUseCaseTransaction.Correction
                 ).stockCorrected,
             (
                 stockTheme.transactions.find {
                     it.transactionType == DISCARDED
-                } as StockThemeTransaction.Discarded
+                } as StockUseCaseTransaction.Discarded
                 ).stockDiscarded
         )
     }

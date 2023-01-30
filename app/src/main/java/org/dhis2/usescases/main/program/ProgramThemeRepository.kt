@@ -1,7 +1,7 @@
 package org.dhis2.usescases.main.program
 
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.programtheme.stock.StockTheme
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 internal class ProgramThemeRepository(
     val d2: D2
@@ -9,8 +9,8 @@ internal class ProgramThemeRepository(
 
     fun isStockTheme(programUid: String): Boolean {
         return try {
-            d2.programThemeModule()
-                .stockThemes()
+            d2.useCaseModule()
+                .stockUseCases()
                 .uid(programUid)
                 .blockingExists()
         } catch (e: NullPointerException) {
@@ -18,10 +18,10 @@ internal class ProgramThemeRepository(
         }
     }
 
-    fun getStockTheme(programUid: String): StockTheme? {
+    fun getStockTheme(programUid: String): StockUseCase? {
         return try {
-            d2.programThemeModule()
-                .stockThemes()
+            d2.useCaseModule()
+                .stockUseCases()
                 .withTransactions()
                 .uid(programUid)
                 .blockingGet()

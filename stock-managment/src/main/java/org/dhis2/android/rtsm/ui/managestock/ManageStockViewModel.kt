@@ -284,7 +284,7 @@ class ManageStockViewModel @Inject constructor(
         populateTable()
     }
 
-    fun onCellClick(cell: TableCell): TextInputModel {
+    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel {
         val stockItem = _stockItems.value?.find { it.id == cell.id }
         val itemName = stockItem?.name ?: ""
         return TextInputModel(

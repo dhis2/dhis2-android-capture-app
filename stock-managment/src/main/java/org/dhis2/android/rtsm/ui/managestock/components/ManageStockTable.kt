@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -32,12 +33,17 @@ fun ManageStockTable(
         if (viewModel.hasData.collectAsState().value) {
             TableTheme(
                 tableColors = null,
-                tableDimensions = TableDimensions(defaultRowHeaderWidth = 200.dp)
+                tableDimensions = TableDimensions(
+                    defaultRowHeaderWidth = with(LocalDensity.current) { 200.dp.toPx() }.toInt()
+                )
             ) {
                 DataSetTableScreen(
                     tableScreenState = screenState,
-                    onCellClick = { _, cell ->
-                        viewModel.onCellClick(cell)
+                    onCellClick = { _, cell, updatedCellValue ->
+                        viewModel.onCellClick(
+                            cell = cell,
+                            updateCellValue = updatedCellValue
+                        )
                     },
                     onEdition = { isEditing ->
                         viewModel.onEditingCell(isEditing, concealBackdropState)
