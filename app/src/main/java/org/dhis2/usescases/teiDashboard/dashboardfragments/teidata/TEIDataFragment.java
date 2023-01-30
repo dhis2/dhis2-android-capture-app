@@ -374,14 +374,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.emptyTeis.setVisibility(View.GONE);
             adapter.submitList(events);
 
-            List<Event> currentSectionEvents = events.stream()
-                    .filter(eventViewModel -> eventViewModel.getType() == EventViewModelType.EVENT)
-                    .map(EventViewModel::getEvent)
-                    .collect(Collectors.toList());
-
-            if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
-                ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
-            }
+//            List<Event> currentSectionEvents = events.stream()
+//                    .filter(eventViewModel -> eventViewModel.getType() == EventViewModelType.EVENT)
+//                    .map(EventViewModel::getEvent)
+//                    .collect(Collectors.toList());
+//
+//            if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
+//                ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
+//            }
 
             for (EventViewModel eventViewModel : events) {
                 if (eventViewModel.getType() == EventViewModelType.EVENT) {

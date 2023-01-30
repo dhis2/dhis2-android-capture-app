@@ -25,7 +25,7 @@ import dhis2.org.analytics.charts.Charts;
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 @Module
-public class TeiDashboardModule {
+public class  TeiDashboardModule {
 
     public final String programUid;
     public final String teiUid;

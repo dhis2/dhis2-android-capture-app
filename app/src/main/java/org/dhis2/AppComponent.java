@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import dagger.Provides;
 import dispatch.core.DispatcherProvider;
 
 /**
@@ -54,6 +55,7 @@ import dispatch.core.DispatcherProvider;
         NetworkUtilsModule.class,
         CustomDispatcherModule.class
 })
+
 public  interface AppComponent {
 
     @Component.Builder

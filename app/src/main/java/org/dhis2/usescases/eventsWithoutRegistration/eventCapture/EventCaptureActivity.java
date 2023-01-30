@@ -335,16 +335,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
 
-//    public void executeRules(){
-//        System.out.println("executing rules");
-//
-//        EventTeiDetailsFragment fragement = (EventTeiDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.tei_column);
-//
-//        System.out.println(fragement);
-//
-//        fragement.onResume();
-//
-//    }
+    public void executeRules(){
+        System.out.println("executing rules");
+
+        EventTeiDetailsFragment fragement = (EventTeiDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.tei_column);
+
+        System.out.println(fragement);
+
+        fragement.onResume();
+
+    }
 
     @Override
     public void attemptToReschedule() {
