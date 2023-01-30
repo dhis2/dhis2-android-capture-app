@@ -21,7 +21,11 @@ fun ManageStockTable(
     concealBackdropState: () -> Unit
 ) {
     val screenState by viewModel.screenState.observeAsState(
-        initial = TableScreenState(emptyList(), false)
+        initial = TableScreenState(
+            tables = emptyList(),
+            selectNext = false,
+            textInputCollapsedMode = false
+        )
     )
 
     MdcTheme {
