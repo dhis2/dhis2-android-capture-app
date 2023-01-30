@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -51,7 +51,7 @@ class ReservedValuePresenterTest {
         refillFlowable.onNext("attr")
 
         assert(!dummyD2Progress.isEmpty.blockingGet())
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -73,7 +73,7 @@ class ReservedValuePresenterTest {
         reservedValuePresenter.init()
         refillFlowable.onNext("attr")
 
-        verifyZeroInteractions(view)
+        verifyNoMoreInteractions(view)
     }
 
     @Test

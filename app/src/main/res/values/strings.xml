@@ -215,7 +215,7 @@
     <string name="settings_sms_module_title">SMS module:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
     <string name="settings_sms_result_sender_number">SMS result sender</string>
-    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout">SMS result timeout (sec)</string>
     <string name="settings_sms_result_timeout_hint">seconds</string>
     <string name="settings_sms_result_sender_hint">number</string>
     <string name="settings_sms_receiver_number_hint">number</string>
@@ -903,7 +903,7 @@
     <string name="sms_sync_not_sent">SMS not sent.</string>
     <string name="sms_sync_opening_app">Opening SMS app. Do not modify the message please.</string>
     <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
-    <string name="sms_sync_is_sms_sent">Did you sent the sms?</string>
+    <string name="sms_sync_is_sms_sent">Did you send the sms?</string>
     <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
     <string name="syncing_events">Syncing events</string>
     <string name="syncing_teis">Syncing tracked entities</string>
@@ -913,4 +913,5 @@
     <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
+    <string name="wrong_pin">Wrong pin</string>
 </resources>

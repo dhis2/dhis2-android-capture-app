@@ -33,8 +33,8 @@ import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.ui.MetadataIcon
-import org.dhis2.commons.ui.MetadataIconData
+import org.dhis2.ui.MetadataIcon
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program

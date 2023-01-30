@@ -13,14 +13,12 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -43,8 +41,6 @@ public class TEIDataContracts {
         Consumer<Single<Boolean>> areEventsCompleted();
 
         Consumer<EnrollmentStatus> enrollmentCompleted();
-
-        void showCatComboDialog(String eventUid, Date eventDate, String categoryComboUid);
 
         void switchFollowUp(boolean followUp);
 
@@ -81,15 +77,13 @@ public class TEIDataContracts {
         void setEnrollment(Enrollment enrollment);
 
         void showSyncDialog(String uid);
+
+        void displayCatComboOptionSelectorForEvents(List<EventViewModel> data);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init();
-
-        void getCatComboOptions(Event event);
-
-        void setDefaultCatOptCombToEvent(String eventUid);
 
         void changeCatOption(String eventUid, String catOptionComboUid);
 

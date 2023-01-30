@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.Date
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -11,7 +12,7 @@ import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 
 class SMSSyncProviderImpl(
     override val d2: D2,
-    override val conflictType: SyncStatusDialog.ConflictType,
+    override val conflictType: ConflictType,
     override val recordUid: String,
     override val dvOrgUnit: String?,
     override val dvAttrCombo: String?,

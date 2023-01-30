@@ -1,11 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.runBlocking
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.composetable.TableScreenState
@@ -29,14 +33,23 @@ class DataValuePresenter(
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
-) {
+) : CoroutineScope {
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val screenState: MutableLiveData<TableScreenState> = MutableLiveData(
-        TableScreenState(emptyList(), false)
+    private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
+        TableScreenState(
+            emptyList(),
+            false,
+            overwrittenRowHeaderWidth = repository.getWidthForSection()
+        )
     )
     private val errors: MutableMap<String, String> = mutableMapOf()
 
     private val dataSetInfo = repository.getDataSetInfo()
+
+    private var job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
 
     fun init() {
         disposable.add(
@@ -47,14 +60,20 @@ class DataValuePresenter(
                 tables.toMutableList().also { list ->
                     indicators?.let { list.add(indicators) }
                 }
+            }.map {
+                TableScreenState(
+                    tables = it,
+                    selectNext = false,
+                    overwrittenRowHeaderWidth = repository.getWidthForSection()
+                )
             }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.io())
                 .subscribe(
                     {
-                        screenState.postValue(
-                            TableScreenState(it, false)
-                        )
+                        screenState.update { currentScreenState ->
+                            currentScreenState.copy(tables = it.tables)
+                        }
                     },
                     { Timber.e(it) }
                 )
@@ -85,7 +104,7 @@ class DataValuePresenter(
 
         val updatedIndicators = indicatorTables()
 
-        val updatedTables = screenState.value?.tables?.map { tableModel ->
+        val updatedTables = screenState.value.tables.map { tableModel ->
             if (tableModel.id == catComboUid) {
                 updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
             } else if (tableModel.id == null && updatedIndicators != null) {
@@ -93,18 +112,18 @@ class DataValuePresenter(
             } else {
                 tableModel
             }
-        } ?: emptyList()
+        }
 
-        screenState.postValue(
-            TableScreenState(updatedTables, selectNext)
-        )
+        screenState.update { currentScreenState ->
+            currentScreenState.copy(tables = updatedTables, selectNext = selectNext)
+        }
     }
 
     fun onDettach() {
         disposable.clear()
     }
 
-    fun currentState(): LiveData<TableScreenState> = screenState
+    fun currentState(): StateFlow<TableScreenState> = screenState
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun mutableTableData() = screenState
@@ -112,32 +131,15 @@ class DataValuePresenter(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun errors() = errors
 
-    fun onCellValueChanged(tableCell: TableCell) {
-        val updatedData = screenState.value?.tables?.map { tableModel ->
-            if (tableModel.hasCellWithId(tableCell.id)) {
-                tableModel.copy(
-                    overwrittenValues = mapOf(
-                        Pair(tableCell.column!!, tableCell)
-                    )
-                )
-            } else {
-                tableModel
-            }
-        } ?: emptyList()
-        screenState.postValue(
-            TableScreenState(updatedData, false)
-        )
-    }
-
     /**
      * Returns an TextInputModel if the current cell requires text input, null otherwise.
      * TODO: Refactor once we migrate all other value types inputs to compose.
      * */
-    fun onCellClick(cell: TableCell): TextInputModel? {
+    fun onCellClick(cell: TableCell, updateCellValue: (TableCell) -> Unit): TextInputModel? {
         val ids = cell.id?.split("_") ?: return null
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
-        handleElementInteraction(dataElement, cell)
+        handleElementInteraction(dataElement, cell, updateCellValue)
         return dataElement.takeIf { it.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
             TextInputModel(
@@ -153,23 +155,30 @@ class DataValuePresenter(
 
     private fun handleElementInteraction(
         dataElement: DataElement,
-        cell: TableCell
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
     ) {
         if (dataElement.optionSetUid() != null) {
-            view.showOptionSetDialog(dataElement, cell, getSpinnerViewModel(dataElement, cell))
+            view.showOptionSetDialog(
+                dataElement,
+                cell,
+                getSpinnerViewModel(dataElement, cell),
+                updateCellValue
+            )
         } else when (dataElement.valueType()) {
             ValueType.BOOLEAN,
-            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell)
-            ValueType.DATE -> view.showCalendar(dataElement, cell, false)
-            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true)
-            ValueType.TIME -> view.showTimePicker(dataElement, cell)
-            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell)
+            ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
+            ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
+            ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
+            ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
+            ValueType.COORDINATE -> view.showCoordinatesDialog(dataElement, cell, updateCellValue)
             ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
                 dataElement,
                 cell,
-                repository.orgUnits()
+                repository.orgUnits(),
+                updateCellValue
             )
-            ValueType.AGE -> view.showAgeDialog(dataElement, cell)
+            ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
             else -> {}
         }
     }
@@ -182,19 +191,20 @@ class DataValuePresenter(
         return repository.getDataElement(dataElementUid)
     }
 
-    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) =
-        runBlocking {
+    fun onSaveValueChange(cell: TableCell, selectNext: Boolean = false) {
+        launch(dispatcherProvider.io()) {
             saveValue(cell, selectNext)
             view.onValueProcessed()
         }
+    }
 
     private suspend fun saveValue(cell: TableCell, selectNext: Boolean) =
         withContext(dispatcherProvider.io()) {
             val ids = cell.id?.split("_")
             val dataElementUid = ids!![0]
             val catOptCombUid = ids[1]
-            val catComboUid = screenState.value?.tables
-                ?.find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
+            val catComboUid = screenState.value.tables
+                .find { tableModel -> tableModel.hasCellWithId(cell.id) }?.id
 
             val result = valueStore.save(
                 dataSetInfo.second,
@@ -219,4 +229,8 @@ class DataValuePresenter(
                 updateData(catComboUid!!, selectNext)
             }
         }
+
+    fun saveWidth(widthDpValue: Float) {
+        repository.saveWidthForSection(widthDpValue)
+    }
 }

@@ -20,7 +20,6 @@ class EventListPresenter(
     val disposable = CompositeDisposable()
 
     fun init() {
-        // CountingIdlingResourceSingleton.increment()
         disposable.add(
             filterManager.asFlowable().startWith(filterManager)
                 .map { eventRepository.filteredProgramEvents() }
@@ -33,6 +32,6 @@ class EventListPresenter(
     }
 
     fun program(): Program {
-        return eventRepository.program().blockingFirst()
+        return eventRepository.program().blockingGet()
     }
 }

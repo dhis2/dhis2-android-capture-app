@@ -32,6 +32,7 @@ import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.sync.ConflictType
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -40,7 +41,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class GranularSyncModule(
     private val context: Context,
-    private val conflictType: SyncStatusDialog.ConflictType,
+    private val conflictType: ConflictType,
     private val recordUid: String,
     private val dvOrgUnit: String?,
     private val dvAttrCombo: String?,

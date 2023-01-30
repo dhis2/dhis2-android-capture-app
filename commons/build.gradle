@@ -55,15 +55,15 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.1'
+        kotlinCompilerExtensionVersion = "1.3.0"
     }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    api project(":ui-components")
 
-    debugApi project(':core')
-    releaseApi("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+    api("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
         exclude group: "com.facebook.flipper"
     }
@@ -91,7 +91,7 @@ dependencies {
     api "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"
     api "androidx.lifecycle:lifecycle-livedata-ktx:${libraries.lifecycle}"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:${libraries.lifecycle}"
-    api "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+    api "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycleExtensions}"
     api "androidx.recyclerview:recyclerview:${libraries.recyclerview}"
 
     api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
@@ -105,8 +105,8 @@ dependencies {
 
     //Compose
     api "androidx.compose.material:material:${libraries.compose}"
-    api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
-    api "com.google.android.material:compose-theme-adapter:${libraries.compose}"
+    api "androidx.constraintlayout:constraintlayout-compose:${libraries.composeConstraintLayout}"
+    api "com.google.android.material:compose-theme-adapter:${libraries.composeTheme}"
     api "androidx.compose.ui:ui-tooling-preview:${libraries.compose}"
     api "androidx.compose.ui:ui:${libraries.compose}"
     api "androidx.compose.runtime:runtime-livedata:${libraries.compose}"
@@ -132,11 +132,11 @@ dependencies {
 
     testApi "junit:junit:${libraries.junit}"
 
-    androidTestApi 'androidx.test.ext:junit:1.1.2'
-    androidTestApi 'androidx.test.espresso:espresso-core:3.3.0'
-    androidTestApi 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    api 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-    api 'androidx.test.espresso.idling:idling-concurrent:3.3.0'
+    androidTestApi "androidx.test.ext:junit:$libraries.junit_ext"
+    androidTestApi "androidx.test.espresso:espresso-core:$libraries.espresso_core"
+    androidTestApi "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    api "androidx.test.espresso:espresso-idling-resource:$libraries.espresso_core"
+    api "androidx.test.espresso.idling:idling-concurrent:$libraries.espresso_core"
 
     implementation "io.sentry:sentry-android:${libraries.sentry}"
 }

@@ -34,7 +34,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
     val optionsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToHide = mutableMapOf<String, MutableList<String>>()
     val optionGroupsToShow = mutableMapOf<String, MutableList<String>>()
-    var fieldsToUpdate = mutableListOf<String>()
+    var fieldsToUpdate = mutableListOf<FieldWithNewValue>()
     var hiddenFields = mutableListOf<String>()
     val configurationErrors = mutableListOf<RulesUtilsProviderConfigurationError>()
     var valueStore: FormValueStore? = null
@@ -136,7 +136,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
 
         valuesToChange.entries.forEach {
             if (save(it.key, it.value) == ValueStoreResult.VALUE_CHANGED) {
-                fieldsToUpdate.add(it.key)
+                fieldsToUpdate.add(FieldWithNewValue(it.key, it.value))
             }
         }
 
@@ -412,7 +412,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 hideOption.option()
             ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
-                fieldsToUpdate.add(hideOption.field())
+                fieldsToUpdate.add(FieldWithNewValue(hideOption.field(), null))
             }
         }
     }
@@ -432,7 +432,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
                 true
             ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
             ) {
-                fieldsToUpdate.add(hideOptionGroup.field())
+                fieldsToUpdate.add(FieldWithNewValue(hideOptionGroup.field(), null))
             }
         }
     }
@@ -458,7 +458,7 @@ class RulesUtilsProviderImpl(val d2: D2) : RulesUtilsProvider {
             false
         )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
-            fieldsToUpdate.add(fieldUid)
+            fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
         }
     }
 }

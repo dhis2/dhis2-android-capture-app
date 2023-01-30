@@ -331,6 +331,7 @@ class FormView : Fragment() {
         viewModel.items.observe(
             viewLifecycleOwner
         ) { items ->
+            FormCountingIdlingResource.decrement()
             render(items)
         }
 

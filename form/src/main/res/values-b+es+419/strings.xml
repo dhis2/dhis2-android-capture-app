@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="location_permission_denied">Se requiere el permiso de localización para obtener coordenadas. POR FAVOR, habilítelo desde los ajustes del dispositivo.</string>
+
+</resources>

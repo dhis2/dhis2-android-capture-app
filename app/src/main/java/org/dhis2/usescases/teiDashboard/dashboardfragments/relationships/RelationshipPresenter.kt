@@ -7,7 +7,9 @@ import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -29,7 +31,8 @@ class RelationshipPresenter internal constructor(
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
-    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
+    private val mapStyleConfig: MapStyleConfiguration
 ) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -199,5 +202,9 @@ class RelationshipPresenter internal constructor(
             )
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
+    }
+
+    fun fetchMapStyles(): List<BaseMapStyle> {
+        return mapStyleConfig.fetchMapStyles()
     }
 }

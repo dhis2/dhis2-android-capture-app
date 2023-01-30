@@ -31,6 +31,7 @@ class ProgramPresenter internal constructor(
 
     fun init() {
         val applyFiler = PublishProcessor.create<FilterManager>()
+        programRepository.clearCache()
 
         disposable.add(
             applyFiler
@@ -89,6 +90,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun updateProgramQueries() {
+        programRepository.clearCache()
         filterManager.publishData()
     }
 

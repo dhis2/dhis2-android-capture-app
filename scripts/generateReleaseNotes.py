@@ -17,7 +17,7 @@ with open(RELEASE_INFO_PATH, 'r') as file:
 
 
 print("Getting issues from filter version...")
-
+print(JIRA_FILTER)
 filtered_issues = requests.get(
     "https://jira.dhis2.org/rest/api/latest/search?jql=filter=" + JIRA_FILTER,
     headers={'Authorization': JIRA_AUTH}).json()

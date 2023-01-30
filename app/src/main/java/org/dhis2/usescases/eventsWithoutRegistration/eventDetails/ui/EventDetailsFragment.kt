@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import java.util.Date
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
 import org.dhis2.R
 import org.dhis2.commons.Constants.ENROLLMENT_STATUS
 import org.dhis2.commons.Constants.ENROLLMENT_UID
@@ -112,7 +111,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             )
         )?.inject(this)
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.event_details_fragment,
+            inflater,
+            R.layout.event_details_fragment,
             container,
             false
         )
@@ -184,9 +184,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             )
         }
 
-        viewModel.onButtonClickCallback = {
-            onButtonCallback?.invoke() ?: viewModel.onActionButtonClick()
-        }
+        viewModel.onButtonClickCallback = onButtonCallback
 
         viewModel.showEventUpdateStatus = { message ->
             displayMessage(message)

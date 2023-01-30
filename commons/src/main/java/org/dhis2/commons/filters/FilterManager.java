@@ -559,6 +559,7 @@ public class FilterManager implements Serializable {
         observableFollowUp.set(false);
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
+        enrollmentPeriodFiltersApplied.set(enrollmentPeriodFilters.size());
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         catOptCombFiltersApplied.set(catOptComboFilters.size());
         stateFiltersApplied.set(stateFilters.size());

@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -29,7 +29,6 @@ import org.dhis2.commons.Constants.DATA_SET_UID
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
@@ -95,23 +94,25 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    val screenState by presenterFragment.currentState().observeAsState(
-                        initial = TableScreenState(emptyList(), false)
-                    )
+                    val screenState by presenterFragment.currentState().collectAsState()
 
                     DataSetTableScreen(
                         tableScreenState = screenState,
-                        onCellClick = { _, cell ->
-                            presenterFragment.onCellClick(cell = cell)
+                        onCellClick = { _, cell, updateCellValue ->
+                            presenterFragment.onCellClick(
+                                cell = cell,
+                                updateCellValue = updateCellValue
+                            )
                         },
                         onEdition = { isEditing ->
                             presenter.editingCellValue(isEditing)
                         },
-                        onCellValueChange = { cell ->
-                            presenterFragment.onCellValueChanged(cell)
-                        },
+                        onCellValueChange = { },
                         onSaveValue = { cell, selectNext ->
                             presenterFragment.onSaveValueChange(cell, selectNext)
+                        },
+                        onRowHeaderResize = { widthDpValue ->
+                            presenterFragment.saveWidth(widthDpValue)
                         }
                     )
                 }
@@ -141,7 +142,12 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
     }
 
-    override fun showCalendar(dataElement: DataElement, cell: TableCell, showTimePicker: Boolean) {
+    override fun showCalendar(
+        dataElement: DataElement,
+        cell: TableCell,
+        showTimePicker: Boolean,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val dialog = CalendarPicker(requireContext())
         dialog.setTitle(dataElement.displayFormName())
 
@@ -153,7 +159,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dialog.isFutureDatesAllowed(true)
         dialog.setListener(object : OnDatePickerListener {
             override fun onNegativeClick() {
-                presenterFragment.onSaveValueChange(cell.copy(value = null))
+                val updatedCellValue = cell.copy(value = null)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
             }
 
             override fun onPositiveClick(datePicker: DatePicker) {
@@ -161,20 +169,27 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 calendar.set(Calendar.MONTH, datePicker.month)
                 calendar.set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
                 if (showTimePicker) {
-                    showDateTime(dataElement, cell, calendar)
+                    showDateTime(dataElement, cell, calendar, updateCellValue)
                 } else {
                     calendar.set(Calendar.HOUR_OF_DAY, 0)
                     calendar.set(Calendar.MINUTE, 0)
                     val selectedDate: Date = calendar.time
                     val result = DateUtils.oldUiDateFormat().format(selectedDate)
-                    presenterFragment.onSaveValueChange(cell.copy(value = result))
+                    val updatedCellValue = cell.copy(value = result)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
                 }
             }
         })
         dialog.show()
     }
 
-    private fun showDateTime(dataElement: DataElement, cell: TableCell, calendar: Calendar) {
+    private fun showDateTime(
+        dataElement: DataElement,
+        cell: TableCell,
+        calendar: Calendar,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val hour = calendar[Calendar.HOUR_OF_DAY]
         val minute = calendar[Calendar.MINUTE]
         val is24HourFormat = DateFormat.is24HourFormat(context)
@@ -185,7 +200,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minutes)
                 val result = DateUtils.databaseDateFormatNoSeconds().format(calendar.time)
-                presenterFragment.onSaveValueChange(cell.copy(value = result))
+                val updatedCellValue = cell.copy(value = result)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
             },
             hour,
             minute,
@@ -195,7 +212,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         dialog.show()
     }
 
-    override fun showTimePicker(dataElement: DataElement, cell: TableCell) {
+    override fun showTimePicker(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val c = Calendar.getInstance()
         if (!cell.value.isNullOrEmpty()) {
             c.time = DateUtils.timeFormat().parse(cell.value!!)!!
@@ -218,7 +239,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 } else {
                     twelveHourFormat.format(selectedDate)
                 }
-                presenterFragment.onSaveValueChange(cell.copy(value = calendarTime))
+                val updatedCellValue = cell.copy(value = calendarTime)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
             },
             hour,
             minute,
@@ -230,12 +253,18 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             DialogInterface.BUTTON_NEGATIVE,
             requireContext().getString(R.string.date_dialog_clear)
         ) { _: DialogInterface?, _: Int ->
-            presenterFragment.onSaveValueChange(cell.copy(value = null))
+            val updatedCellValue = cell.copy(value = null)
+            updateCellValue(updatedCellValue)
+            presenterFragment.onSaveValueChange(updatedCellValue)
         }
         dialog.show()
     }
 
-    override fun showBooleanDialog(dataElement: DataElement, cell: TableCell) {
+    override fun showBooleanDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val yesNoView = YesNoView(context)
         yesNoView.setIsBgTransparent(true)
         yesNoView.setValueType(dataElement.valueType())
@@ -262,7 +291,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         R.id.no -> false.toString()
                         else -> null
                     }
-                    presenterFragment.onSaveValueChange(cell.copy(value = newValue))
+                    val updatedCellValue = cell.copy(value = newValue)
+                    updateCellValue(updatedCellValue)
+                    presenterFragment.onSaveValueChange(updatedCellValue)
                 }
 
                 override fun onNegative() {}
@@ -272,7 +303,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }.show()
     }
 
-    override fun showAgeDialog(dataElement: DataElement, cell: TableCell) {
+    override fun showAgeDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val ageView = AgeView(context)
         ageView.setIsBgTransparent()
         if (!cell.value.isNullOrEmpty()) {
@@ -291,7 +326,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         DateUtils.oldUiDateFormat().format(it)
                     } ?: ""
                     if (cell.value != date) {
-                        presenterFragment.onSaveValueChange(cell.copy(value = date))
+                        val updatedCellValue = cell.copy(value = date)
+                        presenterFragment.onSaveValueChange(updatedCellValue)
+                        updateCellValue(cell.copy(value = date))
                     }
                 }
 
@@ -301,7 +338,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         ).show()
     }
 
-    override fun showCoordinatesDialog(dataElement: DataElement, cell: TableCell) {
+    override fun showCoordinatesDialog(
+        dataElement: DataElement,
+        cell: TableCell,
+        updateCellValue: (TableCell) -> Unit
+    ) {
         val coordinatesView = CoordinatesView(context)
         coordinatesView.setIsBgTransparent(true)
         coordinatesView.featureType = FeatureType.POINT
@@ -317,9 +358,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             object : DialogClickListener {
                 override fun onPositive() {
                     if (cell.value != coordinatesView.currentCoordinates()) {
-                        presenterFragment.onSaveValueChange(
+                        val updatedCellValue =
                             cell.copy(value = coordinatesView.currentCoordinates())
-                        )
+                        updateCellValue(updatedCellValue)
+                        presenterFragment.onSaveValueChange(updatedCellValue)
                     }
                 }
 
@@ -332,16 +374,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showOtgUnitDialog(
         dataElement: DataElement,
         cell: TableCell,
-        orgUnits: List<OrganisationUnit>
+        orgUnits: List<OrganisationUnit>,
+        updateCellValue: (TableCell) -> Unit
     ) {
         val orgUnitDialog = OrgUnitDialog()
         orgUnitDialog.setTitle(dataElement.displayFormName())
             .setMultiSelection(false)
             .setOrgUnits(orgUnits)
             .setPossitiveListener {
-                presenterFragment.onSaveValueChange(
-                    cell.copy(value = orgUnitDialog.selectedOrgUnit)
-                )
+                val updatedCellValue = cell.copy(value = orgUnitDialog.selectedOrgUnit)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
                 orgUnitDialog.dismiss()
             }
             .setNegativeListener {
@@ -358,7 +401,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun showOptionSetDialog(
         dataElement: DataElement,
         cell: TableCell,
-        spinnerViewModel: SpinnerViewModel
+        spinnerViewModel: SpinnerViewModel,
+        updateCellValue: (TableCell) -> Unit
     ) {
         val dialog = OptionSetDialog()
         dialog.create(requireContext())
@@ -371,10 +415,14 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
          */
         if (dialog.showDialog()) {
             dialog.listener = OptionSetOnClickListener {
-                presenterFragment.onSaveValueChange(cell.copy(value = it.code()))
+                val updatedCellValue = cell.copy(value = it.code())
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
             }
             dialog.clearListener = View.OnClickListener {
-                presenterFragment.onSaveValueChange(cell.copy(value = null))
+                val updatedCellValue = cell.copy(value = null)
+                updateCellValue(updatedCellValue)
+                presenterFragment.onSaveValueChange(updatedCellValue)
             }
             dialog.show(parentFragmentManager, TAG)
         } else {

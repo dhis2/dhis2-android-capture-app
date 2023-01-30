@@ -36,7 +36,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertFalse
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -92,7 +91,6 @@ class EventDetailsIntegrationTest {
 
     private lateinit var viewModel: EventDetailsViewModel
 
-    @Ignore
     @Test
     fun `should reopen a completed event`() = runBlocking {
         // Given an event that can be reopened
@@ -131,6 +129,7 @@ class EventDetailsIntegrationTest {
         configureEventCatCombo = createConfigureEventCatCombo(),
         configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
+        eventUid = EVENT_UID,
         geometryController = createGeometryController(),
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
@@ -192,6 +191,7 @@ class EventDetailsIntegrationTest {
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
         const val PROGRAM_UID = "programUid"
+        const val EVENT_UID = "eventUid"
         const val INITIAL_ORG_UNIT_UID = "initialOrgUnitUid"
         const val PROGRAM_STAGE_NAME = "Marvellous Program Stage"
         const val EXECUTION_DATE = "Date of Marvellous Program Stage"

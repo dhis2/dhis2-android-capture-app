@@ -5,8 +5,9 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -126,6 +127,9 @@ class SyncPresenterTest {
             .matomoID(11111)
             .matomoURL("MatomoURL")
             .build()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        ) doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(1)).updateMatomoSecondaryTracker(any(), any(), any())
@@ -143,9 +147,12 @@ class SyncPresenterTest {
         ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .build()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
-        verifyZeroInteractions(analyticsHelper)
+        verifyNoMoreInteractions(analyticsHelper)
     }
 
     @Test
@@ -158,6 +165,12 @@ class SyncPresenterTest {
         whenever(
             d2.settingModule().generalSetting().blockingGet()
         ) doReturn null
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
@@ -173,6 +186,9 @@ class SyncPresenterTest {
         whenever(
             d2.settingModule().generalSetting().blockingGet()
         ) doReturn null
+        whenever(
+            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+        )doReturn Completable.complete()
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())

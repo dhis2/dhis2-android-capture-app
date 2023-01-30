@@ -162,6 +162,7 @@
     <string name="thirty_minutes">30 ນາທີ</string>
     <string name="a_hour">1 ຊົ່ວໂມງ</string>
     <string name="a_day">1 ມື້ (ຄ່າມາດຕະຖານ)</string>
+    <string name="every_12_hours">12h</string>
     <string name="Automatic_Sync_Data">ສົ່ງຂໍ້ມູນໂອໂຕມະຕິກ ແຕ່ລະ:</string>
     <string name="Manual">ຄູ່ມື</string>
     <string name="Automatic_Sync_Metadata">ປັບປຸງການຕັ້ງຄ່າແບບໂອໂຕມຕິກ ທຸກໆ: </string>
@@ -378,6 +379,7 @@
     <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ຂໍ້ຄວາມ</string>
     <string name="finish">ສີ້ນສຸດ</string>
+    <string name="error_fields_title">ຂໍ້ມູນມີຂໍ້ຜິດພາດ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
@@ -391,6 +393,7 @@
     <string name="resource_not_found">%s ບໍ່ພົບເຫັນ</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
     <string name="action_close">ປິດ</string>
     <string name="tuto_main_11">ຕອນນີ້ທ່ານສາມາດກວດສອບການຊິ້ງຂອງຂໍ້ມູນ ໂດຍການກົດໃສ່</string>
     <string name="data_set_complete">ສຳເລັດແລ້ວ</string>
@@ -429,6 +432,8 @@
     <string name="filter_event_status_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
     <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
     <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
+    <string name="event_tei_limits">ເຫດການ%sສູງສຸດ%s%sປະຈຸບັນ%sTEI%sສູງສຸດ%s%sປະຈຸບັນ%s</string>
+    <string name="event_tei_limits_v2">ຈຳກັດການຕັ້ງຄ່າ%s\nເຫດການ:%s/%sTEI:%s/%s</string>
     <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
     <string name="go_back">ກັບຄືນ</string>
@@ -438,11 +443,13 @@
     <string name="choose_ou">ເລືອກຫົວໜ່ວຍອົງກອນ</string>
     <string name="choose_option">ເລືອກຄໍາຕອບ</string>
     <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
+    <string name="syncing_period_not_editable">ໄລຍະເວລາການຊິ້ງຂໍ້ມູນແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="dataset_overview">ລາຍລະອຽດ</string>
     <string name="dataset_comments">ຄຳເຫັນ</string>
     <string name="name">ຊື່</string>
     <string name="formula">Formula</string>
+    <string name="fk_message">ບໍ່ຄົບຖ້ວນ%s%sຈາກ%s%s</string>
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
     <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>

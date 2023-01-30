@@ -6,14 +6,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.permissions.PermissionsListener
+import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -21,10 +21,14 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
+import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 
 abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
@@ -36,6 +40,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
+    private var mapStyles: List<BaseMapStyle> = emptyList()
 
     var numberOfUiIcons: Int = 2
     val defaultUiIconLeftMargin = 8.dp
@@ -45,17 +50,22 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
     val defaultUiIconSize = 40.dp
 
     fun init(
+        mapStyles: List<BaseMapStyle>,
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit
     ) {
+        this.mapStyles = mapStyles.ifEmpty { listOf(internalBaseMap()) }
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
                 mapView.contentDescription = "LOADED"
                 this.map = mapLoaded
+                val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
-                map?.setStyle(Style.MAPBOX_STREETS) { styleLoaded ->
+                map?.setStyle(
+                    baseMapManager.styleJson(this.mapStyles.first())
+                ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded).apply {
+                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager).apply {
                         styleChangeCallback = { newStyle ->
                             style = newStyle
                             mapLayerManager.clearLayers()
@@ -79,10 +89,24 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
 
     private fun setUi() {
         map?.apply {
+            uiSettings.setAttributionDialogManager(
+                AttributionManager(
+                    mapView.context,
+                    this,
+                    mapStyles.first()
+                )
+            )
+            uiSettings.isLogoEnabled = false
+            uiSettings.setAttributionMargins(
+                defaultUiIconLeftMargin,
+                uiSettings.attributionMarginTop,
+                uiSettings.attributionMarginRight,
+                uiSettings.attributionMarginBottom
+            )
             ContextCompat.getDrawable(mapView.context, R.drawable.ic_compass_ripple)?.let {
                 uiSettings.setCompassImage(it)
                 uiSettings.setCompassMargins(
-                    defaultUiIconLeftMargin,
+                    0,
                     numberOfUiIcons * defaultUiIconSize +
                         (numberOfUiIcons + 1) * defaultUiIconTopMargin,
                     defaultUiIconRightMargin,

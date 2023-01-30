@@ -21,6 +21,8 @@ import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -53,6 +55,7 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import timber.log.Timber;
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View, OnOrgUnitSelectionFinished {
@@ -71,6 +74,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     SearchNavigator searchNavigator;
+
+    @Inject
+    NetworkUtils networkUtils;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -142,20 +148,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
         binding.searchButton.setOnClickListener(v -> {
-            hideKeyboard();
             if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
             formView.onEditionFinish();
-            binding.backdropLayout.post(() ->
-                    viewModel.onSearchClick(minNumberOfAttributes -> {
-                        showSnackbar(
-                                v,
-                                String.format(getString(R.string.search_min_num_attr),
-                                        minNumberOfAttributes),
-                                getString(R.string.button_ok)
+            viewModel.onSearchClick(minNumberOfAttributes -> {
+                showSnackbar(
+                        v,
+                        String.format(getString(R.string.search_min_num_attr),
+                                minNumberOfAttributes),
+                        getString(R.string.button_ok)
 
-                        );
-                        return Unit.INSTANCE;
-                    }));
+                );
+                return Unit.INSTANCE;
+            });
         });
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
@@ -299,7 +303,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void openSyncDialog() {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.PROGRAM)
+                .setConflictType(ConflictType.PROGRAM)
                 .setUid(initialProgram)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
@@ -353,10 +357,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     showSearchAndFilterButtons();
                     break;
                 case R.id.navigation_map_view:
-                    presenter.trackSearchMapVisualization();
-                    viewModel.setMapScreen();
-                    showMap();
-                    showSearchAndFilterButtons();
+                    networkUtils.performIfOnline(
+                            this,
+                            () -> {
+                                presenter.trackSearchMapVisualization();
+                                viewModel.setMapScreen();
+                                showMap();
+                                showSearchAndFilterButtons();
+                                return null;
+                            },
+                            () -> {
+                                binding.navigationBar.selectItemAt(0);
+                                return null;
+                            },
+                            getString(R.string.msg_network_connection_maps)
+                    );
+
                     break;
                 case R.id.navigation_analytics:
                     presenter.trackSearchAnalytics();
@@ -483,7 +499,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showSyncDialog(String teiUid) {
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                .setConflictType(ConflictType.TEI)
                 .setUid(teiUid)
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();

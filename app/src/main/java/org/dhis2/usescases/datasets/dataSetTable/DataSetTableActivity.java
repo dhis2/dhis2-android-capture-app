@@ -31,6 +31,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.commons.sync.ConflictType;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.AlertBottomDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
@@ -172,7 +173,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private void showGranularSync() {
         presenter.onClickSyncStatus();
         SyncStatusDialog syncDialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setConflictType(ConflictType.DATA_VALUES)
                 .setUid(dataSetUid)
                 .setPeriodId(periodId)
                 .setOrgUnit(orgUnitUid)
