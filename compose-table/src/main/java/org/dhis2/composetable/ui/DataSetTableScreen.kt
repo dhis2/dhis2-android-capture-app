@@ -248,9 +248,9 @@ fun DataSetTableScreen(
                         tableSelection = newTableSelection
                     }
 
-                        override fun onDecorationClick(dialogModel: TableDialogModel) {
-                            displayDescription = dialogModel
-                        }
+                    override fun onDecorationClick(dialogModel: TableDialogModel) {
+                        displayDescription = dialogModel
+                    }
 
                     override fun onClick(tableCell: TableCell) {
                         currentCell?.takeIf { it != tableCell }?.let {
