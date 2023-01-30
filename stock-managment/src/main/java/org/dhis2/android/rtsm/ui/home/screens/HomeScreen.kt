@@ -5,10 +5,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -16,19 +16,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
-import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
+import org.dhis2.android.rtsm.ui.home.screens.components.CompletionDialog
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.buttons.FAButton
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     activity: Activity,
@@ -70,10 +70,8 @@ fun HomeScreen(
             }
         },
         snackbarHost = {
-            SnackbarHost(hostState = it) { data ->
-                Snackbar(
-                    snackbarData = data, backgroundColor = colorResource(R.color.error)
-                )
+            SnackbarHost(hostState = it) {
+                CompletionDialog(dataEntryUiState = dataEntryUiState)
             }
         }
     ) {

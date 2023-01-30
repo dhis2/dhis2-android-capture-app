@@ -40,6 +40,7 @@ import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
 import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
+import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.composetable.TableScreenState
@@ -49,6 +50,7 @@ import org.dhis2.composetable.model.TextInputModel
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import timber.log.Timber
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -68,7 +70,7 @@ class ManageStockViewModel @Inject constructor(
     private val _config = MutableLiveData<AppConfig>()
     val config: LiveData<AppConfig> = _config
 
-    private val _transaction = MutableLiveData<Transaction>()
+    private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
 
     private var search = MutableLiveData<SearchParametersModel>()
@@ -106,6 +108,7 @@ class ManageStockViewModel @Inject constructor(
     fun setup(transaction: Transaction) {
         if (didTransactionParamsChange(transaction)) {
             _transaction.value = transaction
+            updateStep(DataEntryStep.LISTING)
             loadStockItems()
             refreshData()
         }
@@ -235,6 +238,41 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
+    private fun commitTransaction() {
+        if (itemsCache.values.isEmpty()) {
+            Timber.w("No items to commit On Cache")
+            return
+        }
+        disposable.add(
+            stockManagerRepository.saveTransaction(
+                getPopulatedEntries(),
+                transaction.value!!,
+                config.value!!
+            )
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        _dataEntryUiState.update { currentUiState ->
+                            currentUiState.copy(
+                                snackBarUiState = SnackBarUiState(
+                                    message = R.string.transaction_completed,
+                                    color = R.color.success_color,
+                                    icon = R.drawable.success_icon
+                                )
+                            )
+                        }
+                        updateStep(DataEntryStep.COMPLETED)
+                        cleanItemsFromCache()
+                        clearTransaction()
+                    },
+                    {
+                        it.printStackTrace()
+                    }
+                )
+        )
+    }
+
     fun onCellValueChanged(cell: TableCell) {
         val entries: List<StockEntry> = _stockItems.value?.map {
             itemsCache[it.id] ?: StockEntry(it)
@@ -355,12 +393,13 @@ class ManageStockViewModel @Inject constructor(
             else -> null
         }
         step?.let { updateStep(it) }
+
         if (isEditing) {
             onEditionStart.invoke()
         }
     }
 
-    private fun updateStep(step: DataEntryStep) {
+    fun updateStep(step: DataEntryStep) {
         _dataEntryUiState.update { currentUiState ->
             currentUiState.copy(step = step)
         }
@@ -380,9 +419,6 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
-            DataEntryStep.EDITING -> {
-                dataEntryUiState.value.button.copy(visible = false)
-            }
             DataEntryStep.REVIEWING -> {
                 val buttonVisibility = hasData.value && canReview()
                 ButtonUiState(
@@ -393,7 +429,7 @@ class ManageStockViewModel @Inject constructor(
                     visible = buttonVisibility
                 )
             }
-            DataEntryStep.COMPLETED -> {
+            else -> {
                 dataEntryUiState.value.button.copy(visible = false)
             }
         }
@@ -410,7 +446,7 @@ class ManageStockViewModel @Inject constructor(
                 updateStep(DataEntryStep.REVIEWING)
             }
             DataEntryStep.REVIEWING -> {
-                // TODO("Should go to complete")
+                commitTransaction()
             }
             else -> {
                 // Nothing will happen given that the button is hidden
@@ -427,5 +463,9 @@ class ManageStockViewModel @Inject constructor(
         backStep?.let {
             updateStep(it)
         }
+    }
+
+    private fun clearTransaction() {
+        _transaction.value = null
     }
 }

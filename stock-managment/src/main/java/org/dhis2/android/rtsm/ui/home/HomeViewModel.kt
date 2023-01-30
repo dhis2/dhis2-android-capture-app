@@ -154,7 +154,6 @@ class HomeViewModel @Inject constructor(
                 "Unable to create parcel with empty facility"
             )
         }
-
         return Transaction(
             settingsUiState.value.transactionType,
             ParcelUtils.facilityToIdentifiableModelParcel(settingsUiState.value.facility!!),
@@ -165,5 +164,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    fun resetSettings() {
+        _settingsUiSate.update {
+            SettingsUiState(
+                programUid = config.program
+            )
+        }
     }
 }

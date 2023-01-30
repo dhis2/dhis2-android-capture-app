@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +47,8 @@ import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
+import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
@@ -58,7 +59,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 var orgUnitData: OrganisationUnit? = null
 var orgUnitName: String? = null
 
-@Preview
 @Composable
 fun DropdownComponentTransactions(
     onTransitionSelected: (transition: TransactionType) -> Unit,
@@ -304,7 +304,7 @@ fun DropdownComponentFacilities(
 @Composable
 fun DropdownComponentDistributedTo(
     onDestinationSelected: (destination: Option) -> Unit,
-    hasUnsavedData: Boolean,
+    dataEntryUiState: DataEntryUiState,
     themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
@@ -335,6 +335,15 @@ fun DropdownComponentDistributedTo(
     }
 
     isDestinationSelected(selectedText)
+
+    dataEntryUiState.step
+    when (dataEntryUiState.step) {
+        DataEntryStep.COMPLETED -> {
+            selectedText = ""
+            selectedIndex = -1
+        }
+        else -> {}
+    }
 
     Column(Modifier.padding(horizontal = 16.dp)) {
         OutlinedTextField(
@@ -399,7 +408,7 @@ fun DropdownComponentDistributedTo(
                 data.forEachIndexed { index, item ->
                     DropdownMenuItem(
                         onClick = {
-                            if (selectedIndex != index && hasUnsavedData) {
+                            if (selectedIndex != index && dataEntryUiState.hasUnsavedData) {
                                 launchDialog.invoke(R.string.transaction_discarted) { result ->
                                     when (result) {
                                         EditionDialogResult.DISCARD -> {

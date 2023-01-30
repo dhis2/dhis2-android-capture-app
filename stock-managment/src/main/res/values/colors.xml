@@ -71,4 +71,7 @@
     <color name="mic_active">#E00019</color>
     <color name="mic_default">#C7C7C7</color>
     <color name="mic_disabled">#59C7C7C7</color>
+
+    <color name="success_color">#4CAF50</color>
+
 </resources>

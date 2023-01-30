@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
@@ -207,27 +208,33 @@ fun MainContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(vertical = 0.dp)
         ) {
-            if (settingsUiState.transactionType == TransactionType.DISTRIBUTION) {
-                if (settingsUiState.hasFacilitySelected() &&
-                    settingsUiState.hasDestinationSelected()
-                ) {
-                    manageStockViewModel.setup(viewModel.getData())
-                    ManageStockTable(manageStockViewModel) {
-                        scope.launch { backdropState.conceal() }
+            if (manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                != DataEntryStep.COMPLETED ||
+                manageStockViewModel.dataEntryUiState.collectAsState().value.step
+                != DataEntryStep.START
+            ) {
+                if (settingsUiState.transactionType == TransactionType.DISTRIBUTION) {
+                    if (settingsUiState.hasFacilitySelected() &&
+                        settingsUiState.hasDestinationSelected()
+                    ) {
+                        manageStockViewModel.setup(viewModel.getData())
+                        ManageStockTable(manageStockViewModel) {
+                            scope.launch { backdropState.conceal() }
+                        }
                     }
-                }
-            } else if (settingsUiState.transactionType == TransactionType.CORRECTION) {
-                if (settingsUiState.hasFacilitySelected()) {
-                    manageStockViewModel.setup(viewModel.getData())
-                    ManageStockTable(manageStockViewModel) {
-                        scope.launch { backdropState.conceal() }
+                } else if (settingsUiState.transactionType == TransactionType.CORRECTION) {
+                    if (settingsUiState.hasFacilitySelected()) {
+                        manageStockViewModel.setup(viewModel.getData())
+                        ManageStockTable(manageStockViewModel) {
+                            scope.launch { backdropState.conceal() }
+                        }
                     }
-                }
-            } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
-                if (settingsUiState.hasFacilitySelected()) {
-                    manageStockViewModel.setup(viewModel.getData())
-                    ManageStockTable(manageStockViewModel) {
-                        scope.launch { backdropState.conceal() }
+                } else if (settingsUiState.transactionType == TransactionType.DISCARD) {
+                    if (settingsUiState.hasFacilitySelected()) {
+                        manageStockViewModel.setup(viewModel.getData())
+                        ManageStockTable(manageStockViewModel) {
+                            scope.launch { backdropState.conceal() }
+                        }
                     }
                 }
             }

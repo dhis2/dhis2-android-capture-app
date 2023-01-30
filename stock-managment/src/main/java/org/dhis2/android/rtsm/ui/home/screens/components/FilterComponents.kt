@@ -19,6 +19,7 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -26,7 +27,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 @Composable
 fun FilterList(
     viewModel: HomeViewModel,
-    hasUnsavedData: Boolean,
+    dataEntryUiState: DataEntryUiState,
     themeColor: Color,
     supportFragmentManager: FragmentManager,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
@@ -53,7 +54,7 @@ fun FilterList(
         item {
             DropdownComponentTransactions(
                 onTransitionSelected,
-                hasUnsavedData,
+                dataEntryUiState.hasUnsavedData,
                 themeColor,
                 mapTransaction(),
                 launchDialog
@@ -64,7 +65,7 @@ fun FilterList(
             DropdownComponentFacilities(
                 settingsUiState,
                 onFacilitySelected,
-                hasUnsavedData,
+                dataEntryUiState.hasUnsavedData,
                 themeColor,
                 supportFragmentManager,
                 getFacilities(facilities),
@@ -78,7 +79,7 @@ fun FilterList(
                 item {
                     DropdownComponentDistributedTo(
                         onDestinationSelected,
-                        hasUnsavedData,
+                        dataEntryUiState,
                         themeColor,
                         result,
                         launchDialog = launchDialog

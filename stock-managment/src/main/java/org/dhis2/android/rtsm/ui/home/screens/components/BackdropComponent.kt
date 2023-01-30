@@ -8,18 +8,24 @@ import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeActivity
@@ -49,6 +55,7 @@ fun Backdrop(
     var isFrontLayerDisabled by remember { mutableStateOf<Boolean?>(null) }
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     (activity as HomeActivity).onBackPressed = {
         handleBackNavigation(
@@ -58,7 +65,7 @@ fun Backdrop(
             manageStockViewModel
         )
     }
-
+    DisplaySnackBar(manageStockViewModel, scaffoldState)
     BackdropScaffold(
         appBar = {
             Toolbar(
@@ -85,7 +92,7 @@ fun Backdrop(
         backLayerContent = {
             FilterList(
                 viewModel,
-                dataEntryUiState.hasUnsavedData,
+                dataEntryUiState,
                 themeColor,
                 supportFragmentManager,
                 launchDialog = { msg, result ->
@@ -108,11 +115,10 @@ fun Backdrop(
                 },
                 onFacilitySelected = {
                     viewModel.setFacility(it)
-                },
-                onDestinationSelected = {
-                    viewModel.setDestination(it)
                 }
-            )
+            ) {
+                viewModel.setDestination(it)
+            }
         },
         frontLayerElevation = 5.dp,
         frontLayerContent = {
@@ -147,6 +153,14 @@ fun Backdrop(
             }
         }
     )
+
+    if (dataEntryUiState.step == DataEntryStep.COMPLETED) {
+        scope.launch {
+            backdropState.reveal()
+        }
+        manageStockViewModel.updateStep(DataEntryStep.START)
+        viewModel.resetSettings()
+    }
 }
 
 fun handleBackNavigation(
@@ -156,6 +170,9 @@ fun handleBackNavigation(
     viewModel: ManageStockViewModel
 ) {
     when (dataEntryUiState.step) {
+        DataEntryStep.START -> {
+            activity.finish()
+        }
         DataEntryStep.LISTING -> {
             if (dataEntryUiState.hasUnsavedData) {
                 launchBottomSheet(
@@ -217,5 +234,32 @@ private fun launchBottomSheet(
         onSecondaryButtonClicked = { onDiscard.invoke() }
     ).apply {
         this.show(supportFragmentManager.beginTransaction(), "DIALOG")
+    }
+}
+
+@Composable
+fun DisplaySnackBar(manageStockViewModel: ManageStockViewModel, scaffoldState: ScaffoldState) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        manageStockViewModel.dataEntryUiState.collectLatest {
+            if (it.step == DataEntryStep.COMPLETED) {
+                coroutineScope.launch {
+                    val result = scaffoldState.snackbarHostState.showSnackbar(
+                        message = "Snackbar # ",
+                        actionLabel = "Action on ",
+                        duration = SnackbarDuration.Long
+                    )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            /* action has been performed */
+                        }
+                        SnackbarResult.Dismissed -> {
+                            /* dismissed, no action needed */
+                        }
+                    }
+                }
+            }
+        }
     }
 }

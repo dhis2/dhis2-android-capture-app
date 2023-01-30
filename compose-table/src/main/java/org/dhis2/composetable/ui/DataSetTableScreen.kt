@@ -143,8 +143,7 @@ fun DataSetTableScreen(
     }
 
     BackHandler(
-        !tableScreenState.textInputCollapsedMode ||
-            bottomSheetState.bottomSheetState.isExpanded &&
+        bottomSheetState.bottomSheetState.isExpanded &&
             !bottomSheetState.bottomSheetState.isAnimationRunning
     ) {
         collapseBottomSheet(finish = true)
