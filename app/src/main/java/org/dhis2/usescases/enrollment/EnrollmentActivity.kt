@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -30,6 +31,7 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -179,7 +181,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        if (presenter.openInitial(eventUid)) {
+        if (presenter.isEventScheduleOrSkipped(eventUid)) {
+            val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
+            openEventForResult.launch(scheduleEventIntent)
+        } else if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
                 presenter.getProgram().uid(),
                 eventUid,
@@ -209,6 +214,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.getEnrollment()!!.trackedEntityInstance()
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
+        }
+    }
+
+    private val openEventForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            openDashboard(presenter.getEnrollment()!!.uid()!!)
         }
     }
 

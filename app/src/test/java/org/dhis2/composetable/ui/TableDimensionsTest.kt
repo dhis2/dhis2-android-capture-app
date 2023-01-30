@@ -160,10 +160,7 @@ class TableDimensionsTest {
             totalColumns = totalColumns,
             hasExtra = hasTotal
         )
-        val rowHeaderWidth = tableDimensions.defaultRowHeaderCellWidthWithExtraSize(
-            totalColumns = totalColumns,
-            hasExtra = hasTotal
-        )
+        val rowHeaderWidth = tableDimensions.defaultRowHeaderWidth
         val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
             tableDimensions.headerCellWidth(
                 headerRowColumns = headerParentRowColumns,

@@ -117,7 +117,7 @@ class TableRobot(
             var model by remember { mutableStateOf(screenState) }
             DataSetTableScreen(
                 tableScreenState = model,
-                onCellClick = { tableId, cell ->
+                onCellClick = { tableId, cell, _ ->
                     if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
                         TextInputModel(
                             id = cell.id ?: "",
@@ -172,6 +172,7 @@ class TableRobot(
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
         composeTestRule.waitForIdle()
+        assertKeyBoardVisibility(true)
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 

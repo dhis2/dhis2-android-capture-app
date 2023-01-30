@@ -52,6 +52,7 @@ class DataValuePresenterTest {
         on { ui() } doReturn testingDispatcher
     }
     private val mapper: TableDataToTableModelMapper = mock()
+    private val updateCellValueMocked: (TableCell) -> Unit = mock()
 
     @Before
     fun setup() {
@@ -108,9 +109,14 @@ class DataValuePresenterTest {
             dataValueRepository.getOptionSetViewModel(any(), any())
         ) doReturn mockedSpinnerModel
 
-        presenter.onCellClick(mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
 
-        verify(view).showOptionSetDialog(mockedDataElement, mockedTableCell, mockedSpinnerModel)
+        verify(view).showOptionSetDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedSpinnerModel,
+            updateCellValueMocked
+        )
     }
 
     @Test
@@ -127,8 +133,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -145,8 +151,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showBooleanDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -163,8 +169,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCalendar(mockedDataElement, mockedTableCell, false)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showCalendar(mockedDataElement, mockedTableCell, false, updateCellValueMocked)
     }
 
     @Test
@@ -181,8 +187,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCalendar(mockedDataElement, mockedTableCell, true)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showCalendar(mockedDataElement, mockedTableCell, true, updateCellValueMocked)
     }
 
     @Test
@@ -199,8 +205,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showTimePicker(mockedDataElement, mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showTimePicker(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -217,8 +223,12 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showCoordinatesDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showCoordinatesDialog(
+            mockedDataElement,
+            mockedTableCell,
+            updateCellValueMocked
+        )
     }
 
     @Test
@@ -236,8 +246,13 @@ class DataValuePresenterTest {
         val mockedOrgUnits = listOf<OrganisationUnit>()
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
         whenever(dataValueRepository.orgUnits()) doReturn mockedOrgUnits
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showOtgUnitDialog(mockedDataElement, mockedTableCell, mockedOrgUnits)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showOtgUnitDialog(
+            mockedDataElement,
+            mockedTableCell,
+            mockedOrgUnits,
+            updateCellValueMocked
+        )
     }
 
     @Test
@@ -254,8 +269,8 @@ class DataValuePresenterTest {
 
         whenever(dataValueRepository.getDataElement(any())) doReturn mockedDataElement
 
-        presenter.onCellClick(mockedTableCell)
-        verify(view).showAgeDialog(mockedDataElement, mockedTableCell)
+        presenter.onCellClick(mockedTableCell, updateCellValueMocked)
+        verify(view).showAgeDialog(mockedDataElement, mockedTableCell, updateCellValueMocked)
     }
 
     @Test
@@ -293,7 +308,7 @@ class DataValuePresenterTest {
             whenever(
                 dataValueRepository.getCatOptComboOptions(any())
             ) doReturn listOf("option_${valueType.name}")
-            val textInput = presenter.onCellClick(mockedTableCell)
+            val textInput = presenter.onCellClick(mockedTableCell, updateCellValueMocked)
             assertTrue(textInput != null)
         }
     }

@@ -18,12 +18,24 @@ data class RuleUtilsProviderResult(
     val optionGroupsToHide: Map<String, List<String>>,
     val optionGroupsToShow: Map<String, List<String>>
 ) {
-    fun errorMap(): Map<String, String> = fieldsWithErrors.associate {
-        it.fieldUid to it.errorMessage
+    fun errorMap(): Map<String, String> {
+        val map: MutableMap<String, String> = mutableMapOf()
+        val iterator = fieldsWithErrors.toMutableList().listIterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            map[item.fieldUid] = item.errorMessage
+        }
+        return map
     }
 
-    fun warningMap(): Map<String, String> = fieldsWithWarnings.associate {
-        it.fieldUid to it.errorMessage
+    fun warningMap(): Map<String, String> {
+        val map: MutableMap<String, String> = mutableMapOf()
+        val iterator = fieldsWithWarnings.toMutableList().listIterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            map[item.fieldUid] = item.errorMessage
+        }
+        return map
     }
 
     fun optionsToHide(fieldUid: String): List<String> {
