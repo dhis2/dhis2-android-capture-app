@@ -26,6 +26,7 @@ import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.ReviewStockData
 import org.dhis2.android.rtsm.data.RowAction
+import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.StockItem
@@ -226,7 +227,7 @@ class ManageStockViewModel @Inject constructor(
         val tables = tableModelMapper.map(
             entries = entries,
             stockLabel = resources.getString(R.string.stock),
-            qtdLabel = resources.getString(R.string.quantity)
+            qtdLabel = provideQuantityLabel()
         )
 
         _screenState.postValue(
@@ -236,6 +237,11 @@ class ManageStockViewModel @Inject constructor(
                 textInputCollapsedMode = false
             )
         )
+    }
+
+    private fun provideQuantityLabel() = when (transaction.value?.transactionType) {
+        TransactionType.CORRECTION -> resources.getString(R.string.count)
+        else -> resources.getString(R.string.quantity)
     }
 
     private fun commitTransaction() {

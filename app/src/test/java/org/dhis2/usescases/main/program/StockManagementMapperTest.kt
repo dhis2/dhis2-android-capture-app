@@ -2,7 +2,7 @@ package org.dhis2.usescases.main.program
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import org.hisp.dhis.android.core.programtheme.stock.StockTheme
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -11,7 +11,7 @@ class StockManagementMapperTest {
 
     private lateinit var stockManagementMapper: StockManagementMapper
 
-    private val stockTheme: StockTheme = mock()
+    private val stockTheme: StockUseCase = mock()
     private val repository: ProgramThemeRepository = mock {
         on { getStockTheme(PROGRAM_UID) } doReturn stockTheme
     }

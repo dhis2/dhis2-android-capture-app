@@ -1,5 +1,0 @@
-// Define desired app id
-ext.appConfig = [
-        applicationId               : "org.dhis2.android.rtsm",
-        serverUrl                   : '"https://lmis.integration.dhis2.org/sandbox-dev/"'
-]

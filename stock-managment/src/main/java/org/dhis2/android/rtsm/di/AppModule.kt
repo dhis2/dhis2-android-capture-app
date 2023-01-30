@@ -7,25 +7,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.dhis2.android.rtsm.data.AppConfig
+import javax.inject.Singleton
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
 import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.preferences.PreferenceProviderImpl
-import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.Sdk
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-    @Provides
-    @Singleton
-    fun providesAppConfig(@ApplicationContext appContext: Context): AppConfig {
-        return ConfigUtils.getAppConfig(appContext.resources)
-    }
 
     @Provides
     @Singleton

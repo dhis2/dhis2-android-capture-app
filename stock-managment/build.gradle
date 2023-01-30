@@ -6,7 +6,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
-apply from: "$rootDir/stock-managment/dependencies.gradle"
 apply plugin: "kotlinx-serialization"
 
 def libraries = rootProject.ext.libraries

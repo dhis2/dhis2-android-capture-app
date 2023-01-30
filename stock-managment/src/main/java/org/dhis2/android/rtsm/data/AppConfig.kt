@@ -11,6 +11,6 @@ data class AppConfig(
     val stockOnHand: String,
     val distributedTo: String,
     val stockDistribution: String,
-    val stockCorrection: String,
+    val stockCount: String,
     val stockDiscarded: String
 ) : Parcelable
