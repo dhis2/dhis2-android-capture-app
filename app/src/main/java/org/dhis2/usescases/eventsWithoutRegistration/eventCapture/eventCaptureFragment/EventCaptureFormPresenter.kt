@@ -6,16 +6,20 @@ import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValuePresenter
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventEditableStatus
+import javax.inject.Inject
 
 class EventCaptureFormPresenter(
     private val view: EventCaptureFormView,
-    private val activityPresenter: EventCaptureContract.Presenter,
+//    private val activityPresenter: EventCaptureContract.Presenter,
     private val d2: D2,
     private val eventUid: String
 ) {
+
+    private lateinit var activityPresenter: EventCaptureContract.Presenter
 
     fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
         when (result) {

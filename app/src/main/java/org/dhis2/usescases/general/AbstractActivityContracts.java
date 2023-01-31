@@ -12,6 +12,8 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 
+import dagger.Provides;
+
 /**
  * QUADRAM. Created by ppajuelo on 27/09/2017.
  */
