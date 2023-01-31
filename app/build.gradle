@@ -232,7 +232,7 @@ dependencies {
     implementation project(":commons")
     implementation project(":dhis2_android_maps")
     implementation project(":compose-table")
-    implementation project(":stock-managment")
+    implementation project(':stock-usecase')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:${libraries.kotlinmetadata}"

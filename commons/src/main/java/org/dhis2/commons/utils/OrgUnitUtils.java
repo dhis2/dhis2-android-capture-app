@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.dhis2.commons.utils.OrgUnitHolder_2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.ArrayList;

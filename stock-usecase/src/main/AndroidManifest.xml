@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--    <uses-permission android:name="android.permission.RECORD_AUDIO" />-->
 
     <queries>
         <intent>
@@ -25,7 +24,9 @@
         </intent>
     </queries>
 
-    <application>
+    <application
+        android:allowBackup="false"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.home.HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

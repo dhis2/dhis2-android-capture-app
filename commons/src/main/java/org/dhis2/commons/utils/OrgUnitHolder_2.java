@@ -17,8 +17,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import java.util.Locale;
 import java.util.Objects;
 
-import timber.log.Timber;
-
 /**
  * QUADRAM. Created by ppajuelo on 19/10/2017.
  */
