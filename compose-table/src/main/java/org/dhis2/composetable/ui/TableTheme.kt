@@ -10,9 +10,8 @@ fun TableTheme(
     tableDimensions: TableDimensions? = LocalTableDimensions.current,
     tableConfiguration: TableConfiguration? = LocalTableConfiguration.current,
     tableSelection: TableSelection? = LocalTableSelection.current,
-    content:
-        @Composable
-        () -> Unit
+    content: @Composable
+    () -> Unit
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),

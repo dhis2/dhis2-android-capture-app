@@ -17,9 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.composethemeadapter.MdcTheme
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
@@ -116,6 +114,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         },
                         onColumnHeaderResize = { tableId, column, widthDpValue ->
                             presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
+                        },
+                        onTableDimensionResize = { tableId, widthDpValue ->
+                            presenterFragment.saveTableWidth(tableId, widthDpValue)
                         },
                         onTableDimensionReset = { tableId ->
                             presenterFragment.resetTableDimensions(tableId)

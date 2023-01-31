@@ -56,6 +56,8 @@ fun DataSetTableScreen(
     onRowHeaderResize: (tableId: String, widthDpValue: Float) -> Unit = { _, _ -> },
     onColumnHeaderResize: (tableId: String, column: Int, widthDpValue: Float) -> Unit =
         { _, _, _ -> },
+    onTableDimensionResize: (tableId: String, widthDpValue: Float) -> Unit =
+        { _, _ -> },
     onTableDimensionReset: (tableId: String) -> Unit = {},
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
@@ -303,6 +305,10 @@ fun DataSetTableScreen(
 
                     override fun onTableWidthReset(tableId: String) {
                         onTableDimensionReset(tableId)
+                    }
+
+                    override fun onTableWidthChanged(tableId: String, widthDpValue: Float) {
+                        onTableDimensionResize(tableId, widthDpValue)
                     }
                 }
             )

@@ -21,6 +21,12 @@ class TableDimensionStore(
             .blockingSet(widthDpValue.toString())
     }
 
+    fun saveTableWidth(tableId: String, widthDpValue: Float) {
+        d2.dataStoreModule().localDataStore()
+            .value(tableExtraWidthDataStoreKey(tableId))
+            .blockingSet(widthDpValue.toString())
+    }
+
     fun resetTable(tableId: String) {
         d2.dataStoreModule().localDataStore()
             .byKey().like(rowHeaderWidthDataStoreKey(tableId))
@@ -42,6 +48,26 @@ class TableDimensionStore(
     private fun clearKey(key: String) {
         d2.dataStoreModule().localDataStore()
             .value(key).blockingDeleteIfExist()
+    }
+
+    fun getTableWidth(): Map<String, Float>? {
+        return d2.dataStoreModule().localDataStore()
+            .byKey().like(tableExtraWidthForDataSet())
+            .blockingGet().mapNotNull {
+                val key = it.key()
+                val metadata = key?.split("_")
+                val tableId = metadata?.get(metadata.size - 1)
+                val value = tableId?.let {
+                    d2.dataStoreModule().localDataStore()
+                        .value(tableExtraWidthDataStoreKey(tableId))
+                        .blockingGet()?.value()?.toFloatOrNull()
+                }
+                if (tableId != null && value != null) {
+                    tableId to value
+                } else {
+                    null
+                }
+            }.toMap().takeIf { it.isNotEmpty() }
     }
 
     fun getWidthForSection(): Map<String, Float>? {
@@ -120,4 +146,8 @@ class TableDimensionStore(
 
     private fun rowHeaderWidthDataStoreKey(tableId: String) =
         "row_width_${dataSetUid}_${sectionUid}_$tableId"
+    private fun tableExtraWidthDataStoreKey(tableId: String) =
+        "table_width_${dataSetUid}_${sectionUid}_$tableId"
+    private fun tableExtraWidthForDataSet() =
+        "table_width_${dataSetUid}_${sectionUid}_%"
 }

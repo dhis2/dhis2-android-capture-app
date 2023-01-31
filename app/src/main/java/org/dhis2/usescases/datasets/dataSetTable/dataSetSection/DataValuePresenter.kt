@@ -40,6 +40,7 @@ class DataValuePresenter(
         TableScreenState(
             emptyList(),
             false,
+            overwrittenTableWidth = tableDimensionStore.getTableWidth(),
             overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
             overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
         )
@@ -66,6 +67,7 @@ class DataValuePresenter(
                 TableScreenState(
                     tables = it,
                     selectNext = false,
+                    overwrittenTableWidth = tableDimensionStore.getTableWidth(),
                     overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
                     overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(it)
                 )
@@ -243,5 +245,9 @@ class DataValuePresenter(
 
     fun resetTableDimensions(tableId: String) {
         tableDimensionStore.resetTable(tableId)
+    }
+
+    fun saveTableWidth(tableId: String, widthDpValue: Float) {
+        tableDimensionStore.saveTableWidth(tableId, widthDpValue)
     }
 }

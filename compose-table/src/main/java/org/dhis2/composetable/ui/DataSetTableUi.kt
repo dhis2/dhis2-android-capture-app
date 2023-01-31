@@ -229,7 +229,15 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
         )
-        if (itemHeaderUiState.isSelected(TableTheme.colors.primary)) {
+        val isSelected = when (LocalTableSelection.current) {
+            is TableSelection.AllCellSelection -> false
+            else -> LocalTableSelection.current.isHeaderSelected(
+                selectedTableId = itemHeaderUiState.tableId ?: "",
+                columnIndex = itemHeaderUiState.columnIndex,
+                columnHeaderRowIndex = itemHeaderUiState.rowIndex
+            )
+        }
+        if (isSelected) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
@@ -304,7 +312,7 @@ fun TableHeaderRow(
                     end.linkTo(header.start)
                     bottom.linkTo(header.bottom)
                     height = Dimension.fillToConstraints
-                },
+                }.zIndex(1f),
             tableCornerUiState = cornerUiState,
             tableId = tableModel.id ?: "",
             onClick = onTableCornerClick
@@ -337,7 +345,8 @@ fun TableHeaderRow(
 fun TableActions(
     modifier: Modifier,
     title: String,
-    actionIcons: @Composable () -> Unit
+    actionIcons: @Composable
+    () -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -442,10 +451,11 @@ fun TableCorner(
     tableId: String,
     onClick: () -> Unit
 ) {
+    val isSelected = LocalTableSelection.current is TableSelection.AllCellSelection
     Box(
         modifier = modifier
             .cornerBackground(
-                isSelected = tableCornerUiState.isSelected,
+                isSelected = isSelected,
                 selectedColor = LocalTableColors.current.primaryLight,
                 defaultColor = LocalTableColors.current.tableBackground
             )
@@ -465,11 +475,11 @@ fun TableCorner(
                 .width(1.dp),
             color = TableTheme.colors.primary
         )
-        if (tableCornerUiState.isSelected) {
+        if (isSelected) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .zIndex(2f),
+                    .zIndex(1f),
                 onHeaderResize = { newValue ->
                     tableCornerUiState.onTableResize(newValue)
                 },
@@ -545,7 +555,12 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
             )
         }
 
-        if (uiState.cellStyle.backgroundColor() == TableTheme.colors.primary) {
+        val isSelected = LocalTableSelection.current !is TableSelection.AllCellSelection &&
+            LocalTableSelection.current.isRowSelected(
+                selectedTableId = uiState.tableId,
+                rowHeaderIndex = uiState.rowHeader.row ?: -1
+            )
+        if (isSelected) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
@@ -834,7 +849,6 @@ fun DataTable(
         } else if (editable) {
             TableList(
                 tableList = tableList,
-                tableSelection = tableSelection,
                 tableInteractions = tableInteractions,
                 onSizeChanged = onSizeChanged,
                 onColumnResize = { tableId, column, newValue ->
@@ -856,6 +870,15 @@ fun DataTable(
                         )
                     }
                 },
+                onTableResize = { tableId, newValue ->
+                    with(localDensity) {
+                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                        tableInteractions.onTableWidthChanged(
+                            tableId,
+                            dimensions.extraWidths[tableId]!!.toDp().value
+                        )
+                    }
+                },
                 onResetResize = { tableId ->
                     dimensions = dimensions.resetWidth(tableId)
                     tableInteractions.onTableWidthReset(tableId)
@@ -869,18 +892,18 @@ fun DataTable(
 @Composable
 private fun TableList(
     tableList: List<TableModel>,
-    tableSelection: TableSelection,
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
     onColumnResize: (String, Int, Float) -> Unit,
     onHeaderResize: (String, Float) -> Unit,
+    onTableResize: (String, Float) -> Unit,
     onResetResize: (String) -> Unit
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
     val keyboardState by keyboardAsState()
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
-
+    val tableSelection = LocalTableSelection.current
     LaunchedEffect(keyboardState) {
         if (tableSelection is TableSelection.CellSelection && keyboardState == Keyboard.Opened) {
             verticalScrollState.animateScrollToVisibleItems()
@@ -910,8 +933,10 @@ private fun TableList(
                             isSelected = tableSelection.isCornerSelected(
                                 currentTableModel.id ?: ""
                             ),
-                            onTableResize = {},
-                            onResizing = {}
+                            onTableResize = {
+                                onTableResize(currentTableModel.id ?: "", it)
+                            },
+                            onResizing = { resizingCell = it }
                         ),
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
@@ -1457,11 +1482,11 @@ fun TableListPreview() {
     val tableList = listOf(tableModel)
     TableList(
         tableList = tableList,
-        tableSelection = TableSelection.Unselected(),
         tableInteractions = object : TableInteractions {},
         onSizeChanged = {},
         onColumnResize = { _, _, _ -> },
         onHeaderResize = { _, _ -> },
+        onTableResize = { _, _ -> },
         onResetResize = {}
     )
 }

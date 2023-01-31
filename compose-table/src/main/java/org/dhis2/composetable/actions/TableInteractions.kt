@@ -12,4 +12,5 @@ interface TableInteractions {
     fun onColumnHeaderSizeChanged(tableId: String, column: Int, widthDpValue: Float) = run { }
     fun onOptionSelected(cell: TableCell, code: String, label: String) = run { }
     fun onTableWidthReset(tableId: String) = run { }
+    fun onTableWidthChanged(tableId: String, widthDpValue: Float) = run { }
 }
