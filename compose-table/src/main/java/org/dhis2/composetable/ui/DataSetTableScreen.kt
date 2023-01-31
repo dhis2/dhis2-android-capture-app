@@ -229,7 +229,9 @@ fun DataSetTableScreen(
                 CircularProgressIndicator()
             }
         }
-        CompositionLocalProvider(OnTextChange provides { currentCell }) {
+        CompositionLocalProvider(
+            OnTextChange provides { currentCell }
+        ) {
             DataTable(
                 tableList = tableScreenState.tables,
                 editable = true,

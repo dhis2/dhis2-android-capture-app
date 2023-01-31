@@ -94,6 +94,7 @@ import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.ResizingCell
 import org.dhis2.composetable.model.RowHeader
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableCornerUiState
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.model.TableHeaderCell
@@ -108,7 +109,8 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    cellStyle: @Composable
+    (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit,
     onHeaderResize: (Int, Float) -> Unit,
     onResizing: (ResizingCell?) -> Unit
@@ -247,10 +249,11 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
 @Composable
 fun TableHeaderRow(
     modifier: Modifier = Modifier,
-    cornerModifier: Modifier = Modifier,
+    cornerUiState: TableCornerUiState,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    cellStyle: @Composable
+    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
     onHeaderResize: (Int, Float) -> Unit,
@@ -277,7 +280,9 @@ fun TableHeaderRow(
                     if (TableTheme.dimensions.hasOverriddenWidths(tableModel.id ?: "")) {
                         IconButton(onClick = onResetResize) {
                             Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_restart_alt),
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_restart_alt
+                                ),
                                 contentDescription = "",
                                 tint = TableTheme.colors.primary
                             )
@@ -288,7 +293,7 @@ fun TableHeaderRow(
         }
 
         TableCorner(
-            modifier = cornerModifier
+            modifier = Modifier
                 .constrainAs(tableCorner) {
                     if (isHeaderActionEnabled) {
                         top.linkTo(tableActions.bottom)
@@ -300,6 +305,7 @@ fun TableHeaderRow(
                     bottom.linkTo(header.bottom)
                     height = Dimension.fillToConstraints
                 },
+            tableCornerUiState = cornerUiState,
             tableId = tableModel.id ?: "",
             onClick = onTableCornerClick
         )
@@ -432,11 +438,17 @@ fun TableItemRow(
 @Composable
 fun TableCorner(
     modifier: Modifier = Modifier,
+    tableCornerUiState: TableCornerUiState,
     tableId: String,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
+            .cornerBackground(
+                isSelected = tableCornerUiState.isSelected,
+                selectedColor = LocalTableColors.current.primaryLight,
+                defaultColor = LocalTableColors.current.tableBackground
+            )
             .width(
                 with(LocalDensity.current) {
                     TableTheme.dimensions
@@ -453,6 +465,17 @@ fun TableCorner(
                 .width(1.dp),
             color = TableTheme.colors.primary
         )
+        if (tableCornerUiState.isSelected) {
+            VerticalResizingRule(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .zIndex(2f),
+                onHeaderResize = { newValue ->
+                    tableCornerUiState.onTableResize(newValue)
+                },
+                onResizing = tableCornerUiState.onResizing
+            )
+        }
     }
 }
 
@@ -794,7 +817,7 @@ fun DataTable(
         dimensions = dimensions.copy(totalWidth = tableTotalWidth)
     }
 
-    TableTheme(tableColors, dimensions, tableConfiguration) {
+    TableTheme(tableColors, dimensions, tableConfiguration, tableSelection) {
         if (!editable && !tableList.all { it.areAllValuesEmpty() }) {
             TableItem(
                 tableModel = tableList.first(),
@@ -883,14 +906,13 @@ private fun TableList(
                     TableHeaderRow(
                         modifier = Modifier
                             .background(Color.White),
-                        cornerModifier = Modifier
-                            .cornerBackground(
-                                isSelected = tableSelection.isCornerSelected(
-                                    currentTableModel.id ?: ""
-                                ),
-                                selectedColor = LocalTableColors.current.primaryLight,
-                                defaultColor = LocalTableColors.current.tableBackground
+                        cornerUiState = TableCornerUiState(
+                            isSelected = tableSelection.isCornerSelected(
+                                currentTableModel.id ?: ""
                             ),
+                            onTableResize = {},
+                            onResizing = {}
+                        ),
                         tableModel = currentTableModel,
                         horizontalScrollState = horizontalScrollStates[index],
                         cellStyle = { columnIndex, rowIndex ->
@@ -1252,6 +1274,10 @@ fun TableItem(
             }
 
             TableHeaderRow(
+                cornerUiState = TableCornerUiState(
+                    onTableResize = {},
+                    onResizing = {}
+                ),
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollState,
                 cellStyle = { columnIndex, rowIndex ->

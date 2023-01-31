@@ -9,6 +9,7 @@ fun TableTheme(
     tableColors: TableColors?,
     tableDimensions: TableDimensions? = LocalTableDimensions.current,
     tableConfiguration: TableConfiguration? = LocalTableConfiguration.current,
+    tableSelection: TableSelection? = LocalTableSelection.current,
     content:
         @Composable
         () -> Unit
@@ -16,7 +17,8 @@ fun TableTheme(
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),
         LocalTableDimensions provides (tableDimensions ?: TableDimensions()),
-        LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration())
+        LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration()),
+        LocalTableSelection provides (tableSelection ?: TableSelection.Unselected())
     ) {
         MaterialTheme(
             content = content
@@ -34,4 +36,7 @@ object TableTheme {
     val configuration: TableConfiguration
         @Composable
         get() = LocalTableConfiguration.current
+    val tableSelection
+        @Composable
+        get() = LocalTableSelection.current
 }
