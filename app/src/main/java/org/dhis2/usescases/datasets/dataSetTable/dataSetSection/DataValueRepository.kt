@@ -6,6 +6,8 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -501,36 +503,35 @@ class DataValueRepository(
             getCatOptions(categoryCombo.uid()),
             getDataValues(),
             getGreyFields(),
-            getCompulsoryDataElements(),
-            { dataElements: List<DataElement>,
-                optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
-                                Category>>>>,
-                dataValues: List<DataSetTableModel>,
-                disabledDataElements: List<DataElementOperand>,
-                compulsoryCells: List<DataElementOperand> ->
-                var options: List<List<String>> = ArrayList()
-                for ((_, value) in optionsWithCategory) {
-                    options = getCatOptionCombos(value, 0, ArrayList(), null)
-                }
-                val transformCategories = mutableListOf<MutableList<CategoryOption>>()
-                for ((_, value) in transformCategories(optionsWithCategory)) {
-                    transformCategories.addAll(value)
-                }
-
-                DataTableModel(
-                    periodId,
-                    orgUnitUid,
-                    attributeOptionComboUid,
-                    dataElements.toMutableList(),
-                    dataValues.toMutableList(),
-                    disabledDataElements,
-                    compulsoryCells,
-                    categoryCombo,
-                    transformCategories,
-                    getCatOptionOrder(options)
-                )
+            getCompulsoryDataElements()
+        ) { dataElements: List<DataElement>,
+            optionsWithCategory: Map<String, List<List<Pair<CategoryOption,
+                            Category>>>>,
+            dataValues: List<DataSetTableModel>,
+            disabledDataElements: List<DataElementOperand>,
+            compulsoryCells: List<DataElementOperand> ->
+            var options: List<List<String>> = ArrayList()
+            for ((_, value) in optionsWithCategory) {
+                options = getCatOptionCombos(value, 0, ArrayList(), null)
             }
-        ).toObservable()
+            val transformCategories = mutableListOf<MutableList<CategoryOption>>()
+            for ((_, value) in transformCategories(optionsWithCategory)) {
+                transformCategories.addAll(value)
+            }
+
+            DataTableModel(
+                periodId,
+                orgUnitUid,
+                attributeOptionComboUid,
+                dataElements.toMutableList(),
+                dataValues.toMutableList(),
+                disabledDataElements,
+                compulsoryCells,
+                categoryCombo,
+                transformCategories,
+                getCatOptionOrder(options)
+            )
+        }.toObservable()
     }
 
     private fun getCatOptionCombos(
@@ -719,25 +720,8 @@ class DataValueRepository(
             isEditable,
             showRowTotals(),
             showColumnTotals(),
-            getCurrentSectionMeasure(),
             hasDataElementDecoration
         )
-    }
-
-    fun saveCurrentSectionMeasures(rowHeaderWidth: Int, columnHeaderHeight: Int) {
-        sectionUid.let {
-            prefs.setValue("W${dataSetUid}$it", rowHeaderWidth)
-            prefs.setValue("H${dataSetUid}$it", columnHeaderHeight)
-        }
-    }
-
-    private fun getCurrentSectionMeasure(): TableMeasure {
-        return sectionUid.let {
-            TableMeasure(
-                prefs.getInt("W${dataSetUid}$it", 0),
-                prefs.getInt("H${dataSetUid}$it", 0)
-            )
-        }
     }
 
     private fun isExpired(dataSet: DataSet?): Boolean {
@@ -757,24 +741,6 @@ class DataValueRepository(
             list.add(categoryOptions)
         }
         return list
-    }
-
-    private fun getCatOptionComboOrder(
-        catOptionCombos: List<CategoryOptionCombo>?,
-        catOptionOrder: List<List<CategoryOption>>
-    ): List<CategoryOptionCombo> {
-        val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
-        for (catOptions in catOptionOrder) {
-            for (categoryOptionCombo in catOptionCombos!!) {
-                if (catOptions.containsAll(
-                    getCatOptionFromCatOptionCombo(categoryOptionCombo)
-                )
-                ) {
-                    categoryOptionCombosOrder.add(categoryOptionCombo)
-                }
-            }
-        }
-        return categoryOptionCombosOrder
     }
 
     private fun transformCategories(map: Map<String, List<List<Pair<CategoryOption, Category>>>>):
