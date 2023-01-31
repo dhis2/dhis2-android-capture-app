@@ -1,5 +1,6 @@
 package org.dhis2;
 
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.network.NetworkUtilsModule;
@@ -56,7 +57,7 @@ import dispatch.core.DispatcherProvider;
         CustomDispatcherModule.class
 })
 
-public  interface AppComponent {
+public interface AppComponent {
 
     @Component.Builder
     interface Builder {
