@@ -1,41 +1,17 @@
 package org.dhis2.composetable.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
@@ -83,20 +59,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.model.HeaderMeasures
-import org.dhis2.composetable.model.ItemColumnHeaderUiState
-import org.dhis2.composetable.model.ItemHeaderUiState
-import org.dhis2.composetable.model.OnTextChange
-import org.dhis2.composetable.model.ResizingCell
-import org.dhis2.composetable.model.RowHeader
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableDialogModel
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
-import org.dhis2.composetable.model.areAllValuesEmpty
+import org.dhis2.composetable.model.*
 
 @Composable
 fun TableHeader(
@@ -268,6 +231,7 @@ fun TableHeaderRow(
                     bottom.linkTo(header.bottom)
                     height = Dimension.fillToConstraints
                 },
+            tableId = tableModel.id ?: "",
             onClick = onTableCornerClick
         )
 
@@ -325,7 +289,7 @@ fun TableItemRow(
                         rowHeader = rowModel.rowHeader,
                         cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
                         width = with(LocalDensity.current) {
-                            TableTheme.dimensions.defaultRowHeaderWidth.toDp()
+                            TableTheme.dimensions.rowHeaderWidth(tableModel.id ?: "").toDp()
                         },
                         maxLines = rowModel.maxLines,
                         onCellSelected = onRowHeaderClick,
@@ -365,13 +329,16 @@ fun TableItemRow(
 @Composable
 fun TableCorner(
     modifier: Modifier = Modifier,
+    tableId: String,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
             .width(
                 with(LocalDensity.current) {
-                    TableTheme.dimensions.defaultRowHeaderWidth.toDp()
+                    TableTheme.dimensions
+                        .rowHeaderWidth(tableId)
+                        .toDp()
                 }
             )
             .clickable { onClick() },
@@ -736,7 +703,7 @@ fun DataTable(
                         dimensions.updateColumnWidth(tableList.first().id ?: "", column, width)
                 },
                 onHeaderResize = { width ->
-                    dimensions = dimensions.updateHeaderWidth(width)
+                    dimensions = dimensions.updateHeaderWidth(tableList.first().id ?: "", width)
                 }
             )
         } else if (editable) {
@@ -757,10 +724,10 @@ fun DataTable(
                 },
                 onHeaderResize = { tableId, newValue ->
                     with(localDensity) {
-                        dimensions = dimensions.updateHeaderWidth(newValue)
+                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
                         tableInteractions.onRowHeaderSizeChanged(
                             tableId,
-                            dimensions.defaultRowHeaderWidth.toDp().value
+                            dimensions.rowHeaderWidths[tableId]!!.toDp().value
                         )
                     }
                 }
@@ -961,6 +928,7 @@ private fun TableList(
                     )
                     if (tableRowModel.isLastRow) {
                         ExtendDivider(
+                            tableId = currentTableModel.id ?: "",
                             selected = tableSelection.isCornerSelected(
                                 currentTableModel.id ?: ""
                             )
@@ -1100,6 +1068,7 @@ fun VerticalResizingRule(
 
 @Composable
 fun ExtendDivider(
+    tableId: String,
     selected: Boolean
 ) {
     val background = TableTheme.colors.primary
@@ -1108,7 +1077,7 @@ fun ExtendDivider(
             modifier = Modifier
                 .width(
                     with(LocalDensity.current) {
-                        TableTheme.dimensions.defaultRowHeaderWidth.toDp()
+                        TableTheme.dimensions.rowHeaderWidth(tableId).toDp()
                     }
                 )
                 .height(8.dp)

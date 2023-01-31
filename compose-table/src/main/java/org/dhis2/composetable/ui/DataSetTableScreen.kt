@@ -236,7 +236,9 @@ fun DataSetTableScreen(
                     cellVerticalPadding = 11.dp
                 ).withRowHeaderWidth(
                     with(LocalDensity.current) {
-                        tableScreenState.overwrittenRowHeaderWidth?.dp?.roundToPx()
+                        tableScreenState.overwrittenRowHeaderWidth?.mapValues { (_, width) ->
+                            width.dp.roundToPx()
+                        }
                     }
                 ).withColumnWidth(
                     with(LocalDensity.current) {

@@ -25,8 +25,14 @@ data class TableDimensions(
     val cellVerticalPadding: Dp = 4.dp,
     val cellHorizontalPadding: Dp = 4.dp,
     val tableBottomPadding: Dp = 200.dp,
+    val rowHeaderWidths: Map<String, Int> = emptyMap(),
     val columnWidth: Map<String, Map<Int, Int>> = emptyMap()
 ) {
+
+    fun rowHeaderWidth(tableId: String): Int {
+        return rowHeaderWidths[tableId] ?: defaultRowHeaderWidth
+    }
+
     fun defaultCellWidthWithExtraSize(
         tableId: String,
         column: Int? = null,
@@ -110,9 +116,14 @@ data class TableDimensions(
         return defaultRowHeaderWidth + defaultCellWidth * totalColumns + totalCellWidth
     }
 
-    fun updateHeaderWidth(widthOffset: Float): TableDimensions {
-        val newWidth = defaultRowHeaderWidth + widthOffset - 11
-        return copy(defaultRowHeaderWidth = newWidth.toInt())
+    fun updateHeaderWidth(
+        tableId: String,
+        widthOffset: Float
+    ): TableDimensions {
+        val newWidth = rowHeaderWidth(tableId) + widthOffset - 11
+        val newMap = rowHeaderWidths.toMutableMap()
+        newMap[tableId] = newWidth.toInt()
+        return copy(rowHeaderWidths = newMap)
     }
 
     fun updateColumnWidth(
@@ -129,8 +140,8 @@ data class TableDimensions(
     }
 }
 
-fun TableDimensions.withRowHeaderWidth(defaultRowHeaderWidth: Int?): TableDimensions {
-    return defaultRowHeaderWidth?.let { this.copy(defaultRowHeaderWidth = defaultRowHeaderWidth) }
+fun TableDimensions.withRowHeaderWidth(defaultRowHeaderWidth: Map<String, Int>?): TableDimensions {
+    return defaultRowHeaderWidth?.let { this.copy(rowHeaderWidths = defaultRowHeaderWidth) }
         ?: this
 }
 
