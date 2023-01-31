@@ -30,6 +30,7 @@ class DataValuePresenter(
     private val view: DataValueContract.View,
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
+    private val tableDimensionStore: TableDimensionStore,
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
     private val dispatcherProvider: DispatcherProvider
@@ -39,8 +40,8 @@ class DataValuePresenter(
         TableScreenState(
             emptyList(),
             false,
-            overwrittenRowHeaderWidth = repository.getWidthForSection(),
-            overwrittenColumnWidth = repository.getColumnWidthForSection(null)
+            overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
         )
     )
     private val errors: MutableMap<String, String> = mutableMapOf()
@@ -65,8 +66,8 @@ class DataValuePresenter(
                 TableScreenState(
                     tables = it,
                     selectNext = false,
-                    overwrittenRowHeaderWidth = repository.getWidthForSection(),
-                    overwrittenColumnWidth = repository.getColumnWidthForSection(it)
+                    overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+                    overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(it)
                 )
             }
                 .subscribeOn(schedulerProvider.io())
@@ -233,10 +234,10 @@ class DataValuePresenter(
         }
 
     fun saveWidth(tableId: String, widthDpValue: Float) {
-        repository.saveWidthForSection(tableId, widthDpValue)
+        tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
     }
 
     fun saveColumnWidth(tableId: String, column: Int, widthDpValue: Float) {
-        repository.saveColumnWidthForSection(tableId, column, widthDpValue)
+        tableDimensionStore.saveColumnWidthForSection(tableId, column, widthDpValue)
     }
 }

@@ -46,6 +46,7 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val tableDimensionStore: TableDimensionStore = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn testingDispatcher
@@ -67,6 +68,7 @@ class DataValuePresenterTest {
                 view,
                 dataValueRepository,
                 valueStore,
+                tableDimensionStore,
                 schedulers,
                 mapper,
                 dispatcherProvider
