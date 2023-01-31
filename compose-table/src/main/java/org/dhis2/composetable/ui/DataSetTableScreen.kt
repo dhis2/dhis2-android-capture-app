@@ -54,7 +54,8 @@ fun DataSetTableScreen(
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
     onRowHeaderResize: (tableId: String, widthDpValue: Float) -> Unit = { _, _ -> },
-    onColumnHeaderResize: (tableId: String, column: Int, widthDpValue: Float) -> Unit = { _, _, _ -> },
+    onColumnHeaderResize: (tableId: String, column: Int, widthDpValue: Float) -> Unit =
+        { _, _, _ -> },
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
