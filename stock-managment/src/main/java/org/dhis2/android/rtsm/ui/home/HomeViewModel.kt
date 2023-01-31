@@ -18,7 +18,6 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
-import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
@@ -31,10 +30,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
-    preferenceProvider: PreferenceProvider,
     private val metadataManager: MetadataManager,
     savedState: SavedStateHandle
-) : BaseViewModel(preferenceProvider, schedulerProvider) {
+) : BaseViewModel(schedulerProvider) {
 
     private val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")

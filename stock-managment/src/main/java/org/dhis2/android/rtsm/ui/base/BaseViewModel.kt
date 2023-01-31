@@ -10,13 +10,11 @@ import javax.inject.Inject
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.models.Transaction
-import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor(
-    private val preferenceProvider: PreferenceProvider,
     private val schedulerProvider: BaseSchedulerProvider
 ) : ViewModel() {
     private val _showGuide: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -60,5 +58,5 @@ open class BaseViewModel @Inject constructor(
         }
     }
 
-    fun isVoiceInputEnabled(prefKey: String) = preferenceProvider.getBoolean(prefKey, false)
+    fun isVoiceInputEnabled(prefKey: String) = false // TODO check if enabled
 }

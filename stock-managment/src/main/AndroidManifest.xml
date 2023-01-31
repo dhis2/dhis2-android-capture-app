@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="org.dhis2.android.rtsm">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--    <uses-permission android:name="android.permission.RECORD_AUDIO" />-->
 
     <queries>
         <intent>
@@ -26,15 +25,11 @@
         </intent>
     </queries>
 
-    <application android:supportsRtl="true">
+    <application>
         <activity
             android:name=".ui.home.HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.reviewstock.ReviewStockActivity"
-            android:exported="false"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.scanner.ScannerActivity"
             android:exported="false"

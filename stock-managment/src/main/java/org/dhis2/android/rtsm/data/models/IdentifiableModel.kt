@@ -37,9 +37,16 @@ class IdentifiableModel(
             other !is IdentifiableModel ||
             uid != other.uid ||
             name != other.name ||
-            displayName != displayName
+            displayName != other.displayName
         ) return false
 
         return true
+    }
+
+    override fun hashCode(): Int {
+        var result = uid.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + displayName.hashCode()
+        return result
     }
 }

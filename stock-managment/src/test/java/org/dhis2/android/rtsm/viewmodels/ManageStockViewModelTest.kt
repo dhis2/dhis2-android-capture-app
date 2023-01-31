@@ -15,7 +15,6 @@ import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
-import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
@@ -63,9 +62,6 @@ class ManageStockViewModelTest {
     private lateinit var speechRecognitionManagerImpl: SpeechRecognitionManager
 
     @Mock
-    private lateinit var preferenceProvider: PreferenceProvider
-
-    @Mock
     private lateinit var stockManager: StockManager
 
     private val resourceManager: ResourceManager = mock()
@@ -74,16 +70,11 @@ class ManageStockViewModelTest {
     private fun getModel() = ManageStockViewModel(
         disposable,
         schedulerProvider,
-        preferenceProvider,
         stockManager,
         ruleValidationHelperImpl,
         speechRecognitionManagerImpl,
         resourceManager,
         tableModelMapper
-    )
-
-    private fun createStockEntry(uid: String) = StockItem(
-        uid, faker.name().name(), faker.number().numberBetween(1, 800).toString()
     )
 
     private fun createStockEntry(

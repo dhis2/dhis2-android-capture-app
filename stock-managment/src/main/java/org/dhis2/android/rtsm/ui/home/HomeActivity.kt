@@ -1,8 +1,5 @@
 package org.dhis2.android.rtsm.ui.home
 
-import android.content.Context
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
@@ -34,7 +31,6 @@ import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
-import org.dhis2.android.rtsm.ui.reviewstock.ReviewStockActivity
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
@@ -163,40 +159,6 @@ class HomeActivity : AppCompatActivity(), OnOrgUnitSelectionFinished {
     ) {
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(message)
-        }
-    }
-
-    private fun navigateToReviewStock(
-        scope: CoroutineScope,
-        scaffoldState: ScaffoldState
-    ) {
-        val fieldError = viewModel.checkForFieldErrors()
-        if (fieldError != null) {
-            scope.launch {
-                scaffoldState.snackbarHostState
-                    .showSnackbar(getString(fieldError))
-            }
-            return
-        }
-        startActivity(
-            ReviewStockActivity
-                .getReviewStockActivityIntent(
-                    this.baseContext,
-                    manageStockViewModel.getData(),
-                    intent.getParcelableExtra(INTENT_EXTRA_APP_CONFIG)
-                ).apply {
-                    this.addFlags(FLAG_ACTIVITY_NEW_TASK)
-                },
-            null
-        )
-    }
-
-    companion object {
-        @JvmStatic
-        fun getHomeActivityIntent(context: Context, config: AppConfig): Intent {
-            val intent = Intent(context, HomeActivity::class.java)
-            intent.putExtra(INTENT_EXTRA_APP_CONFIG, config)
-            return intent
         }
     }
 

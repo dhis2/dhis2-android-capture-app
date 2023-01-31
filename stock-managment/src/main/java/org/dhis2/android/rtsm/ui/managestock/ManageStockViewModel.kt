@@ -33,7 +33,6 @@ import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
-import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.ItemWatcher
@@ -57,14 +56,12 @@ import timber.log.Timber
 class ManageStockViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
-    preferenceProvider: PreferenceProvider,
     private val stockManagerRepository: StockManager,
     private val ruleValidationHelper: RuleValidationHelper,
     speechRecognitionManager: SpeechRecognitionManager,
     private val resources: ResourceManager,
     private val tableModelMapper: TableModelMapper
 ) : SpeechRecognitionAwareViewModel(
-    preferenceProvider,
     schedulerProvider,
     speechRecognitionManager
 ) {

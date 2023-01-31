@@ -26,13 +26,11 @@ import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
-import org.dhis2.android.rtsm.services.preferences.PreferenceProvider
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.After
@@ -74,16 +72,10 @@ class HomeViewModelUnitTest {
     private val disposable = CompositeDisposable()
 
     @Mock
-    private lateinit var d2: D2
-
-    @Mock
     private lateinit var facilitiesObserver: Observer<OperationState<List<OrganisationUnit>>>
 
     @Mock
     private lateinit var destinationsObserver: Observer<OperationState<List<Option>>>
-
-    @Mock
-    private lateinit var preferenceProvider: PreferenceProvider
 
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
@@ -120,7 +112,6 @@ class HomeViewModelUnitTest {
         viewModel = HomeViewModel(
             disposable,
             schedulerProvider,
-            preferenceProvider,
             metadataManager,
             getStateHandle()
         )

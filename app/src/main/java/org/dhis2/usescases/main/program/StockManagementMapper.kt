@@ -3,6 +3,7 @@ package org.dhis2.usescases.main.program
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.CORRECTED
 import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.DISCARDED
 import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED
 
@@ -29,12 +30,11 @@ internal class StockManagementMapper(
                     it.transactionType == DISTRIBUTED
                 } as StockUseCaseTransaction.Distributed
                 ).stockDistributed,
-            stockCount = "aWOKxHPJfAg"
-            /*(
-            stockTheme.transactions.find {
-                it.transactionType == CORRECTED
-            } as StockUseCaseTransaction.Correction
-            ).stockCorrected*/,
+            stockCount = (
+                stockTheme.transactions.find {
+                    it.transactionType == CORRECTED
+                } as StockUseCaseTransaction.Correction
+                ).stockCount,
             stockDiscarded = (
                 stockTheme.transactions.find {
                     it.transactionType == DISCARDED

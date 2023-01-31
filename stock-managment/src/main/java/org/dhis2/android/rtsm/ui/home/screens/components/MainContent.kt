@@ -183,19 +183,11 @@ fun MainContent(
                         .alignBy(FirstBaseline)
                         .align(alignment = Alignment.CenterVertically)
                 ) {
-                    if (isFrontLayerDisabled == true) {
-                        Icon(
-                            resource,
-                            contentDescription = null,
-                            tint = themeColor
-                        )
-                    } else {
-                        Icon(
-                            resource,
-                            contentDescription = null,
-                            tint = themeColor
-                        )
-                    }
+                    Icon(
+                        resource,
+                        contentDescription = null,
+                        tint = themeColor
+                    )
                 }
             }
             closeButtonVisibility = when (search) {
