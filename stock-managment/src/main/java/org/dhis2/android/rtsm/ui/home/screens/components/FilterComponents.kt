@@ -39,7 +39,6 @@ fun FilterList(
     val destinations = viewModel.destinationsList.collectAsState().value
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     val showDestination = settingsUiState.transactionType == DISTRIBUTION
-
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp),

@@ -226,6 +226,11 @@ fun DropdownComponentFacilities(
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
+    if (data.size == 1) {
+        onFacilitySelected.invoke(data.get(0))
+        orgUnitData = data.get(0)
+    }
+
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
         openOrgUnitTreeSelector(
