@@ -10,6 +10,7 @@ import org.dhis2.Bindings.decimalFormat
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableModel
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
@@ -1005,9 +1006,55 @@ class DataValueRepository(
         }
     }
 
-    fun saveWidthForSection(widthDpValue: Float) {
+    fun getColumnWidthForSection(tableList: MutableList<TableModel>?): Map<String, Map<Int, Float>>? {
+        return if (tableList != null) {
+            columnWidthForTableModels(tableList.map { it.id ?: "" })
+        } else {
+            columnWidthForDataSet()
+        }
+    }
+
+    private fun columnWidthForTableModels(tableList: List<String>): Map<String, Map<Int, Float>>? {
+        val map = tableList.associateWith { tableId ->
+            val valueMap = d2.dataStoreModule().localDataStore()
+                .byKey().like("col_width_${dataSetUid}_${sectionUid}_${tableId ?: ""}%")
+                .blockingGet().mapNotNull {
+                    val key = it.key()
+                    val column = key?.split("_")?.lastOrNull()?.toInt()
+                    val value = it.value()?.toFloatOrNull()
+                    if (column != null && value != null) {
+                        column to value
+                    } else {
+                        null
+                    }
+                }.toMap()
+            valueMap
+        }
+
+        return map.takeIf { it.isNotEmpty() }
+    }
+
+    private fun columnWidthForDataSet(): Map<String, Map<Int, Float>>? {
+        val tableLists = d2.dataStoreModule().localDataStore()
+            .byKey().like("col_width_${dataSetUid}_${sectionUid}_%")
+            .blockingGet().mapNotNull {
+                val key = it.key()
+                val metadata = key?.split("_")
+                val tableId = metadata?.get(metadata.size - 2)
+                tableId
+            }
+        return columnWidthForTableModels(tableLists)
+    }
+
+    fun saveWidthForSection(tableId: String, widthDpValue: Float) {
         d2.dataStoreModule().localDataStore()
             .value("${dataSetUid}_${sectionUid}_width")
+            .blockingSet(widthDpValue.toString())
+    }
+
+    fun saveColumnWidthForSection(tableId: String, column: Int, widthDpValue: Float) {
+        d2.dataStoreModule().localDataStore()
+            .value("col_width_${dataSetUid}_${sectionUid}_${tableId}_$column")
             .blockingSet(widthDpValue.toString())
     }
 }

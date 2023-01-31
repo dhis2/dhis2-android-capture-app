@@ -2,7 +2,6 @@ package org.dhis2.composetable.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,7 +41,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableDialogModel
 import org.dhis2.composetable.model.TextInputModel
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DataSetTableScreen(
     tableScreenState: TableScreenState,
@@ -54,7 +53,8 @@ fun DataSetTableScreen(
     onEdition: (editing: Boolean) -> Unit,
     onCellValueChange: (TableCell) -> Unit,
     onSaveValue: (TableCell, selectNext: Boolean) -> Unit,
-    onRowHeaderResize: (widthDpValue: Float) -> Unit = {},
+    onRowHeaderResize: (tableId: String, widthDpValue: Float) -> Unit = { _, _ -> },
+    onColumnHeaderResize: (tableId: String, column: Int, widthDpValue: Float) -> Unit = { _, _, _ -> },
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
@@ -232,15 +232,20 @@ fun DataSetTableScreen(
                 tableList = tableScreenState.tables,
                 editable = true,
                 tableColors = tableColors,
-                tableDimensions = tableScreenState.overwrittenRowHeaderWidth?.let {
-                    TableDimensions(
-                        cellVerticalPadding = 11.dp,
-                        defaultRowHeaderWidth = with(LocalDensity.current) {
-                            tableScreenState.overwrittenRowHeaderWidth.dp.roundToPx()
-                        }
-                    )
-                } ?: TableDimensions(
+                tableDimensions = TableDimensions(
                     cellVerticalPadding = 11.dp
+                ).withRowHeaderWidth(
+                    with(LocalDensity.current) {
+                        tableScreenState.overwrittenRowHeaderWidth?.dp?.roundToPx()
+                    }
+                ).withColumnWidth(
+                    with(LocalDensity.current) {
+                        tableScreenState.overwrittenColumnWidth?.mapValues { (_, value) ->
+                            value.mapValues { (_, width) ->
+                                width.dp.roundToPx()
+                            }
+                        }
+                    }
                 ),
                 tableSelection = tableSelection,
                 tableInteractions = object : TableInteractions {
@@ -267,8 +272,16 @@ fun DataSetTableScreen(
                         } ?: collapseBottomSheet()
                     }
 
-                    override fun onRowHeaderSizeChanged(widthDpValue: Float) {
-                        onRowHeaderResize(widthDpValue)
+                    override fun onRowHeaderSizeChanged(tableId: String, widthDpValue: Float) {
+                        onRowHeaderResize(tableId, widthDpValue)
+                    }
+
+                    override fun onColumnHeaderSizeChanged(
+                        tableId: String,
+                        column: Int,
+                        widthDpValue: Float
+                    ) {
+                        onColumnHeaderResize(tableId, column, widthDpValue)
                     }
 
                     override fun onOptionSelected(cell: TableCell, code: String, label: String) {

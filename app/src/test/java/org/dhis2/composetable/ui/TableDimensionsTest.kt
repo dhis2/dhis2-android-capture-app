@@ -164,8 +164,7 @@ class TableDimensionsTest {
         val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
             tableDimensions.headerCellWidth(
                 headerRowColumns = headerParentRowColumns,
-                totalColumns = totalColumns,
-                hasTotal = hasTotal
+                totalColumns = totalColumns
             )
         }
 

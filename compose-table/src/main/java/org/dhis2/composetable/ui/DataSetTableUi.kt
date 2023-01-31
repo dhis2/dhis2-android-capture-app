@@ -84,6 +84,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.model.HeaderMeasures
+import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.model.ItemHeaderUiState
 import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.ResizingCell
@@ -103,9 +104,10 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
-    onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit
+    cellStyle: @Composable (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit,
+    onHeaderResize: (Int, Float) -> Unit,
+    onResizing: (ResizingCell?) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -117,7 +119,11 @@ fun TableHeader(
                 .height(IntrinsicSize.Min)
         ) {
             tableHeaderModel.rows.forEachIndexed { rowIndex, tableHeaderRow ->
-                Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                Row(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Min)
+                        .zIndex(1f)
+                ) {
                     val totalColumns = tableHeaderModel.numberOfColumns(rowIndex)
                     val rowOptions = tableHeaderRow.cells.size
                     repeat(
@@ -125,20 +131,26 @@ fun TableHeader(
                         action = { columnIndex ->
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
-                                tableId = tableId,
-                                rowIndex = rowIndex,
-                                columnIndex = columnIndex,
-                                headerCell = tableHeaderRow.cells[cellIndex],
-                                HeaderMeasures(
-                                    TableTheme.dimensions.headerCellWidth(
-                                        tableHeaderModel.numberOfColumns(rowIndex),
-                                        tableHeaderModel.tableMaxColumns(),
-                                        tableHeaderModel.hasTotals
+                                ItemColumnHeaderUiState(
+                                    tableId = tableId,
+                                    rowIndex = rowIndex,
+                                    columnIndex = columnIndex,
+                                    headerCell = tableHeaderRow.cells[cellIndex],
+                                    HeaderMeasures(
+                                        TableTheme.dimensions.headerCellWidth(
+                                            tableId ?: "",
+                                            columnIndex,
+                                            tableHeaderModel.numberOfColumns(rowIndex),
+                                            tableHeaderModel.tableMaxColumns(),
+                                            tableHeaderModel.hasTotals
+                                        ),
+                                        TableTheme.dimensions.defaultHeaderHeight
                                     ),
-                                    TableTheme.dimensions.defaultHeaderHeight
-                                ),
-                                cellStyle = cellStyle(columnIndex, rowIndex),
-                                onCellSelected = { onHeaderCellSelected(it, rowIndex) }
+                                    cellStyle = cellStyle(columnIndex, rowIndex),
+                                    onCellSelected = { onHeaderCellSelected(it, rowIndex) },
+                                    onHeaderResize = onHeaderResize,
+                                    onResizing = onResizing
+                                )
                             )
                         }
                     )
@@ -147,73 +159,86 @@ fun TableHeader(
         }
         if (tableHeaderModel.hasTotals) {
             HeaderCell(
-                tableId = tableId,
-                rowIndex = 0,
-                columnIndex = tableHeaderModel.rows.size,
-                headerCell = TableHeaderCell("Total"),
-                HeaderMeasures(
-                    TableTheme.dimensions.defaultCellWidthWithExtraSize(
-                        tableHeaderModel.tableMaxColumns(),
-                        tableHeaderModel.hasTotals
+                ItemColumnHeaderUiState(
+                    tableId = tableId,
+                    rowIndex = 0,
+                    columnIndex = tableHeaderModel.rows.size,
+                    headerCell = TableHeaderCell("Total"),
+                    HeaderMeasures(
+                        TableTheme.dimensions.defaultCellWidthWithExtraSize(
+                            tableId = tableId ?: "",
+                            totalColumns = tableHeaderModel.tableMaxColumns(),
+                            hasExtra = tableHeaderModel.hasTotals
+                        ),
+                        TableTheme.dimensions.defaultHeaderHeight * tableHeaderModel.rows.size
                     ),
-                    TableTheme.dimensions.defaultHeaderHeight * tableHeaderModel.rows.size
-                ),
-                cellStyle = cellStyle(
-                    tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
-                    tableHeaderModel.rows.size - 1
-                ),
-                onCellSelected = {}
+                    cellStyle = cellStyle(
+                        tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
+                        tableHeaderModel.rows.size - 1
+                    ),
+                    onCellSelected = {},
+                    onHeaderResize = { _, _ -> },
+                    onResizing = {}
+                )
             )
         }
     }
 }
 
 @Composable
-fun HeaderCell(
-    tableId: String?,
-    rowIndex: Int,
-    columnIndex: Int,
-    headerCell: TableHeaderCell,
-    headerMeasures: HeaderMeasures,
-    cellStyle: CellStyle,
-    onCellSelected: (Int) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .width(with(LocalDensity.current) { headerMeasures.width.toDp() })
-            .fillMaxHeight()
-            .background(cellStyle.backgroundColor())
-            .testTag("$HEADER_CELL$tableId$rowIndex$columnIndex")
-            .semantics {
-                tableId?.let { tableIdColumnHeader = it }
-                columnIndexHeader = columnIndex
-                rowIndexHeader = rowIndex
-                columnBackground = cellStyle.backgroundColor()
-            }
-            .clickable {
-                onCellSelected(columnIndex)
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
+fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
+    Box {
+        Box(
             modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 11.dp)
-                .fillMaxWidth()
-                .align(Alignment.Center),
-            color = cellStyle.mainColor(),
-            text = headerCell.value,
-            textAlign = TextAlign.Center,
-            fontSize = TableTheme.dimensions.defaultHeaderTextSize,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 3,
-            softWrap = true
-        )
-        Divider(
-            color = TableTheme.colors.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        )
+                .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
+                .fillMaxHeight()
+                .background(itemHeaderUiState.cellStyle.backgroundColor())
+                .testTag(itemHeaderUiState.testTag)
+                .semantics {
+                    itemHeaderUiState.tableId?.let { tableIdColumnHeader = it }
+                    columnIndexHeader = itemHeaderUiState.columnIndex
+                    rowIndexHeader = itemHeaderUiState.rowIndex
+                    columnBackground = itemHeaderUiState.cellStyle.backgroundColor()
+                }
+                .clickable {
+                    itemHeaderUiState.onCellSelected(itemHeaderUiState.columnIndex)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 11.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                color = itemHeaderUiState.cellStyle.mainColor(),
+                text = itemHeaderUiState.headerCell.value,
+                textAlign = TextAlign.Center,
+                fontSize = TableTheme.dimensions.defaultHeaderTextSize,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3,
+                softWrap = true
+            )
+            Divider(
+                color = TableTheme.colors.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+            )
+        }
+        if (itemHeaderUiState.isSelected(TableTheme.colors.primary)) {
+            VerticalResizingRule(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .zIndex(2f),
+                onHeaderResize = { newValue ->
+                    itemHeaderUiState.onHeaderResize(
+                        itemHeaderUiState.columnIndex,
+                        newValue
+                    )
+                },
+                onResizing = itemHeaderUiState.onResizing
+            )
+        }
     }
 }
 
@@ -223,10 +248,11 @@ fun TableHeaderRow(
     cornerModifier: Modifier = Modifier,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    cellStyle: @Composable (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
-    onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> }
+    onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
+    onHeaderResize: (Int, Float) -> Unit,
+    onResizing: (ResizingCell?) -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier.fillMaxSize()
@@ -257,7 +283,9 @@ fun TableHeaderRow(
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
             cellStyle = cellStyle,
-            onHeaderCellSelected = onHeaderCellClick
+            onHeaderCellSelected = onHeaderCellClick,
+            onHeaderResize = onHeaderResize,
+            onResizing = onResizing
         )
     }
 }
@@ -316,8 +344,9 @@ fun TableItemRow(
                 defaultHeight = TableTheme.dimensions.defaultCellHeight,
                 defaultWidth = with(LocalDensity.current) {
                     TableTheme.dimensions.defaultCellWidthWithExtraSize(
-                        tableModel.tableHeaderModel.tableMaxColumns(),
-                        tableModel.tableHeaderModel.hasTotals
+                        tableId = tableModel.id ?: "",
+                        totalColumns = tableModel.tableHeaderModel.tableMaxColumns(),
+                        hasExtra = tableModel.tableHeaderModel.hasTotals
                     ).toDp()
                 },
                 options = rowModel.dropDownOptions ?: emptyList(),
@@ -473,7 +502,14 @@ fun ItemValues(
                 TableCell(
                     modifier = Modifier
                         .testTag("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}")
-                        .width(defaultWidth)
+                        .width(
+                            with(LocalDensity.current) {
+                                TableTheme.dimensions.columnWidth[tableId]
+                                    ?.get(columnIndex)
+                                    ?.toDp()
+                                    ?: defaultWidth
+                            }
+                        )
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = defaultHeight)
                         .semantics {
@@ -695,6 +731,10 @@ fun DataTable(
                 tableModel = tableList.first(),
                 tableInteractions = tableInteractions,
                 onSizeChanged = onSizeChanged,
+                onColumnResize = { column, width ->
+                    dimensions =
+                        dimensions.updateColumnWidth(tableList.first().id ?: "", column, width)
+                },
                 onHeaderResize = { width ->
                     dimensions = dimensions.updateHeaderWidth(width)
                 }
@@ -705,10 +745,21 @@ fun DataTable(
                 tableSelection = tableSelection,
                 tableInteractions = tableInteractions,
                 onSizeChanged = onSizeChanged,
-                onHeaderResize = { newValue ->
+                onColumnResize = { tableId, column, newValue ->
+                    with(localDensity) {
+                        dimensions = dimensions.updateColumnWidth(tableId, column, newValue)
+                        tableInteractions.onColumnHeaderSizeChanged(
+                            tableId,
+                            column,
+                            dimensions.columnWidth[tableId]!![column]!!.toDp().value
+                        )
+                    }
+                },
+                onHeaderResize = { tableId, newValue ->
                     with(localDensity) {
                         dimensions = dimensions.updateHeaderWidth(newValue)
                         tableInteractions.onRowHeaderSizeChanged(
+                            tableId,
                             dimensions.defaultRowHeaderWidth.toDp().value
                         )
                     }
@@ -725,7 +776,8 @@ private fun TableList(
     tableSelection: TableSelection,
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
-    onHeaderResize: (Float) -> Unit
+    onColumnResize: (String, Int, Float) -> Unit,
+    onHeaderResize: (String, Float) -> Unit
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -801,7 +853,13 @@ private fun TableList(
                                         )
                                 )
                             )
-                        }
+                        },
+                        onHeaderResize = { column, width ->
+                            onColumnResize(
+                                currentTableModel.id ?: "", column, width
+                            )
+                        },
+                        onResizing = { resizingCell = it }
                     )
                 }
                 itemsIndexed(
@@ -877,7 +935,9 @@ private fun TableList(
                             )
                             tableInteractions.onClick(tableCell)
                         },
-                        onHeaderResize = onHeaderResize,
+                        onHeaderResize = { width ->
+                            onHeaderResize(currentTableModel.id ?: "", width)
+                        },
                         onResizing = {
                             resizingCell = it
                         },
@@ -1087,6 +1147,7 @@ fun TableItem(
     tableModel: TableModel,
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
+    onColumnResize: (Int, Float) -> Unit,
     onHeaderResize: (Float) -> Unit
 ) {
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
@@ -1125,7 +1186,9 @@ fun TableItem(
                         ),
                         columnIndex = columnIndex
                     )
-                }
+                },
+                onHeaderResize = onColumnResize,
+                onResizing = { resizingCell = it }
             )
             tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
@@ -1288,7 +1351,8 @@ fun TableListPreview() {
         tableSelection = TableSelection.Unselected(),
         tableInteractions = object : TableInteractions {},
         onSizeChanged = {},
-        onHeaderResize = {}
+        onColumnResize = { _, _, _ -> },
+        onHeaderResize = { _, _ -> }
     )
 }
 

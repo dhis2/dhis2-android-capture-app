@@ -111,8 +111,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         onSaveValue = { cell, selectNext ->
                             presenterFragment.onSaveValueChange(cell, selectNext)
                         },
-                        onRowHeaderResize = { widthDpValue ->
-                            presenterFragment.saveWidth(widthDpValue)
+                        onRowHeaderResize = { tableId, widthDpValue ->
+                            presenterFragment.saveWidth(tableId, widthDpValue)
+                        },
+                        onColumnHeaderResize = { tableId, column, widthDpValue ->
+                            presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
                         }
                     )
                 }

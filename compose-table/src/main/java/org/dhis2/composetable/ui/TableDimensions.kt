@@ -24,25 +24,47 @@ data class TableDimensions(
     val totalWidth: Int = 0,
     val cellVerticalPadding: Dp = 4.dp,
     val cellHorizontalPadding: Dp = 4.dp,
-    val tableBottomPadding: Dp = 200.dp
+    val tableBottomPadding: Dp = 200.dp,
+    val columnWidth: Map<String, Map<Int, Int>> = emptyMap()
 ) {
-
     fun defaultCellWidthWithExtraSize(
+        tableId: String,
+        column: Int? = null,
         totalColumns: Int,
         hasExtra: Boolean = false
     ): Int {
-        return defaultCellWidth.withExtraSize(totalColumns, hasExtra)
+        return columnWidth[tableId]?.get(column) ?: defaultCellWidth.withExtraSize(
+            totalColumns,
+            hasExtra
+        )
     }
 
     fun headerCellWidth(
+        tableId: String,
+        column: Int,
         headerRowColumns: Int,
         totalColumns: Int,
         hasTotal: Boolean = false
     ): Int {
         val fullWidth = defaultCellWidth * totalColumns
         val rowHeaderRatio = totalColumns / headerRowColumns
-        return (fullWidth / headerRowColumns)
-            .withExtraSize(totalColumns, hasTotal, rowHeaderRatio)
+
+        return when {
+            rowHeaderRatio != 1 -> {
+                val maxColumn = rowHeaderRatio * (1 + column) - 1
+                val minColumn = rowHeaderRatio * column
+                val resizedColumns = columnWidth[tableId]?.filter { (columnIndex, width) ->
+                    columnIndex in minColumn..maxColumn
+                } ?: emptyMap()
+                val totalResizedWidth = resizedColumns.values.sum()
+                val remainingWidth = (rowHeaderRatio - resizedColumns.size) * defaultCellWidth
+                totalResizedWidth + remainingWidth
+                    .withExtraSize(totalColumns, hasTotal, 1)
+            }
+            else ->
+                columnWidth[tableId]?.get(column) ?: (fullWidth / headerRowColumns)
+                    .withExtraSize(totalColumns, hasTotal, rowHeaderRatio)
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -92,6 +114,28 @@ data class TableDimensions(
         val newWidth = defaultRowHeaderWidth + widthOffset - 11
         return copy(defaultRowHeaderWidth = newWidth.toInt())
     }
+
+    fun updateColumnWidth(
+        tableId: String,
+        column: Int,
+        widthOffset: Float
+    ): TableDimensions {
+        val newWidth = (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + widthOffset - 11
+        val newMap = columnWidth.toMutableMap()
+        val tableColumnMap = columnWidth[tableId]?.toMutableMap() ?: mutableMapOf()
+        tableColumnMap[column] = newWidth.toInt()
+        newMap[tableId] = tableColumnMap
+        return this.copy(columnWidth = newMap)
+    }
+}
+
+fun TableDimensions.withRowHeaderWidth(defaultRowHeaderWidth: Int?): TableDimensions {
+    return defaultRowHeaderWidth?.let { this.copy(defaultRowHeaderWidth = defaultRowHeaderWidth) }
+        ?: this
+}
+
+fun TableDimensions.withColumnWidth(columnWidth: Map<String, Map<Int, Int>>?): TableDimensions {
+    return columnWidth?.let { this.copy(columnWidth = columnWidth) } ?: this
 }
 
 val LocalTableDimensions = compositionLocalOf { TableDimensions() }

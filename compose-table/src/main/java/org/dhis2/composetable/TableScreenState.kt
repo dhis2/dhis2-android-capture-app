@@ -7,5 +7,6 @@ data class TableScreenState(
     val tables: List<TableModel>,
     val selectNext: Boolean,
     val id: UUID = UUID.randomUUID(),
-    val overwrittenRowHeaderWidth: Float? = null
+    val overwrittenRowHeaderWidth: Float? = null,
+    val overwrittenColumnWidth: Map<String, Map<Int, Float>>? = null
 )
