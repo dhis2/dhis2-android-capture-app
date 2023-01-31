@@ -56,6 +56,7 @@ fun DataSetTableScreen(
     onRowHeaderResize: (tableId: String, widthDpValue: Float) -> Unit = { _, _ -> },
     onColumnHeaderResize: (tableId: String, column: Int, widthDpValue: Float) -> Unit =
         { _, _, _ -> },
+    onTableDimensionReset: (tableId: String) -> Unit = {},
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
@@ -250,6 +251,7 @@ fun DataSetTableScreen(
                         }
                     }
                 ),
+                tableConfiguration = TableConfiguration(true),
                 tableSelection = tableSelection,
                 tableInteractions = object : TableInteractions {
                     override fun onSelectionChange(newTableSelection: TableSelection) {
@@ -295,6 +297,10 @@ fun DataSetTableScreen(
                             onCellValueChange(it)
                             onSaveValue(cell.copy(value = code), false)
                         }
+                    }
+
+                    override fun onTableWidthReset(tableId: String) {
+                        onTableDimensionReset(tableId)
                     }
                 }
             )

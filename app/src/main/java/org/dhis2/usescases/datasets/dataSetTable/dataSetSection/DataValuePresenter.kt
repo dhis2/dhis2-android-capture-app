@@ -240,4 +240,8 @@ class DataValuePresenter(
     fun saveColumnWidth(tableId: String, column: Int, widthDpValue: Float) {
         tableDimensionStore.saveColumnWidthForSection(tableId, column, widthDpValue)
     }
+
+    fun resetTableDimensions(tableId: String) {
+        tableDimensionStore.resetTable(tableId)
+    }
 }

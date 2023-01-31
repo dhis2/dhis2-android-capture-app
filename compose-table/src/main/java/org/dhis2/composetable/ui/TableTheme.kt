@@ -8,13 +8,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 fun TableTheme(
     tableColors: TableColors?,
     tableDimensions: TableDimensions? = LocalTableDimensions.current,
+    tableConfiguration: TableConfiguration? = LocalTableConfiguration.current,
     content:
         @Composable
         () -> Unit
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),
-        LocalTableDimensions provides (tableDimensions ?: TableDimensions())
+        LocalTableDimensions provides (tableDimensions ?: TableDimensions()),
+        LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration())
     ) {
         MaterialTheme(
             content = content
@@ -29,4 +31,7 @@ object TableTheme {
     val dimensions: TableDimensions
         @Composable
         get() = LocalTableDimensions.current
+    val configuration: TableConfiguration
+        @Composable
+        get() = LocalTableConfiguration.current
 }

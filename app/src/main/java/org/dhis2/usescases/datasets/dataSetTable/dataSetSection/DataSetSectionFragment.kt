@@ -116,6 +116,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                         },
                         onColumnHeaderResize = { tableId, column, widthDpValue ->
                             presenterFragment.saveColumnWidth(tableId, column, widthDpValue)
+                        },
+                        onTableDimensionReset = { tableId ->
+                            presenterFragment.resetTableDimensions(tableId)
                         }
                     )
                 }

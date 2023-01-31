@@ -15,6 +15,7 @@ import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableTheme
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
@@ -78,7 +79,8 @@ class GraphToTable {
                 primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
                 disabledCellText = TableTheme.colors.cellText,
                 disabledCellBackground = TableTheme.colors.tableBackground
-            )
+            ),
+            tableConfiguration = TableConfiguration(false)
         )
     }
 

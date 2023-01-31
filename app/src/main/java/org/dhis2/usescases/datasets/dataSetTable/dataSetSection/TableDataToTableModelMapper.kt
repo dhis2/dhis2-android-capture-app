@@ -63,6 +63,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
 
         return TableModel(
             id = tableData.catCombo()?.uid(),
+            title = tableData.catCombo()?.displayName() ?: "",
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
@@ -88,6 +89,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         }
 
         return TableModel(
+            title = "Indicators",
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )

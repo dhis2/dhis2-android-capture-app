@@ -8,6 +8,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -35,6 +36,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -68,6 +70,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,6 +78,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -187,44 +191,42 @@ fun TableHeader(
 
 @Composable
 fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
-    Box {
-        Box(
+    Box(
+        modifier = Modifier
+            .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
+            .fillMaxHeight()
+            .background(itemHeaderUiState.cellStyle.backgroundColor())
+            .testTag(itemHeaderUiState.testTag)
+            .semantics {
+                itemHeaderUiState.tableId?.let { tableIdColumnHeader = it }
+                columnIndexHeader = itemHeaderUiState.columnIndex
+                rowIndexHeader = itemHeaderUiState.rowIndex
+                columnBackground = itemHeaderUiState.cellStyle.backgroundColor()
+            }
+            .clickable {
+                itemHeaderUiState.onCellSelected(itemHeaderUiState.columnIndex)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
             modifier = Modifier
-                .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
-                .fillMaxHeight()
-                .background(itemHeaderUiState.cellStyle.backgroundColor())
-                .testTag(itemHeaderUiState.testTag)
-                .semantics {
-                    itemHeaderUiState.tableId?.let { tableIdColumnHeader = it }
-                    columnIndexHeader = itemHeaderUiState.columnIndex
-                    rowIndexHeader = itemHeaderUiState.rowIndex
-                    columnBackground = itemHeaderUiState.cellStyle.backgroundColor()
-                }
-                .clickable {
-                    itemHeaderUiState.onCellSelected(itemHeaderUiState.columnIndex)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 11.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                color = itemHeaderUiState.cellStyle.mainColor(),
-                text = itemHeaderUiState.headerCell.value,
-                textAlign = TextAlign.Center,
-                fontSize = TableTheme.dimensions.defaultHeaderTextSize,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 3,
-                softWrap = true
-            )
-            Divider(
-                color = TableTheme.colors.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-            )
-        }
+                .padding(horizontal = 4.dp, vertical = 11.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            color = itemHeaderUiState.cellStyle.mainColor(),
+            text = itemHeaderUiState.headerCell.value,
+            textAlign = TextAlign.Center,
+            fontSize = TableTheme.dimensions.defaultHeaderTextSize,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 3,
+            softWrap = true
+        )
+        Divider(
+            color = TableTheme.colors.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        )
         if (itemHeaderUiState.isSelected(TableTheme.colors.primary)) {
             VerticalResizingRule(
                 modifier = Modifier
@@ -252,17 +254,47 @@ fun TableHeaderRow(
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
     onHeaderResize: (Int, Float) -> Unit,
-    onResizing: (ResizingCell?) -> Unit
+    onResizing: (ResizingCell?) -> Unit,
+    onResetResize: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = modifier.fillMaxSize()
     ) {
-        val (tableCorner, header) = createRefs()
+        val isHeaderActionEnabled = TableTheme.configuration.headerActionsEnabled
+        val (tableActions, tableCorner, header) = createRefs()
+
+        if (isHeaderActionEnabled) {
+            TableActions(
+                modifier = Modifier
+                    .constrainAs(tableActions) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        height = Dimension.value(56.dp)
+                    },
+                title = tableModel.title,
+                actionIcons = {
+                    if (TableTheme.dimensions.hasOverriddenWidths(tableModel.id ?: "")) {
+                        IconButton(onClick = onResetResize) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_restart_alt),
+                                contentDescription = "",
+                                tint = TableTheme.colors.primary
+                            )
+                        }
+                    }
+                }
+            )
+        }
 
         TableCorner(
             modifier = cornerModifier
                 .constrainAs(tableCorner) {
-                    top.linkTo(parent.top)
+                    if (isHeaderActionEnabled) {
+                        top.linkTo(tableActions.bottom)
+                    } else {
+                        top.linkTo(parent.top)
+                    }
                     start.linkTo(parent.start)
                     end.linkTo(header.start)
                     bottom.linkTo(header.bottom)
@@ -276,7 +308,11 @@ fun TableHeaderRow(
             tableId = tableModel.id,
             modifier = Modifier
                 .constrainAs(header) {
-                    top.linkTo(parent.top)
+                    if (isHeaderActionEnabled) {
+                        top.linkTo(tableActions.bottom)
+                    } else {
+                        top.linkTo(parent.top)
+                    }
                     start.linkTo(tableCorner.end)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
@@ -288,6 +324,36 @@ fun TableHeaderRow(
             onHeaderResize = onHeaderResize,
             onResizing = onResizing
         )
+    }
+}
+
+@Composable
+fun TableActions(
+    modifier: Modifier,
+    title: String,
+    actionIcons: @Composable () -> Unit
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_table),
+            contentDescription = "",
+            tint = TableTheme.colors.primary
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = TextStyle(
+                color = Color.Black,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                lineHeight = 10.sp
+            )
+        )
+        actionIcons()
     }
 }
 
@@ -713,6 +779,7 @@ fun DataTable(
     editable: Boolean = true,
     tableColors: TableColors? = null,
     tableDimensions: TableDimensions = TableTheme.dimensions,
+    tableConfiguration: TableConfiguration,
     tableSelection: TableSelection = TableSelection.Unselected(),
     tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
@@ -723,13 +790,11 @@ fun DataTable(
     }
 
     val onSizeChanged: (IntSize) -> Unit = {
-        val tableTotalWidth = with(localDensity) {
-            it.width
-        }
+        val tableTotalWidth = it.width
         dimensions = dimensions.copy(totalWidth = tableTotalWidth)
     }
 
-    TableTheme(tableColors, dimensions) {
+    TableTheme(tableColors, dimensions, tableConfiguration) {
         if (!editable && !tableList.all { it.areAllValuesEmpty() }) {
             TableItem(
                 tableModel = tableList.first(),
@@ -767,6 +832,10 @@ fun DataTable(
                             dimensions.rowHeaderWidths[tableId]!!.toDp().value
                         )
                     }
+                },
+                onResetResize = { tableId ->
+                    dimensions = dimensions.resetWidth(tableId)
+                    tableInteractions.onTableWidthReset(tableId)
                 }
             )
         }
@@ -781,7 +850,8 @@ private fun TableList(
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
     onColumnResize: (String, Int, Float) -> Unit,
-    onHeaderResize: (String, Float) -> Unit
+    onHeaderResize: (String, Float) -> Unit,
+    onResetResize: (String) -> Unit
 ) {
     val horizontalScrollStates = tableList.map { rememberScrollState() }
     val verticalScrollState = rememberLazyListState()
@@ -813,7 +883,6 @@ private fun TableList(
                     TableHeaderRow(
                         modifier = Modifier
                             .background(Color.White),
-
                         cornerModifier = Modifier
                             .cornerBackground(
                                 isSelected = tableSelection.isCornerSelected(
@@ -863,7 +932,12 @@ private fun TableList(
                                 currentTableModel.id ?: "", column, width
                             )
                         },
-                        onResizing = { resizingCell = it }
+                        onResizing = { resizingCell = it },
+                        onResetResize = {
+                            onResetResize(
+                                currentTableModel.id ?: ""
+                            )
+                        }
                     )
                 }
                 itemsIndexed(
@@ -1350,6 +1424,7 @@ fun TableListPreview() {
 
     val tableModel = TableModel(
         "tableId",
+        "table title",
         tableHeaderModel,
         listOf(tableRows)
     )
@@ -1360,7 +1435,8 @@ fun TableListPreview() {
         tableInteractions = object : TableInteractions {},
         onSizeChanged = {},
         onColumnResize = { _, _, _ -> },
-        onHeaderResize = { _, _ -> }
+        onHeaderResize = { _, _ -> },
+        onResetResize = {}
     )
 }
 

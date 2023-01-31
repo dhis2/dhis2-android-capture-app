@@ -138,6 +138,21 @@ data class TableDimensions(
         newMap[tableId] = tableColumnMap
         return this.copy(columnWidth = newMap)
     }
+
+    fun hasOverriddenWidths(tableId: String): Boolean {
+        return rowHeaderWidths.containsKey(tableId) || columnWidth.containsKey(tableId)
+    }
+
+    fun resetWidth(tableId: String): TableDimensions {
+        val newColumnMap = columnWidth.toMutableMap()
+        val newRowHeaderMap = rowHeaderWidths.toMutableMap()
+        newColumnMap.remove(tableId)
+        newRowHeaderMap.remove(tableId)
+        return this.copy(
+            rowHeaderWidths = newRowHeaderMap,
+            columnWidth = newColumnMap
+        )
+    }
 }
 
 fun TableDimensions.withRowHeaderWidth(defaultRowHeaderWidth: Map<String, Int>?): TableDimensions {
