@@ -15,7 +15,8 @@ import dagger.Subcomponent;
 @Subcomponent(modules = EventCaptureModule.class)
 public interface EventCaptureComponent {
     void inject(EventCaptureActivity activity);
-// TODO: reversed
+
+    // TODO: reversed
     void inject(TeiDashboardMobileActivity teiDashboardMobileActivity);
 
     EventCaptureFormComponent plus(EventCaptureFormModule formModule);

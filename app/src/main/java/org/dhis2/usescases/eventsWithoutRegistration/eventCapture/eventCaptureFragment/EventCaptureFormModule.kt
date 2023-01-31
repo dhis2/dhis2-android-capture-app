@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCapturePresenterImpl
 import org.hisp.dhis.android.core.D2
 
 @Module

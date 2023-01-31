@@ -170,6 +170,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
 
         showProgress();
+
         presenter.initNoteCounter();
 
         presenter.init();
