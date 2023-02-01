@@ -35,7 +35,7 @@ import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
-import org.dhis2.android.rtsm.ui.base.ItemWatcher
+import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
 import org.dhis2.android.rtsm.ui.base.SpeechRecognitionAwareViewModel
 import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
@@ -318,7 +318,7 @@ class ManageStockViewModel @Inject constructor(
             cell.value?.let { value ->
                 setQuantity(
                     it, 0, value,
-                    object : ItemWatcher.OnQuantityValidated {
+                    object : OnQuantityValidated {
                         override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                             // When user taps on done or next. We should apply program rules here
                             ruleEffects.forEach { ruleEffect ->
@@ -351,7 +351,7 @@ class ManageStockViewModel @Inject constructor(
         item: @NotNull StockItem,
         position: @NotNull Int,
         qty: @NotNull String,
-        callback: ItemWatcher.OnQuantityValidated?
+        callback: OnQuantityValidated?
     ) {
         entryRelay.accept(RowAction(StockEntry(item, qty), position, callback))
     }

@@ -25,8 +25,7 @@
     </queries>
 
     <application
-        android:allowBackup="false"
-        android:usesCleartextTraffic="true">
+        android:allowBackup="false">
         <activity
             android:name=".ui.home.HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

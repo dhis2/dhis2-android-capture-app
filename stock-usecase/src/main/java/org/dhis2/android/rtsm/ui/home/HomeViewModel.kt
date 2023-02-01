@@ -1,7 +1,5 @@
 package org.dhis2.android.rtsm.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -37,16 +35,10 @@ class HomeViewModel @Inject constructor(
     private val config: AppConfig = savedState.get<AppConfig>(INTENT_EXTRA_APP_CONFIG)
         ?: throw InitializationException("Some configuration parameters are missing")
 
-    // TODO("IS this duplicated: facilities and org units list")
     private val _facilities =
         MutableStateFlow<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
     val facilities: StateFlow<OperationState<List<OrganisationUnit>>>
         get() = _facilities
-
-    private val _orgUnitList =
-        MutableLiveData<List<OrganisationUnit>>()
-    val orgUnitList: LiveData<List<OrganisationUnit>>
-        get() = _orgUnitList
 
     private val _destinations =
         MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
@@ -86,7 +78,6 @@ class HomeViewModel @Inject constructor(
                 .subscribe(
                     {
                         _facilities.value = (OperationState.Success(it))
-                        _orgUnitList.value = it
 
                         if (it.size == 1) {
                             _settingsUiSate.update { currentUiState ->

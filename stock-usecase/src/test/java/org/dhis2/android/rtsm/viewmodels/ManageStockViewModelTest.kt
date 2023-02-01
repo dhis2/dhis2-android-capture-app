@@ -18,7 +18,7 @@ import org.dhis2.android.rtsm.services.StockManager
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
-import org.dhis2.android.rtsm.ui.base.ItemWatcher
+import org.dhis2.android.rtsm.ui.base.OnQuantityValidated
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.TableModelMapper
 import org.dhis2.android.rtsm.utils.ParcelUtils
@@ -181,7 +181,7 @@ class ManageStockViewModelTest {
 
         viewModel.setQuantity(
             item, 200, qty.toString(),
-            object : ItemWatcher.OnQuantityValidated {
+            object : OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     Timber.tag("ruleEffects2").d("$ruleEffects")
                 }
@@ -202,7 +202,7 @@ class ManageStockViewModelTest {
 
         viewModel.setQuantity(
             item, 0, qty.toString(),
-            object : ItemWatcher.OnQuantityValidated {
+            object : OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
                     println("$ruleEffects")
                 }

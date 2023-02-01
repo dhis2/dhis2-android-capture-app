@@ -24,7 +24,6 @@
  */
 package org.dhis2.android.rtsm.utils
 
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
@@ -36,16 +35,13 @@ import org.hisp.dhis.android.core.program.ProgramRuleVariable
 import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollectionRepository
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import org.hisp.dhis.rules.models.AttributeType
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion
 import org.hisp.dhis.rules.models.RuleActionHideField
 import org.hisp.dhis.rules.models.RuleActionShowError
-import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
@@ -111,12 +107,6 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             trackedEntityAttribute() != null -> trackedEntityAttribute()!!.uid()
             else -> ""
         }
-
-    val attrType = when {
-        dataElement() != null -> AttributeType.DATA_ELEMENT
-        trackedEntityAttribute() != null -> AttributeType.TRACKED_ENTITY_ATTRIBUTE
-        else -> AttributeType.UNKNOWN
-    }
 
     if (programRuleActionType() == ProgramRuleActionType.SHOWERROR) {
         return RuleActionShowError.create(content(), data(), field)
@@ -247,46 +237,5 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             it.dataElement()!!,
             value!!
         )
-    }.filter { it.value().isNotEmpty() }
-}
-
-fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
-    d2: D2,
-    program: String
-): List<RuleAttributeValue> {
-    return map {
-        var value = if (it.value() != null) it.value() else ""
-        val attr =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute())
-                .blockingGet()
-        if (!attr.optionSet()?.uid().isNullOrEmpty()) {
-            if (d2.programModule().programRuleVariables()
-                .byProgramUid().eq(program)
-                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
-                .byUseCodeForOptionSet().isTrue
-                .blockingIsEmpty()
-            ) {
-                value =
-                    if (d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
-                        .byCode().eq(value)
-                        .one().blockingExists()
-                    ) {
-                        d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
-                            .byCode().eq(value)
-                            .one()
-                            .blockingGet().name()!!
-                    } else {
-                        ""
-                    }
-            }
-        } else if (attr.valueType()!!.isNumeric) {
-            value = try {
-                value?.toFloat().toString()
-            } catch (e: Exception) {
-                Timber.e(e)
-                ""
-            }
-        }
-        RuleAttributeValue.create(it.trackedEntityAttribute()!!, value!!)
     }.filter { it.value().isNotEmpty() }
 }

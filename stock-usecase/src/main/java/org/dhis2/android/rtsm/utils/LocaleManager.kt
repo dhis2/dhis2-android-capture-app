@@ -24,28 +24,7 @@ class LocaleManager {
             return preferences.getString(prefKey, defaultValue)!!
         }
 
-        @JvmStatic
-//        fun updateResources(context: Context, language: String): Context {
-//            var newContext = context
-//            val newLocale = Locale(language)
-//            Locale.setDefault(newLocale)
-//
-//            val resources = context.resources
-//            val config = Configuration(resources.configuration)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                val localeList = LocaleList(newLocale)
-//                LocaleList.setDefault(localeList)
-//                config.setLocales(localeList) // additionally sets the layout direction
-//
-//                newContext = context.createConfigurationContext(config)
-//            } else {
-//                config.locale = newLocale
-//                resources.updateConfiguration(config, resources.displayMetrics)
-//            }
-//
-//            return newContext
-//        }
-        fun updateResources(context: Context, language: String): Context {
+        private fun updateResources(context: Context, language: String): Context {
             val config = updateConfiguration(context, language)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

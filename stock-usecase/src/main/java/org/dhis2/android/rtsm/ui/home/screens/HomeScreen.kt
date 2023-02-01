@@ -56,7 +56,6 @@ fun HomeScreen(
                     text = dataEntryUiState.button.text,
                     contentColor = dataEntryUiState.button.contentColor,
                     containerColor = dataEntryUiState.button.containerColor,
-                    enabled = dataEntryUiState.button.visible,
                     icon = {
                         Icon(
                             painter = painterResource(id = dataEntryUiState.button.icon),

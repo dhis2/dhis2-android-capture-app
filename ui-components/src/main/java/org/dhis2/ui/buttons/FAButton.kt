@@ -19,7 +19,6 @@ fun FAButton(
     contentColor: Color,
     containerColor: Color,
     expanded: Boolean = true,
-    enabled: Boolean = true,
     icon: @Composable
     () -> Unit,
     onClick: () -> Unit

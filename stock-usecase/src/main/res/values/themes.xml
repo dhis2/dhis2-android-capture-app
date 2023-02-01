@@ -44,9 +44,7 @@
         <item name="extendedFloatingActionButtonStyle">
             @style/Widget.App.Distribution.ExtendedFloatingActionButton
         </item>
-<!--        <item name="floatingActionButtonStyle">-->
-<!--            @style/Widget.App.Distribution.FloatingActionButton-->
-<!--        </item>-->
+
         <item name="toolbarStyle">@style/Widget.App.Distribution.Toolbar</item>
     </style>
 
@@ -138,21 +136,18 @@
         <item name="colorPrimary">@color/gray_900</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
-<!--        <item name="textAllCaps">true</item>-->
     </style>
 
     <style name="ThemeOverlay.App.Distribution.Toolbar" parent="">
         <item name="colorPrimary">@color/distribution_color</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
-<!--        <item name="textAllCaps">true</item>-->
     </style>
 
     <style name="ThemeOverlay.App.Discard.Toolbar" parent="">
         <item name="colorPrimary">@color/discard_color</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
-<!--        <item name="textAllCaps">true</item>-->
     </style>
 
     <style name="discard" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -191,7 +186,6 @@
         <item name="colorPrimary">@color/correction_color</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
-<!--        <item name="textAllCaps">true</item>-->
     </style>
 
     <style name="correction" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -200,7 +194,6 @@
         <item name="colorPrimaryLight">@color/correction_light_color</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!--        <item name="textAllCaps">true</item>-->
 
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
