@@ -1,10 +1,12 @@
 package org.dhis2.android.rtsm.ui.managestock.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -53,7 +55,10 @@ fun ManageStockTable(
                 )
             }
         } else {
-            Text(text = stringResource(id = R.string.no_data))
+            Text(
+                text = stringResource(id = R.string.no_data),
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }
