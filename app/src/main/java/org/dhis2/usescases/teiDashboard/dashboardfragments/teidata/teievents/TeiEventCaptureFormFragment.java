@@ -61,7 +61,7 @@ public class TeiEventCaptureFormFragment extends FragmentGlobalAbstract implemen
 //                        this,
 //                        getArguments().getString(Constants.EVENT_UID))
 //        ).inject(this);
-        setRetainInstance(true);
+//        setRetainInstance(true);
     }
 
     @Override

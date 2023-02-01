@@ -62,6 +62,7 @@ import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.TeiEventCaptureFormFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
@@ -579,11 +580,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public void openEventForm(String eventUidFromFragment) {
 
+        System.out.println("what what?? ");
+
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
         for (Fragment fragment : fragments) {
             if (fragment instanceof FormView) {
-                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), EventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+                System.out.println("what what ?? 22");
+//                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), EventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(fragment.getId(), TeiEventCaptureFormFragment.newInstance(eventUidFromFragment)).commitAllowingStateLoss();
+
             }
         }
 

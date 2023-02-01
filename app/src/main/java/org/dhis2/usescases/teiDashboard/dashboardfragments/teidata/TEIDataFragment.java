@@ -374,32 +374,33 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.emptyTeis.setVisibility(View.GONE);
             adapter.submitList(events);
 
-//            List<Event> currentSectionEvents = events.stream()
-//                    .filter(eventViewModel -> eventViewModel.getType() == EventViewModelType.EVENT)
-//                    .map(EventViewModel::getEvent)
-//                    .collect(Collectors.toList());
-//
-//            if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
-//                ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
-//            }
+            List<Event> currentSectionEvents = events.stream()
+                    .filter(eventViewModel -> eventViewModel.getType() == EventViewModelType.EVENT)
+                    .map(EventViewModel::getEvent)
+                    .collect(Collectors.toList());
 
-            for (EventViewModel eventViewModel : events) {
-                if (eventViewModel.getType() == EventViewModelType.EVENT) {
-                    Event event = eventViewModel.getEvent();
+            if (currentSectionEvents.size() > 0 && OrientationUtilsKt.isLandscape()) {
+                ((TeiDashboardMobileActivity) getActivity()).openEventForm(currentSectionEvents.get(0).uid());
+            }else {
 
-                    System.out.println(event.eventDate());
-                    System.out.println(event.completedDate());
-                    System.out.println("ddddddddddddddddddddddddddd");
+                for (EventViewModel eventViewModel : events) {
+                    if (eventViewModel.getType() == EventViewModelType.EVENT) {
+                        Event event = eventViewModel.getEvent();
 
-                    if (event.eventDate() != null) {
-                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                        System.out.println(event.eventDate());
+                        System.out.println(event.completedDate());
+                        System.out.println("ddddddddddddddddddddddddddd");
+
+                        if (event.eventDate() != null) {
+                            if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                                binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                        }
+                        if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                            presenter.getCatComboOptions(event);
+                            catComboShowed.add(event);
+                        } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                            presenter.setDefaultCatOptCombToEvent(event.uid());
                     }
-                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                        presenter.getCatComboOptions(event);
-                        catComboShowed.add(event);
-                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                        presenter.setDefaultCatOptCombToEvent(event.uid());
                 }
             }
         }
