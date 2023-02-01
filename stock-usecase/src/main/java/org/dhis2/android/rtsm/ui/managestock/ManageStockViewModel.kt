@@ -83,7 +83,8 @@ class ManageStockViewModel @Inject constructor(
         TableScreenState(
             tables = emptyList(),
             selectNext = false,
-            textInputCollapsedMode = false
+            textInputCollapsedMode = false,
+            overwrittenRowHeaderWidth = 200F
         )
     )
     val screenState: LiveData<TableScreenState> = _screenState
@@ -231,7 +232,8 @@ class ManageStockViewModel @Inject constructor(
             TableScreenState(
                 tables = tables,
                 selectNext = selectNext,
-                textInputCollapsedMode = false
+                textInputCollapsedMode = false,
+                overwrittenRowHeaderWidth = 200F
             )
         )
     }

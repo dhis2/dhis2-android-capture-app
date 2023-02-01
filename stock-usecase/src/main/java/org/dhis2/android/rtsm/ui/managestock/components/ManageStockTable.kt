@@ -27,7 +27,8 @@ fun ManageStockTable(
         initial = TableScreenState(
             tables = emptyList(),
             selectNext = false,
-            textInputCollapsedMode = false
+            textInputCollapsedMode = false,
+            overwrittenRowHeaderWidth = 200F
         )
     )
 
