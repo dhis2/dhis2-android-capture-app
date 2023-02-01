@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import dagger.Component;
-
 import dispatch.core.DispatcherProvider;
 
 /**

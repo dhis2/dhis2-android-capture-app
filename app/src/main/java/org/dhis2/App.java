@@ -5,7 +5,6 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -74,10 +73,6 @@ import timber.log.Timber;
 
 @HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
-
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
 
     @NonNull
     @Singleton

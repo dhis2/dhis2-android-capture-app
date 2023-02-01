@@ -83,20 +83,6 @@ android {
         exclude 'META-INF/gradle/incremental.annotation.processors'
     }
 
-    productFlavors {
-        dhis {
-
-        }
-
-        dhisNoSMS {
-
-        }
-
-        dhisUITesting {
-
-        }
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.0"
     }
