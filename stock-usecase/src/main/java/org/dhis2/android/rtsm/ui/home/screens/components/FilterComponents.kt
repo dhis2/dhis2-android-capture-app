@@ -52,6 +52,7 @@ fun FilterList(
     ) {
         item {
             DropdownComponentTransactions(
+                settingsUiState,
                 onTransitionSelected,
                 dataEntryUiState.hasUnsavedData,
                 themeColor,

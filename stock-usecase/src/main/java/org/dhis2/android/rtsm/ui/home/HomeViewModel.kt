@@ -161,5 +161,6 @@ class HomeViewModel @Inject constructor(
                 programUid = config.program
             )
         }
+        selectTransaction(TransactionType.DISTRIBUTION)
     }
 }
