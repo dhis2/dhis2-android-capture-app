@@ -5,7 +5,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 @Immutable
 data class TableConfiguration(
-    val headerActionsEnabled: Boolean = true
+    val headerActionsEnabled: Boolean = true,
+    val editable: Boolean = true
 )
 
 val LocalTableConfiguration = staticCompositionLocalOf { TableConfiguration() }

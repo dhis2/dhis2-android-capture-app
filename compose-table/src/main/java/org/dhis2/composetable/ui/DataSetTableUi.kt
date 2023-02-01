@@ -312,7 +312,8 @@ fun TableHeaderRow(
                     end.linkTo(header.start)
                     bottom.linkTo(header.bottom)
                     height = Dimension.fillToConstraints
-                }.zIndex(1f),
+                }
+                .zIndex(1f),
             tableCornerUiState = cornerUiState,
             tableId = tableModel.id ?: "",
             onClick = onTableCornerClick
@@ -814,77 +815,59 @@ fun DropDownOptions(
 @Composable
 fun DataTable(
     tableList: List<TableModel>,
-    editable: Boolean = true,
-    tableColors: TableColors? = null,
-    tableDimensions: TableDimensions = TableTheme.dimensions,
-    tableConfiguration: TableConfiguration,
-    tableSelection: TableSelection = TableSelection.Unselected(),
     tableInteractions: TableInteractions = object : TableInteractions {}
 ) {
-    val localDensity = LocalDensity.current
-
-    var dimensions by remember {
-        mutableStateOf(tableDimensions)
-    }
-
-    val onSizeChanged: (IntSize) -> Unit = {
-        val tableTotalWidth = it.width
-        dimensions = dimensions.copy(totalWidth = tableTotalWidth)
-    }
-
-    TableTheme(tableColors, dimensions, tableConfiguration, tableSelection) {
-        if (!editable && !tableList.all { it.areAllValuesEmpty() }) {
-            TableItem(
-                tableModel = tableList.first(),
-                tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged,
-                onColumnResize = { column, width ->
-                    dimensions =
-                        dimensions.updateColumnWidth(tableList.first().id ?: "", column, width)
-                },
-                onHeaderResize = { width ->
-                    dimensions = dimensions.updateHeaderWidth(tableList.first().id ?: "", width)
-                }
-            )
-        } else if (editable) {
-            TableList(
-                tableList = tableList,
-                tableInteractions = tableInteractions,
-                onSizeChanged = onSizeChanged,
-                onColumnResize = { tableId, column, newValue ->
-                    with(localDensity) {
-                        dimensions = dimensions.updateColumnWidth(tableId, column, newValue)
-                        tableInteractions.onColumnHeaderSizeChanged(
-                            tableId,
-                            column,
-                            dimensions.columnWidth[tableId]!![column]!!.toDp().value
-                        )
-                    }
-                },
-                onHeaderResize = { tableId, newValue ->
-                    with(localDensity) {
-                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
-                        tableInteractions.onRowHeaderSizeChanged(
-                            tableId,
-                            dimensions.rowHeaderWidths[tableId]!!.toDp().value
-                        )
-                    }
-                },
-                onTableResize = { tableId, newValue ->
-                    with(localDensity) {
-                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                        tableInteractions.onTableWidthChanged(
-                            tableId,
-                            dimensions.extraWidths[tableId]!!.toDp().value
-                        )
-                    }
-                },
-                onResetResize = { tableId ->
-                    dimensions = dimensions.resetWidth(tableId)
-                    tableInteractions.onTableWidthReset(tableId)
-                }
-            )
-        }
+    if (!TableTheme.configuration.editable && !tableList.all { it.areAllValuesEmpty() }) {
+        TableItem(
+            tableModel = tableList.first(),
+            tableInteractions = tableInteractions,
+            onSizeChanged = {
+                tableInteractions.onTableSizeChanged(it.width)
+            },
+            onColumnResize = { column, width ->
+                tableInteractions.onColumnHeaderSizeChanged(
+                    tableList.first().id ?: "",
+                    column,
+                    width
+                )
+            },
+            onHeaderResize = { width ->
+                tableInteractions.onRowHeaderSizeChanged(
+                    tableList.first().id ?: "",
+                    width
+                )
+            }
+        )
+    } else if (TableTheme.configuration.editable) {
+        TableList(
+            tableList = tableList,
+            tableInteractions = tableInteractions,
+            onSizeChanged = {
+                tableInteractions.onTableSizeChanged(it.width)
+            },
+            onColumnResize = { tableId, column, newValue ->
+                tableInteractions.onColumnHeaderSizeChanged(
+                    tableId,
+                    column,
+                    newValue
+                )
+            },
+            onHeaderResize = { tableId, newValue ->
+                tableInteractions.onRowHeaderSizeChanged(
+                    tableId,
+                    newValue
+                )
+            },
+            onTableResize = { tableId, newValue ->
+                tableInteractions.onTableWidthChanged(
+                    tableId,
+                    newValue
+                )
+            },
+            onResetResize = { tableId ->
+                tableInteractions.onTableWidthReset(tableId)
+            }
+        )
     }
 }
 

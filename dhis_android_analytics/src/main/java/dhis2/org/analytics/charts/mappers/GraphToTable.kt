@@ -71,17 +71,20 @@ class GraphToTable {
             tableHeaderModel = tableHeader,
             tableRows = tableRows
         )
-        return DataTable(
-            tableList = listOf(tableModel),
-            editable = false,
+        return TableTheme(
             tableColors = TableColors(
                 primary = MaterialTheme.colors.primary,
                 primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
                 disabledCellText = TableTheme.colors.cellText,
                 disabledCellBackground = TableTheme.colors.tableBackground
             ),
-            tableConfiguration = TableConfiguration(false)
-        )
+            tableConfiguration = TableConfiguration(
+                headerActionsEnabled = false,
+                editable = false
+            )
+        ) {
+            DataTable(tableList = listOf(tableModel))
+        }
     }
 
     private fun headers(graph: Graph, series: List<SerieData>): List<CellModel?> {

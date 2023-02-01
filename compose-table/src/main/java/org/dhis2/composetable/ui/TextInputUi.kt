@@ -58,41 +58,38 @@ import org.dhis2.composetable.model.toKeyboardType
 @Composable
 fun TextInput(
     textInputModel: TextInputModel,
-    tableColors: TableColors? = null,
     onTextChanged: (TextInputModel) -> Unit,
     onSave: () -> Unit,
     onNextSelected: () -> Unit,
     focusRequester: FocusRequester
 ) {
     val focusManager = LocalFocusManager.current
-    TableTheme(tableColors) {
-        val isKeyboardOpen by keyboardAsState()
+    val isKeyboardOpen by keyboardAsState()
 
-        LaunchedEffect(isKeyboardOpen) {
-            if (isKeyboardOpen == Keyboard.Closed) {
-                focusManager.clearFocus(true)
-            }
+    LaunchedEffect(isKeyboardOpen) {
+        if (isKeyboardOpen == Keyboard.Closed) {
+            focusManager.clearFocus(true)
         }
+    }
 
-        Column(
-            modifier = Modifier
-                .testTag(INPUT_TEST_TAG)
-                .fillMaxWidth()
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
-                .padding(16.dp)
-        ) {
-            InputTitle(textInputModel)
-            TextInputContent(
-                textInputModel,
-                onTextChanged = onTextChanged,
-                onSave = onSave,
-                onNextSelected = onNextSelected,
-                focusRequester = focusRequester
+    Column(
+        modifier = Modifier
+            .testTag(INPUT_TEST_TAG)
+            .fillMaxWidth()
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-        }
+            .padding(16.dp)
+    ) {
+        InputTitle(textInputModel)
+        TextInputContent(
+            textInputModel,
+            onTextChanged = onTextChanged,
+            onSave = onSave,
+            onNextSelected = onNextSelected,
+            focusRequester = focusRequester
+        )
     }
 }
 
