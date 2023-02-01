@@ -27,7 +27,11 @@ data class TableDimensions(
     val tableBottomPadding: Dp = 200.dp,
     val extraWidths: Map<String, Int> = emptyMap(),
     val rowHeaderWidths: Map<String, Int> = emptyMap(),
-    val columnWidth: Map<String, Map<Int, Int>> = emptyMap()
+    val columnWidth: Map<String, Map<Int, Int>> = emptyMap(),
+    val minRowHeaderWidth: Int = 130,
+    val minColumnWidth: Int = 130,
+    val maxRowHeaderWidth: Int = Int.MAX_VALUE,
+    val maxColumnWidth: Int = Int.MAX_VALUE
 ) {
 
     private fun extraWidthInTable(tableId: String): Int = extraWidths[tableId] ?: 0
@@ -173,6 +177,39 @@ data class TableDimensions(
             rowHeaderWidths = newRowHeaderMap,
             columnWidth = newColumnMap
         )
+    }
+
+    fun canUpdateRowHeaderWidth(
+        tableId: String,
+        widthOffset: Float
+    ): Boolean {
+        val desiredDimension = updateHeaderWidth(tableId = tableId, widthOffset = widthOffset)
+        return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth
+    }
+
+    fun canUpdateColumnHeaderWidth(
+        tableId: String,
+        currentOffsetX: Float,
+        columnIndex: Int
+    ): Boolean {
+        val desiredDimension = updateColumnWidth(
+            tableId = tableId,
+            widthOffset = currentOffsetX,
+            column = columnIndex
+        )
+        return desiredDimension.columnWidth[tableId]
+            ?.get(columnIndex) in minColumnWidth..maxColumnWidth
+    }
+
+    fun canUpdateAllWidths(
+        tableId: String,
+        widthOffset: Float
+    ): Boolean {
+        val desiredDimension = updateAllWidthBy(tableId = tableId, widthOffset = widthOffset)
+        return desiredDimension.rowHeaderWidth(tableId) in minRowHeaderWidth..maxRowHeaderWidth &&
+            desiredDimension.columnWidth[tableId]?.all { (_, width) ->
+            width in minColumnWidth..maxColumnWidth
+        } == true
     }
 }
 

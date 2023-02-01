@@ -59,9 +59,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -193,7 +191,6 @@ fun TableHeader(
 
 @Composable
 fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
-    val dimensions = TableTheme.dimensions
     Box(
         modifier = Modifier
             .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
@@ -243,9 +240,12 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .zIndex(2f),
-                checkMaxMinCondition = { currentOffsetX ->
-                    val desiredDimension = dimensions.updateColumnWidth(tableId = itemHeaderUiState.tableId ?: "", widthOffset = currentOffsetX, column = itemHeaderUiState.columnIndex)
-                    return@VerticalResizingRule desiredDimension.columnWidth[itemHeaderUiState.tableId ?: ""]?.get(itemHeaderUiState.columnIndex) in 100..500
+                checkMaxMinCondition = { dimensions, currentOffsetX ->
+                    dimensions.canUpdateColumnHeaderWidth(
+                        tableId = itemHeaderUiState.tableId ?: "",
+                        currentOffsetX = currentOffsetX,
+                        columnIndex = itemHeaderUiState.columnIndex
+                    )
                 },
                 onHeaderResize = { newValue ->
                     itemHeaderUiState.onHeaderResize(
@@ -458,7 +458,6 @@ fun TableCorner(
     onClick: () -> Unit
 ) {
     val isSelected = LocalTableSelection.current is TableSelection.AllCellSelection
-    val dimensions = TableTheme.dimensions
     Box(
         modifier = modifier
             .cornerBackground(
@@ -487,9 +486,11 @@ fun TableCorner(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .zIndex(1f),
-                checkMaxMinCondition = { currentOffsetX ->
-                    val desiredDimension = dimensions.updateAllWidthBy(tableId = tableId, widthOffset = currentOffsetX)
-                    return@VerticalResizingRule desiredDimension.extraWidths[tableId] in 100..500
+                checkMaxMinCondition = { dimensions, currentOffsetX ->
+                    dimensions.canUpdateAllWidths(
+                        tableId = tableId,
+                        widthOffset = currentOffsetX
+                    )
                 },
                 onHeaderResize = { newValue ->
                     tableCornerUiState.onTableResize(newValue)
@@ -502,7 +503,6 @@ fun TableCorner(
 
 @Composable
 fun ItemHeader(uiState: ItemHeaderUiState) {
-    val dimensions = TableTheme.dimensions
     Box {
         Row(
             modifier = Modifier
@@ -576,9 +576,11 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
             VerticalResizingRule(
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
-                checkMaxMinCondition = { currentOffsetX ->
-                    val desiredDimension = dimensions.updateHeaderWidth(tableId = uiState.tableId, widthOffset = currentOffsetX)
-                    return@VerticalResizingRule desiredDimension.rowHeaderWidth(uiState.tableId) in 100..500
+                checkMaxMinCondition = { dimensions, currentOffsetX ->
+                    dimensions.canUpdateRowHeaderWidth(
+                        tableId = uiState.tableId,
+                        widthOffset = currentOffsetX
+                    )
                 },
                 onHeaderResize = uiState.onHeaderResize,
                 onResizing = uiState.onResizing
@@ -1151,41 +1153,17 @@ fun VerticalResizingView(
 @Composable
 fun VerticalResizingRule(
     modifier: Modifier = Modifier,
-    checkMaxMinCondition: (currentOffsetX: Float) -> Boolean,
+    checkMaxMinCondition: (dimensions: TableDimensions, currentOffsetX: Float) -> Boolean,
     onHeaderResize: (Float) -> Unit,
     onResizing: (ResizingCell?) -> Unit
 ) {
-    val localDensity = LocalDensity.current
-    val minOffset = with(localDensity) {
-        11.dp.toPx()
-    }
+    var dimensions by remember { mutableStateOf<TableDimensions?>(null) }
+    dimensions = TableTheme.dimensions
 
+    val minOffset = with(LocalDensity.current) { 11.dp.toPx() }
     var offsetX by remember { mutableStateOf(minOffset) }
     var positionInRoot by remember { mutableStateOf(Offset.Zero) }
 
-    var positionInParent by remember { mutableStateOf(Offset.Zero) }
-    val screenWidth = with(localDensity) {
-        LocalConfiguration.current.screenWidthDp.dp.toPx()
-    }
-
-    val minPosition = with(localDensity) {
-        MIN_CELL_WIDTH.toPx()
-    }
-
-    val maxPosition = with(localDensity) {
-        LocalConfiguration.current.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx()
-    }
-
-    var initialPosition = 0f
-
-    val maxWidth = with(localDensity) {
-        200.dp.toPx()
-    }
-    val minWidth = with(localDensity) {
-        50.dp.toPx()
-    }
-
-    val colorPrimary = TableTheme.colors.primary
     Box(
         modifier
             .fillMaxHeight()
@@ -1193,31 +1171,18 @@ fun VerticalResizingRule(
             .offset(24.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = {
-                        initialPosition = positionInRoot.x + offsetX - positionInParent.x
-                    },
                     onDragEnd = {
                         if (abs(offsetX) > minOffset) {
                             onHeaderResize(offsetX)
                         }
                         offsetX = minOffset
                         onResizing(null)
-                        initialPosition = 0f
                     }
                 ) { change, dragAmount ->
                     change.consume()
-
-                    val position = positionInRoot.x + offsetX - positionInParent.x
-                    val nextPosition = position + dragAmount.x
-                    val nextWidth = nextPosition - initialPosition
-                    println(nextWidth)
-                    if (checkMaxMinCondition(offsetX + dragAmount.x)) {
+                    if (checkMaxMinCondition(dimensions!!, offsetX + dragAmount.x)) {
                         offsetX += dragAmount.x
                     }
-                    /*if (minPosition < nextPosition && maxPosition > nextPosition) {
-                        offsetX += dragAmount.x
-                    }*/
-
                     onResizing(ResizingCell(positionInRoot, offsetX))
                 }
             }
@@ -1226,13 +1191,12 @@ fun VerticalResizingRule(
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = colorPrimary,
+                    color = TableTheme.colors.primary,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .size(14.dp)
                 .onGloballyPositioned { coordinates ->
                     positionInRoot = coordinates.positionInRoot()
-                    positionInParent = coordinates.positionInParent()
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
             contentDescription = "",

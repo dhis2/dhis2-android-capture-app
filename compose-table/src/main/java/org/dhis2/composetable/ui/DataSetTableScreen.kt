@@ -30,9 +30,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
 import org.dhis2.composetable.actions.TableInteractions
@@ -62,6 +64,7 @@ fun DataSetTableScreen(
     bottomContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val localDensity = LocalDensity.current
+    val conf = LocalConfiguration.current
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     )
@@ -74,7 +77,10 @@ fun DataSetTableScreen(
     var dimensions by remember {
         mutableStateOf(
             TableDimensions(
-                cellVerticalPadding = 11.dp
+                cellVerticalPadding = 11.dp,
+                maxRowHeaderWidth = with(localDensity) {
+                    (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx()).roundToInt()
+                }
             ).withRowHeaderWidth(
                 with(localDensity) {
                     tableScreenState.overwrittenRowHeaderWidth?.mapValues { (_, width) ->
@@ -225,13 +231,15 @@ fun DataSetTableScreen(
                             if (tableCell.error == null) {
                                 onSaveValue(tableCell, true)
                             } else {
-                                (tableSelection as? TableSelection.CellSelection)?.let { cellSelected ->
-                                    val currentTable =
-                                        tableScreenState.tables.first { it.id == cellSelected.tableId }
-                                    currentTable.getNextCell(cellSelected, true)?.let {
-                                        selectNextCell(it, cellSelected)
-                                    } ?: collapseBottomSheet(finish = true)
-                                }
+                                (tableSelection as? TableSelection.CellSelection)
+                                    ?.let { cellSelected ->
+                                        val currentTable = tableScreenState.tables.first {
+                                            it.id == cellSelected.tableId
+                                        }
+                                        currentTable.getNextCell(cellSelected, true)?.let {
+                                            selectNextCell(it, cellSelected)
+                                        } ?: collapseBottomSheet(finish = true)
+                                    }
                             }
                         }
                     },
