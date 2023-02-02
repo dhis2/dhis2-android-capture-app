@@ -49,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -297,7 +298,7 @@ fun TableHeaderRow(
                                     id = R.drawable.ic_restart_alt
                                 ),
                                 contentDescription = "",
-                                tint = TableTheme.colors.primary
+                                tint = Color.Black.copy(alpha = 0.87f)
                             )
                         }
                     }
@@ -853,6 +854,15 @@ fun DataTable(
                     tableList.first().id ?: "",
                     width
                 )
+            },
+            onTableResize = { newValue ->
+                tableInteractions.onTableWidthChanged(
+                    tableList.first().id ?: "",
+                    newValue
+                )
+            },
+            onResetResize = {
+                tableInteractions.onTableWidthReset(tableList.first().id ?: "")
             }
         )
     } else if (TableTheme.configuration.editable) {
@@ -920,6 +930,7 @@ private fun TableList(
                     horizontal = TableTheme.dimensions.tableHorizontalPadding,
                     vertical = TableTheme.dimensions.tableVerticalPadding
                 )
+                .clip(RoundedCornerShape(8.dp))
                 .onSizeChanged { onSizeChanged(it) },
             contentPadding = PaddingValues(bottom = TableTheme.dimensions.tableBottomPadding),
             state = verticalScrollState
@@ -1258,31 +1269,38 @@ fun TableItem(
     tableInteractions: TableInteractions,
     onSizeChanged: (IntSize) -> Unit,
     onColumnResize: (Int, Float) -> Unit,
-    onHeaderResize: (Float) -> Unit
+    onHeaderResize: (Float) -> Unit,
+    onTableResize: (Float) -> Unit,
+    onResetResize: () -> Unit
 ) {
     var resizingCell: ResizingCell? by remember { mutableStateOf(null) }
     var tableHeight by remember { mutableStateOf(0) }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .background(Color.White)
+            .clip(RoundedCornerShape(8.dp))
+    ) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(
+                    vertical = TableTheme.dimensions.tableVerticalPadding,
+                    horizontal = TableTheme.dimensions.tableHorizontalPadding
+                )
                 .onSizeChanged {
                     onSizeChanged(it)
                     tableHeight = it.height
                 }
         ) {
             val horizontalScrollState = rememberScrollState()
-            val selectionState = rememberSelectionState()
-            var tableSelection by remember {
-                mutableStateOf<TableSelection>(TableSelection.Unselected())
-            }
+            val tableSelection = LocalTableSelection.current
 
             TableHeaderRow(
                 cornerUiState = TableCornerUiState(
-                    onTableResize = {},
-                    onResizing = {}
+                    isSelected = tableSelection.isCornerSelected(tableModel.id ?: ""),
+                    onTableResize = onTableResize,
+                    onResizing = { resizingCell = it }
                 ),
                 tableModel = tableModel,
                 horizontalScrollState = horizontalScrollState,
@@ -1301,8 +1319,28 @@ fun TableItem(
                         columnIndex = columnIndex
                     )
                 },
+                onTableCornerClick = {
+                    tableInteractions.onSelectionChange(
+                        TableSelection.AllCellSelection(tableModel.id ?: "")
+                    )
+                },
+                onHeaderCellClick = { headerColumnIndex, headerRowIndex ->
+                    tableInteractions.onSelectionChange(
+                        TableSelection.ColumnSelection(
+                            tableId = tableModel.id ?: "",
+                            columnIndex = headerColumnIndex,
+                            columnHeaderRow = headerRowIndex,
+                            childrenOfSelectedHeader =
+                                tableModel.countChildrenOfSelectedHeader(
+                                    headerRowIndex,
+                                    headerColumnIndex
+                                )
+                        )
+                    )
+                },
                 onHeaderResize = onColumnResize,
-                onResizing = { resizingCell = it }
+                onResizing = { resizingCell = it },
+                onResetResize = onResetResize
             )
             tableModel.tableRows.forEach { tableRowModel ->
                 TableItemRow(
@@ -1340,27 +1378,56 @@ fun TableItem(
                     },
                     nonEditableCellLayer = { columnIndex, rowIndex, isCellEditable ->
                         AddBackgroundNonEditableCellLayer(
-                            hasToApplyLightPrimary = selectionState.isParentSelection(
-                                columnIndex,
-                                rowIndex
+                            hasToApplyLightPrimary = tableSelection.isCellParentSelected(
+                                selectedTableId = tableModel.id ?: "",
+                                columnIndex = columnIndex,
+                                rowIndex = rowIndex
                             ),
                             cellIsEditable = isCellEditable
                         )
                     },
                     onRowHeaderClick = { rowHeaderIndex ->
-                        tableSelection = TableSelection.RowSelection(
-                            tableId = tableModel.id ?: "",
-                            rowIndex = rowHeaderIndex ?: -1
+                        tableInteractions.onSelectionChange(
+                            TableSelection.RowSelection(
+                                tableId = tableModel.id ?: "",
+                                rowIndex = rowHeaderIndex ?: -1
+                            )
                         )
                     },
                     onDecorationClick = { tableInteractions.onDecorationClick(it) },
-                    onClick = { tableInteractions.onClick(it) },
+                    onClick = { tableCell ->
+                        tableInteractions.onSelectionChange(
+                            TableSelection.CellSelection(
+                                tableId = tableModel.id ?: "",
+                                columnIndex = tableCell.column ?: -1,
+                                rowIndex = tableCell.row ?: -1,
+                                globalIndex = 0
+                            )
+                        )
+                        tableInteractions.onClick(tableCell)
+                    },
                     onHeaderResize = onHeaderResize,
                     onResizing = { resizingCell = it },
                     onOptionSelected = { cell, code, label ->
+                        tableInteractions.onSelectionChange(
+                            TableSelection.CellSelection(
+                                tableId = tableModel.id ?: "",
+                                columnIndex = cell.column ?: -1,
+                                rowIndex = cell.row ?: -1,
+                                globalIndex = 0
+                            )
+                        )
                         tableInteractions.onOptionSelected(cell, code, label)
                     }
                 )
+                if (tableRowModel.isLastRow) {
+                    ExtendDivider(
+                        tableId = tableModel.id ?: "",
+                        selected = tableSelection.isCornerSelected(
+                            tableModel.id ?: ""
+                        )
+                    )
+                }
             }
         }
         VerticalResizingView(
@@ -1368,7 +1435,7 @@ fun TableItem(
                 .height(
                     with(LocalDensity.current) {
                         tableHeight.toDp()
-                    } + 16.dp
+                    }
                 ),
             provideResizingCell = { resizingCell }
         )
