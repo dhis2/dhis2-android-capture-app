@@ -219,10 +219,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private val openEventForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            openDashboard(presenter.getEnrollment()!!.uid()!!)
-        }
+    ) {
+        openDashboard(presenter.getEnrollment()!!.uid()!!)
     }
 
     override fun openDashboard(enrollmentUid: String) {
