@@ -116,7 +116,8 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             TableDimensions(
                                 cellVerticalPadding = 11.dp,
                                 maxRowHeaderWidth = with(localDensity) {
-                                    (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx()).roundToInt()
+                                    (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
+                                        .roundToInt()
                                 },
                                 extraWidths = with(localDensity) {
                                     tableConfState.overwrittenTableWidth?.mapValues { (_, width) ->
@@ -124,9 +125,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                                     }
                                 } ?: emptyMap(),
                                 rowHeaderWidths = with(localDensity) {
-                                    tableConfState.overwrittenRowHeaderWidth?.mapValues { (_, width) ->
-                                        width.dp.roundToPx()
-                                    }
+                                    tableConfState.overwrittenRowHeaderWidth
+                                        ?.mapValues { (_, width) ->
+                                            width.dp.roundToPx()
+                                        }
                                 } ?: emptyMap(),
                                 columnWidth = with(localDensity) {
                                     tableConfState.overwrittenColumnWidth?.mapValues { (_, value) ->

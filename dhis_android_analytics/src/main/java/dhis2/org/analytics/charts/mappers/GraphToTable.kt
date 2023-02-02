@@ -94,7 +94,8 @@ class GraphToTable {
                     TableDimensions(
                         cellVerticalPadding = 11.dp,
                         maxRowHeaderWidth = with(localDensity) {
-                            (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx()).roundToInt()
+                            (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
+                                .roundToInt()
                         },
                         tableHorizontalPadding = 0.dp,
                         tableVerticalPadding = 0.dp,
@@ -105,13 +106,17 @@ class GraphToTable {
                 )
             }
 
-            resetDimensionButton?.visibility = if (dimensions.hasOverriddenWidths(tableModel.id ?: "")) {
+            resetDimensionButton?.visibility = if (
+                dimensions.hasOverriddenWidths(tableModel.id ?: "")
+            ) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
 
-            resetDimensionButton?.setOnClickListener { dimensions = dimensions.resetWidth(tableModel.id ?: "") }
+            resetDimensionButton?.setOnClickListener {
+                dimensions = dimensions.resetWidth(tableModel.id ?: "")
+            }
 
             TableTheme(
                 tableColors = TableColors(

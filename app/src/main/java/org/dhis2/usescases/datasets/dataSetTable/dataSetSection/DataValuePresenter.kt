@@ -40,8 +40,7 @@ class DataValuePresenter(
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
         TableScreenState(
             emptyList(),
-            false,
-
+            false
         )
     )
     private val tableConfigurationState = MutableStateFlow(
@@ -134,7 +133,6 @@ class DataValuePresenter(
 
     fun currentState(): StateFlow<TableScreenState> = screenState
     fun currentTableConfState(): StateFlow<TableConfigurationState> = tableConfigurationState
-
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun mutableTableData() = screenState
