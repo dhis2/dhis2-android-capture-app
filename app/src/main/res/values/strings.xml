@@ -913,4 +913,5 @@
     <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
+    <string name="wrong_pin">Wrong pin</string>
 </resources>

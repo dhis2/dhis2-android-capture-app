@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.mappers
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
@@ -13,7 +14,8 @@ import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
 import org.dhis2.composetable.ui.DataTable
-import org.dhis2.composetable.ui.LocalTableColors
+import org.dhis2.composetable.ui.TableColors
+import org.dhis2.composetable.ui.TableTheme
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 
 class GraphToTable {
@@ -71,9 +73,11 @@ class GraphToTable {
         return DataTable(
             tableList = listOf(tableModel),
             editable = false,
-            tableColors = LocalTableColors.current.copy(
-                disabledCellText = LocalTableColors.current.cellText,
-                disabledCellBackground = LocalTableColors.current.tableBackground
+            tableColors = TableColors(
+                primary = MaterialTheme.colors.primary,
+                primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                disabledCellText = TableTheme.colors.cellText,
+                disabledCellBackground = TableTheme.colors.tableBackground
             )
         )
     }

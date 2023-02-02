@@ -993,4 +993,21 @@ class DataValueRepository(
     fun getDataSetInfo(): Triple<String, String, String> {
         return Triple(periodId, orgUnitUid, attributeOptionComboUid)
     }
+
+    fun getWidthForSection(): Float? {
+        val valueStoreWidth = d2.dataStoreModule().localDataStore()
+            .value("${dataSetUid}_${sectionUid}_width")
+        return if (valueStoreWidth.blockingExists()) {
+            valueStoreWidth
+                .blockingGet().value()?.toFloatOrNull()
+        } else {
+            null
+        }
+    }
+
+    fun saveWidthForSection(widthDpValue: Float) {
+        d2.dataStoreModule().localDataStore()
+            .value("${dataSetUid}_${sectionUid}_width")
+            .blockingSet(widthDpValue.toString())
+    }
 }

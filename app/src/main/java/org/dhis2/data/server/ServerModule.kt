@@ -9,6 +9,7 @@ import okhttp3.Interceptor
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.Constants
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -35,7 +36,7 @@ class ServerModule {
     fun sdk(context: Context): D2 {
         if (!D2Manager.isD2Instantiated()) {
             blockingInstantiateD2(getD2Configuration(context))
-                ?.userModule()?.accountManager()?.setMaxAccounts(null)
+                ?.userModule()?.accountManager()?.setMaxAccounts(Constants.MAX_ACCOUNTS)
         }
         return D2Manager.getD2()
     }
