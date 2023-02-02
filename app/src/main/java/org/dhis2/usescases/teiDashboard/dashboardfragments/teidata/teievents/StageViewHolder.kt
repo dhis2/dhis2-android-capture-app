@@ -32,6 +32,9 @@ internal class StageViewHolder(
         val stage = eventItem.stage!!
 
         binding.programStageName.text = stage.displayName()
+        binding.programStageName.post {
+            binding.programStageName.isSelected = true
+        }
 
         val color = ColorUtils.getColorFrom(
             stage.style().color(),
