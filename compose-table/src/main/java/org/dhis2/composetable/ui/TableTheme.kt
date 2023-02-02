@@ -9,15 +9,13 @@ fun TableTheme(
     tableColors: TableColors?,
     tableDimensions: TableDimensions? = LocalTableDimensions.current,
     tableConfiguration: TableConfiguration? = LocalTableConfiguration.current,
-    tableSelection: TableSelection? = LocalTableSelection.current,
     content: @Composable
     () -> Unit
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),
         LocalTableDimensions provides (tableDimensions ?: TableDimensions()),
-        LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration()),
-        LocalTableSelection provides (tableSelection ?: TableSelection.Unselected())
+        LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration())
     ) {
         MaterialTheme(
             content = content

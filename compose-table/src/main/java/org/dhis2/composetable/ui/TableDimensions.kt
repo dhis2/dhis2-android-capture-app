@@ -213,13 +213,4 @@ data class TableDimensions(
     }
 }
 
-fun TableDimensions.withRowHeaderWidth(defaultRowHeaderWidth: Map<String, Int>?): TableDimensions {
-    return defaultRowHeaderWidth?.let { this.copy(rowHeaderWidths = defaultRowHeaderWidth) }
-        ?: this
-}
-
-fun TableDimensions.withColumnWidth(columnWidth: Map<String, Map<Int, Int>>?): TableDimensions {
-    return columnWidth?.let { this.copy(columnWidth = columnWidth) } ?: this
-}
-
 val LocalTableDimensions = compositionLocalOf { TableDimensions() }
