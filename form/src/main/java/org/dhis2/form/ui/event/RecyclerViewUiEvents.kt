@@ -68,6 +68,11 @@ sealed class RecyclerViewUiEvents {
         val uid: String
     ) : RecyclerViewUiEvents()
 
+    data class AddSignature(
+        val uid: String,
+        val label: String
+    ) : RecyclerViewUiEvents()
+
     data class ShowImage(
         val label: String,
         val value: String
@@ -78,6 +83,14 @@ sealed class RecyclerViewUiEvents {
     ) : RecyclerViewUiEvents()
 
     data class OpenOptionSetDialog(
+        val field: FieldUiModel
+    ) : RecyclerViewUiEvents()
+
+    data class OpenFileSelector(
+        val field: FieldUiModel
+    ) : RecyclerViewUiEvents()
+
+    data class OpenFile(
         val field: FieldUiModel
     ) : RecyclerViewUiEvents()
 }

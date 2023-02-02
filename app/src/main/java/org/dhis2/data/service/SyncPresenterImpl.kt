@@ -31,7 +31,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.fileresource.FileResourceValueType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.GeneralSettings
@@ -219,12 +218,12 @@ class SyncPresenterImpl(
         val globalSettings = getSettings()
 
         globalSettings?.let {
-            if (!globalSettings.numberSmsToSend().isNullOrEmpty()) {
-                d2.smsModule().configCase().setGatewayNumber(globalSettings.numberSmsToSend())
+            if (!globalSettings.smsGateway().isNullOrEmpty()) {
+                d2.smsModule().configCase().setGatewayNumber(globalSettings.smsGateway())
                     .andThen(
-                        if (!globalSettings.numberSmsConfirmation().isNullOrEmpty()) {
+                        if (!globalSettings.smsResultSender().isNullOrEmpty()) {
                             d2.smsModule().configCase()
-                                .setConfirmationSenderNumber(globalSettings.numberSmsConfirmation())
+                                .setConfirmationSenderNumber(globalSettings.smsResultSender())
                         } else {
                             Completable.complete()
                         }
@@ -241,9 +240,7 @@ class SyncPresenterImpl(
         if (d2.systemInfoModule().versionManager().isGreaterThan(DHISVersion.V2_32)) {
             syncStatusController.initDownloadMedia()
             Completable.fromObservable(
-                d2.fileResourceModule().fileResourceDownloader()
-                    .byValueType().eq(FileResourceValueType.IMAGE)
-                    .download()
+                d2.fileResourceModule().fileResourceDownloader().download()
             ).blockingAwait()
         }
     }

@@ -167,8 +167,8 @@ class FormValueStore(
         val valueType =
             d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (valueType == ValueType.IMAGE && value != null) {
-            newValue = saveFileResource(value)
+        if (isFile(valueType) && value != null) {
+            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -333,8 +333,12 @@ class FormValueStore(
             .byValue().eq(value).blockingGet()
     }
 
-    private fun saveFileResource(path: String): String {
-        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+    private fun saveFileResource(path: String, resize: Boolean): String {
+        val file = if (resize) {
+            FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        } else {
+            File(path)
+        }
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
@@ -343,8 +347,8 @@ class FormValueStore(
             .value(recordUid, uid)
         val valueType = d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
-        if (valueType == ValueType.IMAGE && value != null) {
-            newValue = saveFileResource(value)
+        if (isFile(valueType) && value != null) {
+            newValue = saveFileResource(value, valueType == ValueType.IMAGE)
         }
 
         val currentValue = if (valueRepository.blockingExists()) {
@@ -479,5 +483,9 @@ class FormValueStore(
         } else {
             StoreResult(field, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         }
+    }
+
+    private fun isFile(valueType: ValueType?): Boolean {
+        return valueType == ValueType.IMAGE || valueType?.isFile == true
     }
 }

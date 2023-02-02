@@ -59,8 +59,8 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constrainedWidth="true"
             app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             tools:text="Image Field" />
 
@@ -81,22 +81,15 @@
             app:layout_constraintBottom_toBottomOf="@id/label"
             />
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.compose.ui.platform.ComposeView
             android:id="@+id/addImageBtn"
-            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/add_image"
-            android:textColor="?colorPrimary"
             android:enabled="@{item.editable}"
             android:alpha="@{item.editable? 1f : 0.5f}"
             android:visibility="@{item.hasImage ? View.GONE : View.VISIBLE}"
-            android:onClick="@{v -> item.invokeUiEvent(UiEventType.ADD_PICTURE)}"
-            app:backgroundTint="@color/white"
-            app:iconTint="?colorPrimary"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp"
-            app:elevation="8dp"
+            android:paddingTop="8dp"
+            app:add_button="@{item}"
             app:layout_constraintTop_toBottomOf="@id/label"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"

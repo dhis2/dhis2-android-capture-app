@@ -240,8 +240,7 @@ class EventFieldMapper(
     private fun isUnsupported(type: ValueType?): Boolean {
         return when (type) {
             ValueType.TRACKER_ASSOCIATE,
-            ValueType.USERNAME,
-            ValueType.FILE_RESOURCE -> true
+            ValueType.USERNAME -> true
             else -> false
         }
     }

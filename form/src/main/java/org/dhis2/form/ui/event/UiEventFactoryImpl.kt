@@ -6,6 +6,7 @@ import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiEventType.ADD_PICTURE
+import org.dhis2.form.model.UiEventType.ADD_SIGNATURE
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
 import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
@@ -122,7 +123,10 @@ class UiEventFactoryImpl(
                     }
                 }
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
-                else -> null
+                ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
+                UiEventType.ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
+                UiEventType.OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
+                null -> null
             }
         } catch (e: Exception) {
             Timber.d("wrong format")
