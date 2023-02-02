@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -125,35 +126,34 @@ class TextInputUiTest {
                 topEnd = 16.dp
             )
         ) {
-            DataTable(
-                tableList = tableData,
-                tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                ),
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
+            CompositionLocalProvider(
+                LocalTableSelection provides tableSelection
+            ) {
+                DataTable(
+                    tableList = tableData,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
+                        }
 
-                    override fun onClick(tableCell: TableCell) {
-                        currentCell = tableCell
-                        currentInputType = TextInputModel(
-                            id = tableCell.id!!,
-                            mainLabel = "Main Label",
-                            secondaryLabels = listOf("Second Label 1", "Second Label 2"),
-                            tableCell.value,
-                            error = currentCell?.error
-                        )
-                        coroutineScope.launch {
-                            if (bottomSheetState.bottomSheetState.isCollapsed) {
-                                bottomSheetState.bottomSheetState.expand()
+                        override fun onClick(tableCell: TableCell) {
+                            currentCell = tableCell
+                            currentInputType = TextInputModel(
+                                id = tableCell.id!!,
+                                mainLabel = "Main Label",
+                                secondaryLabels = listOf("Second Label 1", "Second Label 2"),
+                                tableCell.value,
+                                error = currentCell?.error
+                            )
+                            coroutineScope.launch {
+                                if (bottomSheetState.bottomSheetState.isCollapsed) {
+                                    bottomSheetState.bottomSheetState.expand()
+                                }
                             }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

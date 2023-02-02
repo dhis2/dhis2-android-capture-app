@@ -1,5 +1,6 @@
 package org.dhis2.composetable
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -8,8 +9,10 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.activity.TableTestActivity
 import org.dhis2.composetable.model.FakeTableModels
+import org.dhis2.composetable.model.OnTextChange
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.ui.DataTable
+import org.dhis2.composetable.ui.LocalTableSelection
 import org.dhis2.composetable.ui.TableColors
 import org.dhis2.composetable.ui.TableSelection
 import org.junit.Rule
@@ -164,18 +167,18 @@ class ColumnTableTest {
             var tableSelection by remember {
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
-
-            DataTable(
-                tableList = fakeModel,
-                editable = true,
-                tableColors = tableColors,
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
+            CompositionLocalProvider(
+                LocalTableSelection provides tableSelection
+            ) {
+                DataTable(
+                    tableList = fakeModel,
+                    tableInteractions = object : TableInteractions {
+                        override fun onSelectionChange(newTableSelection: TableSelection) {
+                            tableSelection = newTableSelection
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
