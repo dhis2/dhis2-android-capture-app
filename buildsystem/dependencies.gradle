@@ -78,7 +78,7 @@ ext {
             flippernetwork            : "0.161.0",
             flipperleak               : "0.161.0",
             leakcannary               : "2.9.1",
-            leakcannarynoop           : "2.9.1",
+            leakcannarynoop           : "1.6.3",
             rxlint                    : "1.6",
             paperwork                 : "1.2.7",
             crashactivity             : "2.3.0",
