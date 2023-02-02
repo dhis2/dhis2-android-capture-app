@@ -7,6 +7,7 @@ import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.extra.DownloadTracker.Extra.ApkChecksum
 import org.matomo.sdk.extra.TrackHelper
+import timber.log.Timber
 
 class MatomoAnalyticsControllerImpl(
     val matomoInstance: Matomo,
@@ -40,10 +41,16 @@ class MatomoAnalyticsControllerImpl(
     }
 
     private fun isAnalyticsPermissionGranted(): Boolean {
-        return D2Manager.isD2Instantiated() &&
-            D2Manager.getD2().dataStoreModule().localDataStore()
-            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
-            ?.toBoolean() == true
+        return (
+            D2Manager.isD2Instantiated() &&
+                D2Manager.getD2().dataStoreModule().localDataStore()
+                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()?.value()
+                ?.toBoolean() == true
+            ).also { granted ->
+            if (!granted) {
+                Timber.d("Tracking is disabled")
+            }
+        }
     }
 
     private fun updateDhisImplementationTrackerFirstTime() {
