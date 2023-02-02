@@ -43,6 +43,13 @@ class TableDimensionStore(
                     clearKey(key)
                 }
             }
+        d2.dataStoreModule().localDataStore()
+            .byKey().like(tableExtraWidthDataStoreKey(tableId))
+            .blockingGet().forEach { keyValuePair ->
+                keyValuePair.key()?.let { key ->
+                    clearKey(key)
+                }
+            }
     }
 
     private fun clearKey(key: String) {
