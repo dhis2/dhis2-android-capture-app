@@ -48,7 +48,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Mar 2022"
+        val period = "Dec 2022"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
