@@ -6,6 +6,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiEventType.ADD_FILE
 import org.dhis2.form.model.UiEventType.ADD_PICTURE
 import org.dhis2.form.model.UiEventType.ADD_SIGNATURE
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
@@ -13,6 +14,7 @@ import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
 import org.dhis2.form.model.UiEventType.EMAIL
+import org.dhis2.form.model.UiEventType.OPEN_FILE
 import org.dhis2.form.model.UiEventType.OPTION_SET
 import org.dhis2.form.model.UiEventType.ORG_UNIT
 import org.dhis2.form.model.UiEventType.PHONE_NUMBER
