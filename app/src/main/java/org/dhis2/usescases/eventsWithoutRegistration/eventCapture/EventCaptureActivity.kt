@@ -49,6 +49,7 @@ import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.customviews.navigationbar.setInitialPage
+import org.dhis2.utils.granularSync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 
@@ -121,7 +122,8 @@ class EventCaptureActivity :
             intent.getStringExtra(Constants.PROGRAM_UID),
             intent.getStringExtra(Constants.EVENT_UID),
             pageConfigurator!!.displayAnalytics(),
-            pageConfigurator!!.displayRelationships()
+            pageConfigurator!!.displayRelationships(),
+            intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
         )
         binding!!.eventViewPager.adapter = adapter
         binding!!.eventViewPager.setCurrentItem(initialPage, false)
